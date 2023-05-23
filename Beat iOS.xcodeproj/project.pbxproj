@@ -278,6 +278,7 @@
 		B63D9F5C2830366B00D027B6 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
@@ -390,7 +391,6 @@
 			isa = PBXGroup;
 			children = (
 				B619DE5B29F80D92007D1838 /* Document View */,
-				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B63D9F5028301E4E00D027B6 /* iOS colors */,
 				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,

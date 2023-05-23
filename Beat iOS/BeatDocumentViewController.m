@@ -41,8 +41,13 @@
 
 @property (atomic) NSAttributedString *attrTextCache;
 @property (atomic) NSString *cachedText;
-@property (nonatomic) NSRange lastChangedRange;
 @property (nonatomic) NSString* contentBuffer;
+
+/// The range which was *actually* changed
+@property (nonatomic) NSRange lastChangedRange;
+
+/// The range where the *edit* happened
+@property (nonatomic) NSRange lastEditedRange;
  
 @property (nonatomic) NSMutableArray<id<BeatEditorView>>* registeredViews;
 
@@ -94,7 +99,7 @@
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
 	
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
-
+	
 	[self.textView removeFromSuperview];
 	self.textView = textView;
 	[self.pageView addSubview:self.textView];
@@ -108,8 +113,8 @@
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-
+	[super viewDidLoad];
+	
 	if (!self.documentIsLoading) return;
 	
 	
@@ -122,7 +127,7 @@
 	_revisionTracking = BeatRevisions.new;
 	_revisionTracking.delegate = self;
 	[_revisionTracking setup];
-		
+	
 	// Hide text from view until loaded
 	self.textView.pageView.layer.opacity = 0.0;
 	
@@ -133,7 +138,7 @@
 	self.textView.backgroundColor = ThemeManager.sharedManager.backgroundColor;
 	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
-
+	
 	[self.document openWithCompletionHandler:^(BOOL success) {
 		if (!success) {
 			// Do something
@@ -165,7 +170,7 @@
 	
 	self.formatting = BeatiOSFormatting.new;
 	self.formatting.delegate = self;
-		
+	
 	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
 	
 	// Load document into parser
@@ -185,7 +190,7 @@
 	
 	// Text I/O
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
-
+	
 	// Text view settings
 	self.textView.textStorage.delegate = self;
 	
@@ -202,7 +207,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-
+	
 	[_textView resize];
 	
 	if (_documentIsLoading) {
@@ -232,14 +237,14 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 
 #pragma mark -
@@ -251,7 +256,7 @@
 	return BeatPagination.lineHeight;
 }
 
- 
+
 #pragma mark - Application data and file access
 
 - (NSString*)fileNameString {
@@ -298,19 +303,19 @@
 	// Save added/removed ranges
 	// This saves the revised ranges into Document Settings
 	NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
-	[_documentSettings set:DocSettingRevisions as:(revisions != nil) ? revisions : @{}];
+	[self.documentSettings set:DocSettingRevisions as:(revisions != nil) ? revisions : @{}];
 	
 	// Save current revision color
-	[_documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
+	[self.documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
 	
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
-	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
+	[self.documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
 	
 	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
 	
 	// Save reviewed ranges
 	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
-	[_documentSettings set:DocSettingReviews as:(reviews != nil) ? reviews : @[]];
+	[self.documentSettings set:DocSettingReviews as:(reviews != nil) ? reviews : @[]];
 	
 	// Save caret position
 	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
@@ -321,13 +326,13 @@
 	NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
 	
 	/*
-	if (_runningPlugins.count) {
-		for (NSString *pluginName in _runningPlugins.allKeys) {
-			BeatPlugin *plugin = _runningPlugins[pluginName];
-			[plugin documentWasSaved];
-		}
-	}
-	*/
+	 if (_runningPlugins.count) {
+	 for (NSString *pluginName in _runningPlugins.allKeys) {
+	 BeatPlugin *plugin = _runningPlugins[pluginName];
+	 [plugin documentWasSaved];
+	 }
+	 }
+	 */
 	
 	return result;
 }
@@ -335,15 +340,15 @@
 /*
  
  @IBAction func dismissDocumentViewController() {
-	 self.previewView?.webview?.removeFromSuperview()
-	 self.previewView?.webview = nil
-	 
-	 self.previewView?.nibBundle?.unload()
-	 self.previewView = nil
-	 
-	 dismiss(animated: true) {
-		 self.document?.close(completionHandler: nil)
-	 }
+ self.previewView?.webview?.removeFromSuperview()
+ self.previewView?.webview = nil
+ 
+ self.previewView?.nibBundle?.unload()
+ self.previewView = nil
+ 
+ dismiss(animated: true) {
+ self.document?.close(completionHandler: nil)
+ }
  }
  */
 
@@ -352,7 +357,7 @@
 - (OutlineScene*)currentScene {
 	// If we are not on the main thread, return the latest known scene
 	if (!NSThread.isMainThread) return _currentScene;
-
+	
 	// Check if the cached scene is OK
 	NSInteger position = self.selectedRange.location;
 	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
@@ -434,7 +439,7 @@
 	}
 	
 	// At the end, return last scene
-	 if (position >= self.text.length) return self.parser.outline.lastObject;
+	if (position >= self.text.length) return self.parser.outline.lastObject;
 	
 	OutlineScene *prevScene;
 	for (OutlineScene *scene in self.outline) {
@@ -499,7 +504,7 @@
 	self.sidebarVisible = !self.sidebarVisible;
 	
 	CGFloat sidebarWidth = (_sidebarVisible) ? 230.0 : 0.0;
-		
+	
 	[UIView animateWithDuration:0.25 animations:^{
 		self.sidebarConstraint.constant = sidebarWidth;
 	}];
@@ -513,13 +518,13 @@
  There, pagination is just a byproduct of previews. This way, once any changes were made (including just attribute changes etc.),
  we can just invalidate the previes at given range and get both for free. Now we're telling this controller to invalidate
  preview, but we're *actually* invalidating pagination.
-
+ 
  Correct pattern should be:
  - change made
  - invalidate preview in preview controller
-   ... build new pagination
-   ... build new preview
-   ... BOTH of them are now up to date
+ ... build new pagination
+ ... build new preview
+ ... BOTH of them are now up to date
  
  We should also allow the pagination to receive a CHANGED RANGE instead of just an index.
  It would allow larger changes to be made, while still supporting caching previous results etc.
@@ -546,16 +551,19 @@ static bool buildPreviewImmediately = false;
 }
 
 - (void)paginateWithChangeAt:(NSInteger)location sync:(bool)sync {
+	[self.previewTimer invalidate];
 	self.preview.previewUpdated = false;
-
+	
 	if (sync) {
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
 	} else {
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
-			[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-			[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
-		});
+		self.previewTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:false block:^(NSTimer * _Nonnull timer) {
+			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
+				[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+				[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
+			});
+		}];
 	}
 }
 
@@ -659,7 +667,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Screenplay document data shorthands
 
 - (NSString*)revisionColor {
-	NSString* revisionColor = [_documentSettings getString:DocSettingRevisionColor];
+	NSString* revisionColor = [self.documentSettings getString:DocSettingRevisionColor];
 	if (revisionColor == nil) revisionColor = BeatRevisions.defaultRevisionColor;
 	return revisionColor;
 }
@@ -862,7 +870,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-			
+	
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
@@ -876,16 +884,16 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
 	
 	// NOTE: calling this method removes the outline changes from parser
-	NSArray *changesInOutline = self.parser.changesInOutline;
+	NSSet* changesInOutline = self.parser.changesInOutline;
 	
 	if (changeInOutline == YES) {
 		[self.parser createOutline];
 		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
 		/*
-		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
-		if (self.timeline.visible) [self.timeline reload];
-		if (self.timelineBar.visible) [self reloadTouchTimeline];
-		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
+		 if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
+		 if (self.timeline.visible) [self.timeline reload];
+		 if (self.timelineBar.visible) [self reloadTouchTimeline];
+		 if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
 		 */
 	} else {
 		//if (self.timeline.visible) [_timeline refreshWithDelay];
@@ -900,7 +908,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Paginate
 	[self paginateWithChangeAt:self.lastChangedRange.location sync:false];
 	
-		
+	
 	// Update any running plugins
 	// if (runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
@@ -945,7 +953,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	else if ([self.textActions shouldJumpOverParentheses:text range:range]) {
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -957,7 +965,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setMatchParentheses:(bool)matchParentheses {
 	[BeatUserDefaults.sharedDefaults saveBool:matchParentheses forKey:BeatSettingMatchParentheses];
-
+	
 }
 
 - (bool)showRevisions {
@@ -1110,9 +1118,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {
 	/*
-	BeatTextView *textView = (BeatTextView*)self.textView;
-	[textView setSelectedRange:range];
-	[textView scrollToRange:range callback:nil];
+	 BeatTextView *textView = (BeatTextView*)self.textView;
+	 [textView setSelectedRange:range];
+	 [textView scrollToRange:range callback:nil];
 	 */
 }
 
@@ -1319,11 +1327,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return 12.0;
 }
 
+- (void)bakeRevisions {
+	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.attributedString];
+}
+
+
 
 
 #pragma mark - Keyboard manager delegate
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
+	NSLog(@"Hiehg: %f", size.height);
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
@@ -1341,6 +1355,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 -(void)keyboardWillHide {
 	self.scrollView.contentInset = UIEdgeInsetsZero;
+}
+
+- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
+	//NSLog(@"Pagination did finish");
 }
 
 

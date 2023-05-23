@@ -291,7 +291,6 @@ static BeatPluginManager *sharedManager;
 #pragma mark - Check for plugin updates
 
 - (void)checkForUpdates {
-	NSArray *disabled = [self disabledPlugins];
 	bool autoUpdate = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUpdatePluginsAutomatically];
 	
 	[self refreshAvailablePlugins];

@@ -1520,7 +1520,7 @@
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Item 3" identifier="" id="L4N-og-10d" userLabel="Native preview tab">
-                                <view key="view" id="vkg-Sm-plN">
+                                <view key="view" appearanceType="darkAqua" id="vkg-Sm-plN">
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -1529,7 +1529,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>

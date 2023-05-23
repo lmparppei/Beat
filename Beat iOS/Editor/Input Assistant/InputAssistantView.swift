@@ -122,7 +122,9 @@ open class InputAssistantView: UIInputView {
 	
 	/// Actions to display on the leading side of the suggestions.
 	public var leadingActions: [InputAssistantAction] = [] {
-		didSet { self.updateActions(leadingActions, leadingStackView) }
+		didSet {
+			self.updateActions(leadingActions, leadingStackView)
+		}
 	}
 	
 	/// Actions to display on the trailing side of the suggestions
@@ -168,6 +170,7 @@ open class InputAssistantView: UIInputView {
 			stackView.spacing = 10
 			stackView.alignment = .center
 			stackView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+			stackView.tintColor = .white
 			updateActions([], stackView)
 		}
 
@@ -259,7 +262,6 @@ open class InputAssistantView: UIInputView {
 				}
 
 				// If possible, the button should be at least 40px wide for a good sized tap target
-
 				let widthConstraint = button.widthAnchor.constraint(equalToConstant: itemWidth)
 				widthConstraint.priority = .defaultHigh
 				widthConstraint.isActive = true

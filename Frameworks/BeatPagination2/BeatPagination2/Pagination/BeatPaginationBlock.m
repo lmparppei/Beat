@@ -208,9 +208,16 @@
 	for (NSInteger i=0; i<self.lines.count; i++) {
 		Line *line = _lines[i];
 		
+        /*
 		if (line.isAnyDialogue || (line.isAnyParenthetical && i > 1))  {
 			[indices addIndex:i];
 		}
+        */
+        
+        // Any parenthetical after the first one are good places to break the page
+        if (line.isAnyParenthetical && i > 1) [indices addIndex:i];
+        // Any line of dialogue is a good place to attempt to break the page
+        if (line.isAnyDialogue) [indices addIndex:i];
 	}
 	
 	return indices;
@@ -333,6 +340,121 @@
 }
 
 - (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
+    remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
+    
+    NSMutableArray* dialogueBlock = self.lines.mutableCopy;
+    NSMutableArray<Line*>* onThisPage = NSMutableArray.new;
+    NSMutableArray<Line*>* onNextPage = NSMutableArray.new;
+    
+    NSMutableArray<Line*>* tmpThisPage = NSMutableArray.new;
+    NSMutableArray<Line*>* tmpNextPage = NSMutableArray.new;
+    
+    BeatPageBreak *pageBreak;
+    Line* pageBreakItem;
+    
+    NSIndexSet* splittableIndices = [self possiblePageBreakIndices];
+    
+    NSInteger cutoff = 0;
+        
+    NSMutableArray* safeLines = NSMutableArray.new;
+    
+    for (NSInteger i=1; i<dialogueBlock.count; i++) {
+        Line* line = dialogueBlock[i];
+        
+        CGFloat heightBefore = [self heightUntil:line];
+        CGFloat h = heightBefore + [self heightForLine:line];
+        
+        if (h <= remainingSpace) {
+            // This line fits
+            if ((line.isAnyDialogue && i > 0) || line == dialogueBlock.lastObject) {
+                [onThisPage addObjectsFromArray:safeLines];
+                [onThisPage addObject:line];
+                
+                [safeLines removeAllObjects];
+            } else {
+                [safeLines addObject:line];
+            }
+            
+            continue;
+        }
+        
+        
+        // This line doesn't.
+        if (line.isAnyParenthetical && [splittableIndices containsIndex:i]) {
+            // After a parenthetical that doesn't fit we'll just hop on to next page
+            cutoff = i;
+            pageBreakItem = line;
+            
+            break;
+        } else if (line.isAnyDialogue) {
+            // We'll have to try and split the dialogue line if needed
+            NSArray* splitLine = [self splitDialogueLine:line remainingSpace:remainingSpace - heightBefore];
+            Line* retain = splitLine[0];
+            Line* split = splitLine[1];
+        
+            // Something was left on this page
+            if (retain.length > 0) {
+                cutoff = i + 1;
+                [tmpThisPage addObjectsFromArray:safeLines];
+                [tmpThisPage addObject:retain];
+                
+                pageBreak = splitLine[2];
+            }
+            
+            // Something was cut off to next page
+            if (split.length > 0 && retain.length > 0) {
+                [tmpNextPage addObject:split];
+            }
+            // Nothing was left on current page, we'll need to see if we
+            // actually can split the dialogue block here
+            else if (retain.length == 0 && split.length > 0 && [splittableIndices containsIndex:i]) {
+                cutoff = i;
+                
+                // Set the correct page break item
+                pageBreakItem = split;
+                
+                // Add remaining safe lines
+                [tmpNextPage insertObjects:safeLines atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, safeLines.count)]];
+            }
+            break;
+        }
+    }
+
+    // We'll cut off at 0, so make page break item the first object in array
+    if (cutoff == 0) pageBreakItem = self.lines.firstObject;
+        
+    [onThisPage addObjectsFromArray:tmpThisPage];
+    [onNextPage addObjectsFromArray:tmpNextPage];
+    [onNextPage addObjectsFromArray:[self.lines subarrayWithRange:NSMakeRange(cutoff, self.lines.count - cutoff)]];
+    
+    // Add character cues
+    if (onThisPage.count && onNextPage.count) {
+        [onThisPage insertObject:self.lines.firstObject atIndex:0];
+        [onThisPage addObject:[self.delegate moreLineFor:self.lines.firstObject]];
+        
+        Line* cue = [self.delegate contdLineFor:self.lines.firstObject];
+        [onNextPage insertObject:cue atIndex:0];
+    }
+    else if (onThisPage.count) {
+        [onThisPage insertObject:self.lines.firstObject atIndex:0];
+    }
+    else {
+        [onNextPage insertObject:self.lines.firstObject atIndex:0];
+    }
+    
+    if (pageBreak == nil) {
+        // Get page break index. If it's below 2 (or not found), make the first item be the page break.
+        NSInteger pageBreakIndex = [self.lines indexOfObject:pageBreakItem];
+        if ((pageBreakIndex == NSNotFound || pageBreakIndex <= 1) && onThisPage.count == 0) pageBreakItem = self.lines.firstObject;
+    
+        pageBreak = [BeatPageBreak.alloc initWithY:0 element:pageBreakItem];
+    }
+    
+    return @[ onThisPage, onNextPage, pageBreak ];
+}
+
+/*
+- (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
 	remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
 	
 	NSMutableArray *dialogueBlock = self.lines.mutableCopy;
@@ -341,16 +463,30 @@
 	Line *pageBreakItem;
 	NSUInteger index = [dialogueBlock indexOfObject:spiller];
 	
+    CGFloat h = 0.0;
+    
 	if (spiller) {
-		// If there is a spiller, calculate the height of the remaining block
-		remainingSpace -= [self heightUntil:spiller];
+		// If there is a spiller, calculate the height of the remaining block until something fits
+        while (index > 0) {
+            Line* l = self.lines[index];
+            h = [self heightUntil:l];
+            if (remainingSpace - h > BeatPagination.lineHeight) {
+                remainingSpace -= h;
+                break;
+            } else {
+                index--;
+            }
+        }
 	}
-	
-	// If nothing fits, move the whole block on next page
-	if (remainingSpace < BeatPagination.lineHeight) {
-		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
-	}
-	
+    
+    if (remainingSpace < BeatPagination.lineHeight) {
+        NSLog(@" -> %lu", index);
+        index = 0;
+    }
+    
+    // Reset spiller
+    spiller = self.lines[index];
+		
 	// Arrays for elements
 	NSMutableArray *onThisPage = NSMutableArray.new;
 	NSMutableArray *onNextPage = NSMutableArray.new;
@@ -364,7 +500,12 @@
 	
 	// Split the block at this location
 	NSUInteger splitAt = (index > 0) ? [splittableIndices indexLessThanOrEqualToIndex:index] : 0;
-	
+    	
+    // If nothing fits, move the whole block on next page
+    if (splitAt == 0) {
+        return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
+    }
+    
 	// Live pagination page break item
 	pageBreakItem = dialogueBlock[splitAt];
 
@@ -378,7 +519,7 @@
 			
 			if (retain.length > 0) {
 				[tmpThisPage addObject:splitLine[0]];
-				[tmpNextPage addObject:splitLine[1]];
+				if (((Line*)splitLine[1]).length) [tmpNextPage addObject:splitLine[1]];
 				pageBreak = splitLine[2];
 				
 				[dialogueBlock removeObject:spiller];
@@ -423,6 +564,7 @@
 	if (pageBreak == nil) pageBreak = [BeatPageBreak.alloc initWithY:0 element:pageBreakItem reason:@"Dialogue break"];
 	return @[ onThisPage, onNextPage, pageBreak ];
 }
+*/
 
 - (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace {
 	NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];

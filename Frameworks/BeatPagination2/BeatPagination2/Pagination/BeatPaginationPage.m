@@ -132,25 +132,32 @@
 
 /// Finds the index which we can restart pagination from. It's kind of a reverse block search.
 - (NSInteger)findSafeLineFromIndex:(NSInteger)index {
+    // OK, this code doesn't make any sense.
+    // I must have been tired, drunk or in psychosis.
+    // After some minor blind fixes, it appears to work, though.
+    
     NSArray<Line*>* lines = self.lines;
     Line* line = lines[index];
     
     bool isDialogue = (line.isDialogue || line.isDualDialogue) ? true : false;
     
-    // This line should be safe
+    // Don't allow pagination to begin at unsafe lines or mid-dialogue
     if (isDialogue || line.unsafeForPageBreak) {
+        index--;
         while (index >= 0) {
             Line* l = lines[index];
             
-            if (!isDialogue && !l.unsafeForPageBreak) break;
-            else if (isDialogue && l.type == character) break;
-            else if (isDialogue && !(l.isDialogue || l.isDualDialogue)) break;
+            if (!l.isDualDialogue) {
+                if (!isDialogue && !l.unsafeForPageBreak) break;
+                else if (isDialogue && l.type == character) break;
+                else if (isDialogue && !(l.isDialogue || l.isDualDialogue)) break;
+            }
             
             index -= 1;
         }
     }
     
-    // Let's also check if the line is preceded by a element which affects pagination
+    // Let's also check if the line is preceded by an element which affects pagination
     if (index > 0) {
         LineType precedingType = lines[index - 1].type;
         if (precedingType == heading || precedingType == shot) {

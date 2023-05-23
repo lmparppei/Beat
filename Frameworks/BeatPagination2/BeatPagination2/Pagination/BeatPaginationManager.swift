@@ -221,7 +221,9 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		if i != NSNotFound {
 			var n = 0
 			while (n < i+1) {
-				operationQueue.remove(at: 0)
+                if(operationQueue.count > 0) {
+                    operationQueue.remove(at: 0)
+                }
 				n += 1
 			}
 		}

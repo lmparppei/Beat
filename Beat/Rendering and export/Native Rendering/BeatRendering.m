@@ -516,6 +516,13 @@
 		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 		pStyle.headIndent = style.marginLeft;
 		pStyle.firstLineHeadIndent = style.marginLeft;
+		
+		// Add additional indent for parenthetical lines
+		if (line.type == parenthetical) {
+			blockWidth += 7.25;
+			pStyle.headIndent += 7.25;
+		}
+		
 		pStyle.paragraphSpacingBefore = style.marginTop;
 		
 		pStyle.paragraphSpacing = style.marginBottom;

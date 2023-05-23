@@ -2758,9 +2758,13 @@ NSUInteger prevLineAtLocationIndex = 0;
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
         line.isSplitParagraph = false;
-        
+                
         // Preprocess split paragraphs
         Line *l = linesForPrinting.lastObject;
+        
+        // Reset dual dialogue
+        if (l.type == character) l.nextElementIsDualDialogue = false;
+        
         if (l.type == action || l.type == lyrics || l.type == centered) {
             l.beginsNewParagraph = true;
             
@@ -2855,7 +2859,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 			while (i >= 0) {
 				Line *precedingLine = [elements objectAtIndex:i];
 								
-				if (precedingLine.type == character ) {
+				if (precedingLine.type == character) {
 					precedingLine.nextElementIsDualDialogue = YES;
 					break;
 				}

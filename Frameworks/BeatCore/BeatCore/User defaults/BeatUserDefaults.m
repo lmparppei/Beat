@@ -122,6 +122,8 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingZoomLevel: @[BeatSettingZoomLevel, @0.97],
 		BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
+        
+        @"Test": @[@"Test", @1],
         		
 		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
         

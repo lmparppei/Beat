@@ -24,7 +24,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	
 	@objc public var assistantView:InputAssistantView?
 	
-	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
+	var insets = UIEdgeInsets(top: 50, left: 30, bottom: 50, right: 30)
 	var pinchRecognizer = UIGestureRecognizer()
 	var customLayoutManager:BeatLayoutManager
 	
@@ -102,6 +102,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		return width + padding * 2
 	}
 	
+	
 	// MARK: - Setup
 		
 	func setup() {
@@ -123,11 +124,16 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		resizePaper()
 		resize()
+		
+		setupButtons()
 	}
-	
+		
 	func setupButtons() {
 		self.assistantView?.leadingActions = [
-			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!)
+			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue))
+		]
+		self.assistantView?.trailingActions = [
+			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!)
 		]
 	}
 	
@@ -150,26 +156,22 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	}
 	
 	@objc func resize() {
-		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
 		guard let enclosingScrollView = self.enclosingScrollView else {
 			print("WARNING: No scroll view set for text view")
 			return
 		}
 		
+		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
+		/*
 		if (containerHeight < enclosingScrollView.frame.height) {
 			containerHeight = enclosingScrollView.frame.height
 		}
+		*/
 		
 		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
 		self.textContainerInset = insets
 		
 		var frame = pageView.frame
-				
-		// Center the page view
-		var x = (enclosingScrollView.frame.width - pageView.frame.width) / 2
-		if (x < 0) { x = 0 }
-		frame.origin.x = x
-		
 		var zoom = enclosingScrollView.zoomScale
 		
 		if (frame.height * zoom < enclosingScrollView.frame.height) {
@@ -181,11 +183,22 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 			zoom = enclosingScrollView.zoomScale / factor
 		}
 		
-		resizeScrollViewContent()
+		// Center the page view
+		var x = (enclosingScrollView.frame.width - pageView.frame.width) / 2
+		if (x < 0) { x = 0 }
+		frame.origin.x = x
 		
+		resizeScrollViewContent()
+				
 		frame.size.width = zoom * (self.documentWidth + self.insets.left + self.insets.right)
 		frame.size.height = enclosingScrollView.contentSize.height
+		
 		self.pageView.frame = frame
+		
+		var textViewFrame = self.frame
+		textViewFrame.origin.x = 0.0
+		textViewFrame.size.width = self.documentWidth + self.insets.left + self.insets.right
+		self.frame = textViewFrame
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
 			self.enclosingScrollView.zoomScale = zoom
@@ -519,10 +532,9 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func resizeScrollViewContent() {
-		// Add constraints to the text view
 		let layoutManager = self.layoutManager
-		//let textContainerInset = self.textContainerInset
-
+		let inset = self.textContainerInset
+		
 		// Calculate the index of the last glyph that fits within the available height
 		let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: self.text.count)
 
@@ -536,13 +548,18 @@ extension BeatUITextView: UIScrollViewDelegate {
 		
 		let factor = self.enclosingScrollView.zoomScale
 		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
-		let scrollSize = CGSize(width: (contentSize.width + self.textContainerInset.left + self.textContainerInset.right) * factor,
-								height: (contentSize.height + self.textContainerInset.top + self.textContainerInset.bottom) * factor)
+		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
+								height: (contentSize.height + inset.top + inset.bottom) * factor)
 
+		if scrollSize.height * factor < self.enclosingScrollView.frame.height {
+			scrollSize.height = (self.enclosingScrollView.frame.height - inset.top - inset.bottom)
+		}
+		
 		let heightNow = self.enclosingScrollView.contentSize.height
 		
 		// Adjust the size to fit, if the size differs more than 5.0 points
 		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
+			scrollSize.height += 12.0
 			self.enclosingScrollView.contentSize = scrollSize
 		}
 		
@@ -577,6 +594,14 @@ extension BeatUITextView: UIScrollViewDelegate {
 		default:
 			super.pressesEnded(presses, with: event)
 		}
+	}
+}
+
+// MARK: - Input assistant buttons
+
+extension BeatUITextView {
+	@objc func addCue() {
+		self.editorDelegate?.formattingActions.addCue()
 	}
 }
 

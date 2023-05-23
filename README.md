@@ -17,31 +17,29 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Writer/) by Hendrik Noeller and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.98.x
+## Latest release: Beat 1.99.x
 
 **Features**
 * Minimalistic UI with as little distractions as possible
 * Smart, automatic screenplay formatting
 * Dark mode for the children of the night
-* Full support for Fountain syntax
+* Fountain syntax fully supported
 * Hide Fountain markup
-* Final Draft import / export
+* Final Draft import / export, supporting revisions and outline items 
 * Title page editor
 * JavaScript plugin API
-* Super-fast print preview
-* Automatic scene numbering in edit view – with forced scene number recognition
-* Page numbering while editing
-* Script version comparison with edit markers
+* Automatic page and scene numbering in edit view
+* Revision generation management
 * Outline list view, with sections and synopses, scene reordering and filtering
 * Outline card view, with sections & synopses
 * Timeline view with sections & synopses
-* Autocomplete characters and scene headings
+* Autocompletion for characters and scene headings
 * Color-coded scenes
-* Analysis view, with line count per character, amount of lines by gender, scene locations, etc.
+* Analysis view, with line count per character, inclusivity by gender, scene locations, etc.
 * Fountain Quicklook in Finder
 * Autosave & script backups in case of crashes 
 * Automatic paragraphs & tab key for auto character cue
-* Timer for measuring your productivity
+* Productivity timer
 
 
 ## Building from repo
@@ -65,7 +63,7 @@ You can download the latest public plugins (and learn more about creating your o
 
 ### iOS Version
 
-Some day. A working prototype exists, but its development is on hiatus right now, as I'm working on my own films and things.  
+Closed beta will start duing summer 2023. You can subscribe to [**Patreon**](https://www.patreon.com/user?u=61753992) to be a part of it!  
 
 ### Will There Be a Windows Version? 
 
@@ -73,21 +71,21 @@ Unfortunately no. Beat is written in Objective C and relies on native macOS APIs
 
 ### Can I help?
 
-Please do! The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. Coding assistance, bug reports, feature requests, ~~donations~~ and feedback are highly appreciated! 
+Please do! The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. Coding assistance, bug reports, feature requests, [donations](https://kapitan.fi/beat/support.html) and feedback are highly appreciated! 
 
 
 ### Support Beat
 
-The creator of this app is a well-off person from a social-democratic welfare country, and with everything going on in the world, donations are no longer accepted. If you've ever wanted to support the project monetarily, it's preferrable to direct those funds to NGOs helping underprivileged people struggling with the COVID-19 pandemic in crisis zones. 
+You can help to keep the project alive by [donating](https://kapitan.fi/beat/support.html) some pennies or by subscribing to the Patreon. However, the creator of this app is a well-off person from a social-democratic welfare country, so you can also send your loose change to NGOs and charities.
 
 
 ## Post-mortem
 
 **Beat is an anti-capitalist venture**. 
 
-Beat will stay free and open source forever, even if there might be a "pro" version with some extra content to finance the development. I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free screenwriting app might not be the thing that helps you to break through, but it's a start. 
+Beat will stay free and open source forever. I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Don't steal it from an individual, though.
 
-If you are here just to steal some code for your own Fountain editor, the best stuff can be found under *Parsing*, *Fountain* and *User Interface* folders in the project. Note that most of the code is under GPL, so you need to share your derivative work publicly.
+If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL, so you will need to share your derivative work publicly.
 
 The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
 

@@ -143,6 +143,7 @@
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool showPageNumbers;
 @property (nonatomic, readonly) bool showRevisions;
+@property (nonatomic, readonly) bool showRevisedTextColor;
 @property (nonatomic, readonly) bool showTags;
 
 

@@ -834,11 +834,27 @@ DQ
                                     <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Highlight Revisions" id="nSA-Ck-Viv">
+                            <menuItem title="Highlight Revisions Using..." id="hn7-em-kBb">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleShowRevisions:" target="-1" id="Hdw-sb-cKK"/>
-                                </connections>
+                                <menu key="submenu" title="Highlight Revisions Using..." id="Uuq-ET-iMU">
+                                    <items>
+                                        <menuItem title="Underlining" id="ADX-2t-uCR">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleShowRevisions:" target="-1" id="Hv5-dG-SeW"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Text Color" tag="3" id="efm-eP-Ffo" customClass="BeatUserDefaultMenuItem" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showRevisedTextColor"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleShowRevisedTextColor:" target="-1" id="IbT-u6-NoT"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="5k0-hN-7vj"/>
                             <menuItem title="Hide Fountain Markup" id="ayj-TQ-Go1">

@@ -110,7 +110,7 @@ class BeatPaginationPageView:NSView {
 		let size = BeatPaperSizing.size(for: settings.paperSize)
 		
 		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding,
-							   y: self.pageStyle.marginTop,
+							   y: self.pageStyle.marginTop - 10.0,
 							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
 							   height: size.height - self.pageStyle.marginTop)
 		

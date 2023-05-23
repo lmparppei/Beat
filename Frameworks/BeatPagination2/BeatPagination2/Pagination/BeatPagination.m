@@ -399,15 +399,18 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	if (line.type == lyrics || line.type == centered) expectedType = line.type;
 	else { expectedType = action; }
 	
-	//idx += 1
-	while (idx < _lineQueue.count) {
-		Line* l = _lineQueue[idx];
-		idx += 1;
+	while (i < _lineQueue.count) {
+		Line* l = _lineQueue[i];
+		i += 1;
 		
 		// Skip empty lines, and break when the next line type is not the one we expected
 		if (l.type == empty || l.string.length == 0) { continue; }
 		if (l.type == expectedType) {
-			if (l.beginsNewParagraph) { break; } // centered and lyric elements might begin a new block
+			if (l.beginsNewParagraph) {
+                // centered and lyric elements might begin a new block
+                break;
+            }
+            
 			[block addObject:l];
 		} else {
 			break;

@@ -391,9 +391,9 @@
                 fullRect.origin.y += inset.height;
                 
                 if (fullLine) {
-                    CGFloat padding = _textView.textContainer.lineFragmentPadding;
+                    CGFloat padding = self.textView.textContainer.lineFragmentPadding;
                     fullRect.origin.x = inset.width + padding;
-                    fullRect.size.width = _textView.textContainer.size.width - padding * 2;
+                    fullRect.size.width = self.textView.textContainer.size.width - padding * 2;
                 }
                 
                 BXRectFill(fullRect);

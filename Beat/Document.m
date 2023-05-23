@@ -2642,6 +2642,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:BeatSettingHideFountainMarkup target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:BeatSettingDisableFormatting target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisions:) setting:BeatSettingShowRevisions target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisedTextColor:) setting:BeatSettingShowRevisedTextColor target:self],
 		
 		[BeatValidationItem.alloc initWithAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
@@ -4377,6 +4378,11 @@ static NSArray<Line*>* cachedTitlePage;
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
 	[self selectAndScrollTo:range];
 }
+
+- (void)createPreviewAt:(NSInteger)location { 
+	[self.previewController createPreviewWithChangeAt:location sync:false];
+}
+
 
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {
