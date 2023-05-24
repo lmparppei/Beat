@@ -397,15 +397,19 @@
         }
         i -= 1;
     }
-
+    
     NSDictionary* uuids = self.delegate.uuids;
     
-    if (begin == nil || end == nil)
+    if (begin == nil || end == nil) {
+        NSLog(@"PAGINATION: -- no starting or closing line: %@ / %@", begin, end);
         return NSMakeRange(NSNotFound, 0);
-    else {
+    } else {
         // Get *actual* lines by UUID
         Line* lBegin = uuids[begin.uuid];
         Line* lEnd = uuids[end.uuid];
+        
+        if (lBegin == nil) NSLog(@"PAGINATION: -- unable to find matching UUID for OPENING line: %@ / %@", lBegin, lEnd);
+        if (lEnd == nil) NSLog(@"PAGINATION: -- unable to find matching UUID for ENDING line: %@ / %@", lBegin, lEnd);
         
         return NSMakeRange(lBegin.position, (lEnd.position + lEnd.string.length) - lBegin.position);
     }
