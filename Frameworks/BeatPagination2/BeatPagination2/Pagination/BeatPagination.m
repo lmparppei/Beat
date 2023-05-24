@@ -633,6 +633,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
     if (blockIndex == NSNotFound) {
         NSLog(@"• PAGINATION: Block not found: range %lu, %lu", range.location, range.length);
+        NSLog(@"  Page range: %lu, %lu", page.representedRange.location, page.representedRange.length);
     }
     if (page == nil) {
         NSLog(@"• PAGINATION: Page not found: range %lu, %lu", range.location, range.length);
