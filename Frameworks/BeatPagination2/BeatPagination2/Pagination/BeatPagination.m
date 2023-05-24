@@ -612,7 +612,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (CGFloat)heightForRange:(NSRange)range
 {
     NSInteger pageIndex = [self findPageIndexAt:range.location];
-	if (pageIndex == NSNotFound) return 0.0;
+    if (pageIndex == NSNotFound) {
+        NSLog(@"• PAGINATION: Page not found: range %lu, %lu", range.location, range.length);
+        return 0.0;
+    }
 	
     // Find the page + block index.
     // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
@@ -628,6 +631,13 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
         }
     }
 
+    if (blockIndex == NSNotFound) {
+        NSLog(@"• PAGINATION: Block not found: range %lu, %lu", range.location, range.length);
+    }
+    if (page == nil) {
+        NSLog(@"• PAGINATION: Page not found: range %lu, %lu", range.location, range.length);
+    }
+    
     if (blockIndex == NSNotFound || page == nil) {
         return 0.0;
     }
