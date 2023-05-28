@@ -171,6 +171,9 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	 */
 	@objc public func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
 		self.settings = settings
+        if (settings.paperSize == .A4) {
+            print("Sending a4?")
+        }
 		
 		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: changeAt)
 		runPagination(pagination: operation)

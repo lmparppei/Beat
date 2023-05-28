@@ -278,6 +278,9 @@
 #pragma mark - Preview
 
 //- (void)updatePreview;
+#if !TARGET_OS_IOS
+- (id)previewController;
+#endif
 - (void)invalidatePreview;
 - (void)invalidatePreviewAt:(NSInteger)index;
 

@@ -108,6 +108,7 @@ static NSDictionary *fdxIds;
 @property (nonatomic) NSInteger tagNumber;
 
 @property (nonatomic) bool inDualDialogue;
+@property (nonatomic) NSInteger dualDialogueCueCount;
 
 @property (nonatomic) BeatPaperSize paperSize;
 
@@ -371,11 +372,23 @@ static NSDictionary *fdxIds;
 	NSMutableArray<NSString*>* paragraphStyles = NSMutableArray.new;
 	[paragraphStyles addObject:[NSString stringWithFormat:@"Type=\"%@\"", paragraphType]];
 	
-	// Create dual dialogue block
-	if (line.type == character && line.nextElementIsDualDialogue) {
+	// Create dual dialogue block.
+	// This is a mess, fix ASAP.
+	if (line.type == character && line.nextElementIsDualDialogue && !_inDualDialogue) {
 		[_result appendString:@"    <Paragraph>\n"];
 		[_result appendString:@"      <DualDialogue>\n"];
+		
 		_inDualDialogue = YES;
+		_dualDialogueCueCount = 1;
+	}
+	else if (line.type == dualDialogueCharacter && _inDualDialogue) {
+		_dualDialogueCueCount = 2;
+	}
+	else if (_inDualDialogue && line.type == character) {
+		_inDualDialogue = NO;
+		_dualDialogueCueCount = 0;
+		[_result appendString:@"      </DualDialogue>\n"];
+		[_result appendString:@"    </Paragraph>\n"];
 	}
 	
 	// Append special styles for some elements
@@ -408,8 +421,10 @@ static NSDictionary *fdxIds;
 	//Apend close paragraph
 	[_result appendString:@"    </Paragraph>\n"];
 	
-	//If a double dialogue is currently in action, check wether it needs to be closed after this
+	// If a double dialogue is currently in action, check wether it needs to be closed after this
+	// This is a duct-tape fix, this has to be cleaned up ASAP.
 	if (_inDualDialogue) {
+		
 		if (index < lines.count - 1) {
 			//If the following line doesn't have anything to do with dialogue, end double dialogue
 			Line* nextLine = lines[index+1];
@@ -421,7 +436,6 @@ static NSDictionary *fdxIds;
 				nextLine.type != dualDialogueParenthetical &
 				nextLine.type != dualDialogue &&
 				nextLine.string.length > 0) {
-				
 				_inDualDialogue = NO;
 				[_result appendString:@"      </DualDialogue>\n"];
 				[_result appendString:@"    </Paragraph>\n"];

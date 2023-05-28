@@ -35,7 +35,7 @@
         NSRange settingRange = [self.settings readSettingsAndReturnRange:string];
         
         string = [string stringByRemovingRange:settingRange];
-
+        self.parser = [ContinuousFountainParser.alloc initWithString:string];
     }
     return self;
 }

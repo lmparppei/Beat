@@ -670,7 +670,7 @@ static BeatAppDelegate *appDelegate;
 	
 	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
 		[self formatAllLinesOfType:heading];
-		[self.previewController clearPreview];
+		[self.previewController resetPreview];
 	}
 	
 	if (oldSansSerif != self.useSansSerif) {
@@ -701,7 +701,7 @@ static BeatAppDelegate *appDelegate;
 		//else [self.textView deleteSceneNumberLabels];
 		
 		// Update the print preview accordingly
-		[self.previewController clearPreview];
+		[self.previewController resetPreview];
 	}
 	
 	[self updateQuickSettings];
@@ -2979,7 +2979,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Preview
 
 - (void)invalidatePreview {
-	[self.previewController clearPreview];
+	[self.previewController resetPreview];
 	return;
 }
 
@@ -2996,6 +2996,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[self returnToEditor];
 	}
 	return;
+}
+- (BOOL)previewVisible {
+	return (self.currentTab == _nativePreviewTab);
 }
 
 - (void)cancelOperation:(id) sender
@@ -3577,7 +3580,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self ensureLayout];
 	
 	// Update the print preview accordingly
-	[self.previewController clearPreview];
+	[self.previewController resetPreview];
 	
 	[self updateQuickSettings];
 }
@@ -3810,7 +3813,7 @@ static NSArray<Line*>* cachedTitlePage;
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];
-	[self.previewController clearPreview];
+	[self.previewController resetPreview];
 }
 
 - (NSInteger)numberOfPages {

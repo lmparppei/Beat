@@ -16,6 +16,7 @@ import AppKit
 
 @objc protocol BeatNativePreviewDelegate:BeatEditorDelegate {
 	@objc func paginationFinished(_ operation:BeatPagination, indices:NSIndexSet)
+	@objc func previewVisible() -> Bool
 }
 
 final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
@@ -83,7 +84,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	var changedIndices:NSMutableIndexSet = NSMutableIndexSet()
 	
 	/// Preview data can be created either in background (async) or in main thread (sync).
-	/// - note: This method doesn't create the actual preview yet, just paginates it.
+	/// - note: This method doesn't create the actual preview yet, just paginates it and prepares the data ready for display.
 	@objc func createPreview(changeAt index:Int, sync:Bool) {
 		// Add index to changed indices
 		changedIndices.add(index)
@@ -117,14 +118,24 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.createPreview(changeAt: index, sync: false)
 	}
 	
-	@objc func clearPreview() {
+	@objc func resetPreview() {
 		self.previewView?.clear()
+		
 		self.pagination?.finishedPagination = nil
-		self.createPreview(changeAt: 0, sync: false)
+		self.paginationUpdated = false
+		
+		if self.delegate?.previewVisible() ?? false {
+			// If the preview was cleared when in preview mode, let's create it in sync
+
+			self.renderOnScreen()
+		} else {
+			self.createPreview(changeAt: 0, sync: false)
+		}
 	}
 	
 	@objc func reloadStyles() {
 		self.renderer?.reloadStyles()
+		
 	}
 	
 	/// Renders pages on screen
@@ -255,6 +266,8 @@ final class BeatPreviewView:NSView {
 		for pageView in self.subviews {
 			pageView.removeFromSuperview()
 		}
+		
+		self.titlePage = nil
 	}
 
 	/// Update container size based on page count
@@ -337,8 +350,7 @@ final class BeatPreviewView:NSView {
 	}
 	
 	override func cancelOperation(_ sender: Any?) {
-		guard let owner = window?.windowController?.owner as? Document else {
-			print("No owner")
+		guard let owner = window?.windowController?.owner as? NSResponder else {
 			return
 		}
 		owner.cancelOperation(sender)
@@ -401,7 +413,7 @@ final class CenteringScrollView: NSScrollView {
 	}
 	
 	override func cancelOperation(_ sender: Any?) {
-		guard let owner = window?.windowController?.owner as? Document else {
+		guard let owner = window?.windowController?.owner as? NSResponder else {
 			print("No owner")
 			return
 		}

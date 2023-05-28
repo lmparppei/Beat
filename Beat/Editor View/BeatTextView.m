@@ -1675,8 +1675,7 @@ double clamp(double d, double min, double max) {
 	NSGlyphProperty *modifiedProps;
 	
 	if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
-		// Show bullets instead of spaces on lines which are only whitespace
-		
+		// Show bullets instead of spaces on lines which contain whitespace only
 		CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
 		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];

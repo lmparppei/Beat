@@ -50,6 +50,7 @@
 
 - (void)reloadStyles {
 	[BeatRenderStyles.shared reload];
+	self.lineTypeAttributes = NSMutableDictionary.new;
 }
 
 - (BeatRenderStyles*)styles {

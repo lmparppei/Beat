@@ -17,6 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatDocument : NSObject
 
 @property (nonatomic) BeatDocumentSettings* settings;
+@property (nonatomic) ContinuousFountainParser* parser;
+
+- (instancetype)initWithURL:(NSURL*)url;
+
 
 @end
 

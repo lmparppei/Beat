@@ -246,7 +246,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 - (void)createPreviewAt:(NSInteger)location;
-- (void)invalidatePreview;
+- (void)resetPreview;
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 #endif

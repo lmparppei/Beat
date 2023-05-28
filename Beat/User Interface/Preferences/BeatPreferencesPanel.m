@@ -219,6 +219,13 @@
 - (IBAction)toggleHeadingSpacing:(id)sender {
 	if (sender == _headingSpacing1) [BeatUserDefaults.sharedDefaults saveInteger:1 forKey:@"sceneHeadingSpacing"];
 	else if (sender == _headingSpacing2) [BeatUserDefaults.sharedDefaults saveInteger:2 forKey:@"sceneHeadingSpacing"];
+	
+	[BeatRenderStyles.shared reload];
+	for (id<BeatEditorDelegate>editor in NSDocumentController.sharedDocumentController.documents) {
+		[(BeatPreviewController*)editor.previewController reloadStyles];
+		[(BeatPreviewController*)editor.previewController resetPreview];
+	}
+	
 	[self updateHeadingSample];
 }
 

@@ -9,28 +9,6 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>fountain</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>BeatDocumentIcon</string>
-			<key>CFBundleTypeName</key>
-			<string>Fountain script</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>.fountain</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-			<key>LSTypeIsPackage</key>
-			<integer>0</integer>
-			<key>NSDocumentClass</key>
-			<string>Document</string>
-		</dict>
-		<dict>
 			<key>CFBundleTypeIconFile</key>
 			<string>BeatDocumentIcon</string>
 			<key>CFBundleTypeName</key>
@@ -39,6 +17,10 @@
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>.fountain</string>
+			</array>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>fi.KAPITAN.fountain</string>

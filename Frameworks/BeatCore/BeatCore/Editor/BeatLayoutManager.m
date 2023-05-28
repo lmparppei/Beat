@@ -353,7 +353,7 @@
         __block NSInteger revisionLevel = -1;
         
         [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-            if (range.location < 0 || NSMaxRange(range) < 0) return;
+            if (range.location < 0 || NSMaxRange(range) <= 0) return;
                         
             BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
             BeatTag* tag = attrs[BeatTagging.attributeKey];

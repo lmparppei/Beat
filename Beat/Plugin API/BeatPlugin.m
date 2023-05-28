@@ -1328,8 +1328,8 @@
 	[self.delegate.previewController createPreviewWithChangeAt:location sync:true];
 }
 
-- (void)invalidatePreview {
-	[self.delegate.previewController clearPreview];
+- (void)resetPreview {
+	[self.delegate.previewController resetPreview];
 }
 
 #endif

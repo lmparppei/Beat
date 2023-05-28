@@ -90,6 +90,9 @@
 
 + (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt
 {
+    if (delegate.settings.paperSize == BeatA4) {
+        NSLog(@"WUUUT");
+    }
 	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:changeAt cachedPages:cachedPages];
 }
 
@@ -155,6 +158,8 @@
 - (CGFloat)maxPageHeight
 {
     RenderStyle* style = self.styles.page;
+    if (_settings == nil) _settings = self.delegate.settings;
+    
     CGSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
     CGFloat headerHeight = BeatPagination.lineHeight * 3;
     
@@ -543,8 +548,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 			pageIndex -= 1;
 			continue;
 		}
-		
-		return @[@(pageIndex), @(safeIndex)];
+
+        return @[@(pageIndex), @(safeIndex)];
 	}
 	
 	return @[@0, @0];

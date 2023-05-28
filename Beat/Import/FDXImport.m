@@ -74,9 +74,11 @@
 			
 			self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 			self.xmlParser.delegate = self;
-			if([self.xmlParser parse]){
+			if ([self.xmlParser parse]){
 				callback();
-		}
+			} else {
+				NSLog(@"ERROR: %@", self.xmlParser.parserError);
+			}
 			
 		}];
 			

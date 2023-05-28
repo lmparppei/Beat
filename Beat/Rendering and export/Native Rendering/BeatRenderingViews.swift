@@ -36,6 +36,7 @@ class BeatPaginationPageView:NSView {
 	
 	@objc init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
+
 		self.attributedString = content
 		self.previewController = previewController
 		self.settings = settings
@@ -110,7 +111,7 @@ class BeatPaginationPageView:NSView {
 		let size = BeatPaperSizing.size(for: settings.paperSize)
 		
 		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding,
-							   y: self.pageStyle.marginTop - 10.0,
+							   y: self.pageStyle.marginTop,
 							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
 							   height: size.height - self.pageStyle.marginTop)
 		

@@ -345,9 +345,12 @@
 	} else {
 		if (item) {
 			OutlineScene *section = item;
-			return section.children[index];
+			if (section.children.count > index) return section.children[index];
+			else return nil;
+			
 		} else {
-			return _tree[index];
+			if (_tree.count > index) return _tree[index];
+			else return nil;
 		}
 	}
 }
