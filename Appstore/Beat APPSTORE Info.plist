@@ -9,6 +9,10 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fountain</string>
+			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>BeatDocumentIcon</string>
 			<key>CFBundleTypeName</key>
@@ -17,10 +21,6 @@
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>.fountain</string>
-			</array>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>fi.KAPITAN.fountain</string>
@@ -79,21 +79,36 @@
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
-			<key>UTTypeConformsTo</key>
-			<array/>
-			<key>UTTypeDescription</key>
-			<string></string>
-			<key>UTTypeIconFile</key>
-			<string></string>
-			<key>UTTypeIdentifier</key>
-			<string></string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon-MacOS-256x256@1x</string>
+				<key>UTTypeIconText</key>
+				<string>Fountain</string>
+			</dict>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<array/>
+				<array>
+					<string>fountain</string>
+				</array>
 				<key>public.mime-type</key>
-				<array/>
+				<array>
+					<string>text/plain</string>
+				</array>
 			</dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Fountain Screenplay</string>
+			<key>UTTypeIconFile</key>
+			<string>BeatDocumentIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>fi.KAPITAN.fountain</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://fountain.io</string>
 		</dict>
 	</array>
 	<key>UTImportedTypeDeclarations</key>
