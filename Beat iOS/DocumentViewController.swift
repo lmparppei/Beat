@@ -20,7 +20,7 @@ import UIKit
 import WebKit
 import BeatCore
 import BeatParsing
-import BeatPaginationCore
+
 import BeatDynamicColor
 import BeatThemes
 

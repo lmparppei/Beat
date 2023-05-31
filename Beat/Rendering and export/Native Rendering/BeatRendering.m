@@ -258,7 +258,7 @@
 	}];
 	
 	// Add hyperlink for the represented line
-	if (!line.isTitlePage) {
+	if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
 		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
 	}
 	

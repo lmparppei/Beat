@@ -12,7 +12,12 @@
 #import "BeatEditorDelegate.h"
 #import "BeatRevisionItem.h"
 
+
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol BeatRevisionDelegate
+- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
+@end
 
 #if TARGET_OS_IOS
 @interface BeatRevisions: NSObject
@@ -32,7 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
 + (NSString*)attributeKey;
 
-@property (weak) IBOutlet id<BeatEditorDelegate> delegate;
+@property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;
+
+// Use this as a bridge when no editor is present. Can be null.
+@property (weak) IBOutlet id<BeatRevisionDelegate> _Nullable revisionDelegate;
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;

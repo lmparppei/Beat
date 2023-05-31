@@ -5,8 +5,9 @@
 //  Created by Lauri-Matti Parppei on 25.4.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
+ # DEPRECATED
  
  This acts as an interface between BeatPrint and custom styles in BeatExportSettings.
  Custom styles are files named something.beatStyle and they automatically show up in the

@@ -1303,12 +1303,6 @@
 	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
 }
 
-- (NSString*)htmlForLines:(NSArray*)lines
-{
-	BeatHTMLScript *html = [BeatHTMLScript.alloc initWithLines:lines];
-	return html.html;
-}
-
 
 #pragma mark - New pagination interface
 

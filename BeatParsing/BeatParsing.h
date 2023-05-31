@@ -22,4 +22,6 @@
 
 #import "BeatSceneTree.h"
 
+#import "NSCharacterSet+BadControlCharacters.h"
+
 #endif /* BeatParsing_h */

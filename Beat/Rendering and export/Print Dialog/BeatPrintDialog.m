@@ -21,7 +21,6 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPrintDialog.h"
-#import "BeatPrintView.h"
 #import "Beat-Swift.h"
 
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
@@ -53,8 +52,6 @@
 @property (weak) IBOutlet BeatCustomExportStyles* exportStyles;
 
 @property (nonatomic) NSString *compareWith;
-
-@property (nonatomic) BeatPrintView *printView;
 
 @property (nonatomic) bool automaticPreview;
 
@@ -210,12 +207,6 @@ static CGFloat panelWidth;
 		}];
 		[self.renderQueue addObject:operation];
 	});
-}
-
-/// Adds the print view to document's queue. It will be automatically removed by the print view itself.
-- (void)addPrintViewToQueue:(BeatPrintView*)printView {
-	if (self.documentDelegate.printViews == nil) self.documentDelegate.printViews = NSMutableArray.new;
-	[self.documentDelegate.printViews addObject:printView];
 }
 
 

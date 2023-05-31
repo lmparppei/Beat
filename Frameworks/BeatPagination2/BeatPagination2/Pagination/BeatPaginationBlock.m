@@ -51,10 +51,12 @@
 	return self;
 }
 
+/// Returns the type for first line in the block.
 - (LineType)type {
 	return self.lines.firstObject.type;
 }
 
+/// Returns the full height of block, **including** top margin when applicable.
 - (CGFloat)height {
 	if (_calculatedHeight > 0.0) return _calculatedHeight;
 	
@@ -77,6 +79,7 @@
 	return height;
 }
 
+/// Returns the height (in points) for given line in block.
 - (CGFloat)heightForLine:(Line*)line {
 	// We'll cache the line heights in a dictionary by UUID
 	if (self.lineHeights == nil) self.lineHeights = NSMutableDictionary.new;
@@ -88,7 +91,7 @@
     
     // Page breaks have 0 height
     if (line.type == pageBreak) return 0.0;
-    
+
 	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight = BeatPagination.lineHeight;
@@ -121,6 +124,7 @@
 	return height;
 }
 
+/// Returns the line which resides at given Y coordinate within the local height of this block.
 - (Line*)lineAt:(CGFloat)y {
 	CGFloat height = 0.0;
 	
@@ -132,6 +136,7 @@
 	return nil;
 }
 
+/// Returns the height of preceding elements until the given line.
 - (CGFloat)heightUntil:(Line*)lineToFind {
 	CGFloat height = 0.0;
 	
@@ -146,6 +151,7 @@
 	return 0.0;
 }
 
+/// Returns the line which doesn't fit within the given remaining space.
 - (Line*)findSpillerAt:(CGFloat)remainingSpace {
 	CGFloat height = 0.0;
 	
@@ -163,7 +169,8 @@
 
 #pragma mark - Return left/right columns for dual dialogue
 
-- (NSArray*)leftSideDialogue {
+/// Returns lines for the left column of a dual dialogue block
+- (NSArray<Line*>*)leftSideDialogue {
 	NSMutableArray *lines = NSMutableArray.new;
 	for (Line* line in self.lines) {
 		if (line.type == dualDialogueCharacter) break;
@@ -171,7 +178,8 @@
 	}
 	return lines;
 }
-- (NSArray*)rightSideDialogue {
+/// Returns lines for the right side of a dual dialogue block
+- (NSArray<Line*>*)rightSideDialogue {
 	NSMutableArray *lines = NSMutableArray.new;
 	for (Line* line in self.lines) {
 		if (line.isDialogue) continue;
@@ -180,6 +188,7 @@
 	return lines;
 }
 
+/// Returns (and when needed, creates) a dual dialogue block inside this block.
 - (BeatPaginationBlock*)leftColumnBlock {
 	if (_leftColumnBlock == nil) {
 		_leftColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self leftSideDialogue] delegate:self.delegate isDualDialogueElement:true];
@@ -187,6 +196,7 @@
 	return _leftColumnBlock;
 }
 
+/// Returns (and when needed, creates) a dual dialogue block inside this block.
 - (BeatPaginationBlock*)rightColumnBlock {
 	if (_rightColumnBlock == nil) {
 		_rightColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self rightSideDialogue] delegate:self.delegate isDualDialogueElement:true];
@@ -197,6 +207,7 @@
 
 #pragma mark - Breaking block across pages
 
+/// Returns the indexes in which this block *could* be broken apart. Basically useless for anything else than dialogue at this point.
 - (NSIndexSet*)possiblePageBreakIndices {
 	// For every non-dialogue block, we'll just return 0
 	Line* firstLine = self.lines.firstObject;
@@ -208,12 +219,6 @@
 	for (NSInteger i=0; i<self.lines.count; i++) {
 		Line *line = _lines[i];
 		
-        /*
-		if (line.isAnyDialogue || (line.isAnyParenthetical && i > 1))  {
-			[indices addIndex:i];
-		}
-        */
-        
         // Any parenthetical after the first one are good places to break the page
         if (line.isAnyParenthetical && i > 1) [indices addIndex:i];
         // Any line of dialogue is a good place to attempt to break the page
@@ -223,6 +228,7 @@
 	return indices;
 }
 
+/// Used to check if this block can be split across pages at all.
 - (NSInteger)pageBreakIndexWithRemainingSpace:(CGFloat)remainingSpace {
 	NSIndexSet *indices = [self possiblePageBreakIndices];
 	
@@ -339,6 +345,7 @@
 	return @[@[], self.lines, pageBreak];
 }
 
+/// Splits a **block** of dialogue, retaining as much as possible in given remaining space.
 - (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
     remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
     
@@ -453,119 +460,8 @@
     return @[ onThisPage, onNextPage, pageBreak ];
 }
 
-/*
-- (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
-	remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
-	
-	NSMutableArray *dialogueBlock = self.lines.mutableCopy;
 
-	BeatPageBreak *pageBreak;
-	Line *pageBreakItem;
-	NSUInteger index = [dialogueBlock indexOfObject:spiller];
-	
-    CGFloat h = 0.0;
-    
-	if (spiller) {
-		// If there is a spiller, calculate the height of the remaining block until something fits
-        while (index > 0) {
-            Line* l = self.lines[index];
-            h = [self heightUntil:l];
-            if (remainingSpace - h > BeatPagination.lineHeight) {
-                remainingSpace -= h;
-                break;
-            } else {
-                index--;
-            }
-        }
-	}
-    
-    if (remainingSpace < BeatPagination.lineHeight) {
-        NSLog(@" -> %lu", index);
-        index = 0;
-    }
-    
-    // Reset spiller
-    spiller = self.lines[index];
-		
-	// Arrays for elements
-	NSMutableArray *onThisPage = NSMutableArray.new;
-	NSMutableArray *onNextPage = NSMutableArray.new;
-	// Arrays for faux elements which are created while paginating
-	NSMutableArray *tmpThisPage = NSMutableArray.new;
-	NSMutableArray *tmpNextPage = NSMutableArray.new;
-	
-	// Indices in which we could split the block.
-	// When we can't split the block at current item, we'll fall back to the previous possible index.
-	NSIndexSet* splittableIndices = [self possiblePageBreakIndices];
-	
-	// Split the block at this location
-	NSUInteger splitAt = (index > 0) ? [splittableIndices indexLessThanOrEqualToIndex:index] : 0;
-    	
-    // If nothing fits, move the whole block on next page
-    if (splitAt == 0) {
-        return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
-    }
-    
-	// Live pagination page break item
-	pageBreakItem = dialogueBlock[splitAt];
-
-	// For dialogue, we'll see if we can split the current line of dialogue
-	if (spiller.isAnyDialogue) {
-		if (remainingSpace > BeatPagination.lineHeight) {
-			// Split dialogue according to remaining space
-			NSArray* splitLine = [self splitDialogueLine:spiller remainingSpace:remainingSpace];
-			
-			Line* retain = splitLine[0];
-			
-			if (retain.length > 0) {
-				[tmpThisPage addObject:splitLine[0]];
-				if (((Line*)splitLine[1]).length) [tmpNextPage addObject:splitLine[1]];
-				pageBreak = splitLine[2];
-				
-				[dialogueBlock removeObject:spiller];
-			} else {
-				// Nothing fit
-				splitAt = [splittableIndices indexLessThanIndex:splitAt];
-				pageBreakItem = dialogueBlock[splitAt];
-			}
-		}
-		else {
-			// This line of dialogue does not fit on page
-			splitAt = [splittableIndices indexLessThanIndex:splitAt];
-			pageBreakItem = dialogueBlock[splitAt];
-		}
-	}
-		
-	// Don't allow only a single element to stay on page
-	if (splitAt == 1 && tmpThisPage.count == 0) splitAt = 0;
-	
-	// If something is left behind on the current page, split it
-	if (splitAt > 0) {
-		// Don't allow the last element in block to be parenthetical
-		Line *prevElement = dialogueBlock[splitAt - 1];
-		if (prevElement.isAnyParenthetical && tmpThisPage.count == 0) splitAt -= 1;
-		
-		// Split the block
-		[onThisPage addObjectsFromArray:
-			 [dialogueBlock subarrayWithRange:NSMakeRange(0, splitAt)]
-		];
-		[onThisPage addObjectsFromArray:tmpThisPage];
-		
-		if (self.delegate) [onThisPage addObject:[self.delegate moreLineFor:spiller]];
-	}
-			
-	// Add stuff on next page if needed
-	if (onThisPage.count) [onNextPage addObject:[self.delegate contdLineFor:dialogueBlock.firstObject]];
-	[onNextPage addObjectsFromArray:tmpNextPage];
-	NSRange splitRange = NSMakeRange(splitAt, dialogueBlock.count - splitAt);
-	if (splitRange.length > 0) [onNextPage addObjectsFromArray:[dialogueBlock subarrayWithRange:splitRange]];
-	
-	// Sorry, this is a mess. pageBreak could be defined earlier on, because it's provided by splitDialogueLine.
-	if (pageBreak == nil) pageBreak = [BeatPageBreak.alloc initWithY:0 element:pageBreakItem reason:@"Dialogue break"];
-	return @[ onThisPage, onNextPage, pageBreak ];
-}
-*/
-
+/// Splits a line of dialogue, retaining as much as possible in given remaining space.
 - (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace {
 	NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
 	NSString* string = line.stripFormatting;
@@ -609,10 +505,11 @@
 	return @[p[0], p[1], pageBreak];
 }
 
+/// Returns the height of string for given line type.
+/// - note: This method doesn't take margins or any other styles into account, just the width.
 - (NSInteger)heightForString:(NSString *)string lineType:(LineType)type
 {
 	// This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
-	// BTW, why won't I conver this method to use NSLayoutManager?
 	
 	CGFloat lineHeight = BeatPagination.lineHeight;
 	if (string.length == 0) return lineHeight;
@@ -713,7 +610,7 @@
 /// Returns an array of line UUIDs
 - (NSArray<NSUUID*>*)UUIDs {
 	if (_UUIDs == nil) {
-		NSMutableArray* UUIDs = NSMutableArray.new;
+        NSMutableArray* UUIDs = [NSMutableArray arrayWithCapacity:self.lines.count];
 		for (Line* line in self.lines) {
 			[UUIDs addObject:line.uuid];
 		}
@@ -723,6 +620,8 @@
 	return _UUIDs;
 }
 
+/// Checks if the block contains given line.
+/// - note: This method uses UUIDs to match the lines in paginated (and cloned) content to those originally in parser.
 - (bool)containsLine:(Line*)line {
 	return [self.UUIDs containsObject:line.uuid];
 }

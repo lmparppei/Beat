@@ -37,6 +37,7 @@
 @property (nonatomic, readonly) NSMutableSet *storylines;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
+- (NSString*)rawText;
 - (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
 - (Line*)lineAtIndex:(NSInteger)index;

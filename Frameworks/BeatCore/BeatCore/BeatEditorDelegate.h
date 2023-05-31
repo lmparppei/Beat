@@ -33,7 +33,6 @@
 #import <BeatParsing/BeatParsing.h>
 
 #if !TARGET_OS_IOS
-@class BeatPrintView;
 #else
 @class BeatUITextView;
 #endif
@@ -233,9 +232,7 @@
 #pragma mark - Printing stuff for macOS
 
 #if !TARGET_OS_IOS
-@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews;
 - (CGFloat)sidebarWidth;
-
 - (NSPrintInfo*)printInfo;
 - (id)document;
 - (void)releasePrintDialog;

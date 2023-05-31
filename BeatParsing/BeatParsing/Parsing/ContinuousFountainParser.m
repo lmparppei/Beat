@@ -164,7 +164,7 @@ static NSDictionary* patterns;
 	return content;
 }
 
-// Return the whole document as single string
+/// Returns the whole document as single string
 - (NSString*)rawText {
 	NSMutableString *string = [NSMutableString string];
 	for (Line* line in self.lines) {
@@ -219,16 +219,7 @@ static NSDictionary* patterns;
 			sceneIndex++;
 			line.sceneIndex = sceneIndex;
 		}
-		
-		// Quick fix for recognizing split paragraphs
-        /*
-        if (!self.delegate.nativeRendering) {
-            LineType currentType = line.type;
-            if (line.type == action || line.type == lyrics || line.type == transitionLine) {
-                if (previousLine.type == currentType && previousLine.string.length > 0) line.isSplitParagraph = YES;
-            }
-        }
-         */
+
 		
         //Add to lines array
         [self.lines addObject:line];
@@ -2757,15 +2748,16 @@ NSUInteger prevLineAtLocationIndex = 0;
     
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
-        line.isSplitParagraph = false;
                 
         // Preprocess split paragraphs
         Line *l = linesForPrinting.lastObject;
         
-        // Reset dual dialogue
-        if (l.type == character) l.nextElementIsDualDialogue = false;
+        if (l.note && !printNotes) continue;
         
-        if (l.type == action || l.type == lyrics || l.type == centered) {
+        // Reset dual dialogue
+        else if (l.type == character) l.nextElementIsDualDialogue = false;
+        
+        else if (l.type == action || l.type == lyrics || l.type == centered) {
             l.beginsNewParagraph = true;
             
             // BUT in some cases, they don't.
@@ -2820,31 +2812,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 			line.type = empty;
 			continue;
 		}
-		
-		/**
-		 This is a paragraph with a line break, so append the line to the previous one.
-		
-		 A quick explanation for this practice:
-		 The pagination skips empty lines and instead calculates margins before elements.
-		 This is a legacy of the old Fountain parser, but is actually somewhat sensitive approach,
-		 because extraneous newlines should be ignored anyway. The caveat is that it requires
-		 an extra sttep of joining action lines with no empty line between them into one element.
-		*/
-        /*
-        static bool shown = false;
-        if (!shown) {
-            NSLog(@"‼️ ####### WARNING: Fix preprocessing for release");
-            shown = true;
-        }
-        */
-
-        // Join the line with preceding one to avoid unnecessary paragraph breaks
-		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0 && !line.effectivelyEmpty) {
-			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
-			[precedingLine joinWithLine:line];
-			continue;
-		}
-         
+		         
 		// Remove misinterpreted dialogue
 		if (line.isAnyDialogue && line.string.length == 0) {
 			line.type = empty;
@@ -2872,7 +2840,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 		}
         
         [elements addObject:line];
-
 		
 		previousLine = line;
 	}

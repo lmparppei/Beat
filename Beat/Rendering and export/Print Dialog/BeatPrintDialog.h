@@ -9,9 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 #import <BeatCore/BeatEditorDelegate.h>
-#import "BeatPrintView.h"
 
-@interface BeatPrintDialog: NSWindowController <PrintViewDelegate>
+@interface BeatPrintDialog: NSWindowController
 @property (weak) id<BeatEditorDelegate> documentDelegate;
 
 - (IBAction)open:(id)sender;

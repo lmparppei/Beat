@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BeatCore
 
 // MARK: - Basic page view for rendering the screenplay
 

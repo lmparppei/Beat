@@ -12,7 +12,6 @@
 
 #import "ContinuousFountainParser.h"
 #import "Line.h"
-#import "BeatHTMLScript.h"
 #import "BeatPlugin.h"
 #import "UnzipKit.h"
 #import "WebPrinter.h"

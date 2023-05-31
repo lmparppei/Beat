@@ -37,7 +37,6 @@
 #import "BeatModalAccessoryView.h"
 
 #import "BeatSpeak.h"
-#import "BeatHTMLScript.h"
 
 #import "WebPrinter.h"
 
@@ -242,7 +241,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 // macOS-only
 #if !TARGET_OS_IOS
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
-@property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 - (void)createPreviewAt:(NSInteger)location;

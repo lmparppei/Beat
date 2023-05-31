@@ -177,6 +177,10 @@
 
 /// Adds given revision attributes using a `BeatEditorDelegate`
 - (void)loadRevisionsFromDictionary:(NSDictionary*)revisions {
+    id d;
+    if (_delegate != nil) d = _delegate;
+    else if (_revisionDelegate != nil) d = _revisionDelegate;
+
     for (NSString *key in revisions.allKeys) {
         NSArray *items = revisions[key];
         
@@ -200,7 +204,7 @@
                 BeatRevisionItem *revision = [BeatRevisionItem type:type color:color];
                 
                 if (revision.type != RevisionNone) {
-                    [_delegate addAttribute:BeatRevisions.attributeKey value:revision range:range];
+                    [d addAttribute:BeatRevisions.attributeKey value:revision range:range];
                 }
             }
         }
@@ -380,6 +384,8 @@
 	bool revisionMode = [_delegate.documentSettings getBool:DocSettingRevisionMode];
 	if (revisionMode) { self.delegate.revisionMode = YES; }
 }
+
+
 
 #pragma mark Register changes
 

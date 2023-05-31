@@ -90,9 +90,6 @@
 
 + (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt
 {
-    if (delegate.settings.paperSize == BeatA4) {
-        NSLog(@"WUUUT");
-    }
 	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:changeAt cachedPages:cachedPages];
 }
 
@@ -103,7 +100,7 @@
 	if (self) {
 		_delegate = delegate;
 		_fonts = BeatFonts.sharedFonts;
-		
+        		
 		_lines = (lines != nil) ? lines : @[];
 		_titlePageContent = (titlePage != nil) ? titlePage : @[];
 		//_cachedPages = cachedPages;

@@ -82,7 +82,6 @@
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
-#import "BeatPrintView.h"
 #import "ColorView.h"
 #import "BeatAppDelegate.h"
 #import "FountainAnalysis.h"
@@ -1246,6 +1245,10 @@ static NSWindow __weak *currentKeyWindow;
 	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
 	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
 	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
+
+	// Remove unwanted control characters
+	NSArray* t = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];
+	text = [t componentsJoinedByString:@""];
 	
 	if (!reverting)	[self setText:text];
 	else _contentBuffer = text; // When reverting, we only set the content buffer
@@ -1473,6 +1476,14 @@ static NSWindow __weak *currentKeyWindow;
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
 	Line* currentLine = self.currentLine;
+	
+	// Don't allow certain symbols
+	if (replacementString.length == 1) {
+		unichar c = [replacementString characterAtIndex:0];
+		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) {
+			return false;
+		}
+	}
 	
 	// This shouldn't be here :-)
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
@@ -2978,6 +2989,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Preview
 
+- (void)createPreviewAt:(NSInteger)location {
+	[self.previewController createPreviewWithChangeAt:location sync:false];
+}
+
+- (void)resetPreview {
+	[self.previewController resetPreview];
+}
+
 - (void)invalidatePreview {
 	[self.previewController resetPreview];
 	return;
@@ -4380,10 +4399,6 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
 	[self selectAndScrollTo:range];
-}
-
-- (void)createPreviewAt:(NSInteger)location { 
-	[self.previewController createPreviewWithChangeAt:location sync:false];
 }
 
 

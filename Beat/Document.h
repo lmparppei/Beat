@@ -71,8 +71,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
 
-@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* _Nullable printViews; //To keep the asynchronously working print data generator in memory
-
 @property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;

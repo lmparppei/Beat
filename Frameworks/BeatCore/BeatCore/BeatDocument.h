@@ -8,14 +8,17 @@
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
 
+@class BeatRevisions;
+
 @protocol BeatDocumentDelegate
-- (NSAttributedString*)attributedString;
+- (NSAttributedString* _Nullable)attributedString;
 @end
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocument : NSObject
 
+@property (nonatomic) NSURL* _Nullable url;
 @property (nonatomic) BeatDocumentSettings* settings;
 @property (nonatomic) ContinuousFountainParser* parser;
 

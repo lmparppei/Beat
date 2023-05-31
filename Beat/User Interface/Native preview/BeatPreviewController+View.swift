@@ -13,6 +13,7 @@
  */
 
 import AppKit
+import BeatCore.BeatEditorDelegate
 
 @objc protocol BeatNativePreviewDelegate:BeatEditorDelegate {
 	@objc func paginationFinished(_ operation:BeatPagination, indices:NSIndexSet)
@@ -25,6 +26,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	@IBOutlet weak var delegate:BeatNativePreviewDelegate?
 	@IBOutlet weak var scrollView:CenteringScrollView?
 	@IBOutlet weak var spinner:NSProgressIndicator?
+	@IBOutlet weak var quickLookView:NSView?
 	
 	@objc var pagination:BeatPaginationManager?
 	var renderer:BeatRendering?
@@ -57,7 +59,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	}
 	
 	override func awakeFromNib() {
-		self.scrollView?.magnification = 1.2;
+		if settings.operation != .ForQuickLook {
+			self.scrollView?.magnification = 1.2;
+		}
 	}
 	
 	
@@ -99,11 +103,18 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		if (sync) {
 			// Store revisions into lines
 			self.delegate?.bakeRevisions()
-
+			
+			// Create pagination
 			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+			
+			if self.delegate?.previewVisible() ?? false {
+				renderOnScreen()
+			}
+			
 		} else {
+			// Paginate and create preview with 1 second delay
 			timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
-				// Store revisions into lines
+				// Store revisions into lines in sync
 				self.delegate?.bakeRevisions()
 
 				// Dispatch pagination to a background thread after one second
@@ -146,7 +157,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		guard let previewView = self.previewView,
 			  let pagination = self.pagination
-		else { return }
+		else {
+			print("Preview / pagination failed")
+			return
+		}
 		
 		// Check if pagination is up to date
 		if !paginationUpdated {
@@ -200,9 +214,20 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				
 				// Update container size
 				previewView.updateSize()
+				/*
+				if (self.quickLookView != nil) {
+					var f = self.quickLookView!.frame
+					f.size.height = previewView.frame.height
+					self.quickLookView?.frame = f
+				}
+				 */
 				
 				// Scroll view to the last edited position
-				self.scrollToRange(self.delegate?.selectedRange ?? NSMakeRange(0, 0))
+				if (self.settings.operation != .ForQuickLook) {
+					self.scrollToRange(self.delegate?.selectedRange ?? NSMakeRange(0, 0))
+				} else {
+					self.scrollToRange(NSMakeRange(0, 0))
+				}
 				
 				// Hide animation
 				self.spinner?.stopAnimation(nil)
@@ -350,9 +375,7 @@ final class BeatPreviewView:NSView {
 	}
 	
 	override func cancelOperation(_ sender: Any?) {
-		guard let owner = window?.windowController?.owner as? NSResponder else {
-			return
-		}
+		guard let owner = window?.windowController?.owner as? Document else { return }
 		owner.cancelOperation(sender)
 	}
 }
@@ -403,7 +426,7 @@ final class FlippedView:NSView {
 	override var isFlipped: Bool { return true }
 }
 
-final class CenteringScrollView: NSScrollView {
+class CenteringScrollView: NSScrollView {
 	override func scrollWheel(with event: NSEvent) {
 		let fixedEvent = event.cgEvent!.copy()!
 		fixedEvent.setDoubleValueField(CGEventField.scrollWheelEventDeltaAxis2, value: 0.0)
