@@ -1,0 +1,182 @@
+//
+//  PreviewViewController.m
+//  BeatQuickLook
+//
+//  Created by Lauri-Matti Parppei on 27.5.2023.
+//  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
+//
+
+#import "PreviewViewController.h"
+#import <BeatCore/BeatCore.h>
+#import <BeatParsing/BeatParsing.h>
+#import <Quartz/Quartz.h>
+#import "Beat-Swift.h"
+
+@interface PreviewViewController () <QLPreviewingController, BeatNativePreviewDelegate, BeatQuickLookDelegate, BeatExportSettingDelegate>
+@property (nonatomic) IBOutlet BeatPreviewController* previewController;
+@property (nonatomic) BeatDocumentSettings* settings;
+@end
+
+@implementation PreviewViewController
+
+- (NSString *)nibName {
+    return @"PreviewViewController";
+}
+
+- (void)loadView {
+    [super loadView];
+    // Do any additional setup after loading the view.
+}
+
+/*
+ * Implement this method and set QLSupportsSearchableItems to YES in the Info.plist of the extension if you support CoreSpotlight.
+ *
+- (void)preparePreviewOfSearchableItemWithIdentifier:(NSString *)identifier queryString:(NSString *)queryString completionHandler:(void (^)(NSError * _Nullable))handler {
+    
+    // Perform any setup necessary in order to prepare the view.
+    
+    // Call the completion handler so Quick Look knows that the preview is fully loaded.
+    // Quick Look will display a loading spinner while the completion handler is not called.
+
+    handler(nil);
+}
+*/
+
+- (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler
+{
+	self.document = [BeatDocument.alloc initWithURL:url];
+	[self.previewController createPreviewWithChangeAt:0 sync:true];
+	
+    handler(nil);
+}
+
+- (ContinuousFountainParser*)parser {
+	return self.document.parser;
+}
+
+- (BeatExportSettings*)exportSettings
+{
+	BeatExportSettings* settings = [BeatExportSettings operation:ForQuickLook delegate:self];
+	return settings;
+}
+
+- (BOOL)previewVisible
+{
+	return true;
+}
+
+- (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices
+{
+	[self.previewController.scrollView scrollPoint:NSMakePoint(0, 0)];
+}
+
+
+#pragma mark - Delegate methods
+
+// Lol. I should create a separate protocol called BeatDelegate or something, which only delivers the data part of the protocol,
+// while BeatEditorDelegate inherits from that and returns the more interactive parts.
+
+-(BeatPaperSize)pageSize {
+	return (BeatPaperSize)[self.document.settings getInt:DocSettingPageSize];
+}
+
+- (nonnull NSString *)fileNameString {
+	return self.document.url.lastPathComponent.stringByDeletingPathExtension;
+}
+
+- (void)addAttribute:(NSString *)key value:(id)value range:(NSRange)range {}
+- (void)addAttributes:(NSDictionary *)attributes range:(NSRange)range {}
+- (void)addStoryline:(NSString *)storyline to:(OutlineScene *)scene {}
+- (void)addString:(NSString *)string atIndex:(NSUInteger)index {}
+- (void)addString:(NSString *)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks {}
+- (NSAttributedString *)attributedString { return nil; }
+- (void)bakeRevisions {}
+
+
+- (bool)caretAtEnd { return false; }
+- (bool)contentLocked { return true; }
+- (Line *)currentLine { return self.parser.lines.firstObject; }
+- (CGFloat)editorLineHeight { return 12.0; }
+- (NSArray *)getOutline { return self.document.parser.outline; }
+- (NSArray<OutlineScene *> *)getOutlineItems { return [self getOutline]; }
+- (NSTextView *)getTextView { return nil; }
+- (bool)hasChanged { return false; }
+- (bool)isDark { return false; }
+- (LineType)lineTypeAt:(NSInteger)index { return [self.parser lineTypeAt:index]; }
+- (NSMutableArray<Line *> *)lines { return self.parser.lines; }
+- (NSArray *)linesForScene:(OutlineScene *)scene { return [self.parser linesForScene:scene]; }
+- (NSArray *)markers { return @[]; }
+- (void)moveScene:(OutlineScene *)sceneToMove from:(NSInteger)from to:(NSInteger)to { }
+- (void)refreshTextViewLayoutElements {}
+- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {}
+- (void)removeAttribute:(NSString *)key range:(NSRange)range {}
+- (void)removeStoryline:(NSString *)storyline from:(OutlineScene *)scene {}
+- (void)replaceRange:(NSRange)range withString:(NSString *)newString {}
+- (void)replaceString:(NSString *)string withString:(NSString *)newString atIndex:(NSUInteger)index {}
+- (NSArray *)scenes { return self.parser.scenes; }
+- (void)scrollToLine:(Line *)line {}
+- (void)scrollToRange:(NSRange)range {}
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {}
+- (NSFont *)sectionFontWithSize:(CGFloat)size { return BeatFonts.sharedFonts.sectionFont; }
+- (void)setAutomaticTextCompletionEnabled:(BOOL)value {}
+- (void)setColor:(NSString *)color forScene:(OutlineScene *)scene {}
+- (void)setPrintSceneNumbers:(bool)value {}
+- (void)setTypingAttributes:(NSDictionary *)attrs {}
+- (void)showLockStatus {}
+- (NSString *)text { return self.parser.rawText; }
+- (void)textDidChange:(NSNotification *)notification {}
+- (void)updateChangeCount:(NSDocumentChangeType)change {}
+
+- (nonnull NSArray<NSString *> *)shownRevisions {
+	return BeatRevisions.revisionColors;
+}
+
+-(bool)printSceneNumbers {
+	return true;
+}
+
+- (NSAttributedString*)attrTextCache {
+	return NSAttributedString.new;
+}
+
+- (NSFont*)courier { return  BeatFonts.sharedFonts.courier; }
+- (NSFont*)italicCourier { return  BeatFonts.sharedFonts.italicCourier; }
+- (NSFont*)boldCourier { return BeatFonts.sharedFonts.boldCourier; }
+- (NSFont*)boldItalicCourier { return BeatFonts.sharedFonts.boldItalicCourier; }
+- (NSDictionary*)characterGenders { return @{}; }
+- (bool)characterInput { return false; }
+- (Line*)characterInputForLine { return nil; }
+- (OutlineScene*)currentScene { return nil; }
+
+@synthesize undoManager;
+@synthesize characterGenders;
+@synthesize characterInput;
+@synthesize characterInputForLine;
+@synthesize disableFormatting;
+@synthesize documentIsLoading;
+@synthesize documentSettings;
+@synthesize documentWidth;
+@synthesize documentWindow;
+@synthesize headingStyleBold;
+@synthesize headingStyleUnderline;
+@synthesize hideFountainMarkup;
+@synthesize lastEditedRange;
+@synthesize magnification;
+@synthesize mode;
+@synthesize pageSize;
+@synthesize printSceneNumbers;
+@synthesize revisionColor;
+@synthesize revisionMode;
+@synthesize sectionFont;
+@synthesize sectionFonts;
+@synthesize selectedRange;
+@synthesize showPageNumbers;
+@synthesize showRevisedTextColor;
+@synthesize showRevisions;
+@synthesize showSceneNumberLabels;
+@synthesize showTags;
+@synthesize synopsisFont;
+@synthesize typewriterMode;
+
+@end
+
