@@ -47,7 +47,7 @@
 
 @property (nonatomic) BeatNotifications *notifications;
 
-@property (nonatomic) BeatLaunchScreen *welcomeWindow;
+@property (nonatomic) NSWindow *welcomeWindow;
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatPreferencesPanel *preferencesPanel;
 @property (nonatomic) BeatAboutScreen *about;
@@ -268,39 +268,6 @@
 				if (response == NSAlertFirstButtonReturn) {
 					NSString *contents = [NSString stringWithContentsOfFile:[appSupportDir stringByAppendingPathComponent:file] encoding:NSUTF8StringEncoding error:nil];
 					[self newDocumentWithContents:contents];
-					
-					/*
-					NSString *recoveredFilename = [[[filename stringByDeletingPathExtension] stringByAppendingString:@" (Recovered)"] stringByAppendingString:@".fountain"];
-					
-					NSSavePanel *saveDialog = [NSSavePanel savePanel];
-					[saveDialog setAllowedFileTypes:@[@"Fountain"]];
-					[saveDialog setNameFieldStringValue:recoveredFilename];
-					
-					[saveDialog beginWithCompletionHandler:^(NSInteger result) {
-						if (result == NSFileHandlingPanelOKButton) {
-
-							NSError *error;
-							@try {
-								[fileManager moveItemAtPath:[appSupportDir stringByAppendingPathComponent:file] toPath:saveDialog.URL.path error:&error];
-								
-								[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:saveDialog.URL display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-								}];
-								if (error) {
-									NSAlert *alert = [[NSAlert alloc] init];
-									alert.messageText = [NSString stringWithFormat:@"Error recovering %@", filename];
-									alert.informativeText = @"The file could not be recovered, but don't worry, it is still safe. Restart Beat and try to recover into another location.";
-									alert.alertStyle = NSAlertStyleWarning;
-									[alert runModal];
-								}
-							} @catch (NSException *exception) {
-							} @finally {
-							}
-						} else {
-							// If the user really doesn't want to spare this file, let's fucking delete it FOREVER!!!
-							[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
-						}
-					}];
-					 */
 				} else {
 					[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
 				}
@@ -426,9 +393,36 @@
 
 #pragma mark - Misc UI
 
+static NSWindow* launchWindow;
+
 -(void)showLaunchScreen {
+	
+	if (_welcomeWindow == nil) {
+		_welcomeWindow = [NSWindow.alloc initWithContentRect:NSMakeRect(0, 0, 0, 0) styleMask:NSWindowStyleMaskFullSizeContentView | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:false];
+		_welcomeWindow.title = @"";
+		_welcomeWindow.titlebarAppearsTransparent = true;
+		_welcomeWindow.movableByWindowBackground = true;
+		_welcomeWindow.releasedWhenClosed = false;
+	}
+
+	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"Launch Screen" bundle:NSBundle.mainBundle];
+	NSViewController* vc = [storyboard instantiateControllerWithIdentifier:@"LaunchScreen"];
+
+	NSRect frame = vc.view.frame;
+	NSSize screen = _welcomeWindow.screen.frame.size;
+	frame.origin.x = (screen.width - frame.size.width) / 2;
+	frame.origin.y = (screen.height - frame.size.height) / 2;
+	
+	[_welcomeWindow setFrame:frame display:true];
+	
+	_welcomeWindow.contentViewController = vc;
+	[_welcomeWindow makeCentered];
+	[_welcomeWindow makeKeyAndOrderFront:nil];
+	
+	/*
 	if (!self.welcomeWindow) self.welcomeWindow = BeatLaunchScreen.alloc.init;
 	[self.welcomeWindow.window makeKeyAndOrderFront:nil];
+	 */
 }
 
 - (void)closeLaunchScreen

@@ -225,6 +225,15 @@
                             </connections>
                         </buttonCell>
                     </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gxb-ET-dSG">
+                        <rect key="frame" x="299" y="175" width="238" height="52"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="DEPRECATED" id="iA8-mG-0Tz">
+                            <font key="font" metaFont="system" size="27"/>
+                            <color key="textColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
             <point key="canvasLocation" x="752" y="-97"/>

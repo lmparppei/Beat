@@ -14,10 +14,10 @@
       location = "group:Beat iOS.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:BeatPagination/BeatPaginationCore.xcodeproj">
+      location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
+      location = "group:BeatPagination/BeatPaginationCore.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatThemes/BeatThemes.xcodeproj">

@@ -405,30 +405,34 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// @warning Be careful not to go out of range!
 - (unichar)lastCharacter;
 
-/// Returns TRUE for anything that can be part of a split paragraph block
+/// returns `true` for anything that can be part of a split paragraph block
 - (bool)canBeSplitParagraph;
-/// returns TRUE for any title page element
+/// returns `true` for any title page element
 - (bool)isTitlePage;
-/// returns TRUE when the line is non-printed
+/// returns `true` when the line is non-printed
 - (bool)isInvisible;
-/// returns TRUE for character cues too
+/// returns `true` for character cues too
 - (bool)isDialogue;
-/// returns TRUE for elements other than a character cue
+/// returns `true` for elements other than a character cue
 - (bool)isDialogueElement;
-/// returns TRUE for dual dialogue characters too
+/// returns `true` for dual dialogue characters too
 - (bool)isDualDialogue;
-/// returns TRUE for elements other than a character cue
+/// returns `true` for elements other than a character cue
 - (bool)isDualDialogueElement;
-/// returns true for scene heading, section and synopsis
+/// returns `true` for scene heading, section and synopsis
 - (bool)isOutlineElement;
-/// returns true for single and dual dialogue character cue
+/// returns `true` for single and dual dialogue character cue
 - (bool)isAnyCharacter;
-/// returns true for single and dual dialogue parenthetical
+/// returns `true` for single and dual dialogue parenthetical
 - (bool)isAnyParenthetical;
-/// returns true for single and dual dialogue
+/// returns `true` for single and dual dialogue
 - (bool)isAnyDialogue;
-/// returns true when the character cue has an extension (CONT'D), (V.O.) etc.
+/// returns `true` when the character cue has an extension (CONT'D), (V.O.) etc.
 - (BOOL)hasExtension;
+
+- (bool)hasEmojis;
+- (NSArray<NSValue*>*)emojiRanges;
+
 
 
 #pragma mark - Debugging

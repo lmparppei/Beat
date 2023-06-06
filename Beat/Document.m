@@ -1741,6 +1741,11 @@ static NSWindow __weak *currentKeyWindow;
 	// Update hidden Fountain markup
 	[_textView updateMarkupVisibility];
 	
+	// Scroll to view if needed
+	if (self.selectedRange.length == 0) {
+		[self.textView scrollRangeToVisible:self.selectedRange];
+	}
+	
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
@@ -2713,9 +2718,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		return NO;
 	}
 	
-	// Normal editor view items
-	bool uneditable = NO;
-	if (_mode == TaggingMode || _mode == ReviewMode) uneditable = YES;
 	
 	// Validate ALL on/of items
 	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
@@ -3795,14 +3797,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {
 	[super setPrintInfo:printInfo];
-	
-	BeatPaperSize size;
-	
-	if (printInfo.paperSize.width > 600) size = BeatUSLetter;
-	else size = BeatA4;
-	
-	//[self.documentSettings setInt:DocSettingPageSize as:size];
-	
+		
 	[self updateLayout];
 }
 - (IBAction)selectPaperSize:(id)sender {
@@ -3827,8 +3822,6 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
-	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
-		
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];

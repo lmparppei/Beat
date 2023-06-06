@@ -12,7 +12,6 @@
 
 #import "BeatEpisodePrinter.h"
 #import "NSMutableArray+MoveItem.h"
-#import "BeatHTMLScript.h"
 #import "Beat-Swift.h"
 
 @interface BeatEpisodePrinter ()

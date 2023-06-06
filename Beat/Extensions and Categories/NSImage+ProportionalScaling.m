@@ -12,27 +12,28 @@
 
 - (NSImage*)imageByScalingProportionallyToSize:(NSSize)targetSize
 {
-  NSImage* sourceImage = self;
-  NSImage* newImage = nil;
+	NSImage* sourceImage = self;
+	NSImage* newImage = nil;
+	
+	// For invalid images, return empty iage
+	if (!sourceImage.isValid) return NSImage.new;
 
-  if ([sourceImage isValid])
-  {
 	NSSize imageSize = [sourceImage size];
 	float width  = imageSize.width;
 	float height = imageSize.height;
-	
+
 	float targetWidth  = targetSize.width;
 	float targetHeight = targetSize.height;
-	
+
 	float scaleFactor  = 0.0;
 	float scaledWidth  = targetWidth;
 	float scaledHeight = targetHeight;
-	
+
 	NSPoint thumbnailPoint = NSZeroPoint;
-	
+
 	if ( NSEqualSizes( imageSize, targetSize ) == NO )
 	{
-	
+
 	  float widthFactor  = targetWidth / width;
 	  float heightFactor = targetHeight / height;
 	  
@@ -50,11 +51,11 @@
 	  else if ( widthFactor > heightFactor )
 		thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
 	}
-	
+
 	newImage = [[NSImage alloc] initWithSize:targetSize];
-	
+
 	[newImage lockFocus];
-	
+
 	  NSRect thumbnailRect;
 	  thumbnailRect.origin = thumbnailPoint;
 	  thumbnailRect.size.width = scaledWidth;
@@ -64,10 +65,8 @@
 					 fromRect: NSZeroRect
 					operation: NSCompositingOperationSourceOver
 					 fraction: 1.0];
-	
+
 	[newImage unlockFocus];
-  
-  }
   
   return newImage;
 }

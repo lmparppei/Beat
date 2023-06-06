@@ -135,3 +135,18 @@
 "timer.start" = "Start";
 "timer.charactersRemoved" = "characters removed";
 "timer.charactersTyped" = "characters\ntyped";
+
+
+/* Tutorials */
+
+"templates.tutorials" = "Tutorials";
+"templates.templates" = "Tutorials";
+
+"templates.tutorial.title" = "Tutorial";
+"templates.tutorial.description" = "Get started quickly with Beat!";
+
+"templates.outliningTutorial.title" = "Outlining Tutorial";
+"templates.outliningTutorial.description" = "Learn more advanced outlining tricks";
+
+"templates.comicBook.title" = "Comic Book";
+"templates.comicBook.description" = "A simple comic book template";

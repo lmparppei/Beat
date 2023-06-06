@@ -1300,10 +1300,8 @@ static NSDictionary* patterns;
 	for (int i = 0;;i++) {
 		if (i > lastIndex) break;
 		
-		bool match = NO;
 		if ((string[i] == '[' && string[i+1] == '[')) {
 			lookForTerminator = NO;
-			match = YES;
 			beginsNoteBlock = YES;
 			rangeBegin = i;
 		}
@@ -1322,7 +1320,6 @@ static NSDictionary* patterns;
 			else {
 				// Make sure there is a range where it all began
 				if (rangeBegin != -1) {
-					match = YES;
 					[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
 					rangeBegin = -1;
 				}

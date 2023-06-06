@@ -59,7 +59,7 @@
 			if (character.length == 0) continue;
 			
 			// Add the character + suffix into dict and calculate number of appearances
-			if (charactersAndLines[character]) {
+			if (charactersAndLines[character] != nil) {
 				NSInteger lines = charactersAndLines[character].integerValue + 1;
 				charactersAndLines[character] = [NSNumber numberWithInteger:lines];
 			} else {

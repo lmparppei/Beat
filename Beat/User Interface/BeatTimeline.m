@@ -256,8 +256,6 @@
 	NSInteger index = 0;
 	NSInteger storylineIndex = 0;
 	
-	BeatTimelineItem *previousItem;
-	//BeatTimelineItem *previousSynopsis;
 	BeatTimelineItem *previousSection;
 	
 	NSRect selectionRect = NSZeroRect;
@@ -337,7 +335,6 @@
 			x += 2;
 		}
 		
-		previousItem = item;
 		index++;
 	}
 		

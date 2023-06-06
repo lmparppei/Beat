@@ -684,7 +684,7 @@
 	if (string == nil) return;
 	
 	BeatConsole *console = BeatConsole.shared;
-	if (NSThread.isMainThread) [console logToConsole:string pluginName:_pluginName];
+	if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General"];
 	else {
 		// Allow logging in background thread
 		dispatch_async(dispatch_get_main_queue(), ^(void){

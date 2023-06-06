@@ -299,7 +299,7 @@
     if (markers == nil) markers = NSCache.new;
     
     // This is a clumsy, cross-platform way to check if appearance has changed.
-    if (markerColor != ThemeManager.sharedManager.textColor.effectiveColor) {
+    if (markerColor != ThemeManager.sharedManager.textColor.effectiveColor || markerColor == nil) {
         // Reset cache and set a new marker color
         markers = NSCache.new;
         markerColor = ThemeManager.sharedManager.textColor.effectiveColor;
@@ -363,7 +363,7 @@
             NSRange rRange = range;
             for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
                 if (i < 0) break;
-                if ([self.textStorage.string characterAtIndex:i] == '\n') {
+                if (self.textStorage.string.length > i && [self.textStorage.string characterAtIndex:i] == '\n') {
                     rRange.length = rRange.length - 1;
                     break;
                 }

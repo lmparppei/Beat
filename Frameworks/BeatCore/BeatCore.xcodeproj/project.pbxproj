@@ -30,6 +30,8 @@
 		B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6D529F1C47B0036FE6B /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
+		B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFont.m */; };
 		B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */; };
 		B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */ = {isa = PBXBuildFile; fileRef = B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -95,6 +97,8 @@
 		B678D68D2A1A1F4E00BD79D8 /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
+		B67C2CF12A2D1AD000B88B0F /* BeatFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFont.h; sourceTree = "<group>"; };
+		B67C2CF22A2D1AD000B88B0F /* BeatFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFont.m; sourceTree = "<group>"; };
 		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
 		B681D59029A37DBD00DF16CA /* BeatDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocument.m; sourceTree = "<group>"; };
 		B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 			children = (
 				B663A6D529F1C47B0036FE6B /* BeatFonts.h */,
 				B663A6D429F1C47A0036FE6B /* BeatFonts.m */,
+				B67C2CF12A2D1AD000B88B0F /* BeatFont.h */,
+				B67C2CF22A2D1AD000B88B0F /* BeatFont.m */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -349,6 +355,7 @@
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
 				B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */,
 				B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */,
+				B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */,
 				B619DE6D29F90A7A007D1838 /* BeatAutocomplete.h in Headers */,
 				B68C0F69299D845A0031AE6B /* BeatValueTransformers.swift in Headers */,
 			);
@@ -442,6 +449,7 @@
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */,
 				B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */,
+				B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
 				B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */,
 				B663A6D629F1C47B0036FE6B /* BeatFonts.m in Sources */,

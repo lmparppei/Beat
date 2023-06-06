@@ -122,6 +122,7 @@
 		B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B678D69C2A1A212A00BD79D8 /* BeatEditorFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormatting.h; sourceTree = "<group>"; };
 		B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEditorFormatting.m; sourceTree = "<group>"; };
+		B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
 		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
 		B686FF832971B65800789C8D /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -415,6 +416,7 @@
 		B6D32035298F04B5003DA45D /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */,
 				B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */,
 				B6D32039298F04C3003DA45D /* Courier Prime Bold.ttf */,
 				B6D32038298F04C3003DA45D /* Courier Prime Italic.ttf */,

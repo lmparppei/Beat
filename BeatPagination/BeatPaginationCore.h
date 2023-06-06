@@ -4,6 +4,12 @@
 //
 //  Created by Lauri-Matti Parppei on 11.1.2023.
 //
+/**
+ 
+ # !!! NOTE !!!
+ This class is deperacted and no longer in use.
+ 
+ */
 
 #import <Foundation/Foundation.h>
 

@@ -10,6 +10,7 @@
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
 #import "NSString+CharacterControl.h"
+#import "NSString+EMOEmoji.h"
 #import "BeatMeasure.h"
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
@@ -1383,6 +1384,14 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
 	if (parenthesisLoc == NSNotFound) return false;
 	else return true;
+}
+
+/// Ranges of emojis (o the times we live in)
+- (NSArray<NSValue*>*)emojiRanges {
+    return self.string.emo_emojiRanges;
+}
+- (bool)hasEmojis {
+    return self.string.emo_containsEmoji;
 }
 
 
