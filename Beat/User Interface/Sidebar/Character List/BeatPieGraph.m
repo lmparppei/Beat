@@ -113,6 +113,8 @@
 			
 			[self.layer insertSublayer:graphLayer atIndex:0];
 			[_graphLayers addObject:graphLayer];
+			
+			CGPathRelease(path);
 		} else {
 			graphLayer = _graphLayers[i];
 		}
