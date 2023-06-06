@@ -196,7 +196,7 @@
                                                 <action selector="openURLwithButtonWithSender:" target="9uD-mB-xHs" id="iPe-DV-5Mk"/>
                                             </connections>
                                         </button>
-                                        <button verticalHuggingPriority="750" id="4RL-Nc-NYn">
+                                        <button hidden="YES" verticalHuggingPriority="750" id="4RL-Nc-NYn">
                                             <rect key="frame" x="37" y="233" width="220" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="Tutorial" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="HWI-6m-SnF" customClass="BeatLaunchButton">
@@ -498,7 +498,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="usj-3b-jHu"/>
+        <segue reference="VEG-h6-WbV"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="B_256" width="256" height="256"/>

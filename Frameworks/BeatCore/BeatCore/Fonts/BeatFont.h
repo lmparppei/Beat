@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BXFont *boldItalic;
 @property (nonatomic, readonly) BXFont *emojiFont;
 
-- (instancetype)initWithFontName:(NSString *)plainFontName
+- (instancetype)initWithFontNames:(NSString *)plainFontName
                              bold:(NSString *)boldFontName
                           italic:(NSString *)italicFontName
                       boldItalic:(NSString *)boldItalicFontName

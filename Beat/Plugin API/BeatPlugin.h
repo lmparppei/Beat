@@ -158,9 +158,6 @@
 /// Restart current plugin
 - (void)restart;
 
-/// Ignore this, this is for our office party
-- (NSString*)htmlForLines:(NSArray*)lines;
-
 /// Crash the app
 - (void)crash;
 

@@ -168,7 +168,7 @@
 			@"sceneIndex": @([outline indexOfObject:scene]),
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 			@"position": [NSNumber numberWithInteger:scene.position],
-			@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],
+			@"lineIndex": [NSNumber numberWithInteger:[_delegate.parser.lines indexOfObject:scene.line]],
 			@"omited": [NSNumber numberWithBool:scene.omitted],
 			@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
 		};
@@ -188,7 +188,7 @@
 }
 
 - (NSString *)snippet:(OutlineScene *)scene {
-	NSUInteger index = [_delegate.lines indexOfObject:scene.line];
+	NSUInteger index = [_delegate.parser.lines indexOfObject:scene.line];
 	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
 	NSUInteger lineIndex = index + 1;
@@ -197,8 +197,8 @@
 	// Get first paragraph
 	// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading.
 	// Also, we'll use SYNOPSIS line as the snippet in case it's the first line
-	while (lineIndex < _delegate.lines.count) {
-		Line* line = _delegate.lines[lineIndex];
+	while (lineIndex < _delegate.parser.lines.count) {
+		Line* line = _delegate.parser.lines[lineIndex];
 		if (line.isOutlineElement) break;
 		else if (line.omitted && !line.note) {
 			lineIndex++;

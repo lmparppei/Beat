@@ -59,8 +59,7 @@ class BeatLaunchScreenView : NSViewController {
 		self.view.window?.isMovableByWindowBackground = true
 
 		// Set version field value
-		var version:String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-		versionField.stringValue = version
+		versionField.stringValue =  Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
 		
 		
 		recentFiles.dataSource = recentFilesSource
@@ -109,7 +108,7 @@ class SameWindowStoryboardSegue: NSStoryboardSegue {
 @objc extension NSWindow {
 	func makeCentered() {
 		var frame = self.frame
-		guard var screen = self.screen?.frame.size else { return }
+		guard let screen = self.screen?.frame.size else { return }
 		
 		frame.origin.x = (screen.width - frame.size.width) / 2
 		frame.origin.y = (screen.height - frame.size.height) / 2

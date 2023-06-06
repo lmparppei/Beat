@@ -1870,6 +1870,7 @@
 	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
 }
 
+
 @end
 /*
 

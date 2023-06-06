@@ -451,7 +451,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Text backgrounds (for revisions + tagging)
 
 - (void)renderBackgroundForLines {
-	for (Line* line in self.delegate.lines) {
+	for (Line* line in self.delegate.parser.lines) {
 		[self renderBackgroundForLine:line clearFirst:YES];
 	}
 }

@@ -500,14 +500,14 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Transformations" id="ngy-iE-uPP">
                                     <items>
-                                        <menuItem title="Make Upper Case" id="DII-3I-Hfz">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Make Upper Case" keyEquivalent="u" id="DII-3I-Hfz">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="uppercaseWord:" target="-1" id="Yq4-Cu-e7n"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Make Lower Case" id="QvQ-v2-0Mq">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Make Lower Case" keyEquivalent="l" id="QvQ-v2-0Mq">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="lowercaseWord:" target="-1" id="h7v-sO-5Zx"/>
                                             </connections>

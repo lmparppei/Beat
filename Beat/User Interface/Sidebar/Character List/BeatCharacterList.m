@@ -149,7 +149,7 @@
 
 -(void)reloadView {
 	NSInteger selectedRow = self.selectedRow;
-	NSArray *lines = self.editorDelegate.lines.copy;
+	NSArray *lines = self.editorDelegate.parser.lines.copy;
 	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
 	
 	NSMutableArray *genders = NSMutableArray.new;
@@ -372,7 +372,7 @@
 }
 
 - (void)prevLine {
-	NSArray *lines = self.editorDelegate.lines;
+	NSArray *lines = self.editorDelegate.parser.lines;
 	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
 	if (!currentLine) return;
 	
@@ -391,7 +391,7 @@
 	}
 }
 - (void)nextLine {
-	NSArray *lines = self.editorDelegate.lines;
+	NSArray *lines = self.editorDelegate.parser.lines;
 	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
 	if (!currentLine) return;
 	

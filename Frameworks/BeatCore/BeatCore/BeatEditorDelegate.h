@@ -4,15 +4,18 @@
 //
 //  Created by Lauri-Matti Parppei on 8.4.2021.
 //
-/*
+/**
  
- BeatEditorDelegate is a protocol which provides the basic stuff for interfacing
- with the editor (and document) for other classes.
+ BeatEditorDelegate is a protocol which provides the basic stuff for interfacing with the editor.
+ It's an expansion of `BeatDocumentDelegate` which  should be used when no actual editor
+ interaction is needed.
+ 
  
  */
 
 #import <TargetConditionals.h>
 #import "BeatEditorMode.h"
+#import "BeatDocumentDelegate.h"
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
@@ -37,10 +40,6 @@
 @class BeatUITextView;
 #endif
 
-@class ContinuousFountainParser;
-@class Line;
-@class OutlineScene;
-@class BeatDocumentSettings;
 @class NSLayoutManager;
 @class NSTextStorage;
 @class UITextRange;
@@ -51,7 +50,7 @@
 - (bool)visible;
 @end
  
-@protocol BeatEditorDelegate <NSObject>
+@protocol BeatEditorDelegate <NSObject, BeatDocumentDelegate>
 
 @property (nonatomic, readonly) bool documentIsLoading;
 - (BXTextView*)getTextView;
@@ -61,14 +60,12 @@
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
-
 #endif
 
 
 #pragma mark - Core functionality
 
-/// Fountain parser associated with the document
-@property (readonly) ContinuousFountainParser *parser;
+@property (atomic, readonly) NSAttributedString *attrTextCache;
 @property (nonatomic, readonly) NSUndoManager *undoManager;
 
  
@@ -84,26 +81,25 @@
 #pragma mark - Getters for parser data
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
-@property (atomic, readonly) NSAttributedString *attrTextCache;
+
+#pragma mark Shorthands for parser data. These should be deprecated and only accessed via the parser
 
 - (NSArray<OutlineScene*>*)getOutlineItems;
-- (NSMutableArray<Line*>*)lines;
-- (NSString*)text;
+- (NSArray*)getOutline; // Shorthand alias
+
 - (NSAttributedString*)attributedString;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 
 - (Line*)currentLine;
-- (LineType)lineTypeAt:(NSInteger)index;
-- (NSArray*)getOutline; // What is this?
 - (NSArray*)scenes;
 - (NSArray*)markers;
+
 
 
 #pragma mark - Screenplay document data
 
 @property (nonatomic) NSDictionary<NSString*, NSString*>* characterGenders;
 @property (nonatomic) NSString *revisionColor;
-@property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
 @property (nonatomic) bool printSceneNumbers;
 
@@ -146,19 +142,10 @@
 @property (nonatomic, readonly) bool showTags;
 
 
-
-#pragma mark - Export options
-
-@property (nonatomic) BeatPaperSize pageSize;
-@property (nonatomic, readonly) BeatExportSettings* exportSettings;
-
-
-
 #pragma mark - Editor text view values
 
 /// Sets and gets the selected range in editor text view
 @property (nonatomic, readwrite) NSRange selectedRange;
-
 @property (nonatomic, readonly) CGFloat documentWidth;
 @property (nonatomic, readonly) CGFloat magnification;
 
@@ -172,7 +159,6 @@
 - (void)setTypingAttributes:(NSDictionary*)attrs;
 - (void)refreshTextViewLayoutElements;
 - (void)refreshTextViewLayoutElementsFrom:(NSInteger)location;
-
 
 
 #pragma mark - Fonts
@@ -190,13 +176,6 @@
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
 #endif
-
-
-
-#pragma mark - Style getters
-
-@property (nonatomic, readonly) bool headingStyleBold;
-@property (nonatomic, readonly) bool headingStyleUnderline;
 
 
 #pragma mark - Editor flags

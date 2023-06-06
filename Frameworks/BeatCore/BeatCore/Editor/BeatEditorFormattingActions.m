@@ -245,6 +245,15 @@ static NSString *revisionAttribute = @"Revision";
 	[_delegate addString:@"*/\n\n" atIndex:scene.position + scene.range.length];
 }
 
+- (IBAction)makeUppercase:(id)sender {
+    if (_delegate.selectedRange.length == 0) return;
+    
+    NSRange range = _delegate.selectedRange;
+    NSString* string = [_delegate.getTextView.string substringWithRange:range];
+    
+    [_delegate replaceRange:range withString:string.uppercaseString];
+}
+
 
 - (IBAction)makeSceneNonNumbered:(id)sender
 {

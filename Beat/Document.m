@@ -4095,7 +4095,7 @@ static NSArray<Line*>* cachedTitlePage;
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
 	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSFileManager *fileManager = NSFileManager.defaultManager;
 	
 	if ([fileManager fileExistsAtPath:url.path]) {
 		[fileManager removeItemAtURL:url error:nil];
