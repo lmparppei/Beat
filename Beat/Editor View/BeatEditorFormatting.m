@@ -374,10 +374,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
 	// If we are editing a dialogue block at the end of the document, the line will be empty.
 	// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
-	if (line.string.length == 0 && !firstTime && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
+	if (line.string.length == 0 && !firstTime &&
+		NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		Line* previousLine;
+		
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
-
 		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
 		
 		// Keep dialogue input after any dialogue elements
@@ -390,11 +391,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			paragraphStyle = [self paragraphStyleFor:line];
 		}
 		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+	} else {
+		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
 	
 	// Set typing attributes
 	attributes[NSFontAttributeName] = _delegate.courier;
+	
 	[_delegate setTypingAttributes:attributes];
 
 	[self applyInlineFormatting:line reset:forceFont];
@@ -718,7 +722,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 												  range:[self globalRangeFromLocalRange:&effectiveRange
 																	  inLineAtPosition:line.position]];
 }
-
 
 
 - (void)setFontStyle:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
