@@ -7,29 +7,37 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>fountain</string>
-				<string>Fountain</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>BeatDocumentIcon</string>
-			<key>CFBundleTypeName</key>
-			<string>Fountain Screenplay</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>fi.KAPITAN.fountain</string>
-			</array>
-			<key>NSDocumentClass</key>
-			<string>Document</string>
-		</dict>
-	</array>
+		<array>
+			<dict>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>fountain</string>
+				</array>
+				<key>CFBundleTypeIconFile</key>
+				<string>BeatDocumentIcon</string>
+				<key>CFBundleTypeName</key>
+				<string>Fountain script</string>
+				<key>CFBundleTypeOSTypes</key>
+				<array>
+					<string>fountain</string>
+				</array>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>LSHandlerRank</key>
+				<string>Owner</string>
+				<key>LSTypeIsPackage</key>
+				<integer>0</integer>
+				<key>NSDocumentClass</key>
+				<string>Document</string>
+				<!--
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>fi.KAPITAN.fountain</string>
+				</array>
+				-->
+			</dict>
+
+		</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
@@ -77,50 +85,17 @@
 	<string>NSApplication</string>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeIcons</key>
-			<dict>
-				<key>UTTypeIconBadgeName</key>
-				<string>Icon-MacOS-256x256@1x</string>
-				<key>UTTypeIconText</key>
-				<string>Fountain</string>
-			</dict>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>fountain</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>text/plain</string>
-				</array>
-			</dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.plain-text</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Fountain Screenplay</string>
-			<key>UTTypeIconFile</key>
-			<string>BeatDocumentIcon</string>
-			<key>UTTypeIdentifier</key>
-			<string>fi.KAPITAN.fountain</string>
-			<key>UTTypeReferenceURL</key>
-			<string>http://fountain.io</string>
-		</dict>
-	</array>
+
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
+				<string>io.fountain</string>
 				<string>public.plain-text</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Fountain Screenplay</string>
+			<string>Fountain script</string>
 			<key>UTTypeIconFile</key>
 			<string>BeatDocumentIcon</string>
 			<key>UTTypeIcons</key>
