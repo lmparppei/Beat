@@ -1,0 +1,30 @@
+
+/* Class = "NSButtonCell"; title = "New Screenplay"; ObjectID = "DbX-Gm-m0E"; */
+"DbX-Gm-m0E.title" = "Nytt dokument";
+
+/* Class = "NSButtonCell"; title = "→ Support Beat"; ObjectID = "ZFK-os-h00"; */
+"ZFK-os-h00.title" = "→ Stöd Beat";
+
+/* Class = "NSButtonCell"; title = "Tutorial"; ObjectID = "a4h-hr-bBC"; */
+"a4h-hr-bBC.title" = "Handledning";
+
+/* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2023"; ObjectID = "b0H-0Y-Klb"; */
+"b0H-0Y-Klb.title" = "© Lauri-Matti Parppei 2019–2023";
+
+/* Class = "NSTextFieldCell"; title = "Released under GPL license"; ObjectID = "b4P-Uh-CmK"; */
+"b4P-Uh-CmK.title" = "Utgiven under GPL-licens";
+
+/* Class = "NSTextFieldCell"; title = "Date"; ObjectID = "d9P-af-E8t"; */
+"d9P-af-E8t.title" = "Date";
+
+/* Class = "NSButtonCell"; title = "→ Discord Community"; ObjectID = "osl-e8-t6d"; */
+"osl-e8-t6d.title" = "→ Community på Discord";
+
+/* Class = "NSTextFieldCell"; title = "Tutorials & Templates"; ObjectID = "u0S-ze-FnT"; */
+"u0S-ze-FnT.title" = "Tutorials & Templates";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "uau-QP-8yL"; */
+"uau-QP-8yL.title" = "Version";
+
+/* Class = "NSButtonCell"; title = "Browse..."; ObjectID = "w3a-gm-hjm"; */
+"w3a-gm-hjm.title" = "Öppna...";

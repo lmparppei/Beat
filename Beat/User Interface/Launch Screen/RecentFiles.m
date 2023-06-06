@@ -31,12 +31,19 @@
 @implementation RecentFiles
 
 -(void)awakeFromNib {
-	_recentFiles = NSDocumentController.sharedDocumentController.recentDocumentURLs.copy;
+	if (_recentFiles.count == 0) _recentFiles = NSDocumentController.sharedDocumentController.recentDocumentURLs.copy;
+}
+
+- (instancetype)init{
+	self = [super init];
+	if (self) {
+		_recentFiles = NSDocumentController.sharedDocumentController.recentDocumentURLs.copy;
+	}
+	return self;
 }
 
 - (void)reload {
 	// We'll cache the date results to avoid sandboxing file access problems.
-	
 	NSArray *files = _recentFiles;
 	_items = NSMutableArray.new;
 
