@@ -20,11 +20,22 @@ final class BeatQuickLookScrollView:CenteringScrollView {
 	
 	override var frame: NSRect {
 		didSet {
-			let pageFrame = BeatPaperSizing.size(for: self.editorDelegate?.pageSize ?? .A4)
-			let factor =  1 / (pageFrame.width / self.frame.width)
+			// OK, so, I'm *very* bad with NSScrollView and everything seems pretty weird.
+			// I'm circumventing those issues with this spaghetti code.
 			
-			self.magnification = factor
+			guard let documentView = self.documentView,
+				  let clipView = self.contentView as? CenteringClipView
+			else { return }
+
+			// Get desired page size for current page size and magnify to fit
+			let pageFrame = BeatPaperSizing.size(for: self.editorDelegate?.pageSize ?? .A4)
+			self.magnify(toFit: NSMakeRect(0, 0, pageFrame.width, self.frame.size.height))
+			
+			// Set document view size and the center the clip view again
+			documentView.frame.size.width = pageFrame.width * (1 / self.magnification)
+			clipView.setBoundsOrigin(clipView.bounds.origin)
 		}
 	}
+	
 }
 

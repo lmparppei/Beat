@@ -284,7 +284,7 @@ final class BeatPreviewView:NSView {
 	var titlePage:BeatTitlePageView?
 	
 	@IBOutlet weak var previewController:BeatPreviewController?
-		
+	
 	func clear() {
 		pageViews.removeAll()
 		
@@ -375,8 +375,10 @@ final class BeatPreviewView:NSView {
 	}
 	
 	override func cancelOperation(_ sender: Any?) {
-		guard let owner = window?.windowController?.owner as? Document else { return }
-		owner.cancelOperation(sender)
+		guard let owner = window?.windowController?.owner as? AnyObject else { return }
+		if owner.responds(to: #selector(cancelOperation)) {
+			owner.cancelOperation(sender)
+		}
 	}
 }
 
@@ -396,7 +398,8 @@ final class CenteringClipView: NSClipView {
 		let documentViewFrame = documentView!.frame
 		var clampedOrigin = newOrigin
 		
-		clampedOrigin.x = (bounds.width - documentViewFrame.width) / -2
+		clampedOrigin.x = floor((bounds.width - documentViewFrame.width) / -2)
+
 		super.setBoundsOrigin(clampedOrigin)
 	}
 		

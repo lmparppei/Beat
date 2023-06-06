@@ -21,17 +21,17 @@
                 <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1GE-1f-7Zs" customClass="BeatQuickLookScrollView" customModule="BeatQuickLook" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="550" height="690"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <clipView key="contentView" id="mNp-sB-EpK">
+                    <clipView key="contentView" id="mNp-sB-EpK" customClass="CenteringClipView" customModule="BeatQuickLook" customModuleProvider="target">
                         <rect key="frame" x="1" y="1" width="548" height="688"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view id="Mnh-Zh-ag5" customClass="FlippedView" customModule="BeatQuickLook" customModuleProvider="target">
+                            <view id="Mnh-Zh-ag5">
                                 <rect key="frame" x="0.0" y="0.0" width="533" height="673"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <customView fixedFrame="YES" id="9Os-hZ-cvs" customClass="BeatPreviewView" customModule="BeatQuickLook" customModuleProvider="target">
+                                    <customView id="9Os-hZ-cvs" customClass="BeatPreviewView" customModule="BeatQuickLook" customModuleProvider="target">
                                         <rect key="frame" x="3" y="0.0" width="527" height="673"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <connections>
                                             <outlet property="previewController" destination="T64-s9-Ad9" id="TzX-nM-eIT"/>
                                         </connections>
@@ -55,7 +55,7 @@
         <customObject id="T64-s9-Ad9" customClass="BeatPreviewController" customModule="BeatQuickLook" customModuleProvider="target">
             <connections>
                 <outlet property="delegate" destination="-2" id="53A-cI-PTD"/>
-                <outlet property="previewView" destination="9Os-hZ-cvs" id="JBC-Zl-AIW"/>
+                <outlet property="previewView" destination="9Os-hZ-cvs" id="WPJ-2b-lQZ"/>
                 <outlet property="scrollView" destination="1GE-1f-7Zs" id="XJf-pc-Hf0"/>
             </connections>
         </customObject>
