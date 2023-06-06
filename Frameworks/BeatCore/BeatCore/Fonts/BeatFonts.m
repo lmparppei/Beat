@@ -6,6 +6,7 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+
 #import "BeatFonts.h"
 #import <TargetConditionals.h>
 
@@ -47,6 +48,11 @@
 	if (self) {
 		if (sansSerif) [self loadSansSerifFont];
 		else [self loadSerifFont];
+        
+        self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
+        
+        self.emojis = [BXFont fontWithName:@"Noto Emoji" size:12.0];
+        if (_emojis == nil) self.emojis = [BXFont fontWithName:@"NotoEmoji" size:12.0]; // Fix for Mojave
 	}
 	
 	return self;
@@ -72,8 +78,6 @@
     self.boldCourier = [BXFont fontWithName:@"CourierPrime-Bold" size:12.0];
     self.italicCourier = [BXFont fontWithName:@"CourierPrime-Italic" size:12.0];
     self.boldItalicCourier = [BXFont fontWithName:@"CourierPrime-BoldItalic" size:12.0];
-    
-    self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
 }
 
 - (void)loadSansSerifFont {
@@ -83,8 +87,6 @@
     self.boldCourier = [BXFont fontWithName:@"CourierPrimeSans-Bold" size:12.0];
     self.italicCourier = [BXFont fontWithName:@"CourierPrimeSans-Italic" size:12.0];
     self.boldItalicCourier = [BXFont fontWithName:@"CourierPrimeSans-BoldItalic" size:12.0];
-    
-    self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
 }
 
 - (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits {
@@ -108,7 +110,6 @@
 	BXFont* f = [BXFont fontWithName:self.courier.fontName size:size];
 	return f;
 }
-
 
 + (CGFloat)characterWidth {
 	return 7.25;

@@ -7,6 +7,7 @@
 //
 
 #import <TargetConditionals.h>
+#import "BeatFont.h"
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
@@ -23,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BXFont* boldCourier;
 @property (nonatomic) BXFont* italicCourier;
 @property (nonatomic) BXFont* boldItalicCourier;
+
+@property (nonatomic) BXFont* emojis;
 
 @property (nonatomic) BXFont* synopsisFont;
 @property (nonatomic) BXFont* sectionFont;

@@ -185,6 +185,16 @@
 		}];
 	}
 	
+	// Emoji replacement
+	if (line.hasEmojis) {
+		for (NSValue* value in line.emojiRanges) {
+			NSRange r = value.rangeValue;
+			if (r.location == NSNotFound || NSMaxRange(r) > line.length) continue;
+			
+			[attributedString addAttribute:NSFontAttributeName value:_fonts.emojis range:r];
+		}
+	}
+	
 	// Apply revisions.
 	if (line.revisedRanges.count) {
 		// By default, we'll display revisions defined in export settings,
