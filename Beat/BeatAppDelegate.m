@@ -403,6 +403,9 @@ static NSWindow* launchWindow;
 		_welcomeWindow.titlebarAppearsTransparent = true;
 		_welcomeWindow.movableByWindowBackground = true;
 		_welcomeWindow.releasedWhenClosed = false;
+		if (@available(macOS 10.14, *)) {
+			_welcomeWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+		}
 	}
 
 	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"Launch Screen" bundle:NSBundle.mainBundle];

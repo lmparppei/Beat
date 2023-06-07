@@ -152,7 +152,7 @@
                                         <button verticalHuggingPriority="750" id="yGG-aB-tqs">
                                             <rect key="frame" x="74" y="146.5" width="220" height="44"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="DbX-Gm-m0E" customClass="BeatLaunchButton">
+                                            <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="DbX-Gm-m0E" customClass="BeatLaunchScreenButton" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                                 <imageReference key="image" image="doc" catalog="system" symbolScale="large"/>
@@ -168,7 +168,7 @@
                                         <button verticalHuggingPriority="750" id="Wut-bd-QwX">
                                             <rect key="frame" x="74" y="95" width="220" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="bevel" title="Tutorial" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="a4h-hr-bBC" customClass="BeatLaunchButton">
+                                            <buttonCell key="cell" type="bevel" title="Tutorial" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="a4h-hr-bBC" customClass="BeatLaunchScreenButton" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                                 <imageReference key="image" image="map" catalog="system" symbolScale="large"/>

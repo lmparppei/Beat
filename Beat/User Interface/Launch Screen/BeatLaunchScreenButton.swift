@@ -9,7 +9,6 @@
 /*
  
  This is a port of BeatLauncButton for the purposes of learning Swift.
- Nothing special to see here.
  
  */
 
@@ -39,49 +38,47 @@ class BeatLaunchScreenButton: NSButtonCell {
 	}
 
 	override func drawTitle(_ title: NSAttributedString, withFrame frame: NSRect, in controlView: NSView) -> NSRect {
-		let button:NSButton! = self.controlView as? NSButton
+		var stringRect:NSRect = NSRect()
 		
-		var appearance:NSAppearance? = nil
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
+			let button:NSButton! = self.controlView as? NSButton
 		
-		if #available(macOS 11.0, *) {
-			_ = NSAppearance.performAsCurrentDrawingAppearance(self.controlView!.window!.effectiveAppearance)
-		} else {
-			appearance = NSAppearance.current
-			NSAppearance.current = self.controlView!.window!.effectiveAppearance
-		}
-		
-		var color = NSColor.controlTextColor.withAlphaComponent(0.6)
-		var topColor = NSColor.controlTextColor.withAlphaComponent(0.9)
-		
-		if button.isHighlighted {
-			color = color.withAlphaComponent(1.0)
-			topColor = NSColor.controlTextColor.withAlphaComponent(1.0)
-		}
-		
-		let topTitle:String = button.title
-		let bottomTitle:String = self.subtitleString
-		
-		let attrStr = NSMutableAttributedString(string: String(format: "%@\n%@", topTitle, bottomTitle))
-		
-		attrStr.addAttribute(NSAttributedString.Key.font, value: NSFont.systemFont(ofSize: NSFont.systemFontSize), range: NSMakeRange(0, attrStr.string.count))
-		attrStr.addAttribute(NSAttributedString.Key.foregroundColor, value:color, range: NSMakeRange(0, attrStr.string.count))
-		attrStr.addAttribute(NSAttributedString.Key.foregroundColor, value:topColor, range: NSMakeRange(0, topTitle.count))
+			var color:NSColor
+			var topColor:NSColor
+			
+			if #available(macOS 10.14, *) {
+				color = NSColor.controlTextColor.withAlphaComponent(0.6)
+				topColor = NSColor.controlTextColor.withAlphaComponent(0.9)
+			} else {
+				// Legacy colors for Mojave
+				color = NSColor.lightGray.withAlphaComponent(0.6)
+				topColor = NSColor.lightGray.withAlphaComponent(0.9)
+			}
+			
+			if button.isHighlighted {
+				color = color.withAlphaComponent(1.0)
+				topColor = NSColor.controlTextColor.withAlphaComponent(1.0)
+			}
+			
+			let topTitle:String = button.title
+			let bottomTitle:String = self.subtitleString
+			
+			let attrStr = NSMutableAttributedString(string: String(format: "%@\n%@", topTitle, bottomTitle))
+			
+			attrStr.addAttribute(NSAttributedString.Key.font, value: NSFont.systemFont(ofSize: NSFont.systemFontSize), range: NSMakeRange(0, attrStr.string.count))
+			attrStr.addAttribute(NSAttributedString.Key.foregroundColor, value:color, range: NSMakeRange(0, attrStr.string.count))
+			attrStr.addAttribute(NSAttributedString.Key.foregroundColor, value:topColor, range: NSMakeRange(0, topTitle.count))
 
-		attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, topTitle.count))
-		attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 8.5), range: NSMakeRange(topTitle.count + 1, bottomTitle.count))
-		
-		
-		
-		let stringRect = NSMakeRect(controlView.frame.size.height + 8, (controlView.frame.size.height - attrStr.size().height) / 2 - 1,
-									attrStr.size().width, attrStr.size().height )
-		attrStr.draw(in: stringRect)
-		
-		// Restore appearance in older systems
-		if #available(macOS 11.0, *) {
-			// Do nothing
-		} else {
-			NSAppearance.current = appearance
-		}
+			attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, topTitle.count))
+			attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 8.5), range: NSMakeRange(topTitle.count + 1, bottomTitle.count))
+			
+			stringRect = NSMakeRect(controlView.frame.size.height + 8, (controlView.frame.size.height - attrStr.size().height) / 2 - 1,
+										attrStr.size().width, attrStr.size().height)
+			
+			// Restore appearance on older systems
+			attrStr.draw(in: stringRect)
+		})
+
 		
 		return stringRect
 	}
@@ -89,41 +86,27 @@ class BeatLaunchScreenButton: NSButtonCell {
 	override func drawImage(_ image: NSImage, withFrame frame: NSRect, in controlView: NSView) {
 		let button:NSButton = controlView as! NSButton
 		
-		var appearance:NSAppearance? = nil
-		if #available(macOS 11.0, *) {
-			_ = NSAppearance.performAsCurrentDrawingAppearance(self.controlView!.window!.effectiveAppearance)
-		} else {
-			appearance = NSAppearance.current
-			NSAppearance.current = self.controlView!.window!.effectiveAppearance
-		}
-		
-		let scaledImage:NSImage = proporionalScaling(image, withSize: NSMakeSize(controlView.frame.size.height - 2.0 * 2, controlView.frame.size.height - 2.0 * 2))
-		
-		var color:NSColor = NSColor.controlTextColor.withAlphaComponent(0.6)
-		if (button.isHighlighted) {
-			color = color.withAlphaComponent(1.0)
-		}
-		
-		scaledImage.lockFocus()
-		color.set()
-
-		let imageRect:NSRect = NSMakeRect(0, 0, scaledImage.size.width, scaledImage.size.height)
-		imageRect.fill(using: NSCompositingOperation.sourceAtop)
-		scaledImage.unlockFocus()
-		
-		let iRect = NSMakeRect(0 + 2, 0 + 2, scaledImage.size.width, scaledImage.size.height)
-		scaledImage.draw(in: iRect)
-		
-		
-		if #available(macOS 11.0, *) {
-			// Do nothing
-		} else {
-			NSAppearance.current = appearance
-		}
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
+			let scaledImage:NSImage = proportionalScaling(image, withSize: NSMakeSize(controlView.frame.size.height - 2.0 * 2, controlView.frame.size.height - 2.0 * 2))
+			
+			var color:NSColor = NSColor.controlTextColor.withAlphaComponent(0.6)
+			if (button.isHighlighted) {
+				color = color.withAlphaComponent(1.0)
+			}
+			
+			scaledImage.lockFocus()
+			color.set()
+			
+			let imageRect:NSRect = NSMakeRect(0, 0, scaledImage.size.width, scaledImage.size.height)
+			imageRect.fill(using: NSCompositingOperation.sourceAtop)
+			scaledImage.unlockFocus()
+			
+			let iRect = NSMakeRect(0 + 2, 0 + 2, scaledImage.size.width, scaledImage.size.height)
+			scaledImage.draw(in: iRect)
+		})
 	}
-	
 
-	func proporionalScaling(_ image: NSImage, withSize targetSize: NSSize) -> NSImage {
+	func proportionalScaling(_ image: NSImage, withSize targetSize: NSSize) -> NSImage {
 		let sourceImage:NSImage = image
 		let newImage:NSImage = NSImage.init(size: targetSize)
 		
@@ -177,38 +160,15 @@ class BeatLaunchScreenButton: NSButtonCell {
 	}
 	
 	override func mouseEntered(with event: NSEvent) {
-		var appearance:NSAppearance? = nil
-		if #available(macOS 11.0, *) {
-			_ = NSAppearance.performAsCurrentDrawingAppearance(self.controlView!.window!.effectiveAppearance)
-		} else {
-			appearance = NSAppearance.current
-			NSAppearance.current = self.controlView!.window!.effectiveAppearance
-		}
-		
-		self.controlView?.layer?.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.8).cgColor
-		
-		if #available(macOS 11.0, *) {
-			// Do nothing
-		} else {
-			NSAppearance.current = appearance
-		}
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
+			self.controlView?.layer?.animate(color: NSColor.windowBackgroundColor.withAlphaComponent(0.8).cgColor, keyPath: "backgroundColor", duration: 0.05)
+		})
 	}
+	
 	override func mouseExited(with event: NSEvent) {
-		var appearance:NSAppearance? = nil
-		if #available(macOS 11.0, *) {
-			_ = NSAppearance.performAsCurrentDrawingAppearance(self.controlView!.window!.effectiveAppearance)
-		} else {
-			appearance = NSAppearance.current
-			NSAppearance.current = self.controlView!.window!.effectiveAppearance
-		}
-		
-		self.controlView?.layer?.backgroundColor = NSColor.clear.cgColor
-		
-		if #available(macOS 11.0, *) {
-			// Do nothing
-		} else {
-			NSAppearance.current = appearance
-		}
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
+			self.controlView?.layer?.animate(color: NSColor.clear.cgColor, keyPath: "backgroundColor", duration: 0.1)
+		})
 	}
 }
 
