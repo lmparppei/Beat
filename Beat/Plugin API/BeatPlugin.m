@@ -85,6 +85,8 @@
 #pragma mark - Helpers
 
 - (void)setupErrorHandler {
+	__weak typeof(id<BeatEditorDelegate>) weakDoc = self.delegate.document;
+	
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		if (NSThread.isMainThread) {
 			NSAlert *alert = [[NSAlert alloc] init];
@@ -94,7 +96,7 @@
 			[alert runModal];
 		} else {
 			NSString *errMsg = [NSString stringWithFormat:@"Error: %@", exception];
-			[BeatConsole.shared logToConsole:errMsg pluginName:@"Plugin parser"];
+			[BeatConsole.shared logToConsole:errMsg pluginName:@"Plugin parser" context:weakDoc];
 		}
 	}];
 }
@@ -684,11 +686,11 @@
 	if (string == nil) return;
 	
 	BeatConsole *console = BeatConsole.shared;
-	if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General"];
+	if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate.document];
 	else {
 		// Allow logging in background thread
 		dispatch_async(dispatch_get_main_queue(), ^(void){
-			[console logToConsole:string pluginName:self.pluginName];
+			[console logToConsole:string pluginName:self.pluginName context:self.delegate.document];
 		});
 	}
 }

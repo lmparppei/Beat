@@ -108,7 +108,7 @@
 		
 		if (name) [_fields setValue:checkbox forKey:name];
 	} else {
-		[BeatConsole.shared logToConsole:[NSString stringWithFormat:@"'%@' is not a valid modal type. Ignoring.", type] pluginName:@"NOTE:"];
+		[BeatConsole.shared logToConsole:[NSString stringWithFormat:@"'%@' is not a valid modal type. Ignoring.", type] pluginName:@"NOTE:" context:nil];
 		return;
 	}
 	

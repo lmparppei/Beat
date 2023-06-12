@@ -6,15 +6,17 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@protocol BeatEditorDelegate;
 
-@interface BeatConsole : NSObject
+@interface BeatConsole : NSWindowController <NSMenuDelegate>
 + (BeatConsole*)shared;
 -(void)openConsole;
 -(void)clearConsole;
--(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName;
+//-(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName;
+-(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName context:(id<BeatEditorDelegate> _Nullable)context;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -50,7 +50,7 @@
 - (bool)visible;
 @end
  
-@protocol BeatEditorDelegate <NSObject, BeatDocumentDelegate>
+@protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
 @property (nonatomic, readonly) bool documentIsLoading;
 - (BXTextView*)getTextView;
@@ -71,6 +71,7 @@
  
 #pragma mark - Application data and file access
 
+- (NSUUID*)uuid;
 - (NSString*)fileNameString;
 - (bool)isDark;
 - (void)showLockStatus;

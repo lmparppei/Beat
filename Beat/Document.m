@@ -920,8 +920,11 @@ static NSWindow __weak *currentKeyWindow;
 - (void)windowDidBecomeMain:(NSNotification *)notification {
 	// Show all plugin windows associated with the current document
 	[self showPluginWindowsForCurrentDocument];
+	[NSNotificationCenter.defaultCenter postNotificationName:@"Document changed" object:self];
 	
-	if (currentKeyWindow != nil && currentKeyWindow.visible) [currentKeyWindow makeKeyAndOrderFront:nil];
+	if (currentKeyWindow != nil && currentKeyWindow.visible) {
+		[currentKeyWindow makeKeyAndOrderFront:nil];
+	}
 }
 -(void)windowDidBecomeKey:(NSNotification *)notification {
 	currentKeyWindow = nil;
@@ -1366,6 +1369,11 @@ static NSWindow __weak *currentKeyWindow;
 
 
 #pragma mark - Print & Export
+
+- (NSUUID*)uuid {
+	if (_uuid == nil) _uuid = NSUUID.new;
+	return _uuid;
+}
 
 - (NSString*)fileNameString
 {
