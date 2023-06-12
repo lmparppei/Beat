@@ -250,7 +250,8 @@
 @optional - (void)focusEditor;
 @optional - (IBAction)toggleCards:(id)sender;
 @optional - (NSDictionary*)runningPlugins;
-
+@optional - (void)runPlugin:(NSString*)pluginWithName;
+@optional - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
 
 #pragma mark - Preview
 

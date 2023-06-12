@@ -69,6 +69,9 @@
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 @property (nonatomic,readonly) NSDictionary *type;
 
+/// Forces the plugin to stay in memory
+- (void)makeResident;
+
 // Alias + actual methods for update methods
 - (void)setUpdate:(JSValue*)updateMethod;
 - (void)onTextChange:(JSValue*)updateMethod;
@@ -117,21 +120,37 @@
 - (void)end;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
-- (NSArray*)screen; /// Current screen dimensions
-- (NSArray*)windowFrame; /// Window dimensions
-- (NSArray*)getWindowFrame; // Alias for windowFrame
-- (void)async:(JSValue*)callback; /// Alias for dispatch
-- (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
+
+/// Current screen dimensions
+- (NSArray*)screen;
+/// Window dimensions
+- (NSArray*)windowFrame;
+/// Alias for windowFrame
+- (NSArray*)getWindowFrame;
+
+
+- (void)async:(JSValue*)callback;
+- (void)sync:(JSValue*)callback;
+/// Alias for async
 - (void)dispatch:(JSValue*)callback;
+/// Alias for sync
 - (void)dispatch_sync:(JSValue*)callback;
+/// Returns `true` if the current operation happens in main thread
 - (bool)isMainThread;
+
+/// Focuses the editor text view
 - (void)focusEditor;
 
+/// Returns a document setting prefixed by current plugin name
 - (id)getDocumentSetting:(NSString*)key;
+/// Returns a non-prefixed document setting
 - (id)getRawDocumentSetting:(NSString*)key;
-- (id)getPropertyValue:(NSString*)key; /// For those who REALLY know what they're doing
+/// For those who REALLY know what they're doing
+- (id)getPropertyValue:(NSString*)key;
 
+/// Returns the current parser in document
 - (ContinuousFountainParser*)parser:(NSString*)string;
+/// Creates the outline from scratch
 - (void)createOutline;
 
 /// Returns old-style paginator object
@@ -337,6 +356,8 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)documentWasSaved;
 - (void)escapePressed;
 
+/// Runs given script in the plugin context
+- (JSValue*)call:(NSString*)script;
 
 // Autocompletion callbacks
 - (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion

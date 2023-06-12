@@ -9,12 +9,15 @@
 #import "BeatConsole.h"
 #import <os/log.h>
 #import <BeatCore/BeatCore.h>
+#import "BeatPlugin.h"
+
+#define ConsolePluginName @"Console"
 
 @interface BeatConsole ()
 @property (nonatomic) IBOutlet NSTextView *consoleTextView;
 @property (nonatomic) IBOutlet NSPopUpButton* contextSeletor;
 @property (nonatomic) IBOutlet NSButton* wat;
-@property (nonatomic) id<BeatEditorDelegate> currentContext;
+@property (nonatomic, weak) id<BeatEditorDelegate> currentContext;
 @property (nonatomic) NSMutableDictionary<NSUUID*, NSMutableAttributedString*>* logs;
 @end
 
@@ -38,10 +41,11 @@
 		self.currentContext = NSDocumentController.sharedDocumentController.currentDocument;
 		
 		self.window.title = @"";
-		[self.window setFrame:NSMakeRect(0, 0, 450, 150) display:true];
+		//[self.window setFrame:NSMakeRect(0, 0, 450, 150) display:true];
+		self.window.minSize = NSMakeSize(300, 100);
 		
-		//[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(switchContext) name:NSWindowDidResignMainNotification object:nil];
 		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(switchContext:) name:@"Document changed" object:nil];
+		[self updateTitle];
 	}
 	
 	return self;
@@ -56,6 +60,7 @@
 -(void)awakeFromNib
 {
 	[self reloadContexts];
+	[self updateTitle];
 }
 
 -(void)openConsole
@@ -149,9 +154,9 @@
 }
 
 - (IBAction)selectContext:(id)sender {
+	/*
 	NSPopUpButton* button = sender;
 	
-	//NSString* name = button.stringValue;
 	NSInteger i = button.indexOfSelectedItem;
 	if (i >= NSDocumentController.sharedDocumentController.documents.count || i != NSNotFound) {
 		[button selectItem:nil];
@@ -160,11 +165,14 @@
 	
 	id doc = NSDocumentController.sharedDocumentController.documents[i];
 	self.currentContext = doc;
-	
-	
+	*/
 }
 
 - (void)reloadContexts {
+	return;
+	/*
+	// Let's not allow the user to select context for now.
+	 
 	[_contextSeletor removeAllItems];
 	NSMenuItem* selected;
 	
@@ -183,6 +191,7 @@
 	}
 	
 	[_contextSeletor selectItem:selected];
+	 */
 }
 
 -(void)setCurrentContext:(id<BeatEditorDelegate>)currentContext
@@ -191,6 +200,22 @@
 	
 	[self reloadContexts];
 	[self loadBufferForContext:currentContext];
+	
+	// Create a plugin interface if needed
+	if (currentContext.runningPlugins[ConsolePluginName] == nil) {
+		[currentContext loadPluginWithName:ConsolePluginName script:[self consolePlugin]];
+	}
+	
+	[self updateTitle];
+}
+
+- (void)updateTitle {
+	NSString* title = (_currentContext.fileNameString != nil) ? _currentContext.fileNameString : @"Untitled";
+	self.window.title = [NSString stringWithFormat:@"Console — %@", title];
+}
+
+-(NSString*)consolePlugin {
+	return @"Beat.makeResident()";
 }
 
 -(void)loadBufferForContext:(id<BeatEditorDelegate>)context {
@@ -206,6 +231,48 @@
 	[_consoleTextView.textStorage replaceCharactersInRange:(NSRange){0, _consoleTextView.string.length} withAttributedString:log];
 	[_consoleTextView.layoutManager ensureLayoutForTextContainer:_consoleTextView.textContainer];
 	[self scrollToEnd];
+}
+
+#pragma mark - Console execution
+
+- (IBAction)runCommand:(id)sender {
+	NSTextField* textField = sender;
+	NSString* script = textField.stringValue.copy;
+	textField.stringValue = @"";
+		
+	NSFont* font;
+	if (@available(macOS 10.15, *)) {
+		font = [NSFont monospacedSystemFontOfSize:10.0 weight:NSFontWeightRegular];
+	} else {
+		font = [NSFont systemFontOfSize:10.0];
+	}
+	
+	NSString* feedback = [NSString stringWithFormat:@"%@\n", script];
+	NSMutableAttributedString* message = [NSAttributedString.alloc initWithString:feedback attributes:@{
+		NSForegroundColorAttributeName: NSColor.tertiaryLabelColor,
+		NSFontAttributeName: font
+	}].mutableCopy;
+	[self logMessage:message context:self.currentContext];
+	
+	// Don't do anything if no document is open.
+	if (_currentContext == nil) {
+		[self logToConsole:@"Error: No document open." pluginName:@"" context:nil];
+		return;
+	}
+	
+	BeatPlugin* plugin = self.currentContext.runningPlugins[ConsolePluginName];
+	JSValue* value = [plugin call:script];
+	
+	if (!value.isUndefined && !value.isNull) {
+		NSString* r = [NSString stringWithFormat:@"> %@\n", value];
+		NSAttributedString* result = [NSAttributedString.alloc initWithString:r attributes:@{
+			NSForegroundColorAttributeName: NSColor.whiteColor,
+			NSFontAttributeName: font
+		}];
+		
+		[self logMessage:result context:self.currentContext];
+	}
+	
 }
 
 #pragma mark - Popup menu delegate

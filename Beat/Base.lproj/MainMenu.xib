@@ -1015,7 +1015,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eyc-hG-S9v"/>
-                            <menuItem title="Support Beat" hidden="YES" id="oNz-fC-tr3" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
+                            <menuItem title="Support Beat" id="oNz-fC-tr3" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.kapitan.fi/beat/support.html"/>
@@ -1059,6 +1059,13 @@ DQ
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="dgC-z2-ebf"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="7eR-cF-LG1"/>
+                            <menuItem title="Open Plugin Developer Console..." id="A0Q-na-kPj">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openConsole:" target="-1" id="81D-Yg-931"/>
                                 </connections>
                             </menuItem>
                         </items>

@@ -4268,8 +4268,35 @@ static NSArray<Line*>* cachedTitlePage;
 	[pluginParser loadPlugin:pluginData];
 		
 	// Null the local variable just in case.
-	// If the plugin asks to stay in memory, it will call registerPlugin:
+	// If the plugin wants to stay in memory, it should call registerPlugin:
 	pluginParser = nil;
+}
+
+- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script {
+	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
+	
+	BeatPlugin* pluginParser = BeatPlugin.new;
+	pluginParser.delegate = self;
+	
+	BeatPluginData* pluginData = BeatPluginData.new;
+	pluginData.name = pluginName;
+	pluginData.script = script;
+	[pluginParser loadPlugin:pluginData];
+	
+	return pluginParser;
+}
+
+- (void)call:(NSString*)script context:(NSString*)pluginName {
+	BeatPlugin* plugin = [self pluginContextWithName:pluginName];
+	[plugin call:script];
+}
+
+- (BeatPlugin*)pluginContextWithName:(NSString*)pluginName {
+	return self.runningPlugins[pluginName];
+}
+
+- (void)runGenericPlugin:(NSString*)script {
+	
 }
 
 - (void)registerPlugin:(id)plugin {

@@ -169,6 +169,11 @@
 		[self end];
 	}
 }
+/// Runs a JavaScript string in this context
+- (JSValue*)call:(NSString*)script
+{
+	return [self.context evaluateScript:script];
+}
 
 - (NSString *)resolvePath:(NSString *)path {
 	path = path.stringByResolvingSymlinksInPath;

@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatConsole*)shared;
 -(void)openConsole;
 -(void)clearConsole;
-//-(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName;
 -(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName context:(id<BeatEditorDelegate> _Nullable)context;
 @end
 

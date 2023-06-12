@@ -447,6 +447,10 @@ static NSWindow* launchWindow;
 	[_preferencesPanel show];
 }
 
+- (IBAction)openConsole:(id)sender {
+	[BeatConsole.shared openConsole];
+}
+
 #pragma mark - File Import
 
 - (IBAction)importFDX:(id)sender
