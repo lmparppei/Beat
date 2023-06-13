@@ -13,9 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatConsole : NSWindowController <NSMenuDelegate>
 + (BeatConsole*)shared;
--(void)openConsole;
--(void)clearConsole;
--(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName context:(id<BeatEditorDelegate> _Nullable)context;
+- (void)openConsole;
+- (void)clearConsole;
+- (void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName context:(id<BeatEditorDelegate> _Nullable)context;
+- (void)logError:(id)error context:(id)context;
 @end
 
 NS_ASSUME_NONNULL_END

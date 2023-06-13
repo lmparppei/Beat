@@ -253,6 +253,10 @@
 @optional - (void)runPlugin:(NSString*)pluginWithName;
 @optional - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
 
+
+@optional - (IBAction)nextScene:(id)sender;
+@optional - (IBAction)previousScene:(id)sender;
+
 #pragma mark - Preview
 
 //- (void)updatePreview;

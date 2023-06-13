@@ -95,7 +95,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (strong, nonatomic) NSFont* _Nonnull italicCourier;
 
 // For delegation
-@property (nonatomic) NSUUID* uuid;
+@property (nonatomic) NSUUID* _Nonnull uuid;
 @property (nonatomic, weak) OutlineScene* _Nullable currentScene; // Don't retain the Outline Scene
 @property (nonatomic) NSMutableIndexSet*  _Nullable changes;
 @property (atomic) NSString*  _Nullable textCache;

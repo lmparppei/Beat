@@ -356,6 +356,9 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)documentWasSaved;
 - (void)escapePressed;
 
+/// Custom error handler
+-(void)replaceErrorHandler:(void (^)(JSValue* exception))block;
+
 /// Runs given script in the plugin context
 - (JSValue*)call:(NSString*)script;
 

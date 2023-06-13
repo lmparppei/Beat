@@ -130,6 +130,24 @@
 	}
 }
 
+- (void)logError:(id)error context:(id)context
+{
+	if (context == nil) context = _currentContext;
+	
+	NSFont* font;
+	if (@available(macOS 10.15, *)) {
+		font = [NSFont monospacedSystemFontOfSize:10.0 weight:NSFontWeightBold];
+	} else {
+		font = [NSFont systemFontOfSize:10.0];
+	}
+	
+	NSAttributedString* string = [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@\n", error] attributes:@{
+		NSForegroundColorAttributeName: NSColor.redColor,
+		NSFontAttributeName: font
+	}];
+	[self logMessage:string context:context];
+}
+
 -(void)scrollToEnd
 {
 	NSClipView *clipView = self.consoleTextView.enclosingScrollView.contentView;
@@ -201,9 +219,10 @@
 	[self reloadContexts];
 	[self loadBufferForContext:currentContext];
 	
+	
 	// Create a plugin interface if needed
 	if (currentContext.runningPlugins[ConsolePluginName] == nil) {
-		[currentContext loadPluginWithName:ConsolePluginName script:[self consolePlugin]];
+		[self createConsolePlugin];
 	}
 	
 	[self updateTitle];
@@ -213,6 +232,16 @@
 	NSString* title = (_currentContext.fileNameString != nil) ? _currentContext.fileNameString : @"Untitled";
 	self.window.title = [NSString stringWithFormat:@"Console — %@", title];
 }
+
+- (void)createConsolePlugin {
+	[_currentContext loadPluginWithName:ConsolePluginName script:[self consolePlugin]];
+	
+	BeatPlugin* plugin = self.currentContext.runningPlugins[ConsolePluginName];
+	[plugin replaceErrorHandler:^(JSValue *exception) {
+		[self logError:exception context:nil];
+	}];
+}
+
 
 -(NSString*)consolePlugin {
 	return @"Beat.makeResident()";
@@ -247,7 +276,7 @@
 		font = [NSFont systemFontOfSize:10.0];
 	}
 	
-	NSString* feedback = [NSString stringWithFormat:@"%@\n", script];
+	NSString* feedback = [NSString stringWithFormat:@"> %@\n", script];
 	NSMutableAttributedString* message = [NSAttributedString.alloc initWithString:feedback attributes:@{
 		NSForegroundColorAttributeName: NSColor.tertiaryLabelColor,
 		NSFontAttributeName: font
@@ -264,7 +293,7 @@
 	JSValue* value = [plugin call:script];
 	
 	if (!value.isUndefined && !value.isNull) {
-		NSString* r = [NSString stringWithFormat:@"> %@\n", value];
+		NSString* r = [NSString stringWithFormat:@"< %@\n", value];
 		NSAttributedString* result = [NSAttributedString.alloc initWithString:r attributes:@{
 			NSForegroundColorAttributeName: NSColor.whiteColor,
 			NSFontAttributeName: font

@@ -88,16 +88,14 @@
 	__weak typeof(id<BeatEditorDelegate>) weakDoc = self.delegate.document;
 	
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
-		if (NSThread.isMainThread) {
-			NSAlert *alert = [[NSAlert alloc] init];
-			alert.messageText = [BeatLocalization localizedStringForKey:@"plugins.errorRunningScript"];
-			alert.informativeText = [NSString stringWithFormat:@"%@", exception];
-			[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-			[alert runModal];
-		} else {
-			NSString *errMsg = [NSString stringWithFormat:@"Error: %@", exception];
-			[BeatConsole.shared logToConsole:errMsg pluginName:@"Plugin parser" context:weakDoc];
-		}
+		[BeatConsole.shared openConsole];
+		[BeatConsole.shared logError:exception context:weakDoc];
+	}];
+}
+
+-(void)replaceErrorHandler:(void (^)(JSValue* exception))block {
+	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
+		block(exception);
 	}];
 }
 

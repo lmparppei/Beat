@@ -284,11 +284,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Window interactions
 
-- (void)mouseDown:(NSEvent *)event {
-	[self closePopovers];
-	[super mouseDown:event];
-}
-
 - (NSTouchBar*)makeTouchBar {
 	[NSApp setAutomaticCustomizeTouchBarMenuItemEnabled:NO];
 	
@@ -1254,6 +1249,32 @@ Line *cachedRectLine;
 
 #pragma mark - Mouse events
 
+- (void)mouseDown:(NSEvent *)event {
+	[self closePopovers];
+	[super mouseDown:event];
+}
+
+- (void)mouseUp:(NSEvent *)event {
+	[super mouseUp:event];
+	
+}
+- (void)otherMouseUp:(NSEvent *)event {
+	// We'll use buttons 3/4 to navigate between scenes
+	switch (event.buttonNumber) {
+		case 3:
+			[self.editorDelegate nextScene:self];
+			return;
+		case 4:
+			[self.editorDelegate previousScene:self];
+			return;
+		default:
+			break;
+	}
+	
+	[super otherMouseUp:event];
+}
+
+
 - (void)mouseMoved:(NSEvent *)event {
 	// point in this scaled text view
 	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
@@ -1280,9 +1301,16 @@ Line *cachedRectLine;
 	}
 }
 
-- (void)mouseExited:(NSEvent *)event {
-	//[[NSCursor arrowCursor] set];
+-(void)resetCursorRects {
+	[super resetCursorRects];
 }
+
+-(void)cursorUpdate:(NSEvent *)event {
+	[NSCursor.IBeamCursor set];
+}
+
+
+#pragma mark - Scaling
 
 - (void)scaleUnitSquareToSize:(NSSize)newUnitSize {
 	[super scaleUnitSquareToSize:newUnitSize];
@@ -1323,13 +1351,7 @@ Line *cachedRectLine;
 	return width;
 }
 
--(void)resetCursorRects {
-	[super resetCursorRects];
-}
 
--(void)cursorUpdate:(NSEvent *)event {
-	[NSCursor.IBeamCursor set];
-}
 
 #pragma mark - Context Menu
 

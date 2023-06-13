@@ -39,6 +39,8 @@
 		B60B9AA52A30785800BCE4B2 /* BeatNSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */; };
 		B60B9AA62A30785800BCE4B2 /* BeatNSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */; };
 		B60B9AA72A307B3300BCE4B2 /* BeatQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B6B85FB92A224E3000C7713A /* BeatQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B60B9AAC2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60B9AAB2A38798B00BCE4B2 /* BeatConsoleTextField.swift */; };
+		B60B9AAD2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60B9AAB2A38798B00BCE4B2 /* BeatConsoleTextField.swift */; };
 		B60D192726B0811E005C2693 /* BeatNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B60D192626B0811E005C2693 /* BeatNotifications.m */; };
 		B60D192826B0811E005C2693 /* BeatNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B60D192626B0811E005C2693 /* BeatNotifications.m */; };
 		B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FAD7526A1D4960019A77B /* BeatLockButton.m */; };
@@ -620,6 +622,7 @@
 		B60A9F03297466B300916FAA /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatAutomaticAppearance.swift; sourceTree = "<group>"; };
 		B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNSColorExtensions.swift; sourceTree = "<group>"; };
+		B60B9AAB2A38798B00BCE4B2 /* BeatConsoleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatConsoleTextField.swift; sourceTree = "<group>"; };
 		B60D192526B0811E005C2693 /* BeatNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotifications.h; sourceTree = "<group>"; };
 		B60D192626B0811E005C2693 /* BeatNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotifications.m; sourceTree = "<group>"; };
 		B60FAD7426A1D4960019A77B /* BeatLockButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLockButton.h; sourceTree = "<group>"; };
@@ -1766,6 +1769,7 @@
 				B6423081288EBEF100F64B87 /* BeatConsole.h */,
 				B6423082288EBEF100F64B87 /* BeatConsole.m */,
 				B68B4C9B263F02F100AC4939 /* BeatConsole.xib */,
+				B60B9AAB2A38798B00BCE4B2 /* BeatConsoleTextField.swift */,
 			);
 			path = Console;
 			sourceTree = "<group>";
@@ -2647,6 +2651,7 @@
 				B6B6C87625650BA4005294FE /* HighlandImport.m in Sources */,
 				B6DCA8602721882900CBE9BC /* BeatSegmentedCell.m in Sources */,
 				B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */,
+				B60B9AAC2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */,
 				B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */,
 				B623D15A29391F3400B5F0CA /* BeatPreviewController+View.swift in Sources */,
 				B63C81E7294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
@@ -2804,6 +2809,7 @@
 				B68B607A260B849300463AD8 /* HighlandImport.m in Sources */,
 				B6DCA8612721882900CBE9BC /* BeatSegmentedCell.m in Sources */,
 				B68B607B260B849300463AD8 /* BeatComparison.m in Sources */,
+				B60B9AAD2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */,
 				B68B607C260B849300463AD8 /* BeatTagButton.m in Sources */,
 				B623D15B29391F3400B5F0CA /* BeatPreviewController+View.swift in Sources */,
 				B63C81E8294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
