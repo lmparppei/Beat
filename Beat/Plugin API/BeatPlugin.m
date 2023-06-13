@@ -86,13 +86,15 @@
 
 - (void)setupErrorHandler {
 	__weak typeof(id<BeatEditorDelegate>) weakDoc = self.delegate.document;
+	__weak typeof(self) weakSelf = self;
 	
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		[BeatConsole.shared openConsole];
-		[BeatConsole.shared logError:exception context:weakDoc];
+		[BeatConsole.shared logError:exception context:weakDoc pluginName:weakSelf.pluginName];
 	}];
 }
 
+/// Error handler can be replaced for special use cases
 -(void)replaceErrorHandler:(void (^)(JSValue* exception))block {
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		block(exception);

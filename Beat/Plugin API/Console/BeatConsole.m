@@ -130,7 +130,10 @@
 	}
 }
 
-- (void)logError:(id)error context:(id)context
+- (void)logError:(id)error context:(id)context {
+	[self logError:error context:context pluginName:@""];
+}
+- (void)logError:(id)error context:(id)context pluginName:(NSString*)name
 {
 	if (context == nil) context = _currentContext;
 	
@@ -141,7 +144,10 @@
 		font = [NSFont systemFontOfSize:10.0];
 	}
 	
-	NSAttributedString* string = [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@\n", error] attributes:@{
+	if (name.length > 0) name = [NSString stringWithFormat:@"%@: ", name];
+	else name = @"";
+	
+	NSAttributedString* string = [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@%@\n", name, error] attributes:@{
 		NSForegroundColorAttributeName: NSColor.redColor,
 		NSFontAttributeName: font
 	}];
