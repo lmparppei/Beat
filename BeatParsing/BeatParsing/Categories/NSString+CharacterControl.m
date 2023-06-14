@@ -149,4 +149,9 @@
     return [NSString stringWithFormat:@"%@%@", head, tail];
 }
 
+- (NSString*)trim
+{
+    return [self stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+
 @end

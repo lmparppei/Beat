@@ -17,4 +17,5 @@
 - (NSInteger)numberOfOccurencesOfCharacter:(unichar)symbol;
 - (NSRange)rangeBetweenFirstAndLastOccurrenceOf:(unichar)chr;
 - (NSString*)stringByRemovingRange:(NSRange)range;
+- (NSString*)trim;
 @end
