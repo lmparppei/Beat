@@ -5,6 +5,18 @@
 //  Created by Lauri-Matti Parppei on 25.7.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ The console is a singleton, which can be opened from any document.
+ 
+ Each context (document) has its own log. Whenever an editor context is accessed via the console, a one-line plugin is created.
+ The plugin, called `Console` acts as a bridge between the console and the document, allowing access to a `JSContext`
+ attached to the editor context. Console is strictly used for plugin/extension development, and it doesn't have to access  the editor directly.
+ 
+ This means that you can't use the console without a context. It's very possible to crash the bridging plugin from within the console,
+ causing the link to disappear. You probably can crash Beat too.
+ 
+ */
 
 #import "BeatConsole.h"
 #import <os/log.h>
@@ -288,7 +300,7 @@
 		NSFontAttributeName: font
 	}].mutableCopy;
 	[self logMessage:message context:self.currentContext];
-	
+		
 	// Don't do anything if no document is open.
 	if (_currentContext == nil) {
 		[self logToConsole:@"Error: No document open." pluginName:@"" context:nil];
@@ -308,6 +320,13 @@
 		[self logMessage:result context:self.currentContext];
 	}
 	
+}
+
+- (NSArray*)consoleCommands {
+	static NSArray* commands;
+	if (commands == nil) commands = @[@"help", @"close"];
+	
+	return commands;
 }
 
 #pragma mark - Popup menu delegate
