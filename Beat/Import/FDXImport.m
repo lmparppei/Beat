@@ -224,7 +224,8 @@ static bool insideParagraph = false;
 			if (previousLine.length > 0 && _element.length > 0) {
 				if ([_activeElement isEqualToString:@"Character"] ||
 					[_activeElement isEqualToString:@"Scene Heading"] ||
-					[_activeElement isEqualToString:@"Action"]) {
+					[_activeElement isEqualToString:@"Action"] ||
+					[_activeElement isEqualToString:@"Shot"]) {
 					[_script addObject:[FDXElement lineBreak]];
 				}
 			}
@@ -282,6 +283,10 @@ static bool insideParagraph = false;
 		else if ([_activeElement isEqualToString:@"Transition"]) {
 			[_element makeUppercase];
 			[_element insertAtBeginning:@"> "];
+		}
+		else if ([_activeElement isEqualToString:@"Shot"]) {
+			[_element makeUppercase];
+			[_element insertAtBeginning:@"!!"];
 		}
 		
 		// Add object if both this and the previous line are not empty
