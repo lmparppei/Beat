@@ -35,6 +35,8 @@
 
 @property (nonatomic) bool contentFound;
 @property (nonatomic) bool titlePage;
+@property (nonatomic) bool insideParagraph;
+
 @property (nonatomic) NSString *lastFoundElement;
 @property (nonatomic) NSString *lastFoundString;
 @property (nonatomic) FDXElement *lastAddedLine;
@@ -88,14 +90,11 @@
 	return self;
 }
 
-static bool insideParagraph = false;
-
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict
+{
 	_lastFoundElement = elementName;
-	
 
 	// Find different sections of the XML
-	
 	if ([elementName isEqualToString:@"Content"]) {
 		_contentFound = YES;
 	}
@@ -107,7 +106,7 @@ static bool insideParagraph = false;
 	}
 	else if ([elementName isEqualToString:@"Paragraph"]) {
 		// When exiting sub-node, the parser might think we are beginning this node again, with null attributes
-		if (!insideParagraph) {
+		if (!_insideParagraph) {
 			if (attributeDict[@"Type"] != nil) _activeElement = attributeDict[@"Type"];
 			_alignment = attributeDict[@"Alignment"];
 		}
@@ -133,53 +132,42 @@ static bool insideParagraph = false;
 	
 }
 
-- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
-	if (_contentFound && !_titlePage && !_didFinishText) {
-		// Clear line breaks
-		string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-		
-		if ([_lastFoundElement isEqualToString:@"Text"]) {
-			//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
-			[_element append:string];
-		}
-		
-		else {
-			NSString *trimmedString = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-			[_element append:trimmedString];
-		}
-				
-		// Save the string for later use
-		if (!_didFinishText) {
-			_lastFoundString = [_lastFoundString stringByAppendingString:string];
-		}
-		
+- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
+{
+	// Let's ignore title page and other non-content stuff
+	if (!_contentFound || _titlePage || _didFinishText) return;
+
+	// Clear line breaks
+	string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+	
+	if ([_lastFoundElement isEqualToString:@"Text"]) {
+		// If we're inside a text element, add the text to element
+		[_element append:string];
 	}
+	else {
+		// Otherwise, we need to trim the string. I think this is here for pre-FD12 compatibility?
+		NSString *trimmedString = [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+		[_element append:trimmedString];
+	}
+	
+	// Save the string for later use
+	_lastFoundString = [_lastFoundString stringByAppendingString:string];
 }
 
-- (NSAttributedString*)attrStrFrom:(NSString*)string {
-	return [[NSAttributedString alloc] initWithString:string];
+- (bool)isFirstCharacterSpace:(NSString*)string
+{
+	if (string.length == 0)	return NO;
+	
+	return ([string characterAtIndex:0] == ' ');
 }
 
-- (bool)isFirstCharacterSpace:(NSString*)string {
-	if (string.length > 0) {
-		if ([[string substringWithRange:NSMakeRange(0, 1)] isEqualToString:@" "]) return YES;
-		else return NO;
-	} else {
-		return NO;
-	}
+- (bool)isLastCharacterSpace:(NSString*)string
+{
+	if (string.length == 0) return NO;
+	
+	return ([string characterAtIndex:string.length - 1] == ' ');
 }
-- (bool)isLastCharacterSpace:(NSString*)string {
-	if (string.length > 1) {
-		if ([[string substringWithRange:NSMakeRange(string.length - 1, 1)] isEqualToString:@" "]) return YES;
-		else return NO;
-	} else {
-		if ([string isEqualToString:@" "]) return YES;
-		else return NO;
-	}
-}
-- (NSString*)trim:(NSString*)string {
-	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-}
+
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName{
 	
@@ -215,23 +203,21 @@ static bool insideParagraph = false;
 	else if ([elementName isEqualToString:@"DualDialogue"]) _dualDialogue = -1;
 	// Go on
 	else if ([elementName isEqualToString:@"Paragraph"] && _element.string.length > 0) {
-		insideParagraph = false;
+		_insideParagraph = false;
 		
 		// Add empty rows before required elements.
-		if (_script.count > 0) {
-			FDXElement *previousLine = _script.lastObject;
-			
-			if (previousLine.length > 0 && _element.length > 0) {
-				if ([_activeElement isEqualToString:@"Character"] ||
-					[_activeElement isEqualToString:@"Scene Heading"] ||
-					[_activeElement isEqualToString:@"Action"] ||
-					[_activeElement isEqualToString:@"Shot"]) {
-					[_script addObject:[FDXElement lineBreak]];
-				}
+		FDXElement *previousLine = _script.lastObject;
+		
+		if (previousLine.length > 0 && _element.length > 0) {
+			if ([_activeElement isEqualToString:@"Character"] ||
+				[_activeElement isEqualToString:@"Scene Heading"] ||
+				[_activeElement isEqualToString:@"Action"] ||
+				[_activeElement isEqualToString:@"Shot"]) {
+				[_script addObject:[FDXElement lineBreak]];
 			}
 		}
 				
-		// Format contents
+		// Format according to line type
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
 			// Set to uppercase
 			[_element makeUppercase];
