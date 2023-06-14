@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B67C2CFC2A2D1DCE00B88B0F /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CFA2A2D1DCE00B88B0F /* NSString+EMOEmoji.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B67C2CFD2A2D1DCE00B88B0F /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CFB2A2D1DCE00B88B0F /* NSString+EMOEmoji.m */; };
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
+		B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */; };
+		B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */; };
 		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
 		B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0728F01A8700657F5F /* BeatSceneTree.m */; };
 		B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0828F01A8700657F5F /* OutlineScene.m */; };
@@ -55,11 +55,11 @@
 
 /* Begin PBXFileReference section */
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
-		B67C2CFA2A2D1DCE00B88B0F /* NSString+EMOEmoji.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+EMOEmoji.h"; path = "../../../../../Downloads/SearchEmojiOnString-iOS-master/SearchEmojiOnString-iOS/NSString+EMOEmoji.h"; sourceTree = "<group>"; };
-		B67C2CFB2A2D1DCE00B88B0F /* NSString+EMOEmoji.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EMOEmoji.m"; path = "../../../../../Downloads/SearchEmojiOnString-iOS-master/SearchEmojiOnString-iOS/NSString+EMOEmoji.m"; sourceTree = "<group>"; };
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
 		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
 		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
+		B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+EMOEmoji.m"; sourceTree = "<group>"; };
+		B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+EMOEmoji.h"; sourceTree = "<group>"; };
 		B6B37E8328F018A100657F5F /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinuousFountainParser.m; sourceTree = "<group>"; };
 		B6B37F0728F01A8700657F5F /* BeatSceneTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSceneTree.m; sourceTree = "<group>"; };
@@ -204,6 +204,8 @@
 		B6B37F3B28F0279700657F5F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */,
+				B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */,
 				B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */,
 				B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */,
 				B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */,
@@ -218,8 +220,6 @@
 				B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */,
 				B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */,
 				B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */,
-				B67C2CFA2A2D1DCE00B88B0F /* NSString+EMOEmoji.h */,
-				B67C2CFB2A2D1DCE00B88B0F /* NSString+EMOEmoji.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -242,7 +242,7 @@
 				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
-				B67C2CFC2A2D1DCE00B88B0F /* NSString+EMOEmoji.h in Headers */,
+				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
 				B6B37F1A28F01A8700657F5F /* BeatSceneTree.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
 				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
@@ -335,7 +335,7 @@
 				B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */,
 				B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */,
 				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
-				B67C2CFD2A2D1DCE00B88B0F /* NSString+EMOEmoji.m in Sources */,
+				B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */,
 				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
 				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,

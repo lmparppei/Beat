@@ -1225,6 +1225,9 @@ static NSWindow __weak *currentKeyWindow;
 	
 	if (_runningPlugins.count) {
 		for (NSString *pluginName in _runningPlugins.allKeys) {
+			// Don't save the console instance
+			if ([pluginName isEqualTo:@"Console"]) continue;
+			
 			BeatPlugin *plugin = _runningPlugins[pluginName];
 			[plugin documentWasSaved];
 		}
