@@ -75,7 +75,7 @@ import BeatCore
 
 public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
     /// If you provide an editor delegate, pagination manager will automatically fetch screenplay and export settings from the editor.
-    weak var editorDelegate:BeatEditorDelegate?
+    public weak var editorDelegate:BeatEditorDelegate?
     
     /// Delegate which is informed when pagination is finished. Useful when using background pagination.
 	weak var delegate:BeatPaginationManagerDelegate?

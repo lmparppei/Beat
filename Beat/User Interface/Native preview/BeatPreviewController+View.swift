@@ -62,6 +62,8 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		if settings.operation != .ForQuickLook {
 			self.scrollView?.magnification = 1.2;
 		}
+		
+		self.pagination?.editorDelegate = self.delegate
 	}
 	
 	

@@ -30,9 +30,9 @@
 
 #import <TargetConditionals.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
-#import <BeatCore/BeatFonts.h>
-#import <BeatCore/BeatMeasure.h>
+#import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
+#import <BeatParsing/BeatParsing.h>
 
 #import "BeatPagination.h"
 
@@ -554,10 +554,14 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 - (NSDictionary<NSUUID*, Line*>*)uuids
 {
+    // Get actual lines for live pagination, and only the paginated ones for static pagination.
+    if (self.delegate.editorDelegate != nil) {
+        return self.delegate.editorDelegate.parser.uuidsToLines;
+    }
+    
     if (_UUIDsToLines != nil) return _UUIDsToLines;
     
     _UUIDsToLines = NSMutableDictionary.new;
-    
     for (Line* line in self.lines) {
         _UUIDsToLines[line.uuid] = line;
     }

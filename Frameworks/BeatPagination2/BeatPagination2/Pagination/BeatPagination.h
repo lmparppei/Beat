@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPaginationDelegate
 @property (nonatomic) id<BeatRendererDelegate> __nullable renderer;
 @property (nonatomic) BeatExportSettings *settings;
+@property (nonatomic) id<BeatEditorDelegate> __nullable editorDelegate;
 - (void)paginationFinished:(BeatPagination*)pagination;
 @end
 
