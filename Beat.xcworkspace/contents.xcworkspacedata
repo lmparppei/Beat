@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:BeatParsing/BeatParsing.xcodeproj">
+      location = "group:Frameworks/BeatParsing/BeatParsing.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
@@ -15,9 +15,6 @@
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:BeatPagination/BeatPaginationCore.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatThemes/BeatThemes.xcodeproj">
