@@ -1385,6 +1385,17 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		B63BC5452A39EE710025696E /* FDX Import */ = {
+			isa = PBXGroup;
+			children = (
+				B667796323C5D1CB0029D508 /* FDXImport.h */,
+				B667796423C5D1CB0029D508 /* FDXImport.m */,
+				B6BA243E2607A672008C9291 /* FDXElement.h */,
+				B6BA243F2607A672008C9291 /* FDXElement.m */,
+			);
+			path = "FDX Import";
+			sourceTree = "<group>";
+		};
 		B63DC83B260A34460092B472 /* Final Draft */ = {
 			isa = PBXGroup;
 			children = (
@@ -1501,10 +1512,7 @@
 			children = (
 				B6A245DF251766DC0055A034 /* BeatFileImport.h */,
 				B6A245E0251766DC0055A034 /* BeatFileImport.m */,
-				B667796323C5D1CB0029D508 /* FDXImport.h */,
-				B667796423C5D1CB0029D508 /* FDXImport.m */,
-				B6BA243E2607A672008C9291 /* FDXElement.h */,
-				B6BA243F2607A672008C9291 /* FDXElement.m */,
+				B63BC5452A39EE710025696E /* FDX Import */,
 				B662FC0724C22167003EF967 /* OSFImport.h */,
 				B662FC0824C22167003EF967 /* OSFImport.m */,
 				B69BFC762565336C007A7D2B /* FadeInImport.h */,

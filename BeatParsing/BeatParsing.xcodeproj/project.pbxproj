@@ -11,7 +11,7 @@
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
 		B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */; };
-		B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */; };
+		B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
 		B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0728F01A8700657F5F /* BeatSceneTree.m */; };
 		B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0828F01A8700657F5F /* OutlineScene.m */; };

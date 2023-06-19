@@ -23,5 +23,6 @@
 #import "BeatSceneTree.h"
 
 #import "NSCharacterSet+BadControlCharacters.h"
+#import "NSString+EMOEmoji.h"
 
 #endif /* BeatParsing_h */

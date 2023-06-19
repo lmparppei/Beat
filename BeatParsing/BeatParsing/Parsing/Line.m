@@ -1391,6 +1391,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return self.string.emo_emojiRanges;
 }
 - (bool)hasEmojis {
+    if (self.string == nil) return false;
     return self.string.emo_containsEmoji;
 }
 
