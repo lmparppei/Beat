@@ -37,10 +37,13 @@
   return self;
 }
 
-+ (void)registerAttribute:(NSString*)key {
++ (void)registerAttribute:(NSString*)key
+{
 	[BeatAttributes.shared.keys addObject:key];
 }
-+ (BOOL)containsCustomAttributes:(NSDictionary*)dict {
+
++ (BOOL)containsCustomAttributes:(NSDictionary*)dict
+{
 	NSMutableSet *keys = BeatAttributes.shared.keys;
 	for (NSString* key in dict.allKeys) {
 		if ([keys containsObject:key]) {
@@ -49,6 +52,18 @@
 	}
 	
 	return false;
+}
+
++ (NSDictionary*)stripUnnecessaryAttributesFrom:(NSDictionary*)attrs
+{
+    NSMutableDictionary* dict = NSMutableDictionary.new;
+    for (NSString* key in BeatAttributes.shared.keys) {
+        if (attrs[key] == nil) continue;
+        
+        dict[key] = attrs[key];
+    }
+    
+    return dict;
 }
 
 @end

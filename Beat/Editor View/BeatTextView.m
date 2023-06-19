@@ -1554,11 +1554,12 @@ double clamp(double d, double min, double max) {
 	return [NSArray arrayWithObjects:NSBundle.mainBundle.bundleIdentifier, NSPasteboardTypeString, nil];
 }
 
--(void)paste:(id)sender {
+-(void)paste:(id)sender
+{
 	
-	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
-	NSDictionary *options = [NSDictionary dictionary];
+	NSDictionary *options = NSDictionary.new;
 	
 	// See if we can read anything from the pasteboard
 	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
@@ -1573,12 +1574,12 @@ double clamp(double d, double min, double max) {
 		id obj = objectsToPaste[0];
 		
 		if ([obj isKindOfClass:NSString.class]) {
+			// Plain text
 			NSString* result = [BeatPasteboardItem sanitizeString:obj];
 			[self.editorDelegate replaceRange:self.selectedRange withString:result];
 			return;
 
-		}
-		else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
+		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
 			BeatPasteboardItem *pastedItem = obj;
 			NSAttributedString *str = pastedItem.attrString;
@@ -1589,10 +1590,14 @@ double clamp(double d, double min, double max) {
 			
 			// Enumerate custom attributes from copied text and render backgrounds as needed
 			NSMutableSet *linesToRender = NSMutableSet.new;
+			
+			[self.textStorage beginEditing];
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 				// Copy *any* stored attributes
 				if ([BeatAttributes containsCustomAttributes:attrs]) {
-					[self.textStorage addAttributes:attrs range:NSMakeRange(pos + range.location, range.length)];
+					NSDictionary* customAttrs = [BeatAttributes stripUnnecessaryAttributesFrom:attrs];
+					[self.textStorage addAttributes:customAttrs range:NSMakeRange(pos + range.location, range.length)];
+					
 					Line *l = [self.parser lineAtPosition:pos + range.location];
 					[linesToRender addObject:l];
 				}
@@ -1602,6 +1607,7 @@ double clamp(double d, double min, double max) {
 				}
 				*/
 			}];
+			[self.textStorage endEditing];
 			
 			// Render background for pasted text where needed
 			for (Line* l in linesToRender) {

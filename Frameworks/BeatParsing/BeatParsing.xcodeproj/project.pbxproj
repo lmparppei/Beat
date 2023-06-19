@@ -99,8 +99,8 @@
 		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
 		B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BadControlCharacters.h"; sourceTree = "<group>"; };
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
-		B6D53C7729379A730039DF88 /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatMeasure.h; path = ../../Frameworks/BeatCore/BeatCore/BeatMeasure.h; sourceTree = "<group>"; };
-		B6D53C7829379A740039DF88 /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatMeasure.m; path = ../../Frameworks/BeatCore/BeatCore/BeatMeasure.m; sourceTree = "<group>"; };
+		B6D53C7729379A730039DF88 /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatMeasure.h; path = ../../BeatCore/BeatCore/BeatMeasure.h; sourceTree = "<group>"; };
+		B6D53C7829379A740039DF88 /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatMeasure.m; path = ../../BeatCore/BeatCore/BeatMeasure.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,7 +198,7 @@
 				B6B37F3828F0275800657F5F /* RegExCategories.h */,
 			);
 			name = RegExCategories;
-			path = ../Libraries/RegExCategories;
+			path = ../../Libraries/RegExCategories;
 			sourceTree = "<group>";
 		};
 		B6B37F3B28F0279700657F5F /* Categories */ = {

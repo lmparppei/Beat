@@ -85,8 +85,6 @@
 		B62A616E284C16790068F139 /* BeatBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A616C284C16790068F139 /* BeatBackup.swift */; };
 		B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A89B424806C8D0065A2BC /* FlatButton.swift */; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
-		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
-		B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7A23CCCE560015563A /* PreviewViewController.xib */; };
 		B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
 		B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
 		B62CD50E279752130070DE17 /* BeatRecentFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD50D279752130070DE17 /* BeatRecentFileCell.swift */; };
@@ -612,7 +610,6 @@
 		B605473C276A8DDD001E571F /* ScreenplayStyles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = ScreenplayStyles.css; sourceTree = "<group>"; };
 		B606FDC42817F09C00D89CD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatPrintDialog.xib; sourceTree = "<group>"; };
 		B606FDC72817F09E00D89CD6 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatPrintDialog.strings; sourceTree = "<group>"; };
-		B606FDC92817F4BA00D89CD6 /* fountainQuickLook-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fountainQuickLook-Bridging-Header.h"; sourceTree = "<group>"; };
 		B606FDCE2818507900D89CD6 /* BeatPaginatorStyles.paginatorStyle */ = {isa = PBXFileReference; lastKnownFileType = text; path = BeatPaginatorStyles.paginatorStyle; sourceTree = "<group>"; };
 		B607519328CB27A700F4E68F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatSceneHeadingSearch.xib; sourceTree = "<group>"; };
 		B607519628CB27AB00F4E68F /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatSceneHeadingSearch.strings; sourceTree = "<group>"; };
@@ -672,11 +669,6 @@
 		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = "Beat/User Interface/Buttons etc/FlatButton.swift"; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62ADC7423CCCE560015563A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
-		B62ADC7723CCCE560015563A /* PreviewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
-		B62ADC7823CCCE560015563A /* PreviewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreviewViewController.m; sourceTree = "<group>"; };
-		B62ADC7B23CCCE560015563A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PreviewViewController.xib; sourceTree = "<group>"; };
-		B62ADC7D23CCCE560015563A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fountainQuickLook.entitlements; sourceTree = "<group>"; };
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		B62CD50C279750FD0070DE17 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
 		B62CD50D279752130070DE17 /* BeatRecentFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRecentFileCell.swift; sourceTree = "<group>"; };
@@ -808,7 +800,6 @@
 		B6713050267610CC00B5FDC5 /* BeatPluginTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginTimer.h; sourceTree = "<group>"; };
 		B6713051267610CC00B5FDC5 /* BeatPluginTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginTimer.m; sourceTree = "<group>"; };
 		B6763E4627820BF600284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/MainMenu.strings; sourceTree = "<group>"; };
-		B6763E4727820BF600284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/PreviewViewController.strings; sourceTree = "<group>"; };
 		B6763E4D27820CCF00284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6763E50278221F300284907 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6763E8127822DE500284907 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatTitlePageEditor.xib; sourceTree = "<group>"; };
@@ -1105,7 +1096,6 @@
 				B68B60C9260BA87000463AD8 /* Appstore */,
 				B6D062E3260CAC9500DEF6FB /* Adhoc */,
 				B138B57519E1C973000489C4 /* Beat */,
-				B62ADC7623CCCE560015563A /* fountainQuickLook */,
 				B67801C728C68F23004A7AE0 /* BeatTests */,
 				B6B85FBB2A224E3100C7713A /* BeatQuickLook */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
@@ -1338,19 +1328,6 @@
 				B62A616C284C16790068F139 /* BeatBackup.swift */,
 			);
 			path = Backup;
-			sourceTree = "<group>";
-		};
-		B62ADC7623CCCE560015563A /* fountainQuickLook */ = {
-			isa = PBXGroup;
-			children = (
-				B62ADC7723CCCE560015563A /* PreviewViewController.h */,
-				B62ADC7823CCCE560015563A /* PreviewViewController.m */,
-				B62ADC7A23CCCE560015563A /* PreviewViewController.xib */,
-				B62ADC7D23CCCE560015563A /* Info.plist */,
-				B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */,
-				B606FDC92817F4BA00D89CD6 /* fountainQuickLook-Bridging-Header.h */,
-			);
-			path = fountainQuickLook;
 			sourceTree = "<group>";
 		};
 		B62C0FF4262C91C6007659F8 /* Plugin Library */ = {
@@ -2409,7 +2386,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B60A9F0B2975CE9500916FAA /* FooterTemplate.html in Resources */,
-				B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */,
 				B60A9F0D2975CE9D00916FAA /* ScreenplayStyles.css in Resources */,
 				B60A9F0C2975CE9A00916FAA /* PreviewStyles.css in Resources */,
 				B60A9F0A2975CE8B00916FAA /* HeaderTemplate.html in Resources */,
@@ -2682,7 +2658,6 @@
 				B6B85FB02A223FA100C7713A /* BeatPreviewController+View.swift in Sources */,
 				B6B85FB42A2240FE00C7713A /* BeatRendering.m in Sources */,
 				B6B85FB32A2240FB00C7713A /* BeatRenderingViews.swift in Sources */,
-				B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */,
 				B68321AF29F6924F00A2553E /* BeatHTMLRenderer.m in Sources */,
 				B689FE40290D05EF002F0785 /* NSString+VersionNumber.m in Sources */,
 			);
@@ -2878,15 +2853,6 @@
 				B65E03DC29AE18D600927056 /* sv */,
 			);
 			name = BeatSceneHeadingSearch.xib;
-			sourceTree = "<group>";
-		};
-		B62ADC7A23CCCE560015563A /* PreviewViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B62ADC7B23CCCE560015563A /* Base */,
-				B6763E4727820BF600284907 /* fi */,
-			);
-			name = PreviewViewController.xib;
 			sourceTree = "<group>";
 		};
 		B640767727D7FE7D0053D63A /* LaunchScreen.xib */ = {

@@ -3168,10 +3168,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
 }
 
-- (NSMutableArray *)getOutlineItems {
+- (NSArray*)getOutlineItems {
 	// Make a copy of the outline to avoid threading issues
-	NSMutableArray * outlineItems = self.parser.outline.mutableCopy;
-	return outlineItems;
+	if (self.parser.outline == nil) return @[];
+	return self.parser.outline.copy;
 }
 
 - (NSMutableArray*)filteredOutline {

@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatAttributes*)shared;
 + (void)registerAttribute:(NSString*)key;
 + (BOOL)containsCustomAttributes:(NSDictionary*)dict;
++ (NSDictionary*)stripUnnecessaryAttributesFrom:(NSDictionary*)attrs;
 @end
 
 NS_ASSUME_NONNULL_END
