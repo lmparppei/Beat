@@ -2211,6 +2211,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)formatAllLines
 {
+
 	for (Line* line in self.parser.lines) {
 		@autoreleasepool { [_formatting formatLine:line]; }
 	}
@@ -2248,16 +2249,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	self.progressIndicator.maxValue =  1.0;
-	[self formatAllWithDelay:0];
+	[self formatAllWithDelayFrom:0];
 }
 
 /// Formats all lines while loading the document
-- (void)formatAllWithDelay:(NSInteger)idx {
+- (void)formatAllWithDelayFrom:(NSInteger)idx {
 	// We split the document into chunks of 400 lines and render them asynchronously
 	// to throttle the initial loading of document a bit
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		Line *line;
 		NSInteger lastIndex = idx;
+		
 		for (NSInteger i = 0; i < 400; i++) {
 			// After 400 lines, hand off the process
 			if (i + idx >= self.parser.lines.count) break;
@@ -2269,12 +2271,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		
 		[self.progressIndicator incrementBy:400.0 / self.parser.lines.count];
 		
-		// If the document is done formatting, complete the loading process.
-		// Else render 400 more lines
 		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) {
+			// If the document is done formatting, complete the loading process.
 			[self loadingComplete];
+		} else {
+			// Else render 400 more lines
+			[self formatAllWithDelayFrom:lastIndex + 1];
 		}
-		else [self formatAllWithDelay:lastIndex + 1];
 	});
 }
 

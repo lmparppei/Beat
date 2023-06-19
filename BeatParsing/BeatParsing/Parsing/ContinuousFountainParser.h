@@ -80,6 +80,8 @@
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
 @property (nonatomic) bool staticParser;
 
+@property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
+
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings;
 + (NSArray*)titlePageForString:(NSString*)string;
 

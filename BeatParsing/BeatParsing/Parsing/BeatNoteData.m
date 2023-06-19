@@ -23,8 +23,6 @@
         }
     }
     
-    NSLog(@"• Color: %@ // Content: %@", color, content);
-    
     return [BeatNoteData.alloc initWithContent:content color:color range:range];
 }
 

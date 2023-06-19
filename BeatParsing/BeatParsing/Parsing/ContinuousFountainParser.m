@@ -36,7 +36,7 @@
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
-//#import "BeatMeasure.h"
+#import "BeatMeasure.h"
 
 #pragma mark - Parser
 
@@ -65,6 +65,9 @@
 
 // Static parser flag
 @property (nonatomic) bool nonContinuous;
+
+// Cached line set for UUID creation
+@property (nonatomic) NSArray* cachedLines;
 
 @end
 
@@ -2207,15 +2210,36 @@ static NSDictionary* patterns;
  
  */
 
-- (NSArray*)safeLines {
+- (NSArray*)safeLines
+{
 	if (NSThread.isMainThread) return self.lines;
 	else return self.lines.copy;
 }
-- (NSArray*)safeOutline {
+- (NSArray*)safeOutline
+{
 	if (NSThread.isMainThread) return self.outline;
 	else return self.outline.copy;
 }
 
+- (NSDictionary<NSUUID*, Line*>*)uuidsToLines
+{
+    // Return the cached version when possible
+    if ([self.cachedLines isEqualToArray:self.lines]) {
+        return _uuidsToLines;
+    }
+
+    // Store the current state of lines
+    self.cachedLines = self.lines.copy;
+    
+    // Create UUID array
+    NSMutableDictionary* uuids = NSMutableDictionary.new;
+    for (Line* line in self.lines) {
+        uuids[line.uuid] = line;
+    }
+    
+    _uuidsToLines = uuids;
+    return _uuidsToLines;
+}
 
 #pragma mark - Convenience
 
