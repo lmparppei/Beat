@@ -127,6 +127,8 @@
 		NSInteger len = locLen[1].integerValue - loc;
 		
 		_openNote = [FDXNote.alloc initWithRange:NSMakeRange(loc, len)];
+		_openNote.color = [FDXElement colorNameFor16bitHex:attributeDict[@"Color"]];
+		
 		return;
 	}
 	
@@ -280,7 +282,7 @@
 		}
 		
 		if (_element.sceneColor != nil) {
-			NSString* colorString = [NSString stringWithFormat:@" [[%@]]", [self colorNameFor16bitHex:_element.sceneColor]];
+			NSString* colorString = [NSString stringWithFormat:@" [[%@]]", [FDXElement colorNameFor16bitHex:_element.sceneColor]];
 			[_element append:colorString];
 		}
 	}
@@ -389,35 +391,5 @@
 	return false;
 }
 
-- (NSString*)colorNameFor16bitHex:(NSString*)hex
-{
-	static NSMutableDictionary* colors;
-	
-	if (colors == nil) {
-		colors = NSMutableDictionary.new;
-		
-		[colors addEntriesFromDictionary:@{
-			@"#E2E29898DDDD": @"pink",
-			@"#EBEB62627B7B": @"red",
-			@"#EFEFA4A46262": @"orange",
-			@"#E5E5CBCB6C6C": @"yellow",
-			@"#929290900000": @"olive",
-			@"#8F8FC3C36A6A": @"green",
-			@"#8888CACAB8B8": @"mint",
-			@"#6363A7A7EFEF": @"blue",
-			@"#9A9AAEAEDBDB": @"violet",
-			@"#AFAF9393E8E8": @"purple",
-			@"#B2B27C7C7373": @"brown",
-			@"#C0C0C0C0C0C0": @"gray"
-		}];
-		
-		for (NSString* key in BeatColors.colors.allKeys) {
-			NSString* hx = [NSString stringWithFormat:@"#%@", [BeatColors colorWith16bitHex:key]];
-			colors[hx] = key;
-		}
-	}
-	
-	return colors[hex];
-}
 
 @end

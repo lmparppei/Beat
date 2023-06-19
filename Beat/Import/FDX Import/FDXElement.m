@@ -7,6 +7,7 @@
 //
 
 #import "FDXElement.h"
+#import <BeatCore/BeatCore.h>
 
 @implementation FDXNote
 - (instancetype)initWithRange:(NSRange)range
@@ -23,13 +24,14 @@
 {
 	NSMutableString* string = NSMutableString.new;
 	[string appendString:@" [["];
+	if (self.color != nil) [string appendFormat:@"%@: ", self.color];
 	
 	for (FDXElement* el in self.elements) {
 		[string appendString:el.string];
 	}
 	
 	[string appendString:@"]]"];
-	return string;
+		return string;
 }
 
 @end
@@ -201,6 +203,37 @@
 }
 - (NSString*)trim:(NSString*)string {
 	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+
++ (NSString*)colorNameFor16bitHex:(NSString*)hex
+{
+	static NSMutableDictionary* colors;
+	
+	if (colors == nil) {
+		colors = NSMutableDictionary.new;
+		
+		[colors addEntriesFromDictionary:@{
+			@"#E2E29898DDDD": @"pink",
+			@"#EBEB62627B7B": @"red",
+			@"#EFEFA4A46262": @"orange",
+			@"#E5E5CBCB6C6C": @"yellow",
+			@"#929290900000": @"olive",
+			@"#8F8FC3C36A6A": @"green",
+			@"#8888CACAB8B8": @"mint",
+			@"#6363A7A7EFEF": @"blue",
+			@"#9A9AAEAEDBDB": @"violet",
+			@"#AFAF9393E8E8": @"purple",
+			@"#B2B27C7C7373": @"brown",
+			@"#C0C0C0C0C0C0": @"gray"
+		}];
+		
+		for (NSString* key in BeatColors.colors.allKeys) {
+			NSString* hx = [NSString stringWithFormat:@"#%@", [BeatColors colorWith16bitHex:key]];
+			colors[hx] = key;
+		}
+	}
+	
+	return colors[hex];
 }
 
 @end
