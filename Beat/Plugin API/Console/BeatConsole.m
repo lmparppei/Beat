@@ -30,7 +30,7 @@
 @property (nonatomic) IBOutlet NSPopUpButton* contextSeletor;
 @property (nonatomic) IBOutlet NSButton* wat;
 @property (nonatomic, weak) id<BeatEditorDelegate> currentContext;
-@property (nonatomic) NSMutableDictionary<NSUUID*, NSMutableAttributedString*>* logs;
+@property (nonatomic) NSMutableDictionary<NSString*, NSMutableAttributedString*>* logs;
 @end
 
 @implementation BeatConsole
@@ -129,8 +129,8 @@
 {
 	// Store to context if set
 	if (context != nil) {
-		if (_logs[context.uuid] == nil) _logs[context.uuid] = NSMutableAttributedString.new;
-		[_logs[context.uuid] appendAttributedString:message];
+		if (_logs[context.uuid.UUIDString] == nil) _logs[context.uuid.UUIDString] = NSMutableAttributedString.new;
+		[_logs[context.uuid.UUIDString] appendAttributedString:message];
 	}
 	
 	if (_currentContext == context || context == nil) {
@@ -184,8 +184,8 @@
 	
 	[_consoleTextView.textStorage replaceCharactersInRange:(NSRange){0, _consoleTextView.string.length} withString:@""];
 	
-	if (_logs[_currentContext.uuid] != nil) {
-		_logs[_currentContext.uuid] = NSMutableAttributedString.new;
+	if (_logs[_currentContext.uuid.UUIDString] != nil) {
+		_logs[_currentContext.uuid.UUIDString] = NSMutableAttributedString.new;
 	}
 }
 
@@ -267,8 +267,8 @@
 
 -(void)loadBufferForContext:(id<BeatEditorDelegate>)context {
 	NSMutableAttributedString* log;
-	if (self.logs[_currentContext.uuid] != nil) {
-		log = self.logs[_currentContext.uuid];
+	if (self.logs[_currentContext.uuid.UUIDString] != nil) {
+		log = self.logs[_currentContext.uuid.UUIDString];
 	} else {
 		log = NSMutableAttributedString.new;
 	}

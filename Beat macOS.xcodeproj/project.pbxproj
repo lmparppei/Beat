@@ -171,8 +171,6 @@
 		B66B5AC22739B75500BBC9C6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA82739B75500BBC9C6 /* ioapi.c */; };
 		B66B5AC32739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
 		B66B5AC42739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
-		B66C4EFF296F6344009ADE4E /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */; };
-		B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B66C4F02296F634C009ADE4E /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; };
 		B66C4F03296F634C009ADE4E /* BeatPaginationCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B66CDF112816DE5500EF4137 /* BeatCustomExportStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF102816DE5500EF4137 /* BeatCustomExportStyles.swift */; };
@@ -547,7 +545,6 @@
 			files = (
 				B604C8DE290CF7E400CBB32D /* BeatParsing.framework in Embed Frameworks */,
 				B663A6F029F1C6310036FE6B /* BeatPagination2.framework in Embed Frameworks */,
-				B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */,
 				B633C1F4298C68260011449D /* BeatCore.framework in Embed Frameworks */,
 				B60A9F05297466B300916FAA /* BeatThemes.framework in Embed Frameworks */,
 			);
@@ -1058,7 +1055,6 @@
 				B60A9F04297466B300916FAA /* BeatThemes.framework in Frameworks */,
 				B68B6088260B849300463AD8 /* QuickLook.framework in Frameworks */,
 				B68B608A260B849300463AD8 /* WebKit.framework in Frameworks */,
-				B66C4EFF296F6344009ADE4E /* BeatPaginationCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
