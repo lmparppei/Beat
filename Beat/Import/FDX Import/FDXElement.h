@@ -10,11 +10,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface FDXNote : NSObject
+@property (nonatomic) NSRange range;
+@property (nonatomic) NSMutableArray* elements;
+- (instancetype)initWithRange:(NSRange)range;
+- (NSString*)noteString;
+@end
+
 @interface FDXElement : NSObject
 @property (nonatomic) NSMutableAttributedString *text;
+@property (nonatomic) NSString *type;
+@property (nonatomic) NSString *sceneColor;
+@property (nonatomic) NSString *originalString;
 + (FDXElement*)lineBreak;
-+ (FDXElement*)withText:(NSString*)string;
-+ (FDXElement*)withAttributedText:(NSAttributedString*)string;
++ (FDXElement*)withText:(NSString*)string type:(NSString*)type;
++ (FDXElement*)withAttributedText:(NSAttributedString*)string type:(NSString*)type;
 - (void)addAttribute:(nonnull NSAttributedStringKey)name value:(nonnull id)value range:(NSRange)range;
 - (void)addStyle:(NSString*)style to:(NSRange)range;
 - (NSInteger)length;

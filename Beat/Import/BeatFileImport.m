@@ -36,6 +36,8 @@
 
 @interface BeatFileImport ()
 @property (nonatomic) NSURL *url;
+@property (nonatomic) NSMutableArray* checkboxes;
+@property (nonatomic) NSView* accessoryView;
 @end
 @implementation BeatFileImport
 
@@ -45,24 +47,68 @@
 - (void)openDialogForFormats:(NSArray*)extensions completion:(void(^)(void))callback {
 	_url = nil;
 	
-	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
+	NSOpenPanel *openDialog = NSOpenPanel.openPanel;
+	
+	
+	openDialog.accessoryView = _accessoryView;
+	openDialog.accessoryViewDisclosed = YES;
+	
 	[openDialog setAllowedFileTypes:extensions];
+	
 	[openDialog beginWithCompletionHandler:^(NSModalResponse result) {
-		if (result == NSModalResponseOK) {
-			if (openDialog.URL) {
-				self.url = openDialog.URL;
-				callback();
-			}
+		if (result == NSModalResponseOK && openDialog.URL) {
+			self.url = openDialog.URL;
+			callback();
 		}
 	}];
 }
 
+- (void)addCheckbox:(NSButton*)checkbox {
+	if (_checkboxes == nil) _checkboxes = NSMutableArray.new;
+	[_checkboxes addObject:checkbox];
+	
+	if (self.accessoryView == nil) {
+		self.accessoryView = [NSView.alloc initWithFrame:NSMakeRect(0, 0, 600, 100)];
+	}
+	
+	// Adjust the frame of the checkbox
+	
+	NSSize size = [checkbox fittingSize];
+	NSRect checkboxFrame = checkbox.frame;
+	checkboxFrame.origin.x = 20.0;
+	checkboxFrame.origin.y = 20.0 * self.accessoryView.subviews.count + 20.0;
+	checkboxFrame.size.width = size.width;
+	checkboxFrame.size.height = size.height;
+	checkbox.frame = checkboxFrame;
+
+	[self.accessoryView addSubview:checkbox];
+	
+	CGFloat height = 0.0;
+	for (NSView* view in self.accessoryView.subviews) {
+		height += view.frame.size.height;
+	}
+	height += 40.0;
+
+	NSRect frame = self.accessoryView.frame;
+	frame.size.height = height;
+	self.accessoryView.frame = frame;
+	
+
+}
+
 - (void)fdx {
 	// The XML reader works asynchronously, so we'll put a completion handler inside the completion handler
+	__block NSButton* importNotes = NSButton.new;
+	[importNotes setButtonType:NSSwitchButton];
+	[importNotes setTitle:@"Import Final Draft notes (WARNING: Can cause formatting issues in some cases)"];
+
+	[self addCheckbox:importNotes];
+	
 	[self openDialogForFormat:@"fdx" completion:^{
 	__block FDXImport *fdxImport;
 	
-		fdxImport = [FDXImport.alloc initWithURL:self.url completion:^(void) {
+		bool notes = (importNotes.state == NSOnState);
+		fdxImport = [FDXImport.alloc initWithURL:self.url importNotes:notes completion:^(void) {
 			if (fdxImport.script.count > 0) {
 				dispatch_async(dispatch_get_main_queue(), ^(void) {
 					[self openFileWithContents:fdxImport.scriptAsString];

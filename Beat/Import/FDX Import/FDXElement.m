@@ -8,33 +8,61 @@
 
 #import "FDXElement.h"
 
-@implementation FDXElement
-
--(instancetype)initWithText:(NSString*)text
+@implementation FDXNote
+- (instancetype)initWithRange:(NSRange)range
 {
 	self = [super init];
-	_text = [[NSMutableAttributedString alloc] initWithString:(text) ? text : @""];
+	if (self) {
+		self.range = range;
+		self.elements = NSMutableArray.new;
+	}
 	return self;
 }
 
--(instancetype)initWithAttributedText:(NSAttributedString*)text
+- (NSString*)noteString
+{
+	NSMutableString* string = NSMutableString.new;
+	[string appendString:@" [["];
+	
+	for (FDXElement* el in self.elements) {
+		[string appendString:el.string];
+	}
+	
+	[string appendString:@"]]"];
+	return string;
+}
+
+@end
+
+@implementation FDXElement
+
+-(instancetype)initWithText:(NSString*)text type:(NSString*)type
+{
+	self = [super init];
+	_text = [[NSMutableAttributedString alloc] initWithString:(text) ? text : @""];
+	_type = (type != nil) ? type : @"";
+	return self;
+}
+
+-(instancetype)initWithAttributedText:(NSAttributedString*)text type:(NSString*)type
 {
 	self = [super init];
 	_text = [[NSMutableAttributedString alloc] initWithAttributedString:(text) ? text : NSAttributedString.new];
+	_type = (type != nil) ? type : @"";
 	return self;
 }
 
 + (FDXElement*)lineBreak
 {
-	return [[FDXElement alloc] initWithText:@""];
+	return [[FDXElement alloc] initWithText:@"" type:@"empty"];
 }
-+ (FDXElement*)withText:(NSString*)string
++ (FDXElement*)withText:(NSString*)string type:(NSString*)type
 {
-	return [[FDXElement alloc] initWithText:string];
+	return [[FDXElement alloc] initWithText:string type:type];
 }
-+ (FDXElement*)withAttributedText:(NSAttributedString*)string
++ (FDXElement*)withAttributedText:(NSAttributedString*)string type:(NSString*)type
 {
-	return [[FDXElement alloc] initWithAttributedText:string];
+	return [[FDXElement alloc] initWithAttributedText:string type:type];
 }
 
 - (NSString*)string
