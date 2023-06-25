@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, NoteType) {
+    NoteTypeNormal = 0,
+    NoteTypeMarker,
+    NoteTypeColor
+};
+
 @protocol BeatNoteDataExports<JSExport>
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic, readonly) NSString* color;
@@ -20,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic, readonly) NSString* color;
 @property (nonatomic, readonly) NSRange range;
+@property (nonatomic, readonly) NoteType type;
 + (BeatNoteData*)withNote:(NSString*)text range:(NSRange)range;
 @end
 

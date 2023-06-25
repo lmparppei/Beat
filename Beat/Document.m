@@ -1646,26 +1646,26 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 	
 	// Update formatting
-	//[BeatMeasure start:@"Format"];
 	[self applyFormatChanges];
-	//[BeatMeasure end:@"Format"];
-	
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
-	bool changeInOutline = [self.parser getAndResetChangeInOutline];
+	//bool changeInOutline = [self.parser getAndResetChangeInOutline];
 	
 	// NOTE: calling this method removes the outline changes from parser
-	NSSet* changesInOutline = self.parser.changesInOutline;
+	// NSSet* changesInOutline = self.parser.changesInOutline;
+	OutlineChanges* changesInOutline = self.parser.changesInOutline;
 
 	// Update scene numbers
-	for (Line* line in changesInOutline) {
-		if (self.currentLine != line) [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+	for (OutlineScene* scene in changesInOutline.updatedElements) {
+		if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
 	}
 	
-	if (changeInOutline == YES) {
+	//if (changeInOutline == YES) {
+	if (changesInOutline.hasChanges == YES) {
 		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
 		
-		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
+		// if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline.updatedElements];
+		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changesInOutline];
 		if (self.timeline.visible) [self.timeline reload];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
@@ -2149,6 +2149,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)cancelCharacterInput {
 	// TODO: Move this to text view
 	_characterInput = NO;
+	_characterInputForLine = nil;
 	
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -2161,7 +2162,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.textView.needsLayout = YES;
 	
 	[self setTypeAndFormat:_characterInputForLine type:empty];
-	
 }
 
 - (void)addRecentCharacter:(NSString*)name {
@@ -2620,7 +2620,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.documentIsLoading = NO;
 	
 	[self ensureLayout];
-	[self.parser createOutline];
 	
 	[self.textView refreshLayoutElements];
 }
@@ -3083,7 +3082,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		
 		// Show outline
 		[self.outlineView reloadOutline];
-		[self.autocompletion collectCharacterNames]; // Get characters for filtering through autocomplete (this is silly, I know)
 		
 		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
 		

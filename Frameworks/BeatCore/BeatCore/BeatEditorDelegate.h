@@ -77,8 +77,6 @@
 - (void)showLockStatus;
 - (bool)contentLocked;
 
-
-
 #pragma mark - Getters for parser data
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
@@ -188,7 +186,9 @@
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
 /// Check if the editor tab is visible on macOS
-@optional - (bool)editorTabVisible;
+#if !TARGET_OS_IOS
+- (bool)editorTabVisible;
+#endif
 
 
 #pragma mark - Pagination
@@ -233,6 +233,16 @@
 #endif
 
 
+#pragma mark - Preview
+
+//- (void)updatePreview;
+#if !TARGET_OS_IOS
+- (id)previewController;
+#endif
+- (void)invalidatePreview;
+- (void)invalidatePreviewAt:(NSInteger)index;
+
+
 #pragma mark - General editor stuff
 
 - (void)updateQuickSettings;
@@ -246,25 +256,18 @@
 - (NSTextStorage*)textStorage;
 - (NSLayoutManager*)layoutManager;
 
-@optional - (void)returnToEditor;
-@optional - (void)focusEditor;
-@optional - (IBAction)toggleCards:(id)sender;
-@optional - (NSDictionary*)runningPlugins;
-@optional - (void)runPlugin:(NSString*)pluginWithName;
-@optional - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
+@optional
+- (void)returnToEditor;
+- (void)focusEditor;
+- (IBAction)toggleCards:(id)sender;
+- (NSDictionary*)runningPlugins;
+- (void)runPlugin:(NSString*)pluginWithName;
+- (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
 
+- (IBAction)nextScene:(id)sender;
+- (IBAction)previousScene:(id)sender;
 
-@optional - (IBAction)nextScene:(id)sender;
-@optional - (IBAction)previousScene:(id)sender;
-
-#pragma mark - Preview
-
-//- (void)updatePreview;
-#if !TARGET_OS_IOS
-- (id)previewController;
-#endif
-- (void)invalidatePreview;
-- (void)invalidatePreviewAt:(NSInteger)index;
+- (void)renameDocumentTo:(NSString *)newName completion:(void (^)(NSError *))completion;
 
 @end
 

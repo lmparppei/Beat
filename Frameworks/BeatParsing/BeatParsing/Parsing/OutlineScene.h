@@ -11,6 +11,12 @@
 #import "Line.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
+typedef NS_ENUM(NSUInteger, OutlineChangeType) {
+    none = 0,
+    SceneAdded,
+    SceneRemoved
+};
+
 @class OutlineScene;
 
 // JavaScript interface
@@ -62,6 +68,8 @@
 @property (nonatomic) NSMutableArray<Line*>* synopsis;
 @property (nonatomic) NSMutableArray<Line*>* lines;
 
+@property (nonatomic) NSMutableArray<BeatNoteData*>* notes;
+
 @property (strong, nonatomic) NSString * string; /// Clean string representation of the line
 @property (nonatomic) LineType type;
 @property (nonatomic) NSString * sceneNumber;
@@ -80,6 +88,7 @@
 @property (nonatomic) NSUInteger omissionEndsAt;
 
 @property (nonatomic) NSInteger sectionDepth;
+@property (nonatomic) NSInteger oldSectionDepth;
 @property (nonatomic) NSMutableArray * characters;
 
 @property (nonatomic) bool omitted;

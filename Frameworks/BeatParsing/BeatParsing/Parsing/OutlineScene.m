@@ -94,19 +94,27 @@
 	return beats;
 }
 
+#pragma mark - Section hierarchy
+
+-(NSInteger)sectionDepth {
+    self.oldSectionDepth = self.line.sectionDepth;
+    return _sectionDepth;
+}
+
 #pragma mark - Forwarded properties
 
- -(LineType)type { return self.line.type; }
-- (NSString*)stringForDisplay { return self.line.stringForDisplay;
-}
+- (LineType)type { return self.line.type; }
+
+- (NSString*)stringForDisplay { return self.line.stringForDisplay; }
+- (NSString*)string { return self.line.string; }
 - (NSString*)typeAsString { return self.line.typeAsString; }
 
-- (NSUInteger)position {	return self.line.position; }
+- (NSUInteger)position { return self.line.position; }
 
 - (bool)omitted {return self.line.omitted; }
-- (bool)omited {	return self.omitted; } // Legacy compatibility
+- (bool)omited { return self.omitted; } // Legacy compatibility
 
-- (NSString*)color {	return self.line.color; }
+- (NSString*)color { return self.line.color; }
 
 - (NSString*)sceneNumber { return self.line.sceneNumber; }
 - (void)setSceneNumber:(NSString *)sceneNumber { self.line.sceneNumber = sceneNumber; }

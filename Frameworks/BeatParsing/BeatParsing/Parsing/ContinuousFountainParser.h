@@ -65,6 +65,14 @@
 
 @end
 
+@interface OutlineChanges:NSObject <NSCopying>
+@property (nonatomic) NSMutableSet<OutlineScene*>* addedElements;
+@property (nonatomic) NSMutableSet<OutlineScene*>* removedElements;
+@property (nonatomic) NSMutableSet<OutlineScene*>* updatedElements;
+@property (nonatomic) bool needsFullUpdate;
+- (bool)hasChanges;
+@end
+
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate; /// Parser delegate. Basically it's the document.
 
@@ -97,7 +105,6 @@
 - (void)resetParsing;
 - (void)createOutline;
 - (NSArray*)outlineTree;
-- (void)updateOutlineWithChangeInRange:(NSRange)range;
 - (NSArray*)scenes;
 - (void)ensurePositions;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
@@ -139,9 +146,8 @@
 - (void)setIdentifiers:(NSArray*)uuids;
 
 //Convenience Methods for Outlineview data
-- (BOOL)getAndResetChangeInOutline;
-- (NSSet*)changesInOutline;
-- (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
+//- (BOOL)getAndResetChangeInOutline;
+- (id)changesInOutline;
 - (Line*)closestPrintableLineFor:(Line*)line;
 
 - (NSString*)description;

@@ -10,6 +10,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatMeasure.h>
+#import <BeatCore/BeatAutocomplete.h>
 
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
@@ -20,7 +21,7 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 
-@interface BeatOutlineView ()
+@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate>
 
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 
@@ -34,6 +35,8 @@
 
 @property (nonatomic) OutlineScene *draggedScene;
 @property (nonatomic) bool outlineEdit;
+
+@property (nonatomic) NSPopover* settingsPopover;
 
 // Fuck you macOS & Apple. For two things, particulary:
 //
@@ -78,7 +81,10 @@
 @property (nonatomic) NSArray *cachedOutline;
 
 @property (weak, nonatomic) IBOutlet NSButton *synopsisCheckbox;
+
 @property (nonatomic) bool showSynopsis;
+@property (nonatomic) bool showSceneNumbers;
+@property (nonatomic) bool showNotes;
 
 @property (nonatomic) NSArray *tree;
 
@@ -100,10 +106,6 @@
 	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
 	self.filteredOutline = [NSMutableArray array];
-	
-	self.showSynopsis = [BeatUserDefaults.sharedDefaults getBool:@"showSynopsisInOutline"];
-	if (self.showSynopsis) self.synopsisCheckbox.state = NSOnState;
-	else self.synopsisCheckbox.state = NSOffState;
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -170,13 +172,17 @@
 }
  */
 
+
 -(void)reloadOutline:(NSSet*)changesInOutline
 {
+	_tree = self.editorDelegate.parser.outlineTree;
+
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	
-	// Reload full data when no specific changes are sent
-	if (changesInOutline.count == 0) {
+	// Reload full data when no specific changes are sent or the actual outline has changed
+	if (changesInOutline.count == 0 || ![_cachedOutline isEqualToArray:self.outline]) {
 		[self reloadOutline];
+		_cachedOutline = self.outline.copy;
 		//[self reloadDiffedOutline];
 		return;
 	}
@@ -220,6 +226,56 @@
 	self.cachedOutline = outline;
 }
 
+-(void)reloadOutlineWithChanges:(OutlineChanges*)changes
+{
+	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	
+	// Reload full data when no specific changes are sent or the actual outline has changed
+//	if (changes.addedElements.count > 1) {
+//		[self reloadOutline];
+//		_cachedOutline = self.outline.copy;
+//		return;
+//	}
+
+	// Store current outline
+	NSArray* outline = self.outline;
+		
+	if (changes.needsFullUpdate) {
+		NSLog(@"We need a full update!");
+	}
+	
+	if (changes.removedElements.count > 0 || changes.addedElements.count > 0 || ![_cachedOutline isEqualToArray:self.outline] || changes.needsFullUpdate) {
+		
+		_cachedOutline = self.outline.copy;
+		[self reloadData];
+	} else {
+		// Disable animations
+		[self beginUpdates];
+		[NSAnimationContext beginGrouping];
+		[NSAnimationContext.currentContext setDuration:0.0];
+		
+		for (OutlineScene* element in changes.updatedElements.allObjects) {
+			[self reloadItem:element];
+		}
+	}
+	
+	// Sections should be expanded by default
+	for (OutlineScene *scene in outline) {
+		if (![_collapsed containsObject:scene] && scene.type == section && ![self isItemExpanded:scene]) {
+			[self expandItemWithoutAnimation:scene expandChildren:true];
+		}
+	}
+	
+	// Scroll back to where we were
+	self.enclosingScrollView.contentView.bounds = bounds;
+	
+	// Enable animations again
+	[NSAnimationContext endGrouping];
+	[self endUpdates];
+	
+	self.cachedOutline = outline.copy;
+}
+
 -(void)reloadOutline
 {
 	// Store the current outline
@@ -250,6 +306,7 @@
 
 -(void)reloadData
 {
+	_tree = self.editorDelegate.parser.outlineTree;
 	self.dragging = false; // Stop any drag operations
 	[super reloadData];
 }
@@ -269,18 +326,19 @@
 }
 
 
+#pragma mark - Setting getters
 
-#pragma mark - Toggle synopsis / section visibility
-
-- (IBAction)toggleSynopsis:(id)sender
+- (bool)showSynopsis
 {
-	NSButton *checkbox = sender;
-	bool value = (checkbox.state == NSOnState) ? true : false;
-	
-	self.showSynopsis = value;
-	[BeatUserDefaults.sharedDefaults saveBool:value forKey:@"showSynopsisInOutline"];
-	
-	[self reloadOutline];
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSynopsisInOutline];
+}
+- (bool)showNotes
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowNotesInOutline];
+}
+- (bool)showSceneNumbers
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbersInOutline];
 }
 
 #pragma mark - Delegation
@@ -300,11 +358,10 @@
 // FOR VIEW-BASED OUTLINE. Very slow.
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
- 
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	
 	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis isDark:dark];
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes isDark:dark];
 	
 	return view;
 }
@@ -326,8 +383,6 @@
 	if (_filters.activeFilters) {
 		return _filteredOutline.count;
 	} else {
-		_tree = self.editorDelegate.parser.outlineTree;
-
 		if (item == nil) {
 			return _tree.count;
 		} else {
@@ -379,7 +434,7 @@
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
 		bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis isDark:dark];
+		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes isDark:dark];
 	}
 	return @"";
 	
@@ -562,7 +617,22 @@
 			[self scrollRowToVisible:[self rowForItem:scene]];
 		} completionHandler:NULL];
 	});
+}
 
+#pragma mark - Outline settings
+
+- (IBAction)openSettings:(NSButton*)sender {
+	self.settingsPopover = NSPopover.new;
+	BeatOutlineSettings* settingsViewController = BeatOutlineSettings.new;
+	settingsViewController.outlineDelegate = self;
+	
+	self.settingsPopover.contentViewController = settingsViewController;
+	self.settingsPopover.behavior = NSPopoverBehaviorTransient;
+	[self.settingsPopover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSRectEdgeMinY];
+}
+
+- (void)popoverDidClose:(NSNotification *)notification {
+	self.settingsPopover = nil;
 }
 
 #pragma mark - Filtering
@@ -593,7 +663,8 @@
 	NSButton *button = (NSButton*)sender;
 	
 	if (button.state == NSControlStateValueOn) {
-		[self.filterViewHeight setConstant:110.0];
+		[self.filterViewHeight setConstant:80.0];
+		[self.editorDelegate.autocompletion collectCharacterNames];
 	} else {
 		[_filterViewHeight setConstant:0.0];
 	}

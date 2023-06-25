@@ -14,7 +14,15 @@
     NSString* content = text;
     NSString* color = @"";
     
-    if ([text containsString:@":"]) {
+    NoteType type = NoteTypeNormal;
+    if ([text rangeOfString:@"marker"].location == 0) {
+        // Check if this note is a marker
+        type = NoteTypeMarker;
+    } else if ([[BeatNoteData colors] containsObject:text]) {
+        // This note only contains a color
+        type = NoteTypeColor;
+    } else if ([text containsString:@":"]) {
+        // Check if this note has a color assigned to it, ie. [[red: Hello World]]
         NSInteger i = [text rangeOfString:@":"].location;
         NSString* c = [text substringToIndex:i];
         if (c.length > 0 && ([c characterAtIndex:0] == '#' || [[BeatNoteData colors] containsObject:c])) {
@@ -22,8 +30,8 @@
             content = [text substringFromIndex:i+1];
         }
     }
-    
-    return [BeatNoteData.alloc initWithContent:content color:color range:range];
+        
+    return [BeatNoteData.alloc initWithContent:content color:color range:range type:type];
 }
 
 + (NSArray<NSString*>*)colors
@@ -34,13 +42,14 @@
 }
 
 
--(instancetype)initWithContent:(NSString*)content color:(NSString*)color range:(NSRange)range
+-(instancetype)initWithContent:(NSString*)content color:(NSString*)color range:(NSRange)range type:(NoteType)type
 {
     self = [super init];
     if (self) {
         _content = content;
         _color = color;
         _range = range;
+        _type = type;
     }
     
     return self;

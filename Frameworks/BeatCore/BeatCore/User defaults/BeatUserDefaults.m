@@ -61,7 +61,11 @@ NSString* const BeatSettingShowRevisedTextColor         = @"showRevisedTextColor
 NSString* const BeatSettingShowTags	 					= @"showTags";
 NSString* const BeatSettingAutomaticContd 				= @"automaticContd";
 NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
+
 NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
+NSString* const BeatSettingShowSceneNumbersInOutline    = @"showSceneNumbersInOutline";
+NSString* const BeatSettingShowNotesInOutline           = @"showNotesInOutline";
+
 NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 
 NSString* const BeatSettingOutlineSectionFontSize       = @"outlineSectionFontSize";
@@ -69,6 +73,7 @@ NSString* const BeatSettingOutlineSceneFontSize         = @"outlineSceneFontSize
 NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontSize";
 
 NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
+
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
@@ -120,7 +125,11 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
 		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],
 		BeatSettingZoomLevel: @[BeatSettingZoomLevel, @0.97],
-		BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
+		
+        BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
+        BeatSettingShowSceneNumbersInOutline: @[BeatSettingShowSceneNumbersInOutline, @YES],
+        BeatSettingShowNotesInOutline: @[BeatSettingShowNotesInOutline, @YES],
+        
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
         
         @"Test": @[@"Test", @1],

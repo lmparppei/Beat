@@ -10,12 +10,13 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatEditorDelegate.h>
 #import "SceneFiltering.h"
-
+@class BeatAutocomplete;
 
 @protocol BeatOutlineViewEditorDelegate <NSObject>
 @property (readonly, nonatomic) OutlineScene *currentScene;
 @property (nonatomic) bool outlineEdit;
 @property (readonly, nonatomic) NSArray *outline;
+@property (readonly, nonatomic) BeatAutocomplete* autocompletion;
 @property (nonatomic, strong, readonly) ContinuousFountainParser *parser;
 - (NSMutableArray<Line*>*)lines;
 - (NSArray*)getOutlineItems;
@@ -35,6 +36,7 @@
 
 -(void)reloadOutline;
 -(void)reloadOutline:(NSSet*)changesInOutline;
+-(void)reloadOutlineWithChanges:(OutlineChanges*)changes;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (NSArray*)outline;
 @end

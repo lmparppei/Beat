@@ -688,7 +688,7 @@ DQ
                                     <action selector="makeSceneNonNumbered:" target="-1" id="bSc-xi-jH1"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="9KI-Cy-Uax"/>
+                            <menuItem isSeparatorItem="YES" id="mPx-Jg-K7t"/>
                             <menuItem title="Lock All Scene Numbers" id="neY-LE-02O">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -699,6 +699,105 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unlockSceneNumbers:" target="-1" id="Iwa-ri-jSu"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="9KI-Cy-Uax"/>
+                            <menuItem title="Add Marker" id="0iR-5D-OWq">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="SFR-ej-7sJ">
+                                    <items>
+                                        <menuItem title="Add a Marker" keyEquivalent="m" id="WCJ-7Z-poa" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="NfZ-Vl-n33"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Marker With Text" id="a8t-0N-sFT" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="Your text here"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="EJ8-Gk-ZI4"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Vc0-2H-Sgu"/>
+                                        <menuItem title="Red" image="Color_Red" id="uNu-t5-6hH" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="red"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="iQN-ZF-94Y"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Blue" image="Color_Blue" id="4uc-VD-Viy" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="pBE-3h-QwA"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Green" image="Color_Green" id="lVX-ro-v5U" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="5g4-Mz-5op"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Pink" image="Color_Pink" id="JCS-BM-6XQ" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="pink"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="KsK-Eb-tGQ"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Brown" image="Color_Brown" id="nRa-kY-4lQ" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="brown"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="poK-75-cNK"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Cyan" image="Color_Cyan" id="WEe-Ln-H4v" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="cyan"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="1sA-U7-LQA"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Orange" image="Color_Orange" id="lPg-kw-X04" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="II7-a7-7rV"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Magenta" image="Color_Magenta" id="xGE-gP-9DS" customClass="BeatColorMenuItem">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="magenta"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="addMarker:" target="-1" id="iYj-O7-0WI"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                                <connections>
+                                    <action selector="addMarker:" target="-1" id="t6W-HK-OnX"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="DDw-pc-ugk"/>
@@ -1103,4 +1202,14 @@ DQ
         <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
         <userDefaultsController representsSharedInstance="YES" id="62Y-BT-kav"/>
     </objects>
+    <resources>
+        <image name="Color_Blue" width="15" height="15"/>
+        <image name="Color_Brown" width="15" height="15"/>
+        <image name="Color_Cyan" width="15" height="15"/>
+        <image name="Color_Green" width="15" height="15"/>
+        <image name="Color_Magenta" width="15" height="15"/>
+        <image name="Color_Orange" width="15" height="15"/>
+        <image name="Color_Pink" width="15" height="15"/>
+        <image name="Color_Red" width="15" height="15"/>
+    </resources>
 </document>
