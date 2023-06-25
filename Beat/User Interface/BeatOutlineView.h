@@ -34,6 +34,8 @@
 @property (nonatomic) NSMutableArray *filteredOutline;
 @property (nonatomic) SceneFiltering *filters;
 
+-(void)setup;
+
 -(void)reloadOutline;
 -(void)reloadOutline:(NSSet*)changesInOutline;
 -(void)reloadOutlineWithChanges:(OutlineChanges*)changes;

@@ -109,8 +109,13 @@
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-	
+
 	[self hideFilterView];
+}
+
+-(void)setup
+{
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -173,86 +178,28 @@
  */
 
 
--(void)reloadOutline:(NSSet*)changesInOutline
+-(void)reloadOutlineWithChanges:(OutlineChanges*)changes
 {
-	_tree = self.editorDelegate.parser.outlineTree;
-
-	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	// Store current outline
+	NSArray* outline = self.outline;
 	
-	// Reload full data when no specific changes are sent or the actual outline has changed
-	if (changesInOutline.count == 0 || ![_cachedOutline isEqualToArray:self.outline]) {
-		[self reloadOutline];
+	// Do a full update if needed
+	if (changes.removed.count > 0 || changes.added.count > 0 || ![_cachedOutline isEqualToArray:self.outline] || changes.needsFullUpdate) {
 		_cachedOutline = self.outline.copy;
-		//[self reloadDiffedOutline];
+		[self reloadOutline];
 		return;
 	}
 	
-	// Store current outline
-	NSArray* outline = self.outline;
+	_tree = self.editorDelegate.parser.outlineTree;
+	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	
 	// Disable animations
 	[self beginUpdates];
 	[NSAnimationContext beginGrouping];
 	[NSAnimationContext.currentContext setDuration:0.0];
 	
-	// Go through the whole outline and see which ones we need to update
-	NSMutableSet *handled = NSMutableSet.new;
-	for (OutlineScene *scene in self.outline) {
-		if ([changesInOutline containsObject:scene.line]) {
-			// Reload item
-			[self reloadItem:scene reloadChildren:true];
-			[handled addObject:scene];
-		}
-	}
-	
-	if (handled.count != changesInOutline.count) {
-		[self reloadData];
-	}
-	
-	// Sections should be expanded by default
-	for (OutlineScene *scene in outline) {
-		if (![_collapsed containsObject:scene] && scene.type == section && ![self isItemExpanded:scene]) {
-			[self expandItemWithoutAnimation:scene expandChildren:true];
-		}
-	}
-	
-	// Scroll back to where we were
-	self.enclosingScrollView.contentView.bounds = bounds;
-	
-	// Enable animations again
-	[NSAnimationContext endGrouping];
-	[self endUpdates];
-	
-	self.cachedOutline = outline;
-}
-
--(void)reloadOutlineWithChanges:(OutlineChanges*)changes
-{
-	NSRect bounds = self.enclosingScrollView.contentView.bounds;
-	
-	// Reload full data when no specific changes are sent or the actual outline has changed
-//	if (changes.addedElements.count > 1) {
-//		[self reloadOutline];
-//		_cachedOutline = self.outline.copy;
-//		return;
-//	}
-
-	// Store current outline
-	NSArray* outline = self.outline;
-	
-	if (changes.removed.count > 0 || changes.added.count > 0 || ![_cachedOutline isEqualToArray:self.outline] || changes.needsFullUpdate) {
-		
-		_cachedOutline = self.outline.copy;
-		[self reloadData];
-	} else {
-		// Disable animations
-		[self beginUpdates];
-		[NSAnimationContext beginGrouping];
-		[NSAnimationContext.currentContext setDuration:0.0];
-		
-		for (OutlineScene* element in changes.updated.allObjects) {
-			[self reloadItem:element];
-		}
+	for (OutlineScene* element in changes.updated.allObjects) {
+		[self reloadItem:element];
 	}
 	
 	// Sections should be expanded by default
@@ -276,9 +223,15 @@
 {
 	// Store the current outline
 	NSArray* outline = self.outline;
+	_tree = self.editorDelegate.parser.outlineTree;
 	
 	// Save outline scroll position
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	
+	// Disable animations
+	[self beginUpdates];
+	[NSAnimationContext beginGrouping];
+	[NSAnimationContext.currentContext setDuration:0.0];
 	
 	// Check if there are filters on and then reload data
 	[self filterOutline];
@@ -293,16 +246,19 @@
 			[self expandItem:scene expandChildren:YES];
 		}
 	}
-
+	
+	// Enable animations again
+	[NSAnimationContext endGrouping];
+	[self endUpdates];
+	
 	// Scroll back to where we were
 	self.enclosingScrollView.contentView.bounds = bounds;
-	
+
 	self.cachedOutline = outline;
 }
 
 -(void)reloadData
 {
-	_tree = self.editorDelegate.parser.outlineTree;
 	self.dragging = false; // Stop any drag operations
 	[super reloadData];
 }
@@ -762,6 +718,21 @@
 	[super expandItem:item expandChildren:expandChildren];
 
 	[NSAnimationContext endGrouping];
+}
+
+#pragma mark - Search outline
+
+- (void)searchOutline
+{
+	// This should probably be moved to BeatOutlineView, too.
+	// Don't search if it's only spaces
+	if (_outlineSearchField.stringValue.containsOnlyWhitespace ||
+		_outlineSearchField.stringValue.length < 1) {
+		[self.filters byText:@""];
+	}
+	
+	[self.filters byText:_outlineSearchField.stringValue];
+	[self reloadOutline];
 }
 
 @end

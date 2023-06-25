@@ -479,10 +479,10 @@ static BeatAppDelegate *appDelegate;
 	// Setup views
 	[self setupResponderChain];
 	[self setupTextView];
-	[self setupOutlineView];
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
+	[self.outlineView setup];
 	[self.cardView setup];
 	
 	// Setup layout here first, but don't paginate
@@ -1821,7 +1821,10 @@ static NSWindow __weak *currentKeyWindow;
 	else return NO;
 }
 
-- (void)updateUIwithCurrentScene {
+/// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
+/// TODO: Register the views which need scene index udpate.
+- (void)updateUIwithCurrentScene
+{
 	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
 	
 	OutlineScene *currentScene = self.currentScene;
@@ -1831,7 +1834,6 @@ static NSWindow __weak *currentKeyWindow;
 	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_outline indexOfObject:currentScene]];
 	
 	// Locate current scene & reload outline without building it in parser
-	// I don't know what this is, to be honest
 	if (self.sidebarVisible && !self.outlineView.dragging && !self.outlineView.editing) {
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			[self.outlineView scrollToScene:currentScene];
@@ -1852,23 +1854,25 @@ static NSWindow __weak *currentKeyWindow;
 
 # pragma mark - Scene lookup
 
-- (OutlineScene*)currentScene {
+- (OutlineScene*)currentScene
+{
 	// If we are not on the main thread, return the latest known scene
 	if (!NSThread.isMainThread) return _currentScene;
 	
-	OutlineScene* scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
+	OutlineScene* scene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 	_currentScene = scene;
 	return scene;
 }
 
-- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
+- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position
+{
 	// If the position is inside the stored current scene, just return that.
-	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
+	if (_currentScene && NSLocationInRange(position, _currentScene.range) && [self.parser.outline containsObject:_currentScene]) {
 		return _currentScene;
 	}
 	
 	// At the end, return last scene
-	 if (position >= self.text.length) return self.parser.outline.lastObject;
+	if (position >= self.text.length) return self.parser.outline.lastObject;
 	
 	OutlineScene *prevScene;
 	for (OutlineScene *scene in self.outline) {
@@ -3160,30 +3164,20 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Outline View
 
-- (void)setupOutlineView {
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
-}
-
-- (NSArray*)getOutlineItems {
-	// Make a copy of the outline to avoid threading issues
+- (NSArray<OutlineScene*>*)outline
+{
 	if (self.parser.outline == nil) return @[];
-	return self.parser.outline.copy;
+	else return self.parser.outline.copy;
 }
 
-- (NSMutableArray*)filteredOutline {
+- (NSArray*)getOutlineItems
+{
+	return self.outline;
+}
+
+- (NSMutableArray*)filteredOutline
+{
 	return self.outlineView.filteredOutline;
-}
-
-- (void)searchOutline {
-	// This should probably be moved to BeatOutlineView, too.
-	// Don't search if it's only spaces
-	if (_outlineSearchField.stringValue.containsOnlyWhitespace ||
-		_outlineSearchField.stringValue.length < 1) {
-		[self.outlineView.filters byText:@""];
-	}
-	
-	[self.outlineView.filters byText:_outlineSearchField.stringValue];
-	[self.outlineView reloadOutline];
 }
 
 -(IBAction)addSection:(id)sender {
@@ -3203,7 +3197,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
-- (void)reloadOutline {
+- (void)reloadOutline
+{
 	[self.outlineView reloadOutline];
 }
 

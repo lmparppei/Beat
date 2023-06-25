@@ -1712,7 +1712,7 @@ static NSDictionary* patterns;
 	}
     
     // Cyclical array lookup from the last found position
-    Line* result = [self findNeighbourIn:lines origin:_lastLineIndex descending:(position < lastFoundPosition) cacheIndex:&actualIndex block:^BOOL(id item) {
+    Line* result = [self findNeighbourIn:lines origin:_lastLineIndex descending:(position < lastFoundPosition) cacheIndex:&actualIndex block:^BOOL(id item, NSInteger idx) {
         Line* l = item;
         return NSLocationInRange(position, l.range);
     }];
@@ -1736,9 +1736,12 @@ static NSDictionary* patterns;
 	else return line.type;
 }
 
+
 #pragma mark - Title page
 
-- (NSString*)titlePageAsString {
+/// Returns the title page lines as string
+- (NSString*)titlePageAsString
+{
     NSMutableString *string = NSMutableString.new;
     for (Line* line in self.safeLines) {
         if (!line.isTitlePage) break;
@@ -1747,9 +1750,10 @@ static NSDictionary* patterns;
     return string;
 }
 
-- (NSArray<Line*>*)titlePageLines {
+/// Returns just the title page lines
+- (NSArray<Line*>*)titlePageLines
+{
     NSMutableArray *lines = NSMutableArray.new;
-    
     for (Line* line in self.safeLines) {
         if (!line.isTitlePage) break;
         [lines addObject:line];
@@ -1758,7 +1762,10 @@ static NSDictionary* patterns;
     return lines;
 }
 
-- (NSArray< NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage {
+/// Re-parser the title page and returns a weird array structure: `[ { "key": "value }, { "key": "value }, { "key": "value } ]`.
+/// This is because we want to maintain the order of the keys, and though ObjC dictionaries sometimes stay in the correct order, things don't work like that in Swift.
+- (NSArray<NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage
+{
     [self.titlePage removeAllObjects];
     
     // Store the latest key
@@ -1789,24 +1796,21 @@ static NSDictionary* patterns;
     return self.titlePage;
 }
 
-- (NSMutableArray<Line*>*)titlePageArrayForKey:(NSString*)key {
+/// Returns the lines for given title page key. For example,`Title` would return something like `["My Film"]`.
+- (NSMutableArray<Line*>*)titlePageArrayForKey:(NSString*)key
+{
     for (NSMutableDictionary* d in self.titlePage) {
         if ([d.allKeys.firstObject isEqualToString:key]) return d[d.allKeys.firstObject];
     }
     return nil;
 }
 
-/*
-- (NSDictionary<NSString*,NSArray<Line*>*>*)titlePageDictionary {
-    
-}
-*/
-
 
 #pragma mark - Outline Data
 
 /// Returns a tree structure for the outline. Only top-level elements are included, get the rest using `element.chilren`.
-- (NSArray*)outlineTree {
+- (NSArray*)outlineTree
+{
     NSMutableArray* tree = NSMutableArray.new;
     
     NSInteger topLevelDepth = 0;
@@ -1836,7 +1840,8 @@ static NSDictionary* patterns;
 }
 
 /// Returns the first outline element which contains at least a part of the given range.
-- (OutlineScene*)outlineElementInRange:(NSRange)range {
+- (OutlineScene*)outlineElementInRange:(NSRange)range
+{
     for (OutlineScene *scene in self.safeOutline) {
         if (NSIntersectionRange(range, scene.range).length > 0) {
             return scene;
@@ -1847,7 +1852,8 @@ static NSDictionary* patterns;
 
 /// Updates scene numbers for scenes. Autonumbered will get incremented automatically.
 /// - note: the arrays can contain __both__ `OutlineScene` or `Line` items to be able to update line content individually without building an outline.
-- (void)updateSceneNumbers:(NSArray*)autoNumbered forcedNumbers:(NSSet*)forcedNumbers {
+- (void)updateSceneNumbers:(NSArray*)autoNumbered forcedNumbers:(NSSet*)forcedNumbers
+{
     static NSArray* postfixes;
     if (postfixes == nil) postfixes = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G"];
 
@@ -1890,7 +1896,8 @@ static NSDictionary* patterns;
 }
 
 /// Returns a set of all scene numbers in the outline
-- (NSSet*)sceneNumbersInOutline {
+- (NSSet*)sceneNumbersInOutline
+{
     NSMutableSet<NSString*>* sceneNumbers = NSMutableSet.new;
     for (OutlineScene* scene in self.outline) {
         [sceneNumbers addObject:scene.sceneNumber];
@@ -1899,14 +1906,16 @@ static NSDictionary* patterns;
 }
 
 /// Returns the number from which automatic scene numbering should start from
-- (NSInteger)sceneNumberOrigin {
+- (NSInteger)sceneNumberOrigin
+{
     NSInteger i = [self.documentSettings getInt:DocSettingSceneNumberStart];
     if (i > 0) return i;
     else return 1;
 }
 
 /// Gets and resets the changes to outline
-- (OutlineChanges*)changesInOutline {
+- (OutlineChanges*)changesInOutline
+{
     // Refresh the changed outline elements
     for (OutlineScene* scene in self.outlineChanges.updated) {
         [self updateScene:scene at:NSNotFound lineIndex:NSNotFound];
@@ -1928,7 +1937,8 @@ static NSDictionary* patterns;
 #pragma mark - Handling changes to outline
 
 /// Updates the current outline from scratch (alias of `updateOutline`, here for legacy reasons)
-- (void)createOutline {
+- (void)createOutline
+{
     [self updateOutlineWithLines:self.safeLines];
 }
 
@@ -1975,6 +1985,7 @@ static NSDictionary* patterns;
 }
 
 
+/// Forces an update to the outline element which contains the given line. No additional checks.
 - (void)addUpdateToOutlineAtLine:(Line*)line {
     OutlineScene* scene = [self outlineElementInRange:line.textRange];
     if (scene) [_outlineChanges.updated addObject:scene];
@@ -2036,7 +2047,7 @@ static NSDictionary* patterns;
     }
 }
 
-/// Insert an outline element
+/// Inserts a new outline element with given line.
 - (void)addOutlineElement:(Line*)line
 {
     NSInteger index = NSNotFound;
@@ -2062,7 +2073,7 @@ static NSDictionary* patterns;
     if (index > 0 && index != NSNotFound) [_outlineChanges.updated addObject:self.outline[index - 1]];
 }
 
-/// Remove given outline elements
+/// Remove outline element for given line
 - (void)removeOutlineElementForLine:(Line*)line
 {
     OutlineScene* scene;
@@ -2110,7 +2121,7 @@ static NSDictionary* patterns;
                     [sectionPath removeLastObject];
                     
                     // Break at higher/equal level section
-                    if (prevSection.sectionDepth <= scene.sectionDepth) break;
+                    if (prevSection.sectionDepth <= scene.line.sectionDepth) break;
                 }
                 
                 scene.parent = sectionPath.lastObject;
@@ -2158,6 +2169,7 @@ static NSDictionary* patterns;
         }
     }
     
+    /// `updateSceneNumbers` supports both `Line` and `OutlineScene` objects.
     [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
 }
     
@@ -2166,13 +2178,11 @@ static NSDictionary* patterns;
 
 /**
  
- safeLines and safeOutline create a copy of the respective array when called from a background thread.
- Because Beat now supports plugins with direct access to the parser, we need to be extra careful with our threads.
+ `safeLines` and `safeOutline` create a copy of the respective array when called from a background thread.
  
- An example:
- We want to build a view of all the scenes and update it in the background. While the background
- thread calls something like linesForScene:, the user edits the screenplay. This causes a crash,
- because our .lines array was mutated while being enumerated.
+ Because Beat now supports plugins with direct access to the parser, we need to be extra careful with our threads.
+ Almost any changes to the screenplay in editor will mutate the `.lines` array, so a background process
+ calling something that enumerates the array (ie. `linesForScene:`) will cause an immediate crash.
  
  */
 
@@ -2212,8 +2222,9 @@ static NSDictionary* patterns;
 
 #pragma mark - Convenience
 
-- (NSInteger)numberOfScenes {
-	NSArray *lines = self.safeLines; // Use thread-safe lines
+- (NSInteger)numberOfScenes
+{
+	NSArray *lines = self.safeLines;
 	NSInteger scenes = 0;
 	
 	for (Line *line in lines) {
@@ -2223,9 +2234,10 @@ static NSDictionary* patterns;
 	return scenes;
 }
 
-- (NSArray*)scenes {
+- (NSArray*)scenes
+{
 	NSArray *outline = self.safeOutline; // Use thread-safe lines
-	NSMutableArray *scenes = [NSMutableArray array];
+    NSMutableArray *scenes = NSMutableArray.new;
 	
 	for (OutlineScene *scene in outline) {
 		if (scene.type == heading) [scenes addObject:scene];
@@ -2233,19 +2245,20 @@ static NSDictionary* patterns;
 	return scenes;
 }
 
-- (NSArray*)linesForScene:(OutlineScene*)scene {
+/// Returns the lines in given scene
+- (NSArray*)linesForScene:(OutlineScene*)scene
+{
 	// Return minimal results for non-scene elements
 	if (scene == nil) return @[];
-	if (scene.type == synopse) return @[scene.line];
+	else if (scene.type == synopse) return @[scene.line];
 	
-	// Make a copy of the lines array IF we are not in the main thread.
 	NSArray *lines = self.safeLines;
 		
-	NSInteger lineIndex = [lines indexOfObject:scene.line];
+    NSInteger lineIndex = [self indexOfLine:scene.line];
 	if (lineIndex == NSNotFound) return @[];
 	
 	// Automatically add the heading line and increment the index
-	NSMutableArray *linesInScene = [NSMutableArray array];
+    NSMutableArray *linesInScene = NSMutableArray.new;
 	[linesInScene addObject:scene.line];
 	lineIndex++;
 	
@@ -2267,26 +2280,37 @@ static NSDictionary* patterns;
 	return linesInScene;
 }
 
+/// Returns the previous line from the given line
 - (Line*)previousLine:(Line*)line {
-    NSInteger i = [self lineIndexAtPosition:line.position];
+    NSInteger i = [self lineIndexAtPosition:line.position]; // Note: We're using lineIndexAtPosition because it's *way* faster
     
     if (i > 0 && i != NSNotFound) return self.safeLines[i - 1];
     else return nil;
 }
 
-
+/// Returns the following line from the given line
 - (Line*)nextLine:(Line*)line {
     NSArray* lines = self.safeLines;
-    NSInteger i = [self lineIndexAtPosition:line.position];
+    NSInteger i = [self lineIndexAtPosition:line.position]; // Note: We're using lineIndexAtPosition because it's *way* faster
     
     if (i != NSNotFound && i < lines.count - 1) return lines[i + 1];
     else return nil;
 }
 
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position {
+/// Returns the next outline item of given type
+/// @param type Type of the outline element (heading/section)
+/// @param position Position where to start the search
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position
+{
     return [self nextOutlineItemOfType:type from:position depth:NSNotFound];
 }
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth {
+
+/// Returns the next outline item of given type
+/// @param type Type of the outline element (heading/section)
+/// @param position Position where to start the search
+/// @param depth Desired hierarchical depth (ie. 0 for top level objects of this type)
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth
+{
     NSInteger idx = [self lineIndexAtPosition:position] + 1;
     NSArray* lines = self.safeLines;
     
@@ -2304,10 +2328,18 @@ static NSDictionary* patterns;
     return nil;
 }
 
+/// Returns the previous outline item of given type
+/// @param type Type of the outline element (heading/section)
+/// @param position Position where to start the seach
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position {
     return [self previousOutlineItemOfType:type from:position depth:NSNotFound];
 }
-- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth {
+/// Returns the previous outline item of given type
+/// @param type Type of the outline element (heading/section)
+/// @param position Position where to start the search
+/// @param depth Desired hierarchical depth (ie. 0 for top level objects of this type)
+- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth
+{
     NSInteger idx = [self lineIndexAtPosition:position] - 1;
     if (idx == NSNotFound || idx < 0) return nil;
     
@@ -2330,6 +2362,7 @@ static NSDictionary* patterns;
 
 #pragma mark - Element blocks
 
+/// Returns the lines for a full dual dialogue block
 - (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue {
     if (!line.isDialogue && !line.isDualDialogue) return @[];
     
@@ -2371,6 +2404,7 @@ static NSDictionary* patterns;
     return @[left, right];
 }
 
+/// Returns the lines for screenplay block in given range.
 - (NSArray<Line*>*)blockForRange:(NSRange)range {
 	NSMutableArray *blockLines = NSMutableArray.new;
 	NSArray *lines;
@@ -2388,14 +2422,14 @@ static NSDictionary* patterns;
 	return blockLines;
 }
 
-- (NSArray<Line*>*)blockFor:(Line*)line {
-	// The "block" includes the empty line at the end
-	
+/// Returns the lines for full screenplay block associated with this line – a dialogue block, for example.
+- (NSArray<Line*>*)blockFor:(Line*)line
+{
 	NSArray *lines = self.lines;
 	NSMutableArray *block = NSMutableArray.new;
 	NSInteger blockBegin = [lines indexOfObject:line];
 	
-	// At an empty line, iterate upwards and find out where the block begins
+    // If the line is empty, iterate upwards to find the start of the block
 	if (line.type == empty) {
 		NSInteger h = blockBegin - 1;
 		while (h >= 0) {
@@ -2408,21 +2442,23 @@ static NSDictionary* patterns;
 		}
 	}
 	
-	if (line.isDialogueElement || line.isDualDialogueElement) {
-		if (!line.isAnyCharacter) {
-			NSInteger i = blockBegin - 1;
-			while (i >= 0) {
-				Line *precedingLine = lines[i];
-				if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement) || precedingLine.length == 0) {
-					blockBegin = i;
-					break;
-				}
-				
-				i--;
-			}
-		}
+    // If the line is part of a dialogue block but NOT a character cue, find the start of the block.
+	if ( (line.isDialogueElement || line.isDualDialogueElement) && !line.isAnyCharacter) {
+        NSInteger i = blockBegin - 1;
+        while (i >= 0) {
+            // If the preceding line is not a dialogue element or a dual dialogue element,
+            // or if it has a length of 0, set the block start index accordingly
+            Line *precedingLine = lines[i];
+            if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement) || precedingLine.length == 0) {
+                blockBegin = i;
+                break;
+            }
+            
+            i--;
+        }
 	}
-	
+    
+    // Add lines until an empty line is found. The empty line belongs to the block too.
 	NSInteger i = blockBegin;
 	while (i < lines.count) {
 		Line *l = lines[i];
@@ -2456,7 +2492,8 @@ static NSDictionary* patterns;
 }
 
 // This returns a pure string with no comments or invisible elements
-- (NSString *)cleanedString {
+- (NSString *)cleanedString
+{
 	NSString * result = @"";
 	
 	for (Line* line in self.lines) {
@@ -2476,24 +2513,30 @@ static NSDictionary* patterns;
 NSUInteger prevLineAtLocationIndex = 0;
 
 /// Returns line at given POSITION, not index.
-- (Line*)lineAtIndex:(NSInteger)position {
+- (Line*)lineAtIndex:(NSInteger)position
+{
 	return [self lineAtPosition:position];
 }
 
-/// Returns the index in lines array for given line. This method might be probed multiple times, so we'll cache the result. This is a *very* small optimization, we're talking about `0.000001` vs `0.000007`. It's many times faster, but doesn't actually have too big of an effect.
-- (NSUInteger)indexOfLine:(Line*)line {
-	NSArray *lines = self.safeLines;
-	
-	static NSInteger previousIndex = NSNotFound;
+/**
+ Returns the index in lines array for given line. This method might be called multiple times, so we'll cache the result.
+ This is a *very* small optimization, we're talking about `0.000001` vs `0.000007`. It's many times faster, but doesn't actually have too big of an effect.
+ */
+NSInteger previousIndex = NSNotFound;
+- (NSUInteger)indexOfLine:(Line*)line
+{
+    NSArray *lines = self.safeLines;
+    
 	if (previousIndex < lines.count && previousIndex >= 0) {
 		if (line == (Line*)lines[previousIndex]) {
 			return previousIndex;
 		}
 	}
-	
+    
 	NSInteger index = [lines indexOfObject:line];
 	previousIndex = index;
-	return index;
+
+    return index;
 }
 
 /**
@@ -2505,7 +2548,8 @@ NSUInteger prevLineAtLocationIndex = 0;
  @param cacheIndex Pointer for retrieving the index of the found element. Set to NSNotFound if the result is nil.
  @param compare The block for comparison, with the inspected element as argument. If the element statisfies your conditions, return true.
  */
-- (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
+- (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item, NSInteger idx))compare
+{
 	// Don't go out of range
 	if (NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
 		/** Uh, wtf, how does this work?
@@ -2538,7 +2582,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 				
 		id item = array[i];
 		
-		if (compare(item)) {
+		if (compare(item, i)) {
 			*cacheIndex = i;
 			return item;
 		}
@@ -2555,7 +2599,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return nil;
 }
 
-- (Line*)closestPrintableLineFor:(Line*)line {
+- (Line*)closestPrintableLineFor:(Line*)line
+{
 	NSArray <Line*>* lines = self.lines;
 	
 	NSInteger i = [lines indexOfObject:line];
@@ -2581,7 +2626,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 /// Rerturns the line object at given position
-- (Line*)lineAtPosition:(NSInteger)position {
+- (Line*)lineAtPosition:(NSInteger)position
+{
 	// Let's check the cached line first
 	if (NSLocationInRange(position, _prevLineAtLocation.range) && _prevLineAtLocation != nil) {
 		return _prevLineAtLocation;
@@ -2606,7 +2652,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 		descending = YES;
 	}
 		
-	Line *line = [self findNeighbourIn:lines origin:prevLineAtLocationIndex descending:descending cacheIndex:&cachedIndex block:^BOOL(id item) {
+	Line *line = [self findNeighbourIn:lines origin:prevLineAtLocationIndex descending:descending cacheIndex:&cachedIndex block:^BOOL(id item, NSInteger idx) {
 		Line *l = item;
 		if (NSLocationInRange(position, l.range)) return YES;
 		else return NO;
@@ -2621,8 +2667,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return nil;
 }
 
-
-- (NSArray*)linesInRange:(NSRange)range {
+/// Returns the lines in given range (even overlapping)
+- (NSArray*)linesInRange:(NSRange)range
+{
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;
 	
@@ -2638,7 +2685,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return linesInRange;
 }
 
-- (NSArray*)scenesInRange:(NSRange)range {
+/// Returns the scenes  in given range (even overlapping)
+- (NSArray*)scenesInRange:(NSRange)range
+{
 	NSMutableArray *scenes = NSMutableArray.new;
 	
 	[self createOutline];
@@ -2657,9 +2706,13 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	return scenes;
 }
+
+/// Returns a scene which contains the given character index (position)
 - (OutlineScene*)sceneAtIndex:(NSInteger)index {
 	return [self sceneAtPosition:index];
 }
+
+/// Returns a scene which contains the given position
 - (OutlineScene*)sceneAtPosition:(NSInteger)index {
 	for (OutlineScene *scene in self.safeOutline) {
 		if (NSLocationInRange(index, scene.range) && scene.line != nil) return scene;
@@ -2667,7 +2720,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return nil;
 }
 
-- (NSArray*)scenesInSection:(OutlineScene*)topSection {
+/// Returns all scenes contained by this section. You should probably use `OutlineScene.children` though.
+- (NSArray*)scenesInSection:(OutlineScene*)topSection
+{
 	if (topSection.type != section) return @[];
 	
 	NSArray *outline = self.safeOutline;
@@ -2686,7 +2741,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return scenes;
 }
 
-- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber {
+/// Returns the scene with given number (string)
+- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber
+{
 	for (OutlineScene *scene in self.outline) {
 		if ([scene.sceneNumber.lowercaseString isEqualToString:sceneNumber.lowercaseString]) {
 			return scene;
@@ -2697,7 +2754,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 
 #pragma mark - Preprocessing for printing
 
-- (NSArray*)preprocessForPrinting {
+- (NSArray*)preprocessForPrinting
+{
     return [self preprocessForPrintingWithLines:self.safeLines printNotes:NO];
 }
 
@@ -2722,12 +2780,14 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
  */
 
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes {
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes
+{
 	if (!lines) lines = self.safeLines;
 	return [ContinuousFountainParser preprocessForPrintingWithLines:lines printNotes:printNotes settings:self.documentSettings];
 }
 
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings {
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings
+{
     // The array for printable elements
     NSMutableArray *elements = NSMutableArray.new;
     
@@ -2838,7 +2898,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 
 #pragma mark - Line identifiers (UUIDs)
 
-- (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines {
+/// Returns every line UUID as an array
+- (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines
+{
 	if (lines == nil) lines = self.lines;
 	
 	NSMutableArray *uuids = NSMutableArray.new;
@@ -2847,7 +2909,10 @@ NSUInteger prevLineAtLocationIndex = 0;
 	}
 	return uuids;
 }
-- (void)setIdentifiers:(NSArray*)uuids {
+
+/// Sets the given UUIDs to each line at the same index
+- (void)setIdentifiers:(NSArray*)uuids
+{
 	for (NSInteger i = 0; i < uuids.count; i++) {
 		id item = uuids[i];
 		NSUUID *uuid;
@@ -2864,7 +2929,10 @@ NSUInteger prevLineAtLocationIndex = 0;
 		}
 	}
 }
-- (void)setIdentifiersForOutlineElements:(NSArray*)uuids {
+
+/// Sets the given UUIDs to each outline element at the same index
+- (void)setIdentifiersForOutlineElements:(NSArray*)uuids
+{
     NSInteger i = 0;
     
     for (Line* line in self.safeLines) {
@@ -2887,15 +2955,18 @@ NSUInteger prevLineAtLocationIndex = 0;
 
 #pragma mark - Document settings
 
-- (BeatDocumentSettings*)documentSettings {
+- (BeatDocumentSettings*)documentSettings
+{
 	if (self.delegate) return self.delegate.documentSettings;
 	else if (self.staticDocumentSettings) return self.staticDocumentSettings;
 	else return nil;
 }
 
+
 #pragma mark - Separate title page & content for printing
 
-- (BeatScreenplay*)forPrinting {
+- (BeatScreenplay*)forPrinting
+{
 	return [BeatScreenplay from:self];
 }
 
@@ -2907,7 +2978,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 	};
 }
 
-- (void)report {
+- (void)report
+{
 	NSInteger lastPos = 0;
 	NSInteger lastLen = 0;
 	for (Line* line in self.lines) {
