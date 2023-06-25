@@ -50,7 +50,7 @@
 }
 
 /// Returns an attributed string for outline view
-+ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current withSynopsis:(bool)includeSynopsis isDark:(bool)dark {
++ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes isDark:(bool)dark {
 	Line *line = scene.line;
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
@@ -92,7 +92,8 @@
 		// Put omitted scenes in parentheses
 		if (line.omitted) string = [NSString stringWithFormat:@"(%@)", string];
 		
-		NSString *sceneNumber = (!line.omitted) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
+		// Only include scene number if it's requested
+		NSString *sceneNumber = (!line.omitted && includeSceneNumber) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
 		NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
 			NSForegroundColorAttributeName: sceneNumberColor,
 			NSFontAttributeName: font
@@ -153,6 +154,37 @@
 			#endif
 			
 			[resultString appendAttributedString:synopsisLine];
+		}
+	}
+	
+	if (includeNotes) {
+		for (BeatNoteData* note in scene.notes) {
+			if (note.content.length == 0) continue;
+			else if (NSIntersectionRange(note.range, scene.line.colorRange).length == note.range.length) continue;
+			else if ([note.content rangeOfString:@"marker"].location == 0) continue;
+			
+			NSString* noteStr = [NSString stringWithFormat:@"\n✎ %@", note.content];
+			
+			CGFloat fontSize = [OutlineViewItem fontSize];
+			BXFont* noteFont = [BXFont systemFontOfSize:fontSize];
+			
+			NSMutableParagraphStyle *noteStyle = NSMutableParagraphStyle.new;
+			noteStyle.lineSpacing = .65;
+			noteStyle.paragraphSpacingBefore = 4.0;
+			
+			BXColor* noteColor = ThemeManager.sharedManager.commentColor;
+			if (note.color) {
+				BXColor* c = [BeatColors color:note.color];
+				if (c != nil) noteColor = c;
+			}
+			
+			NSAttributedString* noteLine = [NSAttributedString.alloc initWithString:noteStr attributes:@{
+				NSFontAttributeName: noteFont,
+				NSForegroundColorAttributeName: noteColor,
+				NSParagraphStyleAttributeName: noteStyle
+			}];
+			
+			[resultString appendAttributedString:noteLine];
 		}
 	}
 

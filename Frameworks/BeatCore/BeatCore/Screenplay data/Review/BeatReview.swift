@@ -181,7 +181,7 @@ public protocol BeatReviewInterface {
 			let range = NSMakeRange(rangeArray[0], rangeArray[1])
 			
 			if (NSMaxRange(range) <= delegate.text().count) {
-				delegate.textStorage?().addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
+				delegate.textStorage().addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
 			}
 		}
 	}
@@ -194,7 +194,7 @@ public protocol BeatReviewInterface {
             delegate?.addAttribute(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
         }
         
-        self.delegate?.renderBackground?(for: currentRange)
+        self.delegate?.renderBackground(for: currentRange)
         delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
         #if os(macOS)
         delegate?.updateChangeCount(.changeDone)
@@ -205,7 +205,7 @@ public protocol BeatReviewInterface {
 	
     public func deleteReview(item:BeatReviewItem) {
         var deleteRange = NSMakeRange(NSNotFound, 0)
-        delegate?.textStorage?().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
+        delegate?.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
             let review = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
             
             if (review == item) {
@@ -215,21 +215,21 @@ public protocol BeatReviewInterface {
         })
         
         if (deleteRange.location != NSNotFound) {
-            delegate?.textStorage?().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
+            delegate?.textStorage().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
             delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
             
 #if os(macOS)
             editorView.item = nil
             popover.close()
             
-            delegate?.renderBackground?(for: deleteRange)
+            delegate?.renderBackground(for: deleteRange)
             delegate?.updateChangeCount(.changeDone)
 #endif
         }
 
         
         // Commit to attributed text cache
-        delegate?.attributedString()
+        _ = delegate?.attributedString()
     }
     
     @objc public func applyReview() {
@@ -248,11 +248,11 @@ public protocol BeatReviewInterface {
                                                         in: NSMakeRange(0, delegate?.text().count ?? 0)) as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
         
         if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
-            delegate?.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
+			textView?.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
         }
         
         // Commit to attributed text cache
-        delegate?.attributedString()
+        _ = delegate?.attributedString()
     }
     
 #if os(macOS)
@@ -265,7 +265,7 @@ public protocol BeatReviewInterface {
 		
 		// If the cursor landed on a review, display the review at that location
 		if (range.length == 0) {
-			let attrs = delegate?.textStorage?().attributes(at: range.location, effectiveRange: effectiveRange)
+			let attrs = delegate?.textStorage().attributes(at: range.location, effectiveRange: effectiveRange)
 			
 			guard let item = attrs?[BeatReview.attributeKey()] as? BeatReviewItem
 			else {
@@ -291,7 +291,7 @@ public protocol BeatReviewInterface {
 		
 		// This is a NEW, empty review. We'll check if there's another item right next to it.
 		if (reviewItem.emptyReview) {
-			delegate?.textStorage?().enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
+			delegate?.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
 				let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem.init(reviewString: "")
 				
 				if (!item.emptyReview) {

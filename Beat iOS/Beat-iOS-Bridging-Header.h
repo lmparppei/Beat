@@ -11,10 +11,9 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 
-#import "BeatHTMLScript.h"
 #import "BeatiOSFormatting.h"
 #import "OutlineViewItem.h"
 #import "BeatPreview.h"

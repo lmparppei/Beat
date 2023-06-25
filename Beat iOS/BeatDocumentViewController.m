@@ -16,7 +16,7 @@
 
 #import "Beat_iOS-Swift.h"
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
@@ -128,6 +128,9 @@
 	_revisionTracking.delegate = self;
 	[_revisionTracking setup];
 	
+	// Setup navigation item delegate
+	self.navigationItem.renameDelegate = self;
+		
 	// Hide text from view until loaded
 	self.textView.pageView.layer.opacity = 0.0;
 	
@@ -351,6 +354,12 @@
  }
  }
  */
+
+#pragma mark - Rename document
+
+- (void)renameDocumentTo:(NSString *)newName completion:(void (^)(NSError *))completion {
+	[self.document renameDocumentTo:newName];
+}
 
 #pragma mark - Getters for parser data
 
@@ -1361,5 +1370,30 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	//NSLog(@"Pagination did finish");
 }
 
+-(void)navigationItem:(UINavigationItem *)navigationItem didEndRenamingWithTitle:(NSString *)title {
+	if (![title.pathExtension isEqualToString:@"fountain"]) {
+		title = [title stringByAppendingString:@".fountain"];
+	}
+	
+	DocumentBrowserViewController* browser = DocumentBrowserViewController.new;
+	[browser renameDocumentAtURL:self.document.fileURL proposedName:title completionHandler:^(NSURL * _Nullable finalURL, NSError * _Nullable error) {
+		if (error) {
+			NSLog(@"ERROR! %@", error);
+			return;
+		}
+		
+		[self.document presentedItemDidMoveToURL:finalURL];
+	}];
+	
+	/*
+	NSLog(@"Title: %@", title);
+	
+	[self renameDocumentTo:title completion:^(NSError * error) {
+		if (error) {
+			NSLog(@"ERROR! %@", error);
+		}
+	}];
+	 */
+}
 
 @end

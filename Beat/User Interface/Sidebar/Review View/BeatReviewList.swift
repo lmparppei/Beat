@@ -41,7 +41,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		self.delegate = self
 		self.dataSource = self
 		
-		self.editorDelegate?.registerEditorView?(self)
+		self.editorDelegate?.registerEditorView(self)
 		
 		reload()
 	}

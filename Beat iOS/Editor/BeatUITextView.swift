@@ -161,12 +161,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 			return
 		}
 		
-		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
-		/*
-		if (containerHeight < enclosingScrollView.frame.height) {
-			containerHeight = enclosingScrollView.frame.height
-		}
-		*/
+		let containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
 		
 		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
 		self.textContainerInset = insets
@@ -243,7 +238,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		self.setNeedsDisplay()
 		self.setNeedsLayout()
 		
-		editorDelegate.setTypeAndFormat?(line, type: .empty)
+		editorDelegate.setTypeAndFormat(line, type: .empty)
 	}
 		
 
@@ -500,13 +495,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func scrollViewDidZoom(_ scrollView: UIScrollView) {
-		let frame = enclosingScrollView.frame
-		var x = (frame.width - pageView.frame.width) / 2
-		if (x < 0) { x = 0 }
-		
-		var pageFrame = pageView.frame
-		pageFrame.origin.x = x
-		pageView.frame = pageFrame
+		//
 	}
 	
 	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
@@ -532,6 +521,8 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func resizeScrollViewContent() {
+		print("Resizing SCROLL VIEW CONTENT")
+		
 		let layoutManager = self.layoutManager
 		let inset = self.textContainerInset
 		
@@ -569,7 +560,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 		guard let key = presses.first?.key else { return }
 		
 		if key.keyCode == .keyboardTab {
-			// Never allow tab
+			editorDelegate?.handleTabPress()
 			return
 		}
 		else if key.keyCode == .keyboardDeleteOrBackspace {
@@ -588,8 +579,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 
 		switch key.keyCode {
 		case .keyboardTab:
-			editorDelegate?.handleTabPress?()
-			break
+			return
 			
 		default:
 			super.pressesEnded(presses, with: event)

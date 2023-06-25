@@ -11,7 +11,6 @@
 #import <TargetConditionals.h>
 #import <BeatCore/BeatCore.h>
 
-
 @implementation BeatEditorFormattingActions
 
 static NSString *lineBreak = @"\n\n===\n\n";
@@ -249,7 +248,7 @@ static NSString *revisionAttribute = @"Revision";
     if (_delegate.selectedRange.length == 0) return;
     
     NSRange range = _delegate.selectedRange;
-    NSString* string = [_delegate.getTextView.string substringWithRange:range];
+    NSString* string = [_delegate.text substringWithRange:range];
     
     [_delegate replaceRange:range withString:string.uppercaseString];
 }
@@ -475,6 +474,24 @@ static NSString *revisionAttribute = @"Revision";
 	} else {
 		return range;
 	}
+}
+
+- (IBAction)addMarker:(id)sender {
+
+    NSString* value = @"";
+    
+    // A cross-platform way to get the possible additional color value
+    if ([sender valueForKey:@"colorKey"] != nil) {
+        value = [NSString stringWithFormat:@" %@", [sender valueForKey:@"colorKey"]];
+    }
+    
+    NSString* marker = [NSString stringWithFormat:@"[[marker%@]]", value];
+    if (self.delegate.currentLine.type != empty) {
+        // Add at the end of this line
+        self.delegate.selectedRange = NSMakeRange(NSMaxRange(self.delegate.currentLine.textRange), 0);
+        marker = [NSString stringWithFormat:@" %@", marker];
+    }
+    [self.delegate replaceRange:self.delegate.selectedRange withString:marker];
 }
 
 @end

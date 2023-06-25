@@ -42,10 +42,7 @@ final class BeatExportViewController:UIViewController, PrintViewDelegate {
 				avc.popoverPresentationController?.barButtonItem = self.senderButton
 				self.senderVC?.present(avc, animated: true)
 			}
-			
 		}
-		
-		
 	}
 	
 	func viewController() -> UIViewController! {
