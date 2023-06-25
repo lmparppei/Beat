@@ -319,7 +319,8 @@
 	
 	[self makeResident];
 }
-- (void)updateOutline:(NSArray*)outline {
+- (void)updateOutline:(NSArray*)outline
+{
 	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) return;
 	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
 }

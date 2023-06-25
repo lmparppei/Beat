@@ -239,12 +239,8 @@
 
 	// Store current outline
 	NSArray* outline = self.outline;
-		
-	if (changes.needsFullUpdate) {
-		NSLog(@"We need a full update!");
-	}
 	
-	if (changes.removedElements.count > 0 || changes.addedElements.count > 0 || ![_cachedOutline isEqualToArray:self.outline] || changes.needsFullUpdate) {
+	if (changes.removed.count > 0 || changes.added.count > 0 || ![_cachedOutline isEqualToArray:self.outline] || changes.needsFullUpdate) {
 		
 		_cachedOutline = self.outline.copy;
 		[self reloadData];
@@ -254,7 +250,7 @@
 		[NSAnimationContext beginGrouping];
 		[NSAnimationContext.currentContext setDuration:0.0];
 		
-		for (OutlineScene* element in changes.updatedElements.allObjects) {
+		for (OutlineScene* element in changes.updated.allObjects) {
 			[self reloadItem:element];
 		}
 	}

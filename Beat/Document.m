@@ -1656,19 +1656,17 @@ static NSWindow __weak *currentKeyWindow;
 	OutlineChanges* changesInOutline = self.parser.changesInOutline;
 
 	// Update scene numbers
-	for (OutlineScene* scene in changesInOutline.updatedElements) {
+	for (OutlineScene* scene in changesInOutline.updated) {
 		if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
 	}
 	
 	//if (changeInOutline == YES) {
 	if (changesInOutline.hasChanges == YES) {
-		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
-		
 		// if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline.updatedElements];
 		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changesInOutline];
 		if (self.timeline.visible) [self.timeline reload];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
-		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
+		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
 	} else {
 		if (self.timeline.visible) [_timeline refreshWithDelay];
 	}
@@ -4345,12 +4343,13 @@ static NSArray<Line*>* cachedTitlePage;
 	}
 }
 
-- (void)updatePluginsWithOutline:(NSArray*)outline {
+- (void)updatePluginsWithOutline:(NSArray*)outline changes:(OutlineChanges* _Nullable)changes {
 	// Run resident plugins which are listening for selection changes
 	if (!self.runningPlugins) return;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		//[plugin updateOutline:outline changes:changes];
 		[plugin updateOutline:outline];
 	}
 }

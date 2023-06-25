@@ -65,10 +65,18 @@
 
 @end
 
-@interface OutlineChanges:NSObject <NSCopying>
-@property (nonatomic) NSMutableSet<OutlineScene*>* addedElements;
-@property (nonatomic) NSMutableSet<OutlineScene*>* removedElements;
-@property (nonatomic) NSMutableSet<OutlineScene*>* updatedElements;
+@protocol OutlineChangesExports <JSExport>
+@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* added;
+@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* removed;
+@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* updated;
+@property (readonly, nonatomic) bool needsFullUpdate;
+- (bool)hasChanges;
+@end
+
+@interface OutlineChanges:NSObject <NSCopying, OutlineChangesExports>
+@property (nonatomic) NSMutableSet<OutlineScene*>* added;
+@property (nonatomic) NSMutableSet<OutlineScene*>* removed;
+@property (nonatomic) NSMutableSet<OutlineScene*>* updated;
 @property (nonatomic) bool needsFullUpdate;
 - (bool)hasChanges;
 @end

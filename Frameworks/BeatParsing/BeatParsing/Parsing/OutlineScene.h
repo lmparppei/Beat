@@ -78,6 +78,7 @@ typedef NS_ENUM(NSUInteger, OutlineChangeType) {
 @property (nonatomic) NSMutableArray * beats;
 
 @property (nonatomic) NSMutableSet *markerColors;
+@property (nonatomic) NSMutableArray* markers;
 
 @property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic) NSUInteger length;
