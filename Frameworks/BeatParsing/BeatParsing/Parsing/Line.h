@@ -40,6 +40,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 	typeCount // This is the the max number of line types, for data storing purposes
 };
 
+@class OutlineScene;
 
 @protocol LineExports <JSExport>
 @property (nonatomic) NSUUID *uuid; // You can actually write into the UUID
@@ -118,6 +119,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @protocol LineDelegate <NSObject>
 @property (readonly) NSMutableArray *lines;
+- (NSArray<Line*>*)linesForScene:(OutlineScene*)outline;
 @end
 
 @class Storybeat;

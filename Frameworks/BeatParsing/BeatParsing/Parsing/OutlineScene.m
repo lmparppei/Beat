@@ -6,32 +6,27 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
- 
- Ideas for redesign at some point:
- Using delegation, we could calculate the length only when required.
- Honstely, it's pretty unclear if this would actually give a performance boost or loss,
- but it shouldn't be *that* bad. In some cases, like when typing on a heading line,
- the new method would probably be a lot more efficient.
- 
- */
-
 #import <Foundation/Foundation.h>
 #import "OutlineScene.h"
 #import "ContinuousFountainParser.h"
 
 @implementation OutlineScene
 
-+ (OutlineScene*)withLine:(Line*)line delegate:(id)delegate {
++ (OutlineScene*)withLine:(Line*)line delegate:(id)delegate
+{
 	return [[OutlineScene alloc] initWithLine:line delegate:delegate];
 }
 
-+ (OutlineScene*)withLine:(Line*)line {
++ (OutlineScene*)withLine:(Line*)line
+{
 	return [[OutlineScene alloc] initWithLine:line];
 }
-- (id)initWithLine:(Line*)line {
+
+- (id)initWithLine:(Line*)line
+{
 	return [self initWithLine:line delegate:nil];
 }
+
 - (id)initWithLine:(Line*)line delegate:(id)delegate
 {
 	if ((self = [super init]) == nil) { return nil; }
@@ -44,10 +39,16 @@
     
 	return self;
 }
-- (NSRange)range {
+
+/// Calculates the range for this scene
+- (NSRange)range
+{
 	return NSMakeRange(self.position, self.length);
 }
--(NSInteger)timeLength {
+
+/// Returns a very unreliable "chronometric" length for the scene
+-(NSInteger)timeLength
+{
 	// Welllll... this is a silly implementation, but let's do it.
 	// We'll measure scene length purely by the character length, but let's substract the scene heading length
 	NSInteger length = self.length - self.line.string.length + 40;
@@ -58,11 +59,14 @@
 
 #pragma mark - JSON serialization
 
-// Plugin compatibility
-- (NSDictionary*)json {
+/// Returns JSON data for scene properties (convenience method)
+- (NSDictionary*)json
+{
 	return [self forSerialization];
 }
-- (NSDictionary*)forSerialization {
+/// Returns JSON data for scene properties
+- (NSDictionary*)forSerialization
+{
     NSMutableArray <NSDictionary*>*synopsis = [NSMutableArray arrayWithCapacity:_synopsis.count];
     for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
     
@@ -96,7 +100,8 @@
 
 #pragma mark - Section hierarchy
 
--(NSInteger)sectionDepth {
+-(NSInteger)sectionDepth
+{
     self.oldSectionDepth = self.line.sectionDepth;
     return _sectionDepth;
 }
@@ -125,9 +130,9 @@
 
 #pragma mark - Generated properties
 
--(NSUInteger)length {
+-(NSUInteger)length
+{
 	if (!_delegate) return _length;
-	if (self.type == synopse) return self.line.range.length;
 	
 	NSArray <Line*> *lines = self.delegate.lines;
 	NSInteger index = [lines indexOfObject:self.line];
@@ -151,14 +156,21 @@
 	return length;
 }
 
--(NSArray*)characters {
-	NSArray *lines = self.delegate.lines;
-	NSInteger index = [lines indexOfObject:self.line];
+/// Fetches the lines for this scene.
+/// - note: The scene has to have a delegate set for this to work. In a normal situation, this should be the case, but if you are receiving an empty array or getting an error, check if there are issues with initialization.
+-(NSArray<Line*>*)lines
+{
+    return [self.delegate linesForScene:self];
+}
+
+/// Returns an array of characters who have dialogue in this scene
+-(NSArray*)characters
+{
+    NSArray *lines = self.lines;
 	
 	NSMutableSet *names = NSMutableSet.set;
 	
-	for (NSInteger i = index + 1; i < lines.count; i++) {
-		Line *line = lines[i];
+	for (Line* line in lines) {
 		if (line.isOutlineElement && line.type != synopse) break;
 		else if (line.type == character || line.type == dualDialogueCharacter) {
 			NSString *characterName = line.characterName;
@@ -169,7 +181,9 @@
 	return names.allObjects;
 }
 
--(NSUInteger)omissionStartsAt {
+/// An experimental method for finding where the omission covering this scene begins at.
+-(NSUInteger)omissionStartsAt
+{
 	if (!self.omitted) return -1;
 	
 	NSArray *lines = self.delegate.lines;
@@ -187,7 +201,9 @@
 	return -1;
 }
 
--(NSUInteger)omissionEndsAt {
+/// An experimental method for finding where the omission covering this scene ends at.
+-(NSUInteger)omissionEndsAt
+{
 	if (!self.omitted) return -1;
 	
 	NSArray *lines = self.delegate.lines;
@@ -207,12 +223,10 @@
 	return -1;
 }
 
-- (NSArray*)storylines {
-	NSMutableArray *storylines = NSMutableArray.array;
-	for (Storybeat *beat in self.beats) {
-		[storylines addObject:beat.storyline];
-	}
-	return storylines;
+/// Returns the storylines (beats) in this scene
+- (NSArray*)storylines
+{
+	return self.beats.copy;
 }
 
 
@@ -224,7 +238,8 @@
 
 #pragma mark - Debugging
 
--(NSString *)description {
+-(NSString *)description
+{
     return [NSString stringWithFormat:@"Scene: %@ (pos %lu / len %lu)", self.string, self.position, self.length];
 }
 

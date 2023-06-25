@@ -49,6 +49,7 @@ typedef NS_ENUM(NSUInteger, OutlineChangeType) {
 
 @property (nonatomic, readonly) NSMutableArray * characters;
 
+-(NSArray<Line*>*)lines;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 - (NSDictionary*)forSerialization;
@@ -94,6 +95,7 @@ typedef NS_ENUM(NSUInteger, OutlineChangeType) {
 
 @property (nonatomic) bool omitted;
 
+- (NSArray<Line*>*)lines;
 - (NSString*)stringForDisplay;
 - (NSRange)range;
 - (NSInteger)timeLength;
