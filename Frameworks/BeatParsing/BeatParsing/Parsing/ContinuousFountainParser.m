@@ -42,38 +42,6 @@
 
 #pragma mark - Parser
 
-@implementation OutlineChanges
-- (instancetype)init
-{
-    self = [super init];
-    
-    self.updated = NSMutableSet.new;
-    self.removed = NSMutableSet.new;
-    self.added = NSMutableSet.new;
-    
-    return self;
-}
-- (bool)hasChanges
-{
-    return (self.updated.count > 0 || self.removed.count > 0 || self.added.count > 0 || self.needsFullUpdate);
-}
-- (id)copy
-{
-    OutlineChanges* changes = OutlineChanges.new;
-    changes.updated = self.updated;
-    changes.removed = self.removed;
-    changes.added = self.added;
-    changes.needsFullUpdate = self.needsFullUpdate;
-    
-    return changes;
-}
-
-- (nonnull id)copyWithZone:(nullable NSZone *)zone {
-    return self.copy;
-}
-
-@end
-
 @interface ContinuousFountainParser () {
 	// Line cache. I don't know why this is an iVar.
 	__weak Line * _prevLineAtLocation;
@@ -593,10 +561,12 @@ static NSDictionary* patterns;
 	// Save the original line type
 	LineType oldType = currentLine.type;
 	bool oldOmitOut = currentLine.omitOut;
+    bool oldNoteIn = currentLine.noteIn;
 	bool oldNoteOut = currentLine.noteOut;
 	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
 	bool oldNoteTermination = currentLine.cancelsNoteBlock;
 	bool notesNeedParsing = NO;
+    NSIndexSet* oldNotes = currentLine.noteRanges.copy;
 	
     // Parse correct type
 	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
@@ -610,8 +580,9 @@ static NSDictionary* patterns;
         // This line became outline element
         [self addOutlineElement:currentLine];
     }
-    else if (currentLine.isOutlineElement && (oldType == section || oldType == heading)) {
-        // The heading / section was changed
+    else if ((currentLine.isOutlineElement && (oldType == section || oldType == heading)) ||
+             (oldNotes != nil && ![oldNotes isEqualToIndexSet:currentLine.noteRanges])) {
+        // The heading / section was changed, or note ranges were edited
         [self addUpdateToOutlineAtLine:currentLine];
     } else {
         // In other case, let's see if we should update the scene
@@ -621,55 +592,9 @@ static NSDictionary* patterns;
     // Mark the current index as changed
 	[self.changedIndices addIndex:index];
 	
+    
 	// Parse multi-line note ranges
-	// This is a mess, and written using trial & error. Dread lightly.
-	if (currentLine.endsNoteBlock != oldEndsNoteBlock) {
-		// A note block which was previously terminated, is no longer that
-		if (!currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = YES;
-		else if (currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = NO;
-		notesNeedParsing = YES;
-	}
-	
-	if (currentLine.noteIn && (currentLine.type == empty || currentLine == _lines.lastObject)) {
-		// Empty (or last) line automatically cancels a note block
-		currentLine.cancelsNoteBlock = YES;
-		NSIndexSet *noteIndices = [self cancelNoteBlockAt:currentLine];
-		[self.changedIndices addIndexes:noteIndices];
-	}
-	else if (currentLine.noteOut) {
-		// Something else was changed and note spills out of the block, so we need to reparse the whole block
-		for (NSInteger ni = [self.lines indexOfObject:currentLine]; ni<self.lines.count; ni++) {
-			Line *nextLine = self.lines[ni];
-			if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
-				NSIndexSet *noteIndices = [self terminateNoteBlockAt:nextLine];
-				[self.changedIndices addIndexes:noteIndices];
-				break;
-			}
-			else if (nextLine.type == empty) {
-				[self.changedIndices addIndexes:[self cancelNoteBlockAt:nextLine]];
-				break;
-			}
-		}
-		notesNeedParsing = YES;
-	}
-	else if (currentLine.noteOut != oldNoteOut && !currentLine.noteOut) {
-		// Note no longer bleeds out of this line
-		for (NSInteger ni = [self.lines indexOfObject:currentLine] + 1; ni < self.lines.count; ni++) {
-			Line *nextLine = self.lines[ni];
-			if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
-				NSIndexSet *noteIndices = [self cancelNoteBlockAt:nextLine];
-				[self.changedIndices addIndexes:noteIndices];
-				break;
-			}
-			else if (!nextLine.noteIn) break;
-		}
-	}
-	
-	if (currentLine.noteIn && [currentLine.string containsString:@"]]"] && [self.lines indexOfObject:currentLine] > 0) {
-		// This line potentially terminates a note block
-		NSIndexSet *noteIndices = [self terminateNoteBlockAt:currentLine];
-		[self.changedIndices addIndexes:noteIndices];
-	}
+    notesNeedParsing = [self parseNotesAt:index didBleedNoteOut:oldNoteOut didReceiveNote:oldNoteIn didEndNoteBlock:oldEndsNoteBlock];
 	
 	if (index > 0) {
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
@@ -1602,9 +1527,15 @@ static NSDictionary* patterns;
 		Line *l = self.lines[i];
 		
 		if ([l.string containsString:@"[["]) {
-			[l.noteRanges addIndexes:l.noteOutIndices];
-			[changedIndices addIndex:i];
-			break;
+            for (NSInteger k=l.string.length-1; k>0; k--) {
+                if ([l.string characterAtIndex:k] == '[' && [l.string characterAtIndex:k-1] == '[') {
+                    NSInteger startIndex = k - 1;
+                    l.noteOutIndices = [NSMutableIndexSet.alloc initWithIndexesInRange:NSMakeRange(startIndex, l.length - startIndex)];
+                    [l.noteRanges addIndexes:l.noteOutIndices];
+                    [changedIndices addIndex:i];
+                    break;
+                }
+            }
 		} else {
 			[l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
 			[changedIndices addIndex:i];
@@ -1616,21 +1547,75 @@ static NSDictionary* patterns;
 	return changedIndices;
 }
 
+- (bool)findNoteBlockStartAt:(Line*)line index:(NSInteger)idx
+{
+    NSMutableIndexSet* changedIndices = NSMutableIndexSet.new;
+    [changedIndices addIndex:idx];
+    
+    bool found = false;
+    
+    NSInteger noteStartLine = NSNotFound;
+    NSInteger noteStartIndex = NSNotFound;
+    
+    for (NSInteger i=idx-1; i>=0; i--) {
+        Line* l = self.lines[i];
+                
+        if (l.type == empty) break;
+        [changedIndices addIndex:i];
+        
+        for (NSInteger k=l.string.length-1; k>=0; k--) {
+            if (k > 0) {
+                unichar c = [l.string characterAtIndex:k];
+                
+                if (c == ']' && [l.string characterAtIndex:k-1] == ']') {
+                    // Cancel right away at terminating note
+                    break;
+                }
+                else if (c == '[' && [l.string characterAtIndex:k-1] == '[') {
+                    // The note opening was found
+                    found = true;
+                    noteStartLine = i;
+                    noteStartIndex = k - 1;
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Note block start found, let's make each line in between a note
+    if (found) {
+        if ([line.string containsString:@"]]"]) {
+            [line.noteInIndices addIndexesInRange:NSMakeRange(0, [line.string rangeOfString:@"]]"].location)];
+        }
+        
+        for (NSInteger i=idx - 1; i>=noteStartLine; i--) {
+            Line* l = self.lines[i];
+            if (i == noteStartLine) {
+                l.noteOutIndices = [NSMutableIndexSet.alloc initWithIndexesInRange:NSMakeRange(noteStartIndex, l.string.length - noteStartIndex)];
+            } else {
+                [l.noteRanges addIndexesInRange:NSMakeRange(0, l.string.length)];
+            }
+        }
+    }
+    
+    [_changedIndices addIndexes:changedIndices];
+    return found;
+}
+
 - (NSIndexSet*)cancelNoteBlockAt:(Line*)line {
 	return [self cancelNoteBlockAt:line index:[self.lines indexOfObject:line]];
 }
 
 - (NSIndexSet*)cancelNoteBlockAt:(Line*)line index:(NSInteger)idx {
-	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
 	if (idx == NSNotFound) return changedIndices;
 	
+    // (What is this?)
+    line.noteOut = NO;
+    
+    // See if the block was previously ACTUALLY formatted as a block
 	Line *prevLine = [self previousLine:line];
-	
-	line.noteOut = NO;
-	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
-	if (prevLine.noteOut) {
-		actuallyCancelsBlock = YES;
-	}
+	bool actuallyCancelsBlock = (prevLine.noteOut);
 	
 	// Look behind for note ranges
 	for (NSInteger i = idx-1; i >= 0; i--) {
@@ -1638,6 +1623,7 @@ static NSDictionary* patterns;
 		
 		if ([l.string containsString:@"[["]) {
 			[l.noteRanges removeIndexes:l.noteOutIndices];
+            [l.noteOutIndices removeAllIndexes];
 			[changedIndices addIndex:i];
 			break;
 		} else {
@@ -1662,15 +1648,79 @@ static NSDictionary* patterns;
 			[changedIndices addIndex:i];
 			break;
 		} else {
+            if (l.noteRanges.count == 0) break;
+            
 			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
 			[changedIndices addIndex:i];
 		}
 	}
 
-	
 	[_changedIndices addIndexes:changedIndices];
 	
 	return changedIndices;
+}
+
+/// Parses changes to multi-line notes beginning from the given index.
+-(bool)parseNotesAt:(NSInteger)lineIndex didBleedNoteOut:(bool)oldNoteOut didReceiveNote:(bool)oldNoteIn didEndNoteBlock:(bool)oldEndsNoteBlock
+{
+    // This is a mess, and written using trial & error. Dread lightly.
+    // I will buy a beer and a vegan burger for anyone who manages to fix this.
+    // TODO: Update in 2023-06: REWORK THIS WHOLE THING.
+
+    Line* line = self.lines[lineIndex];
+    bool notesNeedParsing = NO;
+    
+    if (line.endsNoteBlock != oldEndsNoteBlock) {
+        // A note block which was previously terminated, is no longer that
+        if (line.noteIn) line.noteOut = !line.endsNoteBlock;
+        notesNeedParsing = YES;
+    }
+    
+    if (line.noteIn && (line.type == empty || (line == _lines.lastObject && ![line.string containsString:@"]]"]))) {
+        // Empty (or last) line automatically cancels a note block
+        line.cancelsNoteBlock = YES;
+        
+        NSIndexSet *noteIndices = [self cancelNoteBlockAt:line];
+        [self.changedIndices addIndexes:noteIndices];
+    }
+    else if (line.noteOut) {
+        // Something else was changed and note spills out of the block, so we need to reparse the whole block
+        for (NSInteger ni = [self.lines indexOfObject:line]; ni<self.lines.count; ni++) {
+            Line *nextLine = self.lines[ni];
+            if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
+                NSIndexSet *noteIndices = [self terminateNoteBlockAt:nextLine];
+                [self.changedIndices addIndexes:noteIndices];
+                [self findNoteBlockStartAt:nextLine index:ni];
+                break;
+            }
+            else if (nextLine.type == empty) {
+                [self.changedIndices addIndexes:[self cancelNoteBlockAt:nextLine]];
+                break;
+            }
+        }
+        
+        notesNeedParsing = YES;
+    }
+    else if (line.noteOut != oldNoteOut && !line.noteOut) {
+        // Note no longer bleeds out of this line
+        for (NSInteger ni = [self.lines indexOfObject:line] + 1; ni < self.lines.count; ni++) {
+            Line *nextLine = self.lines[ni];
+            if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
+                NSIndexSet *noteIndices = [self cancelNoteBlockAt:nextLine];
+                [self.changedIndices addIndexes:noteIndices];
+                break;
+            }
+            else if (!nextLine.noteIn) break;
+        }
+    }
+    
+    if (line.noteIn && [line.string containsString:@"]]"] && lineIndex > 0) {
+        // This line potentially terminates a note block
+        NSIndexSet *noteIndices = [self terminateNoteBlockAt:line];
+        [self.changedIndices addIndexes:noteIndices];
+    }
+    
+    return notesNeedParsing;
 }
 
 

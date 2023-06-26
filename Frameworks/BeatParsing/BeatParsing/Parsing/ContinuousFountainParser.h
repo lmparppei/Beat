@@ -13,6 +13,7 @@
 #import "BeatDocumentSettings.h"
 #import "BeatExportSettings.h"
 #import "BeatScreenplay.h"
+#import "OutlineChanges.h"
 
 @class OutlineScene;
 
@@ -63,22 +64,6 @@
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position;
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
 
-@end
-
-@protocol OutlineChangesExports <JSExport>
-@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* added;
-@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* removed;
-@property (readonly, nonatomic) NSMutableSet<OutlineScene*>* updated;
-@property (readonly, nonatomic) bool needsFullUpdate;
-- (bool)hasChanges;
-@end
-
-@interface OutlineChanges:NSObject <NSCopying, OutlineChangesExports>
-@property (nonatomic) NSMutableSet<OutlineScene*>* added;
-@property (nonatomic) NSMutableSet<OutlineScene*>* removed;
-@property (nonatomic) NSMutableSet<OutlineScene*>* updated;
-@property (nonatomic) bool needsFullUpdate;
-- (bool)hasChanges;
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
