@@ -11,15 +11,8 @@
 #import "Line.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
-typedef NS_ENUM(NSUInteger, OutlineChangeType) {
-    none = 0,
-    SceneAdded,
-    SceneRemoved
-};
-
 @class OutlineScene;
 
-// JavaScript interface
 @protocol OutlineSceneExports <JSExport>
 @property (nonatomic, readonly) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
@@ -62,38 +55,58 @@ typedef NS_ENUM(NSUInteger, OutlineChangeType) {
 
 @property (nonatomic, weak) id<LineDelegate> delegate;
 
-@property (nonatomic, weak) Line* line; /// The heading line of this scene
-@property (nonatomic, weak) OutlineScene* parent; /// Either a SECTION (for scenes) or a HEADING for synopsis lines
-@property (nonatomic) NSMutableArray <OutlineScene*>* children; /// Children of this scene (if a section, or if it contains synopsis lines)
+/// The heading line of this scene
+@property (nonatomic, weak) Line* line;
+/// The `section` which contains this scene
+@property (nonatomic, weak) OutlineScene* parent;
+/// How deep in the hierarchy is this outline element (`0` is top-level)
+@property (nonatomic) NSInteger sectionDepth;
+/// `true` if this scene is wrapped in `/* */`
+@property (nonatomic) bool omitted;
 
-@property (nonatomic) NSMutableArray<Line*>* synopsis;
+/// Children of this `section`
+@property (nonatomic) NSMutableArray <OutlineScene*>* children;
+/// A getter for the lines in this scene. Requires a `LineDelegate`.
 @property (nonatomic) NSMutableArray<Line*>* lines;
 
+/// An array of synopsis lines in this scene
+@property (nonatomic) NSMutableArray<Line*>* synopsis;
+/// An array of all notes contained by this scene (including markers and heading colors etc.)
 @property (nonatomic) NSMutableArray<BeatNoteData*>* notes;
-
-@property (strong, nonatomic) NSString * string; /// Clean string representation of the line
-@property (nonatomic) LineType type;
-@property (nonatomic) NSString * sceneNumber;
-@property (nonatomic, readonly) NSString * color;
-@property (nonatomic) NSArray * storylines;
+/// Story beats contained by this scene
 @property (nonatomic) NSMutableArray * beats;
+/// An array of storylines contained by this scene (basically a copy of `.beats` array)
+@property (nonatomic) NSArray * storylines;
+/// An array of characters with dialogue in this scene
+@property (nonatomic) NSMutableArray * characters;
 
+/// Clean string representation of the line
+@property (strong, nonatomic) NSString* string;
+/// Outline element type (forwarded from the heading line)
+@property (nonatomic) LineType type;
+/// Scene number (forwarded from the heading line)
+@property (nonatomic) NSString * sceneNumber;
+/// Outline element color (forwarded from the heading line)
+@property (nonatomic, readonly) NSString * color;
+
+/// Colors of the markers in this scene
 @property (nonatomic) NSMutableSet *markerColors;
+/// All markers in this scene
 @property (nonatomic) NSMutableArray* markers;
 
+/// Starting position of the outline element (forwarded from the heading line)
 @property (nonatomic, readonly) NSUInteger position;
+/// Length of the scene (calculated property, works only with a `LineDelegate` connected)
 @property (nonatomic) NSUInteger length;
-@property (nonatomic, readonly) NSUInteger sceneStart;  // backwards compatibility
-@property (nonatomic, readonly) NSUInteger sceneLength;  // backwards compatibility
+/// The same as `.position`, here for backwards compatibility
+@property (nonatomic, readonly) NSUInteger sceneStart;
+/// The same as `.length`, here for backwards compatibility
+@property (nonatomic, readonly) NSUInteger sceneLength;
 
 @property (nonatomic) NSUInteger omissionStartsAt;
 @property (nonatomic) NSUInteger omissionEndsAt;
 
-@property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSInteger oldSectionDepth;
-@property (nonatomic) NSMutableArray * characters;
-
-@property (nonatomic) bool omitted;
 
 - (NSArray<Line*>*)lines;
 - (NSString*)stringForDisplay;
@@ -101,4 +114,5 @@ typedef NS_ENUM(NSUInteger, OutlineChangeType) {
 - (NSInteger)timeLength;
 - (NSString*)typeAsString;
 - (NSDictionary*)forSerialization;
+- (NSDictionary*)json;
 @end
