@@ -65,6 +65,7 @@ NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
 NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
 NSString* const BeatSettingShowSceneNumbersInOutline    = @"showSceneNumbersInOutline";
 NSString* const BeatSettingShowNotesInOutline           = @"showNotesInOutline";
+NSString* const BeatSettingShowMarkersInOutline        = @"showMarkersInOutline";
 
 NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 
@@ -129,6 +130,7 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
         BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
         BeatSettingShowSceneNumbersInOutline: @[BeatSettingShowSceneNumbersInOutline, @YES],
         BeatSettingShowNotesInOutline: @[BeatSettingShowNotesInOutline, @YES],
+        BeatSettingShowMarkersInOutline: @[BeatSettingShowMarkersInOutline, @YES],
         
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
         

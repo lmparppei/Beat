@@ -16,6 +16,7 @@ class BeatOutlineSettings: NSViewController {
 	@IBOutlet var showSynopsis:NSButton?
 	@IBOutlet var showNotes:NSButton?
 	@IBOutlet var showSceneNumbers:NSButton?
+	@IBOutlet var showMarkers:NSButton?
 	var settings:[String:NSButton] = [:]
 	
 	@objc weak var outlineDelegate:BeatOutlineSettingDelegate?
@@ -32,7 +33,8 @@ class BeatOutlineSettings: NSViewController {
 		self.settings = [
 			BeatSettingShowNotesInOutline: showNotes!,
 			BeatSettingShowSceneNumbersInOutline: showSceneNumbers!,
-			BeatSettingShowSynopsisInOutline: showSynopsis!
+			BeatSettingShowSynopsisInOutline: showSynopsis!,
+			BeatSettingShowMarkersInOutline: showMarkers!,
 		]
 		
 		let userDefaults = BeatUserDefaults.shared()

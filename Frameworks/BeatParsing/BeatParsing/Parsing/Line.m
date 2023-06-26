@@ -556,15 +556,18 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	}
 }
 
-- (NSArray*)noteContents {
+- (NSArray*)noteContents
+{
     return [self noteContentsWithRanges:false];
 }
 
-- (NSMutableDictionary<NSValue*, NSString*>*)noteContentsAndRanges {
+- (NSMutableDictionary<NSValue*, NSString*>*)noteContentsAndRanges
+{
     return [self noteContentsWithRanges:true];
 }
 
-- (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string {
+- (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string
+{
     string = string.lowercaseString;
 
     NSDictionary* notes = self.noteContentsAndRanges;
@@ -591,7 +594,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
     
     if (noteContent != nil) {
-        return @[ [NSValue valueWithRange:noteRange], noteContent ];
+        // For notes with a prefix, we need to check that the note isn't bleeding out.
+        if (NSMaxRange(noteRange) == self.length && self.noteOut) return nil;
+        else return @[ [NSValue valueWithRange:noteRange], noteContent ];
     } else {
         return nil;
     }

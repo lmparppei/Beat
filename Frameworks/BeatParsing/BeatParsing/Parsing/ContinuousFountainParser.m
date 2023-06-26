@@ -566,11 +566,12 @@ static NSDictionary* patterns;
 	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
 	bool oldNoteTermination = currentLine.cancelsNoteBlock;
 	bool notesNeedParsing = NO;
+    NSRange oldMarker = currentLine.markerRange;
     NSIndexSet* oldNotes = currentLine.noteRanges.copy;
 	
     // Parse correct type
 	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
-    
+        
     // Add, remove or update outline elements
     if ((oldType == section || oldType == heading) && !currentLine.isOutlineElement) {
         // This line is no longer an outline element
@@ -579,14 +580,18 @@ static NSDictionary* patterns;
     else if (currentLine.isOutlineElement && !(oldType == section || oldType == heading)) {
         // This line became outline element
         [self addOutlineElement:currentLine];
-    }
-    else if ((currentLine.isOutlineElement && (oldType == section || oldType == heading)) ||
-             (oldNotes != nil && ![oldNotes isEqualToIndexSet:currentLine.noteRanges])) {
-        // The heading / section was changed, or note ranges were edited
-        [self addUpdateToOutlineAtLine:currentLine];
     } else {
         // In other case, let's see if we should update the scene
-        [self addUpdateToOutlineIfNeededAt:index];
+        if ((currentLine.isOutlineElement && (oldType == section || oldType == heading)) ||
+            (oldNotes != nil && ![oldNotes isEqualToIndexSet:currentLine.noteRanges]) ||
+            !(NSEqualRanges(oldMarker, currentLine.markerRange)) ||
+            currentLine.noteRanges.count > 0 ||
+            currentLine.type == synopse ||
+            currentLine.markerRange.length ||
+            currentLine.isOutlineElement
+            ) {
+            [self addUpdateToOutlineAtLine:currentLine];
+        }
     }
     
     // Mark the current index as changed
@@ -1406,8 +1411,10 @@ static NSDictionary* patterns;
         NSRange range = key.rangeValue;
         NSString* content = noteContents[key].lowercaseString;
         
-        // We only want the last color on the line. The values come from a dictionary, so we can't be sure, so just skip it if it's an earlier one.
-        if (line.colorRange.location > range.location) continue;
+        // We only want the last color on the line, which DOESN'T bleed out.
+        // The values come from a dictionary, so we can't be sure, so just skip it if it's an earlier one.
+        if (line.colorRange.location > range.location ||
+            (NSMaxRange(range) == line.length && line.noteOut) ) continue;
         
         // We can define a color using both [[color red]] or just [[red]], or #ffffff
         if ([content containsString:@"color "]) {

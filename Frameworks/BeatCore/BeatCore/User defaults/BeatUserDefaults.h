@@ -39,9 +39,12 @@ extern NSString * const BeatSettingShowRevisedTextColor;
 extern NSString * const BeatSettingShowTags;
 extern NSString * const BeatSettingAutomaticContd;
 extern NSString * const BeatSettingZoomLevel;
+
 extern NSString * const BeatSettingShowSynopsisInOutline;
 extern NSString * const BeatSettingShowSceneNumbersInOutline;
 extern NSString * const BeatSettingShowNotesInOutline;
+extern NSString * const BeatSettingShowMarkersInOutline;
+
 extern NSString * const BeatSettingSuppressedAlert;
 
 extern NSString * const BeatSettingOutlineFontSizeModifier;

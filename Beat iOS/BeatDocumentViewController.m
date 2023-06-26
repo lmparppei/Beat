@@ -621,8 +621,7 @@ static bool buildPreviewImmediately = false;
 	}
 }
 
-// TODO: Just add text i/o class to delegate and edit the existing calls to these methods, rather than using this clunky macro.
-
+// TODO: (Some day) Expose text i/o class to delegate and edit the existing calls to these methods, rather than using this clunky macro.
 FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
@@ -889,15 +888,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Update formatting
 	[self applyFormatChanges];
 	
-	// If outline has changed, we will rebuild outline & timeline if needed
-	bool changeInOutline = [self.parser getAndResetChangeInOutline];
-	
 	// NOTE: calling this method removes the outline changes from parser
-	NSSet* changesInOutline = self.parser.changesInOutline;
+	OutlineChanges* changesInOutline = self.parser.changesInOutline;
 	
-	if (changeInOutline == YES) {
-		[self.parser createOutline];
-		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
+	if (changesInOutline.hasChanges) {
 		/*
 		 if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
 		 if (self.timeline.visible) [self.timeline reload];

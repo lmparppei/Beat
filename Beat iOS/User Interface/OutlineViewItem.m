@@ -12,6 +12,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import "OutlineViewItem.h"
 #import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
@@ -50,7 +51,8 @@
 }
 
 /// Returns an attributed string for outline view
-+ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes isDark:(bool)dark {
++ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark
+{
 	Line *line = scene.line;
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
@@ -158,19 +160,22 @@
 	}
 	
 	if (includeNotes) {
+		CGFloat fontSize = [OutlineViewItem fontSize];
+		BXFont* noteFont = [BXFont systemFontOfSize:fontSize];
+		
+		NSMutableParagraphStyle *noteStyle = NSMutableParagraphStyle.new;
+		noteStyle.lineSpacing = .65;
+		noteStyle.paragraphSpacingBefore = 4.0;
+		
 		for (BeatNoteData* note in scene.notes) {
 			if (note.content.length == 0) continue;
 			else if (NSIntersectionRange(note.range, scene.line.colorRange).length == note.range.length) continue;
-			else if ([note.content rangeOfString:@"marker"].location == 0) continue;
+			else if ([note.content rangeOfString:@"marker"].location == 0 ||
+					 [note.content rangeOfString:@"storyline"].location == 0 ||
+					 [note.content rangeOfString:@"color"].location == 0 ||
+					 [note.content rangeOfString:@"beat"].location == 0) continue;
 			
 			NSString* noteStr = [NSString stringWithFormat:@"\n✎ %@", note.content];
-			
-			CGFloat fontSize = [OutlineViewItem fontSize];
-			BXFont* noteFont = [BXFont systemFontOfSize:fontSize];
-			
-			NSMutableParagraphStyle *noteStyle = NSMutableParagraphStyle.new;
-			noteStyle.lineSpacing = .65;
-			noteStyle.paragraphSpacingBefore = 4.0;
 			
 			BXColor* noteColor = ThemeManager.sharedManager.commentColor;
 			if (note.color) {
@@ -185,6 +190,32 @@
 			}];
 			
 			[resultString appendAttributedString:noteLine];
+		}
+	}
+
+	if (includeMarkers) {
+		CGFloat fontSize = [OutlineViewItem fontSize];
+
+		NSMutableParagraphStyle *markerStyle = NSMutableParagraphStyle.new;
+		markerStyle.lineSpacing = .65;
+		markerStyle.paragraphSpacingBefore = 4.0;
+		
+		for (NSDictionary* marker in scene.markers) {
+			NSString* colorName = marker[@"color"];
+			
+			BXColor* color = (colorName.length > 0) ? [BeatColors color:colorName] : nil;
+			if (color == nil) color = [BeatColors color:@"orange"];
+			
+			NSString* description = [NSString stringWithFormat:@" %@", marker[@"description"]];
+			NSArray* blocks = @[
+				[AttributedBlock.alloc initWithType:AttributedBlockTypeText value:@"\n"],
+				[AttributedBlock.alloc initWithType:AttributedBlockTypeSymbol value:@"bookmark.fill"],
+				[AttributedBlock.alloc initWithType:AttributedBlockTypeText value:description],
+			];
+			
+			NSAttributedString* aStr = [NSAttributedString createWithBlocks:blocks font:[BXFont systemFontOfSize:fontSize] textColor:color symbolColor:BXColor.labelColor paragraphStyle:markerStyle];
+			
+			[resultString appendAttributedString:aStr];
 		}
 	}
 

@@ -292,6 +292,10 @@
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbersInOutline];
 }
+- (bool)showMarkers
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowMarkersInOutline];
+}
 
 #pragma mark - Delegation
 
@@ -313,7 +317,7 @@
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	
 	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes isDark:dark];
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
 	
 	return view;
 }
@@ -386,7 +390,7 @@
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
 		bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes isDark:dark];
+		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
 	}
 	return @"";
 	

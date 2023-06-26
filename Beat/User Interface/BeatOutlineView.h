@@ -37,7 +37,6 @@
 -(void)setup;
 
 -(void)reloadOutline;
--(void)reloadOutline:(NSSet*)changesInOutline;
 -(void)reloadOutlineWithChanges:(OutlineChanges*)changes;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (NSArray*)outline;

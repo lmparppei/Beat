@@ -8,17 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */ = {isa = PBXBuildFile; fileRef = B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */; };
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
 		B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */; };
 		B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
-		B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0728F01A8700657F5F /* BeatSceneTree.m */; };
 		B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0828F01A8700657F5F /* OutlineScene.m */; };
 		B6B37F1628F01A8700657F5F /* Storybeat.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0928F01A8700657F5F /* Storybeat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1828F01A8700657F5F /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0B28F01A8700657F5F /* Line.m */; };
 		B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0C28F01A8700657F5F /* FountainRegexes.m */; };
-		B6B37F1A28F01A8700657F5F /* BeatSceneTree.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1B28F01A8700657F5F /* ContinuousFountainParser.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0F28F01A8700657F5F /* OutlineScene.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1D28F01A8700657F5F /* Line.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F1028F01A8700657F5F /* Line.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -55,6 +55,8 @@
 
 /* Begin PBXFileReference section */
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
+		B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineChanges.h; sourceTree = "<group>"; };
+		B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineChanges.m; sourceTree = "<group>"; };
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
 		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
 		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
@@ -62,13 +64,11 @@
 		B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+EMOEmoji.h"; sourceTree = "<group>"; };
 		B6B37E8328F018A100657F5F /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinuousFountainParser.m; sourceTree = "<group>"; };
-		B6B37F0728F01A8700657F5F /* BeatSceneTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSceneTree.m; sourceTree = "<group>"; };
 		B6B37F0828F01A8700657F5F /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineScene.m; sourceTree = "<group>"; };
 		B6B37F0928F01A8700657F5F /* Storybeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Storybeat.h; sourceTree = "<group>"; };
 		B6B37F0A28F01A8700657F5F /* BeatParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 		B6B37F0B28F01A8700657F5F /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
 		B6B37F0C28F01A8700657F5F /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
-		B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatSceneTree.h; sourceTree = "<group>"; };
 		B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
 		B6B37F0F28F01A8700657F5F /* OutlineScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineScene.h; sourceTree = "<group>"; };
 		B6B37F1028F01A8700657F5F /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -155,8 +155,8 @@
 				B6B37F0B28F01A8700657F5F /* Line.m */,
 				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,
 				B6B37F0828F01A8700657F5F /* OutlineScene.m */,
-				B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */,
-				B6B37F0728F01A8700657F5F /* BeatSceneTree.m */,
+				B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */,
+				B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */,
 				B6B37F0928F01A8700657F5F /* Storybeat.h */,
 				B6B37F1128F01A8700657F5F /* Storybeat.m */,
 				B6B37F1228F01A8700657F5F /* FountainRegexes.h */,
@@ -243,10 +243,10 @@
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
 				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
-				B6B37F1A28F01A8700657F5F /* BeatSceneTree.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
 				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
 				B6D53C7929379A740039DF88 /* BeatMeasure.h in Headers */,
+				B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */,
 				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
 				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
 				B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */,
@@ -329,11 +329,11 @@
 				B6B37F1828F01A8700657F5F /* Line.m in Sources */,
 				B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6B37F4D28F0279700657F5F /* NSIndexSet+Subset.m in Sources */,
-				B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */,
 				B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */,
 				B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */,
 				B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */,
 				B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */,
+				B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */,
 				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
 				B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */,
 				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
