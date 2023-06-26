@@ -20,8 +20,6 @@
 #import "NSString+Regex.h"
 #import "NSMutableString+Regex.h"
 
-#import "BeatSceneTree.h"
-
 #import "NSCharacterSet+BadControlCharacters.h"
 #import "NSString+EMOEmoji.h"
 
