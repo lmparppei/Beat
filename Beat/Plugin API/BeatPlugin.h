@@ -346,7 +346,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)log:(NSString*)string;
 - (void)update:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;
-- (void)updateOutline:(NSArray*)outline;
+- (void)updateOutline:(OutlineChanges*)changes;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
 - (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices;
 - (void)closePluginWindow:(NSPanel*)window;

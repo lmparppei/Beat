@@ -4344,8 +4344,7 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		//[plugin updateOutline:outline changes:changes];
-		[plugin updateOutline:outline];
+		[plugin updateOutline:changes];
 	}
 }
 

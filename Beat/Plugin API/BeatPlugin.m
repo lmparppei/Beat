@@ -319,10 +319,10 @@
 	
 	[self makeResident];
 }
-- (void)updateOutline:(NSArray*)outline
+- (void)updateOutline:(OutlineChanges*)changes
 {
 	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) return;
-	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
+	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:@[changes]];
 }
 
 /// Creates a listener for selecting a new scene.
