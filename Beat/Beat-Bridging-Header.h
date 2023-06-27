@@ -30,4 +30,8 @@
 #import "BeatRendering.h"
 #import "BeatConsole.h"
 
+#import "ITSwitch.h"
+
+#import "BeatColorMenuItem.h"
+
 #endif /* Beat_Bridging_Header_h */

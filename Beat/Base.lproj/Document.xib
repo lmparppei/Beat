@@ -20,7 +20,6 @@
                 <outlet property="characterBox" destination="uDe-RI-kOI" id="qFD-eS-4J2"/>
                 <outlet property="characterList" destination="QGY-eB-GWe" id="w1u-3z-HN2"/>
                 <outlet property="colorMenu" destination="Tqc-M2-IZ5" id="p8e-fo-mfZ"/>
-                <outlet property="darkModeSwitch" destination="S22-Mw-UkV" id="LjC-kx-glN"/>
                 <outlet property="editorTab" destination="stc-hX-uX6" id="VsM-zw-nqb"/>
                 <outlet property="formattingActions" destination="bnh-y9-2pe" id="LoR-qT-gji"/>
                 <outlet property="lockButton" destination="ftJ-Zm-jkE" id="naF-WT-rXK"/>
@@ -32,21 +31,14 @@
                 <outlet property="outlineButton" destination="ULq-c1-qrj" id="TPP-Em-8Xy"/>
                 <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="EkH-y5-5vL"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
-                <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
-                <outlet property="pageSizePopup" destination="UOV-VP-tY1" id="4Sc-YE-3pD"/>
                 <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
                 <outlet property="previewController" destination="wZv-WF-8R7" id="EJs-2O-HbJ"/>
                 <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="uhU-gQ-L56"/>
-                <outlet property="quickSettingsView" destination="zD2-lE-mgt" id="tyu-JN-Hpu"/>
                 <outlet property="review" destination="Qdx-LL-csu" id="A6B-QM-KtI"/>
-                <outlet property="reviewModeSwitch" destination="m3h-pl-Otl" id="HKb-Ub-ne9"/>
-                <outlet property="revisionColorPopup" destination="qQI-Yr-iVj" id="Z6u-99-C0d"/>
-                <outlet property="revisionModeSwitch" destination="EIZ-TU-2Aq" id="KYW-ZN-35t"/>
                 <outlet property="revisionTracking" destination="N8j-Ng-1O5" id="1d2-Fn-OGe"/>
                 <outlet property="rightSidebarConstraint" destination="O0i-Sv-K16" id="i9U-UK-D8o"/>
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
                 <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
-                <outlet property="sceneNumbersSwitch" destination="bKc-za-gPA" id="26c-hz-YMj"/>
                 <outlet property="sideBarTabControl" destination="a6t-MZ-KDr" id="6JW-AT-9UF"/>
                 <outlet property="sideBarTabs" destination="O3A-UT-VXf" id="Boy-Jm-5xk"/>
                 <outlet property="splitHandle" destination="lKQ-7H-w5w" id="CIA-nS-5Ik"/>
@@ -2225,224 +2217,6 @@ Gw
             </items>
             <point key="canvasLocation" x="-579" y="65"/>
         </menu>
-        <customView id="zD2-lE-mgt" userLabel="Quick Settings">
-            <rect key="frame" x="0.0" y="0.0" width="208" height="318"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="djE-wS-Oh2">
-                    <rect key="frame" x="65" y="250" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbers" id="FcY-wT-YPP">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Oa-473">
-                    <rect key="frame" x="65" y="220" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" usesSingleLineMode="YES" id="JLw-Th-DgB">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="IdW-3r-Koe">
-                    <rect key="frame" x="65" y="96" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Revision Mode" id="fPt-b4-RaB">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <customView id="bKc-za-gPA" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="246" width="35" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="boolean" keyPath="checked" value="YES"/>
-                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
-                    <connections>
-                        <action selector="toggleQuickSetting:" target="-2" id="DVa-Kw-jnR"/>
-                    </connections>
-                </customView>
-                <customView id="Mef-QD-NsX" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="216" width="35" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
-                    <connections>
-                        <action selector="toggleQuickSetting:" target="-2" id="bF7-Zr-EC1"/>
-                    </connections>
-                </customView>
-                <customView id="EIZ-TU-2Aq" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="92" width="35" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
-                    <connections>
-                        <action selector="toggleQuickSetting:" target="-2" id="2tK-eG-b7e"/>
-                    </connections>
-                </customView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="k17-ar-uO8">
-                    <rect key="frame" x="65" y="24" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Review Mode" id="2DV-H2-pU8">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <customView id="m3h-pl-Otl" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="20" width="35" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
-                    <connections>
-                        <action selector="toggleQuickSetting:" target="-2" id="hYe-Ec-SRr"/>
-                    </connections>
-                </customView>
-                <box verticalHuggingPriority="750" boxType="separator" id="AYf-SB-Uer">
-                    <rect key="frame" x="12" y="170" width="184" height="5"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                </box>
-                <box verticalHuggingPriority="750" boxType="separator" id="Bgb-ne-OA9">
-                    <rect key="frame" x="12" y="125" width="184" height="5"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                </box>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ZZf-h8-5r0">
-                    <rect key="frame" x="18" y="282" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Quick Settings" id="mg9-HW-sgj">
-                        <font key="font" metaFont="systemBold"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ems-vl-Z7w">
-                    <rect key="frame" x="18" y="72" width="75" height="11"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision" id="Teo-oJ-Dwq">
-                        <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <popUpButton verticalHuggingPriority="750" id="qQI-Yr-iVj" userLabel="Revision Color">
-                    <rect key="frame" x="95" y="66" width="104" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <popUpButtonCell key="cell" type="push" title="First" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="Thz-O0-hCD" id="RQ5-js-cwq">
-                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" id="lCd-Rs-g3k">
-                            <items>
-                                <menuItem title="First" state="on" image="Color_Blue" id="Thz-O0-hCD" customClass="BeatColorMenuItem">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
-                                    </userDefinedRuntimeAttributes>
-                                </menuItem>
-                                <menuItem title="Second" image="Color_Orange" id="NfX-B5-spN" customClass="BeatColorMenuItem">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
-                                    </userDefinedRuntimeAttributes>
-                                </menuItem>
-                                <menuItem title="Third" image="Color_Purple" id="bbu-dp-keE" customClass="BeatColorMenuItem">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="purple"/>
-                                    </userDefinedRuntimeAttributes>
-                                </menuItem>
-                                <menuItem title="Fourth" image="Color_Green" id="gJz-gC-KoS" customClass="BeatColorMenuItem">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
-                                    </userDefinedRuntimeAttributes>
-                                </menuItem>
-                            </items>
-                        </menu>
-                    </popUpButtonCell>
-                    <connections>
-                        <action selector="selectRevisionColor:" target="-2" id="hrf-a4-FEG"/>
-                    </connections>
-                </popUpButton>
-                <popUpButton verticalHuggingPriority="750" id="UOV-VP-tY1" userLabel="Paper Size">
-                    <rect key="frame" x="97" y="136" width="102" height="25"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <popUpButtonCell key="cell" type="push" title="A4" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="bd3-1f-TNb" id="5tR-G3-0Nu" userLabel="Menu">
-                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="menu"/>
-                        <menu key="menu" id="YfC-sv-FfB">
-                            <items>
-                                <menuItem title="A4" state="on" id="bd3-1f-TNb">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <connections>
-                                        <action selector="selectPaperSize:" target="-2" id="mps-DY-MMG"/>
-                                    </connections>
-                                </menuItem>
-                                <menuItem title="US Letter" id="UFH-LF-mx7">
-                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                    <connections>
-                                        <action selector="selectPaperSize:" target="-2" id="6yU-98-QAF"/>
-                                    </connections>
-                                </menuItem>
-                            </items>
-                        </menu>
-                    </popUpButtonCell>
-                    <connections>
-                        <action selector="selectPaperSize:" target="-2" id="sUK-ox-Kwx"/>
-                    </connections>
-                </popUpButton>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WkG-bA-E2d">
-                    <rect key="frame" x="65" y="190" width="125" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Dark Mode" id="vbP-uh-iii">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <customView id="S22-Mw-UkV" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="186" width="35" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
-                    <connections>
-                        <action selector="toggleQuickSetting:" target="-2" id="eWb-VD-Qgj"/>
-                    </connections>
-                </customView>
-                <box verticalHuggingPriority="750" boxType="separator" id="Y1d-TQ-wF6">
-                    <rect key="frame" x="11" y="53" width="184" height="5"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                </box>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WY3-fe-OfP">
-                    <rect key="frame" x="18" y="142" width="75" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="6Yb-zo-0AS">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-            </subviews>
-            <point key="canvasLocation" x="566" y="-413"/>
-        </customView>
     </objects>
     <resources>
         <image name="CardsIcon" width="370" height="370"/>
@@ -2455,7 +2229,6 @@ Gw
         <image name="Color_None" width="15" height="15"/>
         <image name="Color_Orange" width="15" height="15"/>
         <image name="Color_Pink" width="15" height="15"/>
-        <image name="Color_Purple" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
         <image name="Dialogue" width="512" height="512"/>
         <image name="NSLockLockedTemplate" width="14" height="15"/>

@@ -13,10 +13,10 @@ import Cocoa
 }
 
 class BeatOutlineSettings: NSViewController {
-	@IBOutlet var showSynopsis:NSButton?
-	@IBOutlet var showNotes:NSButton?
-	@IBOutlet var showSceneNumbers:NSButton?
-	@IBOutlet var showMarkers:NSButton?
+	@IBOutlet weak var showSynopsis:NSButton?
+	@IBOutlet weak var showNotes:NSButton?
+	@IBOutlet weak var showSceneNumbers:NSButton?
+	@IBOutlet weak var showMarkers:NSButton?
 	var settings:[String:NSButton] = [:]
 	
 	@objc weak var outlineDelegate:BeatOutlineSettingDelegate?

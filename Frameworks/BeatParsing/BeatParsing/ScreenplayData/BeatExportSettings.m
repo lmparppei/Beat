@@ -33,13 +33,13 @@
 	if (self) {
 		_document = doc;
 		_operation = operation;
-		_header = (header.length) ? header : @"";
+		_header = (header.length) ? header.copy : @"";
 		_printSceneNumbers = printSceneNumbers;
 		_revisions = revisions.copy;
 		//_currentScene = scene;
 		_printNotes = printNotes;
 		_coloredPages = coloredPages;
-		_pageRevisionColor = revisedPageColor;
+		_pageRevisionColor = revisedPageColor.copy;
 		_paperSize = NSNotFound;
 	}
 	return self;

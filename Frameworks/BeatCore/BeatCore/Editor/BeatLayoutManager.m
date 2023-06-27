@@ -20,7 +20,7 @@
 @interface BeatLayoutManager()
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
 @property (nonatomic) NSMutableParagraphStyle* _Nullable sceneNumberStyle;
-@property (nonatomic) BXTextView* textView;
+@property (nonatomic, weak) BXTextView* textView;
 @end
 
 #if TARGET_OS_IOS

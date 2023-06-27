@@ -1739,7 +1739,7 @@ double clamp(double d, double min, double max) {
 		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
 		free(newGlyphs);
 	}
-		
+	
 	CFRelease(modifiedStr);
 	return glyphRange.length;
 }

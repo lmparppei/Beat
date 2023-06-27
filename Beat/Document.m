@@ -111,7 +111,7 @@
 #import "BeatEditorButton.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate>
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -131,18 +131,6 @@
 
 // Plugin support
 @property (weak) BeatPluginManager *pluginManager;
-
-// Quick Settings
-@property (nonatomic) NSPopover *quickSettingsPopover;
-@property (nonatomic, weak) IBOutlet NSView *quickSettingsView;
-@property (nonatomic, weak) IBOutlet ITSwitch *sceneNumbersSwitch;
-@property (nonatomic, weak) IBOutlet ITSwitch *pageNumbersSwitch;
-@property (nonatomic, weak) IBOutlet ITSwitch *revisionModeSwitch;
-@property (nonatomic, weak) IBOutlet ITSwitch *taggingModeSwitch;
-@property (nonatomic, weak) IBOutlet ITSwitch *darkModeSwitch;
-@property (nonatomic, weak) IBOutlet ITSwitch *reviewModeSwitch;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *revisionColorPopup;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *pageSizePopup;
 
 // Editor buttons
 @property (nonatomic, weak) IBOutlet NSButton *outlineButton;
@@ -418,6 +406,8 @@
 	self.documentSettings = nil;
 	self.review = nil;
 	
+	self.previewController = nil;
+	
 	// Terminate autosave timer
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
@@ -583,9 +573,6 @@ static BeatAppDelegate *appDelegate;
 	// Reveal text view
 	[self.textView.animator setAlphaValue:1.0];
 	
-	// Update quick settings
-	[self updateQuickSettings];
-	
 	// Hide Fountain markup if needed
 	if (self.hideFountainMarkup) [self.textView redrawAllGlyphs];
 	
@@ -702,8 +689,6 @@ static BeatAppDelegate *appDelegate;
 		// Update the print preview accordingly
 		[self.previewController resetPreview];
 	}
-	
-	[self updateQuickSettings];
 }
 
 
@@ -897,7 +882,6 @@ static BeatAppDelegate *appDelegate;
 	
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
-	[self updateQuickSettings];
 }
 
 #pragma mark - Window delegate
@@ -1003,76 +987,17 @@ static NSWindow __weak *currentKeyWindow;
 #pragma mark - Quick Settings Popup
 
 - (IBAction)showQuickSettings:(id)sender {
-	if (!_quickSettingsPopover) {
-		_quickSettingsPopover = [[NSPopover alloc] init];
-		
-		NSViewController *viewController = [[NSViewController alloc] init];
-		[viewController setView:_quickSettingsView];
-		
-		[_quickSettingsPopover setContentViewController:viewController];
-	}
+	if (sender == nil) return;
 	
-	[self updateQuickSettings];
+	NSPopover* popover = NSPopover.new;
+	BeatDesktopQuickSettings* settings = BeatDesktopQuickSettings.new;
+	settings.delegate = self;
 	
-	NSButton *button = sender;
+	popover.contentViewController = settings;
+	popover.behavior = NSPopoverBehaviorTransient;
+	[popover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSRectEdgeMaxY];
 	
-	if (!_quickSettingsPopover.shown) {
-		[_quickSettingsPopover showRelativeToRect:NSMakeRect(0, 0, 0, 0) ofView:button preferredEdge:NSMaxYEdge];
-		[_quickSettingsButton setState:NSOnState];
-	}
-	else {
-		[self closeQuickSettings];
-	}
 }
-- (void)closeQuickSettings {
-	[_quickSettingsPopover close];
-	[_quickSettingsButton setState:NSOffState];
-}
-- (void)updateQuickSettings {
-	[_sceneNumbersSwitch setChecked:self.showSceneNumberLabels];
-	[_pageNumbersSwitch setChecked:self.showPageNumbers];
-	[_revisionModeSwitch setChecked:self.revisionMode];
-	[_darkModeSwitch setChecked:self.isDark];
-	
-	NSInteger paperSize = [self.documentSettings getInt:DocSettingPageSize];
-	
-	if (paperSize == BeatA4) [_pageSizePopup selectItemWithTitle:@"A4"];
-	else [_pageSizePopup selectItemWithTitle:@"US Letter"];
-	
-	if (self.mode == TaggingMode) [_taggingModeSwitch setChecked:YES]; else [_taggingModeSwitch setChecked:NO];
-	
-	for (BeatColorMenuItem* item in _revisionColorPopup.itemArray) {
-		if ([item.colorKey.lowercaseString isEqualToString:self.revisionColor.lowercaseString]) [_revisionColorPopup selectItem:item];
-	}
-	
-	if (self.mode == TaggingMode) {
-		[_revisionColorPopup setEnabled:NO];
-		[_revisionModeSwitch setEnabled:NO];
-	} else {
-		[_revisionColorPopup setEnabled:YES];
-		[_revisionModeSwitch setEnabled:YES];
-	}
-	
-	if (self.mode == ReviewMode) {
-		[_reviewModeSwitch setChecked:YES];
-	} else {
-		[_reviewModeSwitch setChecked:NO];
-	}
-}
-
-- (IBAction)toggleQuickSetting:(id)sender {
-	ITSwitch *button = sender;
-	
-	if (button == _sceneNumbersSwitch) [self toggleSceneLabels:nil];
-	else if (button == _pageNumbersSwitch) [self togglePageNumbers:nil];
-	else if (button == _revisionModeSwitch) [self toggleRevisionMode:nil];
-	else if (button == _taggingModeSwitch) [self toggleTagging:nil];
-	else if (button == _darkModeSwitch) [self toggleDarkMode:nil];
-	else if (button == _reviewModeSwitch) [self toggleReview:nil];
-	
-	[self updateQuickSettings];
-}
-
 
 #pragma mark - Zooming & layout
 
@@ -1723,9 +1648,6 @@ static NSWindow __weak *currentKeyWindow;
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
-	// Close any popups
-	if (_quickSettingsPopover.shown) [self closeQuickSettings];
 	
 	// Reset forced character input
 	if (self.characterInputForLine != self.currentLine && self.characterInput) {
@@ -2498,7 +2420,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.textView refreshLayoutElements];
 	self.textView.needsLayout = true;
 	self.textView.needsDisplay = true;
-	[self updateQuickSettings];
 	
 	// Save user default
 	[BeatUserDefaults.sharedDefaults saveBool:_showRevisions forKey:@"showRevisions"];
@@ -2516,8 +2437,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 -(IBAction)toggleRevisionMode:(id)sender {
 	_revisionMode = !_revisionMode;
-	
-	[self updateQuickSettings];
 	
 	// Save document setting
 	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
@@ -2558,6 +2477,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	BeatColorMenuItem *item = (BeatColorMenuItem *)button.selectedItem;
 	NSString* revisionColor = item.colorKey;
 	
+	self.revisionColor = revisionColor;
+}
+- (void)setRevisionColor:(NSString *)revisionColor {
 	[_documentSettings setString:DocSettingRevisionColor as:revisionColor];
 }
 
@@ -3607,8 +3529,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	// Update the print preview accordingly
 	[self.previewController resetPreview];
-	
-	[self updateQuickSettings];
 }
 
 - (void)refreshTextViewLayoutElements {
@@ -3767,8 +3687,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		self.textView.pageBreaks = nil;
 		[self.textView deletePageNumbers];
 	}
-	
-	[self updateQuickSettings];
 }
 
 - (void)paginate {
@@ -4140,7 +4058,6 @@ static NSArray<Line*>* cachedTitlePage;
 - (IBAction)toggleReview:(id)sender {
 	if (_mode == ReviewMode) self.mode = EditMode;
 	else self.mode = ReviewMode;
-	[self updateQuickSettings];
 }
 
 -(void)toggleMode:(BeatEditorMode)mode {

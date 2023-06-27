@@ -3,6 +3,7 @@
 //  ITSwitch-Demo
 //
 //  Created by Ilija Tovilo on 01/02/14.
+//  Modified by Beat by L-M Parppei sometime 10 years later.
 //  Copyright (c) 2014 Ilija Tovilo. All rights reserved.
 //
 
@@ -18,6 +19,11 @@ IB_DESIGNABLE
  *  @property checked - Gets or sets the switches state
  */
 @property (nonatomic, assign) IBInspectable BOOL checked;
+
+/**
+ *  @property settingKey - A Beat setting value key
+ */
+@property (nonatomic, assign) IBInspectable NSString* settingKey;
 
 /**
  *  @property tintColor - Gets or sets the switches tint
