@@ -2267,7 +2267,7 @@ static NSDictionary* patterns;
     // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
     NSArray* lines = self.lines.copy;
     NSMutableDictionary* uuids = NSMutableDictionary.new;
-    
+
     for (Line* line in lines) {
         uuids[line.uuid] = line;
     }

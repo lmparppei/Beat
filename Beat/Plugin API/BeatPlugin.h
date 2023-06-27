@@ -112,13 +112,21 @@
 
 - (NSRange)selectedRange;
 - (NSArray*)linesForScene:(id)scene;
-- (NSString*)fileToString:(NSString*)path; /// Read a file into string variable
+/// Read any (text) file into string variable
+- (NSString*)fileToString:(NSString*)path;
+/// Read a PDF file into string variable
 - (NSString*)pdfToString:(NSString*)path;
 - (void)parse;
-- (NSString*)assetAsString:(NSString*)filename; /// Plugin bundle asset as string
-- (NSString*)appAssetAsString:(NSString*)filename; /// Asset from inside the container
+/// Plugin bundle asset as string
+- (NSString*)assetAsString:(NSString*)filename;
+/// Asset from inside the app container
+- (NSString*)appAssetAsString:(NSString*)filename;
+/// Stop plugin execution
 - (void)end;
+
+/// Returns all tags in the scene
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
+/// Returns all available tag names
 - (NSArray*)availableTags;
 
 /// Current screen dimensions
@@ -160,19 +168,22 @@
 /// Returns the CURRENT pagination in document
 - (BeatPaginationManager*)currentPagination;
 
-
+/// Reformat given line
 - (void)reformat:(Line*)line;
 
-- (bool)compatibleWith:(NSString*)version; /// Check compatibility
+/// Check compatibility with Beat version. Basically used for checking if Beat version is out of date.
+- (bool)compatibleWith:(NSString*)version;
 
-- (BeatPluginUIView*)widget:(CGFloat)height; /// Add widget into sidebar
+/// Add widget into sidebar
+- (BeatPluginUIView*)widget:(CGFloat)height;
 
 /// Move to next tab in document window
 - (void)nextTab;
 /// Move to previoustab in document window
 - (void)previousTab;
 
-- (BeatSpeak*)speakSynth; /// Speech synthesis
+/// Create new speech synthesis instance
+- (BeatSpeak*)speakSynth;
 
 /// Restart current plugin
 - (void)restart;
