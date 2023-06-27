@@ -487,21 +487,10 @@ static NSWindow* launchWindow;
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
 {
-    NSURL  *  result;
-    CFUUIDRef   uuid;
-    CFStringRef uuidStr;
+    NSURL* result;
+	NSUUID* uuid = NSUUID.new;
 
-    uuid = CFUUIDCreate(NULL);
-    assert(uuid != NULL);
-
-    uuidStr = CFUUIDCreateString(NULL, uuid);
-    assert(uuidStr != NULL);
-	result = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@.%@", prefix, uuidStr, prefix]]];
-    
-    assert(result != nil);
-
-    CFRelease(uuidStr);
-    CFRelease(uuid);
+	result = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@.%@", prefix, uuid.UUIDString, prefix]]];
 
     return result;
 }
