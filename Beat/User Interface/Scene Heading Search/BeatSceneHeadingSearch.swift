@@ -15,9 +15,9 @@ import Cocoa
 
 class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSControlTextEditingDelegate
  {
-	@objc var delegate:BeatEditorDelegate?
-	@IBOutlet var textField:NSTextField?
-	@IBOutlet var tableView:NSTableView?
+	@objc weak var delegate:BeatEditorDelegate?
+	@IBOutlet weak var textField:NSTextField?
+	@IBOutlet weak var tableView:NSTableView?
 	
 	var results:[OutlineScene] = []
 	
@@ -35,19 +35,21 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
+		
+		self.window?.isReleasedWhenClosed = true
+		
 		textField?.delegate = self
 		delegate?.parser.createOutline()
 		results = delegate?.parser.outline as! [OutlineScene]
 		addCloseOnOutsideClick()
 	}
+	
 	deinit {
 		removeCloseOnOutsideClick()
 	}
 	
-	
 	override func cancelOperation(_ sender: Any?) {
 		// Esc pressed
-		//self.closeModal()
 		self.closeModal()
 	}
 	
@@ -93,13 +95,23 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	}
 	
 	func closeModal() {
+		removeCloseOnOutsideClick()
+		
 		guard let window = self.window,
 			  let documentWindow = self.delegate?.documentWindow
 		else {
 			return
 		}
-		
+				
 		documentWindow.endSheet(window)
+		
+		self.tableView?.removeFromSuperview()
+		self.textField?.removeFromSuperview()
+		
+		self.textField = nil
+		self.tableView = nil
+		self.window = nil
+		self.results = []
 	}
 	
 	// MARK: - Filtering and jumping to scene
@@ -182,9 +194,10 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	// MARK: - Observe clicks outside the modal
 	private var monitor: Any?
 	func addCloseOnOutsideClick(ignoring ignoringViews: [NSView]? = nil) {
-		monitor = NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown) { (event) -> NSEvent? in
-		
-		if !self.window!.contentView!.frame.contains(event.locationInWindow) {
+		monitor = NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown) { [weak self] (event) -> NSEvent? in
+			guard let self = self else { return event }
+			
+			if self.window!.contentView!.frame.contains(event.locationInWindow) {
 				// If the click is in any of the specified views to ignore, don't hide
 				for ignoreView in ignoringViews ?? [NSView]() {
 					let frameInWindow: NSRect = ignoreView.convert(ignoreView.bounds, to: nil)
@@ -201,6 +214,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			return event
 		}
 	}
+	
 	func removeCloseOnOutsideClick() {
 	   if monitor != nil {
 		   NSEvent.removeMonitor(monitor!)
@@ -210,7 +224,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 }
 
 class BeatSceneHeadingView:NSTableCellView {
-	@IBOutlet var sceneNumber:NSTextField?
+	@IBOutlet weak var sceneNumber:NSTextField?
 }
 
 class BeatSceneHeadingTextField:NSTextField {

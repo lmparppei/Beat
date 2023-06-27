@@ -4374,10 +4374,11 @@ static NSArray<Line*>* cachedTitlePage;
 #pragma mark - Search for scene
 
 - (IBAction)goToScene:(id)sender {
-	BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
+	__block BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
 	search.delegate = self;
 	
 	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
+		search = nil;
 	}];
 }
 
