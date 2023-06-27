@@ -1750,7 +1750,8 @@ static NSDictionary* patterns;
 
 /**
  This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
- Instead, it first checks the line it returned the last time, and after that, starts to iterate through
+ Instead, it first checks the line it returned the last time, and after that, starts to iterate through lines from its position and given direction. Usually we can find
+ the line with 1-2 steps, and as we're possibly iterating through thousands and thousands of lines, it's much faster than finding items by their properties the usual way.
  */
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
