@@ -299,6 +299,7 @@
 - (DynamicColor*)outlineSection { return _theme.outlineSection; }
 - (DynamicColor*)outlineItem { return _theme.outlineItem; }
 - (DynamicColor*)outlineItemOmitted { return _theme.outlineItemOmitted; }
+- (DynamicColor*)outlineNote { return _theme.outlineNote; }
 - (DynamicColor*)outlineSceneNumber { return _theme.outlineSceneNumber; }
 - (DynamicColor*)outlineSynopsis { return _theme.outlineSynopsis; }
 

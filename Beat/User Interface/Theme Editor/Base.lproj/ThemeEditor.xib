@@ -30,6 +30,8 @@
                 <outlet property="outlineItemLight" destination="6Y8-Ii-Unc" id="xjd-VY-q0G"/>
                 <outlet property="outlineItemOmittedDark" destination="pyu-eH-ku4" id="pi9-dx-Php"/>
                 <outlet property="outlineItemOmittedLight" destination="aRS-dQ-KOw" id="DHz-Lc-kU8"/>
+                <outlet property="outlineNoteDark" destination="RHC-22-nu8" id="Cbf-ZK-mvG"/>
+                <outlet property="outlineNoteLight" destination="jpH-nM-jVx" id="pUd-WQ-O72"/>
                 <outlet property="outlineSceneNumberDark" destination="i8d-Py-i6v" id="T4E-cv-z0z"/>
                 <outlet property="outlineSceneNumberLight" destination="4Lq-7W-10c" id="dmH-WS-ofx"/>
                 <outlet property="outlineSectionDark" destination="uFD-os-5dH" id="nv7-Jb-noZ"/>
@@ -55,7 +57,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="349" height="503"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="349" height="503"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -127,18 +129,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="9Rn-pt-0Rz">
+                                        <colorWell id="9Rn-pt-0Rz" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="backgroundColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="6m8-mj-yDC"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="MnQ-Gi-ZOy">
+                                        <colorWell id="MnQ-Gi-ZOy" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="backgroundColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="0Nf-8j-Uge"/>
                                             </connections>
@@ -161,18 +170,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="EBB-Rp-TYG">
+                                        <colorWell id="EBB-Rp-TYG" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="201" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="textColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="CbQ-cF-JTx"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="AJW-58-ShP">
+                                        <colorWell id="AJW-58-ShP" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="201" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="textColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="4ks-hq-Yik"/>
                                             </connections>
@@ -186,18 +202,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="Wq2-GV-6GU">
+                                        <colorWell id="Wq2-GV-6GU" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="marginColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="oJL-WN-4xV"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="LEu-PY-jw2">
+                                        <colorWell id="LEu-PY-jw2" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="marginColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="xGb-tm-Yr0"/>
                                             </connections>
@@ -211,18 +234,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="HZ4-jK-zAE">
+                                        <colorWell id="HZ4-jK-zAE" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="selectionColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="giu-La-jZh"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="q78-3Q-4Wx">
+                                        <colorWell id="q78-3Q-4Wx" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="selectionColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="xjh-83-zzY"/>
                                             </connections>
@@ -236,18 +266,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="bqT-RA-CO8">
+                                        <colorWell id="bqT-RA-CO8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="174" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="invisibleTextColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="NVC-ab-LEJ"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="hLF-FC-rwm">
+                                        <colorWell id="hLF-FC-rwm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="174" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="invisibleTextColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="nqC-xC-CjC"/>
                                             </connections>
@@ -261,18 +298,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="shr-n7-dhc">
+                                        <colorWell id="shr-n7-dhc" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="147" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="commentColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="xUw-RJ-bbb"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="apG-nU-9v6">
+                                        <colorWell id="apG-nU-9v6" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="147" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="commentColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="bf2-Kc-yvg"/>
                                             </connections>
@@ -286,18 +330,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="pS0-0R-luD">
+                                        <colorWell id="pS0-0R-luD" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="120" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="pageNumberColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="XNU-Ew-SOV"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="Mq4-zF-1tf">
+                                        <colorWell id="Mq4-zF-1tf" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="120" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="pageNumberColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="DLt-tL-ZwO"/>
                                             </connections>
@@ -311,18 +362,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="eT6-e5-MnA">
+                                        <colorWell id="eT6-e5-MnA" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="93" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="caretColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="AfO-xU-4Xn"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="ge7-Yp-FrI">
+                                        <colorWell id="ge7-Yp-FrI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="93" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="caretColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="UVd-bC-8pV"/>
                                             </connections>
@@ -336,18 +394,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="sgv-hg-RYe">
+                                        <colorWell id="sgv-hg-RYe" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="66" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="synopsisTextColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="eyP-gz-E7X"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="82h-Vz-FCm">
+                                        <colorWell id="82h-Vz-FCm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="66" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="synopsisTextColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="CWc-jW-bij"/>
                                             </connections>
@@ -361,18 +426,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="Ojy-XN-ri2">
+                                        <colorWell id="Ojy-XN-ri2" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="39" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="sectionTextColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="yfb-bN-cFY"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="fUo-az-OBP">
+                                        <colorWell id="fUo-az-OBP" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="39" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="sectionTextColor"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="JpX-e9-NOp"/>
                                             </connections>
@@ -399,7 +471,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="CtB-eq-Bs4">
-                                            <rect key="frame" x="8" y="115" width="308" height="5"/>
+                                            <rect key="frame" x="8" y="75" width="308" height="5"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="qKS-kW-1ga">
@@ -411,18 +483,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="0JY-jb-QKZ">
+                                        <colorWell id="0JY-jb-QKZ" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineBackground"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="H6C-3t-USH"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="fqB-xx-yF8">
+                                        <colorWell id="fqB-xx-yF8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineBackground"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="Trd-IE-tss"/>
                                             </connections>
@@ -436,32 +515,43 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="0jK-2F-8kL">
+                                        <colorWell id="0jK-2F-8kL" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineHighlight"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="eNX-F2-BKj"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="vBl-T8-2xh">
+                                        <colorWell id="vBl-T8-2xh" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineHighlight"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="7mj-NY-bf1"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="Vdu-4G-xlI">
-                                            <rect key="frame" x="180" y="67" width="44" height="23"/>
+                                        <colorWell id="Vdu-4G-xlI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="180" y="27" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="genderManColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="commonColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="CqN-wN-iVG"/>
                                             </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="SLy-0g-Brx">
-                                            <rect key="frame" x="178" y="93" width="48" height="11"/>
+                                            <rect key="frame" x="178" y="53" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Man" id="jaw-Da-IBj">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -470,7 +560,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="u46-Nf-eAE">
-                                            <rect key="frame" x="6" y="71" width="130" height="16"/>
+                                            <rect key="frame" x="6" y="31" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Genders" id="Ghh-a5-XuU">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -478,16 +568,20 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="uUV-g9-gCS">
-                                            <rect key="frame" x="226" y="67" width="44" height="23"/>
+                                        <colorWell id="uUV-g9-gCS" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="226" y="27" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="genderOtherColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="commonColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="NLg-x8-h9S"/>
                                             </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0XD-0L-094">
-                                            <rect key="frame" x="224" y="93" width="48" height="11"/>
+                                            <rect key="frame" x="224" y="53" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Other" id="eoU-fi-QOQ">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -495,16 +589,20 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="EHz-xF-QII">
-                                            <rect key="frame" x="272" y="67" width="44" height="23"/>
+                                        <colorWell id="EHz-xF-QII" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="272" y="27" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="genderUnspecifiedColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="commonColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="7mW-hs-XDX"/>
                                             </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ka7-aP-1dU">
-                                            <rect key="frame" x="270" y="93" width="49" height="11"/>
+                                            <rect key="frame" x="270" y="53" width="49" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Unspec." id="Whr-tU-Und">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -512,16 +610,20 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="K9a-jn-IkI">
-                                            <rect key="frame" x="134" y="67" width="44" height="23"/>
+                                        <colorWell id="K9a-jn-IkI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="134" y="27" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="genderWomanColor"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="commonColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="C0J-Ob-jFo"/>
                                             </connections>
                                         </colorWell>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Un5-DS-I8Q">
-                                            <rect key="frame" x="133" y="93" width="47" height="11"/>
+                                            <rect key="frame" x="133" y="53" width="47" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Woman" id="e7b-TI-SvW">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -556,18 +658,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="6Y8-Ii-Unc">
+                                        <colorWell id="6Y8-Ii-Unc" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineItem"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="fcI-RK-aDb"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="3UP-f8-vwm">
+                                        <colorWell id="3UP-f8-vwm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineItem"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="xtu-Pc-SIL"/>
                                             </connections>
@@ -581,18 +690,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="4Lq-7W-10c">
+                                        <colorWell id="4Lq-7W-10c" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="214" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSceneNumber"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="BQt-c3-cGS"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="i8d-Py-i6v">
+                                        <colorWell id="i8d-Py-i6v" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="214" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSceneNumber"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="75Q-44-gkv"/>
                                             </connections>
@@ -606,18 +722,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="aRS-dQ-KOw">
+                                        <colorWell id="aRS-dQ-KOw" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="187" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineItemOmitted"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="c6t-Oh-oxh"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="pyu-eH-ku4">
+                                        <colorWell id="pyu-eH-ku4" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="187" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineItemOmitted"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="kBh-y4-fEf"/>
                                             </connections>
@@ -631,18 +754,25 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="YGP-YV-nDE">
+                                        <colorWell id="YGP-YV-nDE" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="160" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSection"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="0md-uH-8Fk"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="uFD-os-5dH">
+                                        <colorWell id="uFD-os-5dH" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="160" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSection"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="lqI-Zb-3V9"/>
                                             </connections>
@@ -656,20 +786,59 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <colorWell id="I92-wq-wvM">
+                                        <colorWell id="I92-wq-wvM" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="226" y="133" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSynopsis"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="NX2-ZH-OrU"/>
                                             </connections>
                                         </colorWell>
-                                        <colorWell id="a1h-bh-bH8">
+                                        <colorWell id="a1h-bh-bH8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="272" y="133" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineSynopsis"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="changeColor:" target="-2" id="qZe-8g-lsj"/>
+                                            </connections>
+                                        </colorWell>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="N3O-UI-49F">
+                                            <rect key="frame" x="6" y="110" width="214" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Note" id="r3S-jp-Pwd">
+                                                <font key="font" usesAppearanceFont="YES"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <colorWell id="jpH-nM-jVx" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="226" y="106" width="44" height="23"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineNote"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="changeColor:" target="-2" id="d5X-n2-YqM"/>
+                                            </connections>
+                                        </colorWell>
+                                        <colorWell id="RHC-22-nu8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="272" y="106" width="44" height="23"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="themeKey" value="outlineNote"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="darkColor" value="YES"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="changeColor:" target="-2" id="qxV-eX-IeL"/>
                                             </connections>
                                         </colorWell>
                                     </subviews>

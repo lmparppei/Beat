@@ -57,11 +57,12 @@
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
 	ThemeManager* theme = ThemeManager.sharedManager;
-	BXColor* sceneNumberColor = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
-	BXColor* outlineItemColor = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
-	BXColor* omittedItemColor = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
-	BXColor* sectionItemColor = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
+	BXColor* sceneNumberColor  = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
+	BXColor* outlineItemColor  = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
+	BXColor* omittedItemColor  = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
+	BXColor* sectionItemColor  = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
 	BXColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkAquaColor : theme.outlineSynopsis.aquaColor;
+	BXColor* noteItemColor     = (dark) ? theme.outlineNote.darkAquaColor : theme.outlineNote.aquaColor;
 
 	
 	NSMutableAttributedString *resultString = NSMutableAttributedString.new;
@@ -126,19 +127,19 @@
 	
 	// Append synopsis lines
 	if (includeSynopsis) {
+		NSMutableParagraphStyle *synopsisStyle = NSMutableParagraphStyle.new;
+		synopsisStyle.lineSpacing = .65;
+		synopsisStyle.paragraphSpacingBefore = 4.0;
+		
+		CGFloat fontSize = [OutlineViewItem fontSize];
+
 		for (Line* synopsis in scene.synopsis) {
 			NSString *synopsisStr = [NSString stringWithFormat:@"\n• %@", synopsis.stripFormatting];
 			BXColor *synopsisColor;
 			
 			if (synopsis.color.length > 0) synopsisColor = [BeatColors color:synopsis.color];
 			if (synopsisColor == nil) synopsisColor = synopsisItemColor;
-			
-			NSMutableParagraphStyle *synopsisStyle = NSMutableParagraphStyle.new;
-			synopsisStyle.lineSpacing = .65;
-			synopsisStyle.paragraphSpacingBefore = 4.0;
-			
-			CGFloat fontSize = [OutlineViewItem fontSize];
-			
+						
 			#if TARGET_OS_IOS
 				BXFont* synopsisFont = [BXFont italicSystemFontOfSize:fontSize];
 			#else
@@ -177,7 +178,7 @@
 			
 			NSString* noteStr = [NSString stringWithFormat:@"\n✎ %@", note.content];
 			
-			BXColor* noteColor = ThemeManager.sharedManager.commentColor;
+			BXColor* noteColor = noteItemColor;
 			if (note.color) {
 				BXColor* c = [BeatColors color:note.color];
 				if (c != nil) noteColor = c;

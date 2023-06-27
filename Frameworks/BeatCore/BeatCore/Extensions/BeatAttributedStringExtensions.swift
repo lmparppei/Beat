@@ -120,7 +120,7 @@ extension CharacterSet {
             #endif
                 
                 if let image = attachment.image {
-                    attachment.bounds = CGRect(x: 0, y: (actualFont.capHeight - image.size.height).rounded() / 2, width: image.size.width, height: image.size.height)
+                    attachment.bounds = CGRect(x: 0, y: (actualFont.capHeight - image.size.height).rounded() / 2 - 1.0, width: image.size.width, height: image.size.height)
                 }
 
                 return NSAttributedString(attachment: attachment)

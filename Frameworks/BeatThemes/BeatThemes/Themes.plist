@@ -113,6 +113,12 @@
 					<integer>100</integer>
 					<integer>100</integer>
 				</array>
+				<key>OutlineNote</key>
+				<array>
+					<integer>100</integer>
+					<integer>100</integer>
+					<integer>100</integer>
+				</array>
 				<key>Highlight</key>
 				<array>
 					<integer>0</integer>
@@ -243,6 +249,12 @@
 					<integer>220</integer>
 				</array>
 				<key>OutlineItemOmitted</key>
+				<array>
+					<integer>100</integer>
+					<integer>100</integer>
+					<integer>100</integer>
+				</array>
+				<key>OutlineNote</key>
 				<array>
 					<integer>100</integer>
 					<integer>100</integer>

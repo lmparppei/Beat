@@ -70,5 +70,6 @@
 - (DynamicColor*)outlineItemOmitted;
 - (DynamicColor*)outlineSceneNumber;
 - (DynamicColor*)outlineSynopsis;
+- (DynamicColor*)outlineNote;
 
 @end

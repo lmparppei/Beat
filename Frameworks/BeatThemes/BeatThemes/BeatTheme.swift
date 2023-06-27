@@ -33,6 +33,7 @@ import BeatDynamicColor
     @objc public var outlineSceneNumber: DynamicColor!
     @objc public var outlineSection: DynamicColor!
     @objc public var outlineSynopsis: DynamicColor!
+    @objc public var outlineNote: DynamicColor!
         
     @objc public var name:String? = ""
     
@@ -65,7 +66,8 @@ import BeatDynamicColor
             "outlineItemOmitted": "OutlineItemOmitted",
             "outlineSceneNumber": "OutlineSceneNumber",
             "outlineSection": "OutlineSection",
-            "outlineSynopsis": "OutlineSynopsis"
+            "outlineSynopsis": "OutlineSynopsis",
+            "outlineNote": "OutlineNote"
         ]
     }
     

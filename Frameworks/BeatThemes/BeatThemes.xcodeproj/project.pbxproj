@@ -44,8 +44,6 @@
 
 /* Begin PBXFileReference section */
 		B66716872971C0F2005B8C55 /* BeatTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatTheme.swift; sourceTree = "<group>"; };
-		B66716882971C0F2005B8C55 /* iOSTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iOSTheme.swift; sourceTree = "<group>"; };
-		B66716892971C0F2005B8C55 /* macOSTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = macOSTheme.swift; sourceTree = "<group>"; };
 		B667168B2971C0F2005B8C55 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeManager.m; sourceTree = "<group>"; };
 		B667168C2971C0F2005B8C55 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Themes.plist; sourceTree = "<group>"; };
 		B667168D2971C0F2005B8C55 /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
@@ -112,8 +110,6 @@
 				B667168B2971C0F2005B8C55 /* ThemeManager.m */,
 				B667168C2971C0F2005B8C55 /* Themes.plist */,
 				B66716872971C0F2005B8C55 /* BeatTheme.swift */,
-				B66716892971C0F2005B8C55 /* macOSTheme.swift */,
-				B66716882971C0F2005B8C55 /* iOSTheme.swift */,
 				B686FFE22971C05500789C8D /* BeatThemes.h */,
 			);
 			path = BeatThemes;
