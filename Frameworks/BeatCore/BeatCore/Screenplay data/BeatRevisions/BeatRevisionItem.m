@@ -89,7 +89,7 @@
 }
 
 #pragma mark - Debug
-- (NSString*)description { return [NSString stringWithFormat:@"%@", self.key]; }
+- (NSString*)description { return [NSString stringWithFormat:@"Revision: %@ (%@)", self.key, self.colorName]; }
 
 @end
 /*

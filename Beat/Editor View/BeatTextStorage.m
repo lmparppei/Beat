@@ -16,6 +16,7 @@
 
 @interface BeatTextStorage ()
 @property (nonatomic) bool processing;
+@property (nonatomic) NSTimer* timer;
 @end
 
 @implementation BeatTextStorage

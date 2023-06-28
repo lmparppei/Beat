@@ -39,20 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;
 
-// Use this as a bridge when no editor is present. Can be null.
+/// Use this as a bridge when no editor is present. Can be null.
 @property (weak) IBOutlet id<BeatRevisionDelegate> _Nullable revisionDelegate;
 
-//@property (nonatomic) NSMutableIndexSet *additions;
-//@property (nonatomic) NSMutableIndexSet *removals;
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
 - (void)loadRevisions;
 - (void)registerChangesInRange:(NSRange)range;
 - (void)registerChangesWithLocation:(NSInteger)location length:(NSInteger)length delta:(NSInteger)delta;
 - (void)markerAction:(RevisionType)type;
-//- (void)markRangeAsAddition:(NSRange)range;
-//- (void)markRangeForRemoval:(NSRange)range;
-//- (void)clearReviewMarkers:(NSRange)range;
+- (void)fixRevisionAttributesInRange:(NSRange)fullRange;
 
 - (void)nextRevision;
 - (void)previousRevision;

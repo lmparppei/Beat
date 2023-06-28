@@ -1601,7 +1601,7 @@ static NSWindow __weak *currentKeyWindow;
 	for (id<BeatEditorView> view in _registeredViews) {
 		if (view.visible) [view reloadInBackground];
 	}
-		
+		 
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
 	

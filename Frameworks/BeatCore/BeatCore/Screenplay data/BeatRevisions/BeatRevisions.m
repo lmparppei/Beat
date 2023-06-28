@@ -385,6 +385,45 @@
 	if (revisionMode) { self.delegate.revisionMode = YES; }
 }
 
+/// Combines single, orphaned revision attributes to longer ranges
+- (void)fixRevisionAttributesInRange:(NSRange)fullRange
+{
+    NSTextStorage *textStorage = self.delegate.textStorage;
+    
+    __block NSRange currentRange = NSMakeRange(NSNotFound, 0);
+    __block BeatRevisionItem* previousRevision;
+    
+    [textStorage beginEditing];
+    
+    NSAttributedString* text = textStorage.copy;
+    [text enumerateAttribute:BeatRevisions.attributeKey inRange:fullRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatRevisionItem* revision = value;
+        
+        bool revisionsMatch = [revision.colorName isEqualToString:previousRevision.colorName] && revision.type == previousRevision.type;
+                
+        if ((!revisionsMatch || range.location != NSMaxRange(currentRange)) && previousRevision != nil) {
+            // Revision generation changed or the range is not continuous, so let's add the attribute
+            [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
+            previousRevision = nil;
+        }
+        
+        if (revision == nil) return;
+        
+        if (previousRevision == nil) {
+            currentRange = range;
+            previousRevision = revision;
+        } else {
+            currentRange.length += range.length;
+        }
+    }];
+    
+    // Add the last revision
+    if (previousRevision != nil && currentRange.length > 0) {
+        [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
+    }
+    
+    [textStorage endEditing];
+}
 
 
 #pragma mark Register changes
@@ -401,6 +440,10 @@
     if (location < 0) return;
     
     [self registerChangesInRange:NSMakeRange(location, length)];
+    
+    // Fix the attributes on this line to avoid zillions of extra attributes
+    Line* editedLine = [self.delegate.parser lineAtPosition:location];
+    [self fixRevisionAttributesInRange:editedLine.textRange];
 }
 
 /// When in revision mode, this method automatically adds revision markers to given range. Should only invoked when editing has happened.
@@ -429,7 +472,8 @@
 #pragma mark Convenience methods
 
 /// Move to next revision marker
-- (void)nextRevision {
+- (void)nextRevision
+{
 	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
 	if (selectedRange.location == _delegate.text.length && selectedRange.location > 0) selectedRange.location -= 1;
@@ -469,7 +513,8 @@
 }
 
 /// Move to previous revision marker
-- (void)previousRevision {
+- (void)previousRevision
+{
 	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
 	if (selectedRange.location == _delegate.text.length && selectedRange.location > 0) selectedRange.location -= 1;
@@ -509,7 +554,6 @@
 	}
 }
 
-#pragma mark - Actions
 
 #pragma mark - Revisions
 
