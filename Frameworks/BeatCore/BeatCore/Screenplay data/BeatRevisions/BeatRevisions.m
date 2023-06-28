@@ -274,7 +274,8 @@
 		@"Removed": NSMutableArray.new,
 		@"RemovalSuggestion": NSMutableArray.new
 	};
-	
+
+    /*
 	// Find all line breaks and remove the revision attributes
 	NSRange searchRange = NSMakeRange(0,1);
 	NSRange foundRange;
@@ -284,13 +285,14 @@
 		foundRange = [string.string rangeOfString:@"\n" options:0 range:searchRange];
 		
 		if (foundRange.location != NSNotFound) {
-			[str setAttributes:nil range:foundRange]; // Remove attributes from line berak
+			[str setAttributes:nil range:foundRange]; // Remove attributes from line break
 			searchRange.location = foundRange.location+foundRange.length; // Continue the search
 		} else {
 			// Done
 			break;
 		}
 	}
+    */
 	
 	// Enumerate through revisions and save them.
 	[str enumerateAttribute:BeatRevisions.attributeKey inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
