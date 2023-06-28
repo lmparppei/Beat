@@ -1516,6 +1516,7 @@ static NSDictionary* patterns;
 	return [self terminateNoteBlockAt:line index:i];
 }
 - (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
+    NSLog(@"TERMINATE: %@", line);
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSetWithIndex:idx];
 	if (idx == NSNotFound) return changedIndices;
 	
@@ -1529,7 +1530,10 @@ static NSDictionary* patterns;
 	}
 	
 	[line.noteRanges addIndexes:line.noteInIndices];
-		
+    
+    bool terminatorFound = false;
+    NSMutableArray* linesWhichBecomeNotes = NSMutableArray.new;
+    
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
 		
@@ -1540,22 +1544,34 @@ static NSDictionary* patterns;
                     l.noteOutIndices = [NSMutableIndexSet.alloc initWithIndexesInRange:NSMakeRange(startIndex, l.length - startIndex)];
                     [l.noteRanges addIndexes:l.noteOutIndices];
                     [changedIndices addIndex:i];
+                    
+                    terminatorFound = true;
                     break;
                 }
             }
+            
+            if (terminatorFound) break;
+            
 		} else {
-			[l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
-			[changedIndices addIndex:i];
+            [linesWhichBecomeNotes addObject:l];
 		}
+        
 	}
-	
-	[_changedIndices addIndexes:changedIndices];
+    
+    if (terminatorFound) {
+        for (Line* l in linesWhichBecomeNotes) {
+            [l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
+            NSInteger i = [self.lines indexOfObject:l];
+            if (i != NSNotFound) [changedIndices addIndex:i];
+        }
+    }
 	
 	return changedIndices;
 }
 
 - (bool)findNoteBlockStartAt:(Line*)line index:(NSInteger)idx
 {
+    NSLog(@"FIND NOTE BLOCK START: %@", line);
     NSMutableIndexSet* changedIndices = NSMutableIndexSet.new;
     [changedIndices addIndex:idx];
     
@@ -1614,6 +1630,7 @@ static NSDictionary* patterns;
 }
 
 - (NSIndexSet*)cancelNoteBlockAt:(Line*)line index:(NSInteger)idx {
+    NSLog(@"CANCEL: %@", line);
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
 	if (idx == NSNotFound) return changedIndices;
 	
