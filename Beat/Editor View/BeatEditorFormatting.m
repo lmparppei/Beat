@@ -17,8 +17,6 @@
 #import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatEditorFormatting.h"
-//#import "Beat-Swift.h"
-//#import "NSFont+CFTraits.h"
 
 @interface BeatEditorFormatting()
 // Paragraph styles are stored as { @(paperSize): { @(type): style } }
@@ -267,9 +265,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line == nil) return; // Don't do anything if the line is null
 	if (line.position + line.string.length > _delegate.text.length) return; // Don't go out of range
 	
+	
 	NSRange selectedRange = _delegate.selectedRange;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	NSTextStorage *textStorage = _delegate.textStorage;
+	bool alreadyEditing = (textStorage.editedMask != 0);
 	
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
@@ -323,7 +323,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:range];
 		}
 		
-		[textStorage endEditing];
+		if (!alreadyEditing) [textStorage endEditing];
 		
 		[self addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:line.range];
 		return;
@@ -359,7 +359,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 
 	// Begin editing attributes
-	[textStorage beginEditing];
+	if (!alreadyEditing) [textStorage beginEditing];
 	
 	// Add new attributes
 	NSRange attrRange = range;
@@ -403,7 +403,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 	[self applyInlineFormatting:line reset:forceFont];
 	[self revisedTextStyleForRange:range];
-	[textStorage endEditing];
+	if (!alreadyEditing) [textStorage endEditing];
 	
 	[self setTextColorFor:line];
 	[self revisedTextColorFor:line];

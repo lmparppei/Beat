@@ -190,8 +190,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;
 	
-	if (self.editorDelegate.hideFountainMarkup) self.layoutManager.allowsNonContiguousLayout = NO;
-	else self.layoutManager.allowsNonContiguousLayout = YES;
+	//if (self.editorDelegate.hideFountainMarkup) self.layoutManager.allowsNonContiguousLayout = NO;
+	self.layoutManager.allowsNonContiguousLayout = YES;
 	
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	[paragraphStyle setLineHeightMultiple:self.editorDelegate.lineHeight];
