@@ -76,6 +76,9 @@
 }
 
 - (void)awakeFromNib {
+	// Register this view to be updated
+	[_delegate registerSceneOutlineView:self];
+	
 	self.enclosingScrollView.hasHorizontalScroller = NO;
 	
 	// No item selected
@@ -96,7 +99,7 @@
 	self.wantsLayer = YES;
 	[self.enclosingScrollView setBackgroundColor:[BeatColors color:@"backgroundGray"]];
 	_backgroundColor = [BeatColors color:@"backgroundGray"];
-		
+	
 	// Setup playhead
 	CGPathRef path = CGPathCreateWithRect(CGRectMake(1, 1, 1, self.frame.size.height), nil);
 	_playhead = [CAShapeLayer layer];
@@ -141,13 +144,13 @@
 	// Let's not, for now.
 	
 	/*
-	[_refreshTimer invalidate];
-	
-	_refreshTimer = [NSTimer scheduledTimerWithTimeInterval:2.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
-		self.outline = [self.delegate getOutlineItems];
-		[self updateScenesAndRebuild:YES];
-	}];
-	*/
+	 [_refreshTimer invalidate];
+	 
+	 _refreshTimer = [NSTimer scheduledTimerWithTimeInterval:2.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
+	 self.outline = [self.delegate getOutlineItems];
+	 [self updateScenesAndRebuild:YES];
+	 }];
+	 */
 }
 
 - (void)updateScenes {
@@ -184,7 +187,7 @@
 			
 			scenes++;
 		}
-				
+		
 		NSInteger diff = scenes - self.scenes.count;
 		
 		// We need more items
@@ -218,7 +221,7 @@
 				[_storylineItems.lastObject removeFromSuperview];
 				[_storylineItems removeLastObject];
 			}
-
+			
 		}
 		
 		// Remove all storyline items when they are not needed
@@ -245,7 +248,7 @@
 	if (height > MAXHEIGHT) height = MAXHEIGHT;
 	
 	CGFloat factor = width / _totalLength;
-
+	
 	// Make the scenes be centered in the frame
 	CGFloat yPosition = DEFAULT_Y;
 	if (_hasSections) {
@@ -262,12 +265,12 @@
 	
 	for (OutlineScene *scene in self.outline) {
 		if (scene.omitted) continue;
-
+		
 		// Handle regular scenes
 		//bool selected = NO;
 		//NSInteger selection = self.delegate.selectedRange.location;
 		//if (selection >= scene.sceneStart && selection < scene.sceneStart + scene.sceneLength) selected = YES;
-
+		
 		NSRect rect;
 		CGFloat width;
 		if (scene.type == heading) {
@@ -303,7 +306,7 @@
 					storylineIndex++;
 				}
 				storylineTrack++;
-			}	
+			}
 		}
 		
 		// Clip sections & synopsis markers for same and higher level sections
@@ -337,7 +340,7 @@
 		
 		index++;
 	}
-		
+	
 	// Move playhead to the selected position + disable core animation
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
@@ -354,7 +357,7 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    [super drawRect:dirtyRect];
+	[super drawRect:dirtyRect];
 	[self updateScenes];
 	
 	// Let's draw labels
@@ -377,7 +380,7 @@
 		}
 	} else {
 		OutlineScene *selectedScene = [_outline objectAtIndex:index];
-
+		
 		// Else go through the elements as usual
 		for (BeatTimelineItem *item in self.scenes) {
 			if (item.representedItem == selectedScene) {
@@ -395,7 +398,7 @@
 		// If the scene is not in view, scroll it into center
 		if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
 			bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
-
+			
 			[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
 		}
 	}
@@ -472,7 +475,7 @@
 - (BOOL)isFlipped { return YES; }
 
 - (void)reload {
-	_outline = _delegate.getOutlineItems;
+	_outline = _delegate.parser.outline.copy;
 	
 	[self updateScenesAndRebuild:YES];
 	[self updateStorylines];
@@ -508,7 +511,7 @@
 		[_storylinePopup setHidden:YES];
 		_visibleStorylines = [NSMutableArray array];
 	}
-
+	
 	// Check that any removed storylines are not tracked
 	// ....
 	
@@ -546,7 +549,7 @@
 
 - (void)updateStorylineLabels {
 	[self removeStorylineLabels];
-
+	
 	for (int i = 0; i < _visibleStorylines.count; i++) {
 		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, STORYLINE_LABELS_WIDTH + 5, 12)];
 		textField.editable = NO;
@@ -559,7 +562,7 @@
 		[self addSubview:textField];
 		[_storylineLabels addObject:textField];
 	}
-
+	
 	for (int i = 0; i < _visibleStorylines.count; i++) {
 		NSTextField *textField = _storylineLabels[i];
 		textField.stringValue = _visibleStorylines[i];
@@ -574,9 +577,11 @@
 	}
 }
 
+
 #pragma mark - Sizing + frame
 
-- (void)show {
+- (void)show
+{
 	[self desiredHeight];
 	[self reload];
 	self.enclosingScrollView.hasHorizontalScroller = YES;
@@ -610,7 +615,9 @@
 	return _originalHeight;
 }
 
+
 #pragma mark - Color controls
+
 
 
 #pragma mark - Delegate methods
@@ -681,7 +688,7 @@
 		return YES;
 	}
 	else if (commandSelector == @selector(insertTab:) ||
-			   commandSelector == @selector(cancelOperation:)) {
+			 commandSelector == @selector(cancelOperation:)) {
 		[_storylinePopover close];
 		_storylineField.stringValue = @""; // Empty the string
 		_clickedItem = nil;
@@ -691,6 +698,25 @@
 	// return YES if the action was handled; otherwise NO
 	return NO;
 }
+
+
+#pragma mark - Reloading (to conform to scene outline view protocol)
+
+- (void)reloadInBackground
+{
+	[self reload];
+}
+
+- (void)reloadView
+{
+	[self reload];
+}
+
+- (void)reloadWithChanges:(OutlineChanges *)changes
+{
+	[self reload];
+}
+
 
 @end
 /*

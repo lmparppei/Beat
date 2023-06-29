@@ -28,9 +28,10 @@
 @property CGFloat touchOrigin;
 @property CGFloat panDelay;
 @property bool isPanning;
-
+@property NSTimer* timer;
 @property NSMagnificationGestureRecognizer *gestures;
 @end
+
 @implementation TouchTimelineView
 
 # pragma mark - Setup
@@ -41,6 +42,7 @@
     _scrollPosition = 0;
 	_playheadPosition = 0;
     _selectedItem = -1; // No item selected
+	
 /*
     // For future generations
     _gestures = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(handleMagnification)];
@@ -51,8 +53,15 @@
     //_gestures.delegate = self;
 */
 }
+
+-(void)setDelegate:(id<BeatEditorDelegate>)delegate
+{
+	_delegate = delegate;
+	[_delegate registerSceneOutlineView:self];
+}
+
 - (void)endGestureWithEvent:(NSEvent *)event {
-    NSLog(@"end");
+ 
 }
 
 # pragma mark - Setting data
@@ -231,7 +240,6 @@
     //_isPanning = NO;
 }
 - (void)locateScene {
-    //CGFloat position = (_playheadPosition - _scrollPosition) / _magnification;
     for (NSInteger i = 0; i < self.items.count; i++) {
         NSDictionary *item = [self.items objectAtIndex:i];
 		if (item[@"invisible"] || [item[@"type"] isEqualToString:@"Synopse"]) continue;
@@ -272,7 +280,12 @@
     }
 }
 - (void)didSelectItem:(NSInteger)item {
-    [self.delegate didSelectTouchTimelineItem:item];
+	OutlineScene* scene = self.delegate.parser.outline[item];
+	if (scene != nil) {
+		[self.delegate setSelectedRange:scene.line.textRange];
+		[self.delegate scrollToLine:scene.line];
+		
+	}
 }
 - (NSUInteger)getSelectedItem {
     [self locateScene];
@@ -310,6 +323,25 @@
     _originalMagnification = _magnification;
     return YES;
 }
+
+- (void)reloadInBackground {
+	[self.timer invalidate];
+	__weak __block TouchTimelineView* weakSelf = self;
+	self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
+		[weakSelf reloadView];
+		self.timer = nil;
+	}];
+}
+
+- (void)reloadView {
+	[self setData:self.delegate.parser.outline];
+}
+
+
+- (void)reloadWithChanges:(OutlineChanges *)changes {
+	[self reloadView];
+}
+
 
 @end
 /*

@@ -8,11 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "BeatTimelineItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatTimelineDelegate <NSObject>
+@protocol BeatTimelineDelegate <BeatEditorDelegate>
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 
@@ -28,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface BeatTimeline : NSView <BeatTimelineItemDelegate, NSTextFieldDelegate>
+@interface BeatTimeline : NSView <BeatSceneOutlineView, BeatTimelineItemDelegate, NSTextFieldDelegate>
 
 @property (nonatomic) bool visible;
 

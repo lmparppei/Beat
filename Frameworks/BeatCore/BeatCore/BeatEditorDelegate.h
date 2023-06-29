@@ -49,6 +49,14 @@
 - (void)reloadView;
 - (bool)visible;
 @end
+
+/**
+ Every view which uses the outline structure to show stuff should adhere to this protocol.
+ */
+@protocol BeatSceneOutlineView<BeatEditorView>
+/// Reloads the view with given changes
+- (void)reloadWithChanges:(OutlineChanges*)changes;
+@end
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
@@ -245,10 +253,9 @@
 
 #pragma mark - General editor stuff
 
-- (void)updateQuickSettings;
-
 - (void)handleTabPress;
-- (void)registerEditorView:(id)view;
+- (void)registerEditorView:(id<BeatEditorView>)view;
+- (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
 
 - (void)toggleMode:(BeatEditorMode)mode;
 

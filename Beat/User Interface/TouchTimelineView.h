@@ -7,16 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
 
-@protocol TouchTimelineDelegate <NSObject>
-- (void)didSelectTouchTimelineItem:(NSInteger)index;
-@end
-
-@interface TouchTimelineView : NSView  <NSGestureRecognizerDelegate>
-
+@interface TouchTimelineView : NSView  <BeatSceneOutlineView, NSGestureRecognizerDelegate>
+@property (nonatomic) bool visible;
 @property CGFloat magnification;
 @property bool allowsMagnification;
-@property (weak) id <TouchTimelineDelegate> delegate;
+@property (nonatomic, weak) id<BeatEditorDelegate> delegate;
 @property NSUInteger selectedItem;
 - (void)selectItem:(NSInteger)index;
 - (NSUInteger)getSelectedItem;

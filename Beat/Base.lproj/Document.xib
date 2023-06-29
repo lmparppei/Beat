@@ -1607,9 +1607,6 @@
         <customObject id="IRq-m7-MkJ" customClass="BeatTagging">
             <connections>
                 <outlet property="delegate" destination="-2" id="Rqs-6L-feE"/>
-                <outlet property="sideView" destination="Thg-Wg-JDd" id="RYV-kO-WeI"/>
-                <outlet property="sideViewCostraint" destination="O0i-Sv-K16" id="uUH-uc-5ZD"/>
-                <outlet property="taggingTextView" destination="dhb-rg-0uZ" id="GFT-yv-O55"/>
             </connections>
         </customObject>
         <customObject id="2ND-f1-BwG" customClass="BeatAutocomplete">

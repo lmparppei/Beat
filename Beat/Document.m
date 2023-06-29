@@ -171,6 +171,7 @@
 
 // Views
 @property (nonatomic) NSMutableSet *registeredViews;
+@property (nonatomic) NSMutableSet *registeredOutlineViews;
 
 // Sidebar & Outline view
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
@@ -1187,11 +1188,6 @@ static NSWindow __weak *currentKeyWindow;
 	return YES;
 }
 
-- (void)registerEditorView:(id<BeatEditorView>)view {
-	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
-	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
-}
-
 - (NSDictionary*)revisedRanges {
 	NSDictionary *revisions = [BeatRevisions rangesForSaving:self.getAttributedText];
 	return revisions;
@@ -1212,8 +1208,24 @@ static NSWindow __weak *currentKeyWindow;
  
  */
 
+#pragma mark - Editor view registration
 
-# pragma mark - TextView interface
+/// Registers a normal editor view. They know if they are visible and can be reloaded both in sync and async.
+- (void)registerEditorView:(id<BeatEditorView>)view
+{
+	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
+	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+}
+
+/// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
+- (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view
+{
+	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableSet.set;
+	if (![_registeredOutlineViews containsObject:view]) [_registeredOutlineViews addObject:view];
+}
+
+
+#pragma mark - TextView interface
 
 - (void)setupTextView {
 	// Set insets on load
@@ -1573,11 +1585,8 @@ static NSWindow __weak *currentKeyWindow;
 	// Update formatting
 	[self applyFormatChanges];
 	
-	// If outline has changed, we will rebuild outline & timeline if needed
-	//bool changeInOutline = [self.parser getAndResetChangeInOutline];
-	
+	// Check changes to outline
 	// NOTE: calling this method removes the outline changes from parser
-	// NSSet* changesInOutline = self.parser.changesInOutline;
 	OutlineChanges* changesInOutline = self.parser.changesInOutline;
 
 	// Update scene numbers
@@ -1585,15 +1594,15 @@ static NSWindow __weak *currentKeyWindow;
 		if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
 	}
 	
-	//if (changeInOutline == YES) {
 	if (changesInOutline.hasChanges == YES) {
-		// if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline.updatedElements];
+		// TODO: Conform side bar with BeatSceneOutlineView protocol
 		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changesInOutline];
-		if (self.timeline.visible) [self.timeline reload];
-		if (self.timelineBar.visible) [self reloadTouchTimeline];
+		
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
-	} else {
-		if (self.timeline.visible) [_timeline refreshWithDelay];
+		
+		for (id<BeatSceneOutlineView> view in _registeredOutlineViews) {
+			[view reloadWithChanges:changesInOutline];
+		}
 	}
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
@@ -1612,22 +1621,17 @@ static NSWindow __weak *currentKeyWindow;
 	// Update any running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
-	// Save to buffer
+	// Cache current text state
 	_contentCache = self.textView.string.copy;
 	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
 	
 	// If this was an undo operation, scroll to where the alteration was made
-	if (self.undoManager.isUndoing) {
-		//[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
-		[self.textView ensureRangeIsVisible:_lastChangedRange];
-	}
+	if (self.undoManager.isUndoing) [self.textView ensureRangeIsVisible:_lastChangedRange];
 	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
-	
-	
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -2598,7 +2602,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisedTextColor:) setting:BeatSettingShowRevisedTextColor target:self],
 		
 		[BeatValidationItem.alloc initWithAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"visible" target:self.timeline],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
 		
 		[BeatValidationItem.alloc initWithAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
@@ -3242,8 +3246,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
 			OutlineScene *scene = selectedScene;
 			[self setColor:colorName forScene:scene];
-			if (_timeline.clickedItem != nil) [_timeline reload];
-			if (self.timelineBar.visible) [self reloadTouchTimeline];
+			//if (_timeline.clickedItem != nil) [_timeline reload];
 		}
 		
 		_timeline.clickedItem = nil;
@@ -3433,9 +3436,11 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)refreshAllOutlineViews {
 	if (_sidebarVisible) [self.outlineView reloadOutline];
-	if (_timeline.visible) [self.timeline reload];
-	if (self.timelineBar.visible) [self reloadTouchTimeline];
 	if (_cardsVisible) [self.cardView refreshCards];
+	
+	for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
+		[view reloadView];
+	}
 }
 
 
@@ -3603,19 +3608,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Timeline Delegation
 
-- (bool)timelineVisible { return self.timeline.visible; }
-
-- (void)reloadTouchTimeline {
-	[_touchbarTimeline setData:[self getOutlineItems].mutableCopy];
-}
-- (void)didSelectTouchTimelineItem:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
-	[self scrollToScene:scene];
-}
-- (void) touchPopoverDidShow {
-	[self reloadTouchTimeline];
+- (void)touchPopoverDidShow {
+	self.touchbarTimeline.visible = true;
+	[self.touchbarTimeline reloadView];
 }
 - (void) touchPopoverDidHide {
+	self.touchbarTimeline.visible = false;
 }
 - (void)didSelectTimelineItem:(NSInteger)index {
 	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
@@ -4362,6 +4360,7 @@ static NSArray<Line*>* cachedTitlePage;
 		return YES;
 	}
 }
+
 
 @end
 

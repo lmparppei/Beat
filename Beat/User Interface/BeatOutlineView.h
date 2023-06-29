@@ -16,7 +16,7 @@
 @property (readonly, nonatomic) OutlineScene *currentScene;
 @property (nonatomic) bool outlineEdit;
 @property (readonly, nonatomic) NSArray *outline;
-@property (readonly, nonatomic) BeatAutocomplete* autocompletion;
+@property (readonly, weak, nonatomic) BeatAutocomplete* autocompletion;
 @property (nonatomic, strong, readonly) ContinuousFountainParser *parser;
 - (NSMutableArray<Line*>*)lines;
 - (NSArray*)getOutlineItems;
