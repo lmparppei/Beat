@@ -270,6 +270,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	NSTextStorage *textStorage = _delegate.textStorage;
 	bool alreadyEditing = (textStorage.editedMask != 0);
+	alreadyEditing = true;
 	
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
