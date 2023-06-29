@@ -1666,7 +1666,7 @@ double clamp(double d, double min, double max) {
 	if (line == nil) return 0;
 	
 	LineType type = line.type;
-	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range);
+	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range) || NSIntersectionRange(self.selectedRange, line.range).length > 0;
 
 	// Ignore story markers
 	if (line.type == section || line.type == synopse) return 0;
