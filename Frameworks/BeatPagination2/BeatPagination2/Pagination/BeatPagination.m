@@ -486,15 +486,21 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 /// Returns page index based on line position
 - (NSInteger)findPageIndexAt:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages
 {
+    return [self findPageIndexInRange:NSMakeRange(position, 0) pages:pages];
+}
+- (NSInteger)findPageIndexInRange:(NSRange)lineRange pages:(NSArray<BeatPaginationPage*>*)pages
+{
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
 		NSRange range = page.safeRange;
 		
         // Location is inside this page range
-        if (NSLocationInRange(position, range)) return i;
+        if (NSLocationInRange(lineRange.location, range) || NSLocationInRange(NSMaxRange(lineRange), range) ) {
+            return i;
+        }
 		
         // We've gone past the original location, return the previous page (or the first, if something went wrong)
-		if (range.location > position) {
+		if (range.location > lineRange.location) {
 			return (i > 0) ? i - 1 : 0;
 		}
 	}
@@ -617,7 +623,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 - (CGFloat)heightForRange:(NSRange)range
 {
-    NSInteger pageIndex = [self findPageIndexAt:range.location];
+    NSInteger pageIndex = [self findPageIndexInRange:range pages:self.pages];
     if (pageIndex == NSNotFound) {
         NSLog(@"• PAGINATION: Page not found: range %lu, %lu", range.location, range.length);
         return 0.0;
