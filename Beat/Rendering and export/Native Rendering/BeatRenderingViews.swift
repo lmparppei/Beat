@@ -303,6 +303,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		
 		// Split first line to remove the key ('Title: My Film' -> 'My Film')
 		var firstLine = lines.first!
+		
 		firstLine = firstLine.splitAndFormatToFountain(at: firstLine.titlePageKey().count + 1)[1]
 		firstLine.type = type
 		

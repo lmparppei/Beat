@@ -1844,8 +1844,13 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	//Line *currentLine = _editorDelegate.currentLine;
 	Line *line = [self.editorDelegate.parser lineAtIndex:range.location];
 	
-	// Avoid capitalizing parentheticals
+	if ((line.isAnyCharacter || line.type == heading) && self.popupMode == Autocomplete) {
+		// Do nothing when autocompletion list is visible
+		return;
+	}
+		
 	if (line.isAnyParenthetical) {
+		// Avoid capitalizing parentheticals
 		NSMutableArray<NSTextCheckingResult*> *newResults;
 		
 		NSString *textToChange = [self.textStorage.string substringWithRange:range].uppercaseString;
@@ -1858,12 +1863,11 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 			}
 		}
 		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
-	} else if ((line.isAnyCharacter || line.type == heading) && self.popupMode == Autocomplete) {
-		// Do nothing when heading autocomplete is visible
-	} else {
-		// default behaviors, including auto-correct
-		[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
+		return;
 	}
+
+	// default behaviors, including auto-correct
+	[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 }
 
 

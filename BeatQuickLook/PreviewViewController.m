@@ -127,6 +127,28 @@
 - (void)textDidChange:(NSNotification *)notification {}
 - (void)updateChangeCount:(NSDocumentChangeType)change {}
 
+- (bool)editorTabVisible { return true; }
+- (void)forceFormatChangesInRange:(NSRange)range {}
+- (void)formatAllLines {}
+- (NSAttributedString *)getAttributedText { return self.attributedString; }
+- (void)handleTabPress {}
+- (void)invalidatePreview {}
+- (void)invalidatePreviewAt:(NSInteger)index {}
+- (NSLayoutManager *)layoutManager { return nil; }
+- (id)pagination { return self.previewController.pagination; }
+- (NSPrintInfo *)printInfo { return NSPrintInfo.sharedPrintInfo; }
+- (void)registerEditorView:(id<BeatEditorView>)view {}
+- (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view {}
+- (void)releasePrintDialog {}
+- (void)renderBackgroundForLine:(Line *)line clearFirst:(bool)clear {}
+- (void)renderBackgroundForLines {}
+- (void)renderBackgroundForRange:(NSRange)range {}
+- (void)setTypeAndFormat:(Line *)line type:(LineType)type {}
+- (CGFloat)sidebarWidth { return 0.0; }
+- (NSTextStorage *)textStorage { return nil; }
+- (void)toggleMode:(BeatEditorMode)mode {}
+- (NSUUID *)uuid { return NSUUID.new; }
+
 - (nonnull NSArray<NSString *> *)shownRevisions {
 	return BeatRevisions.revisionColors;
 }

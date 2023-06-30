@@ -28,6 +28,4 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
 - (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(void))callback;
 - (NSString*)scriptAsString;
 
-+ (NSString*)colorNameFor16bitHex:(NSString*)hex;
-
 @end

@@ -60,7 +60,7 @@
     
     CGSize inset = [self offsetSize];
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-    
+        
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
@@ -125,7 +125,6 @@
                                                 CGRect usedRect,
                                                 NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
         // Calculate character range here already. We also get usedRect for free.
-        
         NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
         __block NSInteger revisionLevel = -1;
         
@@ -223,6 +222,7 @@
             [symbol drawInRect:rect];
         }
     }];
+    
     [super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
 }
 
