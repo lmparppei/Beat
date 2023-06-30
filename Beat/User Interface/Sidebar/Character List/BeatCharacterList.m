@@ -11,15 +11,7 @@
 #import <BeatCore/BeatColors.h>
 #import "BeatCharacterList.h"
 #import "BeatPieGraph.h"
-
-@interface BeatCharacter : NSObject
-@property (nonatomic) NSString *name;
-@property (nonatomic) NSString *gender;
-@property (nonatomic) NSInteger lines;
-@property (nonatomic) NSMutableSet * scenes;
-@end
-@implementation BeatCharacter
-@end
+#import "Beat-Swift.h"
 
 @interface BeatLinesBarRowView : NSTableCellView
 @property (nonatomic) CGFloat barWidth;
@@ -40,7 +32,7 @@
 		@"other": ThemeManager.sharedManager.genderOtherColor,
 		@"unspecified": ThemeManager.sharedManager.genderUnspecifiedColor
 	};
-	
+
 	NSColor *color = colorForGender[_character.gender];
 	CGFloat alpha = _barWidth * 1.0;
 
@@ -65,13 +57,14 @@
 
 @end
 
-@interface BeatCharacterList ()
+@interface BeatCharacterList () <NSPopoverDelegate, BeatCharacterListDelegate>
 @property (nonatomic, weak) IBOutlet NSTabView *masterTabView;
 @property (nonatomic, weak) IBOutlet BeatPieGraph *graphView;
 @property (nonatomic) NSDictionary<NSString*, BeatCharacter*> *characterNames;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic) NSInteger mostLines;
 @property (nonatomic) NSPopover *popover;
+@property (nonatomic) BeatCharacterEditorPopoverManager *popoverManager;
 @property (nonatomic) NSTextView *infoTextView;
 
 @property (nonatomic) NSButton *radioUnspecified;
@@ -196,6 +189,7 @@
 		
 		// Reload data in main thread
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			self.popoverManager.popover.animates = false;
 			[self reloadData];
 			[self.graphView pieChartForData:genders];
 			
@@ -203,6 +197,7 @@
 				NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
 				[self selectRowIndexes:indexSet byExtendingSelection:NO];
 			}
+			self.popoverManager.popover.animates = true;
 		});
 	});
 }
@@ -224,7 +219,7 @@
 
 -(void)didClick:(id)sender {
 	if (self.clickedRow == _previouslySelected) {
-		[_popover close];
+		//[_popover close];
 		[self deselectAll:nil];
 		_previouslySelected = -1;
 	} else {
@@ -237,121 +232,20 @@
 }
 
 - (IBAction)showCharacterInfo:(id)sender {
-	if (!self.popover) {
-		// Load popover into memory only when used for the first time
-		[self setupCharacterPopup];
+	if (self.popoverManager) {
+		[self.popoverManager.popover close];
+		self.popoverManager = nil;
 	}
 	
 	NSRect rowFrame = [self frameOfCellAtColumn:1 row:self.selectedRow];
 	
 	BeatCharacter *character = _characterNames[[self sortCharactersByLines][self.selectedRow]];
-	NSString *infoString = [NSString stringWithFormat:@"%@\n%@: %lu\n%@: %lu",
-							character.name,
-							NSLocalizedString(@"statistics.lines", nil),
-							character.lines,
-							NSLocalizedString(@"statistics.scenes", nil),
-							character.scenes.count];
-	_infoTextView.string = infoString;
 	
-	NSString *gender = character.gender.lowercaseString;
-	
-	if (gender) {
-		if ([gender isEqualToString:@"woman"] || [gender isEqualToString:@"female"]) _radioWoman.state = NSOnState;
-		else if ([gender isEqualToString:@"man"] || [gender isEqualToString:@"male"]) _radioMan.state = NSOnState;
-		else if ([gender isEqualToString:@"other"]) _radioOther.state = NSOnState;
-		else _radioUnspecified.state = NSOnState;
-	} else {
-		_radioOther.state = NSOnState;
-	}
-		
-	[self.popover showRelativeToRect:rowFrame ofView:self preferredEdge:NSMaxXEdge];
+	_popoverManager = [BeatCharacterEditorPopoverManager.alloc initWithDelegate:self character:character];
+	[_popoverManager.popover showRelativeToRect:rowFrame ofView:self preferredEdge:NSMaxXEdge];
 }
 
-- (void)setupCharacterPopup {
-	self.popover = [[NSPopover alloc] init];
-	if (@available(macOS 10.14, *)) self.popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
 
-	NSView *contentView = [[NSView alloc] initWithFrame:NSZeroRect];
-	NSViewController *contentViewController = [[NSViewController alloc] init];
-	[contentViewController setView:contentView];
-	
-	NSRect frame = NSMakeRect(0, 0, 200, 150);
-	[self.popover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-	
-	_infoTextView = [NSTextView.alloc initWithFrame:frame];
-	[_infoTextView setEditable:NO];
-	[_infoTextView setDrawsBackground:NO];
-	[_infoTextView setRichText:NO];
-	[_infoTextView setUsesRuler:NO];
-	[_infoTextView setSelectable:NO];
-	[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
-	_infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
-	
-	NSView *infoContentView = [NSView.alloc initWithFrame:NSZeroRect];
-	[infoContentView addSubview:_infoTextView];
-	NSViewController *infoViewController = [[NSViewController alloc] init];
-	[infoViewController setView:infoContentView];
-	
-	self.popover.contentViewController = infoViewController;
-	
-	NSButton *buttonUp = [NSButton buttonWithTitle:@"▲" target:self action:@selector(prevLine)];
-	NSButton *buttonDown = [NSButton buttonWithTitle:@"▼" target:self action:@selector(nextLine)];
-	
-	NSRect upFrame = buttonUp.frame;
-	NSRect downFrame = buttonDown.frame;
-	
-	buttonUp.bezelStyle = NSBezelStyleCircular;
-	buttonUp.bordered = NO;
-	buttonDown.bezelStyle = NSBezelStyleCircular;
-	buttonDown.bordered = NO;
-	
-	upFrame.origin.x = _popover.contentSize.width - upFrame.size.width;
-	upFrame.origin.y = _popover.contentSize.height - upFrame.size.height;
-	buttonUp.frame = upFrame;
-	
-	downFrame.origin.x = downFrame.origin.x = _popover.contentSize.width - downFrame.size.width;
-	downFrame.origin.y = 0;
-	buttonDown.frame = downFrame;
-	
-	[self.popover.contentViewController.view addSubview:buttonUp];
-	[self.popover.contentViewController.view addSubview:buttonDown];
-
-	NSView *genderStack = [[NSView alloc] initWithFrame:(NSRect){0, 4, 150, 80}];
-	
-	NSArray *radioButtons = [self buttonsForGenders];
-	for (NSButton *btn in radioButtons) {
-		[genderStack addSubview:btn];
-	}
-	
-	[self.popover.contentViewController.view addSubview:genderStack];
-}
-
-- (NSArray<NSButton*>*)buttonsForGenders {
-	NSArray *genders = @[NSLocalizedString(@"gender.unspecified", nil), NSLocalizedString(@"gender.woman", nil), NSLocalizedString(@"gender.man", nil), NSLocalizedString(@"gender.other", nil)];
-	NSMutableArray *buttons = [NSMutableArray array];
-	
-	CGFloat y = genders.count * 35;
-	NSInteger i = 0;
-	
-	for (NSString *gender in genders) {
-		NSButton *button = [[NSButton alloc] initWithFrame:(NSRect){ 8, 0, 150, y - i * 35 }];
-		[button setButtonType:NSRadioButton];
-		button.title = gender;
-		[buttons addObject:button];
-		
-		//button.target = self;
-		button.action = @selector(selectGender:);
-		
-		if ([gender isEqualToString:NSLocalizedString(@"gender.unspecified", nil)]) _radioUnspecified = button;
-		else if ([gender isEqualToString:NSLocalizedString(@"gender.woman", nil)]) _radioWoman = button;
-		else if ([gender isEqualToString:NSLocalizedString(@"gender.man", nil)]) _radioMan = button;
-		else _radioOther = button;
-		
-		i++;
-	}
-	
-	return buttons;
-}
 - (IBAction)selectGender:(id)sender {
 	NSString *gender;
 	if (sender == _radioOther) gender = @"other";
@@ -371,12 +265,11 @@
 	}
 }
 
-- (void)prevLine {
+- (void)prevLineFor:(BeatCharacter*)chr
+{
 	NSArray *lines = self.editorDelegate.parser.lines;
 	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
 	if (!currentLine) return;
-	
-	BeatCharacter *chr = _characterNames[[self sortCharactersByLines][self.selectedRow]];
 	
 	NSInteger idx = [lines indexOfObject:currentLine];
 	
@@ -390,13 +283,12 @@
 		}
 	}
 }
-- (void)nextLine {
+- (void)nextLineFor:(BeatCharacter*)chr
+{
 	NSArray *lines = self.editorDelegate.parser.lines;
 	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
 	if (!currentLine) return;
 	
-	BeatCharacter *chr = _characterNames[[self sortCharactersByLines][self.selectedRow]];
-
 	NSInteger idx = [lines indexOfObject:currentLine];
 
 	for (NSInteger i=idx+1; i<lines.count; i++) {
@@ -410,11 +302,6 @@
 	}
 }
 
--(BOOL)resignFirstResponder {
-	[self.popover close];
-	return YES;
-}
-
 -(void)tableViewSelectionDidChange:(NSNotification *)notification {
 	// Hide popover when deselected
 	if (self.selectedRow == -1) [self.popover close];
@@ -422,6 +309,27 @@
 		[self showCharacterInfo:nil];
 	}
 }
+
+-(void)setGenderWithName:(NSString *)name gender:(NSString *)gender
+{
+	if (gender.length && name.length) {
+		// Set gender
+		NSMutableDictionary* genders = _editorDelegate.characterGenders.mutableCopy;
+		genders[name] = gender;
+		_editorDelegate.characterGenders = genders;
+		
+		[self reloadView];
+	}
+}
+-(NSString *)getGenderForName:(NSString *)name
+{
+	if (name.length == 0) return nil;
+	return _editorDelegate.characterGenders[name];
+}
+
+
+#pragma mark - Popover delegate
+
 
 @end
 /*
