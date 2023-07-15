@@ -22,6 +22,8 @@ typedef enum {
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 
+-(instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
+
 - (void)formatLine:(Line*)line;
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime;
 - (void)formatLinesInRange:(NSRange)range;

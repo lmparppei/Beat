@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) iOSDocument* document;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
+@property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
+
 @property (nonatomic) bool printSceneNumbers;
 
 // Editor flags
@@ -52,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) bool skipSelectionChangeEvent;
 
 @property (nonatomic) NSInteger sceneNumberingStartsFrom;
+
+- (void)loadDocumentWithCallback:(void (^)(void))callback;
 
 @end
 

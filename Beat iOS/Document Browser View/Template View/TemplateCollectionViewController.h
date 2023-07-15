@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TemplateCollectionViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface TemplateCollectionViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 @property (copy) void (^ _Nullable importHandler)(NSURL * _Nullable, UIDocumentBrowserImportMode);
 @end
 

@@ -14,7 +14,7 @@
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 
-#import "BeatiOSFormatting.h"
+#import "BeatEditorFormatting.h"
 #import "OutlineViewItem.h"
 #import "BeatPreview.h"
 #import "BeatDocumentViewController.h"

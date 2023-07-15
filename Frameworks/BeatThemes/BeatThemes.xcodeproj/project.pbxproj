@@ -15,6 +15,8 @@
 		B66716C22971CEEB005B8C55 /* BeatDynamicColor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66716BB2971CDC3005B8C55 /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B66716C52971D0C0005B8C55 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66716C42971D0C0005B8C55 /* Cocoa.framework */; platformFilters = (macos, ); };
 		B66716CD2971D415005B8C55 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66716CC2971D415005B8C55 /* UIKit.framework */; platformFilter = ios; };
+		B66CF0802A5080CE00CE0402 /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CF07E2A5080CE00CE0402 /* DynamicColor.m */; };
+		B66CF0812A5080CE00CE0402 /* DynamicColor.h in Headers */ = {isa = PBXBuildFile; fileRef = B66CF07F2A5080CE00CE0402 /* DynamicColor.h */; };
 		B686FFE32971C05500789C8D /* BeatThemes.h in Headers */ = {isa = PBXBuildFile; fileRef = B686FFE22971C05500789C8D /* BeatThemes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -50,6 +52,8 @@
 		B66716B62971CDC2005B8C55 /* BeatDynamicColor.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatDynamicColor.xcodeproj; path = ../BeatDynamicColor/BeatDynamicColor.xcodeproj; sourceTree = "<group>"; };
 		B66716C42971D0C0005B8C55 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B66716CC2971D415005B8C55 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		B66CF07E2A5080CE00CE0402 /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
+		B66CF07F2A5080CE00CE0402 /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B686FFDF2971C05500789C8D /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B686FFE22971C05500789C8D /* BeatThemes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatThemes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -85,9 +89,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B66CF07D2A5080BC00CE0402 /* Dynamic color */ = {
+			isa = PBXGroup;
+			children = (
+				B66CF07F2A5080CE00CE0402 /* DynamicColor.h */,
+				B66CF07E2A5080CE00CE0402 /* DynamicColor.m */,
+			);
+			path = "Dynamic color";
+			sourceTree = "<group>";
+		};
 		B686FFD52971C05500789C8D = {
 			isa = PBXGroup;
 			children = (
+				B66CF07D2A5080BC00CE0402 /* Dynamic color */,
 				B66716B62971CDC2005B8C55 /* BeatDynamicColor.xcodeproj */,
 				B686FFE12971C05500789C8D /* BeatThemes */,
 				B686FFE02971C05500789C8D /* Products */,
@@ -124,6 +138,7 @@
 			files = (
 				B66716942971C0F2005B8C55 /* ThemeManager.h in Headers */,
 				B686FFE32971C05500789C8D /* BeatThemes.h in Headers */,
+				B66CF0812A5080CE00CE0402 /* DynamicColor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B66CF0802A5080CE00CE0402 /* DynamicColor.m in Sources */,
 				B667168E2971C0F2005B8C55 /* BeatTheme.swift in Sources */,
 				B66716922971C0F2005B8C55 /* ThemeManager.m in Sources */,
 			);
@@ -355,6 +371,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
+					"@executable_path/Frameworks/",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
@@ -390,6 +407,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
+					"@executable_path/Frameworks/",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);

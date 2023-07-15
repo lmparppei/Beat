@@ -11,7 +11,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatParsing/BeatParsing.h>
 
-#import "BeatiOSFormatting.h"
+#import "BeatEditorFormatting.h"
 #import "BeatPreview.h"
 
 #import "Beat_iOS-Swift.h"
@@ -60,7 +60,7 @@
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic) BXFont *synopsisFont;
 
-@property (nonatomic) IBOutlet BeatiOSFormatting* formatting;
+@property (nonatomic) IBOutlet BeatEditorFormatting* formatting;
 @property (nonatomic) IBOutlet BeatRevisions* revisionTracking;
 
 @property (nonatomic) IBOutlet BeatReview* review;
@@ -79,6 +79,9 @@
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
 
 @property (nonatomic) bool hideFountainMarkup;
+
+@property (nonatomic) NSMutableAttributedString* formattedTextBuffer;
+
 //@objc var hideFountainMarkup: Bool = false
 
 @end
@@ -110,23 +113,22 @@
 	self.textView.scrollEnabled = false;
 	
 	self.textView.font = self.courier;
+	
+	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
 }
 
 - (void)viewDidLoad {
+	/// NOTE: You need to use `loadDocument` before actually presenting the view
+	
 	[super viewDidLoad];
 	
 	if (!self.documentIsLoading) return;
 	
-	
-	// Load fonts
-	[self loadSerifFonts];
 	// Create text view
 	[self createTextView];
 	
-	// Setup revision tracking
-	_revisionTracking = BeatRevisions.new;
-	_revisionTracking.delegate = self;
-	[_revisionTracking setup];
+	// Setup document title menu
+	[self setupTitleMenu];
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
@@ -142,15 +144,7 @@
 	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
-	[self.document openWithCompletionHandler:^(BOOL success) {
-		if (!success) {
-			// Do something
-			return;
-		}
-		
-		[self setupDocument];
-		[self renderDocument];
-	}];
+	[self setupDocument];
 }
 
 -(IBAction)dismissViewController:(id)sender {
@@ -165,20 +159,47 @@
 	}];
 }
 
-- (void)setupDocument {
+- (void)loadDocumentWithCallback:(void (^)(void))callback
+{
+	[self.document openWithCompletionHandler:^(BOOL success) {
+		if (!success) {
+			// Do something
+			return;
+		}
+		
+		self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
+		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.document.rawText];
+		
+		// Load fonts
+		[self loadSerifFonts];
+		
+		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
+		formatting.delegate = self;
+		
+		for (Line* line in self.parser.lines) { @autoreleasepool {
+			[formatting formatLine:line firstTime:true];
+		} }
+
+		// Setup revision tracking and reviews
+		self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
+		self.review = [BeatReview.alloc initWithDelegate:self];
+				
+		callback();
+	}];
+}
+
+- (void)setupDocument
+{
 	self.titleBar.title = self.fileNameString;
 	
 	self.document.delegate = self;
 	//self.contentBuffer = self.document.rawText;
 	
-	self.formatting = BeatiOSFormatting.new;
+	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
 	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
-	
-	// Load document into parser
-	self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
-	
+		
 	// Init preview
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
@@ -196,33 +217,23 @@
 	
 	// Text view settings
 	self.textView.textStorage.delegate = self;
-	
-	// Set text
-	self.textView.text = self.document.rawText;
-	//[self.revisionTracking loadRevisions];
-	
-}
-
-- (void)renderDocument {
-	[self formatAllLines];
-	[self.outlineView reloadData];
+	[self.textView setFindInteractionEnabled:true];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	[_textView resize];
-	
 	if (_documentIsLoading) {
 		// Loading is complete, show page view
-		[self.textView.layoutManager invalidateGlyphsForCharacterRange:NSMakeRange(0, self.textView.text.length) changeInLength:0 actualCharacterRange:nil];
+		[_textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, _textView.text.length)];
+		[_textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, _textView.text.length) actualCharacterRange:nil];
+		[_textView resize];
 		
 		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 			self.documentIsLoading = false;
 			self.textView.pageView.layer.opacity = 1.0;
-			
 		} completion:^(BOOL finished) {
-			
+			[self.textView resize];
 		}];
 	}
 }
@@ -250,7 +261,7 @@
  */
 
 
-#pragma mark -
+#pragma mark - Text view
 
 - (BXTextView*)getTextView {
 	return self.textView;
@@ -340,26 +351,6 @@
 	return result;
 }
 
-/*
- 
- @IBAction func dismissDocumentViewController() {
- self.previewView?.webview?.removeFromSuperview()
- self.previewView?.webview = nil
- 
- self.previewView?.nibBundle?.unload()
- self.previewView = nil
- 
- dismiss(animated: true) {
- self.document?.close(completionHandler: nil)
- }
- }
- */
-
-#pragma mark - Rename document
-
-- (void)renameDocumentTo:(NSString *)newName completion:(void (^)(NSError *))completion {
-	[self.document renameDocumentTo:newName];
-}
 
 #pragma mark - Getters for parser data
 
@@ -541,29 +532,35 @@
  */
 
 static bool buildPreviewImmediately = false;
-- (IBAction)togglePreview:(id)sender {
+- (IBAction)togglePreview:(id)sender
+{
 	if (!_previewUpdated) {
 		buildPreviewImmediately = true;
 		[self paginate];
 	} else {
 		[self.preview displayPreview];
 	}
+	
 	[self presentViewController:self.previewView animated:true completion:nil];
 }
 
-- (void)previewDidFinish {
+- (void)previewDidFinish
+{
 	//
 }
 
-- (void)paginate {
+- (void)paginate
+{
 	[self paginateWithChangeAt:0 sync:true];
 }
 
-- (void)paginateWithChangeAt:(NSInteger)location sync:(bool)sync {
+- (void)paginateWithChangeAt:(NSInteger)location sync:(bool)sync
+{
 	[self.previewTimer invalidate];
 	self.preview.previewUpdated = false;
 	
 	if (sync) {
+		NSLog(@"%@", self.pagination);
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
 	} else {
@@ -576,27 +573,15 @@ static bool buildPreviewImmediately = false;
 	}
 }
 
-- (void)paginationDidFinishWithPages:(NSArray<BeatPaginationPage *> *)pages {
-	// Update preview in main thread
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		self.preview.previewUpdated = false;
-		
-		if (buildPreviewImmediately) {
-			[self.preview displayPreview];
-		} else {
-			// Send back to background thread
-			[self.preview updatePreviewAsync];
-		}
-	});
-}
-
-- (void)invalidatePreview {
+- (void)invalidatePreview
+{
 	// Mark the current preview as invalid
 	[self paginateWithChangeAt:0 sync:false];
 	self.preview.previewUpdated = NO;
 }
 
-- (void)invalidatePreviewAt:(NSInteger)index {
+- (void)invalidatePreviewAt:(NSInteger)index
+{
 	[self paginateWithChangeAt:index sync:false];
 	self.preview.previewUpdated = NO;
 }
@@ -650,25 +635,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.textView.typingAttributes = attrs;
 }
 
-
-
-#pragma mark - Editor actions
-
-- (IBAction)addDialogue:(id)sender {
-	
-}
-
-- (IBAction)addINT:(id)sender {
-	[self.textActions addNewParagraph:@"INT. "];
-}
-
-- (IBAction)addEXT:(id)sender {
-	[self.textActions addNewParagraph:@"EXT. "];
-}
-
-- (IBAction)addCharacterCue:(id)sender {
-	[self.formattingActions addCue];
-}
 
 
 
@@ -857,12 +823,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.parser parseChangeInRange:affectedRange withString:string];
 }
 
-/// Forces text reformat and editor view updates
-- (void)textDidChange:(NSNotification *)notification {
-	// Faux method for protocol compatibility
-	[self textViewDidChange:self.textView];
-}
-
 -(void)textViewDidChangeSelection:(UITextView *)textView {
 	if (self.currentLine != self.characterInputForLine) {
 		self.characterInput = false;
@@ -870,6 +830,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	[self.textView updateAssistingViews];
+}
+
+/// Forces text reformat and editor view updates
+- (void)textDidChange:(NSNotification *)notification {
+	// Faux method for protocol compatibility
+	[self textViewDidChange:self.textView];
 }
 
 -(void)textViewDidChange:(UITextView *)textView {
@@ -892,14 +858,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	OutlineChanges* changesInOutline = self.parser.changesInOutline;
 	
 	if (changesInOutline.hasChanges) {
-		/*
-		 if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
-		 if (self.timeline.visible) [self.timeline reload];
-		 if (self.timelineBar.visible) [self reloadTouchTimeline];
-		 if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
-		 */
-	} else {
-		//if (self.timeline.visible) [_timeline refreshWithDelay];
+		// Update any outline views
 	}
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
@@ -910,20 +869,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	// Paginate
 	[self paginateWithChangeAt:self.lastChangedRange.location sync:false];
-	
-	
-	// Update any running plugins
-	// if (runningPlugins.count) [self updatePlugins:_lastChangedRange];
-	
-	// Save to buffer
-	// _contentCache = self.textView.string.copy;
-	
-	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
-	// if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
-	
+		
 	// If this was an undo operation, scroll to where the alteration was made
 	if (self.undoManager.isUndoing) {
-		//[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
 		[self.textView scrollRangeToVisible:_lastChangedRange];
 	}
 	
@@ -939,21 +887,25 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	Line* currentLine = self.currentLine;
 	
+	// Handle backspaces with forced cues
+	if (range.length == 1 && [text isEqualToString:@""] && self.characterInput && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
+		[self.textView cancelCharacterInput];
+		return NO;
+	}
+	
 	if (!self.undoManager.isUndoing && !self.undoManager.isRedoing && self.selectedRange.length == 0 && currentLine != nil) {
+		// Test if we'll add extra line breaks and exit the method
 		if (range.length == 0 && [text isEqualToString:@"\n"]) {
-			// Test if we'll add extra line breaks and exit the method
 			bool shouldAddLineBreak = [self.textActions shouldAddLineBreaks:currentLine range:range];
 			if (shouldAddLineBreak) return false;
 		}
 	}
-	
-	// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
 	else if (self.matchParentheses) {
+		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
 		[self.textActions matchParenthesesIn:range string:text];
 	}
-	
-	// Jump over already-typed parentheses and other closures
 	else if ([self.textActions shouldJumpOverParentheses:text range:range]) {
+		// Jump over already-typed parentheses and other closures
 		return false;
 	}
 	
@@ -968,7 +920,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setMatchParentheses:(bool)matchParentheses {
 	[BeatUserDefaults.sharedDefaults saveBool:matchParentheses forKey:BeatSettingMatchParentheses];
-	
 }
 
 - (bool)showRevisions {
@@ -1227,17 +1178,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	[_formatting renderBackgroundForLine:line clearFirst:clear];
+	[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 }
 
 - (void)renderBackgroundForLines {
 }
 
 - (void)renderBackgroundForRange:(NSRange)range {
-	NSArray* lines = [self.parser linesInRange:range];
-	for (Line* line in lines) {
-		[_formatting formatLine:line];
-	}
+	[self.layoutManager invalidateDisplayForCharacterRange:range];
 }
 
 /// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
@@ -1291,7 +1239,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[self.textView.assistantView selectItemAt:0];
 	}
 	
-	[self addCharacterCue:nil];
+	[self.formattingActions addCue];
 }
 
 - (void)registerEditorView:(id)view {
@@ -1319,8 +1267,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - For avoiding throttling
 
 - (bool)hasChanged {
-	if ([self.text isEqualToString:_bufferedText]) return NO;
-	else {
+	if ([self.text isEqualToString:_bufferedText]) {
+		return NO;
+	} else {
 		_bufferedText = self.text.copy;
 		return YES;
 	}
@@ -1360,34 +1309,40 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.scrollView.contentInset = UIEdgeInsetsZero;
 }
 
-- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
-	//NSLog(@"Pagination did finish");
-}
 
--(void)navigationItem:(UINavigationItem *)navigationItem didEndRenamingWithTitle:(NSString *)title {
-	if (![title.pathExtension isEqualToString:@"fountain"]) {
-		title = [title stringByAppendingString:@".fountain"];
-	}
-	
-	DocumentBrowserViewController* browser = DocumentBrowserViewController.new;
-	[browser renameDocumentAtURL:self.document.fileURL proposedName:title completionHandler:^(NSURL * _Nullable finalURL, NSError * _Nullable error) {
+#pragma mark - Rename document
+
+-(void)navigationItem:(UINavigationItem *)navigationItem didEndRenamingWithTitle:(NSString *)title
+{
+	[self.documentBrowser renameDocumentAtURL:self.document.fileURL proposedName:title completionHandler:^(NSURL * _Nullable finalURL, NSError * _Nullable error) {
 		if (error) {
-			NSLog(@"ERROR! %@", error);
+			self.titleBar.title = self.document.fileURL.lastPathComponent.stringByDeletingPathExtension;
 			return;
 		}
 		
 		[self.document presentedItemDidMoveToURL:finalURL];
 	}];
-	
-	/*
-	NSLog(@"Title: %@", title);
-	
-	[self renameDocumentTo:title completion:^(NSError * error) {
-		if (error) {
-			NSLog(@"ERROR! %@", error);
+}
+
+
+#pragma mark - Title menu provider
+
+
+
+#pragma mark - Pagination
+
+- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
+	// Update preview in main thread
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		self.preview.previewUpdated = false;
+		
+		if (buildPreviewImmediately) {
+			[self.preview displayPreview];
+		} else {
+			// Send back to background thread
+			[self.preview updatePreviewAsync];
 		}
-	}];
-	 */
+	});
 }
 
 @end

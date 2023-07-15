@@ -15,5 +15,5 @@ class BeatPreviewView:UIViewController {
 	
 	@IBAction func dismissPreviewView(sender: Any?) {
 		self.dismiss(animated: true)
-	}
+	}	
 }

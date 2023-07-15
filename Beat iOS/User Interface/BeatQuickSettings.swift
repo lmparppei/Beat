@@ -42,7 +42,7 @@ class BeatQuickSettings:BeatPopoverContentController {
 	}
 }
 
-extension BeatDocumentViewController {
+extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 	
 	@IBAction func openQuickSettings(_ sender: AnyObject) {
 		let view = sender.value(forKey: "view") as! UIView
@@ -63,22 +63,22 @@ extension BeatDocumentViewController {
 			popoverPresentationController.sourceView = self.view
 			popoverPresentationController.sourceRect = buttonFrame
 			popoverPresentationController.delegate = self
+			
 			if let popoverController = popoverContentController {
 				present(popoverController, animated: true, completion: nil)
 			}
 		}
 	}
 	
-	func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+	public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
 		return .none
 	}
 	
-	func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+	public func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
 		
 	}
 	
-	func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+	public func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
 		return true
 	}
-	
 }

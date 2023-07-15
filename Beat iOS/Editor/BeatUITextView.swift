@@ -13,6 +13,7 @@ import BeatParsing
 @objc protocol BeatTextEditorDelegate:BeatEditorDelegate {
 	@objc var revisionTracking:BeatRevisions { get }
 	@objc var formattingActions:BeatEditorFormattingActions { get }
+	@objc var textActions:BeatTextIO { get }
 }
 
 class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
@@ -125,16 +126,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		resizePaper()
 		resize()
 		
-		setupButtons()
-	}
-		
-	func setupButtons() {
-		self.assistantView?.leadingActions = [
-			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue))
-		]
-		self.assistantView?.trailingActions = [
-			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!)
-		]
+		setupInputAssistantButtons()
 	}
 	
 	override func awakeFromNib() {
@@ -215,9 +207,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		}
 	}
 	
-	func cancelCharacterInput() {
-		print("Canceling character input")
-		
+	@objc func cancelCharacterInput() {
 		guard let editorDelegate = self.editorDelegate else { return }
 		
 		let line = editorDelegate.characterInputForLine
@@ -227,7 +217,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		let paragraphStyle = NSMutableParagraphStyle()
 		paragraphStyle.firstLineHeadIndent = 0.0
-		paragraphStyle.minimumLineHeight = BeatiOSFormatting.editorLineHeight()
+		paragraphStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight()
 		
 		let attributes:[NSAttributedString.Key:Any] = [
 			NSAttributedString.Key.font: editorDelegate.courier!,
@@ -489,7 +479,6 @@ extension BeatUITextView: NSLayoutManagerDelegate {
 // MARK: - Scroll view delegation
 
 extension BeatUITextView: UIScrollViewDelegate {
-	
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return pageView
 	}
@@ -520,17 +509,16 @@ extension BeatUITextView: UIScrollViewDelegate {
 		}
 	}
 	
-	func resizeScrollViewContent() {
-		print("Resizing SCROLL VIEW CONTENT")
-		
+	@objc func resizeScrollViewContent() {
 		let layoutManager = self.layoutManager
 		let inset = self.textContainerInset
 		
 		// Calculate the index of the last glyph that fits within the available height
-		let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: self.text.count)
+		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
+		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
 
 		// Get the rectangle of the line fragment that contains the last glyph
-		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex - 1, effectiveRange: nil)
+		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
 		var lastLineY = lastLineRect.maxY
 		if lastLineRect.origin.y == 0.0 {
 			lastLineRect = layoutManager.extraLineFragmentRect
@@ -543,7 +531,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 								height: (contentSize.height + inset.top + inset.bottom) * factor)
 
 		if scrollSize.height * factor < self.enclosingScrollView.frame.height {
-			scrollSize.height = (self.enclosingScrollView.frame.height - inset.top - inset.bottom)
+			scrollSize.height = self.enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
 		}
 		
 		let heightNow = self.enclosingScrollView.contentSize.height
@@ -587,11 +575,38 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 }
 
+
 // MARK: - Input assistant buttons
 
 extension BeatUITextView {
+	func setupInputAssistantButtons() {
+		self.assistantView?.leadingActions = [
+			InputAssistantAction(image: UIImage(named: "button_int")!, target: self, action: #selector(addINT)),
+			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue))
+		]
+		self.assistantView?.trailingActions = [
+			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo))
+		]
+	}
+	
+	@objc func addINT() {
+		self.editorDelegate?.textActions.addNewParagraph("INT.")
+	}
+	
+	@objc func addEXT() {
+		self.editorDelegate?.textActions.addNewParagraph("EXT.")
+	}
+	
 	@objc func addCue() {
 		self.editorDelegate?.formattingActions.addCue()
+	}
+	
+	@objc func undo() {
+		self.editorDelegate?.undoManager.undo()
+	}
+	
+	@objc func redo() {
+		self.editorDelegate?.undoManager.redo()
 	}
 }
 

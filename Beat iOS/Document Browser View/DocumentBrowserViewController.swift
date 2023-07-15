@@ -40,28 +40,11 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		templateVC.importHandler = importHandler
 		
 		present(templateVC, animated: true)
-		
-		/*
-		 UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-		 TemplateCollectionViewController *templateCollectionViewController = [storyBoard instantiateViewControllerWithIdentifier:@"TemplateCollectionViewController"];
-		 templateCollectionViewController.importHandler = importHandler;
-		 [self presentViewController:templateCollectionViewController animated:YES completion:nil];
-		 */
-
-		/*
-		if newDocumentURL != nil {
-            importHandler(newDocumentURL, .move)
-        } else {
-			let url = Bundle.main.url(forResource: "Tutorial", withExtension: "fountain")
-			importHandler(url, .copy)
-        }
-		 */
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didPickDocumentsAt documentURLs: [URL]) {
-		print("OK?")
         guard let sourceURL = documentURLs.first else { return }
-        
+		
         // Present the Document View Controller for the first document that was picked.
         // If you support picking multiple items, make sure you handle them all.
         presentDocument(at: sourceURL)
@@ -76,26 +59,21 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		print("FAIL?")
         // Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
     }
-    
-    // MARK: Document Presentation
+    	
+    // MARK: - Document Presentation
     
     func presentDocument(at documentURL: URL) {
-        /*
-        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! DocumentViewController
-        documentViewController.document = iOSDocument(fileURL: documentURL)
-        documentViewController.modalPresentationStyle = .fullScreen
-        
-        present(documentViewController, animated: true, completion: nil)
-		 */
-		
 		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
 		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! BeatDocumentViewController
-		documentViewController.document = iOSDocument(fileURL: documentURL)
 		
-		let navigationController = UINavigationController(rootViewController: documentViewController)
-		navigationController.modalPresentationStyle = .fullScreen
-		present(navigationController, animated: true, completion: nil)
+		documentViewController.document = iOSDocument(fileURL: documentURL)
+		documentViewController.documentBrowser = self
+		
+		documentViewController.loadDocument {
+			let navigationController = UINavigationController(rootViewController: documentViewController)
+			navigationController.modalPresentationStyle = .fullScreen
+			self.present(navigationController, animated: true, completion: nil)
+		}
     }
 }
 

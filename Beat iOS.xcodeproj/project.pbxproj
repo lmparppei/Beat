@@ -26,7 +26,9 @@
 		B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F76E29B7C9B80024D73A /* InputAssistantView.swift */; };
 		B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */; };
 		B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B637EE172A4B423D00F4E7AA /* BeatOutlineDataSource.swift */; };
-		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
+		B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */; };
+		B63AB3C62A58376B00B28BC0 /* BeatTemplateDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */; };
+		B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */; };
 		B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -113,6 +115,9 @@
 		B636F76E29B7C9B80024D73A /* InputAssistantView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantView.swift; sourceTree = "<group>"; };
 		B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantCollectionView.swift; sourceTree = "<group>"; };
 		B637EE172A4B423D00F4E7AA /* BeatOutlineDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatOutlineDataSource.swift; sourceTree = "<group>"; };
+		B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateCell.swift; sourceTree = "<group>"; };
+		B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateDataSource.swift; sourceTree = "<group>"; };
+		B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController Extensions.swift"; sourceTree = "<group>"; };
 		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
 		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
@@ -212,14 +217,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B619DE5B29F80D92007D1838 /* Document View */ = {
+		B619DE5B29F80D92007D1838 /* Document Browser View */ = {
 			isa = PBXGroup;
 			children = (
+				B63AB3C72A58530300B28BC0 /* Template View */,
 				B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */,
-				B619DE5C29F80DB3007D1838 /* TemplateCollectionViewController.h */,
-				B619DE5D29F80DB3007D1838 /* TemplateCollectionViewController.m */,
 			);
-			path = "Document View";
+			path = "Document Browser View";
 			sourceTree = "<group>";
 		};
 		B619DE5F29F80E40007D1838 /* Templates */ = {
@@ -265,6 +269,17 @@
 				B636F76E29B7C9B80024D73A /* InputAssistantView.swift */,
 			);
 			path = "Input Assistant";
+			sourceTree = "<group>";
+		};
+		B63AB3C72A58530300B28BC0 /* Template View */ = {
+			isa = PBXGroup;
+			children = (
+				B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */,
+				B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */,
+				B619DE5C29F80DB3007D1838 /* TemplateCollectionViewController.h */,
+				B619DE5D29F80DB3007D1838 /* TemplateCollectionViewController.m */,
+			);
+			path = "Template View";
 			sourceTree = "<group>";
 		};
 		B63D9F5C2830366B00D027B6 /* Editor */ = {
@@ -358,12 +373,14 @@
 				B633C155298C58930011449D /* Data source */,
 				B619DE5F29F80E40007D1838 /* Templates */,
 				B686FF892971BC6500789C8D /* Exporting and rendering */,
-				B63D9F5C2830366B00D027B6 /* Editor */,
 				B6CB9707282FEDAF00C7AFC7 /* User Interface */,
+				B63D9F5C2830366B00D027B6 /* Editor */,
+				B619DE5B29F80D92007D1838 /* Document Browser View */,
 				B633C132298C54BC0011449D /* Extensions */,
 				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
 				B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */,
 				B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */,
+				B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */,
 				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
 				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
 				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
@@ -380,7 +397,6 @@
 		B6CB9707282FEDAF00C7AFC7 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
-				B619DE5B29F80D92007D1838 /* Document View */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
 				B6D5639B2A424935005840B5 /* BeatFilenameView.swift */,
@@ -515,6 +531,7 @@
 			files = (
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
 				B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */,
+				B63AB3C62A58376B00B28BC0 /* BeatTemplateDataSource.swift in Sources */,
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
 				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
@@ -526,8 +543,10 @@
 				B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
+				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatQuickSettings.swift in Sources */,
 				B619DE5E29F80DB3007D1838 /* TemplateCollectionViewController.m in Sources */,
+				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
 				B633C152298C58130011449D /* BeatPreview.m in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
@@ -537,7 +556,6 @@
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B619DE5829F6FD94007D1838 /* PrintingExtensions.swift in Sources */,
 				B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */,
-				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

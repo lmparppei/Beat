@@ -25,6 +25,9 @@
 		B633C1ED298C63250011449D /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1EA298C631E0011449D /* BeatLocalization.m */; };
 		B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1EF298C63E60011449D /* BeatAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1F0298C63E70011449D /* BeatAttributes.m */; };
+		B63AB3BE2A56B33200B28BC0 /* BeatReviewEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3BD2A56B33200B28BC0 /* BeatReviewEditor.swift */; };
+		B63AB3C02A56BD6200B28BC0 /* BeatReviewEditor iOS.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63AB3BF2A56BD6200B28BC0 /* BeatReviewEditor iOS.xib */; platformFilter = ios; };
+		B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C12A56BEDF00B28BC0 /* BeatTextViewExtensions.swift */; };
 		B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */; };
 		B663A6D629F1C47B0036FE6B /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6D429F1C47A0036FE6B /* BeatFonts.m */; };
 		B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6D529F1C47B0036FE6B /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -47,7 +50,7 @@
 		B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F61299D843C0031AE6B /* BeatArrayExtensions.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F60299D843C0031AE6B /* BeatStringExtensions.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F69299D845A0031AE6B /* BeatValueTransformers.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F5F299D843B0031AE6B /* BeatValueTransformers.swift */; settings = {ATTRIBUTES = (Public, ); }; };
-		B68C0F6B299D8A4F0031AE6B /* ReviewView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68C0F6A299D8A4F0031AE6B /* ReviewView.xib */; platformFilters = (macos, ); };
+		B68C0F6B299D8A4F0031AE6B /* BeatReviewEditor macOS.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68C0F6A299D8A4F0031AE6B /* BeatReviewEditor macOS.xib */; platformFilters = (macos, ); };
 		B68C0F6E299D8D300031AE6B /* libUXKit-AppKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6C299D8D300031AE6B /* libUXKit-AppKit.a */; platformFilters = (macos, ); };
 		B68C0F6F299D8D300031AE6B /* libUXKit-UIKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6D299D8D300031AE6B /* libUXKit-UIKit.a */; platformFilter = ios; };
 		B6974C202A2F1FDF00FA977A /* BeatDocumentDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -92,6 +95,9 @@
 		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
 		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+		B63AB3BD2A56B33200B28BC0 /* BeatReviewEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatReviewEditor.swift; sourceTree = "<group>"; };
+		B63AB3BF2A56BD6200B28BC0 /* BeatReviewEditor iOS.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "BeatReviewEditor iOS.xib"; sourceTree = "<group>"; };
+		B63AB3C12A56BEDF00B28BC0 /* BeatTextViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTextViewExtensions.swift; sourceTree = "<group>"; };
 		B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatURLExtensions.swift; sourceTree = "<group>"; };
 		B663A6D429F1C47A0036FE6B /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
 		B663A6D529F1C47B0036FE6B /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
@@ -112,7 +118,7 @@
 		B68C0F5F299D843B0031AE6B /* BeatValueTransformers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatValueTransformers.swift; sourceTree = "<group>"; };
 		B68C0F60299D843C0031AE6B /* BeatStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStringExtensions.swift; sourceTree = "<group>"; };
 		B68C0F61299D843C0031AE6B /* BeatArrayExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatArrayExtensions.swift; sourceTree = "<group>"; };
-		B68C0F6A299D8A4F0031AE6B /* ReviewView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReviewView.xib; sourceTree = "<group>"; };
+		B68C0F6A299D8A4F0031AE6B /* BeatReviewEditor macOS.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BeatReviewEditor macOS.xib"; sourceTree = "<group>"; };
 		B68C0F6C299D8D300031AE6B /* libUXKit-AppKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-AppKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B68C0F6D299D8D300031AE6B /* libUXKit-UIKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-UIKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentDelegate.h; sourceTree = "<group>"; };
@@ -265,12 +271,12 @@
 		B68C0F50299D7D1F0031AE6B /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */,
+				B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */,
 				B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */,
 				B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */,
 				B6FC406329A1784700004A9D /* BeatTextIO.h */,
 				B6FC406429A1784700004A9D /* BeatTextIO.m */,
-				B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */,
-				B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */,
 				B6B61BB729F9C3610098D94D /* BeatEditorFormattingActions.h */,
 				B6B61BB829F9C3620098D94D /* BeatEditorFormattingActions.m */,
 			);
@@ -281,7 +287,9 @@
 			isa = PBXGroup;
 			children = (
 				B68C0F59299D82130031AE6B /* BeatReview.swift */,
-				B68C0F6A299D8A4F0031AE6B /* ReviewView.xib */,
+				B63AB3BD2A56B33200B28BC0 /* BeatReviewEditor.swift */,
+				B63AB3BF2A56BD6200B28BC0 /* BeatReviewEditor iOS.xib */,
+				B68C0F6A299D8A4F0031AE6B /* BeatReviewEditor macOS.xib */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -322,6 +330,7 @@
 				B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */,
 				B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */,
 				B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */,
+				B63AB3C12A56BEDF00B28BC0 /* BeatTextViewExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -423,7 +432,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B68C0F6B299D8A4F0031AE6B /* ReviewView.xib in Resources */,
+				B68C0F6B299D8A4F0031AE6B /* BeatReviewEditor macOS.xib in Resources */,
+				B63AB3C02A56BD6200B28BC0 /* BeatReviewEditor iOS.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +447,7 @@
 				B68C0F5C299D821A0031AE6B /* BeatReview.swift in Sources */,
 				B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */,
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
+				B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */,
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
 				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
@@ -448,6 +459,7 @@
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
+				B63AB3BE2A56B33200B28BC0 /* BeatReviewEditor.swift in Sources */,
 				B6B85FAF2A223EAE00C7713A /* BeatDocument.m in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
@@ -585,6 +597,7 @@
 		B633C1BD298C5F750011449D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -620,6 +633,7 @@
 		B633C1BE298C5F750011449D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;

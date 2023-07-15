@@ -6,9 +6,12 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
+/**
 
- This class handles formatting the screenplay in editor view
+ This class handles formatting the screenplay in editor view.
+ It is also one of the oldest and messiest parts of the whole app. A full rewrite is direly needed.
+ 
+ TODO: Make this OS-agnostic.
  
  */
 
