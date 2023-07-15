@@ -127,3 +127,10 @@
 "timer.start" = "Käynnistä";
 "timer.charactersRemoved" = "merkkiä poistettu";
 "timer.charactersTyped" = "merkkiä\nlisätty";
+
+"textView.information.selection" = "Valinta";
+"textView.information.document" = "Dokumentti";
+"textView.information.pages" = "Sivuja";
+"textView.information.page" = "Sivu";
+"textView.information.characters" = "Merkkejä";
+"textView.information.words" = "Sanoja";

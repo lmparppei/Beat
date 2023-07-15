@@ -150,3 +150,12 @@
 
 "templates.comicBook.title" = "Comic Book";
 "templates.comicBook.description" = "A simple comic book template";
+
+/* Selection / information */
+
+"textView.information.selection" = "Selection";
+"textView.information.document" = "Document";
+"textView.information.pages" = "Pages";
+"textView.information.page" = "Page";
+"textView.information.characters" = "Characters";
+"textView.information.words" = "Words";

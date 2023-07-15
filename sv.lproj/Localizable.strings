@@ -278,3 +278,10 @@
 "timer.start" = "Starta";
 "timer.charactersRemoved" = "tecken borttagna";
 "timer.charactersTyped" = "tecken skriven";
+
+"textView.information.selection" = "Val";
+"textView.information.document" = "Dokument";
+"textView.information.pages" = "Sidor";
+"textView.information.page" = "Sida";
+"textView.information.characters" = "Tecken";
+"textView.information.words" = "Ord";
