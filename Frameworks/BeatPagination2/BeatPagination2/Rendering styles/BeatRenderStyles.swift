@@ -86,10 +86,16 @@ import OSLog
 	@objc public var textAlign:String = "left"
 	
 	@objc public var marginTop:CGFloat = 0
-	@objc public var marginLeft:CGFloat = 0
+    
+    @objc public var marginLeft:CGFloat = 0
+    
+    @objc public var marginLeftA4:CGFloat = 0
+    @objc public var marginLeftLetter:CGFloat = 0
+    
 	@objc public var marginBottom:CGFloat = 0
 	@objc public var marginRight:CGFloat = 0
 	@objc public var paddingLeft:CGFloat = 0
+    
 	@objc public var contentPadding:CGFloat = 0
 
 	@objc public var lineHeight:CGFloat = 0
@@ -143,6 +149,10 @@ import OSLog
 			return "defaultWidthLetter"
 		case "content-padding":
 			return "contentPadding"
+        case "margin-left-us":
+            return "marginLeftLetter"
+        case "margin-left-a4":
+            return "marginLeftA4"
 		default:
 			return name
 		}

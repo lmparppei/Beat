@@ -304,7 +304,7 @@
 	
 	[leftCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
 	[contentCell setContentWidth:width - 5.0 type:NSTextBlockAbsoluteValueType];
-	[rightCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
+	[rightCell setContentWidth:contentPadding - 5.0 type:NSTextBlockAbsoluteValueType];
 		
 	// Stylize the actual heading part.
 	// Make a copy of the style just in case.
@@ -426,7 +426,9 @@
 	NSString* pageNumberString = (pageNumber > 1) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
 	
 	NSTextTable* table = NSTextTable.new;
-	[table setContentWidth:100 type:NSTextBlockPercentageValueType];
+	CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
+	width += self.styles.page.contentPadding + self.styles.page.marginLeft;
+	[table setContentWidth:width type:NSTextBlockAbsoluteValueType];
 	
 	NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
 	NSTextTableBlock* headerCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
@@ -520,8 +522,8 @@
 		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
 		else 							styles[NSFontAttributeName] = self.fonts.courier;
 		
-		CGFloat width = (self.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-		CGFloat blockWidth = width + style.marginLeft;
+		CGFloat width = (paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+		CGFloat blockWidth = width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
 		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
 		
 		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;

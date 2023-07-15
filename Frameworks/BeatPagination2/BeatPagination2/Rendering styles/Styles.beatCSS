@@ -25,11 +25,14 @@ page {
 	line-height: 12;
 	
 	content-padding: 7ch;
+ 
+    margin-left-a4: 0;
+    margin-left-us: 28;
 }
 
 heading {
-    width-a4: 60ch - 2ch;
-    width-us: 62ch - 2ch;
+    width-a4: 60ch - 4ch;
+    width-us: 62ch - 4ch;
     
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);

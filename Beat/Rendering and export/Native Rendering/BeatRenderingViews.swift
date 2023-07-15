@@ -110,8 +110,9 @@ class BeatPaginationPageView:NSView {
 	
 	func textViewFrame() -> NSRect {
 		let size = BeatPaperSizing.size(for: settings.paperSize)
+		let marginOffset = (settings.paperSize == .A4) ? pageStyle.marginLeftA4 : pageStyle.marginLeftLetter
 		
-		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding,
+		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding + marginOffset,
 							   y: self.pageStyle.marginTop,
 							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
 							   height: size.height - self.pageStyle.marginTop)
