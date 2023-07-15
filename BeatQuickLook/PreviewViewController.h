@@ -12,5 +12,6 @@
 @interface PreviewViewController : NSViewController
 
 @property (nonatomic) BeatDocument* document;
+@property (nonatomic) NSRange selectedRange;
 
 @end

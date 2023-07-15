@@ -169,6 +169,7 @@
 - (bool)characterInput { return false; }
 - (Line*)characterInputForLine { return nil; }
 - (OutlineScene*)currentScene { return nil; }
+- (NSRange)selectedRange { return NSMakeRange(0, 0); }
 
 @synthesize undoManager;
 @synthesize characterGenders;
@@ -191,7 +192,6 @@
 @synthesize revisionMode;
 @synthesize sectionFont;
 @synthesize sectionFonts;
-@synthesize selectedRange;
 @synthesize showPageNumbers;
 @synthesize showRevisedTextColor;
 @synthesize showRevisions;
