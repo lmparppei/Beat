@@ -1272,11 +1272,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	return contentRanges;
 }
 
-/// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc. to convert it to another style of formatting
-- (NSIndexSet*)formattingRanges {
-	return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
-}
-
 - (NSUInteger)numberOfPrecedingFormattingCharacters {
     if (self.string.length < 1) return 0;
     
@@ -1305,6 +1300,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
     
     return 0;
+}
+
+/// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc. to convert it to another style of formatting
+- (NSIndexSet*)formattingRanges {
+    return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
 }
 
 /// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
