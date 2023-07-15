@@ -249,24 +249,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	self.autocompletePopover.animates = NO;
 	self.autocompletePopover.contentViewController = contentViewController;
-	
-	// Info popover
-	self.infoPopover = [[NSPopover alloc] init];
-	
-	NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
-	_infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
-	[_infoTextView setEditable:NO];
-	[_infoTextView setDrawsBackground:NO];
-	[_infoTextView setRichText:NO];
-	[_infoTextView setUsesRuler:NO];
-	[_infoTextView setSelectable:NO];
-	[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
-	
-	[infoContentView addSubview:_infoTextView];
-	NSViewController *infoViewController = [[NSViewController alloc] init];
-	[infoViewController setView:infoContentView];
-
-	self.infoPopover.contentViewController = infoViewController;
 }
 
 -(void)removeFromSuperview {
@@ -553,86 +535,111 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (IBAction)showInfo:(id)sender {
 	bool wholeDocument = NO;
-	NSRange range;
-	if (self.selectedRange.length == 0) {
+	NSRange range = self.selectedRange;
+	
+	if (range.length == 0) {
 		wholeDocument = YES;
 		range = NSMakeRange(0, self.string.length);
-	} else {
-		range = self.selectedRange;
 	}
-		
-	NSInteger words = 0;
-	NSArray *lines = [[self.string substringWithRange:range] componentsSeparatedByString:@"\n"];
-	NSInteger symbols = [[self.string substringWithRange:range] length];
 	
+	NSString* string = [self.string substringWithRange:range];
+	
+	// Calculate amount of words in range
+	NSInteger words = 0;
+	NSArray *lines = [string componentsSeparatedByString:@"\n"];
+	NSInteger symbols = string.length;
+
 	for (NSString *line in lines) {
 		for (NSString *word in [line componentsSeparatedByString:@" "]) {
 			if (word.length > 0) words += 1;
 		}
-		
 	}
-	[_infoTextView setString:@""];
-	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
-	
-	NSString *infoString = [NSString stringWithFormat:@"Words: %lu\nCharacters: %lu", words, symbols];
 
 	// Get number of pages / page number for selection
-	if (wholeDocument) {
-		NSInteger pages = _editorDelegate.numberOfPages;
-		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
-	} else {
-		NSInteger page = [_editorDelegate getPageNumberAt:self.selectedRange.location];
-		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
-	}
-	
-	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-	[attributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]] forKey:NSFontAttributeName];
+	NSInteger numberOfPages = 0;
+	if (wholeDocument) numberOfPages = _editorDelegate.numberOfPages;
+	else numberOfPages = [_editorDelegate getPageNumberAt:self.selectedRange.location];
 	
 	
-	if (wholeDocument) infoString = [NSString stringWithFormat:@"Document\n%@", infoString];
-	else infoString = [NSString stringWithFormat:@"Selection\n%@", infoString];
-	_infoTextView.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
-	_infoTextView.string = infoString;
-	[_infoTextView.textStorage addAttributes:attributes range:NSMakeRange(0, [infoString rangeOfString:@"\n"].location)];
-		
-	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
-	NSRect result = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
+	// Create the string
+	NSString* infoString = [NSString stringWithFormat:
+							@"%@\
+							%@: %lu\n\
+							%@: %lu",
+							(wholeDocument) ? NSLocalizedString(@"textView.information.document", nil) : NSLocalizedString(@"textView.information.selection", nil),
+							NSLocalizedString(@"textView.information.words", nil),
+							words,
+							NSLocalizedString(@"textView.information.characters", nil),
+							symbols];
 	
-	NSRect frame = NSMakeRect(0, 0, 200, result.size.height + 16);
-	[self.infoPopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-	[self.infoTextView setFrame:NSMakeRect(0, 0, NSWidth(frame), NSHeight(frame))];
+	// Create the stylized string with a bolded heading
+	NSMutableAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:infoString];
+	NSDictionary* attributes = @{
+		NSFontAttributeName: [NSFont systemFontOfSize:NSFont.systemFontSize],
+		NSForegroundColorAttributeName: NSColor.textColor
+	};
 	
-	self.substring = [self.string substringWithRange:NSMakeRange(range.location, 0)];
+	[attrString addAttributes:attributes range:NSMakeRange(0, attrString.length)];
+	[attrString addAttribute:NSFontAttributeName value:[NSFont boldSystemFontOfSize:NSFont.systemFontSize] range:NSMakeRange(0, [attrString.string rangeOfString:@"\n"].location)];
 	
+	// Display popover at selected position
 	NSRect rect;
 	if (!wholeDocument) {
 		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
 	} else {
 		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
 	}
+	
 	rect = [self.window convertRectFromScreen:rect];
 	rect = [self convertRect:rect fromView:nil];
 	rect.size.width = 5;
-	
-	[self.infoPopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+
+	NSPopover* popover = [self createPopoverWithText:attrString];
+	[popover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 	[self.window makeFirstResponder:self];
 }
 
+- (NSPopover*)createPopoverWithText:(NSAttributedString*)text
+{
+	if (_infoPopover == nil) {
+		// Info popover
+		NSPopover* popover = NSPopover.new;
+		popover.behavior = NSPopoverBehaviorTransient;
+		
+		NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
+		_infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
+		_infoTextView.editable = false;
+		_infoTextView.drawsBackground = false;
+		_infoTextView.richText = false;
+		_infoTextView.usesRuler = false;
+		_infoTextView.selectable = false;
+		[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
 
-// Beat customization
-- (IBAction)toggleDarkPopup:(id)sender {
-	/*
-	 // Nah. Saved for later use.
-	 
-	_nightMode = !_nightMode;
-	
-	if (_nightMode) {
-		self.autocompletePopover.appearance = [NSAppearance appearanceNamed: NSAppearanceNameVibrantDark];
-	} else {
-		self.autocompletePopover.appearance = [NSAppearance appearanceNamed: NSAppearanceNameVibrantLight];
+		_infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+		
+		[infoContentView addSubview:_infoTextView];
+		
+		NSViewController *infoViewController = NSViewController.new;
+		infoViewController.view = infoContentView;
+		
+		popover.contentViewController = infoViewController;
+		
+		_infoPopover = popover;
 	}
-	 */
+	
+	// calculate content size
+	[_infoTextView.textStorage setAttributedString:text];
+	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	
+	NSRect usedRect = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
+	NSRect frame = NSMakeRect(0, 0, 200, usedRect.size.height + 16);
+	
+	_infoPopover.contentSize = frame.size;
+	_infoTextView.frame = NSMakeRect(0, 0, frame.size.width, frame.size.height);
+
+	return _infoPopover;
 }
+
 
 #pragma mark - Insert
 
@@ -697,7 +704,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	else if (_editorDelegate.mode == ReviewMode) {
 		// Show review editor
-		[_editorDelegate.review showReviewItemWithRange:self.selectedRange forEditing:YES];
+		[_editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
 	}
 	else {
 		// We are in editor mode. Run any required events.
@@ -713,7 +720,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)selectionEvents {
 	/*
 	 
-	 NB: I could/should make this one a registered event, too.
+	 TODO: I could/should make this one a registered event, too.
 	 
 	 */
 	
@@ -726,10 +733,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.string.length > 0) {
 		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
 		if (reviewItem && !reviewItem.emptyReview) {
-			[_editorDelegate.review showReviewItemWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			[_editorDelegate.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
 			[self.window makeFirstResponder:self];
 		} else {
-			[_editorDelegate.review.popover close];
+			[_editorDelegate.review closePopover];
 		}
 	}
 }

@@ -273,7 +273,6 @@
 
 // Autocompletion
 @property (nonatomic) bool isAutoCompleting;
-@property (readwrite, nonatomic) bool darkPopup;
 
 // Touch bar
 @property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
@@ -2400,7 +2399,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 {
 	return BeatFonts.sharedFonts.courier.pointSize;
 }
-- (CGFloat)lineHeight { return LINE_HEIGHT; }
+
+- (CGFloat)lineHeight {
+	return LINE_HEIGHT;
+}
 
 
 #pragma mark - Formatting Buttons
@@ -2447,28 +2449,28 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (IBAction)markAddition:(id)sender
 {
-	if (!self.contentLocked) {
-		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-		[self.revisionTracking markerAction:RevisionAddition];
-		[self.formatting refreshRevisionTextColorsInRange:range];
-	}
+	if (self.contentLocked) return;
+	
+	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+	[self.revisionTracking markerAction:RevisionAddition];
+	[self.formatting refreshRevisionTextColorsInRange:range];
 }
 - (IBAction)markRemoval:(id)sender
 {
-	if (!self.contentLocked) {
-		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-		[self.revisionTracking markerAction:RevisionRemovalSuggestion];
-		[self.formatting formatLinesInRange:range];
-	}
+	if (self.contentLocked) return;
+	
+	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+	[self.revisionTracking markerAction:RevisionRemovalSuggestion];
+	[self.formatting formatLinesInRange:range];
 }
 - (IBAction)clearMarkings:(id)sender
 {
 	// Remove markers
-	if (!self.contentLocked) {
-		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-		[self.revisionTracking markerAction:RevisionNone];
-		[self.formatting refreshRevisionTextColorsInRange:range];
-	}
+	if (self.contentLocked) return;
+	
+	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+	[self.revisionTracking markerAction:RevisionNone];
+	[self.formatting refreshRevisionTextColorsInRange:range];
 }
 
 - (IBAction)commitRevisions:(id)sender {
@@ -2497,6 +2499,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Lock & Force Scene Numbering
 
+// TODO: Move this to editor formatting actions
+
 - (IBAction)unlockSceneNumbers:(id)sender
 {
 	_sceneNumberLabelUpdateOff = YES;
@@ -2521,7 +2525,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
-	NSInteger sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
+	NSInteger sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
 	if (sceneNumber == 0) sceneNumber = 1;
 	
 	for (Line* line in self.parser.lines) {
@@ -2782,10 +2786,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[(BeatAppDelegate *)NSApp.delegate toggleDarkMode];
 	
 	[self updateUIColors];
-	
-	[self.textView toggleDarkPopup:nil];
-	_darkPopup = [self isDark];
-	
+
 	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
 	for (Document* doc in openDocuments) {
 		if (doc != self) [doc updateUIColors];
@@ -3667,6 +3668,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
  
  What matters most is how well you walk through the fire.
  
+ TODO: Migrate this code to use BeatPreviewController. Rather than explicitly paginating, create a preview at given range, and invalidate it when necessary.
+ 
  */
 
 - (BeatPaginationManager*)pagination {
@@ -3693,6 +3696,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
+	// Don't paginate while loading
+	if (self.documentIsLoading) return;
+	
 	[self.previewController createPreviewWithChangeAt:range.location sync:sync];
 	return;
 }
@@ -4070,7 +4076,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (IBAction)reviewSelectedRange:(id)sender {
 	if (self.selectedRange.length == 0) return;
-	[_review showReviewItemWithRange:self.selectedRange forEditing:YES];
+	[_review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
 }
 
 #pragma mark - Tagging Mode

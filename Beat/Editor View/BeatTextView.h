@@ -105,7 +105,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 + (CGFloat)linePadding;
 - (CGFloat)documentWidth;
 
-- (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (CGFloat)setInsets;
 - (void)scrollToRange:(NSRange)range;
