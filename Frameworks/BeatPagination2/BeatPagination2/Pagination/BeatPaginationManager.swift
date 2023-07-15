@@ -210,12 +210,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	
     /// Called when a pagination operation is finished.
 	public func paginationFinished(_ pagination: BeatPagination) {
-		// Check if the currently finished pagination was created before the latest one.
-        // If it's older, do nothing.
-        if (self.finishedPagination != nil) {
-			if (pagination.startTime < self.finishedPagination!.startTime) { return }
-		}
-		
         // Remove the finished pagination operation (and any earlier ones) from queue
         let i = self.operationQueue.firstIndex(of: pagination) ?? NSNotFound
 		if i != NSNotFound {
@@ -227,6 +221,13 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 				n += 1
 			}
 		}
+        
+        // Check if the currently finished pagination was created before the latest one.
+        // If it's older, do nothing.
+        if (finishedPagination != nil && pagination.startTime < self.finishedPagination!.startTime) {
+            return
+        }
+
 		
         // If the pagination was successful, let's make it the latest finished pagination
 		if pagination.success {
@@ -242,7 +243,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			runPagination(pagination: lastOperation!)
 		}
 	}
-	
 	
 	
 	
