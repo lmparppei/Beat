@@ -49,6 +49,7 @@
     self = [super init];
     if (self) {
         self.delegate = delegate;
+        [self setup];
     }
     return self;
 }
