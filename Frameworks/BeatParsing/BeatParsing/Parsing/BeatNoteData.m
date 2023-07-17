@@ -72,7 +72,7 @@
         case NoteTypeColor:
             return @"color";
         case NoteTypeMarker:
-            return @"note";
+            return @"marker";
     }
     return @"";
 }
