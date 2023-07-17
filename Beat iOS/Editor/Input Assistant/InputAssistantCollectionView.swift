@@ -73,7 +73,6 @@ class InputAssistantCollectionView: UICollectionView {
 }
 
 extension InputAssistantCollectionView: UICollectionViewDataSource {
-    
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }

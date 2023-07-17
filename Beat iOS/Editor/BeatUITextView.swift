@@ -16,7 +16,7 @@ import BeatParsing
 	@objc var textActions:BeatTextIO { get }
 }
 
-class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
+class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
 
 	//@IBInspectable var documentWidth:CGFloat = 640
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
@@ -35,7 +35,9 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	
 	// MARK: - Initializers
 	
+	/// This class function creates and sets up the main editor text view. We can't create a text view in IB, because layout manager can't be replaced when initializing through `NSCoder`.
 	@objc class func createTextView(editorDelegate:BeatEditorDelegate, frame:CGRect, pageView:BeatPageView, scrollView:BeatScrollView) -> BeatUITextView {
+		// First create core text system
 		let textContainer = NSTextContainer()
 		let layoutManager = BeatLayoutManager()
 		let textStorage = NSTextStorage(string: "")
@@ -43,17 +45,19 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		layoutManager.addTextContainer(textContainer)
 		textStorage.addLayoutManager(layoutManager)
 		
+		// Create the text view and connect the container + layout anager
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
 		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
-		
 		textView.textContainer.widthTracksTextView = false
+		textView.autocorrectionType = .no
+		
+		// Set up the container views
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
 		
-		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate)
+		// Set up assistant view
+		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: textView)
 		textView.assistantView?.attach(to: textView)
-		
-		textView.autocorrectionType = .no
 		
 		layoutManager.editorDelegate = editorDelegate
 		textView.setup()
@@ -65,6 +69,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		customLayoutManager = layoutManager
 		super.init(frame: frame, textContainer: textContainer)
 	}
+	
 	override var textLayoutManager: NSTextLayoutManager? {
 		return nil
 	}
@@ -82,30 +87,20 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	}
 	
 	
-	// MARK: - Getters
+	// MARK: - Layout manager
 	
 	override var layoutManager: NSLayoutManager {
 		return customLayoutManager
 	}
-		
-	@objc var documentWidth:CGFloat {
-		var width = 0.0
-		let padding = self.textContainer.lineFragmentPadding
-		
-		guard let delegate = self.editorDelegate else { return 0.0 }
-		
-		if delegate.pageSize == .A4 {
-			width = BeatFonts.characterWidth() * 59
-		} else {
-			width = BeatFonts.characterWidth() * 61
-		}
-		
-		return width + padding * 2
-	}
 	
 	
 	// MARK: - Setup
-		
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		setup()
+	}
+	
 	func setup() {
 		self.textContainerInset = insets
 		self.isScrollEnabled = false
@@ -128,15 +123,36 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		setupInputAssistantButtons()
 	}
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		setup()
-	}
-	
+		
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		resize()
+	}
+	
+	
+	// MARK: - Resize scroll view and text view
+	/**
+	 
+	 To achieve the "page-like" view, we need to do some trickery.
+	 
+	 Instead of using the built-in scroll view of `UITextView`, we're wrapping `UITextView` inside an `NSView` placed inside a `UIScrollView`.
+	 Whenever the text view content changes, we'll need to resize the wrapping view and content size of the enclosing scroll view.
+	 
+	 */
+	
+	@objc var documentWidth:CGFloat {
+		var width = 0.0
+		let padding = self.textContainer.lineFragmentPadding
+		
+		guard let delegate = self.editorDelegate else { return 0.0 }
+		
+		if delegate.pageSize == .A4 {
+			width = BeatFonts.characterWidth() * 60
+		} else {
+			width = BeatFonts.characterWidth() * 62
+		}
+		
+		return width + padding * 2
 	}
 	
 	@objc func resizePaper() {
@@ -192,6 +208,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		} completion: { _ in
 		}
 	}
+	
 	
 	// MARK: - Dialogue input
 	
@@ -472,9 +489,8 @@ extension BeatUITextView: NSLayoutManagerDelegate {
 		
 		return glyphs
 	}
-	 
-
 }
+
 
 // MARK: - Scroll view delegation
 
@@ -581,8 +597,9 @@ extension BeatUITextView: UIScrollViewDelegate {
 extension BeatUITextView {
 	func setupInputAssistantButtons() {
 		self.assistantView?.leadingActions = [
-			InputAssistantAction(image: UIImage(named: "button_int")!, target: self, action: #selector(addINT)),
-			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue))
+			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue)),
+			InputAssistantAction(image: UIImage(named: "Shortcut.INT")!, target: self, action: #selector(addINT)),
+			InputAssistantAction(image: UIImage(named: "Shortcut.EXT")!, target: self, action: #selector(addEXT))
 		]
 		self.assistantView?.trailingActions = [
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo))
@@ -608,7 +625,28 @@ extension BeatUITextView {
 	@objc func redo() {
 		self.editorDelegate?.undoManager.redo()
 	}
+	
+	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
+		guard let editorDelegate = self.editorDelegate else { return }
+		
+		if suggestion[0] == "(" && editorDelegate.currentLine().isAnyCharacter() {
+			// This is a character extension
+			editorDelegate.textActions.addCueExtension(suggestion, on: editorDelegate.currentLine())
+		} else {
+			// This is something else
+			let r = NSMakeRange(editorDelegate.currentLine().position, editorDelegate.currentLine().length)
+			print("Suggestion: '" + suggestion + "'")
+			print("  -> selected range:", editorDelegate.selectedRange)
+			print("  -> current line:", editorDelegate.currentLine())
+			print("  -> current range:", editorDelegate.currentLine().textRange())
+			print("  -> range to replace:", r)
+			
+			editorDelegate.replace(r, with: suggestion)
+			print("    -> '" + editorDelegate.currentLine().string + "'")
+		}
+	}
 }
+
 
 // MARK: - Assisting views
 

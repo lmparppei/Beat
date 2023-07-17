@@ -41,8 +41,11 @@ public protocol InputAssistantViewDataSource:NSObject {
 public protocol InputAssistantViewDelegate:NSObject {
 	
 	/// When the user taps on a suggestion
-	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestionAtIndex index: Int)
+	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String)
 }
+
+
+// MARK: - Autocomplete data source
 
 /// Data source for autocomplete suggestions
 public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
@@ -109,6 +112,9 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	}
 }
 
+
+// MARK: - Input assistant view
+
 /// UIInputView that displays custom suggestions, as well as leading and trailing actions.
 open class InputAssistantView: UIInputView {
 	
@@ -155,7 +161,7 @@ open class InputAssistantView: UIInputView {
 	private let suggestionsCollectionView: InputAssistantCollectionView
 		
 	
-	public init(editorDelegate:BeatEditorDelegate) {
+	public init(editorDelegate:BeatEditorDelegate, inputAssistantDelegate:InputAssistantViewDelegate?) {
 		self.leadingStackView = UIStackView()
 		self.trailingStackView = UIStackView()
 		
@@ -190,6 +196,8 @@ open class InputAssistantView: UIInputView {
 		
 		self.dSource = AutocompletionDataSource(editorDelegate: editorDelegate)
 		self.dataSource = self.dSource
+		
+		self.delegate = inputAssistantDelegate
 	}
 	
 	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -272,21 +280,6 @@ open class InputAssistantView: UIInputView {
 	}
 }
 
-extension UIImage {
-	
-	/// Scales the image to the given CGSize
-	func scaled(toSize size: CGSize) -> UIImage {
-		if self.size == size {
-			return self
-		}
-		
-		let newImage = UIGraphicsImageRenderer(size: size).image { context in
-			self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-		}
-		return newImage.withRenderingMode(self.renderingMode)
-	}
-}
-
 extension InputAssistantView: UICollectionViewDelegate {
 	/// Manually trigger first selection
 	@objc public func selectItem(at index:Int) {
@@ -299,7 +292,9 @@ extension InputAssistantView: UICollectionViewDelegate {
 		UIDevice.current.playInputClick()
 		collectionView.deselectItem(at: indexPath, animated: true)
 		
-		self.delegate?.inputAssistantView(self, didSelectSuggestionAtIndex: indexPath.row)
+		if let item = self.dataSource?.inputAssistantView(self, nameForSuggestionAtIndex: indexPath.last ?? NSNotFound) as? String {
+			self.delegate?.inputAssistantView(self, didSelectSuggestion: item)
+		}
 	}
 }
 
@@ -308,3 +303,17 @@ extension InputAssistantView: UIInputViewAudioFeedback {
 	public var enableInputClicksWhenVisible: Bool { return true }
 }
 
+
+extension UIImage {
+	/// Scales the image to the given CGSize
+	func scaled(toSize size: CGSize) -> UIImage {
+		if self.size == size {
+			return self
+		}
+		
+		let newImage = UIGraphicsImageRenderer(size: size).image { context in
+			self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+		}
+		return newImage.withRenderingMode(self.renderingMode)
+	}
+}
