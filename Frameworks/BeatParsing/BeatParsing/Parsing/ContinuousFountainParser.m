@@ -411,7 +411,7 @@ static NSDictionary* patterns;
     
     [self adjustLinePositionsFrom:lineIndex];
     
-    //[self report];
+    [self report];
     [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
@@ -571,6 +571,8 @@ static NSDictionary* patterns;
 	
     // Parse correct type
 	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
+
+    if (![oldNotes isEqualToIndexSet:currentLine.noteRanges]) NSLog(@"Notes changed: %@", currentLine);
         
     // Add, remove or update outline elements
     if ((oldType == section || oldType == heading) && !currentLine.isOutlineElement) {
@@ -768,17 +770,13 @@ static NSDictionary* patterns;
 	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
     
     Line* previousLine = (index < self.lines.count && index > 0) ? self.lines[index-1] : nil;
+    [line noteDataWithLineIndex:index];
     
     line.omittedRanges = [self rangesOfOmitChars:charArray
                                         ofLength:length
                                           inLine:line
                                  lastLineOmitOut:previousLine.omitOut
                                      saveStarsIn:excluded];
-    
-    line.noteRanges = [self noteRanges:charArray
-                              ofLength:length
-                                inLine:line
-                           partOfBlock:previousLine.noteOut];
     
     line.escapeRanges = NSMutableIndexSet.new;
 
@@ -876,7 +874,7 @@ static NSDictionary* patterns;
     bool previousIsEmpty = false;
     
     NSString *trimmedString = (line.string.length > 0) ? [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] : @"";
-
+    
     // Check for everything that is considered as empty
     if (previousLine.effectivelyEmpty || index == 0) previousIsEmpty = true;
     
@@ -1224,6 +1222,10 @@ static NSDictionary* patterns;
 
 - (NSMutableIndexSet*)noteRanges:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line partOfBlock:(bool)partOfBlock
 {
+    [line noteData];
+    return line.noteRanges;
+    
+    /*
 	// If a note block is bleeding into this line, noteIn is true
 	line.noteIn = partOfBlock;
 		
@@ -1298,8 +1300,8 @@ static NSDictionary* patterns;
 		line.noteOut = NO;
 		[line.noteOutIndices removeAllIndexes];
 	}
-		
-	return indexSet;
+    */
+	//return indexSet;
 }
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length
@@ -1505,7 +1507,6 @@ static NSDictionary* patterns;
 	return [self terminateNoteBlockAt:line index:i];
 }
 - (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
-    NSLog(@"TERMINATE: %@", line);
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSetWithIndex:idx];
 	if (idx == NSNotFound) return changedIndices;
 	

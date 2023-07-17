@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 
 @interface BeatNoteData : NSObject<BeatNoteDataExports>
 @property (nonatomic, readonly) NSString* content;
-@property (nonatomic, readonly) NSString* color;
+@property (nonatomic) NSString* color;
 @property (nonatomic, readonly) NSRange range;
 @property (nonatomic, readonly) NoteType type;
 + (BeatNoteData*)withNote:(NSString*)text range:(NSRange)range;

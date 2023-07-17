@@ -120,6 +120,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @protocol LineDelegate <NSObject>
 @property (readonly) NSMutableArray *lines;
+@property (nonatomic) NSMutableIndexSet *changedIndices;
 - (NSArray<Line*>*)linesForScene:(OutlineScene*)outline;
 @end
 
@@ -329,6 +330,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @property (nonatomic) NSMutableIndexSet *noteOutIndices;
 @property (nonatomic) NSMutableIndexSet *noteInIndices;
+
+- (NSArray*)noteDataWithLineIndex:(NSInteger)lineIndex;
 
 /// The line is filled by a note
 - (bool)note;
