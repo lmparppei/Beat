@@ -615,7 +615,6 @@ FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(N
 FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
 FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string);
 FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position);
-FORWARD_TO(self.textActions, void, globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position);
 FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
 FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);
 
@@ -668,7 +667,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// First replace the existing color range (if it exists)
 	if (line.colorRange.length > 0) {
 		NSRange localRange = line.colorRange;
-		NSRange globalRange = [self.textActions globalRangeFromLocalRange:&localRange inLineAtPosition:line.position];
+		NSRange globalRange = [line globalRangeFromLocal:localRange];
 		[self removeRange:globalRange];
 	}
 	
@@ -711,7 +710,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			[beats addObject:[Storybeat line:scene.line scene:scene string:storyline range:replaceRange]];
 			NSString *beatStr = [Storybeat stringWithBeats:beats];
 			
-			[self replaceRange:[self.textActions globalRangeFromLocalRange:&replaceRange inLineAtPosition:scene.line.position] withString:beatStr];
+			[self replaceRange:[scene.line globalRangeFromLocal:replaceRange] withString:beatStr];
 		}
 		
 	} else {
@@ -763,7 +762,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 				if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
 				
 				NSRange removalRange = beatToRemove.rangeInLine;
-				[self replaceRange:[self.textActions globalRangeFromLocalRange:&removalRange inLineAtPosition:lineWithBeat.position] withString:beatStr];
+				[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
 			}
 		}
 	}
@@ -788,16 +787,20 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	NSRange affectedRange = NSMakeRange(NSNotFound, 0);
 	NSString* string = @"";
-	
+		
 	if (editedRange.length == 0 && delta < 0) {
 		// Single removal. Note that delta is NEGATIVE.
 		NSRange removedRange = NSMakeRange(editedRange.location, labs(delta));
 		affectedRange = removedRange;
 	}
-	else if (editedRange.length > 0 && delta <= 0) {
-		// Something was replaced. Note that delta is NEGATIVE.
+	else if (editedRange.length > 0 && labs(delta) >= 0) {
+		// Something was replaced.
 		NSRange addedRange = editedRange;
-		NSRange replacedRange = NSMakeRange(editedRange.location, editedRange.length + labs(delta));
+		NSRange replacedRange;
+		
+		// Handle negative and positive delta
+		if (delta <= 0) replacedRange = NSMakeRange(editedRange.location, editedRange.length + labs(delta));
+		else replacedRange =  NSMakeRange(editedRange.location, editedRange.length - labs(delta));
 		
 		affectedRange = replacedRange;
 		string = [self.text substringWithRange:addedRange];
@@ -819,6 +822,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			string = [self.text substringWithRange:addedRange];
 		}
 	}
+	
+	NSLog(@"Parsing change: %lu/%lu  --  %@", affectedRange.location, affectedRange.length, [self.text substringWithRange:affectedRange]);
+	NSLog(@"   original string: %@", string);
+
 	
 	[self.parser parseChangeInRange:affectedRange withString:string];
 }
