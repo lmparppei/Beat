@@ -769,7 +769,9 @@ static NSDictionary* patterns;
 	// The cryptically named omitOut and noteOut mean that the line bleeds an omit out,
 	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
     
-    Line* previousLine = (index < self.lines.count && index > 0) ? self.lines[index-1] : nil;
+    Line* previousLine = (index <= self.lines.count && index > 0) ? self.lines[index-1] : nil;
+    
+    // Parse notes. Lines handle their own parsing here, breaking the pattern.
     [line noteDataWithLineIndex:index];
     
     line.omittedRanges = [self rangesOfOmitChars:charArray
@@ -1172,8 +1174,41 @@ static NSDictionary* patterns;
 
 - (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
 {
-    NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+    line.omitIn = lastLineOut;
     
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    NSRange range = (line.omitIn) ? NSMakeRange(0, 0) : NSMakeRange(NSNotFound, 0);
+    
+    for (NSUInteger i=0; i < length; i++) {
+        if (i+1 > length) break;
+        
+        unichar c1 = string[i];
+        unichar c2 = string[i+1];
+        
+        if (c1 == '/' && c2 == '*' && range.location == NSNotFound) {
+            [stars addIndex:i+1];
+            range.location = i;
+            
+        } else if (c1 == '*' && c2 == '/') {
+            if (range.location == NSNotFound) continue;
+            
+            [stars addIndex:i];
+            
+            range.length = i + range.location + OMIT_PATTERN_LENGTH;
+            [indexSet addIndexesInRange:range];
+            
+            range = NSMakeRange(NSNotFound, 0);
+        }
+    }
+    
+    if (range.location != NSNotFound) {
+        line.omitOut = true;
+        [indexSet addIndexesInRange:NSMakeRange(range.location, line.length - range.location + 1)];
+    } else {
+        line.omitOut = false;
+    }
+    
+    /*
     NSInteger lastIndex = length - OMIT_PATTERN_LENGTH; //Last index to look at if we are looking for start
     NSInteger rangeBegin = lastLineOut ? 0 : -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
     line.omitIn = lastLineOut;
@@ -1216,7 +1251,8 @@ static NSDictionary* patterns;
     } else {
         line.omitOut = NO;
     }
-    
+    */
+     
     return indexSet;
 }
 
