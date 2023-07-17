@@ -656,27 +656,25 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
 	}
 	
+	// Enumerate note ranges and set it as COMMENT color
+	// NOTE that this also resets note formatting ranges.
+	NSArray* notes = line.noteData;
+	
 	// Enumerate FORMATTING RANGES and make all of them invisible
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
 	}];
-	
-	// Enumerate note ranges and set it as COMMENT color
-	NSDictionary* notes = line.noteContentsAndRanges;
-	for (NSNumber* r in notes.allKeys) {
-		NSString* content = notes[r];
-		NSRange range = r.rangeValue;
 		
+	for (BeatNoteData* note in notes) {
+		NSRange range = note.range;
 		NSColor* color = themeManager.commentColor;
 		
-		if ([content containsString:@":"]) {
-			NSInteger i = [content rangeOfString:@":"].location;
-			NSString* colorName = [content substringToIndex:i];
-			NSColor* c = [BeatColors color:colorName];
+		if (note.color) {
+			NSColor* c = [BeatColors color:note.color];
 			if (c != nil) color = c;
 		}
 		
-		[self setForegroundColor:color line:line range:range];
+		if (range.length > 0) [self setForegroundColor:color line:line range:range];
 	}
 	
 	// Enumerate title page ranges
