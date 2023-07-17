@@ -1911,11 +1911,6 @@ FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)p
 FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
 FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);
 
-- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
-{
-	return NSMakeRange(range->location + position, range->length);
-}
-
 - (void)removeAttribute:(NSString*)key range:(NSRange)range {
 	if (key == nil) return;
 	[self.textView.textStorage removeAttribute:key range:range];
@@ -3260,7 +3255,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// First replace the existing color range (if it exists)
 	if (line.colorRange.length > 0) {
 		NSRange localRange = line.colorRange;
-		NSRange globalRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:line.position];
+		NSRange globalRange = [line globalRangeFromLocal:localRange];
 		[self removeRange:globalRange];
 	}
 	
@@ -3303,7 +3298,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			[beats addObject:[Storybeat line:scene.line scene:scene string:storyline range:replaceRange]];
 			NSString *beatStr = [Storybeat stringWithBeats:beats];
 			
-			[self replaceRange:[self globalRangeFromLocalRange:&replaceRange inLineAtPosition:scene.line.position] withString:beatStr];
+			[self replaceRange:[scene.line globalRangeFromLocal:replaceRange] withString:beatStr];
 		}
 		
 	} else {
@@ -3354,7 +3349,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 				if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
 				
 				NSRange removalRange = beatToRemove.rangeInLine;
-				[self replaceRange:[self globalRangeFromLocalRange:&removalRange inLineAtPosition:lineWithBeat.position] withString:beatStr];
+				[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
 			}
 		}
 	}

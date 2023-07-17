@@ -522,7 +522,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Set foreground color
 
 - (void)setForegroundColor:(BXColor*)color line:(Line*)line range:(NSRange)localRange {
-	NSRange globalRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:line.position];
+	NSRange globalRange = [line globalRangeFromLocal:localRange];
 	
 	// Don't go out of range and add attributes
 	if (NSMaxRange(localRange) <= line.string.length && localRange.location >= 0 && color != nil) {
@@ -740,9 +740,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		effectiveRange = NSMakeRange(range.location + symLen, 0);
 	}
 	
-	if (key.length) [self.textStorage addAttribute:key value:value
-												  range:[self globalRangeFromLocalRange:&effectiveRange
-																	  inLineAtPosition:line.position]];
+	if (key.length) [self.textStorage addAttribute:key value:value range:[line globalRangeFromLocal:effectiveRange]];
 }
 
 
@@ -767,7 +765,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
 	if (key.length) {
-		NSRange globalRange = [self globalRangeFromLocalRange:&effectiveRange inLineAtPosition:line.position];
+		NSRange globalRange = [line globalRangeFromLocal:effectiveRange];
 				
 		// Add the attribute if needed
 		[textStorage enumerateAttribute:key inRange:globalRange options:0 usingBlock:^(id  _Nullable attr, NSRange range, BOOL * _Nonnull stop) {
@@ -778,10 +776,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 }
 
-- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
-{
-	return NSMakeRange(range->location + position, range->length);
-}
 
 #pragma mark - Revision colors
 

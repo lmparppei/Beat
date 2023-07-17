@@ -170,6 +170,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSRange)textRange;
 /// Converts a global range to the local range insde this string.
 - (NSRange)globalRangeToLocal:(NSRange)range;
+/// Converts a local range to global range.
+- (NSRange)globalRangeFromLocal:(NSRange)range;
 
 /// Legacy method for backwards-compatibility. Use `.stripFormatting` instead.
 - (NSString*)textContent;

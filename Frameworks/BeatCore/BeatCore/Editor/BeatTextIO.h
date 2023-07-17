@@ -56,6 +56,7 @@
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
 
 - (void)addNewParagraph:(NSString*)string;
+- (void)addCueExtension:(NSString*)extension onLine:(Line*)line;
 
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange;
 - (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange;

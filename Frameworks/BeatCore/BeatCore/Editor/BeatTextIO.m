@@ -10,6 +10,10 @@
 #import <BeatParsing/BeatParsing.h>
 #import "BeatUserDefaults.h"
 
+@interface BeatTextIO()
+@property (nonatomic) bool skipAutomaticLineBreaks;
+@end
+
 @implementation BeatTextIO
 
 -(instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate {
@@ -44,7 +48,7 @@
 
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
- Don't use this for adding text, but go through the intermediate methods instead, `addString`, `removeString` etc.
+ - NOTE: __Don't use__ this for adding text, but go through the intermediate methods instead, `addString`, `removeString` etc.
  */
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
@@ -79,10 +83,12 @@
 
 }
 
-static bool _skipAutomaticLineBreaks = false;
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index {
+/// Adds a string at the given index.
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index
+{
     [self addString:string atIndex:index skipAutomaticLineBreaks:false];
 }
+/// Adds a string at the given index. When adding text with line breaks, you can skip automatic line breaks.
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks
 {
     NSRange selectedRange = _delegate.selectedRange;
@@ -97,10 +103,12 @@ static bool _skipAutomaticLineBreaks = false;
     [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
 }
 
+/// Removes a range. This is here for backwards-compatibility.
 - (void)removeAt:(NSUInteger)index length:(NSUInteger)length {
     [self replaceRange:NSMakeRange(index, length) withString:@""];
 }
 
+/// Replaces text in a range with another string.
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
     NSRange selectedRange = _delegate.selectedRange;
@@ -117,16 +125,19 @@ static bool _skipAutomaticLineBreaks = false;
     [self restorePositionForChangeAt:range.location length:newString.length - range.length originalRange:selectedRange];
 }
 
+/// Replaces the given string with another string at given index. A convenience method, I guess.
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
     [self replaceRange:NSMakeRange(index, string.length) withString:newString];
 }
 
+/// Removes given range.
 - (void)removeRange:(NSRange)range
 {
     [self replaceRange:range withString:@""];
 }
 
+/// Moves the given string in a range to another position. You can provide another string to mutate the string before moving.
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string
 {
     _delegate.moving = YES;
@@ -164,17 +175,14 @@ static bool _skipAutomaticLineBreaks = false;
     _delegate.moving = NO;
 }
 
+/// Moves given range to another position
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position
 {
     NSString *stringToMove = [_delegate.text substringWithRange:range];
     [self moveStringFrom:range to:position actualString:stringToMove];
 }
 
-- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
-{
-    return NSMakeRange(range->location + position, range->length);
-}
-
+/// Moves a whole scene from given position to another.
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to
 {
     // FOLLOWING CODE IS A MESS. Dread lightly.
@@ -267,14 +275,27 @@ static bool _skipAutomaticLineBreaks = false;
     }
 }
 
+/// Removes text on the given line in its LOCAL range instead of global range.
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet {
     __block NSUInteger offset = 0;
     [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         // Remove beats on any line
-        NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
+        NSRange globalRange = [line globalRangeFromLocal:range];
         [self removeRange:(NSRange){ globalRange.location - offset, globalRange.length }];
         offset += range.length;
     }];
+}
+
+/// Adds a character extension. The line *has* to be a character.
+- (void)addCueExtension:(NSString*)extension onLine:(Line*)line
+{
+    if (line == nil) line = _delegate.currentLine;
+    if (!line.isAnyCharacter || line.length == 0) return;
+    
+    NSString* str = [NSString stringWithFormat:@"%@%@", (line.lastCharacter != ' ') ? @" " : @"", extension];
+    
+    if (line.type == character) [self addString:str atIndex:NSMaxRange(_delegate.currentLine.textRange)];
+    else if (line.type == dualDialogueCharacter) [self addString:str atIndex:NSMaxRange(_delegate.currentLine.textRange) - 1]; // Keep the ^ for DD cues
 }
 
 #pragma mark - Additional editor convenience stuff

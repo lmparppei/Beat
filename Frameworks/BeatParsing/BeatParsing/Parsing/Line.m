@@ -428,6 +428,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	
 	return (NSRange){ intersection.location - self.position, intersection.length };
 }
+/// Converts a global (document-wide) range into local range inside the line
+-(NSRange)globalRangeFromLocal:(NSRange)range
+{
+    return NSMakeRange(range.location + self.position, range.length);
+}
 
 /// Length of the string
 -(NSInteger)length {
@@ -548,13 +553,44 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
  
  Checked using trimmed length, to make lines like `  [[note]]` be notes.
  */
-- (bool)note {
-	if (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2) {
-		return YES;
-	} else {
-		return NO;
-	}
+- (bool)note
+{
+    return (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2);
 }
+
+/*
+-(bool)cancelsNoteBlock
+{
+    return self.type == empty;
+}
+
+-(bool)terminatesNoteBlock
+{
+    if (![self.string containsString:@"]]"]) return false;
+    for (NSInteger i=0; i<self.length; i++) {
+        unichar c1 = [self.string characterAtIndex:i];
+        unichar c2 = [self.string characterAtIndex:i+1];
+        
+        if (c1 == ']' && c2 == ']') return true;
+        else if (c1 == '[' && c2 == '[') return false;
+    }
+    
+    return false;
+}
+- (bool)beginsNoteBlock
+{
+    if (![self.string containsString:@"[["]) return false;
+    for (NSInteger i=0; i<self.length; i++) {
+        unichar c1 = [self.string characterAtIndex:i];
+        unichar c2 = [self.string characterAtIndex:i+1];
+        
+        if (c1 == '[' && c2 == '[') return true;
+        else if (c1 == ']' && c2 == ']') return false;
+    }
+    
+    return false;
+}
+*/
 
 - (NSArray*)noteContents
 {
