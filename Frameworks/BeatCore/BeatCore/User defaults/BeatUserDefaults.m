@@ -134,8 +134,6 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
         
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
         
-        @"Test": @[@"Test", @1],
-        		
 		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
         
         BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0]

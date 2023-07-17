@@ -7,11 +7,6 @@
 //
 /**
  
- Review system.
- This was also me learning some Swift, which is not going too well. Dread lightly.
- 
- The review system is split
- 
  Like the revision module, review class also provides ranges and text content for the reviews for
  saving into the document as JSON.
  
@@ -226,8 +221,8 @@ public protocol BeatReviewInterface {
 	}
 }
 
+
 // MARK: - Review popover view
-// TODO: Maybe move this into another class which is completely oblivious of OS stuff
 extension BeatReview {
     
 	@objc public func showReviewIfNeeded(range:NSRange, forEditing:Bool) {
@@ -321,5 +316,29 @@ extension BeatReview {
 		#endif
 	}
 }
-
-
+/*
+ 
+ meit' ei oo montaa
+ sitä suurempaa
+ on tavata uusi sisarus
+ aamuyöllä
+ 
+ hotellihuoneessa
+ joskus kuudelta
+ uuden aamun kalpea valo
+ verhojen raosta
+ 
+ sille ei oo sanoja vieläkään
+ mut me ollaan totta
+ sä näät mut
+ mä nään sut
+ 
+ nukahdat parin metrin päähän minusta
+ mut en oo ikinä
+ ollut näin lähellä
+ ketään
+ 
+ en oo ikinä
+ ollut näin lähellä ketään.
+ 
+ */

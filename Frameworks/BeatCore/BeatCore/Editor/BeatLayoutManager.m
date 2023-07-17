@@ -12,9 +12,6 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatCore/BeatMeasure.h>
 
-//#import "BeatTextView.h"
-//#import "BeatMeasure.h"
-//#import "Beat-Swift.h"
 #import "BeatRevisions.h"
 
 @interface BeatLayoutManager()
@@ -24,22 +21,26 @@
 @end
 
 #if TARGET_OS_IOS
-#define BXPoint CGPoint
-#define BXRectFill UIRectFill
-#define BXBezierPath UIBezierPath
-#else
-#define BXPoint NSPoint
-#define BXRectFill NSRectFill
-#define BXBezierPath NSBezierPath
-#endif
+    #define BXPoint CGPoint
+    #define BXRectFill UIRectFill
+    #define BXBezierPath UIBezierPath
 
-#if TARGET_OS_IOS
+    // Because of different line heights on iOS, we'll need to add an offset
+    #define SCENE_NUMBER_OFFSET -5.0
+
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
     #define getRectValue CGRectValue
 #else
+    #define BXPoint NSPoint
+    #define BXRectFill NSRectFill
+    #define BXBezierPath NSBezierPath
+
+    #define SCENE_NUMBER_OFFSET 0.0
+
     #define rectNumberValue(s) [NSValue valueWithRect:rect]
     #define getRectValue rectValue
 #endif
+
 
 @implementation BeatLayoutManager
 
@@ -257,6 +258,8 @@
     // Create rect for the marker position
     rect.size.width = 7.5 * line.sceneNumber.length;
     rect.size.height = rect.size.height + 1.0;
+    
+    CGFloat y = rect.origin.y + SCENE_NUMBER_OFFSET;
     
     rect = CGRectMake(inset.width,
                              rect.origin.y,
@@ -487,19 +490,6 @@
 
 
 #pragma mark - Crossplatform helpers
-
-/*
-/// What is this?
-- (NSUInteger)hashForAttributesInRange:(NSRange)range
-{
-    NSTextStorage* textStorage = self.textStorage;
-    BeatRevisionItem *revision = [textStorage attribute:BeatRevisions.attributeKey atIndex:range.location effectiveRange:NULL];
-    NSString *colorName = revision.colorName ?: @"";
-    NSUInteger hash = [colorName hash];
-
-    return hash;
-}
-*/
 
 -(void)saveGraphicsState {
 #if !TARGET_OS_IOS
