@@ -55,4 +55,26 @@
     return self;
 }
 
+-(NSDictionary *)json
+{
+    return @{
+        @"content": (_content != nil) ? _content : @"",
+        @"color": (_color != nil) ? _color : @"",
+        @"range": @{ @"location": @(_range.location), @"length": @(_range.length) },
+        @"type": [self typeAsString]
+    };
+}
+-(NSString*)typeAsString
+{
+    switch (self.type) {
+        case NoteTypeNormal:
+            return @"note";
+        case NoteTypeColor:
+            return @"color";
+        case NoteTypeMarker:
+            return @"note";
+    }
+    return @"";
+}
+
 @end

@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic, readonly) NSString* color;
 @property (nonatomic, readonly) NSRange range;
+- (NSDictionary*)json;
 @end
 
 @interface BeatNoteData : NSObject<BeatNoteDataExports>

@@ -762,6 +762,20 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return noteData;
 }
 
+- (NSArray*)notes
+{
+    return self.noteData;
+}
+
+- (NSArray*)notesAsJSON
+{
+    NSMutableArray* notes = NSMutableArray.new;
+    for (BeatNoteData* note in self.noteData) {
+        [notes addObject:note.json];
+    }
+    return notes;
+}
+
 #pragma mark Centered
 
 /// Returns TRUE if the line is *actually* centered.
@@ -1546,7 +1560,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - JSON serialization
 
--(NSDictionary*)forSerialization {
+-(NSDictionary*)forSerialization
+{
     NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:@{
 		@"string": (self.string.length) ? self.string.copy : @"",
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
@@ -1558,7 +1573,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		@"omitted": @(self.omitted),
 		@"marker": (self.marker.length) ? self.marker : @"",
 		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
-		@"uuid": (self.uuid) ? self.uuid.UUIDString : @""
+		@"uuid": (self.uuid) ? self.uuid.UUIDString : @"",
+        @"notes": [self notesAsJSON]
 	}];
     
     if (self.type == synopse) {

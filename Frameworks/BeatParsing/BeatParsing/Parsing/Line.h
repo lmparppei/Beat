@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly, atomic) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
+@property (nonatomic, readonly) NSArray<BeatNoteData*>* notes;
 
 @property (nonatomic, readonly) bool noteIn;
 @property (nonatomic, readonly) bool noteOut;

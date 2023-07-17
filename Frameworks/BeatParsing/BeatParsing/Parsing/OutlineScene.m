@@ -86,16 +86,28 @@
         @"omitted": @(self.omitted),
         @"synopsis": synopsis,
         @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
-        @"line": self.line.forSerialization
+        @"line": self.line.forSerialization,
+        @"notes": [self notesAsJSON]
     };
 }
 
-- (NSArray*)serializedBeats {
+- (NSArray*)serializedBeats
+{
 	NSMutableArray *beats = NSMutableArray.new;
 	for (Storybeat *beat in self.beats) {
 		[beats addObject:beat.forSerialization];
 	}
 	return beats;
+}
+
+- (NSArray*)notesAsJSON
+{
+    NSArray* noteData = self.notes;
+    NSMutableArray* notes = NSMutableArray.new;
+    for (BeatNoteData* note in noteData) {
+        [notes addObject:note.json];
+    }
+    return notes;
 }
 
 #pragma mark - Section hierarchy

@@ -764,30 +764,19 @@ static NSDictionary* patterns;
 	// First, we handle notes and omits, which can bleed over multiple lines.
 	// The cryptically named omitOut and noteOut mean that the line bleeds an omit out,
 	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
-    if (index == 0) {
-        line.omittedRanges = [self rangesOfOmitChars:charArray
-											ofLength:length
-											  inLine:line
-									 lastLineOmitOut:NO
-										 saveStarsIn:excluded];
-		
-		line.noteRanges = [self noteRanges:charArray
-										 ofLength:length
-										   inLine:line
-									  partOfBlock:NO];
-    } else {
-        Line* previousLine = self.lines[index-1];
-		line.omittedRanges = [self rangesOfOmitChars:charArray
-											ofLength:length
-											  inLine:line
-									 lastLineOmitOut:previousLine.omitOut
-										 saveStarsIn:excluded];
-		
-		line.noteRanges = [self noteRanges:charArray
-								  ofLength:length
-									inLine:line
-							   partOfBlock:previousLine.noteOut];
-	}
+    
+    Line* previousLine = (index < self.lines.count && index > 0) ? self.lines[index-1] : nil;
+    
+    line.omittedRanges = [self rangesOfOmitChars:charArray
+                                        ofLength:length
+                                          inLine:line
+                                 lastLineOmitOut:previousLine.omitOut
+                                     saveStarsIn:excluded];
+    
+    line.noteRanges = [self noteRanges:charArray
+                              ofLength:length
+                                inLine:line
+                           partOfBlock:previousLine.noteOut];
     
     line.escapeRanges = NSMutableIndexSet.new;
 
@@ -860,21 +849,22 @@ static NSDictionary* patterns;
 			else line.titleRange = NSMakeRange(0, 0);
 		}
 	}
-	
-	// Multiline block parsing
-	// There's no index for this line yet, so let's just pass on the count of lines as index
-	if (line.noteIn) {
-		NSInteger lineIdx = [self.lines indexOfObject:line];
-		if (lineIdx == NSNotFound) lineIdx = self.lines.count;
-		
-		if ([line.string containsString:@"]]"]) {
-			[self terminateNoteBlockAt:line index:lineIdx];
-		}
-		else if (line.type == empty) {
-			[self cancelNoteBlockAt:line index:lineIdx];
-			line.noteOut = NO;
-		}
-	}
+    /*
+     // Multiline block parsing
+     // There's no index for this line yet, so let's just pass on the count of lines as index
+     if (line.noteIn) {
+         NSInteger lineIdx = [self.lines indexOfObject:line];
+         if (lineIdx == NSNotFound) lineIdx = self.lines.count;
+         
+         if ([line.string containsString:@"]]"]) {
+             [self terminateNoteBlockAt:line index:lineIdx];
+         }
+         else if (line.type == empty) {
+             [self cancelNoteBlockAt:line index:lineIdx];
+             line.noteOut = NO;
+         }
+     }
+     */
 }
 
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index {
@@ -1236,7 +1226,7 @@ static NSDictionary* patterns;
 	line.noteIn = partOfBlock;
 		
 	// Reset all indices
-	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
 	
 	line.cancelsNoteBlock = NO;
 	line.endsNoteBlock = NO;
@@ -1295,16 +1285,13 @@ static NSDictionary* patterns;
 	//Terminate any open ranges at the end of the line so that this line is omited untill the end
 
 	if (rangeBegin != -1) {
-			//NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
-			//[indexSet addIndexesInRange:rangeToAdd];
-
 		// Let's take note that this line bleeds out a note range
 		if (beginsNoteBlock) line.beginsNoteBlock = YES;
 		line.noteOut = YES;
 		
+        // Add unterminated indices
 		NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
-		NSMutableIndexSet *unterminatedIndices = [NSMutableIndexSet indexSetWithIndexesInRange:rangeToAdd];
-		line.noteOutIndices = unterminatedIndices;
+        line.noteOutIndices = [NSMutableIndexSet indexSetWithIndexesInRange:rangeToAdd];
 	} else {
 		line.noteOut = NO;
 		[line.noteOutIndices removeAllIndexes];
@@ -1687,6 +1674,8 @@ static NSDictionary* patterns;
 /// Parses changes to multi-line notes beginning from the given index.
 -(bool)parseNotesAt:(NSInteger)lineIndex didBleedNoteOut:(bool)oldNoteOut didReceiveNote:(bool)oldNoteIn didEndNoteBlock:(bool)oldEndsNoteBlock
 {
+    return false;
+    
     // This is a mess, and written using trial & error. Dread lightly.
     // I will buy a beer and a vegan burger for anyone who manages to fix this.
     // TODO: Update in 2023-06: REWORK THIS WHOLE THING.
@@ -2281,10 +2270,10 @@ static NSDictionary* patterns;
 
     // Store the current state of lines
     self.cachedLines = self.lines.copy;
-    
+
     // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
     NSArray* lines = self.lines.copy;
-    NSMutableDictionary* uuids = NSMutableDictionary.new;
+    NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:self.lines.count];
 
     for (Line* line in lines) {
         uuids[line.uuid] = line;
@@ -2973,7 +2962,7 @@ NSInteger previousIndex = NSNotFound;
 
 #pragma mark - Line identifiers (UUIDs)
 
-/// Returns every line UUID as an array
+/// Returns every line UUID as an arrayg
 - (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines
 {
 	if (lines == nil) lines = self.lines;
@@ -3068,6 +3057,121 @@ NSInteger previousIndex = NSNotFound;
 		lastPos = line.position;
 	}
 }
+
+#pragma mark - New note parsing
+
+- (void)parseNoteChangesAt:(NSInteger)lineIndex oldNoteIn:(bool)oldNoteIn oldNoteOut:(bool)oldNoteOut
+{
+    Line* line = self.lines[lineIndex];
+    
+    if (oldNoteOut && !line.noteOut) {
+        // Cancel every note from here on out
+        NSInteger i = lineIndex;
+        while (i >= 0) {
+            Line* l = self.lines[i];
+            if (!l.noteOut) break;
+            
+            line.noteOut = false;
+            [line.noteOutIndices removeAllIndexes];
+            
+            NSInteger noteOutIndex = [self startOfNoteOut:line];
+            
+            [self.changedIndices addIndex:lineIndex];
+            
+            if (noteOutIndex != NSNotFound) {
+                [line.noteRanges removeIndexesInRange:NSMakeRange(noteOutIndex, line.length - noteOutIndex)];
+                break;
+            } else {
+                [line.noteRanges removeAllIndexes];
+            }
+            
+            i--;
+        }
+    }
+}
+
+- (NSInteger)startOfNoteOut:(Line*)line
+{
+    if (![line.string containsString:@"[["]) return NSNotFound;
+    
+    for (NSInteger k = line.length - 1; k > 0; k--) {
+        unichar c1 = [line.string characterAtIndex:k];
+        unichar c2 = [line.string characterAtIndex:k - 1];
+        
+        if (c1 == '[' && c2 == '[') {
+            return k;
+        }
+    }
+    
+    return NSNotFound;
+}
+
+- (void)removeMultilineNoteFromLines:(NSArray*)lines noteStartPosition:(NSInteger)noteStartPosition noteEndPosition:(NSInteger)noteEndPosition
+{
+    NSInteger lineIndex = NSNotFound;
+    
+    for (NSInteger i=0; i<lines.count; i++) {
+        Line* line = lines[i];
+        
+        if (i == 0) {
+            lineIndex = [self.lines indexOfObject:line];
+            
+            line.noteOut = false;
+            [line.noteRanges removeIndexes:line.noteOutIndices];
+            
+        } else if (line == lines.lastObject) {
+            line.noteIn = false;
+            [line.noteRanges removeIndexes:line.noteInIndices];
+            
+        } else {
+            [line.noteRanges removeAllIndexes];
+            
+            line.noteIn = false;
+            line.noteOut = false;
+        }
+        
+        [_changedIndices addIndex:lineIndex];
+        lineIndex++;
+    }
+}
+
+/// Returns both the line and index
+- (Line*)findNoteStart:(NSInteger)lineIndex noteStartPosition:(NSInteger*)noteBeginIndex
+{
+    NSMutableArray* lines = NSMutableArray.new;
+    
+    for (NSInteger i=lineIndex; i>=0; i++) {
+        Line* l = _lines[i];
+        if (!l.noteOut || l.type == empty) break;
+        
+        [lines insertObject:l atIndex:0];
+
+        // This line doesn't bleed out a note
+        if (![l.string containsString:@"[["]) continue;
+
+        // Try to find where the note starts
+        bool found = false;
+        for (NSInteger k=l.length; k>0; k--) {
+            unichar c = [l.string characterAtIndex:k];
+            unichar c2 = [l.string characterAtIndex:k - 1];
+            
+            if (c == '[' && c2 == '[') {
+                *noteBeginIndex = k - 1;
+                return l;
+            }
+        }
+    }
+    
+    return nil;
+}
+
+#pragma mark - Full new note parsing
+
+/**
+ 
+ */
+
+
 
 
 @end
