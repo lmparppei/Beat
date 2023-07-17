@@ -33,6 +33,8 @@
 @property (nonatomic, readonly) NSUInteger sceneLength; // backwards compatibility
 @property (nonatomic, readonly) NSInteger sectionDepth; // backwards compatibility
 
+@property (nonatomic) NSMutableArray<BeatNoteData*>* notes;
+
 @property (nonatomic, readonly) NSMutableSet *markerColors;
 
 @property (nonatomic, readonly) bool omitted;
