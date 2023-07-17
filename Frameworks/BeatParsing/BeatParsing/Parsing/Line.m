@@ -64,7 +64,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		_type = type;
 		_position = position;
 		_formattedAs = -1;
-		//_parser = parser; // UNCOMMENT WHEN NEEDED
+		_parser = parser;
 		
 		_boldRanges = NSMutableIndexSet.indexSet;
 		_italicRanges = NSMutableIndexSet.indexSet;
@@ -558,6 +558,20 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2);
 }
 
+- (bool)canTerminateNoteBlock
+{
+    if (![self.string containsString:@"]]"]) return false;
+    for (NSInteger i=0; i<self.length; i++) {
+        unichar c1 = [self.string characterAtIndex:i];
+        unichar c2 = [self.string characterAtIndex:i+1];
+        
+        if (c1 == ']' && c2 == ']') return true;
+        else if (c1 == '[' && c2 == '[') return false;
+    }
+    
+    return false;
+}
+
 /*
 -(bool)cancelsNoteBlock
 {
@@ -704,9 +718,77 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     else return strings;
 }
 
-- (NSArray*)noteData {
+- (NSArray*)noteData
+{
     __block NSMutableArray<BeatNoteData*>* noteData = NSMutableArray.new;
+    __block NSRange noteRange = NSMakeRange(NSNotFound, 0);
     
+    for (NSInteger i = 0; i < self.length - 1; i++) {
+        unichar c1 = [self.string characterAtIndex:i];
+        unichar c2 = [self.string characterAtIndex:i+1];
+        
+        if (c1 == '[' && c2 == '[') {
+            noteRange.location = i;
+        }
+        else if (c1 == ']' && c2 == ']' && noteRange.location != NSNotFound) {
+            noteRange.length = i + 2 - noteRange.location;
+            
+            NSRange contentRange = NSMakeRange(noteRange.location + 2, noteRange.length - 4);
+            NSString* content = [self.string substringWithRange:contentRange];
+            
+            BeatNoteData* note = [BeatNoteData withNote:content range:noteRange];
+            [noteData addObject:note];
+            
+            noteRange = NSMakeRange(NSNotFound, 0);
+        }
+    }
+    
+    // Return notes if there was no unfinished note.
+    if (noteRange.location == NSNotFound) {
+        return noteData;
+    }
+    
+    // Otherwise, let's find out where the note ends.
+    NSMutableArray<Line*>* noteBlock = NSMutableArray.new;
+    Line* noteEnd;
+    
+    // If there was an unfinished note, let's find where it ends (or doesn't)
+    NSInteger lineIndex = [_parser.lines indexOfObject:self];
+    
+    if (lineIndex != NSNotFound) {
+        for (NSInteger i = lineIndex+1; i<_parser.lines.count; i++) {
+            Line* l = _parser.lines[i];
+            
+            if (l.type == empty) {
+                break;
+            } else if (l.canTerminateNoteBlock) {
+                noteEnd = l;
+                break;
+            }
+            
+            [noteBlock addObject:l];
+        }
+    }
+    
+    // No end for the note found
+    if (!noteEnd) return noteData;
+    
+    NSString* tail = [self.string substringFromIndex:noteRange.location + 2];
+    NSRange tailRange = NSMakeRange(noteRange.location, self.string.length - noteRange.location);
+    
+    NSMutableString* content = [NSMutableString.alloc initWithString:tail];
+    
+    for (Line* line in noteBlock) {
+        [content appendFormat:@" %@", line.string];
+    }
+    
+    NSString* e = [noteEnd.string substringToIndex:[noteEnd.string rangeOfString:@"]]"].location];
+    [content appendFormat:@" %@", e];
+    
+    BeatNoteData* note = [BeatNoteData withNote:content range:tailRange];
+    [noteData addObject:note];
+    
+    /*
     if (self.noteInIndices.count) {
         NSRange range = NSMakeRange(0, self.noteInIndices.count);
         NSString *noteIn = [self.string substringToIndex:self.noteInIndices.count];
@@ -757,7 +839,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             }
         }
     }];
-    
+    */
     
     return noteData;
 }

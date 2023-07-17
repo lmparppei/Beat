@@ -588,7 +588,9 @@ static NSDictionary* patterns;
             currentLine.noteRanges.count > 0 ||
             currentLine.type == synopse ||
             currentLine.markerRange.length ||
-            currentLine.isOutlineElement
+            currentLine.isOutlineElement ||
+            currentLine.noteOut ||
+            currentLine.noteIn
             ) {
             [self addUpdateToOutlineAtLine:currentLine];
         }
@@ -2098,7 +2100,7 @@ static NSDictionary* patterns;
             [scene.synopsis addObject:line];
         }
         
-        if (line.noteRanges) {
+        if (line.noteRanges || line.noteOutIndices.count || line.noteInIndices.count) {
             [scene.notes addObjectsFromArray:line.noteData];
         }
         
