@@ -51,7 +51,6 @@
 - (void)removeRange:(NSRange)range;
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string;
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position;
-- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
 

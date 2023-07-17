@@ -67,6 +67,7 @@
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementText:string]) {
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
+
         UITextRange *textRange = textView.selectedTextRange;
         [self.delegate.getTextView setSelectedTextRange:oldRange];
         
@@ -464,19 +465,26 @@
     NSInteger position = self.delegate.currentLine.position;
     self.delegate.selectedRange = NSMakeRange(position, 0);
     
-    // If previous line is not empty, add a line break at current line.
+    // If current line is not empty, add a line break at current line.
     Line* previous = [self.delegate.parser previousLine:self.delegate.currentLine];
-    if (previous.type != empty) {
-        [self addString:@"\n" atIndex:self.delegate.currentLine.position];
+    if (self.delegate.currentLine.type != empty) {
+        position = NSMaxRange(self.delegate.currentLine.textRange);
+        [self addString:@"\n\n" atIndex:position];
+        self.delegate.selectedRange = NSMakeRange(position + 2, 0);
+    }
+    else if (previous.type != empty) {
+        position = NSMaxRange(self.delegate.currentLine.textRange);
+        [self addString:@"\n" atIndex:position];
         self.delegate.selectedRange = NSMakeRange(position + 1, 0);
     }
 
     // If current or next line are not empty, add two line breaks at current line.
     Line* next = [self.delegate.parser nextLine:self.delegate.currentLine];
-    if (self.delegate.currentLine.type != empty || next.string.length != 0) {
-        [self addString:@"\n\n" atIndex:NSMaxRange(self.delegate.currentLine.textRange)];
+    if (next.string.length > 0) {
+        [self addString:@"\n" atIndex:NSMaxRange(self.delegate.currentLine.textRange)];
+        self.delegate.selectedRange = NSMakeRange(NSMaxRange(self.delegate.currentLine.textRange) - 1, 0);
     }
-        
+    
     [self addString:string atIndex:self.delegate.selectedRange.location];
 }
 
