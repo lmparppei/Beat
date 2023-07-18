@@ -3189,7 +3189,6 @@ NSInteger previousIndex = NSNotFound;
         if (![l.string containsString:@"[["]) continue;
 
         // Try to find where the note starts
-        bool found = false;
         for (NSInteger k=l.length; k>0; k--) {
             unichar c = [l.string characterAtIndex:k];
             unichar c2 = [l.string characterAtIndex:k - 1];
