@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc class BeatOutlineDataSource:NSObject {
+@objc class BeatOutlineDataProvider:NSObject {
 	var dataSource:UITableViewDiffableDataSource<Int,OutlineDataItem>
 	var delegate:BeatEditorDelegate
 
@@ -16,9 +16,20 @@ import Foundation
 		self.delegate = delegate
 		self.dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
 			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene")
+			cell?.backgroundColor = UIColor.black
+			
+			let scene = delegate.parser.outline[indexPath.row] as! OutlineScene
+			let string = OutlineViewItem.withScene(scene, currentScene: OutlineScene(), sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: true)
+			
+			
+			cell?.textLabel?.attributedText = string
+			
 			return cell
 		})
 		super.init()
+		
+		// Create initial snapshot
+		self.update()
 	}
 	
 	@objc func update() {
@@ -27,7 +38,17 @@ import Foundation
 			let item = OutlineDataItem(with: scene as! OutlineScene)
 			items.append(item)
 		}
+		
+		var snapshot = NSDiffableDataSourceSnapshot<Int, OutlineDataItem>()
+		snapshot.appendSections([0])
+		snapshot.appendItems(items)
+		
+		self.dataSource.apply(snapshot,animatingDifferences: false)
 	}
+}
+
+class BeatOutlineViewCell:UITableViewCell {
+	@IBOutlet var textField:UILabel?
 }
 
 class OutlineDataItem:Hashable {
@@ -46,7 +67,7 @@ class OutlineDataItem:Hashable {
 		self.synopsis = scene.synopsis as! [Line]
 		self.beats = scene.beats as! [Storybeat]
 		self.markers = scene.markers as! [[String : String]]
-		self.sceneNumber = scene.sceneNumber
+		self.sceneNumber = scene.sceneNumber ?? ""
 		self.uuid = scene.line.uuid!
 	}
 	

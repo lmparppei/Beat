@@ -50,6 +50,7 @@
 @property (nonatomic) NSRange lastEditedRange;
  
 @property (nonatomic) NSMutableArray<id<BeatEditorView>>* registeredViews;
+@property (nonatomic) NSMutableArray<id<BeatSceneOutlineView>>* registeredOutlineViews;
 
 @property (nonatomic) bool sidebarVisible;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* sidebarConstraint;
@@ -77,6 +78,8 @@
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 @property (nonatomic, weak) IBOutlet UIView* sidebar;
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
+
+@property (nonatomic) BeatOutlineDataProvider* outlineProvider;
 
 @property (nonatomic) bool hideFountainMarkup;
 
@@ -218,6 +221,9 @@
 	// Text view settings
 	self.textView.textStorage.delegate = self;
 	[self.textView setFindInteractionEnabled:true];
+	
+	// Data source
+	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];	
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -503,10 +509,14 @@
 - (IBAction)toggleSidebar:(id)sender {
 	self.sidebarVisible = !self.sidebarVisible;
 	
-	CGFloat sidebarWidth = (_sidebarVisible) ? 230.0 : 0.0;
+	if (self.sidebarVisible) [self.outlineProvider update];
 	
+	CGFloat sidebarWidth = (_sidebarVisible) ? 230.0 : 0.0;
+
 	[UIView animateWithDuration:0.25 animations:^{
 		self.sidebarConstraint.constant = sidebarWidth;
+	} completion:^(BOOL finished) {
+		[self.textView resize];
 	}];
 }
 
@@ -639,10 +649,16 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Screenplay document data shorthands
 
-- (NSString*)revisionColor {
+- (NSString*)revisionColor
+{
 	NSString* revisionColor = [self.documentSettings getString:DocSettingRevisionColor];
 	if (revisionColor == nil) revisionColor = BeatRevisions.defaultRevisionColor;
 	return revisionColor;
+}
+- (void)setRevisionColor:(NSString *)revisionColor
+{
+	if (revisionColor == nil) return;
+	[self.documentSettings setString:DocSettingRevisionColor as:revisionColor];
 }
 
 - (NSDictionary<NSString*, NSString*>*)characterGenders {
@@ -823,10 +839,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		}
 	}
 	
-	NSLog(@"Parsing change: %lu/%lu  --  %@", affectedRange.location, affectedRange.length, [self.text substringWithRange:affectedRange]);
-	NSLog(@"   original string: %@", string);
-
-	
 	[self.parser parseChangeInRange:affectedRange withString:string];
 }
 
@@ -866,6 +878,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	if (changesInOutline.hasChanges) {
 		// Update any outline views
+		if (self.sidebarVisible) [self.outlineProvider update];
 	}
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
@@ -1078,11 +1091,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {
-	/*
-	 BeatTextView *textView = (BeatTextView*)self.textView;
-	 [textView setSelectedRange:range];
-	 [textView scrollToRange:range callback:nil];
-	 */
+	[self focusEditor];
+	
+	self.textView.selectedRange = range;
+	[self.textView scrollToRange:range];
 }
 
 
@@ -1249,8 +1261,16 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.formattingActions addCue];
 }
 
+-(void)focusEditor {
+	[self.textView becomeFirstResponder];
+}
+
 - (void)registerEditorView:(id)view {
 	if (_registeredViews == nil) _registeredViews = NSMutableArray.new;
+	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+}
+-(void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view {
+	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableArray.new;
 	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
 }
 

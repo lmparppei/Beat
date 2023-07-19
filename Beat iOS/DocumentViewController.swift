@@ -1051,7 +1051,6 @@ extension DocumentViewController: NSTextStorageDelegate {
 			}
 		}
 		
-		print("Parsing change at ", affectedRange, "string:", string)
 		parser?.parseChange(in: affectedRange, with: string)
 	}
 }
