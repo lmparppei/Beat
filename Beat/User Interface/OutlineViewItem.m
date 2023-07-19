@@ -166,15 +166,12 @@
 		
 		NSMutableParagraphStyle *noteStyle = NSMutableParagraphStyle.new;
 		noteStyle.lineSpacing = .65;
-		noteStyle.paragraphSpacingBefore = 4.0;
+		noteStyle.paragraphSpacingBefore = 5.0;
 		
 		for (BeatNoteData* note in scene.notes) {
 			if (note.content.length == 0) continue;
 			else if (NSIntersectionRange(note.range, scene.line.colorRange).length == note.range.length) continue;
-			else if ([note.content rangeOfString:@"marker"].location == 0 ||
-					 [note.content rangeOfString:@"storyline"].location == 0 ||
-					 [note.content rangeOfString:@"color"].location == 0 ||
-					 [note.content rangeOfString:@"beat"].location == 0) continue;
+			else if (note.type != NoteTypeNormal) continue;
 			
 			NSString* noteStr = [NSString stringWithFormat:@"\n✎ %@", note.content];
 			
@@ -189,6 +186,19 @@
 				NSForegroundColorAttributeName: noteColor,
 				NSParagraphStyleAttributeName: noteStyle
 			}];
+			
+			if ([noteStr containsString:@"\n"]) {
+				// Fix paragraph style for multi-line notes
+				NSInteger p = 2; // Exclude the first line breaks
+				NSRange rangeWithoutFirstLine = NSMakeRange(p, noteStr.length - p);
+				
+				NSMutableAttributedString* noteLineCopy = noteLine.mutableCopy;
+				NSMutableParagraphStyle* noSpacingStyle = noteStyle.mutableCopy;
+				noSpacingStyle.paragraphSpacingBefore = 0.0;
+				
+				[noteLineCopy addAttribute:NSParagraphStyleAttributeName value:noSpacingStyle range:rangeWithoutFirstLine];
+				noteLine = noteLineCopy;
+			}
 			
 			[resultString appendAttributedString:noteLine];
 		}
