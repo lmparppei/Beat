@@ -164,7 +164,6 @@ open class InputAssistantView: UIInputView {
 	public init(editorDelegate:BeatEditorDelegate, inputAssistantDelegate:InputAssistantViewDelegate?) {
 		self.leadingStackView = UIStackView()
 		self.trailingStackView = UIStackView()
-		
 		self.suggestionsCollectionView = InputAssistantCollectionView()
 		
 		super.init(frame: .init(origin: .zero, size: .init(width: 0, height: 55)), inputViewStyle: .default)
@@ -173,9 +172,10 @@ open class InputAssistantView: UIInputView {
 		self.suggestionsCollectionView.delegate = self
 		
 		for stackView in [leadingStackView, trailingStackView] {
-			stackView.spacing = 10
+			stackView.spacing = 0.0
+			stackView.distribution = .equalCentering
 			stackView.alignment = .center
-			stackView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+			stackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 			stackView.tintColor = .white
 			updateActions([], stackView)
 		}
@@ -206,10 +206,16 @@ open class InputAssistantView: UIInputView {
 	public func reloadData() {
 		// We'll only refresh data if the line has changed
 		guard let line = self.dSource?.delegate?.currentLine() else { return }
-				
+
 		suggestionsCollectionView.reloadData()
 		
 		prevLine = line
+		
+		if suggestionsCollectionView.numberOfItems(inSection: 0) > 0 {
+			self.leadingStackView.isHidden = true
+		} else {
+			self.leadingStackView.isHidden = false
+		}
 	}
 
 	/// The keyboard appearance of the attached text input
@@ -253,6 +259,7 @@ open class InputAssistantView: UIInputView {
 		for view in stackView.arrangedSubviews {
 			view.removeFromSuperview()
 		}
+
 		if actions.isEmpty {
 			let emptyView = UIView()
 			emptyView.widthAnchor.constraint(equalToConstant: 0).isActive = true
@@ -263,7 +270,8 @@ open class InputAssistantView: UIInputView {
 				let button = UIButton(type: .system)
 				if action.title.count > 0 { button.setTitle(action.title, for: .normal) }
 				
-				button.setImage(action.image.scaled(toSize: CGSize(width: 25, height: 25)), for: .normal)
+				let width = (action.image.size.width / action.image.size.height) * 25
+				button.setImage(action.image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
 				
 				if let target = action.target, let action = action.action {
 					button.addTarget(target, action: action, for: .touchUpInside)

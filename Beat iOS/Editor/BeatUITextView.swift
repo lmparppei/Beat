@@ -130,6 +130,18 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 	}
 	
 	
+	// MARK: - Scroll to range
+	
+	@objc func scrollToRange(_ range:NSRange) {
+		var rect = self.rectForRange(range: range)
+		rect.origin.y += self.insets.top
+		rect.size.height += self.insets.bottom
+		rect.origin.y = self.enclosingScrollView.zoomScale * rect.origin.y
+		
+		self.enclosingScrollView.scrollRectToVisible(rect, animated: true)
+	}
+	
+	
 	// MARK: - Resize scroll view and text view
 	/**
 	 
@@ -635,14 +647,7 @@ extension BeatUITextView {
 		} else {
 			// This is something else
 			let r = NSMakeRange(editorDelegate.currentLine().position, editorDelegate.currentLine().length)
-			print("Suggestion: '" + suggestion + "'")
-			print("  -> selected range:", editorDelegate.selectedRange)
-			print("  -> current line:", editorDelegate.currentLine())
-			print("  -> current range:", editorDelegate.currentLine().textRange())
-			print("  -> range to replace:", r)
-			
 			editorDelegate.replace(r, with: suggestion)
-			print("    -> '" + editorDelegate.currentLine().string + "'")
 		}
 	}
 }
