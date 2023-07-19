@@ -8,43 +8,56 @@
 
 import Foundation
 
-class BeatiOSOutlineView: UITableView, UITableViewDelegate, UITableViewDataSource {
-	@IBOutlet weak var editorDelegate:BeatEditorDelegate!
+class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
 	
-	let cellIdentifier = "OutlineCell"
+	@IBOutlet weak var editorDelegate:BeatEditorDelegate!
+	var dataProvider:BeatOutlineDataProvider?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		self.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+		// Register outline view
+		self.editorDelegate.register(self)
 		
 		self.delegate = self
-		self.dataSource = self
 		
 		self.backgroundColor = UIColor.black;
 		self.backgroundView?.backgroundColor = UIColor.black;
+		
+		self.dataProvider = BeatOutlineDataProvider(delegate: self.editorDelegate, tableView: self)
+		self.dataProvider?.update()
 	}
 	
-	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if (editorDelegate.parser == nil) { return 0 }
-		editorDelegate.parser.createOutline()
-
-		return editorDelegate.parser.outline.count
+	func reload(with changes: OutlineChanges!) {
+		self.reload()
 	}
 	
-	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		
-		let cell = self.dequeueReusableCell(withIdentifier: cellIdentifier)! as UITableViewCell
-		cell.backgroundView?.backgroundColor = UIColor.black
-		cell.backgroundColor = UIColor.black
-		
-		let scene = self.editorDelegate.parser.outline[indexPath.row] as! OutlineScene
-		
-		let string = OutlineViewItem.withScene(scene, currentScene: editorDelegate.currentScene, sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: true)
-		cell.textLabel?.attributedText = string
-		
-		return cell
+	func reloadInBackground() {
+		self.reload()
 	}
+	
+	func reload() {
+		self.dataProvider?.update()
+	}
+	
+	func visible() -> Bool {
+		if self.frame.width > 1 {
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let i = indexPath.row
+		guard let scene = self.editorDelegate.parser.outline[i] as? OutlineScene else { return }
+		
+		self.editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
+		self.editorDelegate.scroll(to: scene.line)
+		
+		self.selectRow(at: nil, animated: true, scrollPosition: .middle)
+	}
+	
 }
 /*
 class BeatiOSOutlineCell: UITableViewCell {

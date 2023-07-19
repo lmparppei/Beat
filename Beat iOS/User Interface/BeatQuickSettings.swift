@@ -9,41 +9,76 @@
 import UIKit
 
 class BeatQuickSettings:BeatPopoverContentController {
+	@IBOutlet var settingController:BeatQuickSettingsTableController?
+	
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+		if segue.identifier == "ToSettingsTable" {
+			settingController = segue.destination as? BeatQuickSettingsTableController
+			settingController?.editorDelegate = self.delegate
+		}
+		super.prepare(for: segue, sender: sender)
+	}
+}
+
+class BeatQuickSettingsTableController:UITableViewController {
 	@IBOutlet var showPageNumbers:UISwitch?
 	@IBOutlet var showSceneNumbers:UISwitch?
 	@IBOutlet var revisionMode:UISwitch?
 	@IBOutlet var pageSizeSwitch:UISegmentedControl?
+	@IBOutlet var revisionGeneration:UISegmentedControl?
+	
+	var editorDelegate:BeatEditorDelegate?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		showPageNumbers?.setOn(self.delegate?.showPageNumbers ?? false, animated: false)
-		showSceneNumbers?.setOn(self.delegate?.showSceneNumberLabels ?? false, animated: false)
-		revisionMode?.setOn(self.delegate?.revisionMode ?? false, animated: false)
+		guard let delegate = self.editorDelegate else { return }
 		
-		pageSizeSwitch?.selectedSegmentIndex = (self.delegate?.pageSize ?? .A4 == .A4) ? 0 : 1
+		showPageNumbers?.setOn(delegate.showPageNumbers, animated: false)
+		showSceneNumbers?.setOn(delegate.showSceneNumberLabels, animated: false)
+		revisionMode?.setOn(delegate.revisionMode, animated: false)
+		
+		pageSizeSwitch?.selectedSegmentIndex = delegate.pageSize.rawValue
+		
+		// Get revision generation. This is intended to be backwards and forwards compatible with future models.
+		let currentGeneration = self.editorDelegate?.revisionColor ?? ""
+		
+		let generations = BeatRevisions.revisionGenerations()
+		for i in 0..<generations.count {
+			if generations[i].color == currentGeneration {
+				revisionGeneration?.selectedSegmentIndex = i
+				break
+			}
+		}
+		
 	}
 	
 	@IBAction func toggleShowPageNumbers(_ sender:UISwitch) {
-		self.delegate?.showPageNumbers = sender.isOn
+		editorDelegate?.showPageNumbers = sender.isOn
 	}
 	
 	@IBAction func toggleShowSceneNumbers(_ sender:UISwitch) {
-		self.delegate?.showSceneNumberLabels = sender.isOn
+		editorDelegate?.showSceneNumberLabels = sender.isOn
 	}
 	
 	@IBAction func togglePageSize(_ sender:UISegmentedControl) {
 		/// OK lol, this is a silly thing to do, but `BeatPageSize` is an enum (`0` is A4 and `1` is US Letter) so why not.
-		self.delegate?.pageSize = BeatPaperSize(rawValue: sender.selectedSegmentIndex) ?? .A4
+		editorDelegate?.pageSize = BeatPaperSize(rawValue: sender.selectedSegmentIndex) ?? .A4
 	}
 	
 	@IBAction func toggleRevisionMode(_ sender:UISwitch) {
-		self.delegate?.revisionMode = sender.isOn
+		editorDelegate?.revisionMode = sender.isOn
+	}
+	
+	@IBAction func selectRevisionGeneration(_ sender:UISegmentedControl) {
+		let generations = BeatRevisions.revisionGenerations()
+		let gen = generations[sender.selectedSegmentIndex]
+		
+		editorDelegate?.revisionColor = gen.color
 	}
 }
 
 extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
-	
 	@IBAction func openQuickSettings(_ sender: AnyObject) {
 		let view = sender.value(forKey: "view") as! UIView
 		
