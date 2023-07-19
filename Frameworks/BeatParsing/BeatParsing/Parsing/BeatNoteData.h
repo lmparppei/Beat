@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, NoteType) {
     NoteTypeNormal = 0,
     NoteTypeMarker,
+    NoteTypeBeat,
     NoteTypeColor
 };
 
@@ -20,6 +21,7 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic, readonly) NSString* color;
 @property (nonatomic, readonly) NSRange range;
+@property (nonatomic, readonly) bool multiline;
 - (NSDictionary*)json;
 @end
 
@@ -28,6 +30,7 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic) NSString* color;
 @property (nonatomic, readonly) NSRange range;
 @property (nonatomic, readonly) NoteType type;
+@property (nonatomic) bool multiline;
 + (BeatNoteData*)withNote:(NSString*)text range:(NSRange)range;
 @end
 

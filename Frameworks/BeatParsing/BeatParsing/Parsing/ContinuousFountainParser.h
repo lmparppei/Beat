@@ -92,13 +92,20 @@
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous;
 
-//Parsing methods
+#pragma mark - Parsing methods
+/// Parses the full text
 - (void)parseText:(NSString*)text;
+/// Parse a change in range with given replacement string.
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
+/// Reparses the whole document.
 - (void)resetParsing;
+/// Creates a full new outline.
 - (void)createOutline;
+/// Returns a tree structure of the outline. You can find children of sections using `section.children`.
 - (NSArray*)outlineTree;
+/// Returns parsed scenes, excluding structure elements
 - (NSArray*)scenes;
+/// Ensures parsing issues. Only for debugging.
 - (void)ensurePositions;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 - (Line*)previousLine:(Line*)line;
@@ -109,39 +116,63 @@
 - (NSArray*)safeLines;
 - (NSArray*)safeOutline;
 
-// Preprocess for printing & saving
+#pragma mark -  Preprocess for printing & saving
+
+/// Returns a `BeatScrenplay` object which is preprocessed for printing and has a separate title page dictionary.
+- (BeatScreenplay*)forPrinting;
+/// Returns the raw string for the screenplay. Preprocesses some lines.
 - (NSString*)screenplayForSaving;
+/// Preprocesses parsed lines, stripping away invisible lines and making sure dual dialogue blocks are held together.
 - (NSArray*)preprocessForPrinting;
 - (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes;
-
+/// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
 
-//Convenience Methods for Other Stuff
-- (NSUInteger)indexOfLine:(Line*)line;
-- (Line*)lineAtPosition:(NSInteger)position;
-- (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
-- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index;
-- (OutlineScene*)sceneAtIndex:(NSInteger)index;
-- (NSArray*)scenesInRange:(NSRange)range;
-- (NSArray*)linesInRange:(NSRange)range;
-- (NSArray*)scenesInSection:(OutlineScene*)topSection;
-- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
+#pragma mark - Convenience Methods
 
-- (BeatScreenplay*)forPrinting;
+/// Returns the index of given line. Uses cached results, so it's much more performant than using `[_lines indexOfObject:]`.
+- (NSUInteger)indexOfLine:(Line*)line;
+/// Returns the line at given position
+- (Line*)lineAtPosition:(NSInteger)position;
+/// Returns the index of line at this position
+- (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
+/// Returns the outline index of the scene which holds the scene in this position
+- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index;
+/// Returns the scene which contains the line at given index
+- (OutlineScene*)sceneAtIndex:(NSInteger)index;
+/// Returns all scenes in the given range (including intersecting scenes)
+- (NSArray*)scenesInRange:(NSRange)range;
+/// Returns all lines in the given range (including intersecting lines)
+- (NSArray*)linesInRange:(NSRange)range;
+/// Returns all scenes in the given section.
+- (NSArray*)scenesInSection:(OutlineScene*)topSection;
+/// Returns the scene with given number (note that scene numbers are strings)
+- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
+/// Returns the number of scenes  in the file (excluding other structure elements)
 - (NSInteger)numberOfScenes;
+/// Returns line type for given line index
 - (LineType)lineTypeAt:(NSInteger)index;
 
+/// Returns a "screenplay block" (items which beling together, such as character cues and dialogue) for the given range.
 - (NSArray<Line*>*)blockForRange:(NSRange)range;
+/// Returns a "screenplay block" (items which beling together, such as character cues and dialogue) for the given line,
 - (NSArray<Line*>*)blockFor:(Line*)line;
+/// Returns the both dual dialogue blocks for given line. Pass a pointer to `isDualDialogue` to see if the line *actually* is part of a dual dialogue block.
 - (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue;
 
-- (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines;
+/// Returns `NSUUID` object for each line.
+- (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines;
+/// Set `NSUUID` identifiers for lines in corresponding indices.
 - (void)setIdentifiers:(NSArray*)uuids;
 
 //Convenience Methods for Outlineview data
-//- (BOOL)getAndResetChangeInOutline;
+/// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.
 - (id)changesInOutline;
+/// Checks if the given line is visible in print, and if not. returns its closest printed sibling.
 - (Line*)closestPrintableLineFor:(Line*)line;
+
+/// Returns the starting line of a note block which the given line is part of. You can skip the `idx` parameter. Pass a pointer for `positionInLine` to get the actual line index of starting note.
+- (NSInteger)findNoteBlockStartIndexFor:(Line*)line at:(NSInteger)idx positionInLine:(NSInteger*)position;
 
 - (NSString*)description;
 @end

@@ -15,17 +15,21 @@
     NSString* color = @"";
     
     NoteType type = NoteTypeNormal;
-    if ([text rangeOfString:@"marker"].location == 0) {
+    NSString* lowercaseText = content.lowercaseString;
+    
+    if ([lowercaseText rangeOfString:@"marker"].location == 0) {
         // Check if this note is a marker
         type = NoteTypeMarker;
-    } else if ([[BeatNoteData colors] containsObject:text]) {
+    } else if ([BeatNoteData.colors containsObject:lowercaseText]) {
         // This note only contains a color
         type = NoteTypeColor;
-    } else if ([text containsString:@":"]) {
+    } else if ([lowercaseText rangeOfString:@"beat"].location == 0 || [lowercaseText rangeOfString:@"storyline"].location == 0) {
+        type = NoteTypeBeat;
+    } else if ([lowercaseText containsString:@":"]) {
         // Check if this note has a color assigned to it, ie. [[red: Hello World]]
-        NSInteger i = [text rangeOfString:@":"].location;
-        NSString* c = [text substringToIndex:i];
-        if (c.length > 0 && ([c characterAtIndex:0] == '#' || [[BeatNoteData colors] containsObject:c])) {
+        NSInteger i = [lowercaseText rangeOfString:@":"].location;
+        NSString* c = [lowercaseText substringToIndex:i];
+        if (c.length > 0 && ([c characterAtIndex:0] == '#' || [BeatNoteData.colors containsObject:c])) {
             color = c;
             content = [text substringFromIndex:i+1];
         }
@@ -73,6 +77,8 @@
             return @"color";
         case NoteTypeMarker:
             return @"marker";
+        case NoteTypeBeat:
+            return @"beat";
     }
     return @"";
 }

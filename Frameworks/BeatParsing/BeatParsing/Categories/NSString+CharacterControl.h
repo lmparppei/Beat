@@ -18,4 +18,6 @@
 - (NSRange)rangeBetweenFirstAndLastOccurrenceOf:(unichar)chr;
 - (NSString*)stringByRemovingRange:(NSRange)range;
 - (NSString*)trim;
+- (NSInteger)locationOfLastOccurenceOf:(unichar)chr;
+
 @end

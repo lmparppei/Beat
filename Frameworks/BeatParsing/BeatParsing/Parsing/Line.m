@@ -560,7 +560,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 /// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`)
-- (bool)canTerminateNoteBlock
+- (bool)canTerminateNoteBlock {
+    return [self canTerminateNoteBlockWithActualIndex:nil];
+}
+- (bool)canTerminateNoteBlockWithActualIndex:(NSInteger*)position
 {
     if (self.length > 30000) return false;
     else if (![self.string containsString:@"]]"]) return false;
@@ -572,7 +575,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         unichar c1 = chrs[i];
         unichar c2 = chrs[i+1];
         
-        if (c1 == ']' && c2 == ']') return true;
+        if (c1 == ']' && c2 == ']') {
+            if (position != nil) *position = i;
+            return true;
+        }
         else if (c1 == '[' && c2 == '[') return false;
     }
     
@@ -599,7 +605,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         unichar c2 = chrs[i-1];
         
         if (c1 == '[' && c2 == '[') {
-            *index = i - 1;
+            if (index != nil) *index = i - 1;
             return true;
         }
         else if (c1 == ']' && c2 == ']') return false;
@@ -709,10 +715,12 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
  Please dread lightly.
  */
 
+/*
 - (NSArray*)noteData
 {
     return [self noteDataWithLineIndex:NSNotFound];
 }
+
 - (NSArray*)noteDataWithLineIndex:(NSInteger)lineIndex
 {
     self.noteIn = false;
@@ -864,60 +872,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     self.noteOut = true;
     
     return noteData;
-    
-    /*
-    if (self.noteInIndices.count) {
-        NSRange range = NSMakeRange(0, self.noteInIndices.count);
-        NSString *noteIn = [self.string substringToIndex:self.noteInIndices.count];
-        if ([noteIn containsString:@"]]"]) noteIn = [noteIn substringToIndex:self.noteInIndices.count - 2];
-        
-        [noteData addObject:[BeatNoteData withNote:noteIn range:range]];
-    }
-    
-    if (self.noteOutIndices.count) {
-        NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
-        NSString* noteOut = [self.string substringFromIndex:self.noteOutIndices.firstIndex];
-        if ([noteOut containsString:@"[["] && noteOut.length > 2) noteOut = [noteOut substringFromIndex:2];
-        else noteOut = @"";
-        
-        if (range.length > 0 && noteOut != nil) {
-            [noteData addObject:[BeatNoteData withNote:noteOut range:range]];
-        }
-    }
-    
-    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length <= @"[[".length * 2) return;
-        
-        NSInteger inspectedRange = -1;
-        NSRange contentRange = NSMakeRange(0, 0);
-        
-        for (NSInteger i = range.location; i<NSMaxRange(range); i++) {
-            unichar c = [self.string characterAtIndex:i];
-            
-            if (c == '[') {
-                inspectedRange += 1;
-                
-                if (inspectedRange == 1) {
-                    // A beginning of a new note
-                    contentRange.location = i + 1;
-                }
-            }
-            
-            else if (c == ']' && inspectedRange > 0) {
-                contentRange.length = i - contentRange.location;
-                inspectedRange = -1;
-                
-                NSString* string = [self.string substringWithRange:contentRange];
-                if (string.length > 0) {
-                    NSRange actualRange = NSMakeRange(contentRange.location - 2, contentRange.length + 4);
-                    
-                    [noteData addObject:[BeatNoteData withNote:string range:actualRange]];
-                }
-            }
-        }
-    }];
-    */
 }
+*/
 
 - (NSArray*)notes
 {

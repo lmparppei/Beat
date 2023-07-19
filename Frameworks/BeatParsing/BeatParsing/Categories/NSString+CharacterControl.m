@@ -154,4 +154,14 @@
     return [self stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
+- (NSInteger)locationOfLastOccurenceOf:(unichar)chr
+{
+    for (NSInteger i=self.length-1; i>=0; i--) {
+        unichar c = [self characterAtIndex:i];
+        if (c == chr) return i;
+    }
+    
+    return NSNotFound;
+}
+
 @end

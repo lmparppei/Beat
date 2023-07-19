@@ -22,3 +22,9 @@ public extension NSArray {
 		return self.compactMap({ $0 as? T })
 	}
 }
+
+@objc public extension NSArray {
+    var lastIndex:Int {
+        return self.count - 1
+    }
+}
