@@ -73,6 +73,8 @@
 		B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
 		B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
 		B61F016F266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
+		B61FD05A2A66C45400A40883 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FD0582A66C45400A40883 /* OutlineViewItem.m */; };
+		B61FD05B2A66C45400A40883 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FD0582A66C45400A40883 /* OutlineViewItem.m */; };
 		B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
 		B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3A2549AEDD00201BC9 /* Outlining.fountain */; };
 		B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3B2549AEDD00201BC9 /* Big-Fish.fountain */; };
@@ -95,8 +97,6 @@
 		B62CFE822980349E00CBB769 /* BeatPluginControlMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CFE802980349E00CBB769 /* BeatPluginControlMenuItem.swift */; };
 		B62F5548283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
-		B633C17B298C5C760011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C17A298C5C750011449D /* OutlineViewItem.m */; };
-		B633C17C298C5C760011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C17A298C5C750011449D /* OutlineViewItem.m */; };
 		B633C1DD298C60C80011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; };
 		B633C1DE298C60C80011449D /* BeatCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B633C1E7298C62C50011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E6298C62C50011449D /* BeatCore.framework */; };
@@ -657,6 +657,8 @@
 		B619DE6E29F969FE007D1838 /* libUXKit-AppKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-AppKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
 		B61F016D266AB93A005A1B8A /* NSMutableArray+MoveItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+MoveItem.h"; sourceTree = "<group>"; };
+		B61FD0582A66C45400A40883 /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
+		B61FD0592A66C45400A40883 /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchTimelineView.h; sourceTree = "<group>"; };
 		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchTimelineView.m; sourceTree = "<group>"; };
 		B623BD352549AE7F00201BC9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -680,8 +682,6 @@
 		B62CD50D279752130070DE17 /* BeatRecentFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRecentFileCell.swift; sourceTree = "<group>"; };
 		B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreenButton.swift; sourceTree = "<group>"; };
 		B62CFE802980349E00CBB769 /* BeatPluginControlMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginControlMenuItem.swift; sourceTree = "<group>"; };
-		B633C179298C5C750011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat iOS/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
-		B633C17A298C5C750011449D /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Beat iOS/User Interface/OutlineViewItem.m"; sourceTree = SOURCE_ROOT; };
 		B633C1DC298C60C80011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B633C1E6298C62C50011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B63525142A48C53700510B95 /* BeatOutlineSettings.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatOutlineSettings.xib; sourceTree = "<group>"; };
@@ -1266,8 +1266,8 @@
 				B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */,
 				B624C144234BDE7100C438C7 /* BeatOutlineView.h */,
 				B624C145234BDE7100C438C7 /* BeatOutlineView.m */,
-				B633C179298C5C750011449D /* OutlineViewItem.h */,
-				B633C17A298C5C750011449D /* OutlineViewItem.m */,
+				B61FD0592A66C45400A40883 /* OutlineViewItem.h */,
+				B61FD0582A66C45400A40883 /* OutlineViewItem.m */,
 				B63525142A48C53700510B95 /* BeatOutlineSettings.xib */,
 				B63525172A48C61000510B95 /* BeatOutlineSettings.swift */,
 			);
@@ -2568,7 +2568,6 @@
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B66E2CC229EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */,
-				B633C17B298C5C760011449D /* OutlineViewItem.m in Sources */,
 				B6C250E729DC6C7000173B20 /* BeatPluginUI.m in Sources */,
 				B6B9CEEB28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,
 				B678D69A2A1A210400BD79D8 /* BeatEditorFormatting.m in Sources */,
@@ -2647,6 +2646,7 @@
 				B6764B33251367BF00731A36 /* NSArray+Additions.m in Sources */,
 				B6B6C87625650BA4005294FE /* HighlandImport.m in Sources */,
 				B6DCA8602721882900CBE9BC /* BeatSegmentedCell.m in Sources */,
+				B61FD05B2A66C45400A40883 /* OutlineViewItem.m in Sources */,
 				B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */,
 				B60B9AAC2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */,
 				B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */,
@@ -2729,7 +2729,6 @@
 				B68B6041260B849300463AD8 /* BeatModalInput.m in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
 				B66E2CC329EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */,
-				B633C17C298C5C760011449D /* OutlineViewItem.m in Sources */,
 				B6C250E829DC6C7000173B20 /* BeatPluginUI.m in Sources */,
 				B6B9CEEC28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,
 				B678D69B2A1A210400BD79D8 /* BeatEditorFormatting.m in Sources */,
@@ -2808,6 +2807,7 @@
 				B68B6078260B849300463AD8 /* NSArray+Additions.m in Sources */,
 				B68B607A260B849300463AD8 /* HighlandImport.m in Sources */,
 				B6DCA8612721882900CBE9BC /* BeatSegmentedCell.m in Sources */,
+				B61FD05A2A66C45400A40883 /* OutlineViewItem.m in Sources */,
 				B68B607B260B849300463AD8 /* BeatComparison.m in Sources */,
 				B60B9AAD2A38798B00BCE4B2 /* BeatConsoleTextField.swift in Sources */,
 				B68B607C260B849300463AD8 /* BeatTagButton.m in Sources */,

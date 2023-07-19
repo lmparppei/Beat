@@ -6,25 +6,25 @@
 
 @implementation NSString (Levenshtein)
 
-// default match: 0
-// default cost: 1
-
 -(float)compareWithString:(NSString *)comparisonString
 {
+    // default match: 0
+    // default cost: 1
+
 	NSString *originalString = self;
 	
 	// Normalize strings
-	[originalString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	[comparisonString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	[originalString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+	[comparisonString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 
-	originalString = [originalString lowercaseString];
-	comparisonString = [comparisonString lowercaseString];
+	originalString = originalString.lowercaseString;
+	comparisonString = comparisonString.lowercaseString;
 
 	// Step 1 (Steps follow description at http://www.merriampark.com/ld.htm)
 	NSInteger k, i, j, cost, * d, distance;
 
-	NSInteger n = [originalString length];
-	NSInteger m = [comparisonString length];
+	NSInteger n = originalString.length;
+	NSInteger m = comparisonString.length;
 
 	if( n++ != 0 && m++ != 0 ) {
 

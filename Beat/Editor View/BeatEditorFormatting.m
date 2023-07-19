@@ -655,16 +655,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	else if (line.type == pageBreak) {
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
 	}
-	
-	// Enumerate note ranges and set it as COMMENT color
-	// NOTE that this also resets note formatting ranges.
-	NSArray* notes = line.noteData;
-	
+		
 	// Enumerate FORMATTING RANGES and make all of them invisible
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
 	}];
 		
+	NSArray* notes = line.noteData;
 	for (BeatNoteData* note in notes) {
 		NSRange range = note.range;
 		NSColor* color = themeManager.commentColor;

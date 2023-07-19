@@ -1737,6 +1737,7 @@ double clamp(double d, double min, double max) {
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
 		
 		[self.layoutManager setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+		
 		free(newGlyphs);
 		free(modifiedProps);
 		
@@ -1744,6 +1745,7 @@ double clamp(double d, double min, double max) {
 		// Create the new glyphs
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
 		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+		
 		free(newGlyphs);
 	}
 	

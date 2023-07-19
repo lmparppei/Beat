@@ -23,7 +23,6 @@
 #define REVISION_ATTR @"Revision"
 #define DEFAULT_COLOR @"blue"
 #define REVISION_ORDER @[@"blue", @"orange", @"purple", @"green"]
-
 #define REVISION_MARKERS @{ @"blue": @"*", @"orange": @"**", @"purple": @"+", @"green": @"++" }
 
 #if !TARGET_OS_IOS
@@ -37,6 +36,22 @@
 
 	#define BXChangeDone UIDocumentChangeDone
 #endif
+
+@implementation BeatRevisionGeneration
++ (instancetype)withColor:(NSString*)color marker:(NSString*)marker {
+    return [BeatRevisionGeneration.alloc initWithColor:color marker:marker];
+}
+
+- (instancetype)initWithColor:(NSString*)color marker:(NSString*)marker
+{
+    self = [super init];
+    if (self) {
+        self.color = color;
+        self.marker = marker;
+    }
+    return self;
+}
+@end
 
 @implementation BeatRevisions
 
@@ -62,6 +77,23 @@
 /// Returns all the colors, in generation order
 + (NSArray<NSString*>*)revisionColors {
 	return REVISION_ORDER;
+}
+
+/// Returns the modern revisions.
++ (NSArray<BeatRevisionGeneration*>*)revisionGenerations
+{
+    static NSArray* generations;
+    
+    if (generations == nil) {
+        generations = @[
+            [BeatRevisionGeneration withColor:@"blue" marker:@"*"],
+            [BeatRevisionGeneration withColor:@"orange" marker:@"**"],
+            [BeatRevisionGeneration withColor:@"purple" marker:@"+"],
+            [BeatRevisionGeneration withColor:@"green" marker:@"++"]
+        ];
+    }
+    
+    return generations;
 }
 /// Returns the generation symbols for screenplay rendering
 + (NSDictionary<NSString*, NSString*>*)revisionMarkers {

@@ -19,6 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
 @end
 
+@interface BeatRevisionGeneration: NSObject
+@property (nonatomic) NSString* color;
+@property (nonatomic) NSString* marker;
+@end
+
 #if TARGET_OS_IOS
 @interface BeatRevisions: NSObject
 #else
@@ -32,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString*)defaultRevisionColor;
 + (NSArray<NSString*>*)revisionColors;
++ (NSArray<BeatRevisionGeneration*>*)revisionGenerations;
 + (NSDictionary*)revisionLevels;
 + (NSDictionary<NSString*, NSString*>*)revisionMarkers;
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
