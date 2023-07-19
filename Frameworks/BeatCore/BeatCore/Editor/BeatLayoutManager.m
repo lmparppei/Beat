@@ -26,7 +26,7 @@
     #define BXBezierPath UIBezierPath
 
     // Because of different line heights on iOS, we'll need to add an offset
-    #define SCENE_NUMBER_OFFSET -5.0
+    #define SCENE_NUMBER_OFFSET -3.5
 
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
     #define getRectValue CGRectValue
@@ -61,7 +61,7 @@
     
     CGSize inset = [self offsetSize];
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-        
+    
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
@@ -259,12 +259,12 @@
     rect.size.width = 7.5 * line.sceneNumber.length;
     rect.size.height = rect.size.height + 1.0;
     
-    CGFloat y = rect.origin.y + SCENE_NUMBER_OFFSET;
+    CGFloat y = rect.origin.y - SCENE_NUMBER_OFFSET;
     
     rect = CGRectMake(inset.width,
-                             rect.origin.y,
-                             7.5 * line.sceneNumber.length,
-                             rect.size.height + 1.0);
+                      y,
+                      7.5 * line.sceneNumber.length,
+                      rect.size.height + 1.0);
     
     BXColor* color;
     if (line.color.length > 0) color = [BeatColors color:line.color];
