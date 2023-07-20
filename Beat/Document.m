@@ -2182,6 +2182,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		Line *line;
 		NSInteger lastIndex = idx;
 		
+		[self.textStorage beginEditing];
 		for (NSInteger i = 0; i < 400; i++) {
 			// After 400 lines, hand off the process
 			if (i + idx >= self.parser.lines.count) break;
@@ -2190,6 +2191,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			lastIndex = i + idx;
 			[self.formatting formatLine:line firstTime:YES];
 		}
+		[self.textStorage endEditing];
 		
 		[self.progressIndicator incrementBy:400.0 / self.parser.lines.count];
 		
