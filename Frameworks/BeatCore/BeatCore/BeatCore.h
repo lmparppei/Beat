@@ -40,3 +40,4 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import "BeatEditorFormattingActions.h"
 #import "BeatMeasure.h"
 #import "BeatDocument.h"
+#import "NSArray+JSON.h"

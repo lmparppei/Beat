@@ -1572,10 +1572,7 @@
 		[scenesToSerialize addObject:scene.forSerialization];
 	}
 	
-	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
-	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	return json;
+	return scenesToSerialize.json;
 }
 
 - (NSString*)outlineAsJSON
@@ -1615,16 +1612,13 @@
 }
 
 - (NSString*)linesAsJSON {
-	NSMutableArray *linesToSerialize = [NSMutableArray array];
+	NSMutableArray *linesToSerialize = NSMutableArray.new;
 	
 	for (Line* line in self.delegate.parser.lines) { 
 		[linesToSerialize addObject:line.forSerialization];
 	}
 	
-	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:linesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
-	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	return json;
+	return linesToSerialize.json;
 }
 
 - (void)setColor:(NSString *)color forScene:(id)scene {
