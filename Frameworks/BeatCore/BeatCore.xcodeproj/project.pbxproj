@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */; };
 		B619DE6D29F90A7A007D1838 /* BeatAutocomplete.h in Headers */ = {isa = PBXBuildFile; fileRef = B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FD0602A6926BF00A40883 /* NSArray+JSON.m */; };
 		B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */; };
 		B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1B9298C5F750011449D /* BeatCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1B8298C5F750011449D /* BeatCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -76,6 +78,8 @@
 /* Begin PBXFileReference section */
 		B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatAutocomplete.m; sourceTree = "<group>"; };
 		B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAutocomplete.h; sourceTree = "<group>"; };
+		B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+JSON.h"; sourceTree = "<group>"; };
+		B61FD0602A6926BF00A40883 /* NSArray+JSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+JSON.m"; sourceTree = "<group>"; };
 		B62FB00D298FB662003492B5 /* BeatCore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatCore.md; sourceTree = "<group>"; };
 		B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
 		B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
@@ -331,6 +335,8 @@
 				B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */,
 				B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */,
 				B63AB3C12A56BEDF00B28BC0 /* BeatTextViewExtensions.swift */,
+				B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */,
+				B61FD0602A6926BF00A40883 /* NSArray+JSON.m */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -363,6 +369,7 @@
 				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
 				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
 				B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */,
+				B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */,
 				B68C0F5D299D82EA0031AE6B /* BeatReview.swift in Headers */,
 				B68C0F66299D845A0031AE6B /* BeatAttributedStringExtensions.swift in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
@@ -460,6 +467,7 @@
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
 				B63AB3BE2A56B33200B28BC0 /* BeatReviewEditor.swift in Sources */,
+				B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */,
 				B6B85FAF2A223EAE00C7713A /* BeatDocument.m in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
