@@ -517,7 +517,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Set temporary attributes
 
 - (void)addTemporaryAttribute:(NSString*)key value:(id)value range:(NSRange)range {
-	[_delegate.layoutManager addTemporaryAttribute:key value:value forCharacterRange:range];
+	//[_delegate.layoutManager addTemporaryAttribute:key value:value forCharacterRange:range];
+	[_delegate.textStorage addAttribute:key value:value range:range];
 }
 
 
