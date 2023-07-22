@@ -22,6 +22,9 @@
  Update 2022/05:
  Too late.
  
+ Update 2023/07:
+ Yeah, please rewrite this to be compatible with both macOS and iOS.
+ 
  */
 
 #import <BeatParsing/BeatParsing.h>
@@ -287,7 +290,7 @@
 	NSInteger cardsPerRow = 3;
 
 	// Orientation is ALWAYS LANDSCAPE
-	NSInteger maxRows = round((printInfo.paperSize.width - 20) / 165);
+	NSInteger maxRows = floor((printInfo.imageablePageBounds.size.width - 10) / 165);
 	
 	NSInteger cardsOnRow = 0;
 	NSInteger rows = 0;
