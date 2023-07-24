@@ -115,7 +115,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="openPluginFolder:" target="-2" id="F6b-GD-5b3"/>
+                                            <action selector="openPluginFolderAction:" target="-2" id="e3W-ha-jZL"/>
                                         </connections>
                                     </button>
                                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cBa-Q6-KR1">

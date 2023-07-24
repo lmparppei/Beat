@@ -87,7 +87,8 @@
         @"synopsis": synopsis,
         @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
         @"line": self.line.forSerialization,
-        @"notes": [self notesAsJSON]
+        @"notes": [self notesAsJSON],
+        @"uuid": self.line.uuidString
     };    
     
     return json;

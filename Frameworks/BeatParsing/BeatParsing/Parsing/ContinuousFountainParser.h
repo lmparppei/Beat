@@ -64,6 +64,7 @@
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position;
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
 
+- (Line *)lineWithUUID:(NSString *)uuid;
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
@@ -164,6 +165,9 @@
 - (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines;
 /// Set `NSUUID` identifiers for lines in corresponding indices.
 - (void)setIdentifiers:(NSArray*)uuids;
+
+/// Get the line with this UUID
+- (Line*)lineWithUUID:(NSString*)uuid;
 
 //Convenience Methods for Outlineview data
 /// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.

@@ -2057,6 +2057,14 @@ static NSDictionary* patterns;
     return nil;
 }
 
+- (Line *)lineWithUUID:(NSString *)uuid
+{
+    for (Line* line in self.lines) {
+        if ([line.uuidString isEqualToString:uuid]) return line;
+    }
+    return nil;
+}
+
 
 #pragma mark - Element blocks
 
