@@ -115,10 +115,12 @@
 	self.context[@"require"] = ^(NSString *path) {
 		NSString *modulePath = [[BeatPluginManager.sharedManager pathForPlugin:weakSelf.pluginName] stringByAppendingPathComponent:path];
 		modulePath = [weakSelf resolvePath:modulePath];
-		
+		        
 		if(![NSFileManager.defaultManager fileExistsAtPath:modulePath]) {
 			// File doesn't exist inside the plugin container. Let's see if it can be found inside the app container.
-			NSURL *url = [NSBundle.mainBundle URLForResource:path.lastPathComponent withExtension:@"js"];
+            NSBundle* bundle = [NSBundle bundleForClass:weakSelf.class];
+			NSURL *url = [bundle URLForResource:path.lastPathComponent withExtension:@"js"];
+            
 			if (url == nil) {
 				NSString *message = [NSString stringWithFormat:@"Require: File “%@” does not exist.", path];
 				weakSelf.context.exception = [JSValue valueWithNewErrorFromMessage:message inContext:weakSelf.context];
@@ -1105,9 +1107,9 @@
  
  */
 
-#if !TARGET_OS_IOS
 - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
+#if !TARGET_OS_IOS
 	if (_delegate.documentWindow.attachedSheet) return;
 	
 	if (width <= 0) width = 600;
@@ -1116,7 +1118,7 @@
 	if (height > 800) height = 1000;
 	
 	// Load template
-	NSBundle* bundle = [NSBundle bundleForClass:self.class];
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
 	NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
 	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
 	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
@@ -1459,7 +1461,7 @@
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		self.printer = [[BeatHTMLPrinter alloc] init];
+		self.printer = [[WebPrinter alloc] init];
 		
 		if (settings[@"orientation"]) {
 			NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];

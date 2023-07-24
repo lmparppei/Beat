@@ -15,4 +15,9 @@ FOUNDATION_EXPORT const unsigned char BeatPluginsVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <BeatPlugins/PublicHeader.h>
 
+#import "BeatPlugin.h"
+#import "BeatPluginManager.h"
 
+#if !TARGET_OS_IOS
+#import "BeatHTMLPrinter.h"
+#endif

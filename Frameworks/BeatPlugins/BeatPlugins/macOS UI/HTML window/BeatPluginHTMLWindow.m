@@ -91,9 +91,9 @@
 /// Sets the HTML content with preloaded styles.
 - (void)setHTML:(NSString*)html {
 	// Load template
-	NSBundle* bundle = [NSBundle bundleForClass:self.class];
+    NSBundle* bundle = [NSBundle bundleForClass:self.class];
 	
-	NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
+    NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
 	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
 	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
 	

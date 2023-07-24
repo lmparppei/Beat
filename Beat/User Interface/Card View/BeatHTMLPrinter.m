@@ -6,17 +6,17 @@
 //  Copyright © 2020-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "WebPrinter.h"
+#import "BeatHTMLPrinter.h"
 #import <WebKit/WebKit.h>
 
-@interface WebPrinter () <WebFrameLoadDelegate>
+@interface BeatHTMLPrinter () <WebFrameLoadDelegate>
 @property (nonatomic) WebView *printView;
 @property (nonatomic) NSPrintInfo *printInfo;
 @property (nonatomic) void (^callback)(void);
 
 @property (nonatomic) NSUInteger finishedWebViews;
 @end
-@implementation WebPrinter
+@implementation BeatHTMLPrinter
 
 - (instancetype)init {
 	return [self initWithName:@"Unnamed"];

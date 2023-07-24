@@ -285,7 +285,7 @@
 		B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
 		B68B6069260B849300463AD8 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B68B606B260B849300463AD8 /* FDXElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BA243F2607A672008C9291 /* FDXElement.m */; };
-		B68B606D260B849300463AD8 /* WebPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF54D2465925C00C5B78C /* WebPrinter.m */; };
+		B68B606D260B849300463AD8 /* BeatHTMLPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF54D2465925C00C5B78C /* BeatHTMLPrinter.m */; };
 		B68B606E260B849300463AD8 /* BeatStatisticsPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatStatisticsPanel.m */; };
 		B68B606F260B849300463AD8 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
 		B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */; };
@@ -351,7 +351,7 @@
 		B69E237D275FA4F8004A2E26 /* BeatPluginUIDropdown.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E237B275FA4F8004A2E26 /* BeatPluginUIDropdown.m */; };
 		B69E2384275FD054004A2E26 /* BeatPluginUICheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E2383275FD054004A2E26 /* BeatPluginUICheckbox.m */; };
 		B69E2385275FD054004A2E26 /* BeatPluginUICheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B69E2383275FD054004A2E26 /* BeatPluginUICheckbox.m */; };
-		B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF54D2465925C00C5B78C /* WebPrinter.m */; };
+		B69EF54E2465925C00C5B78C /* BeatHTMLPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF54D2465925C00C5B78C /* BeatHTMLPrinter.m */; };
 		B69EF55124659FC000C5B78C /* SceneCards.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF55024659FC000C5B78C /* SceneCards.m */; };
 		B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69EF5522465AA2000C5B78C /* CardPrintCSS.css */; };
 		B69FCF64272314910022A9D9 /* BeatCharacterList.m in Sources */ = {isa = PBXBuildFile; fileRef = B69FCF63272314900022A9D9 /* BeatCharacterList.m */; };
@@ -362,8 +362,6 @@
 		B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */; };
 		B6B51B1D295B562D002182D2 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
 		B6B51B1E295B562D002182D2 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
-		B6B61BB229F96FC70098D94D /* NSTextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB129F96FC60098D94D /* NSTextView+UX.m */; };
-		B6B61BB329F96FC70098D94D /* NSTextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB129F96FC60098D94D /* NSTextView+UX.m */; };
 		B6B6C87625650BA4005294FE /* HighlandImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B6C87525650BA4005294FE /* HighlandImport.m */; };
 		B6B80BE02726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
 		B6B80BE12726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
@@ -883,8 +881,8 @@
 		B69E2382275FD054004A2E26 /* BeatPluginUICheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUICheckbox.h; sourceTree = "<group>"; };
 		B69E2383275FD054004A2E26 /* BeatPluginUICheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUICheckbox.m; sourceTree = "<group>"; };
 		B69E2386275FD0F7004A2E26 /* BeatPluginUIExports.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIExports.h; sourceTree = "<group>"; };
-		B69EF54C2465925C00C5B78C /* WebPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebPrinter.h; sourceTree = "<group>"; };
-		B69EF54D2465925C00C5B78C /* WebPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WebPrinter.m; sourceTree = "<group>"; };
+		B69EF54C2465925C00C5B78C /* BeatHTMLPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLPrinter.h; sourceTree = "<group>"; };
+		B69EF54D2465925C00C5B78C /* BeatHTMLPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLPrinter.m; sourceTree = "<group>"; };
 		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneCards.h; sourceTree = "<group>"; };
 		B69EF55024659FC000C5B78C /* SceneCards.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneCards.m; sourceTree = "<group>"; };
 		B69EF5522465AA2000C5B78C /* CardPrintCSS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = CardPrintCSS.css; sourceTree = "<group>"; };
@@ -900,8 +898,6 @@
 		B6B37F6628F0585C00657F5F /* BeatFontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontManager.swift; sourceTree = "<group>"; };
 		B6B462E82708A4860056EEF1 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
 		B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNativePrinting.swift; sourceTree = "<group>"; };
-		B6B61BB029F96FC60098D94D /* NSTextView+UX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTextView+UX.h"; sourceTree = "<group>"; };
-		B6B61BB129F96FC60098D94D /* NSTextView+UX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextView+UX.m"; sourceTree = "<group>"; };
 		B6B6C87425650BA4005294FE /* HighlandImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HighlandImport.h; sourceTree = "<group>"; };
 		B6B6C87525650BA4005294FE /* HighlandImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HighlandImport.m; sourceTree = "<group>"; };
 		B6B6C87F25650D04005294FE /* TextBundleWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBundleWrapper.h; sourceTree = "<group>"; };
@@ -1630,8 +1626,8 @@
 				B6898EF62676615A00D728B3 /* CardView copy.js */,
 				B69EF5522465AA2000C5B78C /* CardPrintCSS.css */,
 				B6EAEDBF267A687900BBD2A2 /* CardWindow.html */,
-				B69EF54C2465925C00C5B78C /* WebPrinter.h */,
-				B69EF54D2465925C00C5B78C /* WebPrinter.m */,
+				B69EF54C2465925C00C5B78C /* BeatHTMLPrinter.h */,
+				B69EF54D2465925C00C5B78C /* BeatHTMLPrinter.m */,
 				B69EF54F24659FC000C5B78C /* SceneCards.h */,
 				B69EF55024659FC000C5B78C /* SceneCards.m */,
 			);
@@ -1833,8 +1829,6 @@
 		B69C74DE2773D9A40022D9D5 /* Extensions and Categories */ = {
 			isa = PBXGroup;
 			children = (
-				B6B61BB029F96FC60098D94D /* NSTextView+UX.h */,
-				B6B61BB129F96FC60098D94D /* NSTextView+UX.m */,
 				B669E0392923885200891DD1 /* NSFont+CFTraits.h */,
 				B669E03A2923885200891DD1 /* NSFont+CFTraits.m */,
 				B689FE3E290D05EF002F0785 /* NSString+VersionNumber.h */,
@@ -2566,7 +2560,6 @@
 				B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B69BFC782565336C007A7D2B /* FadeInImport.m in Sources */,
 				B66B5ABD2739B75500BBC9C6 /* unzip.c in Sources */,
-				B6B61BB229F96FC70098D94D /* NSTextView+UX.m in Sources */,
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B66E2CC229EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */,
@@ -2633,7 +2626,7 @@
 				B661937026BE81FD00152CA1 /* BeatModalAccessoryView.m in Sources */,
 				B66B5AC32739B75500BBC9C6 /* mztools.c in Sources */,
 				B69C74DC2773D6350022D9D5 /* BeatLaunchButton.m in Sources */,
-				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
+				B69EF54E2465925C00C5B78C /* BeatHTMLPrinter.m in Sources */,
 				B65F02B125B82BF8009E1D04 /* BeatStatisticsPanel.m in Sources */,
 				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
 				B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */,
@@ -2728,7 +2721,6 @@
 				B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B68B6040260B849300463AD8 /* FadeInImport.m in Sources */,
 				B66B5ABE2739B75500BBC9C6 /* unzip.c in Sources */,
-				B6B61BB329F96FC70098D94D /* NSTextView+UX.m in Sources */,
 				B68B6041260B849300463AD8 /* BeatModalInput.m in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
 				B66E2CC329EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */,
@@ -2795,7 +2787,7 @@
 				B661937126BE81FD00152CA1 /* BeatModalAccessoryView.m in Sources */,
 				B66B5AC42739B75500BBC9C6 /* mztools.c in Sources */,
 				B69C74DD2773D6350022D9D5 /* BeatLaunchButton.m in Sources */,
-				B68B606D260B849300463AD8 /* WebPrinter.m in Sources */,
+				B68B606D260B849300463AD8 /* BeatHTMLPrinter.m in Sources */,
 				B68B606E260B849300463AD8 /* BeatStatisticsPanel.m in Sources */,
 				B68B606F260B849300463AD8 /* OSFImport.m in Sources */,
 				B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */,

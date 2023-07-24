@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WebPrinter : NSView <WebFrameLoadDelegate>
+@interface BeatHTMLPrinter : NSView <WebFrameLoadDelegate>
 //@property (nonatomic, weak) NSPrintOperation *printOperation;
 @property (nonatomic) NSString *name;
 - (instancetype)initWithName:(NSString*)name;

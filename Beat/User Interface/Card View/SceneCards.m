@@ -30,14 +30,14 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import "SceneCards.h"
-#import "WebPrinter.h"
+#import "BeatHTMLPrinter.h"
 #import <WebKit/WebKit.h>
 
 #define SNIPPET_LENGTH 190
 
 @interface SceneCards ()
 @property (nonatomic) NSArray* cards;
-@property (nonatomic) WebPrinter *webPrinter;
+@property (nonatomic) BeatHTMLPrinter *webPrinter;
 @end
 
 @implementation SceneCards
@@ -45,7 +45,7 @@
 - (void)awakeFromNib {
 	[super awakeFromNib];
 	
-	self.webPrinter = [[WebPrinter alloc] initWithName:@"Scene Cards"];
+	self.webPrinter = [[BeatHTMLPrinter alloc] initWithName:@"Scene Cards"];
 	[self createHTMLView];
 }
 

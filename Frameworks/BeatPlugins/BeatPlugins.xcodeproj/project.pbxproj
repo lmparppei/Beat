@@ -7,10 +7,96 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B680B75E2A6EBBE300FCD805 /* Template.js in Resources */ = {isa = PBXBuildFile; fileRef = B680B75D2A6EBBE300FCD805 /* Template.js */; };
+		B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */; platformFilters = (macos, ); };
+		B680B77A2A6EBBFD00FCD805 /* BeatPluginUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */; };
+		B680B77B2A6EBBFD00FCD805 /* BeatModalAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7602A6EBBFB00FCD805 /* BeatModalAccessoryView.m */; };
+		B680B77C2A6EBBFD00FCD805 /* BeatWidgetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7722A6EBBFC00FCD805 /* BeatWidgetView.m */; platformFilters = (macos, ); };
+		B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7712A6EBBFC00FCD805 /* BeatPluginUIView.m */; platformFilters = (macos, ); };
+		B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7652A6EBBFC00FCD805 /* BeatPluginHTMLWindow.m */; platformFilters = (macos, ); };
+		B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B76C2A6EBBFC00FCD805 /* BeatPluginUICheckbox.m */; platformFilters = (macos, ); };
+		B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7752A6EBBFD00FCD805 /* BeatPluginUITextField.m */; platformFilters = (macos, ); };
+		B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7682A6EBBFC00FCD805 /* BeatPluginUILabel.m */; platformFilters = (macos, ); };
+		B680B7822A6EBBFD00FCD805 /* BeatPluginUIDropdown.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B76B2A6EBBFC00FCD805 /* BeatPluginUIDropdown.m */; platformFilters = (macos, ); };
+		B680B7832A6EBBFD00FCD805 /* BeatPluginControlMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7622A6EBBFB00FCD805 /* BeatPluginControlMenuItem.swift */; platformFilters = (macos, ); };
+		B680B7842A6EBBFD00FCD805 /* BeatPluginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7662A6EBBFC00FCD805 /* BeatPluginWebView.swift */; };
+		B680B7852A6EBC1C00FCD805 /* BeatWidgetView.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7742A6EBBFD00FCD805 /* BeatWidgetView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B76E2A6EBBFC00FCD805 /* BeatPluginUIView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7872A6EBC2C00FCD805 /* BeatPluginUIButton.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B76F2A6EBBFC00FCD805 /* BeatPluginUIButton.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B76D2A6EBBFC00FCD805 /* BeatPluginUIDropdown.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7892A6EBC2C00FCD805 /* BeatPluginUILabel.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B76A2A6EBBFC00FCD805 /* BeatPluginUILabel.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78A2A6EBC3A00FCD805 /* BeatPluginUIExports.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7782A6EBBFD00FCD805 /* BeatPluginUIExports.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7702A6EBBFC00FCD805 /* BeatPluginUITextField.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7772A6EBBFD00FCD805 /* BeatPluginUI.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7692A6EBBFC00FCD805 /* BeatPluginUICheckbox.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78E2A6EBC4800FCD805 /* BeatPluginHTMLWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7642A6EBBFB00FCD805 /* BeatPluginHTMLWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7922A6EBD8300FCD805 /* libUXKit-AppKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7912A6EBD8300FCD805 /* libUXKit-AppKit.a */; platformFilters = (macos, ); };
+		B680B7942A6EBD8C00FCD805 /* libUXKit-UIKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7932A6EBD8C00FCD805 /* libUXKit-UIKit.a */; platformFilter = ios; };
+		B680B79A2A6EBEBD00FCD805 /* BeatPluginTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7972A6EBEBD00FCD805 /* BeatPluginTimer.m */; };
+		B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7962A6EBEBD00FCD805 /* BeatSpeak.m */; };
+		B680B7A12A6EBEF100FCD805 /* BeatPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */; };
+		B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */; };
+		B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */; };
+		B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A92A6EC0E200FCD805 /* BeatConsole.m */; };
+		B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */; };
+		B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7AB2A6EC0E200FCD805 /* BeatConsole.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7B02A6EC29600FCD805 /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7AF2A6EC29600FCD805 /* BeatCore.framework */; };
+		B680B7B42A6EC29E00FCD805 /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7B32A6EC29E00FCD805 /* BeatPagination2.framework */; };
+		B680B7B82A6EC2A600FCD805 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7B72A6EC2A600FCD805 /* BeatParsing.framework */; };
+		B680B7BC2A6EC2B600FCD805 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7BB2A6EC2B600FCD805 /* BeatDynamicColor.framework */; };
+		B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B680B75D2A6EBBE300FCD805 /* Template.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Template.js; sourceTree = "<group>"; };
+		B680B7602A6EBBFB00FCD805 /* BeatModalAccessoryView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatModalAccessoryView.m; sourceTree = "<group>"; };
+		B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatModalAccessoryView.h; sourceTree = "<group>"; };
+		B680B7622A6EBBFB00FCD805 /* BeatPluginControlMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginControlMenuItem.swift; sourceTree = "<group>"; };
+		B680B7642A6EBBFB00FCD805 /* BeatPluginHTMLWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginHTMLWindow.h; sourceTree = "<group>"; };
+		B680B7652A6EBBFC00FCD805 /* BeatPluginHTMLWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginHTMLWindow.m; sourceTree = "<group>"; };
+		B680B7662A6EBBFC00FCD805 /* BeatPluginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWebView.swift; sourceTree = "<group>"; };
+		B680B7682A6EBBFC00FCD805 /* BeatPluginUILabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUILabel.m; sourceTree = "<group>"; };
+		B680B7692A6EBBFC00FCD805 /* BeatPluginUICheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUICheckbox.h; sourceTree = "<group>"; };
+		B680B76A2A6EBBFC00FCD805 /* BeatPluginUILabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUILabel.h; sourceTree = "<group>"; };
+		B680B76B2A6EBBFC00FCD805 /* BeatPluginUIDropdown.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUIDropdown.m; sourceTree = "<group>"; };
+		B680B76C2A6EBBFC00FCD805 /* BeatPluginUICheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUICheckbox.m; sourceTree = "<group>"; };
+		B680B76D2A6EBBFC00FCD805 /* BeatPluginUIDropdown.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIDropdown.h; sourceTree = "<group>"; };
+		B680B76E2A6EBBFC00FCD805 /* BeatPluginUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIView.h; sourceTree = "<group>"; };
+		B680B76F2A6EBBFC00FCD805 /* BeatPluginUIButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIButton.h; sourceTree = "<group>"; };
+		B680B7702A6EBBFC00FCD805 /* BeatPluginUITextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUITextField.h; sourceTree = "<group>"; };
+		B680B7712A6EBBFC00FCD805 /* BeatPluginUIView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUIView.m; sourceTree = "<group>"; };
+		B680B7722A6EBBFC00FCD805 /* BeatWidgetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatWidgetView.m; sourceTree = "<group>"; };
+		B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUIButton.m; sourceTree = "<group>"; };
+		B680B7742A6EBBFD00FCD805 /* BeatWidgetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatWidgetView.h; sourceTree = "<group>"; };
+		B680B7752A6EBBFD00FCD805 /* BeatPluginUITextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUITextField.m; sourceTree = "<group>"; };
+		B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUI.m; sourceTree = "<group>"; };
+		B680B7772A6EBBFD00FCD805 /* BeatPluginUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUI.h; sourceTree = "<group>"; };
+		B680B7782A6EBBFD00FCD805 /* BeatPluginUIExports.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIExports.h; sourceTree = "<group>"; };
+		B680B7912A6EBD8300FCD805 /* libUXKit-AppKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-AppKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7932A6EBD8C00FCD805 /* libUXKit-UIKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-UIKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7962A6EBEBD00FCD805 /* BeatSpeak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSpeak.m; sourceTree = "<group>"; };
+		B680B7972A6EBEBD00FCD805 /* BeatPluginTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginTimer.m; sourceTree = "<group>"; };
+		B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSpeak.h; sourceTree = "<group>"; };
+		B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginTimer.h; sourceTree = "<group>"; };
+		B680B79C2A6EBEE900FCD805 /* Plugin HTML template.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "Plugin HTML template.html"; sourceTree = "<group>"; };
+		B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPlugin.m; sourceTree = "<group>"; };
+		B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugin.h; sourceTree = "<group>"; };
+		B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginManager.h; sourceTree = "<group>"; };
+		B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginManager.m; sourceTree = "<group>"; };
+		B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLPrinter.h; sourceTree = "<group>"; };
+		B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLPrinter.m; sourceTree = "<group>"; };
+		B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatConsoleTextField.swift; sourceTree = "<group>"; };
+		B680B7A92A6EC0E200FCD805 /* BeatConsole.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatConsole.m; sourceTree = "<group>"; };
+		B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatConsole.xib; sourceTree = "<group>"; };
+		B680B7AB2A6EC0E200FCD805 /* BeatConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatConsole.h; sourceTree = "<group>"; };
+		B680B7AF2A6EC29600FCD805 /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7B32A6EC29E00FCD805 /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7B72A6EC2A600FCD805 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7BB2A6EC2B600FCD805 /* BeatDynamicColor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDynamicColor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D0FD2A6EBB9400574D72 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D1002A6EBB9400574D72 /* BeatPlugins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugins.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -20,17 +106,115 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B680B7B82A6EC2A600FCD805 /* BeatParsing.framework in Frameworks */,
+				B680B7B02A6EC29600FCD805 /* BeatCore.framework in Frameworks */,
+				B680B7B42A6EC29E00FCD805 /* BeatPagination2.framework in Frameworks */,
+				B680B7942A6EBD8C00FCD805 /* libUXKit-UIKit.a in Frameworks */,
+				B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */,
+				B680B7BC2A6EC2B600FCD805 /* BeatDynamicColor.framework in Frameworks */,
+				B680B7922A6EBD8300FCD805 /* libUXKit-AppKit.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B680B75C2A6EBBE300FCD805 /* JS Modules */ = {
+			isa = PBXGroup;
+			children = (
+				B680B75D2A6EBBE300FCD805 /* Template.js */,
+			);
+			path = "JS Modules";
+			sourceTree = "<group>";
+		};
+		B680B75F2A6EBBFB00FCD805 /* macOS UI */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7672A6EBBFC00FCD805 /* Widget views */,
+				B680B7632A6EBBFB00FCD805 /* HTML window */,
+				B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */,
+				B680B7602A6EBBFB00FCD805 /* BeatModalAccessoryView.m */,
+				B680B7622A6EBBFB00FCD805 /* BeatPluginControlMenuItem.swift */,
+			);
+			path = "macOS UI";
+			sourceTree = "<group>";
+		};
+		B680B7632A6EBBFB00FCD805 /* HTML window */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7642A6EBBFB00FCD805 /* BeatPluginHTMLWindow.h */,
+				B680B7652A6EBBFC00FCD805 /* BeatPluginHTMLWindow.m */,
+				B680B7662A6EBBFC00FCD805 /* BeatPluginWebView.swift */,
+			);
+			path = "HTML window";
+			sourceTree = "<group>";
+		};
+		B680B7672A6EBBFC00FCD805 /* Widget views */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7742A6EBBFD00FCD805 /* BeatWidgetView.h */,
+				B680B7722A6EBBFC00FCD805 /* BeatWidgetView.m */,
+				B680B76E2A6EBBFC00FCD805 /* BeatPluginUIView.h */,
+				B680B7712A6EBBFC00FCD805 /* BeatPluginUIView.m */,
+				B680B76F2A6EBBFC00FCD805 /* BeatPluginUIButton.h */,
+				B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */,
+				B680B76A2A6EBBFC00FCD805 /* BeatPluginUILabel.h */,
+				B680B7682A6EBBFC00FCD805 /* BeatPluginUILabel.m */,
+				B680B76D2A6EBBFC00FCD805 /* BeatPluginUIDropdown.h */,
+				B680B76B2A6EBBFC00FCD805 /* BeatPluginUIDropdown.m */,
+				B680B7692A6EBBFC00FCD805 /* BeatPluginUICheckbox.h */,
+				B680B76C2A6EBBFC00FCD805 /* BeatPluginUICheckbox.m */,
+				B680B7702A6EBBFC00FCD805 /* BeatPluginUITextField.h */,
+				B680B7752A6EBBFD00FCD805 /* BeatPluginUITextField.m */,
+				B680B7782A6EBBFD00FCD805 /* BeatPluginUIExports.h */,
+				B680B7772A6EBBFD00FCD805 /* BeatPluginUI.h */,
+				B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */,
+			);
+			path = "Widget views";
+			sourceTree = "<group>";
+		};
+		B680B7902A6EBD8300FCD805 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */,
+				B680B7BB2A6EC2B600FCD805 /* BeatDynamicColor.framework */,
+				B680B7B72A6EC2A600FCD805 /* BeatParsing.framework */,
+				B680B7B32A6EC29E00FCD805 /* BeatPagination2.framework */,
+				B680B7AF2A6EC29600FCD805 /* BeatCore.framework */,
+				B680B7932A6EBD8C00FCD805 /* libUXKit-UIKit.a */,
+				B680B7912A6EBD8300FCD805 /* libUXKit-AppKit.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B680B7952A6EBEBD00FCD805 /* API object wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */,
+				B680B7972A6EBEBD00FCD805 /* BeatPluginTimer.m */,
+				B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */,
+				B680B7962A6EBEBD00FCD805 /* BeatSpeak.m */,
+			);
+			path = "API object wrappers";
+			sourceTree = "<group>";
+		};
+		B680B7A72A6EC0E200FCD805 /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7AB2A6EC0E200FCD805 /* BeatConsole.h */,
+				B680B7A92A6EC0E200FCD805 /* BeatConsole.m */,
+				B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */,
+				B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
 		B692D0F32A6EBB9400574D72 = {
 			isa = PBXGroup;
 			children = (
 				B692D0FF2A6EBB9400574D72 /* BeatPlugins */,
 				B692D0FE2A6EBB9400574D72 /* Products */,
+				B680B7902A6EBD8300FCD805 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -46,6 +230,17 @@
 			isa = PBXGroup;
 			children = (
 				B692D1002A6EBB9400574D72 /* BeatPlugins.h */,
+				B680B79C2A6EBEE900FCD805 /* Plugin HTML template.html */,
+				B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */,
+				B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */,
+				B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */,
+				B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */,
+				B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */,
+				B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */,
+				B680B7A72A6EC0E200FCD805 /* Console */,
+				B680B7952A6EBEBD00FCD805 /* API object wrappers */,
+				B680B75F2A6EBBFB00FCD805 /* macOS UI */,
+				B680B75C2A6EBBE300FCD805 /* JS Modules */,
 			);
 			path = BeatPlugins;
 			sourceTree = "<group>";
@@ -57,7 +252,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
 				B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */,
+				B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */,
+				B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */,
+				B680B7852A6EBC1C00FCD805 /* BeatWidgetView.h in Headers */,
+				B680B78A2A6EBC3A00FCD805 /* BeatPluginUIExports.h in Headers */,
+				B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */,
+				B680B7872A6EBC2C00FCD805 /* BeatPluginUIButton.h in Headers */,
+				B680B7892A6EBC2C00FCD805 /* BeatPluginUILabel.h in Headers */,
+				B680B78E2A6EBC4800FCD805 /* BeatPluginHTMLWindow.h in Headers */,
+				B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */,
+				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
+				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
+				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +327,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B680B75E2A6EBBE300FCD805 /* Template.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +338,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B680B77B2A6EBBFD00FCD805 /* BeatModalAccessoryView.m in Sources */,
+				B680B7A12A6EBEF100FCD805 /* BeatPluginManager.m in Sources */,
+				B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */,
+				B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */,
+				B680B7832A6EBBFD00FCD805 /* BeatPluginControlMenuItem.swift in Sources */,
+				B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */,
+				B680B79A2A6EBEBD00FCD805 /* BeatPluginTimer.m in Sources */,
+				B680B77A2A6EBBFD00FCD805 /* BeatPluginUI.m in Sources */,
+				B680B77C2A6EBBFD00FCD805 /* BeatWidgetView.m in Sources */,
+				B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */,
+				B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */,
+				B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */,
+				B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */,
+				B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */,
+				B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */,
+				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
+				B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */,
+				B680B7842A6EBBFD00FCD805 /* BeatPluginWebView.swift in Sources */,
+				B680B7822A6EBBFD00FCD805 /* BeatPluginUIDropdown.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,11 +497,16 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPlugins;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -296,11 +529,16 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPlugins;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};
