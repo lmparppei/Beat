@@ -27,18 +27,22 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (void)setRawHTML:(NSString*)html;
 - (void)close;
 - (void)focus;
+
 - (void)gangWithDocumentWindow;
 - (void)detachFromDocumentWindow;
 - (void)toggleFullScreen;
 - (bool)isFullScreen;
+
 @end
 
 @protocol PluginWindowHost <NSObject, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 @property (readonly) NSString *pluginName;
+#if !TARGET_OS_IOS
 - (void)gangWithDocumentWindow:(NSWindow*)window;
 - (void)detachFromDocumentWindow:(NSWindow*)window;
 - (void)closePluginWindow:(id)sender;
 - (void)log:(NSString*)string;
+#endif
 @end
 
 @interface BeatPluginHTMLWindow : NSPanel <BeatHTMLPanelExports>

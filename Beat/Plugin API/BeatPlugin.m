@@ -26,11 +26,10 @@
 #import "Beat-Swift.h"
 #import <objc/runtime.h>
 
-
 @interface BeatPlugin ()
+
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
-@property (nonatomic) NSWindow *sheet;
 @property (nonatomic) JSValue *sheetCallback;
 @property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) JSValue *sceneCompletionCallback;
@@ -58,8 +57,10 @@
 #if !TARGET_OS_IOS
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
 @property (nonatomic) BeatPluginUIView *widgetView;
-
 @property (nonatomic) WebPrinter *printer;
+@property (nonatomic) NSWindow *sheet;
+#else
+@property (nonatomic) UIWindow *sheet;
 #endif
 
 @end
@@ -191,11 +192,11 @@
 	}
 	
 	// Remove widget
-	if (_widgetView != nil) [_widgetView remove];
+	if (self.widgetView != nil) [self.widgetView remove];
 	
-	_sheet = nil;
-	_sheetCallback = nil;
-	_plugin = nil;
+	self.sheet = nil;
+	self.sheetCallback = nil;
+	self.plugin = nil;
 	
 	[self stopBackgroundInstances];
 	[self clearMenus];
@@ -235,12 +236,12 @@
 	[self clearMenus];
 	
 	// Remove widget
-	if (_widgetView != nil) [_widgetView remove];
+	if (self.widgetView != nil) [self.widgetView remove];
 	
 	//_vm = nil;
-	_sheet = nil;
-	_sheetCallback = nil;
-	_plugin = nil;
+	self.sheet = nil;
+	self.sheetCallback = nil;
+	self.plugin = nil;
 	
 	if (_resident) {
 		[_delegate deregisterPlugin:self];
@@ -450,7 +451,27 @@
 
 /// Runs the given block in a **background thread**
 - (void)dispatch:(JSValue*)callback {
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+	[self dispatch:callback priority:0];
+}
+/// Runs the given block in a background thread
+- (void)dispatch:(JSValue*)callback priority:(NSInteger)priority {
+	intptr_t p;
+	
+	switch (priority) {
+		case 1:
+			p = DISPATCH_QUEUE_PRIORITY_BACKGROUND; break;
+		case 2:
+			p = DISPATCH_QUEUE_PRIORITY_LOW; break;
+		case 3:
+			p = DISPATCH_QUEUE_PRIORITY_DEFAULT; break;
+		case 4:
+			p = DISPATCH_QUEUE_PRIORITY_HIGH; break;
+		default:
+			p = DISPATCH_QUEUE_PRIORITY_DEFAULT;
+			break;
+	}
+	
+	dispatch_async(dispatch_get_global_queue(p, 0), ^(void){
 		[callback callWithArguments:nil];
 	});
 }
@@ -528,26 +549,72 @@
 
 #pragma mark - File i/o
 
-/** Presents a save dialog.
- @param format Allowed file extension
- @param callback If the user didn't click on cancel, callback receives an array of paths (containing only a single path). When clicking cancel, the return parameter is nil.
- */
-- (void)saveFile:(NSString*)format callback:(JSValue*)callback
-{
-	NSSavePanel *savePanel = [NSSavePanel savePanel];
-	savePanel.allowedFileTypes = @[format];
-	[savePanel beginSheetModalForWindow:self.delegate.documentWindow completionHandler:^(NSModalResponse returnCode) {
-		if (returnCode == NSModalResponseOK) {
-			[savePanel close];
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
-				[callback callWithArguments:@[savePanel.URL.path]];
-			});
+#pragma mark macOS only
+#if !TARGET_OS_IOS
+	/** Presents a save dialog.
+	 @param format Allowed file extension
+	 @param callback If the user didn't click on cancel, callback receives an array of paths (containing only a single path). When clicking cancel, the return parameter is nil.
+	 */
+	- (void)saveFile:(NSString*)format callback:(JSValue*)callback
+	{
+		NSSavePanel *savePanel = [NSSavePanel savePanel];
+		savePanel.allowedFileTypes = @[format];
+		[savePanel beginSheetModalForWindow:self.delegate.documentWindow completionHandler:^(NSModalResponse returnCode) {
+			if (returnCode == NSModalResponseOK) {
+				[savePanel close];
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
+					[callback callWithArguments:@[savePanel.URL.path]];
+				});
+			} else {
+				
+				[self runCallback:callback withArguments:nil];
+			}
+		}];
+	}
+
+	/** Presents an open dialog box.
+	 @param format Array of file extensions allowed to be opened
+	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths, though it contains only a single path.
+	*/
+	- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
+	{
+		NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+		openPanel.allowedFileTypes = formats;
+		
+		NSModalResponse result = [openPanel runModal];
+		if (result == NSModalResponseOK) {
+			[self runCallback:callback withArguments:@[openPanel.URL.path]];
 		} else {
-			
 			[self runCallback:callback withArguments:nil];
 		}
-	}];
-}
+	}
+
+	/** Presents an open dialog box which allows selecting multiple files.
+	 @param format Array of file extensions allowed to be opened
+	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths.
+	*/
+	- (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
+	{
+		// Open MULTIPLE files
+		NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+		openPanel.allowedFileTypes = formats;
+		openPanel.allowsMultipleSelection = YES;
+		
+		NSModalResponse result = [openPanel runModal];
+		
+		if (result == NSModalResponseOK) {
+			NSMutableArray *paths = [NSMutableArray array];
+			for (NSURL* url in openPanel.URLs) {
+				[paths addObject:url.path];
+			}
+			[self runCallback:callback withArguments:@[paths]];
+		} else {
+			[self runCallback:callback withArguments:nil];
+		}
+	}
+#endif
+
+#pragma mark Generic writing and reading methods
 
 /// Writes string content to the given path.
 - (bool)writeToFile:(NSString*)path content:(NSString*)content
@@ -563,61 +630,6 @@
 	}
 }
 
-/** Presents an open dialog box.
- @param format Array of file extensions allowed to be opened
- @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths, though it contains only a single path.
-*/
-- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
-{
-	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-	openPanel.allowedFileTypes = formats;
-	
-	NSModalResponse result = [openPanel runModal];
-	if (result == NSModalResponseOK) {
-		[self runCallback:callback withArguments:@[openPanel.URL.path]];
-	} else {
-		[self runCallback:callback withArguments:nil];
-	}
-	
-	/*
-	 // Alternatively we can use a sheet
-	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
-		if (result == NSModalResponseOK) {
-			[openPanel close];
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
-				// some other method calls here
-				[callback callWithArguments:@[openPanel.URL.path]];
-			});
-		} else {
-			[callback callWithArguments:nil];
-		}
-	}];
-	*/
-}
-
-/** Presents an open dialog box which allows selecting multiple files.
- @param format Array of file extensions allowed to be opened
- @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths.
-*/
-- (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
-{
-	// Open MULTIPLE files
-	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-	openPanel.allowedFileTypes = formats;
-	openPanel.allowsMultipleSelection = YES;
-	
-	NSModalResponse result = [openPanel runModal];
-	
-	if (result == NSModalResponseOK) {
-		NSMutableArray *paths = [NSMutableArray array];
-		for (NSURL* url in openPanel.URLs) {
-			[paths addObject:url.path];
-		}
-		[self runCallback:callback withArguments:@[paths]];
-	} else {
-		[self runCallback:callback withArguments:nil];
-	}
-}
 
 /// Returns the given path as a string (from anywhere in the system)
 - (NSString*)fileToString:(NSString*)path
@@ -633,24 +645,13 @@
 	}
 }
 
-
-/// Returns string rendition of a PDF
-- (NSString*)pdfToString:(NSString*)path
-{
-	NSMutableString *result = [NSMutableString string];
-	
-	PDFDocument *doc = [[PDFDocument alloc] initWithURL:[NSURL fileURLWithPath:path]];
-	if (!doc) return @"";
-	
-	for (int i = 0; i < doc.pageCount; i++) {
-		PDFPage *page = [doc pageAtIndex:i];
-		if (!page) continue;
-		
-		[result appendString:page.string];
-	}
-	
-	return result;
+/// Attempts to open  the given path in workspace (system)
+- (void)openInWorkspace:(NSString*)path {
+	[NSWorkspace.sharedWorkspace openFile:path];
 }
+
+
+#pragma mark - Access plugin assets
 
 /// Returns the given file in plugin container as string
 - (NSString*)assetAsString:(NSString *)filename
@@ -677,29 +678,48 @@
 	}
 }
 
-/// Attempts to open  the given path in workspace (system)
-- (void)openInWorkspace:(NSString*)path {
-	[NSWorkspace.sharedWorkspace openFile:path];
+/// Returns string rendition of a PDF
+- (NSString*)pdfToString:(NSString*)path
+{
+	NSMutableString *result = [NSMutableString string];
+	
+	PDFDocument *doc = [[PDFDocument alloc] initWithURL:[NSURL fileURLWithPath:path]];
+	if (!doc) return @"";
+	
+	for (int i = 0; i < doc.pageCount; i++) {
+		PDFPage *page = [doc pageAtIndex:i];
+		if (!page) continue;
+		
+		[result appendString:page.string];
+	}
+	
+	return result;
 }
 
 
-
-#pragma mark - Scripting methods accessible via JS
+#pragma mark - Logging
 
 /// Logs the given message to plugin developer log
 - (void)log:(NSString*)string
 {
 	if (string == nil) return;
 	
-	BeatConsole *console = BeatConsole.shared;
-	if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate.document];
-	else {
-		// Allow logging in background thread
-		dispatch_async(dispatch_get_main_queue(), ^(void){
-			[console logToConsole:string pluginName:self.pluginName context:self.delegate.document];
-		});
-	}
+	#if !TARGET_OS_IOS
+		BeatConsole *console = BeatConsole.shared;
+		if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate.document];
+		else {
+			// Allow logging in background thread
+			dispatch_async(dispatch_get_main_queue(), ^(void){
+				[console logToConsole:string pluginName:self.pluginName context:self.delegate.document];
+			});
+		}
+	#else
+		NSLog(@"Plugin error: %@", string);
+	#endif
 }
+
+
+#pragma mark - Scrolling
 
 /// Scroll to given location in editor window
 - (void)scrollTo:(NSInteger)location
@@ -741,10 +761,13 @@
 	}
 }
 
+
+#pragma mark - Text I/O
+
 /// Adds a string into the editor at given index (location)
 - (void)addString:(NSString*)string toIndex:(NSUInteger)index
 {
-	[self.delegate addString:string atIndex:index];
+	[self.delegate.textActions addString:string atIndex:index];
 }
 
 /// Replaces the given range with a string
@@ -752,7 +775,7 @@
 {
 	NSRange range = NSMakeRange(from, length);
 	@try {
-		[self.delegate replaceRange:range withString:string];
+		[self.delegate.textActions replaceRange:range withString:string];
 	}
 	@catch (NSException *e) {
 		[self reportError:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
@@ -791,9 +814,16 @@
 	else [self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
 }
 
+
+#pragma mark - Modals
+
 /// Presents an alert box
 - (void)alert:(NSString*)title withText:(NSString*)info
 {
+#if TARGET_OS_IOS
+	// Do something on iOS
+	NSLog(@"WARNING: Beat.alert missing on iOS");
+#else
 	// Send back to main thread
 	if (!NSThread.isMainThread) {
 		dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -806,12 +836,18 @@
 	NSAlert *alert = [self dialog:title withInfo:info];
 	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
 	[alert runModal];
+#endif
 }
 
 /// Presents a confirmation box, returning `true` if the user clicked `OK`.
 - (bool)confirm:(NSString*)title withInfo:(NSString*)info
 {
-	NSAlert *alert = [[NSAlert alloc] init];
+#if TARGET_OS_IOS
+	// Do something on iOS
+	NSLog(@"WARNING: Beat.confirm missing on iOS");
+	return false;
+#else
+	NSAlert *alert = NSAlert.new;
 	alert.messageText = title;
 	alert.informativeText = info;
 	
@@ -819,11 +855,9 @@
 	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 	
 	NSModalResponse response = [alert runModal];
-	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
-		return YES;
-	} else {
-		return NO;
-	}
+	
+	return (response == NSModalResponseOK || response == NSAlertFirstButtonReturn);
+#endif
 }
 
 /**
@@ -872,6 +906,7 @@
  @param settings Dictionary of modal window settings. Return value dictionary contains corresponding control names.
  */
 - (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
+#if !TARGET_OS_IOS
 	if (!NSThread.isMainThread) {
 		[self log:@"ERROR: Trying to create a modal from background thread"];
 		return nil;
@@ -911,6 +946,11 @@
 		[self runCallback:callback withArguments:nil];
 		return nil;
 	}
+#else
+	// Do something on iOS
+	NSLog(@"WARNING: Beat.modal missing on iOS");
+	return @{};
+#endif
 }
 
 /** Simple text input prompt.
@@ -921,6 +961,7 @@
  */
 - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
 {
+#if !TARGET_OS_IOS
 	if (!NSThread.isMainThread) {
 		[self log:@"ERROR: Trying to create a prompt from background thread"];
 		return nil;
@@ -947,6 +988,10 @@
 	} else {
 		return nil;
 	}
+#else
+	NSLog(@"WARNING: Beat.prompt missing on iOS");
+	return @"";
+#endif
 }
 
 /** Presents a dropdown box. Returns either the selected option or `null` when the user clicked on *Cancel*.
@@ -956,6 +1001,7 @@
 */
 - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
 {
+#if !TARGET_OS_IOS
 	if (!NSThread.isMainThread) {
 		[self log:@"ERROR: Trying to create a dropdown prompt from background thread"];
 		return nil;
@@ -984,8 +1030,13 @@
 	} else {
 		return nil;
 	}
+#else
+	NSLog(@"WARNING: Beat.dropdownPrompt missing on iOS");
+	return @"";
+#endif
 }
 
+#if !TARGET_OS_IOS
 /// Displays a simple alert box.
 - (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info
 {
@@ -1002,6 +1053,7 @@
 	
 	return alert;
 }
+#endif
 
 #pragma mark - User settings
 
@@ -1047,6 +1099,7 @@
 
 - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
+#if !TARGET_OS_IOS
 	if (_delegate.documentWindow.attachedSheet) return;
 	
 	if (width <= 0) width = 600;
@@ -1161,39 +1214,44 @@
 		_context = nil;
 	}
 }
+#endif
 
 #pragma mark - Window management
 
-/// Makes the given window move along its parent document window. **Never use with standalone plugins.**
-- (void)gangWithDocumentWindow:(NSWindow*)window
-{
-	if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
-}
-/// Window no longer moves aside its document window.
-- (void)detachFromDocumentWindow:(NSWindow*)window
-{
-	if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
-}
-/// Show all plugin windows.
-- (void)showAllWindows
-{
-	if (_terminating) return;
-	
-	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-		[window appear];
+#if !TARGET_OS_IOS
+	/// Makes the given window move along its parent document window. **Never use with standalone plugins.**
+	- (void)gangWithDocumentWindow:(NSWindow*)window
+	{
+		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
 	}
-}
-/// All plugin windows become normal level windows, so they no longer float above the document window.
-- (void)hideAllWindows
-{
-	if (_terminating) return;
-	
-	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-		[window hide];
+	/// Window no longer moves aside its document window.
+	- (void)detachFromDocumentWindow:(NSWindow*)window
+	{
+		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
 	}
-}
+	/// Show all plugin windows.
+	- (void)showAllWindows
+	{
+		if (_terminating) return;
+		
+		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+			[window appear];
+		}
+	}
+	/// All plugin windows become normal level windows, so they no longer float above the document window.
+	- (void)hideAllWindows
+	{
+		if (_terminating) return;
+		
+		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+			[window hide];
+		}
+	}
+#endif
 
 #pragma mark - HTML Window
+
+#if !TARGET_OS_IOS
 
 - (BeatPluginHTMLWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
@@ -1291,6 +1349,7 @@
 	}
 }
 
+#endif
 
 #pragma mark - Tagging interface
 
@@ -1339,6 +1398,16 @@
 
 #pragma mark - Widget interface and Plugin UI API
 
+- (BeatPluginUIView *)widgetView {
+	// Return nil for iOS
+#if TARGET_OS_IOS
+	return nil;
+#else
+	return _widgetView;
+#endif
+}
+
+#if !TARGET_OS_IOS
 - (BeatPluginUIView*)widget:(CGFloat)height
 {
 	// Allow only one widget view
@@ -1370,10 +1439,12 @@
 {
 	return [BeatPluginUILabel withText:title frame:frame color:color size:size font:fontName];
 }
+#endif
 
 
 #pragma mark - Printing interface
 
+#if !TARGET_OS_IOS
 - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback
 {
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
@@ -1398,20 +1469,26 @@
 		}];
 	});
 }
+#endif
 
 
 #pragma mark - Window interface
 
 - (void)nextTab
 {
+#if !TARGET_OS_IOS
 	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectNextTab:nil];
+#endif
 }
 - (void)previousTab
 {
+#if !TARGET_OS_IOS
 	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectPreviousTab:nil];
+#endif
 }
+
 
 #pragma mark - Utilities
 
@@ -1435,8 +1512,10 @@
 /// Sets host document window frame
 - (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
 {
+#if !TARGET_OS_IOS
 	NSRect frame = NSMakeRect(x, y, width, height);
 	[self.delegate.documentWindow setFrame:frame display:true];
+#endif
 }
 
 
@@ -1536,13 +1615,11 @@
 
 - (NSArray*)scenes
 {
-	//[self.delegate.parser createOutline];
 	return self.delegate.parser.scenes;
 }
 
 - (NSArray*)outline
 {
-	//[self.delegate.parser createOutline];
 	return self.delegate.parser.outline;
 }
 
@@ -1563,8 +1640,6 @@
 
 - (NSString*)scenesAsJSON
 {
-	//[self.delegate.parser createOutline];
-	
 	NSMutableArray *scenesToSerialize = NSMutableArray.new;
 	NSArray* scenes = self.delegate.parser.scenes.copy;
 	
@@ -1605,7 +1680,7 @@
 	}
 	
 	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:0 error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 	
 	return json;
@@ -1711,15 +1786,6 @@
 	[_delegate.documentSettings set:settingName as:value];
 }
 
-- (NSDictionary*)printInfo {
-	return @{
-		@"paperSize": @[@(_delegate.printInfo.paperSize.width), @(_delegate.printInfo.paperSize.height)],
-		@"imageableSize": @[@(_delegate.printInfo.imageablePageBounds.origin.x),
-							@(_delegate.printInfo.imageablePageBounds.origin.y),
-							@(_delegate.printInfo.imageablePageBounds.size.width),
-							@(_delegate.printInfo.imageablePageBounds.size.height)]
-	};
-}
 
 #pragma mark - Formatting
 
@@ -1799,6 +1865,7 @@
 	}
 }
 
+
 #pragma mark - Return revised ranges
 
 - (void)bakeRevisions {
@@ -1816,6 +1883,7 @@
 
 #pragma mark - Menu items
 
+#if !TARGET_OS_IOS
 - (void)clearMenus {
 	for (NSMenuItem* topMenuItem in self.menus) {
 		[topMenuItem.submenu removeAllItems];
@@ -1870,6 +1938,30 @@
 
 - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
 	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
+}
+#endif
+
+
+#pragma mark - Cross-platform compatibility checks
+
+- (NSString*)os {
+#if TARGET_OS_IOS
+	return @"iOS";
+#else
+	return @"macOS";
+#endif
+}
+
+- (bool)iOS {
+#if TARGET_OS_IOS
+	return true;
+#else
+	return false;
+#endif
+}
+
+- (bool)macOS {
+	return !self.iOS;
 }
 
 

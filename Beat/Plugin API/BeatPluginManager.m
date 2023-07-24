@@ -20,7 +20,6 @@
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPluginManager.h"
 #import "BeatAppDelegate.h"
-#import "BeatCheckboxCell.h"
 #import "UnzipKit.h"
 #import "BeatPluginLibrary.h"
 #import "NSString+VersionNumber.h"
@@ -90,12 +89,7 @@
 
 @interface BeatPluginManager ()
 
-@property (nonatomic, weak) IBOutlet NSMenu *pluginMenu;
-@property (nonatomic, weak) IBOutlet NSMenu *exportMenu;
-@property (nonatomic, weak) IBOutlet NSMenu *importMenu;
-
 @property (nonatomic) NSDictionary *plugins;
-@property (nonatomic) NSURL *pluginURL;
 @property (nonatomic) NSMutableSet *incompleteDownloads;
 @property (nonatomic) NSDictionary *externalLibrary;
 @end
@@ -131,7 +125,7 @@ static BeatPluginManager *sharedManager;
 	if (sharedManager) return sharedManager;
 		
 	if (self) {
-		_pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
+		_pluginURL = [self appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];		
 	}
 	
@@ -139,27 +133,10 @@ static BeatPluginManager *sharedManager;
 }
 
 
-#pragma mark - UI Side (menu items)
+#pragma mark -Run plugins
 
-- (void)setupPluginMenus {
-	// Populate plugin menus at load
-	[self setupPluginMenu:_pluginMenu];
-	[self setupPluginMenu:_exportMenu];
-	[self setupPluginMenu:_importMenu];
-	 
-	[self checkForUpdates];
-}
-
--(void)menuWillOpen:(NSMenu *)menu {
-	[self setupPluginMenu:menu];
-}
-
--(void)setupPluginMenu:(NSMenu*)menu {
-	BeatPluginType type = ToolPlugin;
-	if (menu == _exportMenu) type = ExportPlugin;
-	else if (menu == _importMenu) type = ImportPlugin;
-	
-	[self pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
+- (void)runPlugin:(id)plugin {
+	// Faux placeholder method
 }
 
 - (IBAction)runStandalonePlugin:(id)sender {
@@ -206,11 +183,7 @@ static BeatPluginManager *sharedManager;
 	}];
 }
 
-
-- (void)runPlugin:(id)plugin {
-	// Faux placeholder method
-}
-
+/*
 - (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type {
 	// Remove existing plugin menu items
 	NSArray *menuItems = parentMenu.itemArray.copy;
@@ -257,13 +230,7 @@ static BeatPluginManager *sharedManager;
 		if (plugin.type == ImportPlugin || plugin.type == ExportPlugin) {
 			item.target = self;
 			item.action = @selector(runStandalonePlugin:);
-		}
-		else {
-			/*
-			id<BeatScriptingDelegate> document = NSDocumentController.sharedDocumentController.currentDocument;
-			if (document != nil) item.target = document;
-			 */
-			
+		} else {
 			item.target = nil;
 			item.action = @selector(runPlugin:);
 		}
@@ -275,16 +242,32 @@ static BeatPluginManager *sharedManager;
 		[parentMenu addItem:item];
 	}
 }
+*/
 
-- (IBAction)openPluginFolderAction:(id)sender {
-	[self openPluginFolder];
-}
-- (void)openPluginFolder {
-	NSURL *url = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
-	[NSWorkspace.sharedWorkspace openURL:url];
-}
+#pragma mark - Plugin folder access
+
 - (NSURL*)pluginFolderURL {
-	return [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
+	return [self appDataPath:PLUGIN_FOLDER];
+}
+
+- (NSURL*)appDataPath:(NSString*)subPath {
+	NSString* pathComponent = @"Beat";
+	
+	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
+	
+	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																		  NSUserDomainMask,
+																		  YES);
+	NSString* appSupportDir = [searchPaths firstObject];
+	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	if (![fileManager fileExistsAtPath:appSupportDir]) {
+		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+	
+	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
 }
 
 
@@ -295,7 +278,7 @@ static BeatPluginManager *sharedManager;
 	
 	[self refreshAvailablePlugins];
 	[self getPluginLibraryWithCallback:^{
-		NSMutableArray *availableUpdates = [NSMutableArray array];
+		NSMutableArray *availableUpdates = NSMutableArray.new;
 		
 		for (NSString *name in self.availablePlugins.allKeys) {
 			BeatPluginInfo *plugin = self.availablePlugins[name];
@@ -331,7 +314,7 @@ static BeatPluginManager *sharedManager;
 
 #pragma mark - Disabling and enabling plugins
 
-- (NSArray*)disabledPlugins {
+- (NSArray<NSString*>*)disabledPlugins {
 	return [NSUserDefaults.standardUserDefaults valueForKey:DISABLED_KEY];
 }
 - (void)disablePlugin:(NSString*)plugin {
@@ -381,66 +364,13 @@ static BeatPluginManager *sharedManager;
 	}
 }
 
-- (bool)isNewerVersion:(NSString*)current old:(NSString*)old {
-	NSArray* newComp = [current componentsSeparatedByString:@"."];
-	NSArray* oldComp = [old componentsSeparatedByString:@"."];
-
-	NSInteger pos = 0;
-
-	while (newComp.count > pos || oldComp.count > pos) {
-		NSInteger v1 = newComp.count > pos ? [[newComp objectAtIndex:pos] integerValue] : 0;
-		NSInteger v2 = oldComp.count > pos ? [[oldComp objectAtIndex:pos] integerValue] : 0;
-		
-		if (v1 < v2) {
-			return NO;
-		}
-		else if (v1 > v2) {
-			return YES;
-		}
-		pos++;
-	}
-	
-	return NO;
-}
-
-- (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion {
-	return [currentVersion isNewerVersionThan:requiredVersion];
-	/*
-	if ([requiredVersion compare:currentVersion options:NSNumericSearch] == NSOrderedDescending) {
-	  // actualVersion is lower than the requiredVersion
-		return NO;
-	} else return YES;
-	*/
-}
-- (bool)isCompatible:(NSString*)requiredVersion {
-	NSString * currentVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];
-	currentVersion = currentVersion.shortenedVersionNumberString;
-	return [self isCompatible:requiredVersion current:currentVersion];
-}
-
-/*
-- (bool)isNewerVersion:(NSString*)current old:(NSString*)old {
-	NSString *pad = @"0000";
-	
-	current = [current stringByReplacingOccurrencesOfString:@"." withString:@""];
-	old = [old stringByReplacingOccurrencesOfString:@"." withString:@""];
-	
-	current = [pad stringByReplacingCharactersInRange:(NSRange){0, current.length} withString:current];
-	old = [pad stringByReplacingCharactersInRange:(NSRange){0, old.length} withString:old];
-		
-	NSInteger currentVersion = [current integerValue];
-	NSInteger oldVersion = [old integerValue];
-	
-	if (currentVersion > oldVersion) return YES;
-	else return NO;
-}
- */
-
-- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock {
+/// Gets the plugin library JSON from GitHub repo. The JSON is stored into `.externalLibrary`.
+- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock
+{
 	NSString *urlAsString = PLUGIN_LIBRARY_URL;
 
 	// Download external JSON data
-	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration]];
+	NSURLSession *session = [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration.ephemeralSessionConfiguration];
 	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
 			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 				
@@ -449,7 +379,7 @@ static BeatPluginManager *sharedManager;
 		
 		// Read JSON data and init the local dictionary
 		NSDictionary *pluginData = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-		NSMutableDictionary *plugins = [NSMutableDictionary dictionary];
+		NSMutableDictionary *plugins = NSMutableDictionary.new;
 		
 		// Iterate through remote plugin data
 		for (NSString *pluginName in pluginData.allKeys) {
@@ -488,8 +418,12 @@ static BeatPluginManager *sharedManager;
 	}] resume];
 }
 
-- (void)loadPlugins {
-	NSMutableArray *plugins = [NSMutableArray array];
+/// Loads the local plugins.
+/// A plugin can be either a single file (`.js` or `.beatPlugin`) *or* a folder which contains one of these:
+/// `FolderName.js`, `FolderName.beatPlugin`, `plugin.js`, `plugin.beatPlugin`
+- (void)loadPlugins
+{
+	NSMutableArray *plugins = NSMutableArray.new;
 	
 	// Plugins from inside the bundle
 	NSArray *bundledPlugins = [NSBundle.mainBundle URLsForResourcesWithExtension:@"beatPlugin" subdirectory:nil];
@@ -502,34 +436,42 @@ static BeatPluginManager *sharedManager;
 	NSArray *files = [fileManager contentsOfDirectoryAtPath:_pluginURL.path error:nil];
 	
 	for (NSString *file in files) {
-		if (![file.pathExtension isEqualToString:@"beatPlugin"]) continue;
+		//if (![file.pathExtension isEqualToString:@"beatPlugin"]) continue;
 		
-		BOOL folderPlugin;
+		BOOL folder;
+		NSString* extension = file.pathExtension;
 		
 		NSString *filepath = [_pluginURL.path stringByAppendingPathComponent:file];
-		if ([fileManager fileExistsAtPath:filepath isDirectory:&folderPlugin]) {
-			if (!folderPlugin) [plugins addObject:filepath];
-			else {
+		if ([fileManager fileExistsAtPath:filepath isDirectory:&folder]) {
+			
+			if (!folder) {
+				// Extension has to be either .js or .beatPlugin
+				if (![extension isEqualToString:@"beatPlugin"] && ![extension isEqualToString:@"js"]) continue;
+				
+				[plugins addObject:filepath];
+			} else {
 				// If it's a folder-type plugin, we need to check its contents for a file of the same name:
 				// SamplePlugin.beatPlugin/SamplePlugin.beatPlugin
-				NSString *pluginName = filepath.lastPathComponent;
-				NSString *fullpath = [filepath stringByAppendingPathComponent:pluginName];
+				NSString* pluginPath = [self pluginPathForPath:filepath];
 				
-				if ([fileManager fileExistsAtPath:fullpath]) [plugins addObject:filepath];
+				if (pluginPath != nil) [plugins addObject:filepath];
 			}
 		}
 	}
 	
-	NSMutableDictionary *pluginsWithNames = [NSMutableDictionary dictionary];
+	NSMutableDictionary *pluginsWithNames = NSMutableDictionary.new;
 	for (NSString *plugin in plugins) {
 		[pluginsWithNames setValue:plugin forKey:plugin.lastPathComponent.stringByDeletingPathExtension];
 	}
 	_plugins = pluginsWithNames;
 }
-- (NSArray*)pluginNames {
+
+/// Returns an array of plugin names
+- (NSArray<NSString*>*)pluginNames {
 	return [self.plugins.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 }
 
+/// Returns plugin data, which means files and the actual script
 - (BeatPluginData*)pluginWithName:(NSString*)name {
 	BeatPluginData *plugin = [[BeatPluginData alloc] init];
 	plugin.name = name;
@@ -539,69 +481,55 @@ static BeatPluginManager *sharedManager;
 	[self loadPlugins];
 	NSString *filename = _plugins[name];
 	
-	// Check if it's a plugin folder
-	BOOL isDir = NO;
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && isDir) {
-		// If it's a plugin folder, we have to append the plugin name AGAIN to the path
-		NSString *path = [filename stringByDeletingLastPathComponent];
-		NSString *file = [NSString stringWithFormat:@"%@/%@", filename.lastPathComponent, filename.lastPathComponent];
+	NSFileManager* fileManager = NSFileManager.defaultManager;
+	
+	if ([self isFolderPlugin:name]) {
+		// Check that the folder actually has a plugin file
+		NSString* pluginPath = [self pluginPathForPath:filename];
+		if (pluginPath == nil) return nil;
 		
-		path = [path stringByAppendingPathComponent:file];
-		plugin.script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+		plugin.script = [NSString stringWithContentsOfFile:pluginPath encoding:NSUTF8StringEncoding error:nil];
 		
 		// Also, read the folder contents and allow file access to the plugin
-		NSFileManager *fileManager = [NSFileManager defaultManager];
-		NSArray *files = [fileManager contentsOfDirectoryAtPath:path.stringByDeletingLastPathComponent error:nil];
+		NSArray *files = [fileManager contentsOfDirectoryAtPath:pluginPath.stringByDeletingLastPathComponent error:nil];
 		NSMutableArray *pluginFiles = [NSMutableArray array];
 		
 		for (NSString* file in files) {
 			// Don't include the plugin script
-			if ([file.lastPathComponent isEqualTo:name]) continue;;
+			if ([file.lastPathComponent isEqualTo:pluginPath.lastPathComponent]) continue;
 			[pluginFiles addObject:file];
 		}
+		
 		plugin.files = [NSArray arrayWithArray:pluginFiles];
 	} else {
-		// Get script
+		// Get script for a single file
 		plugin.script = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil];
 	}
 	
-	// Make the script a self-running function
+	// Make the script a self-running function. This allows us to avoid some namespacing issues in JS.
 	plugin.script = [NSString stringWithFormat:@"(function(){ %@ })();", plugin.script];
 
 	return plugin;
 }
 
-- (NSString*)pathForPlugin:(NSString*)pluginName {
+- (NSString*)pathForPlugin:(NSString*)pluginName
+{
 	return _plugins[pluginName];
 }
 
-- (NSString*)scriptForPlugin:(NSString*)pluginName {
-	NSString *filename = _plugins[pluginName];
-	if (!filename) return @"";
-	
-	NSString *script = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil];
-	// Make it a self-running function
-	script = [NSString stringWithFormat:@"(function(){ %@ })();", script];
-	
-	return script;
-}
-
-- (bool)isFolderPlugin:(NSString*)pluginName {
-	BOOL isDir = NO;
-	NSString *filename = _plugins[pluginName];
-	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && isDir) return YES;
-	else return NO;
-}
-
-- (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin {
+/// Returns plugin info – name, version, copyright etc.
+- (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin
+{
 	// Info for LOCAL (installed) plugins
 	BeatPluginInfo *pluginInfo = BeatPluginInfo.alloc.init;
 	
 	// Set correct path for folder and non-folder plugins
 	NSString *path;
 	if (![self isFolderPlugin:plugin]) path = _plugins[plugin];
-	else path = [[(NSString*)_plugins[plugin] stringByAppendingPathComponent:plugin] stringByAppendingPathExtension:@"beatPlugin"];
+	else path = [self pluginPathForPath:_plugins[plugin]];
+	
+	// No plugin found in the folder, or something else went wrong.
+	if (path == nil) return pluginInfo;
 
 	// Get plugin script contents
 	NSError *error;
@@ -652,19 +580,6 @@ static BeatPluginManager *sharedManager;
 		
 		NSString *image = [[(RxMatchGroup*)matchImage.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 		pluginInfo.imagePath = image;
-		
-		/*
-		NSError *error;
-		NSString *imagePath = [(NSString*)_plugins[plugin] stringByAppendingPathComponent:image];
-		NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:imagePath] options:0 error:&error];
-		
-		if (!error) {
-			// Create base64 representation
-			NSString *imgData = [NSString stringWithFormat:@"data:image/png;base64, %@", [data base64EncodedStringWithOptions:0]];
-			pluginInfo.image = imgData;
-		}
-		*/
-		
 	}
 	
 	if (matchType) {
@@ -680,38 +595,75 @@ static BeatPluginManager *sharedManager;
 	
 	return pluginInfo;
 }
+
+/// Returns the actual file path for a folder plugin.
+- (NSString*)pluginPathForPath:(NSString*)filepath
+{
+	NSString *pluginName = filepath.lastPathComponent;
+	NSArray* possiblePlugins = @[
+		[filepath stringByAppendingPathComponent:pluginName],
+		[filepath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.beatPlugin", filepath.lastPathComponent.stringByDeletingPathExtension]],
+		[filepath stringByAppendingPathComponent:@"plugin.js"],
+		[filepath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.js", filepath.lastPathComponent.stringByDeletingPathExtension]],
+	];
+	
+	NSFileManager* fileManager = NSFileManager.defaultManager;
+	
+	for (NSString* path in possiblePlugins) {
+		if ([fileManager fileExistsAtPath:path]) {
+			return path;
+		}
+	}
+	
+	return nil;
+}
+
+- (bool)isFolderPlugin:(NSString*)pluginName
+{
+	BOOL isDir = NO;
+	NSString *filename = _plugins[pluginName];
+	
+	if ([NSFileManager.defaultManager fileExistsAtPath:filename isDirectory:&isDir] && isDir) return YES;
+	else return NO;
+}
  
+#pragma mark - Plugin version checking
 
-#pragma mark - Data Source
+- (bool)isNewerVersion:(NSString*)current old:(NSString*)old {
+	NSArray* newComp = [current componentsSeparatedByString:@"."];
+	NSArray* oldComp = [old componentsSeparatedByString:@"."];
 
-- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
-	if (!item) return [self availablePluginNames].count;
-	return 0;
-}
+	NSInteger pos = 0;
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
-	return [self availablePluginNames][index];
-}
-
--(BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
+	while (newComp.count > pos || oldComp.count > pos) {
+		NSInteger v1 = newComp.count > pos ? [[newComp objectAtIndex:pos] integerValue] : 0;
+		NSInteger v2 = oldComp.count > pos ? [[oldComp objectAtIndex:pos] integerValue] : 0;
+		
+		if (v1 < v2) {
+			return NO;
+		}
+		else if (v1 > v2) {
+			return YES;
+		}
+		pos++;
+	}
+	
 	return NO;
 }
 
-- (NSArray*)availablePluginNames {
+- (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion {
+	return [currentVersion isNewerVersionThan:requiredVersion];
+}
+
+- (bool)isCompatible:(NSString*)requiredVersion {
+	NSString * currentVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];
+	currentVersion = currentVersion.shortenedVersionNumberString;
+	return [self isCompatible:requiredVersion current:currentVersion];
+}
+ 
+- (NSArray*)availablePluginNames
+{
 	return [self.availablePlugins.allKeys sortedArrayUsingSelector:@selector(compare:)];
-}
-
-#pragma mark - Outlineview delegate
-
--(BOOL)outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item {
-	return YES;
-}
-
--(BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
-	return NO;
-}
--(BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-	return YES;
 }
 
 

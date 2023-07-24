@@ -191,14 +191,15 @@
 }
 
 
-
 #pragma mark - Gang / detach from document window
 
+#if !TARGET_OS_IOS
 - (void)gangWithDocumentWindow {
 	[self.host gangWithDocumentWindow:self];
 }
 - (void)detachFromDocumentWindow {
 	[self.host detachFromDocumentWindow:self];
 }
+#endif
 
 @end

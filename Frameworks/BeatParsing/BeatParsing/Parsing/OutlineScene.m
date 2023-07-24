@@ -70,7 +70,7 @@
     NSMutableArray <NSDictionary*>*synopsis = [NSMutableArray arrayWithCapacity:_synopsis.count];
     for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
     
-    return @{
+    NSDictionary* json = @{
         // String values have to be guarded so we don't try to put nil into NSDictionary
         @"string": (self.string != nil) ? self.string.copy : @"",
         @"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
@@ -88,7 +88,9 @@
         @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
         @"line": self.line.forSerialization,
         @"notes": [self notesAsJSON]
-    };
+    };    
+    
+    return json;
 }
 
 - (NSArray*)serializedBeats

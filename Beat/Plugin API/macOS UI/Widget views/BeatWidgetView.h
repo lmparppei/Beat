@@ -11,11 +11,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#if TARGET_OS_IOS
+@interface BeatWidgetView : UIView
+#else
 @interface BeatWidgetView : NSView
 - (void)addWidget:(BeatPluginUIView*)widget;
 - (void)removeWidget:(BeatPluginUIView*)widget;
 - (void)repositionWidgets;
 - (void)show:(BeatPluginUIView*)widget;
+#endif
 @end
 
 

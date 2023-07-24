@@ -54,11 +54,51 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		
 		self.editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
 		self.editorDelegate.scroll(to: scene.line)
-		
-		self.selectRow(at: nil, animated: true, scrollPosition: .middle)
 	}
 	
+	/// Updates current scene
+	var previousLine:Line?
+	@objc func update() {
+		// Do nothing if the line hasn't changed
+		if editorDelegate.currentLine() == previousLine { return }
+		
+		for i in 0..<self.numberOfRows(inSection: 0) {
+			guard let c = self.cellForRow(at: IndexPath(row: i, section: 0)) as? BeatOutlineViewCell else { continue }
+			if NSLocationInRange(self.editorDelegate.selectedRange.location, c.representedScene?.range() ?? NSMakeRange(NSNotFound, 0)) {
+				if !c.isSelected { c.setSelected(true, animated: true) }
+			} else {
+				c.setSelected(false, animated: true)
+			}
+		}
+				
+	}
 }
+
+class BeatOutlineViewCell:UITableViewCell {
+	@IBOutlet var textField:UILabel?
+	weak var representedScene:OutlineScene?
+	
+	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+		super.init(style: style, reuseIdentifier: reuseIdentifier)
+		setup()
+	}
+	
+	required init?(coder: NSCoder) {
+		super.init(coder: coder)
+		self.backgroundColor = .black
+		setup()
+	}
+	
+	func setup() {
+		self.backgroundColor = .black
+
+		let selectionView = UIView()
+		selectionView.backgroundColor = ThemeManager.shared().outlineHighlight()
+		self.selectedBackgroundView = selectionView
+
+	}
+}
+
 /*
 class BeatiOSOutlineCell: UITableViewCell {
 	@IBOutlet var label:UILabel?

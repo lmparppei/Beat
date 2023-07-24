@@ -182,9 +182,6 @@
                                             </connections>
                                         </menuItem>
                                     </items>
-                                    <connections>
-                                        <outlet property="delegate" destination="MpY-Uw-HUk" id="a2G-SM-8im"/>
-                                    </connections>
                                 </menu>
                             </menuItem>
                             <menuItem title="Export" id="RGT-hK-aoo">
@@ -210,9 +207,6 @@
                                             </connections>
                                         </menuItem>
                                     </items>
-                                    <connections>
-                                        <outlet property="delegate" destination="MpY-Uw-HUk" id="dlS-3n-52o"/>
-                                    </connections>
                                 </menu>
                                 <connections>
                                     <action selector="export:" target="-1" id="TfW-38-X9Y"/>
@@ -1035,9 +1029,6 @@ DQ
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="rAa-we-oVz"/>
                         </items>
-                        <connections>
-                            <outlet property="delegate" destination="MpY-Uw-HUk" id="NdN-Ya-UPR"/>
-                        </connections>
                     </menu>
                 </menuItem>
                 <menuItem title="Window" id="aUF-d1-5bR">
@@ -1174,21 +1165,14 @@ DQ
             <point key="canvasLocation" x="82" y="-6"/>
         </menu>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-        <customObject id="MpY-Uw-HUk" customClass="BeatPluginManager">
-            <connections>
-                <outlet property="exportMenu" destination="o7H-J0-CK2" id="DDK-o7-QFc"/>
-                <outlet property="importMenu" destination="xR8-x2-hNB" id="4b8-l6-ETo"/>
-                <outlet property="pluginMenu" destination="T42-tx-tAb" id="yxt-VN-DfL"/>
-            </connections>
-        </customObject>
         <customObject id="vEX-2F-hcj" customClass="BeatAppDelegate">
             <connections>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
-                <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
+                <outlet property="pluginMenuManager" destination="c8Z-dk-uIi" id="gUa-of-xAI"/>
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
                 <outlet property="spellCheckingUtils" destination="Ibp-oA-JIB" id="dE7-Pz-M2x"/>
                 <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
@@ -1201,6 +1185,13 @@ DQ
         </customObject>
         <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
         <userDefaultsController representsSharedInstance="YES" id="62Y-BT-kav"/>
+        <customObject id="c8Z-dk-uIi" customClass="BeatPluginMenuManager" customModule="Beat" customModuleProvider="target">
+            <connections>
+                <outlet property="exportMenu" destination="o7H-J0-CK2" id="TBJ-xa-ahY"/>
+                <outlet property="importMenu" destination="xR8-x2-hNB" id="ndy-rR-CrP"/>
+                <outlet property="pluginMenu" destination="T42-tx-tAb" id="ZmM-TD-kN8"/>
+            </connections>
+        </customObject>
     </objects>
     <resources>
         <image name="Color_Blue" width="15" height="15"/>

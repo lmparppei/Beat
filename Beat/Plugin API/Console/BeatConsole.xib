@@ -18,7 +18,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES" utility="YES" HUD="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="474" height="158"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="hOg-eo-caU">
                 <rect key="frame" x="0.0" y="0.0" width="474" height="158"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -86,7 +86,7 @@ Learn more about plugin API on the Beat website.
                             <action selector="runCommand:" target="-2" id="BhB-oi-sdG"/>
                         </connections>
                     </textField>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" id="lz6-88-Art">
+                    <box verticalHuggingPriority="750" boxType="separator" id="lz6-88-Art">
                         <rect key="frame" x="0.0" y="24" width="474" height="5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     </box>

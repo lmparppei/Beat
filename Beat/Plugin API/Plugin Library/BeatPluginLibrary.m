@@ -10,11 +10,12 @@
 #import "BeatPluginManager.h"
 #import "BeatCheckboxCell.h"
 #import <BeatCore/BeatColors.h>
-#import "BeatAppDelegate.h"
+#import "Beat-Swift.h"
 
 @interface BeatPluginLibrary ()
 @property (nonatomic) BeatPluginManager *pluginManager;
 @property (nonatomic, weak) IBOutlet WKWebView *webview;
+@property (nonatomic) BeatPluginLibraryDataSource* dataSource;
 @end
 
 @implementation BeatPluginLibrary
@@ -22,22 +23,24 @@
 - (instancetype)init {
 	self = [super initWithWindowNibName:@"BeatPluginLibrary" owner:self];
 	
-	if (self) {
-		self.pluginManager = BeatPluginManager.sharedManager;
-		self.pluginView.dataSource = self.pluginManager;
-		self.pluginView.delegate = self;
-	}
+	if (self) [self setupPluginView];
 		
 	return self;
 }
 - (instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
 	
-	self.pluginManager = BeatPluginManager.sharedManager;
-	self.pluginView.dataSource = BeatPluginManager.sharedManager;
-	self.pluginView.delegate = self;
+	if (self) [self setupPluginView];
 	
 	return self;
+}
+- (void)setupPluginView
+{
+	self.pluginManager = BeatPluginManager.sharedManager;
+	
+	self.dataSource = BeatPluginLibraryDataSource.new;
+	self.pluginView.dataSource = self.dataSource;
+	self.pluginView.delegate = self;
 }
 
 - (void)windowDidLoad {
@@ -62,13 +65,12 @@
 	[self showWindow:self.window];
 	[self.window makeKeyAndOrderFront:self];
 	
-	self.pluginView.dataSource = self.pluginManager;
+	self.pluginView.dataSource = self.dataSource;
 	
 	[self.pluginManager refreshAvailablePlugins];
 	
 	[self.pluginManager getPluginLibraryWithCallback:^{
 		// Reload again when external data has been loaded
-
 		[self.pluginView reloadData];
 	}];
 	
@@ -120,8 +122,11 @@
 
 #pragma mark - Open plugin folder
 
-- (IBAction)openPluginFolder:(id)sender {
-	[self.pluginManager openPluginFolder];
+- (IBAction)openPluginFolderAction:(id)sender {
+	[self openPluginFolder];
+}
+- (void)openPluginFolder {
+	[NSWorkspace.sharedWorkspace openURL:self.pluginManager.pluginURL];
 }
 
 #pragma mark - Outline View delegation

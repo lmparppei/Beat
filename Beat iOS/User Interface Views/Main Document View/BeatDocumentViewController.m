@@ -849,6 +849,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	[self.textView updateAssistingViews];
+	if (self.outlineView.visible) [self.outlineView update];
 }
 
 /// Forces text reformat and editor view updates

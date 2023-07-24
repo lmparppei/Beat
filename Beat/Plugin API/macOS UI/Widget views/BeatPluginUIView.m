@@ -27,6 +27,11 @@
 	return self;
 }
 
+- (BOOL)isFlipped {
+	return YES;
+}
+
+#if !TARGET_OS_IOS
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
 	@try {
@@ -43,10 +48,6 @@
 	[self.animator setFrame:frame];
 	
 	[(BeatWidgetView*)self.superview repositionWidgets];
-}
-
-- (BOOL)isFlipped {
-	return YES;
 }
 
 - (BeatPluginUIButton*)addButton:(NSString*)title action:(JSValue*)action frame:(NSRect)frame {
@@ -84,6 +85,7 @@
 - (void)setHtml:(NSString*)html {
 	[_webView loadHTMLString:html baseURL:nil];
 }
+
 - (void)remove {
 	_webView = nil;
 	_drawingCall = nil;
@@ -155,5 +157,18 @@
 		[circlePath stroke];
 	}
 }
+
+#else
+
+// Placeholder methods for iOS
+
+- (void)remove {
+	
+}
+- (void)show {
+	
+}
+
+#endif
 
 @end

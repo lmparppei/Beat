@@ -290,7 +290,7 @@
 	NSInteger cardsPerRow = 3;
 
 	// Orientation is ALWAYS LANDSCAPE
-	NSInteger maxRows = floor((printInfo.imageablePageBounds.size.width - 10) / 165);
+	NSInteger maxRows = floor(printInfo.imageablePageBounds.size.width / 165);
 	
 	NSInteger cardsOnRow = 0;
 	NSInteger rows = 0;

@@ -13,8 +13,8 @@
  */
 
 #import "BeatWidgetView.h"
-
 #define MARGIN 5.0
+
 
 @interface BeatWidgetView ()
 @property (nonatomic) NSMutableArray<BeatPluginUIView*> *widgets;
@@ -114,6 +114,7 @@
 }
 
 @end
+
 /*
  
  We'll be alright, stay here some time

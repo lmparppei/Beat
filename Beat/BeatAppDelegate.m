@@ -43,7 +43,7 @@
 @interface BeatAppDelegate () <BeatThemeDelegate>
 @property (nonatomic) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (nonatomic) IBOutlet NSMenuItem *menuManual;
-@property (nonatomic) IBOutlet BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
+@property (nonatomic) IBOutlet BeatPluginMenuManager *pluginMenuManager; // Set main ownership to avoid leaks
 
 @property (nonatomic) BeatNotifications *notifications;
 
@@ -124,7 +124,7 @@
 	[self showLaunchScreen];
 	
 	// Populate plugin menu
-	[self.pluginManager setupPluginMenus];
+	[self.pluginMenuManager setupPluginMenus];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {

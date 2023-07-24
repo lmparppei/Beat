@@ -6,7 +6,7 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,24 +42,20 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSArray* files;
 @end
 
-@interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate, NSMenuDelegate>
-@property (nonatomic, strong) NSMenuItem *menuItem;
-@property (nonatomic, strong) NSMenuItem *exportMenuItem;
-@property (nonatomic) NSMenuItem *importMenuItem;
+@interface BeatPluginManager : NSObject
 @property (nonatomic) NSMutableDictionary<NSString*, id> * availablePlugins;
+@property (nonatomic) NSURL *pluginURL;
 
 + (BeatPluginManager*)sharedManager;
-- (void)setupPluginMenus;
 
-- (NSArray*)pluginNames;
-- (NSString*)scriptForPlugin:(NSString*)pluginName;
+- (NSArray<NSString*>*)pluginNames;
 - (BeatPluginData*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type;
-- (void)openPluginFolder;
 - (NSURL*)pluginFolderURL;
 
-- (NSArray*)disabledPlugins;
+- (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin;
+
+- (NSArray<NSString*>*)disabledPlugins;
 - (void)disablePlugin:(NSString*)plugin;
 - (void)enablePlugin:(NSString*)plugin;
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;

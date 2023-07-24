@@ -169,6 +169,9 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (void)onDocumentSaved:(JSValue*)updateMethod;
 - (void)onEscape:(JSValue*)updateMethod;
 
+// Create a new line element
+JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
+
 
 #pragma mark General editor and app access
 /// Creates a new document with given string
@@ -177,12 +180,12 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 /// Creates a new `Document` object without actually opening the window
 - (id)newDocumentObject:(NSString*)string;
 
+- (void)parse;
+
 /// Current screen dimensions
 - (NSArray*)screen;
 
 	#if !TARGET_OS_IOS
-	/// Returns a print info object (macOS only)
-	- (NSPrintInfo*)printInfo;
 	/// Window dimensions
 	- (NSArray*)windowFrame;
 	/// Alias for windowFrame
@@ -227,7 +230,6 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (NSString*)fileToString:(NSString*)path;
 /// Read a PDF file into string variable
 - (NSString*)pdfToString:(NSString*)path;
-- (void)parse;
 /// Plugin bundle asset as string
 - (NSString*)assetAsString:(NSString*)filename;
 /// Asset from inside the app container
@@ -242,6 +244,7 @@ JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)cal
 /// Displays a save dialog
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
 
+ 
 #pragma mark Tagging
 /// Returns all tags in the scene
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
@@ -276,13 +279,15 @@ JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)le
 - (void)reformat:(Line*)line;
 
 
-#pragma mark Widgets
-/// Add widget into sidebar
-- (BeatPluginUIView*)widget:(CGFloat)height;
-JSExportAs(button, - (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame);
-JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame);
-JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
-JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
+#pragma mark Widgets (macOS only)
+#if !TARGET_OS_IOS
+	/// Add widget into sidebar
+	- (BeatPluginUIView*)widget:(CGFloat)height;
+	JSExportAs(button, - (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame);
+	JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame);
+	JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
+	JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
+#endif
 
 
 #pragma mark Speak synthesizer
@@ -308,6 +313,7 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
+JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(id)scene);
 
 
 #pragma mark Modal windows
@@ -324,10 +330,11 @@ JSExportAs(dropdownPrompt, - (NSString*)dropdownPrompt:(NSString*)prompt withInf
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 
 #pragma mark Displaying HTML content
-JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
-JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(id)scene);
-JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+#if !TARGET_OS_IOS
+	JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+	JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+	JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+#endif
 
 
 #pragma mark Text highlighting
@@ -342,16 +349,14 @@ JSExportAs(importHandler, - (void)importHandler:(NSArray*)extensions callback:(J
 JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback);
 
 
-// Create a new line element
-JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
-
-#pragma mark Menu items
-
-- (NSMenuItem*)separatorMenuItem;
-- (void)refreshMenus;
-JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
-JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
-JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
+#pragma mark Menu items (macOS only)
+#if !TARGET_OS_IOS
+	- (NSMenuItem*)separatorMenuItem;
+	- (void)refreshMenus;
+	JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
+	JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
+	JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
+#endif
 @end
 
 
@@ -364,6 +369,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
+@property (nonatomic, readonly) NSPrintInfo *printInfo;
 - (void)createPreviewAt:(NSInteger)location;
 - (void)resetPreview;
 - (void)addWidget:(id)widget;
@@ -374,8 +380,8 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 
 @property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, readonly) BeatTagging *tagging;
-@property (nonatomic, readonly) NSPrintInfo *printInfo;
 @property (nonatomic, readonly) Line* currentLine;
+@property (nonatomic, readonly) BeatTextIO* textActions;
 
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
@@ -397,12 +403,10 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (id)document;
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
+
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index;
-- (void)removeRange:(NSRange)range;
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 - (void)setColor:(NSString *)color forLine:(Line *)line;
 
@@ -461,6 +465,8 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)documentWasSaved;
 - (void)escapePressed;
 
+- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments;
+
 /// Custom error handler
 -(void)replaceErrorHandler:(void (^)(JSValue* exception))block;
 
@@ -471,8 +477,10 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
 - (NSArray*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
 
+#if !TARGET_OS_IOS
 - (void)showAllWindows;
 - (void)hideAllWindows;
+#endif
 
 - (void)restart;
 

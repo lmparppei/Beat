@@ -15,14 +15,13 @@ import Foundation
 	@objc init(delegate:BeatEditorDelegate, tableView:UITableView) {
 		self.delegate = delegate
 		self.dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
-			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene")
-			cell?.backgroundColor = UIColor.black
+			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 			
 			let scene = delegate.parser.outline[indexPath.row] as! OutlineScene
 			let string = OutlineViewItem.withScene(scene, currentScene: OutlineScene(), sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: true)
 			
-			
-			cell?.textLabel?.attributedText = string
+			cell.representedScene = scene
+			cell.textLabel?.attributedText = string
 			
 			return cell
 		})
@@ -45,10 +44,6 @@ import Foundation
 		
 		self.dataSource.apply(snapshot,animatingDifferences: false)
 	}
-}
-
-class BeatOutlineViewCell:UITableViewCell {
-	@IBOutlet var textField:UILabel?
 }
 
 class OutlineDataItem:Hashable {

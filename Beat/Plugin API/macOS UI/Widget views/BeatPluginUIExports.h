@@ -9,6 +9,12 @@
 #import <Cocoa/Cocoa.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
+#if TARGET_OS_IOS
+#define BXView UIView
+#else
+#define BXView NSView
+#endif
+
 @protocol BeatPluginUIExports <JSExport>
 
 @property (nonatomic) NSRect frame;

@@ -6,7 +6,12 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#if TARGET_OS_IOS
+#import <UIKit/UIKit.h>
+#else
 #import <Cocoa/Cocoa.h>
+#endif
+
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <Webkit/Webkit.h>
 #import "BeatPluginUIButton.h"
@@ -14,8 +19,9 @@
 
 @protocol BeatPluginUIViewExports <JSExport>
 @property (nonatomic, readonly) NSRect frame;
-
 - (void)remove;
+
+#if !TARGET_OS_IOS
 - (void)onDraw:(JSValue*)value;
 - (void)addElement:(NSView*)view;
 - (void)setHeight:(CGFloat)height;
@@ -25,11 +31,11 @@ JSExportAs(htmlView, - (void)addHtmlView:(NSString*)html);
 JSExportAs(rectangle, - (void)rectangle:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height fillColor:(NSString*)color borderColor:(NSString*)border stroke:(CGFloat)strokeWidth);
 JSExportAs(roundedRectangle, - (void)roundedRectangle:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height radius:(CGFloat)radius fillColor:(NSString*)color borderColor:(NSString*)border stroke:(CGFloat)strokeWidth);
 JSExportAs(circle, - (void)circle:(CGFloat)x y:(CGFloat)y radius:(CGFloat)radius fillColor:(NSString*)color borderColor:(NSString*)border stroke:(CGFloat)strokeWidth);
-
+#endif
 
 @end
 
-@interface BeatPluginUIView : NSView <BeatPluginUIViewExports, BeatPluginUIExports, WKScriptMessageHandler>
+@interface BeatPluginUIView : BXView <BeatPluginUIViewExports, BeatPluginUIExports, WKScriptMessageHandler>
 @property (nonatomic) WKWebView *webView;
 - (instancetype)initWithHeight:(CGFloat)height;
 - (void)remove;
