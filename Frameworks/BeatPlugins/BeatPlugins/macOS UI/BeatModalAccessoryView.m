@@ -7,7 +7,6 @@
 //
 
 #import "BeatModalAccessoryView.h"
-#import "BeatAppDelegate.h"
 #import "BeatConsole.h"
 
 #define WIDTH 350

@@ -9,29 +9,29 @@
 import AppKit
 import JavaScriptCore
 
-@objc protocol BeatPluginControlMenuExports:JSExport {
+@objc public protocol BeatPluginControlMenuExports:JSExport {
 	@objc func addItem(_ newItem: NSMenuItem)
 	@objc func removeItem(_ item: NSMenuItem)
 }
-@objc class BeatPluginControlMenu:NSMenu, BeatPluginControlMenuExports {
-	@objc override func addItem(_ newItem: NSMenuItem) {
+@objc public class BeatPluginControlMenu:NSMenu, BeatPluginControlMenuExports {
+	@objc override public func addItem(_ newItem: NSMenuItem) {
 		super.addItem(newItem)
 	}
-	@objc override func removeItem(_ item: NSMenuItem) {
+	@objc override public func removeItem(_ item: NSMenuItem) {
 		super.removeItem(item)
 	}
 }
 
-@objc protocol BeatPluginControlMenuItemExports:JSExport {
+@objc public protocol BeatPluginControlMenuItemExports:JSExport {
 	@objc var on:Bool { get set }
 	@objc var submenu:NSMenu? { get set }
 }
 
-class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
+public class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
 	
 	var method:JSValue
 	
-	@objc var on:Bool {
+	@objc public var on:Bool {
 		get {
 			if self.state == .on { return true } else { return false }
 		}
@@ -41,7 +41,7 @@ class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
 		}
 	}
 	
-	@objc init(title:String, shortcut:[String], method: JSValue) {
+	@objc public init(title:String, shortcut:[String], method: JSValue) {
 		self.method = method
 
 		var keyEquivalent = ""
@@ -70,7 +70,7 @@ class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
 		self.target = self
 	}
 	
-	@objc func validateState() {
+	@objc public func validateState() {
 		if self.on {
 			self.state = .on
 		} else {
@@ -78,7 +78,7 @@ class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
 		}
 	}
 	
-	@objc func runMethod() {
+	@objc public func runMethod() {
 		self.method.call(withArguments: [])
 	}
 	

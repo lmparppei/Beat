@@ -41,6 +41,9 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import "BeatMeasure.h"
 #import "BeatDocument.h"
 #import "NSArray+JSON.h"
+#import "NSString+VersionNumber.h"
+
+#import "BeatNotificationDelegate.h"
 
 #if !TARGET_OS_IOS
 #import "NSTextView+UX.h"

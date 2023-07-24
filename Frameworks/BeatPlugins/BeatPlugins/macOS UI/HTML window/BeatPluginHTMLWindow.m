@@ -8,7 +8,7 @@
 
 #import "BeatPluginHTMLWindow.h"
 #import "BeatPlugin.h"
-#import "Beat-Swift.h"
+#import <BeatPlugins/BeatPlugins-Swift.h>
 
 @interface BeatPluginHTMLWindow ()
 @end

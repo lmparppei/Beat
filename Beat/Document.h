@@ -33,6 +33,7 @@ THE SOFTWARE.
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatPlugins/BeatPlugins.h>
 
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
@@ -41,10 +42,8 @@ THE SOFTWARE.
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
-#import "BeatPlugin.h"
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
-//#import "Beat-Swift.h"
 
 /*
 typedef NS_ENUM(NSUInteger, BeatFormatting) {

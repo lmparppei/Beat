@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B62117042A6EC9100053228F /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
+		B621170B2A6ECEB40053228F /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621170A2A6ECEB30053228F /* PDFKit.framework */; };
+		B621170C2A6ECF460053228F /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B680B79C2A6EBEE900FCD805 /* Plugin HTML template.html */; };
 		B680B75E2A6EBBE300FCD805 /* Template.js in Resources */ = {isa = PBXBuildFile; fileRef = B680B75D2A6EBBE300FCD805 /* Template.js */; };
 		B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */; platformFilters = (macos, ); };
 		B680B77A2A6EBBFD00FCD805 /* BeatPluginUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */; };
@@ -47,10 +50,17 @@
 		B680B7B82A6EC2A600FCD805 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7B72A6EC2A600FCD805 /* BeatParsing.framework */; };
 		B680B7BC2A6EC2B600FCD805 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7BB2A6EC2B600FCD805 /* BeatDynamicColor.framework */; };
 		B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */; };
+		B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7CC2A6EC50300FCD805 /* BeatConsole.xib in Resources */ = {isa = PBXBuildFile; fileRef = B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */; };
+		B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B62117032A6EC9100053228F /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B621170A2A6ECEB30053228F /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/PDFKit.framework; sourceTree = DEVELOPER_DIR; };
 		B680B75D2A6EBBE300FCD805 /* Template.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Template.js; sourceTree = "<group>"; };
 		B680B7602A6EBBFB00FCD805 /* BeatModalAccessoryView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatModalAccessoryView.m; sourceTree = "<group>"; };
 		B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatModalAccessoryView.h; sourceTree = "<group>"; };
@@ -110,6 +120,8 @@
 				B680B7B02A6EC29600FCD805 /* BeatCore.framework in Frameworks */,
 				B680B7B42A6EC29E00FCD805 /* BeatPagination2.framework in Frameworks */,
 				B680B7942A6EBD8C00FCD805 /* libUXKit-UIKit.a in Frameworks */,
+				B621170B2A6ECEB40053228F /* PDFKit.framework in Frameworks */,
+				B62117042A6EC9100053228F /* UnzipKit.framework in Frameworks */,
 				B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */,
 				B680B7BC2A6EC2B600FCD805 /* BeatDynamicColor.framework in Frameworks */,
 				B680B7922A6EBD8300FCD805 /* libUXKit-AppKit.a in Frameworks */,
@@ -176,6 +188,8 @@
 		B680B7902A6EBD8300FCD805 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B621170A2A6ECEB30053228F /* PDFKit.framework */,
+				B62117032A6EC9100053228F /* UnzipKit.framework */,
 				B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */,
 				B680B7BB2A6EC2B600FCD805 /* BeatDynamicColor.framework */,
 				B680B7B72A6EC2A600FCD805 /* BeatParsing.framework */,
@@ -252,7 +266,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */,
 				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
+				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
 				B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */,
 				B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */,
 				B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */,
@@ -264,8 +280,10 @@
 				B680B78E2A6EBC4800FCD805 /* BeatPluginHTMLWindow.h in Headers */,
 				B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */,
 				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
+				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
 				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
+				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +346,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B680B75E2A6EBBE300FCD805 /* Template.js in Resources */,
+				B621170C2A6ECF460053228F /* Plugin HTML template.html in Resources */,
+				B680B7CC2A6EC50300FCD805 /* BeatConsole.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +526,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -538,6 +559,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;

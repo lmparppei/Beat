@@ -32,7 +32,6 @@
 #import "BeatPluginUICheckbox.h"
 #import "BeatPluginUILabel.h"
 
-#import "BeatAppDelegate.h"
 #import "BeatModalAccessoryView.h"
 
 #import "BeatSpeak.h"
@@ -56,6 +55,12 @@
 @class BeatPaginationManager;
 @class BeatPagination;
 @class OutlineScene;
+
+#pragma mark - App delegate replacement
+
+@protocol BeatAppAPIDelegate
+- (id)newDocumentWithContents:(NSString*)string;
+@end
 
 #pragma mark - JS API exports
 
@@ -369,8 +374,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
-- (void)createPreviewAt:(NSInteger)location;
-- (void)resetPreview;
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 #endif
@@ -386,6 +389,11 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
 @property (nonatomic, readonly) bool closing;
+
+- (BeatPaginationManager*)pagination;
+- (void)createPreviewAt:(NSInteger)location;
+- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync;
+- (void)resetPreview;
 
 /// Runs a plugin with given name
 - (void)runPluginWithName:(NSString*)pluginName;

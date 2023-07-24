@@ -19,12 +19,9 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPluginManager.h"
-#import "BeatAppDelegate.h"
-#import "UnzipKit.h"
-#import "BeatPluginLibrary.h"
-#import "NSString+VersionNumber.h"
+#import <UnzipKit/UnzipKit.h>
 #import "BeatPlugin.h"
-#import "Beat-Swift.h"
+#import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatCore/BeatLocalization.h>
 #import <os/log.h>
 
@@ -141,7 +138,8 @@ static BeatPluginManager *sharedManager;
 
 - (IBAction)runStandalonePlugin:(id)sender {
 	// This runs a plugin which is NOT tied to the document
-	BeatPluginMenuItem *item = sender;
+#if !TARGET_OS_IOS
+	id<BeatPluginInfoUIItem> item = sender;
 	NSString *pluginName = item.pluginName;
 	
 	BeatPlugin *parser = BeatPlugin.new;
@@ -159,6 +157,7 @@ static BeatPluginManager *sharedManager;
 	}
 	
 	parser = nil;
+#endif
 }
 
 - (void)runExportPlugin:(BeatPlugin*)parser {
@@ -297,9 +296,12 @@ static BeatPluginManager *sharedManager;
 		if (autoUpdate) {
 			[self updatePlugins:availableUpdates];
 		} else {
-			// Show notification if there are updates available
-			NSString *text = [NSString stringWithFormat:@"%@", [availableUpdates componentsJoinedByString:@", "]];
-			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Update Available" body:text identifier:@"PluginUpdates" oneTime:YES interval:5.0];
+            #if !TARGET_OS_IOS
+            // Show notification if there are updates available (on macOS)
+            NSString *text = [NSString stringWithFormat:@"%@", [availableUpdates componentsJoinedByString:@", "]];
+            id<BeatNotificationDelegate> notifications = (id<BeatNotificationDelegate>)NSApp.delegate;
+            [notifications showNotification:@"Update Available" body:text identifier:@"PluginUpdates" oneTime:YES interval:5.0];
+            #endif
 		}
 	}];
 }
@@ -307,8 +309,11 @@ static BeatPluginManager *sharedManager;
 - (void)updatePlugins:(NSArray*)availableUpdates {
 	for (NSString* name in availableUpdates) {
 		[self downloadPlugin:name withCallback:^(NSString * _Nonnull pluginName) {
-			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Plugin Updated" body:pluginName identifier:@"PluginUpdates" oneTime:YES interval:3.0];
-		}];
+            #if !TARGET_OS_IOS
+            id<BeatNotificationDelegate> notifications = (id<BeatNotificationDelegate>)NSApp.delegate;
+			[notifications showNotification:@"Plugin Updated" body:pluginName identifier:@"PluginUpdates" oneTime:YES interval:3.0];
+            #endif
+        }];
 	}
 }
 
@@ -727,7 +732,7 @@ static BeatPluginManager *sharedManager;
 	if (error || !container) return;
 		
 	// Get & create plugin path
-	NSURL *pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
+	NSURL *pluginURL = [self appDataPath:PLUGIN_FOLDER];
 	[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
 	
 	// Reload installed plugins

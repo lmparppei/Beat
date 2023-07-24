@@ -1,0 +1,479 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B62116ED2A6EC8C30053228F /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B62116D02A6EC8C20053228F /* LICENSE */; };
+		B62116EE2A6EC8C30053228F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B62116D12A6EC8C20053228F /* README.md */; };
+		B62116EF2A6EC8C30053228F /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B62116D32A6EC8C20053228F /* UnzipKitResources-Info.plist */; };
+		B62116F02A6EC8C30053228F /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B62116D42A6EC8C20053228F /* UnzipKit.strings */; };
+		B62116F12A6EC8C30053228F /* UnzipKit.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116D82A6EC8C20053228F /* UnzipKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62116F22A6EC8C30053228F /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B62116D92A6EC8C20053228F /* UZKArchive.m */; };
+		B62116F32A6EC8C30053228F /* UZKFileInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116DA2A6EC8C20053228F /* UZKFileInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62116F42A6EC8C30053228F /* UnzipKitMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116DB2A6EC8C20053228F /* UnzipKitMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62116F52A6EC8C30053228F /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B62116DD2A6EC8C20053228F /* NSURL+UnzipKitExtensions.m */; };
+		B62116F62A6EC8C30053228F /* NSURL+UnzipKitExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116DE2A6EC8C20053228F /* NSURL+UnzipKitExtensions.h */; };
+		B62116F72A6EC8C30053228F /* UZKArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116DF2A6EC8C20053228F /* UZKArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62116F82A6EC8C30053228F /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B62116E02A6EC8C20053228F /* UZKFileInfo.m */; };
+		B62116F92A6EC8C30053228F /* UZKFileInfo_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116E12A6EC8C20053228F /* UZKFileInfo_Private.h */; };
+		B62116FA2A6EC8C30053228F /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B62116E42A6EC8C30053228F /* unzip.c */; };
+		B62116FB2A6EC8C30053228F /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B62116E52A6EC8C30053228F /* zip.c */; };
+		B62116FC2A6EC8C30053228F /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B62116E62A6EC8C30053228F /* ioapi.c */; };
+		B62116FD2A6EC8C30053228F /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B62116E72A6EC8C30053228F /* mztools.c */; };
+		B62116FE2A6EC8C30053228F /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116E82A6EC8C30053228F /* crypt.h */; };
+		B62116FF2A6EC8C30053228F /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116E92A6EC8C30053228F /* zip.h */; };
+		B62117002A6EC8C30053228F /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116EA2A6EC8C30053228F /* unzip.h */; };
+		B62117012A6EC8C30053228F /* mztools.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116EB2A6EC8C30053228F /* mztools.h */; };
+		B62117022A6EC8C30053228F /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = B62116EC2A6EC8C30053228F /* ioapi.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B62116D02A6EC8C20053228F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B62116D12A6EC8C20053228F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B62116D32A6EC8C20053228F /* UnzipKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnzipKitResources-Info.plist"; sourceTree = "<group>"; };
+		B62116D52A6EC8C20053228F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UnzipKit.strings; sourceTree = "<group>"; };
+		B62116D62A6EC8C20053228F /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/UnzipKit.strings; sourceTree = "<group>"; };
+		B62116D82A6EC8C20053228F /* UnzipKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKit.h; sourceTree = "<group>"; };
+		B62116D92A6EC8C20053228F /* UZKArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKArchive.m; sourceTree = "<group>"; };
+		B62116DA2A6EC8C20053228F /* UZKFileInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo.h; sourceTree = "<group>"; };
+		B62116DB2A6EC8C20053228F /* UnzipKitMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKitMacros.h; sourceTree = "<group>"; };
+		B62116DD2A6EC8C20053228F /* NSURL+UnzipKitExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+UnzipKitExtensions.m"; sourceTree = "<group>"; };
+		B62116DE2A6EC8C20053228F /* NSURL+UnzipKitExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+UnzipKitExtensions.h"; sourceTree = "<group>"; };
+		B62116DF2A6EC8C20053228F /* UZKArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKArchive.h; sourceTree = "<group>"; };
+		B62116E02A6EC8C20053228F /* UZKFileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKFileInfo.m; sourceTree = "<group>"; };
+		B62116E12A6EC8C20053228F /* UZKFileInfo_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo_Private.h; sourceTree = "<group>"; };
+		B62116E42A6EC8C30053228F /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		B62116E52A6EC8C30053228F /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		B62116E62A6EC8C30053228F /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		B62116E72A6EC8C30053228F /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		B62116E82A6EC8C30053228F /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		B62116E92A6EC8C30053228F /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		B62116EA2A6EC8C30053228F /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		B62116EB2A6EC8C30053228F /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		B62116EC2A6EC8C30053228F /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		B680B7DF2A6EC72E00FCD805 /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B680B7DC2A6EC72E00FCD805 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B62116D22A6EC8C20053228F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B62116D32A6EC8C20053228F /* UnzipKitResources-Info.plist */,
+				B62116D42A6EC8C20053228F /* UnzipKit.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B62116D72A6EC8C20053228F /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B62116D82A6EC8C20053228F /* UnzipKit.h */,
+				B62116DF2A6EC8C20053228F /* UZKArchive.h */,
+				B62116D92A6EC8C20053228F /* UZKArchive.m */,
+				B62116DA2A6EC8C20053228F /* UZKFileInfo.h */,
+				B62116E02A6EC8C20053228F /* UZKFileInfo.m */,
+				B62116DB2A6EC8C20053228F /* UnzipKitMacros.h */,
+				B62116E12A6EC8C20053228F /* UZKFileInfo_Private.h */,
+				B62116DC2A6EC8C20053228F /* Extensions */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		B62116DC2A6EC8C20053228F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B62116DD2A6EC8C20053228F /* NSURL+UnzipKitExtensions.m */,
+				B62116DE2A6EC8C20053228F /* NSURL+UnzipKitExtensions.h */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B62116E22A6EC8C30053228F /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				B62116E32A6EC8C30053228F /* MiniZip */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		B62116E32A6EC8C30053228F /* MiniZip */ = {
+			isa = PBXGroup;
+			children = (
+				B62116E42A6EC8C30053228F /* unzip.c */,
+				B62116E52A6EC8C30053228F /* zip.c */,
+				B62116E62A6EC8C30053228F /* ioapi.c */,
+				B62116E72A6EC8C30053228F /* mztools.c */,
+				B62116E82A6EC8C30053228F /* crypt.h */,
+				B62116E92A6EC8C30053228F /* zip.h */,
+				B62116EA2A6EC8C30053228F /* unzip.h */,
+				B62116EB2A6EC8C30053228F /* mztools.h */,
+				B62116EC2A6EC8C30053228F /* ioapi.h */,
+			);
+			path = MiniZip;
+			sourceTree = "<group>";
+		};
+		B680B7D52A6EC72E00FCD805 = {
+			isa = PBXGroup;
+			children = (
+				B680B7E12A6EC72E00FCD805 /* UnzipKit */,
+				B680B7E02A6EC72E00FCD805 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B680B7E02A6EC72E00FCD805 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B680B7DF2A6EC72E00FCD805 /* UnzipKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B680B7E12A6EC72E00FCD805 /* UnzipKit */ = {
+			isa = PBXGroup;
+			children = (
+				B62116D02A6EC8C20053228F /* LICENSE */,
+				B62116D12A6EC8C20053228F /* README.md */,
+				B62116E22A6EC8C30053228F /* Lib */,
+				B62116D22A6EC8C20053228F /* Resources */,
+				B62116D72A6EC8C20053228F /* Source */,
+			);
+			path = UnzipKit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B680B7DA2A6EC72E00FCD805 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62116F72A6EC8C30053228F /* UZKArchive.h in Headers */,
+				B62116F12A6EC8C30053228F /* UnzipKit.h in Headers */,
+				B62116F62A6EC8C30053228F /* NSURL+UnzipKitExtensions.h in Headers */,
+				B62116F32A6EC8C30053228F /* UZKFileInfo.h in Headers */,
+				B62117022A6EC8C30053228F /* ioapi.h in Headers */,
+				B62116F42A6EC8C30053228F /* UnzipKitMacros.h in Headers */,
+				B62116FE2A6EC8C30053228F /* crypt.h in Headers */,
+				B62117002A6EC8C30053228F /* unzip.h in Headers */,
+				B62116FF2A6EC8C30053228F /* zip.h in Headers */,
+				B62116F92A6EC8C30053228F /* UZKFileInfo_Private.h in Headers */,
+				B62117012A6EC8C30053228F /* mztools.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B680B7DE2A6EC72E00FCD805 /* UnzipKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B680B7E62A6EC72E00FCD805 /* Build configuration list for PBXNativeTarget "UnzipKit" */;
+			buildPhases = (
+				B680B7DA2A6EC72E00FCD805 /* Headers */,
+				B680B7DB2A6EC72E00FCD805 /* Sources */,
+				B680B7DC2A6EC72E00FCD805 /* Frameworks */,
+				B680B7DD2A6EC72E00FCD805 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UnzipKit;
+			productName = UnzipKit;
+			productReference = B680B7DF2A6EC72E00FCD805 /* UnzipKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B680B7D62A6EC72E00FCD805 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					B680B7DE2A6EC72E00FCD805 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = B680B7D92A6EC72E00FCD805 /* Build configuration list for PBXProject "UnzipKit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				sv,
+			);
+			mainGroup = B680B7D52A6EC72E00FCD805;
+			productRefGroup = B680B7E02A6EC72E00FCD805 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B680B7DE2A6EC72E00FCD805 /* UnzipKit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B680B7DD2A6EC72E00FCD805 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62116EF2A6EC8C30053228F /* UnzipKitResources-Info.plist in Resources */,
+				B62116EE2A6EC8C30053228F /* README.md in Resources */,
+				B62116ED2A6EC8C30053228F /* LICENSE in Resources */,
+				B62116F02A6EC8C30053228F /* UnzipKit.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B680B7DB2A6EC72E00FCD805 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62116FC2A6EC8C30053228F /* ioapi.c in Sources */,
+				B62116F82A6EC8C30053228F /* UZKFileInfo.m in Sources */,
+				B62116F52A6EC8C30053228F /* NSURL+UnzipKitExtensions.m in Sources */,
+				B62116FA2A6EC8C30053228F /* unzip.c in Sources */,
+				B62116FD2A6EC8C30053228F /* mztools.c in Sources */,
+				B62116FB2A6EC8C30053228F /* zip.c in Sources */,
+				B62116F22A6EC8C30053228F /* UZKArchive.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B62116D42A6EC8C20053228F /* UnzipKit.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B62116D52A6EC8C20053228F /* en */,
+				B62116D62A6EC8C20053228F /* sv */,
+			);
+			name = UnzipKit.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B680B7E42A6EC72E00FCD805 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B680B7E52A6EC72E00FCD805 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B680B7E72A6EC72E00FCD805 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.UnzipKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		B680B7E82A6EC72E00FCD805 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.UnzipKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B680B7D92A6EC72E00FCD805 /* Build configuration list for PBXProject "UnzipKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B680B7E42A6EC72E00FCD805 /* Debug */,
+				B680B7E52A6EC72E00FCD805 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B680B7E62A6EC72E00FCD805 /* Build configuration list for PBXNativeTarget "UnzipKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B680B7E72A6EC72E00FCD805 /* Debug */,
+				B680B7E82A6EC72E00FCD805 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B680B7D62A6EC72E00FCD805 /* Project object */;
+}

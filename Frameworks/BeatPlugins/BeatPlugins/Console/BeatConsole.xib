@@ -74,7 +74,7 @@ Learn more about plugin API on the Beat website.
                             <action selector="clearConsole:" target="-2" id="g8C-XR-Ub1"/>
                         </connections>
                     </button>
-                    <textField focusRingType="none" verticalHuggingPriority="750" id="jgF-1F-6fc" customClass="BeatConsoleTextField" customModule="Beat" customModuleProvider="target">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="jgF-1F-6fc" customClass="BeatConsoleTextField" customModule="BeatPlugins" customModuleProvider="target">
                         <rect key="frame" x="8" y="4" width="432" height="16"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                         <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" focusRingType="none" placeholderString="&gt;" usesSingleLineMode="YES" id="tx5-Hj-wfD">

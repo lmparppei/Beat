@@ -99,9 +99,6 @@
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
 #import "BeatColorMenuItem.h"
-#import "BeatPlugin.h"
-#import "BeatPluginManager.h"
-#import "BeatWidgetView.h"
 #import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
 #import "BeatCharacterList.h"
@@ -2741,6 +2738,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	else if (menuItem.action == @selector(showWidgets:)) {
 		// Don't show menu item for widget view, if no widgets are visible
+
 		if (self.widgetView.subviews.count > 0) {
 			menuItem.hidden = NO;
 			return YES;
@@ -2930,8 +2928,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Preview
 
-- (void)createPreviewAt:(NSInteger)location {
+- (void)createPreviewAt:(NSInteger)location
+{
 	[self.previewController createPreviewWithChangeAt:location sync:false];
+}
+- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync
+{
+	[self.previewController createPreviewWithChangeAt:location sync:sync];
 }
 
 - (void)resetPreview {
@@ -3669,6 +3672,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
  
  */
 
+/// Returns the current pagination in preview controller
+/// - note: Required to conform to plugin API.
 - (BeatPaginationManager*)pagination {
 	return self.previewController.pagination;
 }

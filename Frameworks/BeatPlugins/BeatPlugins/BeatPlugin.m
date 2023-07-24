@@ -21,9 +21,11 @@
 #import "BeatPlugin.h"
 #import <BeatCore/BeatRevisions.h>
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatPlugins/BeatPlugins-Swift.h>
+#import <PDFKit/PDFKit.h>
 
 #import "BeatConsole.h"
-#import "Beat-Swift.h"
+
 #import <objc/runtime.h>
 
 @interface BeatPlugin ()
@@ -434,7 +436,7 @@
 #pragma mark - Import/Export callbacks
 
 /** Creates an import handler.
- @param etensions Array of allowed file extensions
+ @param extensions Array of allowed file extensions
  @param callback Callback for handling the actual import. The callback block receives the file contents as string.
 */
 - (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback {
@@ -583,7 +585,7 @@
 	}
 
 	/** Presents an open dialog box.
-	 @param format Array of file extensions allowed to be opened
+	 @param formats Array of file extensions allowed to be opened
 	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths, though it contains only a single path.
 	*/
 	- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
@@ -600,7 +602,7 @@
 	}
 
 	/** Presents an open dialog box which allows selecting multiple files.
-	 @param format Array of file extensions allowed to be opened
+	 @param formats Array of file extensions allowed to be opened
 	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths.
 	*/
 	- (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
@@ -1006,7 +1008,7 @@
 
 /** Presents a dropdown box. Returns either the selected option or `null` when the user clicked on *Cancel*.
  @param prompt Title of the dropdown dialog
- @param withInfo Further information presented to the user below the title
+ @param info Further information presented to the user below the title
  @param items Items in the dropdown box as array of strings
 */
 - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
@@ -1120,6 +1122,7 @@
 	// Load template
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
 	NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
+    
 	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
 	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
 	
@@ -1393,15 +1396,15 @@
 
 - (BeatPaginationManager*)currentPagination
 {
-	return self.delegate.previewController.pagination;
+	return self.delegate.pagination;
 }
 
 - (void)createPreviewAt:(NSInteger)location {
-	[self.delegate.previewController createPreviewWithChangeAt:location sync:true];
+	[self.delegate createPreviewAt:location sync:true];
 }
 
 - (void)resetPreview {
-	[self.delegate.previewController resetPreview];
+	[self.delegate resetPreview];
 }
 
 #endif
@@ -1461,7 +1464,7 @@
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		self.printer = [[WebPrinter alloc] init];
+        self.printer = BeatHTMLPrinter.new;
 		
 		if (settings[@"orientation"]) {
 			NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
@@ -1733,13 +1736,20 @@
 
 - (void)newDocument:(NSString*)string
 {
-	if (string.length) [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
+#if !TARGET_OS_IOS
+    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
+	if (string.length) [delegate newDocumentWithContents:string];
 	else [NSDocumentController.sharedDocumentController newDocument:nil];
+#endif
 }
+
 - (id)newDocumentObject:(NSString*)string
 {
-	if (string.length) return [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
+#if !TARGET_OS_IOS
+    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
+	if (string.length) return [delegate newDocumentWithContents:string];
 	else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
+#endif
 }
 
 - (Line*)currentLine {
@@ -1805,39 +1815,51 @@
 }
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
 	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+#if !TARGET_OS_IOS
+    [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
+    [_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
+#endif
 }
 
 #pragma mark - Temporary attributes
 
 - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
+#if !TARGET_OS_IOS
 	NSColor *color = [BeatColors color:hexColor];
 	[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+#endif
 }
 - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len {
-	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+#if !TARGET_OS_IOS
+    [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
+#endif
 }
 
 - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
+#if !TARGET_OS_IOS
 	NSColor *color = [BeatColors color:hexColor];
 	[_delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+#endif
 }
 
 - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {
+#if !TARGET_OS_IOS
 	[_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc, len }];
-	//[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+#endif
 }
 
 
 #pragma mark - WebKit controller
 
 - (bool)promisesAvailable {
-	if (@available(macOS 11.0, *)) {
-		return true;
-	} else {
-		return false;
-	}
+#if !TARGET_OS_IOS
+    if (@available(macOS 11.0, *)) return true;
+    else return false;
+#else
+    return true;
+#endif
 }
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
@@ -1845,17 +1867,19 @@
 	if ([message.name isEqualToString:@"log"]) {
 		[self log:message.body];
 	}
-	else if ([message.name isEqualToString:@"sendData"]) {
-		if (_context) [self receiveDataFromHTMLPanel:message.body];
+    
+    // The following methods will require a real JS context, so if it's no longer there, do nothing.
+    if (_context == nil) return;
+    
+	if ([message.name isEqualToString:@"sendData"]) {
+		[self receiveDataFromHTMLPanel:message.body];
 	}
 	else if ([message.name isEqualToString:@"call"]) {
-		if (_context) [_context evaluateScript:message.body];
+		[_context evaluateScript:message.body];
 	}
 	else if ([message.name isEqualToString:@"callAndLog"]) {
-		if (_context) {
-			[_context evaluateScript:message.body];
-			[self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
-		}
+        [_context evaluateScript:message.body];
+        [self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
 	}
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import "FadeInImport.h"
-#import "UnzipKit.h"
+#import <UnzipKit/UnzipKit.h>
 #import "OSFImport.h"
 
 #define FILENAME @"document.xml"

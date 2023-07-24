@@ -11,7 +11,7 @@
 #import "BeatSegmentedControl.h"
 #import "BeatSegmentedCell.h"
 #import "BeatSidebarTabView.h"
-#import "BeatWidgetView.h"
+#import <BeatPlugins/BeatWidgetView.h>
 
 @interface BeatSegmentedControl ()
 @property (nonatomic, weak) IBOutlet BeatWidgetView* widgetView;

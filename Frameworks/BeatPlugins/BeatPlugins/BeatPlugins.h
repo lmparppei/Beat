@@ -17,7 +17,10 @@ FOUNDATION_EXPORT const unsigned char BeatPluginsVersionString[];
 
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
+#import "BeatConsole.h"
 
 #if !TARGET_OS_IOS
 #import "BeatHTMLPrinter.h"
+#import "BeatPluginUI.h"
+#import "BeatWidgetView.h"
 #endif

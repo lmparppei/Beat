@@ -30,7 +30,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import "SceneCards.h"
-#import "BeatHTMLPrinter.h"
+#import <BeatPlugins/BeatHTMLPrinter.h>
 #import <WebKit/WebKit.h>
 
 #define SNIPPET_LENGTH 190

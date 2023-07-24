@@ -13,24 +13,21 @@
 
 #import <os/log.h>
 #import <StoreKit/StoreKit.h>
-
+#import <BeatCore/NSString+VersionNumber.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatPlugins/BeatPlugins.h>
 
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
-#import "BeatPluginManager.h"
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
-#import "BeatPlugin.h"
-#import "BeatPluginManager.h"
 #import "BeatNotifications.h"
 #import "BeatModalInput.h"
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
 #import "BeatPluginLibrary.h"
-#import "NSString+VersionNumber.h"
 
 #ifndef QUICKLOOK
 #import "Beat-Swift.h"

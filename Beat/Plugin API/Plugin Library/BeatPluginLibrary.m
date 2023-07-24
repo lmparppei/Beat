@@ -7,7 +7,7 @@
 //
 
 #import "BeatPluginLibrary.h"
-#import "BeatPluginManager.h"
+#import <BeatPlugins/BeatPlugins.h>
 #import "BeatCheckboxCell.h"
 #import <BeatCore/BeatColors.h>
 #import "Beat-Swift.h"

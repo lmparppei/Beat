@@ -8,13 +8,13 @@
 
 import Cocoa
 
-class BeatConsoleTextField: NSTextField {
+public class BeatConsoleTextField: NSTextField {
 	private var commandHistory: [String] = []
 	private var commandIndex = -1
 	
 	private var syntaxHighlighter = JSSyntaxHighlighter()
 
-	override func performKeyEquivalent(with event: NSEvent) -> Bool {
+	override public func performKeyEquivalent(with event: NSEvent) -> Bool {
 		switch event.keyCode {
 		case 125: // Down arrow
 			showNextCommand()
@@ -49,7 +49,7 @@ class BeatConsoleTextField: NSTextField {
 		}
 	}
 	
-	override func sendAction(_ action: Selector?, to target: Any?) -> Bool {
+	override public func sendAction(_ action: Selector?, to target: Any?) -> Bool {
 		let command = stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
 		let result = super.sendAction(action, to: target)
 		if result {
@@ -61,7 +61,7 @@ class BeatConsoleTextField: NSTextField {
 		commandIndex = -1
 		return result
 	}
-	override func textDidChange(_ notification: Notification) {
+	override public func textDidChange(_ notification: Notification) {
 		// Highlight
 		self.syntaxHighlighter.colorize(self.currentEditor() as! NSTextView)
 		

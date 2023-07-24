@@ -7,7 +7,7 @@
 //
 
 #import "BeatCheckboxCell.h"
-#import "BeatPluginManager.h"
+#import <BeatPlugins/BeatPlugins.h>
 #import <BeatCore/BeatColors.h>
 
 @interface BeatCheckboxCell ()
@@ -56,7 +56,7 @@
 }
 
 - (IBAction)togglePlugin:(id)sender {
-	if (!_pluginManager) _pluginManager = [BeatPluginManager sharedManager];
+	if (!_pluginManager) _pluginManager = BeatPluginManager.sharedManager;
 	
 	NSButton *checkBox = (NSButton*)sender;
 	if (checkBox.state == NSOnState) [_pluginManager enablePlugin:self.name];

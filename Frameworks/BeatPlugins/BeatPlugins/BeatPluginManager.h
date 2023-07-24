@@ -36,6 +36,10 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 - (NSString*)imageDataOrURL;
 @end
 
+@protocol BeatPluginInfoUIItem
+@property (nonatomic) NSString* pluginName;
+@end
+
 @interface BeatPluginData : NSObject
 @property (nonatomic) NSString* name;
 @property (nonatomic) NSString* script;

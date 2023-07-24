@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 #import <BeatCore/BeatEditorDelegate.h>
-#import "BeatHTMLPrinter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

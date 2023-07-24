@@ -39,6 +39,9 @@
 		B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFont.m */; };
 		B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */; };
 		B680B7C62A6EC32C00FCD805 /* NSTextView+UX.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7D02A6EC5A700FCD805 /* BeatNotificationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7CF2A6EC59600FCD805 /* BeatNotificationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B680B7D32A6EC67700FCD805 /* NSString+VersionNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7D22A6EC67700FCD805 /* NSString+VersionNumber.m */; };
+		B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7D12A6EC67700FCD805 /* NSString+VersionNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */; };
 		B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */ = {isa = PBXBuildFile; fileRef = B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -114,6 +117,9 @@
 		B67C2CF22A2D1AD000B88B0F /* BeatFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFont.m; sourceTree = "<group>"; };
 		B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextView+UX.m"; sourceTree = "<group>"; };
 		B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTextView+UX.h"; sourceTree = "<group>"; };
+		B680B7CF2A6EC59600FCD805 /* BeatNotificationDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotificationDelegate.h; sourceTree = "<group>"; };
+		B680B7D12A6EC67700FCD805 /* NSString+VersionNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+VersionNumber.h"; sourceTree = "<group>"; };
+		B680B7D22A6EC67700FCD805 /* NSString+VersionNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+VersionNumber.m"; sourceTree = "<group>"; };
 		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
 		B681D59029A37DBD00DF16CA /* BeatDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocument.m; sourceTree = "<group>"; };
 		B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
@@ -196,6 +202,7 @@
 				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
 				B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */,
 				B633C1E0298C60F10011449D /* BeatEditorMode.h */,
+				B680B7CF2A6EC59600FCD805 /* BeatNotificationDelegate.h */,
 				B6B61BBB29F9C3970098D94D /* Fonts */,
 				B68C0F50299D7D1F0031AE6B /* Editor */,
 				B62FB011298FB6A8003492B5 /* User defaults */,
@@ -331,6 +338,8 @@
 		B6D32029298EBEDA003DA45D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B680B7D12A6EC67700FCD805 /* NSString+VersionNumber.h */,
+				B680B7D22A6EC67700FCD805 /* NSString+VersionNumber.m */,
 				B68C0F5E299D843B0031AE6B /* BeatAttributedStringExtensions.swift */,
 				B68C0F61299D843C0031AE6B /* BeatArrayExtensions.swift */,
 				B68C0F60299D843C0031AE6B /* BeatStringExtensions.swift */,
@@ -368,6 +377,7 @@
 				B6B61BBA29F9C36D0098D94D /* BeatEditorFormattingActions.h in Headers */,
 				B680B7C62A6EC32C00FCD805 /* NSTextView+UX.h in Headers */,
 				B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */,
+				B680B7D02A6EC5A700FCD805 /* BeatNotificationDelegate.h in Headers */,
 				B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */,
 				B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */,
 				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
@@ -379,6 +389,7 @@
 				B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */,
 				B68C0F5D299D82EA0031AE6B /* BeatReview.swift in Headers */,
 				B68C0F66299D845A0031AE6B /* BeatAttributedStringExtensions.swift in Headers */,
+				B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
 				B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */,
 				B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */,
@@ -463,6 +474,7 @@
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
 				B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */,
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
+				B680B7D32A6EC67700FCD805 /* NSString+VersionNumber.m in Sources */,
 				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,

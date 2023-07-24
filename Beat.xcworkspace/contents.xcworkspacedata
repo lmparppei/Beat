@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Frameworks/UnzipKit/UnzipKit.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Frameworks/BeatPlugins/BeatPlugins.xcodeproj">
    </FileRef>
    <FileRef

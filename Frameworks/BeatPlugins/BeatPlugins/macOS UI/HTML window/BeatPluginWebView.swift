@@ -13,8 +13,8 @@
 import AppKit
 import WebKit
 
-class BeatPluginWebView:WKWebView {
-	override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+@objc public class BeatPluginWebView:WKWebView {
+	override public func acceptsFirstMouse(for event: NSEvent?) -> Bool {
 		let window = self.window as? BeatPluginHTMLWindow ?? nil
 		
 		// If the window is floating (meaning it belongs to the currently active document)
