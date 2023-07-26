@@ -11,6 +11,7 @@
 		B619DE6D29F90A7A007D1838 /* BeatAutocomplete.h in Headers */ = {isa = PBXBuildFile; fileRef = B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FD0602A6926BF00A40883 /* NSArray+JSON.m */; };
+		B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = B621170D2A6FABDC0053228F /* BeatCompatibility.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */; };
 		B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1B9298C5F750011449D /* BeatCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1B8298C5F750011449D /* BeatCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -85,6 +86,7 @@
 		B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAutocomplete.h; sourceTree = "<group>"; };
 		B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+JSON.h"; sourceTree = "<group>"; };
 		B61FD0602A6926BF00A40883 /* NSArray+JSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+JSON.m"; sourceTree = "<group>"; };
+		B621170D2A6FABDC0053228F /* BeatCompatibility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCompatibility.h; sourceTree = "<group>"; };
 		B62FB00D298FB662003492B5 /* BeatCore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatCore.md; sourceTree = "<group>"; };
 		B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
 		B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				B633C1B8298C5F750011449D /* BeatCore.h */,
+				B621170D2A6FABDC0053228F /* BeatCompatibility.h */,
 				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
 				B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */,
 				B633C1E0298C60F10011449D /* BeatEditorMode.h */,
@@ -382,6 +385,7 @@
 				B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */,
 				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
+				B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
 				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
 				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,

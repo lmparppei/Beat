@@ -6,16 +6,18 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+
 #if TARGET_OS_IOS
-#import <UIKit/UIKit.h>
+    #import <UIKit/UIKit.h>
 #else
-#import <Cocoa/Cocoa.h>
+    #import <Cocoa/Cocoa.h>
+    #import "BeatPluginUIButton.h"
 #endif
 
+#import "BeatPluginUIExports.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <Webkit/Webkit.h>
-#import "BeatPluginUIButton.h"
-#import "BeatPluginUIExports.h"
 
 @protocol BeatPluginUIViewExports <JSExport>
 @property (nonatomic, readonly) NSRect frame;

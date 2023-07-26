@@ -9,7 +9,7 @@
 #ifndef UnzipKitMacros_h
 #define UnzipKitMacros_h
 
-#import "TargetConditionals.h"
+#import <TargetConditionals.h>
 
 //#import "Availability.h"
 //#import "AvailabilityInternal.h"
@@ -19,7 +19,7 @@
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 #define SDK_10_13_MAJOR 11
 #define SDK_10_13_MINOR 0
 #else

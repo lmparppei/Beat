@@ -42,7 +42,6 @@
 
 // iOS-only
 #import <UIKit/UIKit.h>
-#import "UITextView+UX.h"
 
 #endif
 
@@ -241,13 +240,14 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 /// Write a string to file in given path. You can't access files unless they are in the container or user explicitly selected them using a save dialog.
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
 
-/// Displays an open dialog
-JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
-/// Displays an open dialog with the option to select multiple files
-JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback);
-/// Displays a save dialog
-JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
-
+#if !TARGET_OS_IOS
+    /// Displays an open dialog
+    JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
+    /// Displays an open dialog with the option to select multiple files
+    JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback);
+    /// Displays a save dialog
+    JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
+#endif
  
 #pragma mark Tagging
 /// Returns all tags in the scene
@@ -295,8 +295,10 @@ JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)le
 
 
 #pragma mark Speak synthesizer
+#if !TARGET_OS_IOS
 /// Create new speech synthesis instance
 - (BeatSpeak*)speakSynth;
+#endif
 
 
 #pragma mark Timer
@@ -366,16 +368,18 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 #pragma mark - Host document delegate
 
-@protocol BeatPluginDelegate <NSObject>
+@protocol BeatPluginDelegate <BeatEditorDelegate>
 
 // macOS-only
 #if !TARGET_OS_IOS
-@property (nonatomic, weak, readonly) NSWindow *documentWindow;
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
+@property (nonatomic, weak, readonly) NSWindow *documentWindow;
+#else
+@property (nonatomic, weak, readonly) UIWindow *documentWindow;
 #endif
 
 @property (nonatomic, readonly, weak) BXTextView *textView;
@@ -442,7 +446,10 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @end
 
-@interface BeatPlugin : NSObject <BeatPluginExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost, WKScriptMessageHandlerWithReply>
+@interface BeatPlugin : NSObject <BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
++ (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate;
++ (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate;
+
 @property (weak) id<BeatPluginDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
@@ -460,12 +467,13 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
+- (void)reportError:(NSString*)title withText:(NSString*)string;
 - (void)update:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(OutlineChanges*)changes;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
 - (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices;
-- (void)closePluginWindow:(NSPanel*)window;
+- (void)closePluginWindow:(id)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;
 - (void)documentDidResignMain;
@@ -487,11 +495,11 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 #if !TARGET_OS_IOS
 - (void)showAllWindows;
 - (void)hideAllWindows;
+- (void)refreshMenus;
 #endif
 
 - (void)restart;
 
-- (void)refreshMenus;
 
 
 @end

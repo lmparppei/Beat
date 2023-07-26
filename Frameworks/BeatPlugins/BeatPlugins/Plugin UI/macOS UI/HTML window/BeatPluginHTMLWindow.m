@@ -21,8 +21,8 @@
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
 	
 	// Make the window aware of the plugin host
-	self.host = host;
-	self.delegate = host;
+	self.host = (id<PluginWindowHost>)host;
+	self.delegate = (id<NSWindowDelegate>)host;
 	
 	// Window settings
 	self.tabbingMode = NSWindowTabbingModeDisallowed;
@@ -32,28 +32,9 @@
 	self.releasedWhenClosed = NO;
 	
 	self.title = host.pluginName;
+    _webView = [BeatPluginWebView createWithHtml:html width:width height:height host:(BeatPlugin*)self.host];
 
-	// Create configuration for WKWebView
-	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
-	
-	// Message handlers
-	if (@available(macOS 11.0, *)) {
-		[config.userContentController addScriptMessageHandlerWithReply:self.host contentWorld:WKContentWorld.pageWorld name:@"callAndWait"];
-	}
-	
-	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
-	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
-	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
-	if (@available(macOS 12.3, *)) [config.preferences setElementFullscreenEnabled:true];
-	
-	// Initialize (custom) webkit view
-	_webview = [[BeatPluginWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
-	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-
-	// Load HTML and add the view into window
-	[self setHTML:html];
-	[self.contentView addSubview:_webview];
+	[self.contentView addSubview:_webView];
 	
 	// Window will appear on screen
 	[self appear];
@@ -63,11 +44,8 @@
 
 /// Returns `true` when window is in full screen mode
 - (bool)isFullScreen {
-	if ((self.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen) {
-		return true;
-	} else {
-		return false;
-	}
+	if ((self.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen) return true;
+	else return false;
 }
 
 /// Toggles between full screen mode
@@ -85,33 +63,26 @@
 
 /// Sets the HTML content with no preloaded styles. Also kills support for in-window methods.
 - (void)setRawHTML:(NSString*)html {
-	[_webview loadHTMLString:html baseURL:nil];
+	[_webView loadHTMLString:html baseURL:nil];
 }
 
 /// Sets the HTML content with preloaded styles.
 - (void)setHTML:(NSString*)html {
-	// Load template
-    NSBundle* bundle = [NSBundle bundleForClass:self.class];
-	
-    NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
-	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
-	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
-	
-	[_webview loadHTMLString:template baseURL:nil];
+    [self.webView setHTML:html];
 }
 
 #pragma mark - Running JS in window instance
 
 - (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
 	if (callback && !callback.isUndefined) {
-		[_webview evaluateJavaScript:js completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+		[_webView evaluateJavaScript:js completionHandler:^(id _Nullable data, NSError * _Nullable error) {
 			// Make sure we are on the main thread
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[callback callWithArguments:data];
 			});
 		}];
 	} else {
-		[self.webview evaluateJavaScript:js completionHandler:nil];
+		[self.webView evaluateJavaScript:js completionHandler:nil];
 	}
 }
 

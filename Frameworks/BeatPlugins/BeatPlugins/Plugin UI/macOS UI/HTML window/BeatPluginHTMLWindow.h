@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class BeatPluginWebView;
+
 @protocol BeatHTMLPanelExports <JSExport>
 @property (nonatomic) NSString* title;
 @property (nonatomic) bool dark;
@@ -48,12 +50,11 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 #if !TARGET_OS_IOS
 @interface BeatPluginHTMLWindow : NSPanel <BeatHTMLPanelExports>
 @property (nonatomic, weak) id<PluginWindowHost> host;
-@property (nonatomic) bool isClosing;
 @property (nonatomic) JSValue* callback;
 @property (nonatomic) bool dark;
 @property (nonatomic) BOOL resizable;
 
-@property (nonatomic) WKWebView  * _Nullable webview;
+@property (nonatomic) BeatPluginWebView* _Nullable webView;
 
 - (instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host;
 - (void)closeWindow;

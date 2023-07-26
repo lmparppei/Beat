@@ -20,6 +20,8 @@
 		B619DE6329F80E40007D1838 /* New Document.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B619DE6129F80E40007D1838 /* New Document.fountain */; };
 		B61FD05D2A66D49200A40883 /* BeatIndexCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */; };
 		B61FD05E2A66D4A400A40883 /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
+		B62117162A7062F90053228F /* BeatPlugins.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117152A7062F90053228F /* BeatPlugins.framework */; };
+		B62117172A7062F90053228F /* BeatPlugins.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62117152A7062F90053228F /* BeatPlugins.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
 		B633C152298C58130011449D /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C150298C58130011449D /* BeatPreview.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
@@ -35,10 +37,6 @@
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B678D69E2A1A212A00BD79D8 /* BeatEditorFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */; };
 		B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68321B629F6BD7E00A2553E /* BeatPrintView.m */; };
-		B686FFBB2971BC7E00789C8D /* Uppercase actions.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B686FFAF2971BC7E00789C8D /* Uppercase actions.beatStyle */; };
-		B686FFBD2971BC7E00789C8D /* Print line numbers.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B686FFAA2971BC7E00789C8D /* Print line numbers.beatStyle */; };
-		B686FFBE2971BC7E00789C8D /* Use plain Courier.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B686FFAB2971BC7E00789C8D /* Use plain Courier.beatStyle */; };
-		B686FFBF2971BC7E00789C8D /* Scale down.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B686FFAC2971BC7E00789C8D /* Scale down.beatStyle */; };
 		B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FF9B2971BC7E00789C8D /* PreviewStyles.css */; };
 		B686FFC52971BC7E00789C8D /* ScreenplayStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FFA72971BC7E00789C8D /* ScreenplayStyles.css */; };
 		B686FFC62971BC7E00789C8D /* PreviewStyles-iOS.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FFA12971BC7E00789C8D /* PreviewStyles-iOS.css */; };
@@ -85,6 +83,7 @@
 				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
 				B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */,
 				B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */,
+				B62117172A7062F90053228F /* BeatPlugins.framework in Embed Frameworks */,
 				B60A9F3B29774F7A00916FAA /* BeatThemes.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -105,6 +104,7 @@
 		B619DE6029F80E40007D1838 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Tutorial.fountain; sourceTree = "<group>"; };
 		B619DE6129F80E40007D1838 /* New Document.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "New Document.fountain"; sourceTree = "<group>"; };
 		B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatIndexCardView.swift; sourceTree = "<group>"; };
+		B62117152A7062F90053228F /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B633C14D298C566E0011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
@@ -135,14 +135,6 @@
 		B686FF9B2971BC7E00789C8D /* PreviewStyles.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PreviewStyles.css; sourceTree = "<group>"; };
 		B686FFA12971BC7E00789C8D /* PreviewStyles-iOS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = "PreviewStyles-iOS.css"; sourceTree = "<group>"; };
 		B686FFA72971BC7E00789C8D /* ScreenplayStyles.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScreenplayStyles.css; sourceTree = "<group>"; };
-		B686FFA92971BC7E00789C8D /* Uppercase actions.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Uppercase actions.beatStyle"; sourceTree = "<group>"; };
-		B686FFAA2971BC7E00789C8D /* Print line numbers.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Print line numbers.beatStyle"; sourceTree = "<group>"; };
-		B686FFAB2971BC7E00789C8D /* Use plain Courier.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Use plain Courier.beatStyle"; sourceTree = "<group>"; };
-		B686FFAC2971BC7E00789C8D /* Scale down.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Scale down.beatStyle"; sourceTree = "<group>"; };
-		B686FFAD2971BC7E00789C8D /* Scale down.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Scale down.beatStyle"; sourceTree = "<group>"; };
-		B686FFAE2971BC7E00789C8D /* Print line numbers.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Print line numbers.beatStyle"; sourceTree = "<group>"; };
-		B686FFAF2971BC7E00789C8D /* Uppercase actions.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Uppercase actions.beatStyle"; sourceTree = "<group>"; };
-		B686FFB02971BC7E00789C8D /* Use plain Courier.beatStyle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Use plain Courier.beatStyle"; sourceTree = "<group>"; };
 		B686FFD42971BE3600789C8D /* BeatEditorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorMode.h; sourceTree = "<group>"; };
 		B69311BD296EDFF400CF4869 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311BF296EDFFD00CF4869 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -184,6 +176,7 @@
 				B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */,
 				B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */,
 				B60A9F3729774F6C00916FAA /* BeatParsing.framework in Frameworks */,
+				B62117162A7062F90053228F /* BeatPlugins.framework in Frameworks */,
 				B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */,
 				B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */,
 				B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */,
@@ -343,7 +336,6 @@
 		B686FF9A2971BC7E00789C8D /* CSS */ = {
 			isa = PBXGroup;
 			children = (
-				B686FFA82971BC7E00789C8D /* Custom CSS */,
 				B686FF9B2971BC7E00789C8D /* PreviewStyles.css */,
 				B686FFA72971BC7E00789C8D /* ScreenplayStyles.css */,
 				B686FFA12971BC7E00789C8D /* PreviewStyles-iOS.css */,
@@ -351,24 +343,10 @@
 			path = CSS;
 			sourceTree = "<group>";
 		};
-		B686FFA82971BC7E00789C8D /* Custom CSS */ = {
-			isa = PBXGroup;
-			children = (
-				B686FFB02971BC7E00789C8D /* Use plain Courier.beatStyle */,
-				B686FFAE2971BC7E00789C8D /* Print line numbers.beatStyle */,
-				B686FFA92971BC7E00789C8D /* Uppercase actions.beatStyle */,
-				B686FFAF2971BC7E00789C8D /* Uppercase actions.beatStyle */,
-				B686FFAD2971BC7E00789C8D /* Scale down.beatStyle */,
-				B686FFAA2971BC7E00789C8D /* Print line numbers.beatStyle */,
-				B686FFAB2971BC7E00789C8D /* Use plain Courier.beatStyle */,
-				B686FFAC2971BC7E00789C8D /* Scale down.beatStyle */,
-			);
-			path = "Custom CSS";
-			sourceTree = "<group>";
-		};
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B62117152A7062F90053228F /* BeatPlugins.framework */,
 				B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */,
 				B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */,
 				B633C1E3298C622F0011449D /* BeatCore.framework */,
@@ -511,14 +489,10 @@
 				B686FFCE2971BC7E00789C8D /* FooterTemplate.html in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
-				B686FFBB2971BC7E00789C8D /* Uppercase actions.beatStyle in Resources */,
 				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B619DE6329F80E40007D1838 /* New Document.fountain in Resources */,
 				B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */,
-				B686FFBF2971BC7E00789C8D /* Scale down.beatStyle in Resources */,
-				B686FFBD2971BC7E00789C8D /* Print line numbers.beatStyle in Resources */,
 				B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */,
-				B686FFBE2971BC7E00789C8D /* Use plain Courier.beatStyle in Resources */,
 				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
 				B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */,
 				B686FFCC2971BC7E00789C8D /* HeaderTemplate.html in Resources */,

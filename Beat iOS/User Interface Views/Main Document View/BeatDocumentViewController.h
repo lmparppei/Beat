@@ -8,15 +8,18 @@
 
 #import <UIKit/UIKit.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatPlugins/BeatPlugins.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class iOSDocument;
 
-@interface BeatDocumentViewController : UIViewController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate>
+@interface BeatDocumentViewController : UIViewController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
 @property (nonatomic) iOSDocument* document;
-@property (atomic, readonly) BeatDocumentSettings *documentSettings;
+@property (weak, readonly) BXWindow* documentWindow;
+
+@property (atomic) BeatDocumentSettings *documentSettings;
 
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
 

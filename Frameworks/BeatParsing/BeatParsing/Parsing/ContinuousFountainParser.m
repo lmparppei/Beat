@@ -755,6 +755,9 @@ static NSDictionary* patterns;
     
     // Parse notes
     [self parseNotesFor:line at:index oldType:oldType];
+    for (BeatNoteData* note in line.noteData) {
+        NSLog(@" -> '%@'", [line.string substringWithRange:note.range]);
+    }
         
 	// Omits have stars in them, which can be mistaken for formatting characters.
 	// We store the omit asterisks into the "excluded" index set to avoid this mixup.

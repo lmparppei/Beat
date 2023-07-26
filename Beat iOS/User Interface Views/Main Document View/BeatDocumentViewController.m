@@ -15,9 +15,11 @@
 #import "BeatPreview.h"
 
 #import "Beat_iOS-Swift.h"
+#import <OSLog/OSLog.h>
 
 @interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate>
 
+@property (nonatomic) NSUUID* uuid;
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -31,7 +33,6 @@
 
 @property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
-@property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
@@ -86,7 +87,7 @@
 @property (nonatomic) NSMutableAttributedString* formattedTextBuffer;
 
 //@objc var hideFountainMarkup: Bool = false
-
+@property (nonatomic) bool closing;
 @end
 
 @implementation BeatDocumentViewController 
@@ -98,6 +99,10 @@
 	}
 	
 	return self;
+}
+
+- (BXWindow*)documentWindow {
+	return self.view.window;
 }
 
 /// Creates the text view and replaces placeholder text view
@@ -596,6 +601,20 @@ static bool buildPreviewImmediately = false;
 	self.preview.previewUpdated = NO;
 }
 
+/// Backwards compatibility
+- (void)resetPreview {
+	[self invalidatePreviewAt:0];
+}
+
+- (void)createPreviewAt:(NSInteger)location {
+	[self paginateWithChangeAt:location sync:true];
+}
+
+- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync {
+	[self paginateWithChangeAt:location sync:sync];
+}
+
+
 
 #pragma mark - Text I/O
 
@@ -975,6 +994,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return self.showSceneNumberLabels;
 }
 
+- (bool)showRevisedTextColor {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
+}
+
 
 #pragma mark - Document setting shorthands
 
@@ -1169,6 +1192,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[_formatting formatLine:line];
 	}
 	[self.parser.changedIndices removeAllIndexes];
+}
+
+- (void)formatLine:(Line *)line {
+	[self.formatting formatLine:line];
 }
 
 - (void)forceFormatChangesInRange:(NSRange)range {
@@ -1372,5 +1399,93 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		}
 	});
 }
+
+
+#pragma mark - Minimal plugin support
+
+- (NSUUID *)uuid {
+	if (_uuid == nil) _uuid = NSUUID.new;
+	return _uuid;
+}
+
+- (IBAction)runPlugin:(id)sender
+{
+	// Get plugin filename from menu item
+	//BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
+	//NSString *pluginName = menuItem.pluginName;
+	
+	//[self runPluginWithName:pluginName];
+}
+
+- (void)runPluginWithName:(NSString*)pluginName {
+	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
+	
+	// See if the plugin is running and disable it if needed
+	if (self.runningPlugins[pluginName]) {
+		[(BeatPlugin*)self.runningPlugins[pluginName] forceEnd];
+		[self.runningPlugins removeObjectForKey:pluginName];
+		return;
+	}
+
+	// Run a new plugin
+	BeatPlugin *plugin = [BeatPlugin withName:pluginName delegate:self];
+	
+	// Null the local variable just in case.
+	// If the plugin wishes to stay in memory, it should call registerPlugin:
+	plugin = nil;
+}
+
+/// Loads and registers a plugin with given code. This is used for injecting plugins into memory, including the console plugin.
+- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script
+{
+	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
+	
+	BeatPlugin* plugin = [BeatPlugin withName:pluginName script:script delegate:self];
+	return plugin;
+}
+
+- (void)call:(NSString*)script context:(NSString*)pluginName {
+	BeatPlugin* plugin = [self pluginContextWithName:pluginName];
+	[plugin call:script];
+}
+
+- (BeatPlugin*)pluginContextWithName:(NSString*)pluginName {
+	return self.runningPlugins[pluginName];
+}
+
+- (void)runGenericPlugin:(NSString*)script
+{
+	
+}
+
+- (void)registerPlugin:(id)plugin
+{
+	BeatPlugin *parser = (BeatPlugin*)plugin;
+	if (!self.runningPlugins) self.runningPlugins = NSMutableDictionary.new;
+	
+	self.runningPlugins[parser.pluginName] = parser;
+}
+- (void)deregisterPlugin:(id)plugin
+{
+	BeatPlugin *parser = (BeatPlugin*)plugin;
+	[self.runningPlugins removeObjectForKey:parser.pluginName];
+	parser = nil;
+}
+
+
+- (NSDictionary *)revisedRanges {
+	NSDictionary *revisions = [BeatRevisions rangesForSaving:self.getAttributedText];
+	return revisions;
+}
+
+- (id)getPropertyValue:(NSString *)key {
+	return [self valueForKey:key];
+}
+
+- (void)setPropertyValue:(NSString *)key value:(id)value {
+	[self setValue:value forKey:key];
+}
+
+
 
 @end

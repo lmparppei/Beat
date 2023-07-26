@@ -126,9 +126,6 @@
 @property (nonatomic) NSAttributedString *attributedContentCache;
 //@property (nonatomic) NSURL *mostRecentlySavedFileURL;
 
-// Plugin support
-@property (weak) BeatPluginManager *pluginManager;
-
 // Editor buttons
 @property (nonatomic, weak) IBOutlet NSButton *outlineButton;
 @property (nonatomic, weak) IBOutlet NSButton *previewButton;
@@ -474,9 +471,6 @@ static BeatAppDelegate *appDelegate;
 	
 	// Setup layout here first, but don't paginate
 	[self setupLayoutWithPagination:NO];
-	
-	// Setup plugin management
-	[self setupPlugins];
 	
 	// Print dialog
 	self.printDialog.document = nil;
@@ -4160,9 +4154,6 @@ static NSArray<Line*>* cachedTitlePage;
  
  */
 
-- (void)setupPlugins {
-	self.pluginManager = BeatPluginManager.sharedManager;
-}
 - (IBAction)runPlugin:(id)sender {
 	// Get plugin filename from menu item
 	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
@@ -4170,6 +4161,7 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	[self runPluginWithName:pluginName];
 }
+
 - (void)runPluginWithName:(NSString*)pluginName {
 	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
 	
@@ -4181,29 +4173,20 @@ static NSArray<Line*>* cachedTitlePage;
 	}
 
 	// Run a new plugin
-	BeatPlugin *pluginParser = [[BeatPlugin alloc] init];
-	pluginParser.delegate = self;
+	BeatPlugin *plugin = [BeatPlugin withName:pluginName delegate:self];
 	
-	BeatPluginData *pluginData = [self.pluginManager pluginWithName:pluginName];
-	[pluginParser loadPlugin:pluginData];
-		
 	// Null the local variable just in case.
-	// If the plugin wants to stay in memory, it should call registerPlugin:
-	pluginParser = nil;
+	// If the plugin wishes to stay in memory, it should call registerPlugin:
+	plugin = nil;
 }
 
-- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script {
+/// Loads and registers a plugin with given code. This is used for injecting plugins into memory, including the console plugin.
+- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script
+{
 	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
 	
-	BeatPlugin* pluginParser = BeatPlugin.new;
-	pluginParser.delegate = self;
-	
-	BeatPluginData* pluginData = BeatPluginData.new;
-	pluginData.name = pluginName;
-	pluginData.script = script;
-	[pluginParser loadPlugin:pluginData];
-	
-	return pluginParser;
+	BeatPlugin* plugin = [BeatPlugin withName:pluginName script:script delegate:self];
+	return plugin;
 }
 
 - (void)call:(NSString*)script context:(NSString*)pluginName {
@@ -4215,17 +4198,20 @@ static NSArray<Line*>* cachedTitlePage;
 	return self.runningPlugins[pluginName];
 }
 
-- (void)runGenericPlugin:(NSString*)script {
+- (void)runGenericPlugin:(NSString*)script
+{
 	
 }
 
-- (void)registerPlugin:(id)plugin {
+- (void)registerPlugin:(id)plugin
+{
 	BeatPlugin *parser = (BeatPlugin*)plugin;
 	if (!self.runningPlugins) self.runningPlugins = NSMutableDictionary.new;
 	
 	self.runningPlugins[parser.pluginName] = parser;
 }
-- (void)deregisterPlugin:(id)plugin {
+- (void)deregisterPlugin:(id)plugin
+{
 	BeatPlugin *parser = (BeatPlugin*)plugin;
 	[self.runningPlugins removeObjectForKey:parser.pluginName];
 	parser = nil;

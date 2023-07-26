@@ -19,7 +19,6 @@
  */
 
 #import "BeatPlugin.h"
-#import <BeatCore/BeatRevisions.h>
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import <PDFKit/PDFKit.h>
@@ -28,7 +27,11 @@
 
 #import <objc/runtime.h>
 
+#if TARGET_OS_IOS
 @interface BeatPlugin ()
+#else
+@interface BeatPlugin () <NSWindowDelegate, PluginWindowHost>
+#endif
 
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
@@ -37,7 +40,6 @@
 @property (nonatomic) JSValue *sceneCompletionCallback;
 @property (nonatomic) JSValue *characterCompletionCallback;
 @property (nonatomic) JSValue *documentSavedCallback;
-@property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSMutableArray *timers;
 @property (nonatomic) NSMutableArray *speakSynths;
@@ -61,6 +63,7 @@
 @property (nonatomic) BeatPluginUIView *widgetView;
 @property (nonatomic) BeatHTMLPrinter *printer;
 @property (nonatomic) NSWindow *sheet;
+@property (nonatomic) BeatPluginHTMLPanel* htmlPanel;
 #else
 @property (nonatomic) UIWindow *sheet;
 @property (nonatomic) id widgetView;
@@ -69,6 +72,30 @@
 @end
 
 @implementation BeatPlugin
+
++ (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate
+{
+    BeatPlugin* plugin = BeatPlugin.new;
+    plugin.delegate = delegate;
+    
+    BeatPluginData *pluginData = [BeatPluginManager.sharedManager pluginWithName:name];
+    [plugin loadPlugin:pluginData];
+    
+    return plugin;
+}
+
++ (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate
+{
+    BeatPlugin* plugin = BeatPlugin.new;
+    plugin.delegate = delegate;
+    
+    BeatPluginData *pluginData = BeatPluginData.new;
+    pluginData.name = name;
+    pluginData.script = script;
+    [plugin loadPlugin:pluginData];
+    
+    return plugin;
+}
 
 - (id)init
 {
@@ -190,27 +217,38 @@
 /// Force-quit a resident plugin. Used mostly by Beat to kill a background plugin by unchecking it under the Tools menu.
 - (void)forceEnd {
 	_terminating = YES;
-	if (_pluginWindows.count) {
-		for (BeatPluginHTMLWindow *window in _pluginWindows) {
-			[window closeWindow];
-		}
-	}
-	
+    
+    [self closeWindows];
 	[self stopBackgroundInstances];
 	
 	// macOS specific nulls
 #if !TARGET_OS_IOS
 	// Remove widget
 	if (self.widgetView != nil) [self.widgetView remove];
-	self.sheet = nil;
-	self.sheetCallback = nil;
-	
+    
 	[self clearMenus];
 #endif
 	
 	self.plugin = nil;
 		
 	[_delegate deregisterPlugin:self];
+}
+
+/// Closes all windows (on macOS)
+- (void)closeWindows
+{
+#if !TARGET_OS_IOS
+    if (self.htmlPanel) {
+        [self.htmlPanel closePanel:nil];
+        self.htmlPanel = nil;
+    }
+    
+    if (_pluginWindows.count) {
+        for (BeatPluginHTMLWindow *window in _pluginWindows) {
+            [window closeWindow];
+        }
+    }
+#endif
 }
 
 /// Restarts the plugin, clearing it from memory first.
@@ -229,14 +267,7 @@
 	
 	_terminating = YES;
 	
-	if (_pluginWindows.count) {
-		for (BeatPluginHTMLWindow *window in _pluginWindows) {
-			// Don't perform any callbacks here
-			if (window.isVisible && !window.isClosing) {
-				[window closeWindow];
-			}
-		}
-	}
+    [self closeWindows];
 	
 	// Stop any timers left
 	[self stopBackgroundInstances];
@@ -248,9 +279,6 @@
 
 	// Remove widget
 	if (self.widgetView != nil) [self.widgetView remove];
-	
-	self.sheet = nil;
-	self.sheetCallback = nil;
 #endif
 	
 	self.plugin = nil;
@@ -369,10 +397,14 @@
 }
 - (void)documentDidBecomeMain {
 	[_documentDidBecomeMainMethod callWithArguments:nil];
+    #if !TARGET_OS_IOS
 	[self refreshMenus];
+    #endif
 }
 - (void)documentDidResignMain {
+    #if !TARGET_OS_IOS
 	[self refreshMenus];
+    #endif
 }
 
 /// Creates a listener for when preview was updated.
@@ -504,6 +536,7 @@
 
 #pragma mark - Speak
 
+#if !TARGET_OS_IOS
 - (BeatSpeak*)speakSynth {
 	if (!_speakSynths) _speakSynths = NSMutableArray.new;	
 	
@@ -512,6 +545,18 @@
 	
 	return synth;
 }
+#endif
+
+- (void)killSynths {
+    #if !TARGET_OS_IOS
+    for (BeatSpeak *synth in _speakSynths) {
+        [synth stopSpeaking];
+    }
+    [_speakSynths removeAllObjects];
+    _speakSynths = nil;
+    #endif
+}
+
 
 #pragma mark - Timer
 
@@ -551,11 +596,7 @@
 	[_timers removeAllObjects];
 	_timers = nil;
 	
-	for (BeatSpeak *synth in _speakSynths) {
-		[synth stopSpeaking];
-	}
-	[_speakSynths removeAllObjects];
-	_speakSynths = nil;
+    [self killSynths];
 }
 
 
@@ -659,7 +700,14 @@
 
 /// Attempts to open  the given path in workspace (system)
 - (void)openInWorkspace:(NSString*)path {
+#if !TARGET_OS_IOS
 	[NSWorkspace.sharedWorkspace openFile:path];
+#else
+    NSURL *fileURL = [NSURL fileURLWithPath:path];
+
+    UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+    [documentInteractionController presentOptionsMenuFromRect:CGRectZero inView:self.delegate.textView animated:YES];
+#endif
 }
 
 
@@ -820,10 +868,8 @@
 
 /// Report a plugin error
 - (void)reportError:(NSString*)title withText:(NSString*)string {
-	// In the main thread, display errors as a modal window
-	if (NSThread.isMainThread) [self alert:title withText:string];
-	// Inn a background thread errors are logged to console
-	else [self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
+	//[self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
+    [BeatConsole.shared logError:@"WebView timed out" context:self pluginName:self.pluginName];
 }
 
 
@@ -1113,91 +1159,15 @@
 {
 #if !TARGET_OS_IOS
 	if (_delegate.documentWindow.attachedSheet) return;
+
+    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:html width:width height:height + 35.0 host:self cancelButton:cancelButton callback:callback];
 	
-	if (width <= 0) width = 600;
-	if (width > 800) width = 1000;
-	if (height <= 0) height = 400;
-	if (height > 800) height = 1000;
-	
-	// Load template
-    NSBundle *bundle = [NSBundle bundleForClass:self.class];
-	NSURL *templateURL = [bundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
+    self.htmlPanel = panel;
     
-	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
-	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
-	
-	NSWindow *panel = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0, width, height + 35) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
-	
-	WKWebView *webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 35, width, height)];
-	[webView loadHTMLString:template baseURL:nil];
-	[webView.configuration.userContentController addScriptMessageHandler:self name:@"sendData"];
-	[webView.configuration.userContentController addScriptMessageHandler:self name:@"log"];
-	[webView.configuration.userContentController addScriptMessageHandler:self name:@"call"];
-	[webView.configuration.userContentController addScriptMessageHandler:self name:@"callAndLog"];
-	[panel.contentView addSubview:webView];
-	
-	NSButton *okButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 90, 5, 90, 24)];
-	okButton.bezelStyle = NSRoundedBezelStyle;
-	[okButton setButtonType:NSMomentaryLightButton];
-	[okButton setTarget:self];
-	[okButton setAction:@selector(fetchHTMLPanelDataAndClose)];
-
-	// Make esc close the panel
-	okButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
-	okButton.title = [BeatLocalization localizedStringForKey:@"general.close"];
-	[panel.contentView addSubview:okButton];
-	
-	// Add cancel button if needed
-	if (cancelButton) {
-		NSButton *cancelButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 175, 5, 90, 24)];
-		cancelButton.bezelStyle = NSRoundedBezelStyle;
-		[cancelButton setButtonType:NSMomentaryLightButton];
-		[cancelButton setTarget:self];
-		[cancelButton setAction:@selector(closePanel:)];
-
-		// Close button is now OK and enter is the shortcut for sending the data
-		okButton.title = @"OK";
-		okButton.keyEquivalent = @"\r";
-		
-		// Esc closes the panel
-		cancelButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
-		cancelButton.title = @"Cancel";
-		[panel.contentView addSubview:cancelButton];
-	}
-	
-	_sheet = panel;
-	_sheetWebView = webView;
-	_sheetCallback = callback;
-	
-	[self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
-		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
-		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
-		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
-		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
-		self.sheetWebView = nil;
-		self.sheet = nil;
+    [self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
+        self.htmlPanel = nil;
 	}];
-}
-
-- (void)fetchHTMLPanelDataAndClose
-{
-	[_sheetWebView evaluateJavaScript:@"sendBeatData();" completionHandler:nil];
-	
-	// The sheet will close automatically after that, but run an alert if the sheet didn't close in time
-	// (for both the developer and the user to understand that something isn't working right)
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2), dispatch_get_main_queue(), ^(void){
-		if (self.delegate.documentWindow.attachedSheet == self.sheet && self.delegate.documentWindow.attachedSheet != nil) {
-			[self reportError:@"Plugin timed out" withText:@"Something went wrong with receiving data from the plugin"];
-			[self closePanel:nil];
-		}
-	});
-}
-
-- (void)closePanel:(id)sender
-{
-	if (self.delegate.documentWindow.attachedSheet) {
-		[self.delegate.documentWindow endSheet:_sheet];
-	}
+#endif
 }
 
 - (void)receiveDataFromHTMLPanel:(NSString*)json
@@ -1205,30 +1175,32 @@
 	// This method actually closes the HTML panel.
 	// It is called by sending a message to the script parser via webkit message handler,
 	// so this works asynchronously. Keep in mind.
-	
+#if !TARGET_OS_IOS
 	if ([json isEqualToString:@"(null)"]) json = @"";
 	
-	if (self.sheetCallback) {
+	if (self.htmlPanel.callback != nil) {
 		NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
 		NSError *error;
 		NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 		
-		if (!error) {
-			[self closePanel:nil];
-			[self runCallback:self.sheetCallback withArguments:@[jsonData]];
+        JSValue* callback = self.htmlPanel.callback;
+        
+        if (!error) {
+            [self.htmlPanel closePanel:nil];
+			[self runCallback:callback withArguments:@[jsonData]];
 		} else {
-			[self closePanel:nil];
+            [self.htmlPanel closePanel:nil];
 			[self reportError:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
 		}
 		
-		_sheetCallback = nil;
+        self.htmlPanel.callback = nil;
 	} else {
 		// If there was no callback, it marks the end of the script
-		[self closePanel:nil];
+        [self.htmlPanel closePanel:nil];
 		_context = nil;
 	}
-}
 #endif
+}
 
 #pragma mark - Window management
 
@@ -1263,7 +1235,22 @@
 	}
 #endif
 
+
 #pragma mark - HTML Window
+
+- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments {
+    if (!callback || callback.isUndefined) return;
+        
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.inCallback = YES;
+        [callback callWithArguments:arguments];
+        self.inCallback = NO;
+        
+        if (self.terminateAfterCallback) {
+            [self end];
+        }
+    });
+}
 
 #if !TARGET_OS_IOS
 
@@ -1292,62 +1279,13 @@
 	return panel;
 }
 
-- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments {
-	if (!callback || callback.isUndefined) return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		self.inCallback = YES;
-		[callback callWithArguments:arguments];
-		self.inCallback = NO;
-		
-		if (self.terminateAfterCallback) {
-			NSLog(@"... terminate plugin post callback");
-			[self end];
-		}
-	});
-}
-
-- (void)closePluginWindow:(id)sender
-{
-	if (_terminating) return;
-	
-	BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
-	window.isClosing = YES;
-	
-	// Store callback
-	JSValue *callback = window.callback;
-		
-	// Run callback
-	if (!callback.isUndefined && ![callback isNull]) {
-		[self runCallback:callback withArguments:nil];
-	}
-	
-	// Close window and remove its reference
-	[_pluginWindows removeObject:window];
-	[window closeWindow];
-}
-
 /// A plugin (HTML) window will close.
 - (void)windowWillClose:(NSNotification *)notification
 {
-	NSLog(@"HTML window will close");
-
 	BeatPluginHTMLWindow *window = notification.object;
 	if (window == nil) return;
-	
-	window.isClosing = YES;
-	
-	// Remove webview from memory
-	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
-	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
-	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
-	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
-	
-	if (@available(macOS 11.0, *)) {
-		[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndWait" contentWorld:WKContentWorld.pageWorld];
-	}
-	
-	[window.webview removeFromSuperview];
+    
+	[window.webView remove];
 }
 
 /// When the plugin window is set as main window, the document will become active. (If applicable.)
@@ -1364,6 +1302,41 @@
 }
 
 #endif
+
+/// Reliably closes a plugin window
+- (void)closePluginWindow:(id)sender
+{
+    if (_terminating) return;
+
+#if !TARGET_OS_IOS
+    // macOS
+    BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
+    
+    // Store callback
+    JSValue *callback = window.callback;
+        
+    // Run callback
+    if (!callback.isUndefined && ![callback isNull]) {
+        [self runCallback:callback withArguments:nil];
+    }
+    
+    // Close window and remove its reference
+    [_pluginWindows removeObject:window];
+    [window closeWindow];
+#else
+    // iOS
+    BeatPluginHTMLViewController* vc = (BeatPluginHTMLViewController*)sender;
+    JSValue* callback = vc.callback;
+    
+    // Run callback
+    if (!callback.isUndefined && !callback.isNull) {
+        [self runCallback:callback withArguments:nil];
+    }
+    
+    [vc closePanel:nil];
+#endif
+
+}
 
 #pragma mark - Tagging interface
 
@@ -1387,8 +1360,6 @@
 
 #pragma mark - New pagination interface
 
-#if !TARGET_OS_IOS
-
 - (BeatPaginationManager*)pagination
 {
 	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
@@ -1407,21 +1378,15 @@
 	[self.delegate resetPreview];
 }
 
-#endif
 
 
 #pragma mark - Widget interface and Plugin UI API
 
+#if !TARGET_OS_IOS
 - (BeatPluginUIView *)widgetView {
-	// Return nil for iOS
-#if TARGET_OS_IOS
-	return nil;
-#else
 	return _widgetView;
-#endif
 }
 
-#if !TARGET_OS_IOS
 - (BeatPluginUIView*)widget:(CGFloat)height
 {
 	// Allow only one widget view
@@ -1510,7 +1475,11 @@
 /// - returns: `[x, y, width, height]`
 - (NSArray*)screen
 {
-	NSRect screen = self.delegate.documentWindow.screen.frame;
+#if TARGET_OS_IOS
+    CGRect screen = self.delegate.documentWindow.screen.bounds;
+#else
+    CGRect screen = self.delegate.documentWindow.screen.frame;
+#endif
 	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
 }
 /// Returns window frame as an array
@@ -1520,7 +1489,7 @@
 }
 - (NSArray*)windowFrame
 {
-	NSRect frame = self.delegate.documentWindow.frame;
+	CGRect frame = self.delegate.documentWindow.frame;
 	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
 }
 /// Sets host document window frame
@@ -1914,6 +1883,7 @@
 - (NSDictionary*)revisedRanges {
 	return self.delegate.revisedRanges;
 }
+
 
 
 #pragma mark - Menu items

@@ -332,7 +332,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet *noteInIndices;
 
 @property (nonatomic) NSMutableArray<BeatNoteData*>* noteData;
-- (NSArray*)noteDataWithLineIndex:(NSInteger)lineIndex;
 
 /// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`)
 - (bool)canTerminateNoteBlock;

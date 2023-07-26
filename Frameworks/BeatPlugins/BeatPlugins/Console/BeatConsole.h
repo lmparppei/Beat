@@ -6,6 +6,8 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
 #else
