@@ -92,13 +92,14 @@ Beat.onSelectionChange((selection) => {
 	let outline = Beat.outline()
 	let currentScene = Beat.currentScene
 	
+	if (currentScene == null) return;
+
 	let uuid = currentScene.line?.uuidString()
 	window.runJS('updateSelection("' + uuid + '")')
 })
 
 // This method returns the HTML for index cards
 function createOutline(...outline) {
-	Beat.log("... creating outline")
 	json = []
 
 	let previousScene
@@ -326,7 +327,5 @@ Beat.custom = {
 function windowed() {
 	return (Beat.container == undefined)
 }
-
-Beat.log("Done ........................")
 
 
