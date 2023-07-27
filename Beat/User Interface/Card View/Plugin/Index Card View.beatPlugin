@@ -1,0 +1,332 @@
+/*
+
+New Outline
+© Lauri-Matti Parppei
+
+*/
+
+// Require the Beat template engine
+require("Template")
+
+let json
+
+let modes = { ios: 1, window: 2, container: 3 }
+
+if (Beat.container != undefined) mode = modes.container;
+else if (Beat.iOS()) mode = modes.ios;
+else ode = modes.window;
+
+// Templates for cards and elements
+let templates = {
+	scene: new Template("<div class='item card {{color}} {{selected}} {{isOmitted}}' color='{{color}}' uuid='{{uuid}}' position='{{range.location}}' length='{{range.length}}'><div class='card-content'>\
+			<div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div><div class='title'>{{ stringForDisplay }}</div></div>\
+				<div class='card-container'>\
+					{{ synopsisList }}\
+					{{ noteList }}\
+					<div class='content'>{{ text }}</div>\
+				</div>\
+				<div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
+			</div></div>"),
+
+	synopsisList: new Template("<div class='synopsis'><ul>{{ synopsisList }}</ul></div>"),
+	synopsisItem: new Template("<li class='{{ color }}'>{{ stringForDisplay }}</li>"),
+
+	section: new Template("<div class='item section' depth='{{sectionDepth}}' uuid='{{uuid}}'><h2>{{ stringForDisplay }}</h2>{{ synopsisList }}</div>"),
+
+	storyline: new Template("<span class='storyline'>{{ storyline }}</span>"),
+	storylineList: new Template("<div class='storylineList'>{{ storylines }}</div>"),
+
+	note: new Template("<li class='note {{ color }}'>✎ {{ content }}</li>"),
+	noteList: new Template("<div class='noteList'><ul>{{ notes }}</ul></div>"),
+}
+
+
+// When running the plugin for the first time, create the outline immediately
+let html =  (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
+
+let css = Beat.assetAsString("BeatCardsUI.css")
+let ui = Beat.assetAsString("BeatCardsUI.html")
+let js = Beat.assetAsString("dragula.js")
+
+if (!css || !js || !ui) {
+	// If the files weren't found, we'll search inside the app bundle.
+	css = Beat.appAssetAsString("BeatCardsUI.css")
+	ui = Beat.appAssetAsString("BeatCardsUI.html")
+	js = Beat.appAssetAsString("dragula.js")
+}
+
+
+// Create UI
+ui = ui.replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", Beat.iOS())
+
+// Create window.
+// We'll choose the appropriate view to use as the HTML view.
+// On iOS, it'll be a HTML panel, on macOS it's either a window (for the detached view) or the container (for the static view)
+let window
+if (mode == modes.ios) {
+	window = Beat.htmlPanel(ui, 900, 600, function () { Beat.end(); })
+}
+else if (mode == modes.window) {
+	window = Beat.htmlWindow(ui, 900, 600, function () { Beat.end(); })
+}
+else if (mode == modes.container) {
+	// This plugin is running *inside a plugin container*, so we'll get the HTML view from the container
+	window = Beat.container
+	Beat.log("# Running in container: " + window)
+
+	window.setHTML(ui)
+}
+
+
+// Register the listener
+let timer
+Beat.onOutlineChange(function (outlineChanges) {
+	if (timer != undefined && timer != null) timer.invalidate();
+	timer = Beat.timer(0.5, () => {
+		let html = createOutline(...Beat.outline()).replaceAll("\"", "\\\"")
+		window.runJS('load(' + JSON.stringify(html) + ')')
+	})
+})
+
+Beat.onSelectionChange((selection) => {
+	let outline = Beat.outline()
+	let currentScene = Beat.currentScene
+	
+	let uuid = currentScene.line?.uuidString()
+	window.runJS('updateSelection("' + uuid + '")')
+})
+
+// This method returns the HTML for index cards
+function createOutline(...outline) {
+	Beat.log("... creating outline")
+	json = []
+
+	let previousScene
+
+	for (let i=0; i < outline.length; i++) {
+		let scene = updateScene(outline[i])
+		json.push(scene)
+    }
+
+    // Create HTML based on the JSON data
+    let html = "<div class='dragContainer'>"
+
+    for (const scene of json) {
+    	let card = updateCard(scene)
+    	html += card.html
+
+    	if (scene.type == Beat.type.section && scene.sectionDepth < 3) {
+    		html += "</div><div class='dragContainer'>"
+    	}
+
+    	previousScene = scene
+    }
+
+    html += "</div>"
+
+    return html
+}
+
+// Get JSON for the scene and update it with some custom data
+function updateScene(scene) {
+	let pagination = Beat.currentPagination()
+
+	let sceneJSON = scene.json()
+
+	// Get the snippet (if needed)
+	sceneJSON.text = ""
+	let sceneLines = Beat.linesForScene(scene)
+	
+	for (let i=1; i<sceneLines.length; i++) {
+		let line = sceneLines[i]
+		if (line.type != Beat.type.empty && line.length > 0) {
+			if (!scene.omitted) sceneJSON.text = line.stripFormatting();
+			else sceneJSON.text = line.string;
+
+			break
+		}
+	}
+
+	// Convert some values to lowercase for consistency
+	sceneJSON.color = sceneJSON.color.toLowerCase()
+	sceneJSON.typeAsString = sceneJSON.typeAsString.toLowerCase()
+
+	// Get lines for this scene
+	let lines = Beat.linesForScene(scene)
+
+	// Get scene height
+	let pages = pagination.sceneLengthInEights(scene)
+
+	// (Oh my fucking god JavaScript is silly with its non-typed variables
+	// but I don't care.)
+	if (pages[0] > 0) sceneJSON.pages = pages[0];
+	else sceneJSON.pages = "";
+	if (pages[1] > 0) sceneJSON.eights = pages[1] + "/8";
+	else sceneJSON.eights = ""
+
+	// Add the JSON data to array
+	return sceneJSON
+}
+
+// Create the actual HTML card
+function updateCard(scene) {
+	let card = {
+		html: "",
+		uuid: ""
+	}
+
+	scene.synopsisList = ""
+	if (scene.synopsis.length) {
+		let synopsisList = []
+		for (const synopsis of scene.synopsis) {
+			synopsisList += templates.synopsisItem.withData(synopsis)
+		}
+
+		if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
+		scene.text = ""
+	}
+
+	scene.storylineList = ""
+	if (scene.storylines.length) {
+		let storylines = ""
+		for (const storyline of scene.storylines) {
+			storylines += templates.storyline.withData({ storyline: storyline })
+		}
+		scene.storylineList = templates.storylineList.withData({ storylines: storylines })
+	}
+
+	scene.noteList = ""
+	if (scene.notes.length) {
+		let notes = ""
+		for (const note of scene.notes) {
+			if (note.type == "note" && note.content.indexOf("COLOR") != 0 && note.content.length > 0) notes += templates.note.withData({ color: note.color, content: note.content })
+		}
+		if (notes.length > 0) scene.noteList = templates.noteList.withData({ notes: notes })
+	}
+
+	// Don't display the snippet if not needed
+	if (scene.noteList.length > 0 || scene.synopsisList.length > 0) scene.text = ""
+
+	scene.isOmitted = (scene.omitted) ? "omitted" : ""
+
+	let selectedRange = Beat.selectedRange()
+
+	if (selectedRange.location >= scene.range.location && selectedRange.location < scene.range.location + scene.range.length) {
+		scene.selected = "selected"
+	} else {
+		scene.selected = ""
+	}
+
+	// Load template
+	let cardHTML
+	if (scene.typeAsString == "heading") cardHTML = templates.scene.withData(scene)
+	else cardHTML = templates.section.withData(scene)
+
+	card.html = cardHTML
+	card.uuid = scene.line.uuid
+	
+	return card
+}
+
+// Custom methods to be called from the plugin window
+Beat.custom = {
+	restart: () => {
+		Beat.restart()
+	},
+	scrollToLine: (uuid) => {
+		let line = Beat.currentParser.lineWithUUID(uuid)
+		Beat.scrollToLine(line)
+		Beat.focusEditor()
+	},
+	getSceneForUUID: (uuid) => {
+		for (let i=0; i<Beat.outline().length; i++) {
+			let s = outline[i]
+			let sceneUUID = s.line.uuidString()
+			
+			if (uuid == sceneUUID) return s;
+		}
+
+		return null
+	},
+	moveScene: (sceneUUID, sceneBeforeUUID) => {
+		const outline = [...Beat.outline()]
+		
+		let sceneIndex = -1
+		let targetIndex = -1
+
+		for (let i=0; i<outline.length; i++) {
+			let s = outline[i]
+			let uuid = s.line.uuidString()
+			
+			if (uuid == sceneUUID) sceneIndex = i;
+			else if (uuid == sceneBeforeUUID) targetIndex = i;
+		}
+
+		// Do nothing if we couldn't find the scene
+		if (sceneIndex == -1) return;
+		
+		let scene = outline[sceneIndex]
+		let sibling = outline[targetIndex]
+		
+		let stringToMove = Beat.getText().substring(scene.position, scene.position + scene.length)
+		let targetPosition = (sibling) ? sibling.position : Beat.getText().length
+		
+		let position = scene.position
+		let length = scene.length
+		
+		// Then onto some very convoluted code for taking care of omissions
+		if (outline[targetIndex - 1] && outline[targetIndex - 1].omitted &&
+			outline[targetIndex] && outline[targetIndex].omitted && !scene.omitted) {
+			stringToMove = "\n*/\n\n" + stringToMove + "\n/*\n\n"
+		}
+		else if (sibling.omitted && outline[targetIndex - 1] && !outline[targetIndex - 1].omitted && !scene.omitted) {
+			// Find the omission
+			targetPosition = sibling.omissionStartsAt
+		} else if (scene.omitted) {
+			// Move an omitted scene
+			if (outline[sceneIndex-1]?.omitted && outline[sceneIndex+1]?.omitted) {
+				stringToMove = "/*\n\n" + stringToMove + "*/\n\n"
+			}
+			else if (outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+				// We need to close the current omission
+				Beat.replaceRange(scene.position, 0, "*/\n")
+				position += 3
+				if (targetPosition > position) targetPosition += 3;
+
+				stringToMove = "\n/*\n\n" + stringToMove
+			}
+			else if (!outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+				position = scene.omissionStartsAt
+				length = scene.length + scene.position - position
+				stringToMove = Beat.getText().substring(position, position + length)
+			}
+		}
+
+		
+		Beat.onSelectionChangeDisabled = true // We don't want the selected scene to change before outline has been udpated
+		
+		if (targetPosition < scene.position) {
+			Beat.replaceRange(position, length, "")
+			Beat.replaceRange(targetPosition, 0, stringToMove)
+
+			Beat.setSelectedRange(targetPosition, 0)
+		} else {
+			Beat.replaceRange(targetPosition, 0, stringToMove)
+			Beat.setSelectedRange(targetPosition, 0)
+			Beat.replaceRange(position, length, "")
+		}
+
+		Beat.onSelectionChangeDisabled = false
+	},
+	returnToEditor: () => {
+		window.closePanel()
+	}
+}
+
+function windowed() {
+	return (Beat.container == undefined)
+}
+
+Beat.log("Done ........................")
+
+

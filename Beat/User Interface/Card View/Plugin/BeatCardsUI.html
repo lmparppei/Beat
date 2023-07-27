@@ -1,0 +1,257 @@
+<html>
+	<head>
+		<style type='text/css'>
+			{{css}}
+		</style>
+		<script>
+			{{dragula}}
+		</script>
+		<script>
+			let modes = {
+				ios: 1,
+				window: 2,
+				container: 3
+			}
+
+			const mode = {{mode}}
+			const iOS = {{iOS}}
+
+			let colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta']
+			let colorName = ['#color.none#', '#color.red#', '#color.blue#', '#color.green#', '#color.pink#', '#color.brown#', '#color.cyan#', '#color.orange#', '#color.magenta#'];
+
+			contextMenu = {};
+			contextMenu.init = function () {
+				contextMenu.menu = document.createElement('div');
+				contextMenu.menu.id = 'contextMenu';
+				
+				var content = '';
+
+				Beat.log("Menu initialized")
+
+				for (var i in colors) {
+					var color = colors[i];
+					if (typeof color === 'string') {
+						content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + colorName[i] + "</div>";
+					}
+				}
+				
+				contextMenu.menu.innerHTML = content;
+				document.body.appendChild(contextMenu.menu);
+			}
+
+			contextMenu.toggle = function (e) {
+				if (contextMenu.menu == null) contextMenu.init();
+				
+				if (contextMenu.open == true) {
+					contextMenu.close()
+				} else {
+					var coordinates = getPosition(e)
+					contextMenu.menu.style.left = coordinates.x + "px"
+					contextMenu.menu.style.top = coordinates.y + "px"
+
+					contextMenu.target = e.target
+					contextMenu.open = true
+					
+					contextMenu.menu.className = "visible"
+
+					// Avoid overflow
+					if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
+						contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px"
+					}
+
+					if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
+						contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px"
+					}
+				}
+			}
+			contextMenu.close = function () {
+				contextMenu.open = false;
+				contextMenu.menu.className = '';
+			}
+			contextMenu.setColor = function (color) {
+				for (var c in colors) {
+					if (typeof colors[c] === 'string') {
+						contextMenu.target.classList.remove(colors[c]);
+					}
+				}
+				
+				let parent 
+
+				//contextMenu.target.classList.add(color);
+				
+				// SET COLOR
+				/*
+				let index = contextMenu.target.getAttribute('lineIndex');
+				let sceneIndex = contextMenu.target.getAttribute('sceneIndex');
+				
+				if (standalone) Beat.call("Beat.custom.setColor(" + sceneIndex + ", '" + color + "')")
+				else window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
+				*/
+				Beat.log("Set color here")
+				contextMenu.close()
+			}
+			contextMenu.open = false
+
+			function getPosition(e) {
+				var posx = 0;
+				var posy = 0;
+				
+				if (!e) var e = window.event;
+				
+				if (e.pageX || e.pageY) {
+					posx = e.pageX;
+					posy = e.pageY;
+				} else if (e.clientX || e.clientY) {
+					posx = e.clientX + document.body.scrollLeft +
+					document.documentElement.scrollLeft;
+					posy = e.clientY + document.body.scrollTop +
+					document.documentElement.scrollTop;
+				}
+				
+				return {
+					x: posx,
+					y: posy
+				}
+			}
+
+			function updateSelection(selected) {
+				let items = document.querySelectorAll(".item")
+				for (let i=0; i<items.length; i++) {
+					let item = items[i]
+					let uuid = item.getAttribute("uuid")
+					
+					if (uuid == selected) {
+						item.classList.add("selected")
+						item.scrollIntoView( { behavior: "smooth", block: "center" })
+					} else {
+						item.classList.remove("selected")
+					}
+				}
+			}
+			
+			let drake;
+			function initDragDrop () {
+				// Init dragula
+				drake = dragula({
+					direction: 'horizontal',
+					revertOnSpill: true,
+					
+					invalid: function (el, handle) {
+						return el.classList.contains("section")
+					}
+				});
+
+				const containers = document.querySelectorAll(".dragContainer")
+				drake.containers = []
+				for (let container of containers) {
+					drake.containers.push(container)
+				}
+
+				// Handle drop
+
+				drake.on('drop', function (el, target, source, sibling) {
+					let siblingUUID = sibling.getAttribute("uuid")
+					let sceneUUID = el.getAttribute("uuid")
+
+					Beat.call("Beat.custom.moveScene('" + sceneUUID + "', '" + siblingUUID + "')")
+				});
+			}
+
+			function filter(element) {
+				const value = element.checked;
+				let className = 'hide-' + element.name;
+				
+				if (value) {
+					document.body.classList.remove(className);
+				} else {
+					document.body.classList.add(className);
+				}
+			}
+
+			let zoomLevel = 1
+			function zoomIn () {
+				if (zoomLevel < 2) zoomLevel++;
+				
+				let zoomClass = 'zoomLevel-' + zoomLevel
+				document.body.className = zoomClass
+			}
+			function zoomOut () {
+				if (zoomLevel > 0) zoomLevel--;
+				
+				let zoomClass = 'zoomLevel-' + zoomLevel
+				document.body.className = zoomClass
+			}
+
+		</script>
+	</head>
+	<body class='zoomLevel-1'>
+		<div id='menu'>
+			<!-- <button onclick='restart()'>Restart</button> -->
+
+			<div id='filters'>
+				<input type='checkbox' name='scenes' onclick='filter(this)' checked> 🎬 
+				<input type='checkbox' name='section-1' onclick='filter(this)' checked> # 
+				<input type='checkbox' name='section-2' onclick='filter(this)' checked> ## 
+				<input type='checkbox' name='section-3' onclick='filter(this)' checked> ### 
+			</div>
+
+			<div id='zoom'>
+			   <button onclick='zoomOut()'>-</button>
+			   <button onclick='zoomIn()'>+</button>
+			</div>
+		</div>
+
+		<div id='container'>
+			{{html}}
+		</div>
+
+		<script>
+			const container = document.getElementById('container')
+			
+			function load(html) {
+				container.innerHTML = html.replaceAll("\\\"", "\"")
+				setupContextMenu()
+				initDragDrop()
+			}
+
+			function setupContextMenu() {
+				let cards = document.querySelectorAll(".card")
+				
+				cards.forEach(function (card) {
+					let uuid = card.getAttribute("uuid")
+
+					card.onclick = function () {
+						contextMenu.close();
+						Beat.log("Click")
+						if (mode == modes.window) scrollToLine(uuid);
+					}
+					card.ondblclick = function () {
+						// In container mode we'll return to editor view
+						if (mode == modes.container && !iOS) {
+							Beat.call("Beat.custom.returnToEditor()")
+						}
+
+						Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
+					}
+					card.oncontextmenu = function (e) {
+						e.preventDefault()
+						Beat.log("Context menu")
+						contextMenu.toggle(e)
+					}
+				})
+			}
+
+			function scrollToLine(uuid) {
+				Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
+			}
+
+			function restart() {
+				Beat.call("Beat.custom.restart()")
+			}
+
+			setupContextMenu()
+			initDragDrop()
+
+		</script>
+	</body>
+</html>

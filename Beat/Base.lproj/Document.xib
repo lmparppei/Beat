@@ -4,7 +4,6 @@
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="21008"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -14,7 +13,6 @@
                 <outlet property="autocompletion" destination="2ND-f1-BwG" id="7w3-w6-q1Q"/>
                 <outlet property="backgroundView" destination="3qa-Wg-PsD" id="is8-W2-FQ7"/>
                 <outlet property="beatTimer" destination="rsQ-wl-KkE" id="pT8-vn-UCc"/>
-                <outlet property="cardView" destination="H6p-BS-C9x" id="ndu-gh-RHx"/>
                 <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Wxg-hf-1FX"/>
                 <outlet property="cardsTab" destination="798-ya-EGc" id="HQx-jG-RjP"/>
                 <outlet property="characterBox" destination="uDe-RI-kOI" id="qFD-eS-4J2"/>
@@ -1484,14 +1482,6 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <wkWebView wantsLayer="YES" allowsLinkPreview="NO" id="2ja-Hc-I6Z">
-                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
-                                                <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                                <wkPreferences key="preferences"/>
-                                            </wkWebViewConfiguration>
-                                        </wkWebView>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mUG-iU-q9L">
                                             <rect key="frame" x="1112" y="620" width="23" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
@@ -1503,6 +1493,16 @@
                                                 <action selector="toggleCards:" target="-2" id="itP-Gm-Q7I"/>
                                             </connections>
                                         </button>
+                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0r8-Vu-ZXk" customClass="BeatPluginContainerView" customModule="BeatPlugins">
+                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="pluginName" value="Index Card View"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <outlet property="delegate" destination="-2" id="o5g-Ma-UXH"/>
+                                            </connections>
+                                        </customView>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1596,12 +1596,6 @@
         <customObject id="N8j-Ng-1O5" customClass="BeatRevisions">
             <connections>
                 <outlet property="delegate" destination="-2" id="soj-W6-qai"/>
-            </connections>
-        </customObject>
-        <customObject id="H6p-BS-C9x" customClass="SceneCards">
-            <connections>
-                <outlet property="cardView" destination="2ja-Hc-I6Z" id="ffT-Qd-mza"/>
-                <outlet property="delegate" destination="-2" id="Eoj-pi-rNH"/>
             </connections>
         </customObject>
         <customObject id="IRq-m7-MkJ" customClass="BeatTagging">
