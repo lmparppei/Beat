@@ -1,0 +1,10 @@
+
+let container = Beat.container
+
+if (container == undefined) {
+	Beat.log("No container.")
+	return;
+}
+
+Beat.log("Container: " + container)
+container.setHTML("Hello world.")

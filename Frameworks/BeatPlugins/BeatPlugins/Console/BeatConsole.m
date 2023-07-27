@@ -154,6 +154,8 @@
 }
 - (void)logError:(id)error context:(id)context pluginName:(NSString*)name
 {
+    NSLog(@"ERROR: %@: %@", name, error);
+    
 #if !TARGET_OS_IOS
 	if (context == nil) context = _currentContext;
 	
@@ -172,8 +174,6 @@
 		NSFontAttributeName: font
 	}];
 	[self logMessage:string context:context];
-#else
-    NSLog([NSString stringWithFormat:@"%@: %@", name, error]);
 #endif
 }
 

@@ -284,6 +284,14 @@
 		B6916C0025D135930037EF6A /* BeatFDXExport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6916BFF25D135930037EF6A /* BeatFDXExport.m */; };
 		B692D0ED2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */; };
 		B692D0EE2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */; };
+		B696BC1F2A714C450078BA79 /* Container Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC1E2A714C1F0078BA79 /* Container Test.beatPlugin */; };
+		B696BC202A714C450078BA79 /* Container Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC1E2A714C1F0078BA79 /* Container Test.beatPlugin */; };
+		B696BC2B2A7151D40078BA79 /* BeatCardsUI.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC252A7150F50078BA79 /* BeatCardsUI.css */; };
+		B696BC2C2A7151D40078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */; };
+		B696BC2E2A7151D40078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC222A7150F50078BA79 /* BeatCardsUI.html */; };
+		B696BC322A7151D50078BA79 /* BeatCardsUI.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC252A7150F50078BA79 /* BeatCardsUI.css */; };
+		B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */; };
+		B696BC352A7151D50078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC222A7150F50078BA79 /* BeatCardsUI.html */; };
 		B698DCDA2A4B8BB000D8C5C4 /* BeatQuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */; };
 		B698DCDB2A4B8BB000D8C5C4 /* BeatQuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */; };
 		B698DCE02A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B698DCE32A4B969E00D8C5C4 /* BeatQuickSettings.xib */; };
@@ -755,6 +763,11 @@
 		B6916BFE25D135930037EF6A /* BeatFDXExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFDXExport.h; sourceTree = "<group>"; };
 		B6916BFF25D135930037EF6A /* BeatFDXExport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFDXExport.m; sourceTree = "<group>"; };
 		B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginLibraryDataSource.swift; sourceTree = "<group>"; };
+		B696BC1E2A714C1F0078BA79 /* Container Test.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Container Test.beatPlugin"; path = "Frameworks/BeatPlugins/BeatPlugins/Plugin UI/Container Test.beatPlugin"; sourceTree = "<group>"; };
+		B696BC222A7150F50078BA79 /* BeatCardsUI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = BeatCardsUI.html; sourceTree = "<group>"; };
+		B696BC232A7150F50078BA79 /* dragula.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
+		B696BC252A7150F50078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatQuickSettings.swift; sourceTree = "<group>"; };
 		B698DCE22A4B969E00D8C5C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatQuickSettings.xib; sourceTree = "<group>"; };
 		B698DCE52A4B96A100D8C5C4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
@@ -973,6 +986,7 @@
 			children = (
 				B6763E4E27820CCF00284907 /* Localizable.strings */,
 				B66682FE262369DD006473B9 /* TODO */,
+				B696BC1E2A714C1F0078BA79 /* Container Test.beatPlugin */,
 				B69A928B231915E900FE6A3E /* README.md */,
 				B66B5A912739B54800BBC9C6 /* CHANGELOG.md */,
 				B640766227D7915F0053D63A /* Developer Documentation */,
@@ -1420,6 +1434,7 @@
 		B66FC99F2276EADC00C0265D /* Card View */ = {
 			isa = PBXGroup;
 			children = (
+				B696BC212A7150E10078BA79 /* Plugin */,
 				B69A929B2319609100FE6A3E /* dragula.js */,
 				B67F4A5D22762FE600E14FCA /* CardCSS.css */,
 				B66FC99D2276EAD800C0265D /* CardView.js */,
@@ -1574,6 +1589,17 @@
 				B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */,
 			);
 			path = Statistics;
+			sourceTree = "<group>";
+		};
+		B696BC212A7150E10078BA79 /* Plugin */ = {
+			isa = PBXGroup;
+			children = (
+				B696BC252A7150F50078BA79 /* BeatCardsUI.css */,
+				B696BC222A7150F50078BA79 /* BeatCardsUI.html */,
+				B696BC232A7150F50078BA79 /* dragula.js */,
+				B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */,
+			);
+			path = Plugin;
 			sourceTree = "<group>";
 		};
 		B698DCDC2A4B901500D8C5C4 /* Quick Settings */ = {
@@ -2046,6 +2072,7 @@
 				B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
+				B696BC202A714C450078BA79 /* Container Test.beatPlugin in Resources */,
 				B60A9F432977EEE400916FAA /* ThemeEditor.xib in Resources */,
 				B636AEEA27BD56500018C6CC /* revisions_2022.jpg in Resources */,
 				B67C2CFF2A2D29BB00B88B0F /* Templates And Tutorials.plist in Resources */,
@@ -2069,8 +2096,10 @@
 				B6763E5A2782295E00284907 /* Localizable.strings in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6907E3B233FE17C00741071 /* BeatStatisticsPanel.html in Resources */,
+				B696BC2E2A7151D40078BA79 /* BeatCardsUI.html in Resources */,
 				B6C7024F295DFF5C00920D82 /* Courier Prime Italic.ttf in Resources */,
 				B6E38950270DDE130067DD0C /* outline.png in Resources */,
+				B696BC2C2A7151D40078BA79 /* Index Card View.beatPlugin in Resources */,
 				B6C70253295DFF5C00920D82 /* Courier Prime.ttf in Resources */,
 				B698DCE02A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */,
 				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
@@ -2099,6 +2128,7 @@
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
 				B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */,
 				B6F712A9276BC78D00C4489B /* PreviewStyles.css in Resources */,
+				B696BC2B2A7151D40078BA79 /* BeatCardsUI.css in Resources */,
 				B6E3894F270DDE130067DD0C /* timeline.png in Resources */,
 				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
 			);
@@ -2128,6 +2158,7 @@
 				B6E099D6276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B605473F276A9011001E571F /* ScreenplayStyles.css in Resources */,
 				B60A9F442977EEE500916FAA /* ThemeEditor.xib in Resources */,
+				B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
 				B607519228CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,
 				B636AEEB27BD56500018C6CC /* revisions_2022.jpg in Resources */,
@@ -2171,9 +2202,12 @@
 				B6F31177274BF70400D0840D /* BeatPluginLibrary.xib in Resources */,
 				B6F632FC28416FB600494BD7 /* Icon-MacOS-256x256@1x.png in Resources */,
 				B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B696BC352A7151D50078BA79 /* BeatCardsUI.html in Resources */,
 				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
 				B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
+				B696BC322A7151D50078BA79 /* BeatCardsUI.css in Resources */,
+				B696BC1F2A714C450078BA79 /* Container Test.beatPlugin in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
 				B67C2D002A2D29BB00B88B0F /* Templates And Tutorials.plist in Resources */,

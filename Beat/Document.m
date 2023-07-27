@@ -166,6 +166,7 @@
 // Views
 @property (nonatomic) NSMutableSet *registeredViews;
 @property (nonatomic) NSMutableSet *registeredOutlineViews;
+@property (nonatomic) NSMutableSet<BeatPluginContainerView*>* registeredPluginContainers;
 
 // Sidebar & Outline view
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
@@ -211,7 +212,7 @@
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
 
 // Card view
-@property (nonatomic, weak) IBOutlet SceneCards *cardView;
+//@property (nonatomic, weak) IBOutlet SceneCards *cardView;
 @property (nonatomic) bool cardsVisible;
 
 // Mode display
@@ -355,7 +356,7 @@
 	
 	// Avoid retain cycles with WKWebView
 	// [self.preview deallocPreview];
-	[self.cardView removeHandlers];
+	// [self.cardView removeHandlers];
 	
 	
 	// Terminate running plugins
@@ -391,7 +392,7 @@
 	self.contentBuffer = nil;
 	self.analysisWindow = nil;
 	self.currentScene = nil;
-	self.cardView = nil;
+	//self.cardView = nil;
 	self.outlineView.filters = nil;
 	self.outline = nil;
 	self.outlineView.filteredOutline = nil;
@@ -430,6 +431,16 @@
 
 static BeatAppDelegate *appDelegate;
 
+- (void)windowControllerWillLoadNib:(NSWindowController *)windowController {
+	[super windowControllerWillLoadNib:windowController];
+	
+	//Put any previously loaded data into the text view
+	self.documentIsLoading = YES;
+	
+	// Initialize parser
+	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
+}
+
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	// Hide the welcome screen
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
@@ -467,34 +478,30 @@ static BeatAppDelegate *appDelegate;
 	[self setupAnalysis];
 	[self setupColorPicker];
 	[self.outlineView setup];
-	[self.cardView setup];
 	
 	// Setup layout here first, but don't paginate
 	[self setupLayoutWithPagination:NO];
 	
 	// Print dialog
 	self.printDialog.document = nil;
-	
-	//Put any previously loaded data into the text view
-	self.documentIsLoading = YES;
-	
+		
+	// Put any previously loaded text into the text view when it's loaded
+	self.textView.alphaValue = 0;
 	if (self.contentBuffer) {
 		[self setText:self.contentBuffer];
 	} else {
 		self.contentBuffer = @"";
 		[self setText:@""];
 	}
-	
-	self.textView.alphaValue = 0;
-	
-	[self parseAndRenderDocument];
+		
+	// Perform first-time rendering
+	[self renderDocument];
 }
 
--(void)parseAndRenderDocument {
-	// Initialize parser
-	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
-	[self.revisionTracking setup]; // Initialize edit tracking
-	
+-(void)renderDocument {
+	// Initialize edit tracking
+	[self.revisionTracking setup];
+
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Show a progress bar for longer documents
 		if (self.parser.lines.count > 1000) {
@@ -583,6 +590,11 @@ static BeatAppDelegate *appDelegate;
 				NSLog(@"Plugin error: %@", exception);
 			}
 		}
+	}
+	
+	// Load plugin containers
+	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
+		[container load];
 	}
 }
 
@@ -1204,7 +1216,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)registerEditorView:(id<BeatEditorView>)view
 {
 	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
-	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+	[_registeredViews addObject:view];
 }
 
 /// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
@@ -1212,6 +1224,13 @@ static NSWindow __weak *currentKeyWindow;
 {
 	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableSet.set;
 	if (![_registeredOutlineViews containsObject:view]) [_registeredOutlineViews addObject:view];
+}
+
+/// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
+- (void)registerPluginContainer:(id<BeatPluginContainer>)view
+{
+	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableSet.new;
+	[_registeredPluginContainers addObject:(BeatPluginContainerView*)view];
 }
 
 
@@ -1288,7 +1307,9 @@ static NSWindow __weak *currentKeyWindow;
 	
 	self.textView.alphaValue = 0.0;
 	[self setText:_contentBuffer];
-	[self parseAndRenderDocument];
+	
+	self.parser = [ContinuousFountainParser.alloc initWithString:_contentBuffer delegate:self];
+	[self renderDocument];
 	
 	[self updateChangeCount:NSChangeCleared];
 	[self updateChangeCount:NSChangeDone];
@@ -1368,14 +1389,14 @@ static NSWindow __weak *currentKeyWindow;
 - (IBAction)undoEdit:(id)sender {
 	
 	[self.undoManager undo];
-	if (_cardsVisible) [self.cardView refreshCards:YES];
+	//if (_cardsVisible) [self.cardView refreshCards:YES];
 	
 	// To avoid some graphical glitches
 	[self ensureLayout];
 }
 - (IBAction)redoEdit:(id)sender {
 	[self.undoManager redo];
-	if (_cardsVisible) [self.cardView refreshCards:YES];
+	// if (_cardsVisible) [self.cardView refreshCards:YES];
 	
 	// To avoid some graphical glitches
 	[self ensureLayout];
@@ -3416,7 +3437,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (self.currentTab != _cardsTab) {
 		_cardsVisible = YES;
 		
-		[self.cardView refreshCards];
+		//[self.cardView refreshCards];
 		[self showTab:_cardsTab];
 	} else {
 		_cardsVisible = NO;
@@ -3431,7 +3452,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)refreshAllOutlineViews {
 	if (_sidebarVisible) [self.outlineView reloadOutline];
-	if (_cardsVisible) [self.cardView refreshCards];
+	//if (_cardsVisible) [self.cardView refreshCards];
 	
 	for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
 		[view reloadView];

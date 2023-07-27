@@ -84,6 +84,16 @@
     return plugin;
 }
 
+/// For plugin containers, we'll first need to set the container, and only load the plugin afterwards
++ (BeatPlugin*)withContainer:(id<BeatPluginContainer>)container delegate:(id<BeatPluginDelegate>)delegate
+{
+    BeatPlugin* plugin = BeatPlugin.new;
+    plugin.delegate = delegate;
+    plugin.container = container;
+        
+    return plugin;
+}
+
 + (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate
 {
     BeatPlugin* plugin = BeatPlugin.new;
@@ -180,14 +190,26 @@
 
 #pragma mark - Running Scripts
 
+/// Load plugin with given name
+- (void)loadPluginWithName:(NSString*)name
+{
+    BeatPluginData *pluginData = [BeatPluginManager.sharedManager pluginWithName:name];
+    if (pluginData == nil) NSLog(@"No plugin found with name: %@", pluginData);
+    
+    [self loadPlugin:pluginData];
+}
+
 /// Load plugin data with the given data.
 - (void)loadPlugin:(BeatPluginData*)plugin
 {
 	self.plugin = plugin;
 	self.pluginName = plugin.name;
 	
+    // For contained plugins we won't use the actual name to avoid conflicts.
+    if (self.container != nil) self.pluginName = [NSString stringWithFormat:@"%@ (in container)", self.pluginName];
+    
 	[BeatPluginManager.sharedManager pathForPlugin:plugin.name];
-	
+
 	[self runScript:plugin.script];
 }
 
@@ -198,7 +220,7 @@
 	[self.context evaluateScript:pluginString];
 	
 	// Kill it if the plugin is not resident
-	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView) {
+	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView && !self.container) {
 		[self end];
 	}
 }
@@ -720,7 +742,8 @@
 		NSString *path = [[BeatPluginManager.sharedManager pathForPlugin:_plugin.name] stringByAppendingPathComponent:filename];
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 	} else {
-		[self log:@"Can't find bundled file '%@' – Are you sure the plugin is contained in a self-titled folder? For example: Plugin.beatPlugin/Plugin.beatPlugin"];
+        NSString* msg = [NSString stringWithFormat:@"Can't find bundled file '%@' – Are you sure the plugin is contained in a self-titled folder? For example: Plugin.beatPlugin/Plugin.beatPlugin", filename];
+		[self log:msg];
 		return @"";
 	}
 }
@@ -733,7 +756,8 @@
 	if (path) {
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 	} else {
-		[self log:@"Can't find '%@' in app bundle"];
+        NSString* msg = [NSString stringWithFormat:@"Can't find '%@' in app bundle", filename];
+		[self log:msg];
 		return @"";
 	}
 }
@@ -762,7 +786,7 @@
 /// Logs the given message to plugin developer log
 - (void)log:(NSString*)string
 {
-	if (string == nil) return;
+    if (string == nil) string = @"";
 	
 	#if !TARGET_OS_IOS
 		BeatConsole *console = BeatConsole.shared;
@@ -869,7 +893,8 @@
 /// Report a plugin error
 - (void)reportError:(NSString*)title withText:(NSString*)string {
 	//[self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
-    [BeatConsole.shared logError:@"WebView timed out" context:self pluginName:self.pluginName];
+    NSString* msg = [NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string];
+    [BeatConsole.shared logError:msg context:self pluginName:self.pluginName];
 }
 
 
@@ -1603,7 +1628,7 @@
 
 - (NSArray*)outline
 {
-	return self.delegate.parser.outline;
+    return (self.delegate.parser.outline) ? self.delegate.parser.outline : @[];
 }
 
 - (Line*)lineAtPosition:(NSInteger)index

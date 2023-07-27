@@ -55,6 +55,8 @@
 @class BeatPagination;
 @class OutlineScene;
 
+@protocol BeatPluginContainer;
+
 #pragma mark - App delegate replacement
 
 @protocol BeatAppAPIDelegate
@@ -72,7 +74,8 @@
 - (void)restart;
 /// Crash the app
 - (void)crash;
-
+/// Container view for this plugin (if applicable)
+@property (weak, readonly, nonatomic) id<BeatPluginContainer> container;
 
 #pragma mark System access
 /// Check compatibility with Beat version. Basically used for checking if Beat version is out of date.
@@ -83,7 +86,10 @@
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
 /// Executes a run-time ObjC call. This is for the people who, really, and let me emphasize, __actually__ know what the fuck they are doing. No plugins should ever use this method. Purely for testing and hacking purposes.
 JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments);
-
+/// Returns `true` when the plugin is running on iOS
+- (bool)iOS;
+/// Returns `true` when the plugin is running on macOS
+- (bool)macOS;
 
 #pragma mark Parsed content
 /// List of Beat line types
@@ -375,6 +381,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
+
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
@@ -394,6 +401,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @property (nonatomic, readonly) bool closing;
 
+- (void)registerPluginContainer:(id<BeatPluginContainer>)view;
 - (BeatPaginationManager*)pagination;
 - (void)createPreviewAt:(NSInteger)location;
 - (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync;
@@ -454,6 +462,8 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
 
+@property (weak, nonatomic) id<BeatPluginContainer> container;
+
 @property (nonatomic) bool onPreviewFinishedDisabled;
 @property (nonatomic) bool onOutlineChangeDisabled;
 @property (nonatomic) bool onSelectionChangeDisabled;
@@ -465,6 +475,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic) JSValue* importCallback;
 @property (nonatomic) JSValue* exportCallback;
 
+- (void)loadPluginWithName:(NSString*)name;
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
 - (void)reportError:(NSString*)title withText:(NSString*)string;

@@ -22,15 +22,15 @@ import WebKit
     @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue)
     @objc func closePanel(_ sender:AnyObject?)
     //@objc func fetchHTMLPanelDataAndClose()
-    @objc var webView:BeatPluginWebView { get }
+    @objc var webView:BeatPluginWebView? { get set }
     
     var callback:JSValue? { get set }
     weak var host:BeatPlugin? { get set }
 }
 
-protocol BeatPluginWebViewExports:JSExport {
+@objc protocol BeatPluginWebViewExports:JSExport {
     func setHTML(_ html:String)
-    func runJS(_ js:String, callback:JSValue)
+    func runJS(_ js:String, _ callback:JSValue?)
 }
 
 @objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports {
@@ -64,13 +64,19 @@ protocol BeatPluginWebViewExports:JSExport {
         return webView
     }
 
-    @objc public func runJS(_ js:String, callback:JSValue) {
+    public func runJS(_ js:String, _ callback:JSValue?) {
+        print(" -> run js")
         self.evaluateJavaScript(js) { returnValue, error in
+            print("   ... callback")
             if error != nil {
                 return
             }
-                        
-            callback.call(withArguments: (returnValue != nil) ? [returnValue!] : [])
+             
+            if let c = callback {
+                if !c.isUndefined {
+                    callback?.call(withArguments: (returnValue != nil) ? [returnValue!] : [])
+                }
+            }
         }
     }
     

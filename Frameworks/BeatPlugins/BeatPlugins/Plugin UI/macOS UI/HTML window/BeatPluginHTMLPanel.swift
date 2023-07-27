@@ -14,7 +14,7 @@ import WebKit
 
 @objc public class BeatPluginHTMLPanel: NSPanel, BeatHTMLView {
     @objc public var callback:JSValue?
-    @objc public var webView:BeatPluginWebView
+    @objc public var webView:BeatPluginWebView?
     @objc public weak var host:BeatPlugin?
     
     @objc required public init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue) {
@@ -79,7 +79,7 @@ import WebKit
      
     /// Gets HTML data from the window (and checks if the Beat injected code is still there). The actual handling of this message is done in main plugin class, which is a bit inconvenient. The async dispatch is for forcing the panel to be closed if the plugin didn't respond in time.
     @objc func fetchHTMLPanelDataAndClose() {
-        self.webView.evaluateJavaScript("sendBeatData();")
+        self.webView?.evaluateJavaScript("sendBeatData();")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
             // your code here
@@ -94,24 +94,13 @@ import WebKit
     /// Closes the panel and removes the script handlers. Always use this when closing the panel.
     @objc public func closePanel(_ sender:AnyObject?) {
         if (host?.delegate.documentWindow.attachedSheet != nil) {
-            self.webView.remove()
+            self.webView?.remove()
             host?.delegate.documentWindow.endSheet(self)
         }
     }
     
     /// Executes given string in the web view of this panel
-    @objc public func runJS(_ js:String, callback:JSValue?) {
-        if let c = callback {
-            if !c.isUndefined {
-                self.webView.evaluateJavaScript(js) { data, error in
-                    DispatchQueue.main.async {
-                        let arguments = (data != nil) ? [data!] : []
-                        callback?.call(withArguments: arguments)
-                    }
-                }
-            } else {
-                self.webView.evaluateJavaScript(js)
-            }
-        }
+    @objc public func runJS(_ js:String, callback:JSValue) {
+        self.webView?.runJS(js, callback)
     }
 }

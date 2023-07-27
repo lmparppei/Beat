@@ -58,6 +58,7 @@
 		B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,6 +114,7 @@
 		B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D0FD2A6EBB9400574D72 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D1002A6EBB9400574D72 /* BeatPlugins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugins.h; sourceTree = "<group>"; };
+		B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				B680B7662A6EBBFC00FCD805 /* BeatPluginWebView.swift */,
+				B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */,
 				B62117122A6FFB7D0053228F /* iOS UI */,
 				B680B75F2A6EBBFB00FCD805 /* macOS UI */,
 			);
@@ -398,6 +401,7 @@
 				B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */,
 				B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */,
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
+				B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */,
 				B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */,
 				B680B7842A6EBBFD00FCD805 /* BeatPluginWebView.swift in Sources */,
 				B680B7822A6EBBFD00FCD805 /* BeatPluginUIDropdown.m in Sources */,
