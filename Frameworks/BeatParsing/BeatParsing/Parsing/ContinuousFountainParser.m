@@ -755,9 +755,6 @@ static NSDictionary* patterns;
     
     // Parse notes
     [self parseNotesFor:line at:index oldType:oldType];
-    for (BeatNoteData* note in line.noteData) {
-        NSLog(@" -> '%@'", [line.string substringWithRange:note.range]);
-    }
         
 	// Omits have stars in them, which can be mistaken for formatting characters.
 	// We store the omit asterisks into the "excluded" index set to avoid this mixup.
@@ -1167,7 +1164,6 @@ static NSDictionary* patterns;
     
     for (NSUInteger i=0; i < length-1; i++) {
         if (i+1 > length) break;
-        
         unichar c1 = string[i];
         unichar c2 = string[i+1];
         
@@ -1180,7 +1176,7 @@ static NSDictionary* patterns;
             
             [stars addIndex:i];
             
-            range.length = i + range.location + OMIT_PATTERN_LENGTH;
+            range.length = i - range.location + OMIT_PATTERN_LENGTH;
             [indexSet addIndexesInRange:range];
             
             range = NSMakeRange(NSNotFound, 0);
