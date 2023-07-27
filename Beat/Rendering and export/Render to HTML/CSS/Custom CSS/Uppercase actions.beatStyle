@@ -1,9 +1,0 @@
-p {
-	text-transform: uppercase;
-}
-.dialogue, .dual-dialogue, .parenthetical {
-	text-transform: none;
-}
-.lyrics {
-	text-transform: none;
-}

@@ -744,7 +744,6 @@ static NSDictionary *fdxIds;
 		// Remove old-style carriage returns (just in case)
 		NSString* c = [NSString stringWithFormat:@"%c", 0x03];
 		NSRange r = [text rangeOfString:c];
-		if (r.location != NSNotFound) NSLog(@" -> %lu/%lu", r.location, r.length);
 		
 		// Remove unwanted characters
 		NSArray* l = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];

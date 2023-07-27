@@ -65,12 +65,8 @@ import WebKit
     }
 
     public func runJS(_ js:String, _ callback:JSValue?) {
-        print(" -> run js")
         self.evaluateJavaScript(js) { returnValue, error in
-            print("   ... callback")
-            if error != nil {
-                return
-            }
+            if error != nil { return }
              
             if let c = callback {
                 if !c.isUndefined {
