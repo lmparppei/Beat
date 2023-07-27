@@ -1394,7 +1394,13 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid]) return true;
     else return false;
 }
+- (NSUUID *)uuid {
+    if (_uuid) return _uuid;
+    _uuid = NSUUID.new;
+    return _uuid;
+}
 - (NSString*)uuidString {
+    //NSLog(@"... %@", _uuid);
     return self.uuid.UUIDString;
 }
 
@@ -1687,7 +1693,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		@"marker": (self.marker.length) ? self.marker : @"",
 		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
 		@"uuid": (self.uuid) ? self.uuid.UUIDString : @"",
-        @"notes": [self notesAsJSON]
+        @"notes": [self notesAsJSON],
+        @"ranges": self.ranges
 	}];
     
     if (self.type == synopse) {
