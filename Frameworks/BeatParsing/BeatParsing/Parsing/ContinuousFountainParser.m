@@ -198,6 +198,7 @@ static NSDictionary* patterns;
 	_lines = NSMutableArray.new;
 	
 	// Replace MS Word line breaks with macOS ones
+    if (text == nil) text = @"";
 	text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
 	
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
