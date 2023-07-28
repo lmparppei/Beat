@@ -20,7 +20,7 @@
     if ([lowercaseText rangeOfString:@"marker"].location == 0) {
         // Check if this note is a marker
         type = NoteTypeMarker;
-    } else if ([BeatNoteData.colors containsObject:lowercaseText]) {
+    } else if ([BeatNoteData.colors containsObject:lowercaseText] || [lowercaseText rangeOfString:@"color"].location == 0) {
         // This note only contains a color
         type = NoteTypeColor;
     } else if ([lowercaseText rangeOfString:@"beat"].location == 0 || [lowercaseText rangeOfString:@"storyline"].location == 0) {

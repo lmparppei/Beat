@@ -31,12 +31,16 @@ import UIKit
 #if os(macOS)
 
 @objc public class BeatPluginContainerView:NSView, BeatPluginContainer, BeatPluginContainerExports {
+    public var displayed: Bool {
+        return true
+    }
+    
     @IBInspectable public var pluginName:String = ""
     @IBOutlet public var delegate:BeatPluginDelegate?
     public var pluginOptions: [String : AnyObject] = [:]
     public var webView: BeatPluginWebView?
     public var host: BeatPlugin?
-
+    
     public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback: JSValue) {
         fatalError("init(html:etc...) has not been implemented")
     }

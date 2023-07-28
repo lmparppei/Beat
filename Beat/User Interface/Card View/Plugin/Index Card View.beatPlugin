@@ -57,7 +57,7 @@ if (!css || !js || !ui) {
 
 
 // Create UI
-ui = ui.replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", Beat.iOS())
+ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", Beat.iOS())
 
 // Create window.
 // We'll choose the appropriate view to use as the HTML view.
@@ -248,6 +248,10 @@ Beat.custom = {
 		}
 
 		return null
+	},
+	setColor: (uuid, color) => {
+		let line = Beat.currentParser.lineWithUUID(uuid)
+		Beat.setColorForScene(color, line)
 	},
 	moveScene: (sceneUUID, sceneBeforeUUID) => {
 		const outline = [...Beat.outline()]

@@ -45,12 +45,31 @@
 				if (contextMenu.open == true) {
 					contextMenu.close()
 				} else {
+					let uuid
+					let target = e.target
+
+					// Find the actual target scene
+					while (target != null) {
+						let uuid = target.getAttribute("uuid")
+						if (uuid != null) {
+							contextMenu.target = target;
+							contextMenu.uuid = uuid
+							break;
+						}
+
+						target = target.parentNode;
+					}
+
+					// Do nothign if there's no actual target
+					if (contextMenu.target == null) return;
+
 					var coordinates = getPosition(e)
 					contextMenu.menu.style.left = coordinates.x + "px"
 					contextMenu.menu.style.top = coordinates.y + "px"
+					contextMenu.open = true
+
 
 					contextMenu.target = e.target
-					contextMenu.open = true
 					
 					contextMenu.menu.className = "visible"
 
@@ -69,25 +88,12 @@
 				contextMenu.menu.className = '';
 			}
 			contextMenu.setColor = function (color) {
-				for (var c in colors) {
-					if (typeof colors[c] === 'string') {
-						contextMenu.target.classList.remove(colors[c]);
-					}
-				}
-				
-				let parent 
+				let uuid = contextMenu.target.getA
+			
+				Beat.call((uuid, color) => {
+					Beat.custom.setColor(uuid, color)
+				}, contextMenu.uuid, color)
 
-				//contextMenu.target.classList.add(color);
-				
-				// SET COLOR
-				/*
-				let index = contextMenu.target.getAttribute('lineIndex');
-				let sceneIndex = contextMenu.target.getAttribute('sceneIndex');
-				
-				if (standalone) Beat.call("Beat.custom.setColor(" + sceneIndex + ", '" + color + "')")
-				else window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
-				*/
-				Beat.log("Set color here")
 				contextMenu.close()
 			}
 			contextMenu.open = false
@@ -182,6 +188,7 @@
 				document.body.className = zoomClass
 			}
 
+
 		</script>
 	</head>
 	<body class='zoomLevel-1'>
@@ -217,15 +224,15 @@
 			function setupContextMenu() {
 				let cards = document.querySelectorAll(".card")
 				
-				cards.forEach(function (card) {
+				cards.forEach((card) => {
 					let uuid = card.getAttribute("uuid")
 
-					card.onclick = function () {
+					card.onclick = () => {
 						contextMenu.close();
 						Beat.log("Click")
 						if (mode == modes.window) scrollToLine(uuid);
 					}
-					card.ondblclick = function () {
+					card.ondblclick = () => {
 						// In container mode we'll return to editor view
 						if (mode == modes.container && !iOS) {
 							Beat.call("Beat.custom.returnToEditor()")
@@ -233,12 +240,17 @@
 
 						Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
 					}
-					card.oncontextmenu = function (e) {
+					card.oncontextmenu = (e) => {
 						e.preventDefault()
-						Beat.log("Context menu")
 						contextMenu.toggle(e)
 					}
 				})
+				
+				document.getElementById("container").onclick = () => {
+					if (contextMenu.open) {
+						contextMenu.close()
+					}
+				}
 			}
 
 			function scrollToLine(uuid) {

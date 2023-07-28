@@ -35,6 +35,9 @@
 
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
+
+@property (nonatomic) BeatPluginData* pluginData;
+
 @property (nonatomic) JSValue *sheetCallback;
 @property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) JSValue *sceneCompletionCallback;
@@ -111,16 +114,21 @@
 {
 	if ((self = [super init]) == nil) { return nil; }
 	
-	// Create virtual machine and JS context
-	_vm = [[JSVirtualMachine alloc] init];
-	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
-	
-	[self setupErrorHandler];
-	[self setupRequire];
-		
-	[_context setObject:self forKeyedSubscript:@"Beat"];
+    [self setupVM];
 	
 	return self;
+}
+
+- (void)setupVM
+{
+    // Create virtual machine and JS context
+    _vm = [[JSVirtualMachine alloc] init];
+    _context = [[JSContext alloc] initWithVirtualMachine:_vm];
+    
+    [self setupErrorHandler];
+    [self setupRequire];
+        
+    [_context setObject:self forKeyedSubscript:@"Beat"];
 }
 
 #pragma mark - Helpers
@@ -204,6 +212,7 @@
 {
 	self.plugin = plugin;
 	self.pluginName = plugin.name;
+    self.pluginData = plugin;
 	
     // For contained plugins we won't use the actual name to avoid conflicts.
     if (self.container != nil) self.pluginName = [NSString stringWithFormat:@"%@ (in container)", self.pluginName];
@@ -275,8 +284,16 @@
 
 /// Restarts the plugin, clearing it from memory first.
 - (void)restart {
-	[self end];
-	[_delegate runPluginWithName:self.pluginName];
+    [self end];
+    
+    if (!self.container) {
+        [_delegate runPluginWithName:self.pluginName];
+    } else {
+        // If we're running the plugin a container, we won't deallocate the whole plugin.
+        // Instead, we're nulling the VM and just reloading the data here.
+        [self setupVM];
+        [self loadPlugin:self.pluginData];
+    }
 }
 
 /// Quits the current plugin. **Required** when using plugins with callbacks.
@@ -305,9 +322,8 @@
 	
 	self.plugin = nil;
 	
-	if (_resident) {
-		[_delegate deregisterPlugin:self];
-	}
+    // Remove from the list of running plugins
+	if (_resident) [_delegate deregisterPlugin:self];
 }
 
 /// Give focus back to the editor
@@ -895,6 +911,15 @@
 	//[self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
     NSString* msg = [NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string];
     [BeatConsole.shared logError:msg context:self pluginName:self.pluginName];
+}
+
+
+#pragma mark - Localization
+
+// Localizes the given string
+- (NSString*)localize:(NSString*)string
+{
+    return [BeatLocalization localizeString:string];
 }
 
 
@@ -1681,7 +1706,6 @@
 		if (items[idx] != nil) [scenesToSerialize addObject:items[@(i)]];
 	}
 	*/
-
 	
 	for (OutlineScene* scene in outline) {
 		[scenesToSerialize addObject:scene.forSerialization];
@@ -1694,6 +1718,7 @@
 	return json;
 }
 
+/// Returns all lines as JSON
 - (NSString*)linesAsJSON {
 	NSMutableArray *linesToSerialize = NSMutableArray.new;
 	
@@ -1704,7 +1729,9 @@
 	return linesToSerialize.json;
 }
 
-- (void)setColor:(NSString *)color forScene:(id)scene {
+/// Sets given color for the line. Supports both outline elements and lines for the second parameter.
+- (void)setColor:(NSString *)color forScene:(id)scene
+{
 	if ([scene isKindOfClass:OutlineScene.class]) {
 		[_delegate setColor:color forScene:scene];
 	} else if ([scene isKindOfClass:Line.class]) {
@@ -1780,6 +1807,7 @@
 	return result;
 }
 
+
 #pragma mark - Document Settings
 
 // Plugin-specific document settings (prefixed by plugin name)
@@ -1814,6 +1842,7 @@
     [_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
 #endif
 }
+
 
 #pragma mark - Temporary attributes
 

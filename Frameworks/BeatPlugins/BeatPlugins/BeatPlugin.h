@@ -90,6 +90,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (bool)iOS;
 /// Returns `true` when the plugin is running on macOS
 - (bool)macOS;
+/// Returns a string, with all instances of `#key#` replaced with localized strings.
+- (NSString*)localize:(NSString*)string;
 
 #pragma mark Parsed content
 /// List of Beat line types

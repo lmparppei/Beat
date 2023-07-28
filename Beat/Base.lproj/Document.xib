@@ -1482,6 +1482,16 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
+                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0r8-Vu-ZXk" customClass="BeatPluginContainerView" customModule="BeatPlugins">
+                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="pluginName" value="Index Card View"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <outlet property="delegate" destination="-2" id="o5g-Ma-UXH"/>
+                                            </connections>
+                                        </customView>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mUG-iU-q9L">
                                             <rect key="frame" x="1112" y="620" width="23" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
@@ -1493,16 +1503,6 @@
                                                 <action selector="toggleCards:" target="-2" id="itP-Gm-Q7I"/>
                                             </connections>
                                         </button>
-                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0r8-Vu-ZXk" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="pluginName" value="Index Card View"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <outlet property="delegate" destination="-2" id="o5g-Ma-UXH"/>
-                                            </connections>
-                                        </customView>
                                     </subviews>
                                 </view>
                             </tabViewItem>
