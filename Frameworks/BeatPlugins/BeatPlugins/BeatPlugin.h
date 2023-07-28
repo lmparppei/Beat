@@ -347,7 +347,8 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 #if !TARGET_OS_IOS
 	JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
 	JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
-	JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+    - (NSDictionary*)printInfo;
+    JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 #endif
 
 

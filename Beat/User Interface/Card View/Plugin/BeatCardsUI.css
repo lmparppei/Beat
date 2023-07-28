@@ -438,3 +438,24 @@ li.note { color: black !important; }
 #zoom button:hover {
 	background-color: #333;
 }
+
+#print {
+	z-index: 999;
+
+	font-weight: bold;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: auto;
+	height: 2rem;
+	margin: 0;
+	padding: 0 .8rem 0 .8rem;
+	background-color: rgba(0,0,0,.9);
+	color: #eee;
+	font-size: .9em;
+	border: none;
+
+	border-radius: .5em;
+}

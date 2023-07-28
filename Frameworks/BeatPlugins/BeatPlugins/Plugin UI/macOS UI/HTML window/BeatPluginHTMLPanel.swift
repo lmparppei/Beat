@@ -13,17 +13,10 @@ import UIKit
 import WebKit
 
 @objc public class BeatPluginHTMLPanel: NSPanel, BeatHTMLView {
+    @objc public var displayed: Bool = true
     @objc public var callback:JSValue?
     @objc public var webView:BeatPluginWebView?
     @objc public weak var host:BeatPlugin?
-    
-    @objc public var displayed: Bool {
-        if self.parent != nil && self.isVisible {
-            return true
-        } else {
-            return false
-        }
-    }
     
     @objc required public init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue) {
         self.callback = callback
@@ -102,6 +95,7 @@ import WebKit
     /// Closes the panel and removes the script handlers. Always use this when closing the panel.
     @objc public func closePanel(_ sender:AnyObject?) {
         if (host?.delegate.documentWindow.attachedSheet != nil) {
+            displayed = false
             self.webView?.remove()
             host?.delegate.documentWindow.endSheet(self)
         }

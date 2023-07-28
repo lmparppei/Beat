@@ -214,8 +214,11 @@
 	self.pluginName = plugin.name;
     self.pluginData = plugin;
 	
-    // For contained plugins we won't use the actual name to avoid conflicts.
-    if (self.container != nil) self.pluginName = [NSString stringWithFormat:@"%@ (in container)", self.pluginName];
+    // For contained plugins we won't use the actual name to avoid conflicts. Also inform the container of this change.
+    if (self.container != nil) {
+        self.pluginName = [NSString stringWithFormat:@"%@ (in container)", self.pluginName];
+        self.container.pluginName = self.pluginName;
+    }
     
 	[BeatPluginManager.sharedManager pathForPlugin:plugin.name];
 
@@ -1474,6 +1477,17 @@
 #pragma mark - Printing interface
 
 #if !TARGET_OS_IOS
+- (NSDictionary*)printInfo
+{
+    NSPrintInfo* printInfo = NSPrintInfo.sharedPrintInfo;
+    return @{
+        @"paperSize": @(printInfo.paperSize),
+        @"imageableSize": @{
+            @"width": @(printInfo.imageablePageBounds.size.width),
+            @"height": @(printInfo.imageablePageBounds.size.height)
+        }
+    };
+}
 - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback
 {
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
@@ -1492,6 +1506,18 @@
 			if ([paperSize isEqualToString:@"us letter"]) [BeatPaperSizing setPageSize:BeatUSLetter printInfo:printInfo];
 			else if ([paperSize isEqualToString:@"a4"]) [BeatPaperSizing setPageSize:BeatA4 printInfo:printInfo];
 		}
+        
+        if (settings[@"margins"]) {
+            NSArray* margins = settings[@"margins"];
+            NSArray* keys = @[@"marginTop", @"marginRight", @"marginBottom", @"marginLeft"];
+            for (NSInteger i=0; i<margins.count; i++) {
+                NSNumber* n = margins[i];
+                if (i == 0) printInfo.topMargin = n.floatValue;
+                else if (i == 1) printInfo.rightMargin = n.floatValue;
+                else if (i == 2) printInfo.bottomMargin = n.floatValue;
+                else if (i == 3) printInfo.leftMargin = n.floatValue;
+            }
+        }
 		
 		[self.printer printHtml:html printInfo:printInfo callback:^{
 			if (callback) [callback callWithArguments:nil];

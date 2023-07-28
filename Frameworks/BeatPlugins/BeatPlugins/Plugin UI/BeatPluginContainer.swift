@@ -14,9 +14,13 @@ import UIKit
 //public typealias JSrunJS = (@convention(block) (String, JSValue?) -> Void)
 
 @objc public protocol BeatPluginContainerExports:JSExport {
+    var pluginName:String { get }
+    var onViewWillDraw:JSValue? { get set }
+    var onViewDidHide: JSValue? { get set }
+    var displayed:Bool { get }
+
     func setHTML(_ html:String)
     func runJS(_ js:String, _ callback:JSValue?)
-    var pluginName:String { get }
     func closePanel(_ sender:AnyObject?)
 }
 
@@ -25,21 +29,22 @@ import UIKit
     var pluginOptions:[String:AnyObject] { get set }
     var webView:BeatPluginWebView? { get set }
     var delegate:BeatPluginDelegate? { get set }
+    
+    func containerViewDidHide()
     func load()
 }
 
 #if os(macOS)
 
 @objc public class BeatPluginContainerView:NSView, BeatPluginContainer, BeatPluginContainerExports {
-    public var displayed: Bool {
-        return true
-    }
-    
     @IBInspectable public var pluginName:String = ""
     @IBOutlet public var delegate:BeatPluginDelegate?
     public var pluginOptions: [String : AnyObject] = [:]
     public var webView: BeatPluginWebView?
     public var host: BeatPlugin?
+    public var onViewWillDraw: JSValue?
+    public var onViewDidHide: JSValue?
+    @objc public var displayed = false
     
     public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback: JSValue) {
         fatalError("init(html:etc...) has not been implemented")
@@ -93,6 +98,17 @@ import UIKit
 
     public func runJS(_ js:String, _ callback:JSValue?) {
         self.webView?.runJS(js, callback)
+    }
+ 
+    public override func viewWillDraw() {
+        super.viewWillDraw()
+        displayed = true
+        onViewWillDraw?.call(withArguments: [self])
+    }
+    
+    public func containerViewDidHide() {
+        displayed = false
+        onViewDidHide?.call(withArguments: [self])
     }
     
     public var callback: JSValue?

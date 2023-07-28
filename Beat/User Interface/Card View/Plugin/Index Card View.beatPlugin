@@ -9,12 +9,22 @@ New Outline
 require("Template")
 
 let json
+let window 
+let timer
+let updated = false
 
 let modes = { ios: 1, window: 2, container: 3 }
 
 if (Beat.container != undefined) mode = modes.container;
 else if (Beat.iOS()) mode = modes.ios;
-else ode = modes.window;
+else mode = modes.window;
+
+if (Beat.container != undefined) {
+	Beat.container.onViewWillDraw = () => {
+		// When opening contained view, refresh the HTML if needed
+		if (!updated) refreshHTML();
+	}
+}
 
 // Templates for cards and elements
 let templates = {
@@ -38,23 +48,23 @@ let templates = {
 
 	note: new Template("<li class='note {{ color }}'>✎ {{ content }}</li>"),
 	noteList: new Template("<div class='noteList'><ul>{{ notes }}</ul></div>"),
+	printedCard: new Template("<div class='cardContainer'><div class='card'>\
+									<div class='header'>\
+										<div class='sceneNumber'>{{sceneNumber}}</div> <h3>{{stringForDisplay}}</h3>\
+									</div>\
+									{{synopsisList}}\
+									<p>{{text}}</p>\
+								</div></div>")
 }
 
 
 // When running the plugin for the first time, create the outline immediately
 let html =  (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
 
-let css = Beat.assetAsString("BeatCardsUI.css")
-let ui = Beat.assetAsString("BeatCardsUI.html")
-let js = Beat.assetAsString("dragula.js")
-
-if (!css || !js || !ui) {
-	// If the files weren't found, we'll search inside the app bundle.
-	css = Beat.appAssetAsString("BeatCardsUI.css")
-	ui = Beat.appAssetAsString("BeatCardsUI.html")
-	js = Beat.appAssetAsString("dragula.js")
-}
-
+// Get files from inside the app bundle
+let css = Beat.appAssetAsString("BeatCardsUI.css")
+let ui = Beat.appAssetAsString("BeatCardsUI.html")
+let js = Beat.appAssetAsString("dragula.js")
 
 // Create UI
 ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", Beat.iOS())
@@ -62,7 +72,6 @@ ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).r
 // Create window.
 // We'll choose the appropriate view to use as the HTML view.
 // On iOS, it'll be a HTML panel, on macOS it's either a window (for the detached view) or the container (for the static view)
-let window
 if (mode == modes.ios) {
 	window = Beat.htmlPanel(ui, 900, 600, function () { Beat.end(); })
 }
@@ -72,20 +81,26 @@ else if (mode == modes.window) {
 else if (mode == modes.container) {
 	// This plugin is running *inside a plugin container*, so we'll get the HTML view from the container
 	window = Beat.container
-	Beat.log("# Running in container: " + window)
 
 	window.setHTML(ui)
 }
 
 
 // Register the listener
-let timer
-Beat.onOutlineChange(function (outlineChanges) {
+Beat.onTextChange(function (outlineChanges) {
+	updated = false
+
 	if (timer != undefined && timer != null) timer.invalidate();
-	timer = Beat.timer(0.5, () => {
-		let html = createOutline(...Beat.outline()).replaceAll("\"", "\\\"")
-		window.runJS('load(' + JSON.stringify(html) + ')')
-	})
+
+	// If the container is currently in view, let's update it in sync.
+	// Otherwise we'll send set the timer.
+	if (Beat.container != undefined && Beat.container.displayed) {
+		refreshHTML();
+	} else {
+		timer = Beat.timer(1.5, () => {
+			refreshHTML()
+		})
+	}
 })
 
 Beat.onSelectionChange((selection) => {
@@ -94,9 +109,23 @@ Beat.onSelectionChange((selection) => {
 	
 	if (currentScene == null) return;
 
+	let scroll = true
+	if (Beat.container != undefined && Beat.container.displayed) {
+		// Do nothing if the container is in view.
+		scroll = false
+	}
+
 	let uuid = currentScene.line?.uuidString()
-	window.runJS('updateSelection("' + uuid + '")')
+
+	window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
 })
+
+function refreshHTML() {
+	let html = createOutline(...Beat.outline()).replaceAll("\"", "\\\"")
+	window.runJS('load(' + JSON.stringify(html) + ')')
+
+	updated = true
+}
 
 // This method returns the HTML for index cards
 function createOutline(...outline) {
@@ -147,10 +176,11 @@ function updateScene(scene) {
 			break
 		}
 	}
+	sceneJSON.text = sceneJSON.text.replaceAll("<", "&lt;")
 
 	// Convert some values to lowercase for consistency
-	sceneJSON.color = sceneJSON.color.toLowerCase()
-	sceneJSON.typeAsString = sceneJSON.typeAsString.toLowerCase()
+	sceneJSON.color = sceneJSON.color?.toLowerCase()
+	sceneJSON.typeAsString = sceneJSON.typeAsString?.toLowerCase()
 
 	// Get lines for this scene
 	let lines = Beat.linesForScene(scene)
@@ -307,25 +337,96 @@ Beat.custom = {
 			}
 		}
 
-		
-		Beat.onSelectionChangeDisabled = true // We don't want the selected scene to change before outline has been udpated
-		
+		// Disable listeners for a second
+		Beat.onSelectionChangeDisabled = true 
+		Beat.onTextChangeDisabled = true
+
 		if (targetPosition < scene.position) {
 			Beat.replaceRange(position, length, "")
 			Beat.replaceRange(targetPosition, 0, stringToMove)
 
-			Beat.setSelectedRange(targetPosition, 0)
+			//Beat.setSelectedRange(targetPosition, 0)
 		} else {
 			Beat.replaceRange(targetPosition, 0, stringToMove)
-			Beat.setSelectedRange(targetPosition, 0)
+			//Beat.setSelectedRange(targetPosition, 0)
 			Beat.replaceRange(position, length, "")
 		}
 
 		Beat.onSelectionChangeDisabled = false
+		Beat.onTextChangeDisabled = false
+		refreshHTML()
 	},
 	returnToEditor: () => {
 		window.closePanel()
+	},
+	printCards: () => {
+		printCards()
 	}
+}
+
+function printCards() {
+	let css = Beat.appAssetAsString("BeatCardsPrint.css")
+	let printedHTML = ""
+
+	let json = []
+	let outline = Beat.outline()
+
+	for (let i=0; i < outline.length; i++) {
+		let scene = updateScene(outline[i])
+
+		scene.synopsisList = ""
+			if (scene.synopsis.length) {
+				let synopsisList = []
+				for (const synopsis of scene.synopsis) {
+					synopsisList += templates.synopsisItem.withData(synopsis)
+				}
+
+				if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
+				scene.text = ""
+			}
+
+		json.push(scene)
+    }
+
+    let imageableSize = Beat.printInfo().imageableSize
+
+	// Orientation is ALWAYS LANDSCAPE
+	let cardsPerRow = 3;
+	let maxRows = Math.floor(imageableSize.width / 165);
+
+    let cardsOnRow = 0
+	let rows = 0
+
+    for (const card of json) {
+    	if (card.typeAsString == "section") continue;
+
+    	let cardHTML = templates.printedCard.withData(card)
+    	printedHTML += cardHTML
+
+    	cardsOnRow++
+    	
+    	if (cardsOnRow == cardsPerRow) {
+    		rows++
+    		cardsOnRow = 0
+    	}
+    	if (rows == maxRows) {
+    		printedHTML += "</section><div class='pageBreak'></div><section>"
+
+    		rows = 0
+    		cardsOnRow = 0
+    	}
+    }
+
+    let settings = {
+    	orientation: "landscape",
+    	margins: [5, 5, 5, 5]
+    }
+
+    let htmlContent = "<html><head><style>" + css + "</style></head><body><div id='container'><section>" + printedHTML + "</section></div></body></html>"
+    Beat.printHTML(htmlContent, settings, () => {
+
+    })
+
 }
 
 function windowed() {

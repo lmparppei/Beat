@@ -292,6 +292,8 @@
 		B696BC322A7151D50078BA79 /* BeatCardsUI.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC252A7150F50078BA79 /* BeatCardsUI.css */; };
 		B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */; };
 		B696BC352A7151D50078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC222A7150F50078BA79 /* BeatCardsUI.html */; };
+		B696BC392A73BCDC0078BA79 /* BeatCardsPrint.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */; };
+		B696BC3A2A73BCDD0078BA79 /* BeatCardsPrint.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */; };
 		B698DCDA2A4B8BB000D8C5C4 /* BeatQuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */; };
 		B698DCDB2A4B8BB000D8C5C4 /* BeatQuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */; };
 		B698DCE02A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B698DCE32A4B969E00D8C5C4 /* BeatQuickSettings.xib */; };
@@ -768,6 +770,7 @@
 		B696BC232A7150F50078BA79 /* dragula.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
 		B696BC252A7150F50078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
+		B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsPrint.css; sourceTree = "<group>"; };
 		B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatQuickSettings.swift; sourceTree = "<group>"; };
 		B698DCE22A4B969E00D8C5C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatQuickSettings.xib; sourceTree = "<group>"; };
 		B698DCE52A4B96A100D8C5C4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
@@ -1594,6 +1597,7 @@
 		B696BC212A7150E10078BA79 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */,
 				B696BC252A7150F50078BA79 /* BeatCardsUI.css */,
 				B696BC222A7150F50078BA79 /* BeatCardsUI.html */,
 				B696BC232A7150F50078BA79 /* dragula.js */,
@@ -2109,6 +2113,7 @@
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */,
+				B696BC3A2A73BCDD0078BA79 /* BeatCardsPrint.css in Resources */,
 				B6E099D82766861B005E7827 /* FooterTemplate.html in Resources */,
 				B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */,
@@ -2158,6 +2163,7 @@
 				B6E099D6276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B605473F276A9011001E571F /* ScreenplayStyles.css in Resources */,
 				B60A9F442977EEE500916FAA /* ThemeEditor.xib in Resources */,
+				B696BC392A73BCDC0078BA79 /* BeatCardsPrint.css in Resources */,
 				B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
 				B607519228CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,

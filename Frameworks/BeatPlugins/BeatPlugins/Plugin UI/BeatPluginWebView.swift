@@ -24,7 +24,7 @@ import WebKit
     //@objc func fetchHTMLPanelDataAndClose()
     @objc var webView:BeatPluginWebView? { get set }
     
-    var displayed:Bool { get }
+    var displayed:Bool { get set }
     var callback:JSValue? { get set }
     weak var host:BeatPlugin? { get set }
 }

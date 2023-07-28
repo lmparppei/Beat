@@ -798,6 +798,11 @@ static BeatAppDelegate *appDelegate;
 - (void)showTab:(NSTabViewItem*)tab {
 	[self.tabView selectTabViewItem:tab];
 	[tab.view.subviews.firstObject becomeFirstResponder];
+	
+	// Update containers in tabs
+	for (id<BeatPluginContainer> view in self.registeredPluginContainers) {
+		if (![tab.view.subviews containsObject:(NSView*)view]) [view containerViewDidHide];
+	}
 }
 
 /// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
@@ -3435,13 +3440,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (IBAction)toggleCards: (id)sender {
 	if (self.currentTab != _cardsTab) {
-		_cardsVisible = YES;
-		
-		//[self.cardView refreshCards];
 		[self showTab:_cardsTab];
 	} else {
-		_cardsVisible = NO;
-		
 		// Reload outline + timeline (in case there were any changes in outline while in card view)
 		[self refreshAllOutlineViews];
 		[self returnToEditor];
@@ -3452,7 +3452,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)refreshAllOutlineViews {
 	if (_sidebarVisible) [self.outlineView reloadOutline];
-	//if (_cardsVisible) [self.cardView refreshCards];
 	
 	for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
 		[view reloadView];

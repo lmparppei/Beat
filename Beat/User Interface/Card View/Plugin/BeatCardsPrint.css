@@ -1,0 +1,201 @@
+/*
+
+Beat Card View
+Print style sheet
+© 2019-202 Lauri-Matti Parppei / KAPITAN
+
+Released under GPL license.
+
+*/
+
+#debug {
+	color: white;
+}
+
+* {
+	box-sizing: border-box;
+	cursor: default;
+}
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #26282a;
+	font-family: Courier, monospace;
+	font-size: .825em;
+}
+
+@page
+{
+    size: auto;   /* auto is the initial value */
+
+    /* this affects the margin in the printer settings */
+    margin: 10mm 10mm 10mm 10mm;
+}
+
+section {
+	margin: 0; padding: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	page-break-after: always;
+	border: solid 1px black;
+	border-width: 1px 0 0 1px;
+}
+section:last-child {
+	page-break-after: avoid;
+}
+
+h2 {
+	width: 100%;
+	font-family: Helvetica, sans-serif;
+	font-size: 2em;
+	padding: 2rem 0 1rem .7rem;
+	margin: 0;
+	color: #eee;
+	font-weight: 300;
+}
+h3, p { font-size: 1em;  margin: 0; padding: 0; }
+h3 { margin-bottom: auto; margin-top: auto; line-height: 1em; }
+
+p, ul li {
+	font-family: Helvetica, sans-serif;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+ul li {
+	margin: 0;
+	margin-left: 1.4em;
+	font-style: italic;
+}
+
+section {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.sceneNumber {
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-right: .5rem;
+
+	flex-grow: 0;
+	flex-shrink: 0;
+
+	font-size: .65em;
+
+	font-family: Helvetica, sans-serif;
+	
+	color: #444;
+	background-color: #fff;
+
+	border-radius: 50%;
+	border: solid 1px black;
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-weight: bold;
+}
+.card.selected .sceneNumber { background-color: #222; color: #ddd; }
+
+.nightMode .sceneNumber {
+	background-color: #777;
+	color: #222;
+}
+/* .nightMode .card:hover .sceneNumber { background-color: #999; } */
+.nightMode .card.selected .sceneNumber { background-color: black; color: #ddd; }
+
+
+.header {
+	margin-bottom: .5rem;
+	padding: 0;
+	display: flex;
+	align-items: center;
+}
+
+.cardContainer {
+	width: calc(100% / 3);
+}
+
+.card, .synopse {
+	position: relative;
+
+	/* width: calc(100% / 4 - 1.4rem); */
+	height: 220px;
+	padding: 20px;
+	margin: 0;
+	
+	/* margin: .7em; */
+	color: black;
+	border: solid 1px black;
+	border-width: 0 1px 1px 0;
+
+	overflow: hidden;
+	z-index: 1;
+}
+
+.color.none { background-color: transparent; }
+
+.selected h3 { color: #333 !important; }
+
+.red .sceneNumber { background-color: rgb(239,0,73);}
+.blue .sceneNumber { background-color: rgb(0,129,239); }
+.green .sceneNumber  { background-color: rgb(0,223,121); }
+.pink .sceneNumber { background-color: rgb(250,111,193); }
+.magenta .sceneNumber { background-color: rgb(236,0,140);}
+.gray .sceneNumber { background-color: gray; }
+.purple .sceneNumber { background-color: rgb(181, 32, 218); }
+.yellow .sceneNumber { background-color: rgb(255, 162, 0); }
+.cyan .sceneNumber { background-color: rgb(7, 189, 236); }
+.teal .sceneNumber { background-color: rgb(12, 224, 227); }
+.orange .sceneNumber { background-color: rgb(255, 161, 13); }
+.brown .sceneNumber { background-color: rgb(169, 106, 7); }
+
+.synopse {
+	background-color: #111;
+	box-shadow: none;
+	color: #ddd;
+	border: solid 1px #444;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+.synopse h3 {
+	font-weight: normal;
+	text-transform: none;
+}
+
+.pageBreak { height: 1cm; width: 100%; }
+
+
+@media print {
+	body {
+		background-color: transparent !important;
+		margin: 1cm !important;
+		color: black !important;
+		font-size: .8em;
+	}
+	.ui { display: none; }
+	body > .card {
+		background-color: white !important;
+		color: black !important;
+		border: solid 1px black;
+	}
+	.card.selected {
+		outline: none !important;
+		box-shadow: none !important;
+		color: black !important;
+	}
+	body > h2, body > h3, body > p { color: black !important; }
+}
+

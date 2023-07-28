@@ -93,7 +93,6 @@ section {
 }
 
 #print {
-	position: ab;
 	z-index: 999;
 
 	font-weight: bold;

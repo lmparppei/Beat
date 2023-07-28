@@ -120,7 +120,7 @@
 				}
 			}
 
-			function updateSelection(selected) {
+			function updateSelection(selected, scroll) {
 				let items = document.querySelectorAll(".item")
 				for (let i=0; i<items.length; i++) {
 					let item = items[i]
@@ -128,7 +128,8 @@
 					
 					if (uuid == selected) {
 						item.classList.add("selected")
-						item.scrollIntoView( { behavior: "smooth", block: "center" })
+						if (scroll) item.scrollIntoView( { behavior: "smooth", block: "center" });
+
 					} else {
 						item.classList.remove("selected")
 					}
@@ -188,12 +189,18 @@
 				document.body.className = zoomClass
 			}
 
+			function print() {
+				Beat.call(() => {
+					Beat.custom.printCards()
+				})
+			}
 
 		</script>
 	</head>
 	<body class='zoomLevel-1'>
 		<div id='menu'>
 			<!-- <button onclick='restart()'>Restart</button> -->
+			<button id='print' class='ui' onclick="print()">⎙ #cardView.print#</button>
 
 			<div id='filters'>
 				<input type='checkbox' name='scenes' onclick='filter(this)' checked> 🎬 
