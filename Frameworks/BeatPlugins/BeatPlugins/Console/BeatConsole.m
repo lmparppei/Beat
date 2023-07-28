@@ -169,11 +169,21 @@
 	if (name.length > 0) name = [NSString stringWithFormat:@"%@: ", name];
 	else name = @"";
 	
-	NSAttributedString* string = [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@%@\n", name, error] attributes:@{
-		NSForegroundColorAttributeName: NSColor.redColor,
-		NSFontAttributeName: font
-	}];
-	[self logMessage:string context:context];
+    NSMutableAttributedString* msg = NSMutableAttributedString.new;
+	[msg appendAttributedString: [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@", name] attributes:@{
+		NSForegroundColorAttributeName: NSColor.redColor, NSFontAttributeName: font
+	}]];
+    [msg appendAttributedString: [NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@\n", error] attributes:@{
+        NSForegroundColorAttributeName: NSColor.textColor, NSFontAttributeName: font
+    }]];
+    
+    if (!NSThread.isMainThread) {
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            [self logMessage:msg context:context];
+        });
+    } else {
+        [self logMessage:msg context:context];
+    }
 #endif
 }
 
