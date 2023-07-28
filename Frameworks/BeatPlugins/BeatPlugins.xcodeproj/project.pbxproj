@@ -59,7 +59,6 @@
 		B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
-		B696BC372A73AFC70078BA79 /* BeatPluginPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -401,7 +400,6 @@
 				B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */,
 				B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */,
 				B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */,
-				B696BC372A73AFC70078BA79 /* BeatPluginPrint.swift in Sources */,
 				B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */,
 				B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */,
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
