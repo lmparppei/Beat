@@ -26,11 +26,14 @@
 #define ConsolePluginName @"Console"
 
 @interface BeatConsole ()
+#if !TARGET_OS_IOS
 @property (nonatomic) IBOutlet NSTextView *consoleTextView;
 @property (nonatomic) IBOutlet NSPopUpButton* contextSeletor;
-@property (nonatomic) IBOutlet NSButton* wat;
+#endif
+
 @property (nonatomic, weak) id<BeatEditorDelegate> currentContext;
 @property (nonatomic) NSMutableDictionary<NSString*, NSMutableAttributedString*>* logs;
+
 @end
 
 @implementation BeatConsole
@@ -46,22 +49,26 @@
 
 - (instancetype)init
 {
+#if TARGET_OS_IOS
+    self = [super initWithNibName:nil bundle:nil];
+    return self;
+#else
 	self = [super initWithWindowNibName:self.className owner:self];
 
 	if (self) {
 		self.logs = NSMutableDictionary.new;
 		self.currentContext = NSDocumentController.sharedDocumentController.currentDocument;
-#if !TARGET_OS_IOS
+
 		self.window.title = @"";
 		//[self.window setFrame:NSMakeRect(0, 0, 450, 150) display:true];
 		self.window.minSize = NSMakeSize(300, 100);
 		
 		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(switchContext:) name:@"Document changed" object:nil];
 		[self updateTitle];
-#endif
 	}
 	
-	return self;
+    return self;
+#endif
 }
 
 -(void)switchContext:(NSNotification*)notification

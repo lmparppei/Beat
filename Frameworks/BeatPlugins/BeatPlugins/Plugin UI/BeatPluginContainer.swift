@@ -10,6 +10,7 @@ import AppKit
 #elseif os(iOS)
 import UIKit
 #endif
+import UXKit
 
 //public typealias JSrunJS = (@convention(block) (String, JSValue?) -> Void)
 
@@ -34,22 +35,42 @@ import UIKit
     func load()
 }
 
-#if os(macOS)
-
-@objc public class BeatPluginContainerView:NSView, BeatPluginContainer, BeatPluginContainerExports {
-    @IBInspectable public var pluginName:String = ""
-    @IBOutlet public var delegate:BeatPluginDelegate?
-    public var pluginOptions: [String : AnyObject] = [:]
+@objc public class BeatPluginContainerBase: UXView, BeatPluginContainer {
+    @objc public var pluginName: String = ""
+    @IBOutlet public var delegate: BeatPluginDelegate?
+    public var pluginOptions: [String: AnyObject] = [:]
     public var webView: BeatPluginWebView?
     public var host: BeatPlugin?
     public var onViewWillDraw: JSValue?
     public var onViewDidHide: JSValue?
     @objc public var displayed = false
+
+    // Callback is not used in a container, but required for conforming to protocol
+    public var callback: JSValue?
     
-    public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback: JSValue) {
+    override init(frame frameRect: CGRect) {
+        super.init(frame: frameRect)
+    }
+    
+    public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback: JSValue?) {
+        // For now, we can't create a container programmatically.
         fatalError("init(html:etc...) has not been implemented")
     }
     
+    required init?(coder: NSCoder) {
+        // For now, we can't create containers using coders.
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func setHTML(_ html: String) {
+        self.webView?.setHTML(html)
+    }
+    
+    public func runJS(_ js: String, _ callback: JSValue?) {
+        self.webView?.runJS(js, callback)
+    }
+        
+    /// Adds web view to the container
     func setupWebView(html:String) {
         guard let host = self.host else {
             print("No host for container view set: ", self)
@@ -62,9 +83,6 @@ import UIKit
         self.addSubview(self.webView!)
     }
     
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-    }
     override public func awakeFromNib() {
         self.host = BeatPlugin()
         self.host?.delegate = self.delegate
@@ -75,44 +93,54 @@ import UIKit
         setupWebView(html: "")
     }
     
-    @objc public func load() {
+    public func load() {
         // Let's load the plugin only when asked.
         if (self.pluginName.count > 0) {
             self.host?.load(withName: self.pluginName)
         }
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    // - MARK: OS-specific methods
+    // These have to be overridden in OS-specific classes
     public func closePanel(_ sender: AnyObject?) {
-        self.delegate?.returnToEditor?()
-        
-        // This does nothing in a container view (for now)
-    }
-    
-    public func setHTML(_ html:String) {
-        self.webView?.setHTML(html)
+        fatalError("Override closePanel in OS-specific classes")
     }
 
-    public func runJS(_ js:String, _ callback:JSValue?) {
-        self.webView?.runJS(js, callback)
+    public func containerViewDidHide() {
+        onViewDidHide?.call(withArguments: [self])
     }
- 
+}
+
+// MARK: - OS-specific implementations
+
+#if os(macOS)
+
+@objc public class BeatPluginContainerView:BeatPluginContainerBase {
+    override public func closePanel(_ sender: AnyObject?) {
+        self.delegate?.returnToEditor?()
+    }
+     
     public override func viewWillDraw() {
         super.viewWillDraw()
         displayed = true
         onViewWillDraw?.call(withArguments: [self])
     }
-    
-    public func containerViewDidHide() {
-        displayed = false
-        onViewDidHide?.call(withArguments: [self])
+}
+
+#elseif os(iOS)
+
+@objc public class BeatPluginContainerView:BeatPluginContainerBase {
+    override public func closePanel(_ sender: AnyObject?) {
+        
     }
     
-    public var callback: JSValue?
-    
+    /*
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        displayed = true
+        onViewWillDraw?.call(withArguments: [self])
+    }
+     */
 }
 
 #endif

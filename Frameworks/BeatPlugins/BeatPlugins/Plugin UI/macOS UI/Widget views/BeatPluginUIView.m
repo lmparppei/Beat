@@ -23,7 +23,7 @@
 @implementation BeatPluginUIView
 
 - (instancetype)initWithHeight:(CGFloat)height {
-	self = [super initWithFrame:(NSRect){0, 0, 350, height}];
+	self = [super initWithFrame:(CGRect){0, 0, 350, height}];
 	return self;
 }
 

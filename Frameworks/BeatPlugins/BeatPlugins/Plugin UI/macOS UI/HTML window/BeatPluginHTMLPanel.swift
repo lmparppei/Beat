@@ -18,7 +18,7 @@ import WebKit
     @objc public var webView:BeatPluginWebView?
     @objc public weak var host:BeatPlugin?
     
-    @objc required public init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue) {
+    @objc required public init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue?) {
         self.callback = callback
         self.host = host
         

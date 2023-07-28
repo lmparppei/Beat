@@ -20,7 +20,7 @@
 #import <Webkit/Webkit.h>
 
 @protocol BeatPluginUIViewExports <JSExport>
-@property (nonatomic, readonly) NSRect frame;
+@property (nonatomic, readonly) CGRect frame;
 - (void)remove;
 
 #if !TARGET_OS_IOS

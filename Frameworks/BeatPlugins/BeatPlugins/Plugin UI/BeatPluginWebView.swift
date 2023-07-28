@@ -19,7 +19,7 @@ import WebKit
 
 /// A protocol which hsa the basic methods for interacting with both the window and its HTML content.
 @objc public protocol BeatHTMLView {
-    @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue)
+    @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue?)
     @objc func closePanel(_ sender:AnyObject?)
     //@objc func fetchHTMLPanelDataAndClose()
     @objc var webView:BeatPluginWebView? { get set }
@@ -57,8 +57,12 @@ import WebKit
         }
 
         // Initialize (custom) webkit view
-        let webView = BeatPluginWebView(frame: NSRect(x: 0, y: 0, width: width, height: height), configuration: config)
+        let webView = BeatPluginWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: config)
+        #if os(macOS)
         webView.autoresizingMask = [.width, .height]
+        #elseif os(iOS)
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #endif
         
         webView.setHTML(html)
                 

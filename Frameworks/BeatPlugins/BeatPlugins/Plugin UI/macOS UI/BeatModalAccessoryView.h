@@ -6,11 +6,10 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-
-NS_ASSUME_NONNULL_BEGIN
+#import <TargetConditionals.h>
 
 #if !TARGET_OS_IOS
+#import <Cocoa/Cocoa.h>
 // macOS
 @interface BeatModalAccessoryView : NSView
 @property (nonatomic) NSMutableDictionary *fields;
@@ -21,10 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 #else
+#import <UIKit/UIKit.h>
 // iOS
 @interface BeatModalAccessoryView : UIView
 @end
 
 #endif
 
-NS_ASSUME_NONNULL_END

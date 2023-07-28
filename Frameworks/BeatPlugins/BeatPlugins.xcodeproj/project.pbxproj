@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B62117042A6EC9100053228F /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
 		B621170B2A6ECEB40053228F /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621170A2A6ECEB30053228F /* PDFKit.framework */; };
 		B621170C2A6ECF460053228F /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B680B79C2A6EBEE900FCD805 /* Plugin HTML template.html */; };
 		B62117102A6FEE700053228F /* BeatPluginHTMLPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B621170F2A6FEE700053228F /* BeatPluginHTMLPanel.swift */; platformFilters = (macos, ); };
@@ -45,7 +44,7 @@
 		B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */; platformFilters = (macos, ); };
 		B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A92A6EC0E200FCD805 /* BeatConsole.m */; };
-		B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */; };
+		B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */; platformFilters = (macos, ); };
 		B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7AB2A6EC0E200FCD805 /* BeatConsole.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7B02A6EC29600FCD805 /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7AF2A6EC29600FCD805 /* BeatCore.framework */; };
 		B680B7B42A6EC29E00FCD805 /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7B32A6EC29E00FCD805 /* BeatPagination2.framework */; };
@@ -54,12 +53,28 @@
 		B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */; };
 		B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B680B7CC2A6EC50300FCD805 /* BeatConsole.xib in Resources */ = {isa = PBXBuildFile; fileRef = B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */; };
+		B680B7CC2A6EC50300FCD805 /* BeatConsole.xib in Resources */ = {isa = PBXBuildFile; fileRef = B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */; platformFilters = (macos, ); };
 		B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
+		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
+		B696BC3C2A73FB6F0078BA79 /* UnzipKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B696BC3D2A73FB6F0078BA79 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				B696BC3C2A73FB6F0078BA79 /* UnzipKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B62117032A6EC9100053228F /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,10 +143,10 @@
 				B680B7B42A6EC29E00FCD805 /* BeatPagination2.framework in Frameworks */,
 				B680B7942A6EBD8C00FCD805 /* libUXKit-UIKit.a in Frameworks */,
 				B621170B2A6ECEB40053228F /* PDFKit.framework in Frameworks */,
-				B62117042A6EC9100053228F /* UnzipKit.framework in Frameworks */,
 				B680B7C02A6EC2C100FCD805 /* BeatThemes.framework in Frameworks */,
 				B680B7BC2A6EC2B600FCD805 /* BeatDynamicColor.framework in Frameworks */,
 				B680B7922A6EBD8300FCD805 /* libUXKit-AppKit.a in Frameworks */,
+				B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +340,7 @@
 				B692D0F92A6EBB9400574D72 /* Sources */,
 				B692D0FA2A6EBB9400574D72 /* Frameworks */,
 				B692D0FB2A6EBB9400574D72 /* Resources */,
+				B696BC3D2A73FB6F0078BA79 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -543,6 +559,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -577,6 +594,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

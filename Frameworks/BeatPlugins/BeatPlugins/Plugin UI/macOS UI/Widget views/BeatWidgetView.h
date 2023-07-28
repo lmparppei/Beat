@@ -6,7 +6,13 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+
+#if TARGET_OS_IOS
+    #import <UIKit/UIKit.h>
+#else
+    #import <Cocoa/Cocoa.h>
+#endif
 #import "BeatPluginUIView.h"
 
 NS_ASSUME_NONNULL_BEGIN

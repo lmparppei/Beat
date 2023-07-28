@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 #if !TARGET_OS_IOS
 @interface BeatConsole : NSWindowController <NSMenuDelegate>
 #else
-@interface BeatConsole : UIWindowController
+@interface BeatConsole : UIViewController
 #endif
 + (BeatConsole*)shared;
 - (void)openConsole;

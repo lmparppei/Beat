@@ -123,6 +123,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)createOutline;
 /// Returns the full raw text (excluding settings block)
 - (NSString*)getText;
+/// Creates a new line element
+JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 
 
 #pragma mark Contextual line and scene info
@@ -179,9 +181,6 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (void)onPaginationFinished:(JSValue*)updateMethod;
 - (void)onDocumentSaved:(JSValue*)updateMethod;
 - (void)onEscape:(JSValue*)updateMethod;
-
-// Create a new line element
-JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 
 
 #pragma mark General editor and app access

@@ -1797,6 +1797,7 @@
 	if (string.length) return [delegate newDocumentWithContents:string];
 	else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
 #endif
+    return nil;
 }
 
 - (Line*)currentLine {

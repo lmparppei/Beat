@@ -6,19 +6,20 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #if TARGET_OS_IOS
+#import <UIKit/UIKit.h>
 #define BXView UIView
 #else
+#import <AppKit/AppKit.h>
 #define BXView NSView
 #endif
 
 @protocol BeatPluginUIExports <JSExport>
 
-@property (nonatomic) NSRect frame;
+@property (nonatomic) CGRect frame;
 - (void)remove;
-- (void)setFrame:(NSRect)frame;
+- (void)setFrame:(CGRect)frame;
 
 @end

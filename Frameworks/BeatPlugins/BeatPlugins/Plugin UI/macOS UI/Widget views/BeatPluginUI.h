@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#if !TARGET_OS_IOS
 #import "BeatPluginUIView.h"
 #import "BeatPluginUIButton.h"
 #import "BeatPluginUIDropdown.h"
@@ -15,6 +16,7 @@
 #import "BeatPluginUICheckbox.h"
 #import "BeatPluginUILabel.h"
 #import "BeatPluginUITextField.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

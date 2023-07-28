@@ -8,6 +8,7 @@
 
 #import "NSTextView+UX.h"
 
+#if !TARGET_OS_IOS
 @implementation NSTextView (UX)
 
 - (NSString*)text {
@@ -18,3 +19,4 @@
 }
 
 @end
+#endif

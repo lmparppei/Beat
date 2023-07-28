@@ -130,7 +130,7 @@ static BeatPluginManager *sharedManager;
 }
 
 
-#pragma mark -Run plugins
+#pragma mark - Run plugins
 
 - (void)runPlugin:(id)plugin {
 	// Faux placeholder method
@@ -160,6 +160,9 @@ static BeatPluginManager *sharedManager;
 #endif
 }
 
+#pragma mark Export / Import plugins (macOS)
+
+#if !TARGET_OS_IOS
 - (void)runExportPlugin:(BeatPlugin*)parser {
 	NSSavePanel *panel = NSSavePanel.new;
 	panel.allowedFileTypes = parser.exportedExtensions;
@@ -182,66 +185,8 @@ static BeatPluginManager *sharedManager;
 	}];
 }
 
-/*
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type {
-	// Remove existing plugin menu items
-	NSArray *menuItems = parentMenu.itemArray.copy;
-	for (NSMenuItem *item in menuItems) {
-		if ([item isKindOfClass:BeatPluginMenuItem.class]) [parentMenu removeItem:item];
-	}
-		
-	// Load existing plugins
-	[self loadPlugins];
-	NSArray *disabledPlugins = [self disabledPlugins];
-	
-	// Create plugin menu items
-	for (NSString *pluginName in self.pluginNames) {
-		BeatPluginInfo *plugin = [self pluginInfoFor:pluginName];
-		
-		// Backwards compatibility for old export/import plugins
-		if ([pluginName rangeOfString:@"Export"].location == 0) plugin.type = ExportPlugin;
-		else if ([pluginName rangeOfString:@"Import"].location == 0) plugin.type = ImportPlugin;
-		
-		// Skip if not correct type
-		if (parentMenu == _exportMenu && plugin.type != ExportPlugin) continue;
-		else if (parentMenu == _importMenu && plugin.type != ImportPlugin) continue;
-		else if (parentMenu == _pluginMenu && (plugin.type == ExportPlugin || plugin.type == ImportPlugin)) continue;
-		
-		// Don't show disabled plugins in menu
-		if ([disabledPlugins containsObject:pluginName]) continue;
+#endif
 
-		// String to be displayed
-		NSString *displayName = pluginName.copy;
-		
-		// Clean up plugin names for import/export and localize if possible
-		if (plugin.type == ExportPlugin && [pluginName rangeOfString:@"Export"].location != NSNotFound) {
-			displayName = [NSString stringWithFormat:@"%@ %@...", [BeatLocalization localizedStringForKey:@"export.prefix"], [pluginName stringByReplacingOccurrencesOfString:@"Export " withString:@""]];
-		}
-		else if (plugin.type == ImportPlugin && [pluginName rangeOfString:@"Import"].location != NSNotFound) {
-			displayName = [NSString stringWithFormat:@"%@ %@...", [BeatLocalization localizedStringForKey:@"import.prefix"], [pluginName stringByReplacingOccurrencesOfString:@"Import " withString:@""]];
-		}
-		
-		// Create menu item
-		BeatPluginMenuItem *item = [BeatPluginMenuItem.alloc initWithTitle:displayName pluginName:pluginName type:type];
-		item.state = NSOffState;
-		
-		// Set correct target for standalone plugins
-		if (plugin.type == ImportPlugin || plugin.type == ExportPlugin) {
-			item.target = self;
-			item.action = @selector(runStandalonePlugin:);
-		} else {
-			item.target = nil;
-			item.action = @selector(runPlugin:);
-		}
-		
-		// See if the plugin is currently running
-		if (runningPlugins[pluginName]) item.state = NSOnState;
-			
-		// Finally, add to menu
-		[parentMenu addItem:item];
-	}
-}
-*/
 
 #pragma mark - Plugin folder access
 
@@ -501,7 +446,7 @@ static BeatPluginManager *sharedManager;
 		
 		for (NSString* file in files) {
 			// Don't include the plugin script
-			if ([file.lastPathComponent isEqualTo:pluginPath.lastPathComponent]) continue;
+			if ([file.lastPathComponent isEqualToString:pluginPath.lastPathComponent]) continue;
 			[pluginFiles addObject:file];
 		}
 		
