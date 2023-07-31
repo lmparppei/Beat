@@ -144,18 +144,17 @@
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem title="More..." image="ellipsis.circle" catalog="system" id="HbG-xJ-Z78"/>
-                            <barButtonItem title="Settings" id="dzN-hd-2vt">
+                            <barButtonItem title="Settings" id="57u-GR-Hn4">
                                 <imageReference key="image" image="gearshape.fill" catalog="system" symbolScale="default"/>
                                 <connections>
-                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="hP3-VJ-FlA"/>
-                                    <segue destination="GMn-jP-wej" kind="show" id="xJV-OX-4ZH"/>
+                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="Fc6-Ih-5Qm"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Index Cards" id="57u-GR-Hn4">
+                            <barButtonItem title="Index Cards" id="dzN-hd-2vt">
                                 <imageReference key="image" image="square.grid.2x2.fill" catalog="system" symbolScale="default"/>
                                 <connections>
-                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="Fc6-Ih-5Qm"/>
+                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="hP3-VJ-FlA"/>
+                                    <segue destination="UZW-Mv-jzT" kind="show" identifier="Cards" id="vuS-8l-2Ks"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Preview" id="HYO-k9-O7y">
@@ -230,88 +229,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2398.6822840409955" y="653.90625"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="KKU-GZ-P8E">
-            <objects>
-                <viewController id="VC7-E4-7Qw" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ehz-5g-JIy">
-                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" dataMode="prototypes" id="MMc-Yb-WFu">
-                                <rect key="frame" x="4" y="14" width="1321" height="977"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="44l-Jj-zVz">
-                                    <size key="itemSize" width="179" height="161"/>
-                                    <size key="estimatedItemSize" width="150" height="150"/>
-                                    <size key="headerReferenceSize" width="400" height="50"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Card" id="IPG-zR-TkI">
-                                        <rect key="frame" x="0.0" y="50" width="179" height="161"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Qqf-Iw-BDz">
-                                            <rect key="frame" x="0.0" y="0.0" width="179" height="161"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PeA-MI-zbV">
-                                                    <rect key="frame" x="8" y="8" width="163" height="26"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" name="Courier-Bold" family="Courier" pointSize="11"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </collectionViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <size key="customSize" width="179" height="161"/>
-                                    </collectionViewCell>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Section Card" id="1ck-ek-CI5">
-                                        <rect key="frame" x="190.5" y="50" width="179" height="161"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="WOQ-Xi-DC9">
-                                            <rect key="frame" x="0.0" y="0.0" width="179" height="161"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="TopLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="znT-O9-OFQ">
-                                                    <rect key="frame" x="10" y="8" width="159" height="145"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </collectionViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <size key="customSize" width="179" height="161"/>
-                                    </collectionViewCell>
-                                </cells>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="Section Header" id="b1w-YS-aA5">
-                                    <rect key="frame" x="0.0" y="0.0" width="1321" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VcS-YC-az8">
-                                            <rect key="frame" x="0.0" y="10" width="1313" height="34"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </label>
-                                    </subviews>
-                                </collectionReusableView>
-                            </collectionView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="rK0-OL-bCJ"/>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SXn-Yw-Xhc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3074" y="654"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
@@ -545,21 +462,36 @@
             </objects>
             <point key="canvasLocation" x="1673.4992679355782" y="-164.35546875"/>
         </scene>
-        <!--Beat Index Card View Controller-->
-        <scene sceneID="9Fa-V0-Yf5">
+        <!--Index Card View-->
+        <scene sceneID="J4j-ml-5FK">
             <objects>
-                <viewController modalPresentationStyle="pageSheet" id="GMn-jP-wej" customClass="BeatIndexCardViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="VB2-Mb-VSM">
+                <viewController title="Index Card View" id="UZW-Mv-jzT" customClass="BeatPluginContainerViewController" customModule="BeatPlugins" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XsT-vL-ctF">
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="a4G-I9-KFD"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
+                                <rect key="frame" x="0.0" y="0.0" width="1367" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
+                                </connections>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="bKv-DM-jPu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="rKR-ID-IOX"/>
+                    <navigationItem key="navigationItem" id="0Ui-oi-hTO">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="FKz-1N-oX2"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="container" destination="lPf-zz-Wp5" id="TtV-cb-Wa5"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="9dt-d3-RDq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iR4-kY-YYF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2399" y="-29"/>
+            <point key="canvasLocation" x="2398.6822840409955" y="-15.234374999999998"/>
         </scene>
         <!--Beat Quick Settings-->
         <scene sceneID="Ez1-VE-dLe">
@@ -569,7 +501,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="350" height="385"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" id="NEB-De-fMw">
+                            <containerView opaque="NO" contentMode="scaleToFill" id="NEB-De-fMw">
                                 <rect key="frame" x="0.0" y="0.0" width="350" height="385"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
@@ -857,7 +789,6 @@
         <image name="Color_Orange" width="15" height="15"/>
         <image name="Color_Purple" width="15" height="15"/>
         <image name="doc" catalog="system" width="115" height="128"/>
-        <image name="ellipsis.circle" catalog="system" width="128" height="123"/>
         <image name="eye.fill" catalog="system" width="128" height="80"/>
         <image name="folder" catalog="system" width="128" height="96"/>
         <image name="gearshape.fill" catalog="system" width="128" height="123"/>

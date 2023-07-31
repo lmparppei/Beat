@@ -2,8 +2,67 @@
 	<head>
 		<style type='text/css'>
 			{{css}}
+			{{iOS-css}}
 		</style>
 		<script>
+			let scroller = {
+				interval: 10,
+				step: 10,
+				zone: 100,
+				enabled: false, // Add an 'enabled' property to the object
+
+				start: () => {
+					disableScroll()
+					
+					scroller.enabled = true;
+					document.addEventListener('mousemove', scroller.mouseMove);
+					scroller.tick();
+				},
+
+				stop: () => {
+					enableScroll()
+					
+					scroller.enabled = false;
+					document.removeEventListener('mousemove', scroller.mouseMove);
+				},
+
+				mouseMove: (e) => {
+					scroller.clientY = e.clientY;
+				},
+
+				tick: () => {
+					if (!scroller.enabled) return;
+
+					let direction = 0;
+					if (scroller.clientY) {
+						let dst = window.pageYOffset || document.documentElement.scrollTop;
+						if (scroller.clientY < scroller.zone && dst > 0)
+							direction = -1;
+						else {
+							let dh = document.documentElement.scrollHeight;
+							let wh = window.innerHeight;
+							if (scroller.clientY > wh - scroller.zone && dst < dh - wh - 1)
+								direction = 1;
+						}
+					}
+
+					window.scrollBy(0, scroller.step * direction);
+					setTimeout(scroller.tick, scroller.interval);
+				},
+			};
+			
+			var wheelOpt = { passive: false }
+			function disableScroll() {
+				window.addEventListener('touchmove', preventDefault, wheelOpt);
+			}
+			function preventDefault(e) {
+				e.preventDefault();
+			}
+			function enableScroll() {
+				window.removeEventListener('touchmove', preventDefault, wheelOpt);
+			}
+
+			
 			{{dragula}}
 		</script>
 		<script>
@@ -25,8 +84,6 @@
 				contextMenu.menu.id = 'contextMenu';
 				
 				var content = '';
-
-				Beat.log("Menu initialized")
 
 				for (var i in colors) {
 					var color = colors[i];
@@ -84,6 +141,8 @@
 				}
 			}
 			contextMenu.close = function () {
+				if (contextMenu.menu == null) return;
+				
 				contextMenu.open = false;
 				contextMenu.menu.className = '';
 			}
@@ -120,7 +179,9 @@
 				}
 			}
 
-			function updateSelection(selected, scroll) {
+			function updateSelection(selected, scroll, instant = false) {
+				document.getElementById("filters").innerHTML = selected
+				
 				let items = document.querySelectorAll(".item")
 				for (let i=0; i<items.length; i++) {
 					let item = items[i]
@@ -128,7 +189,8 @@
 					
 					if (uuid == selected) {
 						item.classList.add("selected")
-						if (scroll) item.scrollIntoView( { behavior: "smooth", block: "center" });
+						if (scroll && !instant) item.scrollIntoView( { behavior: "smooth", block: "center" });
+						else if (scroll && instant)item.scrollIntoView( { block: "center" });
 
 					} else {
 						item.classList.remove("selected")
@@ -146,22 +208,22 @@
 					invalid: function (el, handle) {
 						return el.classList.contains("section")
 					}
-				});
+				})
+				.on('cancel', scroller.stop)
+				.on('drag', scroller.start)
+				.on('drop', function (el, target, source, sibling) {
+					let siblingUUID = sibling.getAttribute("uuid")
+					let sceneUUID = el.getAttribute("uuid")
 
+					Beat.call("Beat.custom.moveScene('" + sceneUUID + "', '" + siblingUUID + "')")
+				});
+			
 				const containers = document.querySelectorAll(".dragContainer")
 				drake.containers = []
 				for (let container of containers) {
 					drake.containers.push(container)
 				}
 
-				// Handle drop
-
-				drake.on('drop', function (el, target, source, sibling) {
-					let siblingUUID = sibling.getAttribute("uuid")
-					let sceneUUID = el.getAttribute("uuid")
-
-					Beat.call("Beat.custom.moveScene('" + sceneUUID + "', '" + siblingUUID + "')")
-				});
 			}
 
 			function filter(element) {
@@ -208,7 +270,7 @@
 				<input type='checkbox' name='section-2' onclick='filter(this)' checked> ## 
 				<input type='checkbox' name='section-3' onclick='filter(this)' checked> ### 
 			</div>
-
+			
 			<div id='zoom'>
 			   <button onclick='zoomOut()'>-</button>
 			   <button onclick='zoomIn()'>+</button>
@@ -235,9 +297,15 @@
 					let uuid = card.getAttribute("uuid")
 
 					card.onclick = () => {
-						contextMenu.close();
-						Beat.log("Click")
-						if (mode == modes.window) scrollToLine(uuid);
+						if (contextMenu != null) contextMenu.close();
+						
+						if (iOS) {
+							Beat.call("Beat.custom.returnToEditor()")
+							scrollToLine(uuid);
+						}
+						else if (mode == modes.window) {
+							scrollToLine(uuid);
+						}
 					}
 					card.ondblclick = () => {
 						// In container mode we'll return to editor view
@@ -245,12 +313,14 @@
 							Beat.call("Beat.custom.returnToEditor()")
 						}
 
-						Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
+						scrollToLine(uuid)
 					}
 					card.oncontextmenu = (e) => {
 						e.preventDefault()
 						contextMenu.toggle(e)
 					}
+					
+					
 				})
 				
 				document.getElementById("container").onclick = () => {
@@ -269,7 +339,10 @@
 			}
 
 			setupContextMenu()
-			initDragDrop()
+			if (!iOS) initDragDrop();
+			
+			let currentScene = "{{current}}"
+			updateSelection(currentScene, true, true);
 
 		</script>
 	</body>

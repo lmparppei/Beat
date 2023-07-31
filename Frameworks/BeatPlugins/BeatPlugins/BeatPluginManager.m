@@ -433,12 +433,14 @@ static BeatPluginManager *sharedManager;
 	
 	NSFileManager* fileManager = NSFileManager.defaultManager;
 	
+    NSError* error;
+    
 	if ([self isFolderPlugin:name]) {
 		// Check that the folder actually has a plugin file
 		NSString* pluginPath = [self pluginPathForPath:filename];
 		if (pluginPath == nil) return nil;
 		
-		plugin.script = [NSString stringWithContentsOfFile:pluginPath encoding:NSUTF8StringEncoding error:nil];
+		plugin.script = [NSString stringWithContentsOfFile:pluginPath encoding:NSUTF8StringEncoding error:&error];
 		
 		// Also, read the folder contents and allow file access to the plugin
 		NSArray *files = [fileManager contentsOfDirectoryAtPath:pluginPath.stringByDeletingLastPathComponent error:nil];
@@ -453,8 +455,12 @@ static BeatPluginManager *sharedManager;
 		plugin.files = [NSArray arrayWithArray:pluginFiles];
 	} else {
 		// Get script for a single file
-		plugin.script = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil];
+		plugin.script = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:&error];
 	}
+    
+    if (error != nil) {
+        NSLog(@"Plugin manager error: %@", error);
+    }
 	
 	// Make the script a self-running function. This allows us to avoid some namespacing issues in JS.
 	plugin.script = [NSString stringWithFormat:@"(function(){ %@ })();", plugin.script];

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) iOSDocument* document;
 @property (weak, readonly) BXWindow* documentWindow;
 
-@property (atomic) BeatDocumentSettings *documentSettings;
+@property (nonatomic) BeatDocumentSettings *documentSettings;
 
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
 

@@ -109,7 +109,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
 
 // Document settings
-@property (atomic) BeatDocumentSettings* _Nullable documentSettings;
+@property (nonatomic) BeatDocumentSettings* _Nullable documentSettings;
 
 // Versioning
 @property (nonatomic) NSURL* _Nullable revertedTo;

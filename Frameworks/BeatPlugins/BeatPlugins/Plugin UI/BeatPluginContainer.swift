@@ -33,11 +33,12 @@ import UXKit
     
     func containerViewDidHide()
     func load()
+    func unload()
 }
 
 @objc public class BeatPluginContainerBase: UXView, BeatPluginContainer {
     @objc public var pluginName: String = ""
-    @IBOutlet public var delegate: BeatPluginDelegate?
+    @IBOutlet weak public var delegate: BeatPluginDelegate?
     public var pluginOptions: [String: AnyObject] = [:]
     public var webView: BeatPluginWebView?
     public var host: BeatPlugin?
@@ -59,7 +60,7 @@ import UXKit
     
     required init?(coder: NSCoder) {
         // For now, we can't create containers using coders.
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
     
     public func setHTML(_ html: String) {
@@ -69,13 +70,31 @@ import UXKit
     public func runJS(_ js: String, _ callback: JSValue?) {
         self.webView?.runJS(js, callback)
     }
+    
+    deinit {
+        unload()
+    }
+    
+    public func unload() {
+        // Unload the plugin
+        self.webView?.remove()
+        self.host?.end()
+        
+        // Remove
+        self.host = nil
+        self.webView = nil
+    }
         
     /// Adds web view to the container
     func setupWebView(html:String) {
+        // Don't do this twice (can happen on iOS when the view controller is already created)
+        if self.webView != nil { return }
+
         guard let host = self.host else {
             print("No host for container view set: ", self)
             return
         }
+                
         self.webView = BeatPluginWebView.create(html: html, width: self.frame.width, height: self.frame.height, host: host)
         self.webView?.setHTML(html)
         self.host?.container = self
@@ -84,7 +103,15 @@ import UXKit
     }
     
     override public func awakeFromNib() {
-        self.host = BeatPlugin()
+        setup()
+    }
+    
+    /// We will call `setup()` directly on iOS. On macOS, it's called by `awakeFromNib`.
+    @objc public func setup() {
+        if self.host == nil {
+            self.host = BeatPlugin()
+        }
+        
         self.host?.delegate = self.delegate
         
         // Register this view
@@ -130,8 +157,17 @@ import UXKit
 #elseif os(iOS)
 
 @objc public class BeatPluginContainerView:BeatPluginContainerBase {
+    @IBOutlet weak var viewController:UIViewController?
+    
     override public func closePanel(_ sender: AnyObject?) {
-        
+        if (viewController?.navigationController != nil) {
+            // We came in through a segue and need to pop this view.
+            viewController?.navigationController?.popViewController(animated: true)
+            unload()
+        } else {
+            // The VC was instantiated some other way, let's just dismiss it.
+            viewController?.dismiss(animated: true)
+        }
     }
     
     /*
@@ -141,6 +177,31 @@ import UXKit
         onViewWillDraw?.call(withArguments: [self])
     }
      */
+}
+
+@objc public class BeatPluginContainerViewController:UIViewController {
+    @IBOutlet @objc public weak var container:BeatPluginContainerView?
+    @objc public weak var delegate:BeatPluginDelegate?
+    @IBInspectable @objc public var pluginName:String = ""
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Set up the container
+        container?.pluginName = pluginName
+        container?.delegate = delegate
+        
+        container?.setup()
+        container?.load()
+    }
+}
+
+extension UIView {
+    var parentViewController: UIViewController? {
+        sequence(first: self) { $0.next }
+            .first(where: { $0 is UIViewController })
+            .flatMap { $0 as? UIViewController }
+    }
 }
 
 #endif

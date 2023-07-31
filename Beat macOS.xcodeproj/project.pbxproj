@@ -766,17 +766,16 @@
 		B6916BFF25D135930037EF6A /* BeatFDXExport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFDXExport.m; sourceTree = "<group>"; };
 		B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginLibraryDataSource.swift; sourceTree = "<group>"; };
 		B696BC1E2A714C1F0078BA79 /* Container Test.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Container Test.beatPlugin"; path = "Frameworks/BeatPlugins/BeatPlugins/Plugin UI/Container Test.beatPlugin"; sourceTree = "<group>"; };
-		B696BC222A7150F50078BA79 /* BeatCardsUI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = BeatCardsUI.html; sourceTree = "<group>"; };
-		B696BC232A7150F50078BA79 /* dragula.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
-		B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
-		B696BC252A7150F50078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
-		B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsPrint.css; sourceTree = "<group>"; };
+		B696BC222A7150F50078BA79 /* BeatCardsUI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = BeatCardsUI.html; path = "../../../../Beat iOS/User Interface Views/Card View/BeatCardsUI.html"; sourceTree = "<group>"; };
+		B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; name = "Index Card View.beatPlugin"; path = "../../../../Beat iOS/User Interface Views/Card View/Index Card View.beatPlugin"; sourceTree = "<group>"; };
+		B696BC252A7150F50078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = BeatCardsUI.css; path = "../../../../Beat iOS/User Interface Views/Card View/BeatCardsUI.css"; sourceTree = "<group>"; };
+		B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = BeatCardsPrint.css; path = "../../../../Beat iOS/User Interface Views/Card View/BeatCardsPrint.css"; sourceTree = "<group>"; };
 		B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatQuickSettings.swift; sourceTree = "<group>"; };
 		B698DCE22A4B969E00D8C5C4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatQuickSettings.xib; sourceTree = "<group>"; };
 		B698DCE52A4B96A100D8C5C4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
 		B698DCE72A4B96A300D8C5C4 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = "../../../../Beat iOS/User Interface Views/Card View/dragula.js"; sourceTree = "<group>"; };
 		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FountainAnalysis.h; sourceTree = "<group>"; };
 		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FountainAnalysis.m; sourceTree = "<group>"; };
 		B69BFC762565336C007A7D2B /* FadeInImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FadeInImport.h; sourceTree = "<group>"; };
@@ -1438,7 +1437,6 @@
 			isa = PBXGroup;
 			children = (
 				B696BC212A7150E10078BA79 /* Plugin */,
-				B69A929B2319609100FE6A3E /* dragula.js */,
 				B67F4A5D22762FE600E14FCA /* CardCSS.css */,
 				B66FC99D2276EAD800C0265D /* CardView.js */,
 				B6898EF62676615A00D728B3 /* CardView copy.js */,
@@ -1600,7 +1598,7 @@
 				B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */,
 				B696BC252A7150F50078BA79 /* BeatCardsUI.css */,
 				B696BC222A7150F50078BA79 /* BeatCardsUI.html */,
-				B696BC232A7150F50078BA79 /* dragula.js */,
+				B69A929B2319609100FE6A3E /* dragula.js */,
 				B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */,
 			);
 			path = Plugin;

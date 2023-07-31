@@ -21,7 +21,7 @@
 
 /// Fountain parser associated with the document
 @property (readonly) ContinuousFountainParser *parser;
-@property (atomic, readonly) BeatDocumentSettings *documentSettings;
+@property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
 
 - (NSString*)text;
 

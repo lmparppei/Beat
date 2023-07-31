@@ -10,6 +10,7 @@
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPlugins/BeatPlugins.h>
 
 #import "BeatEditorFormatting.h"
 #import "BeatPreview.h"
@@ -17,7 +18,7 @@
 #import "Beat_iOS-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
 
 @property (nonatomic) NSUUID* uuid;
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
@@ -50,8 +51,9 @@
 /// The range where the *edit* happened
 @property (nonatomic) NSRange lastEditedRange;
  
-@property (nonatomic) NSMutableArray<id<BeatEditorView>>* registeredViews;
-@property (nonatomic) NSMutableArray<id<BeatSceneOutlineView>>* registeredOutlineViews;
+@property (nonatomic) NSMutableSet<id<BeatEditorView>>* registeredViews;
+@property (nonatomic) NSMutableSet<id<BeatSceneOutlineView>>* registeredOutlineViews;
+@property (nonatomic) NSMutableSet<id<BeatPluginContainer>>* registeredPluginContainers;
 
 @property (nonatomic) bool sidebarVisible;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* sidebarConstraint;
@@ -140,9 +142,9 @@
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
-		
+	
 	// Hide text from view until loaded
-	self.textView.pageView.layer.opacity = 0.0;
+	// self.textView.pageView.layer.opacity = 0.0;
 	
 	// Hide sidebar
 	self.sidebarConstraint.constant = 0.0;
@@ -156,15 +158,7 @@
 }
 
 -(IBAction)dismissViewController:(id)sender {
-	[self.previewView.webview removeFromSuperview];
-	self.previewView.webview = nil;
-	
-	[self.previewView.nibBundle unload];
-	self.previewView = nil;
-	
-	[self dismissViewControllerAnimated:true completion:^{
-		[self.document closeWithCompletionHandler:nil];
-	}];
+	[self unloadViews];
 }
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback
@@ -187,10 +181,7 @@
 		for (Line* line in self.parser.lines) { @autoreleasepool {
 			[formatting formatLine:line firstTime:true];
 		} }
-
-		// Setup revision tracking and reviews
-		self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
-		self.review = [BeatReview.alloc initWithDelegate:self];
+		[self.parser.changedIndices removeAllIndexes];
 				
 		callback();
 	}];
@@ -198,6 +189,10 @@
 
 - (void)setupDocument
 {
+	// Setup revision tracking and reviews
+	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
+	self.review = [BeatReview.alloc initWithDelegate:self];
+	
 	self.titleBar.title = self.fileNameString;
 	
 	self.document.delegate = self;
@@ -207,7 +202,7 @@
 	self.formatting.delegate = self;
 	
 	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
-		
+	
 	// Init preview
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
@@ -228,7 +223,7 @@
 	[self.textView setFindInteractionEnabled:true];
 	
 	// Data source
-	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];	
+	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -236,40 +231,39 @@
 	
 	if (_documentIsLoading) {
 		// Loading is complete, show page view
+		[_textView layoutIfNeeded];
+		
 		[_textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, _textView.text.length)];
 		[_textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, _textView.text.length) actualCharacterRange:nil];
-		[_textView resize];
 		
-		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-			self.documentIsLoading = false;
-			self.textView.pageView.layer.opacity = 1.0;
-		} completion:^(BOOL finished) {
-			[self.textView resize];
-		}];
+		CGRect r = [self.textView rectForRangeWithRange:NSMakeRange(_textView.text.length - 10, 9)];
+		
+		[_textView resize];
 	}
 }
 
-- (IBAction)dismissDocumentViewController:(id)sender {
+- (IBAction)dismissDocumentViewController:(id)sender
+{
+	[self unloadViews];
+}
+
+- (void)unloadViews
+{
 	[self.previewView.webview removeFromSuperview];
 	self.previewView.webview = nil;
 	
 	[self.previewView.nibBundle unload];
 	self.previewView = nil;
 	
-	[self dismissViewControllerAnimated:YES completion:^{
+	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
+		[container unload];
+	}
+	[self.registeredPluginContainers removeAllObjects];
+	
+	[self dismissViewControllerAnimated:true completion:^{
 		[self.document closeWithCompletionHandler:nil];
 	}];
 }
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
 
 
 #pragma mark - Text view
@@ -517,7 +511,7 @@
 	if (self.sidebarVisible) [self.outlineProvider update];
 	
 	CGFloat sidebarWidth = (_sidebarVisible) ? 230.0 : 0.0;
-
+	
 	[UIView animateWithDuration:0.25 animations:^{
 		self.sidebarConstraint.constant = sidebarWidth;
 	} completion:^(BOOL finished) {
@@ -619,6 +613,8 @@ static bool buildPreviewImmediately = false;
 #pragma mark - Text I/O
 
 - (NSString *)text {
+	if (self.textView == nil) return self.formattedTextBuffer.string;
+	
 	if (NSThread.mainThread) return self.textView.text;
 	else return self.attrTextCache.string;
 }
@@ -662,7 +658,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)setTypingAttributes:(NSDictionary*)attrs {
 	self.textView.typingAttributes = attrs;
 }
-
 
 
 
@@ -819,10 +814,19 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (editedMask == NSTextStorageEditedAttributes) {
 		return;
 	}
+	else if (editedMask & NSTextStorageEditedCharacters) {
+		// First store the edited range and register possible changes to the text
+		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
+		
+		// Register changes
+		if (_revisionMode && _lastChangedRange.location != NSNotFound) {
+			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
+		}
+	}
 	
 	NSRange affectedRange = NSMakeRange(NSNotFound, 0);
 	NSString* string = @"";
-		
+	
 	if (editedRange.length == 0 && delta < 0) {
 		// Single removal. Note that delta is NEGATIVE.
 		NSRange removedRange = NSMakeRange(editedRange.location, labs(delta));
@@ -859,6 +863,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	[self.parser parseChangeInRange:affectedRange withString:string];
+	
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView {
@@ -885,7 +890,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (_documentIsLoading) return;
 	
 	// Register changes
-	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
+	//if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
 	// Save
 	[self.document updateChangeCount:UIDocumentChangeDone];
@@ -903,13 +908,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
-	for (id<BeatEditorView> view in _registeredViews) {
+	for (id<BeatEditorView> view in _registeredViews.allObjects) {
 		if (view.visible) [view reloadInBackground];
 	}
 	
 	// Paginate
 	[self paginateWithChangeAt:self.lastChangedRange.location sync:false];
-		
+	
 	// If this was an undo operation, scroll to where the alteration was made
 	if (self.undoManager.isUndoing) {
 		[self.textView scrollRangeToVisible:_lastChangedRange];
@@ -948,6 +953,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		// Jump over already-typed parentheses and other closures
 		return false;
 	}
+	
+	_lastChangedRange = (NSRange){ range.location, text.length };
 	
 	return true;
 }
@@ -1294,12 +1301,15 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)registerEditorView:(id)view {
-	if (_registeredViews == nil) _registeredViews = NSMutableArray.new;
-	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+	if (_registeredViews == nil) _registeredViews = NSMutableSet.new;
+	[_registeredViews addObject:view];
 }
 -(void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view {
-	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableArray.new;
-	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableSet.new;
+	[_registeredViews addObject:view];
+}
+- (void)registerPluginContainer:(id<BeatPluginContainer>)view {
+	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableSet.new;
 }
 
 - (void)toggleMode:(BeatEditorMode)mode {
@@ -1344,7 +1354,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Keyboard manager delegate
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	NSLog(@"Hiehg: %f", size.height);
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
@@ -1426,7 +1435,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[self.runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
-
+	
 	// Run a new plugin
 	BeatPlugin *plugin = [BeatPlugin withName:pluginName delegate:self];
 	
@@ -1486,6 +1495,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self setValue:value forKey:key];
 }
 
+
+#pragma mark - Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+	if ([segue.identifier isEqualToString:@"Cards"]) {
+		BeatPluginContainerViewController* vc = segue.destinationViewController;
+		
+		vc.delegate = self;
+		vc.pluginName = @"Index Card View";
+	}
+}
 
 
 @end

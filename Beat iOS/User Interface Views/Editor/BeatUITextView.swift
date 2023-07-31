@@ -221,6 +221,41 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		}
 	}
 	
+	@objc func resizeScrollViewContent() {
+		let layoutManager = self.layoutManager
+		let inset = self.textContainerInset
+		
+		// Calculate the index of the last glyph that fits within the available height
+		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
+		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
+
+		// Get the rectangle of the line fragment that contains the last glyph
+		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
+		var lastLineY = lastLineRect.maxY
+		if lastLineRect.origin.y == 0.0 {
+			lastLineRect = layoutManager.extraLineFragmentRect
+			lastLineY = lastLineRect.maxY * -1
+		}
+		
+		let factor = self.enclosingScrollView.zoomScale
+		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
+		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
+								height: (contentSize.height + inset.top + inset.bottom) * factor)
+
+		if scrollSize.height * factor < self.enclosingScrollView.frame.height {
+			scrollSize.height = self.enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
+		}
+		
+		let heightNow = self.enclosingScrollView.contentSize.height
+		
+		// Adjust the size to fit, if the size differs more than 5.0 points
+		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
+			scrollSize.height += 12.0
+			self.enclosingScrollView.contentSize = scrollSize
+		}
+		
+	}
+	
 	
 	// MARK: - Dialogue input
 	
@@ -535,41 +570,6 @@ extension BeatUITextView: UIScrollViewDelegate {
 		} completion: { _ in
 			
 		}
-	}
-	
-	@objc func resizeScrollViewContent() {
-		let layoutManager = self.layoutManager
-		let inset = self.textContainerInset
-		
-		// Calculate the index of the last glyph that fits within the available height
-		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
-		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
-
-		// Get the rectangle of the line fragment that contains the last glyph
-		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
-		var lastLineY = lastLineRect.maxY
-		if lastLineRect.origin.y == 0.0 {
-			lastLineRect = layoutManager.extraLineFragmentRect
-			lastLineY = lastLineRect.maxY * -1
-		}
-		
-		let factor = self.enclosingScrollView.zoomScale
-		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
-		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
-								height: (contentSize.height + inset.top + inset.bottom) * factor)
-
-		if scrollSize.height * factor < self.enclosingScrollView.frame.height {
-			scrollSize.height = self.enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
-		}
-		
-		let heightNow = self.enclosingScrollView.contentSize.height
-		
-		// Adjust the size to fit, if the size differs more than 5.0 points
-		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
-			scrollSize.height += 12.0
-			self.enclosingScrollView.contentSize = scrollSize
-		}
-		
 	}
 	
 	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

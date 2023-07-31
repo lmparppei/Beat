@@ -283,7 +283,8 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
 - (BeatPaginationManager*)paginator:(NSArray*)lines;
 /// Creates and returns a NEW pagination manager
 - (BeatPaginationManager*)pagination;
-
+/// Resets the preview and clears pagination
+- (void)resetPreview;
 
 #pragma mark Reformatting
 JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)len);
@@ -398,7 +399,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) Line* currentLine;
 @property (nonatomic, readonly) BeatTextIO* textActions;
 
-@property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
 @property (nonatomic, readonly) bool closing;

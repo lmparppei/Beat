@@ -354,10 +354,11 @@
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
-	// Avoid retain cycles with WKWebView
-	// [self.preview deallocPreview];
-	// [self.cardView removeHandlers];
-	
+	// Remove plugin containers (namely the index card view)
+	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
+		[container unload];
+	}
+	[self.registeredPluginContainers removeAllObjects];
 	
 	// Terminate running plugins
 	for (NSString *pluginName in _runningPlugins.allKeys) {
@@ -365,7 +366,7 @@
 		[plugin end];
 		[_runningPlugins removeObjectForKey:pluginName];
 	}
-	
+		
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
 	[self.previewController.timer invalidate];
@@ -1651,8 +1652,6 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
-	// Faux delegate method forwarded from NSTextView.
-	// Use if needed.
 	if (_documentIsLoading) return;
 	
 	if (editedMask & NSTextStorageEditedCharacters) {

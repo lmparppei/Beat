@@ -817,7 +817,7 @@
 			});
 		}
 	#else
-		NSLog(@"Plugin error: %@", string);
+		NSLog(@"%@: %@", self.pluginName, string);
 	#endif
 }
 
@@ -1427,7 +1427,8 @@
 	[self.delegate createPreviewAt:location sync:true];
 }
 
-- (void)resetPreview {
+- (void)resetPreview
+{
 	[self.delegate resetPreview];
 }
 

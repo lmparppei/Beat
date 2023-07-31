@@ -59,15 +59,32 @@ let templates = {
 
 
 // When running the plugin for the first time, create the outline immediately
-let html =  (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
+let html = (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
+
 
 // Get files from inside the app bundle
 let css = Beat.appAssetAsString("BeatCardsUI.css")
 let ui = Beat.appAssetAsString("BeatCardsUI.html")
 let js = Beat.appAssetAsString("dragula.js")
 
+let additionalCSS = ""
+
+if (Beat.iOS()) {
+	additionalCSS = "#print, #zoom { display: none; }"
+}
+
+let current = ""
+if (Beat.currentScene != null) current = Beat.currentScene.line.uuidString()
+
 // Create UI
-ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", Beat.iOS())
+ui = Beat.localize(ui)
+		.replaceAll("{{html}}", html)
+		.replaceAll("{{css}}", css)
+		.replaceAll("{{dragula}}", js)
+		.replaceAll("{{mode}}", mode)
+		.replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false'))
+		.replaceAll("{{iOS-css}}", additionalCSS,)
+		.replaceAll("{{current}}", current)
 
 // Create window.
 // We'll choose the appropriate view to use as the HTML view.
@@ -357,6 +374,7 @@ Beat.custom = {
 		refreshHTML()
 	},
 	returnToEditor: () => {
+		Beat.log("Return to editor")
 		window.closePanel()
 	},
 	printCards: () => {
@@ -432,5 +450,4 @@ function printCards() {
 function windowed() {
 	return (Beat.container == undefined)
 }
-
 

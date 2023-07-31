@@ -26,7 +26,7 @@
     #define BXBezierPath UIBezierPath
 
     // Because of different line heights on iOS, we'll need to add an offset
-    #define SCENE_NUMBER_OFFSET -3.5
+    #define Y_OFFSET -3.5
 
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
     #define getRectValue CGRectValue
@@ -35,7 +35,7 @@
     #define BXRectFill NSRectFill
     #define BXBezierPath NSBezierPath
 
-    #define SCENE_NUMBER_OFFSET 0.0
+    #define Y_OFFSET 0.0
 
     #define rectNumberValue(s) [NSValue valueWithRect:rect]
     #define getRectValue rectValue
@@ -213,7 +213,7 @@
         if (revisionLevel >= 0) {
             // Calculate rect for the marker position
             CGRect rect = CGRectMake(inset.width + documentWidth - 22,
-                                     inset.height + usedRect.origin.y,
+                                     inset.height + usedRect.origin.y - Y_OFFSET,
                                      22,
                                      usedRect.size.height + 1.0);
             
@@ -259,7 +259,7 @@
     rect.size.width = 7.5 * line.sceneNumber.length;
     rect.size.height = rect.size.height + 1.0;
     
-    CGFloat y = rect.origin.y - SCENE_NUMBER_OFFSET;
+    CGFloat y = rect.origin.y - Y_OFFSET;
     
     rect = CGRectMake(inset.width,
                       y,

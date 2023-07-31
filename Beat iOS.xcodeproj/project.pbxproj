@@ -46,6 +46,11 @@
 		B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BF296EDFFD00CF4869 /* UIKit.framework */; };
 		B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; };
 		B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B696BC412A74200D0078BA79 /* BeatCardsPrint.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3F2A741FA70078BA79 /* BeatCardsPrint.css */; };
+		B696BC422A74200D0078BA79 /* BeatCardsUI.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC402A741FA70078BA79 /* BeatCardsUI.css */; };
+		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
+		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
+		B696BC472A7426750078BA79 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B696BC462A7426750078BA79 /* dragula.js */; };
 		B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
@@ -139,6 +144,11 @@
 		B69311BD296EDFF400CF4869 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311BF296EDFFD00CF4869 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311C1296EE00500CF4869 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = BeatCardsUI.html; sourceTree = "<group>"; };
+		B696BC3F2A741FA70078BA79 /* BeatCardsPrint.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsPrint.css; sourceTree = "<group>"; };
+		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
+		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
+		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
@@ -258,8 +268,13 @@
 		B629FE3C2846B8DB00E8B9BD /* Card View */ = {
 			isa = PBXGroup;
 			children = (
+				B696BC442A7426260078BA79 /* Index Card View.beatPlugin */,
+				B696BC3F2A741FA70078BA79 /* BeatCardsPrint.css */,
+				B696BC402A741FA70078BA79 /* BeatCardsUI.css */,
+				B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */,
 				B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */,
 				B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */,
+				B696BC462A7426750078BA79 /* dragula.js */,
 			);
 			path = "Card View";
 			sourceTree = "<group>";
@@ -487,9 +502,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B686FFCE2971BC7E00789C8D /* FooterTemplate.html in Resources */,
+				B696BC422A74200D0078BA79 /* BeatCardsUI.css in Resources */,
+				B696BC412A74200D0078BA79 /* BeatCardsPrint.css in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
 				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */,
+				B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */,
 				B619DE6329F80E40007D1838 /* New Document.fountain in Resources */,
 				B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */,
 				B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */,
@@ -504,6 +523,7 @@
 				B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */,
 				B6D3203F298F04C3003DA45D /* Courier Prime Sans.ttf in Resources */,
 				B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */,
+				B696BC472A7426750078BA79 /* dragula.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
