@@ -405,8 +405,8 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
 - (BeatPaginationManager*)pagination;
-- (void)createPreviewAt:(NSInteger)location;
-- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync;
+- (void)createPreviewAt:(NSRange)range;
+- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
 - (void)resetPreview;
 
 /// Runs a plugin with given name

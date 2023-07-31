@@ -2947,13 +2947,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Preview
 
-- (void)createPreviewAt:(NSInteger)location
+- (void)createPreviewAt:(NSRange)range
 {
-	[self.previewController createPreviewWithChangeAt:location sync:false];
+	[self.previewController createPreviewWithChangedRange:range sync:false];
 }
-- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync
+- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync
 {
-	[self.previewController createPreviewWithChangeAt:location sync:sync];
+	[self.previewController createPreviewWithChangedRange:range sync:sync];
 }
 
 - (void)resetPreview {
@@ -2966,7 +2966,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)invalidatePreviewAt:(NSInteger)index {
-	[self.previewController invalidatePreviewAt:index];
+	[self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
 }
 
 - (IBAction)preview:(id)sender
@@ -3714,7 +3714,7 @@ static NSArray<Line*>* cachedTitlePage;
 	// Don't paginate while loading
 	if (self.documentIsLoading) return;
 	
-	[self.previewController createPreviewWithChangeAt:range.location sync:sync];
+	[self.previewController createPreviewWithChangedRange:range sync:sync];
 	return;
 }
 

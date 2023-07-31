@@ -560,10 +560,10 @@ static bool buildPreviewImmediately = false;
 
 - (void)paginate
 {
-	[self paginateWithChangeAt:0 sync:true];
+	[self paginateWithChangeAt:NSMakeRange(0, 0) sync:true];
 }
 
-- (void)paginateWithChangeAt:(NSInteger)location sync:(bool)sync
+- (void)paginateWithChangeAt:(NSRange)range sync:(bool)sync
 {
 	[self.previewTimer invalidate];
 	self.preview.previewUpdated = false;
@@ -571,12 +571,12 @@ static bool buildPreviewImmediately = false;
 	if (sync) {
 		NSLog(@"%@", self.pagination);
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
+		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:range.location];
 	} else {
 		self.previewTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:false block:^(NSTimer * _Nonnull timer) {
 			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
 				[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-				[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
+				[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:range.location];
 			});
 		}];
 	}
@@ -585,13 +585,13 @@ static bool buildPreviewImmediately = false;
 - (void)invalidatePreview
 {
 	// Mark the current preview as invalid
-	[self paginateWithChangeAt:0 sync:false];
+	[self paginateWithChangeAt:NSMakeRange(0, 0) sync:false];
 	self.preview.previewUpdated = NO;
 }
 
 - (void)invalidatePreviewAt:(NSInteger)index
 {
-	[self paginateWithChangeAt:index sync:false];
+	[self paginateWithChangeAt:NSMakeRange(index, 0) sync:false];
 	self.preview.previewUpdated = NO;
 }
 
@@ -600,12 +600,12 @@ static bool buildPreviewImmediately = false;
 	[self invalidatePreviewAt:0];
 }
 
-- (void)createPreviewAt:(NSInteger)location {
-	[self paginateWithChangeAt:location sync:true];
+- (void)createPreviewAt:(NSRange)range {
+	[self paginateWithChangeAt:range sync:true];
 }
 
-- (void)createPreviewAt:(NSInteger)location sync:(BOOL)sync {
-	[self paginateWithChangeAt:location sync:sync];
+- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync {
+	[self paginateWithChangeAt:range sync:sync];
 }
 
 
@@ -913,7 +913,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	// Paginate
-	[self paginateWithChangeAt:self.lastChangedRange.location sync:false];
+	[self paginateWithChangeAt:_lastChangedRange sync:false];
 	
 	// If this was an undo operation, scroll to where the alteration was made
 	if (self.undoManager.isUndoing) {

@@ -45,7 +45,7 @@
 - (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler
 {
 	self.document = [BeatDocument.alloc initWithURL:url];
-	[self.previewController createPreviewWithChangeAt:0 sync:true];
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0, self.text.length) sync:true];
 	
     handler(nil);
 }

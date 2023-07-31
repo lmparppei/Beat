@@ -581,16 +581,21 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (NSInteger)indexForEditorLine:(Line*)line {
     NSInteger j = NSNotFound;
     for (NSInteger i=0; i<_lines.count; i++) {
+        //NSLog(@"    # %@ / %@", _lines[i].uuid, line.uuid);
         if ([_lines[i].uuid BequalTo:line.uuid]) {
             j = i;
             break;
         }
+    }
+    if (j == NSNotFound && line.type != section) {
+        NSLog(@" • NO MATCH: %@", line);
     }
     
     return j;
 }
 
 - (CGFloat)heightForScene:(OutlineScene*)scene {
+    NSLog(@"H: %@", scene.string);
     // Height for omitted scenes is always 0.0
     if (scene.omitted) return 0.0;
     
@@ -615,8 +620,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     
     Line* firstLine = _lines[lineIndex];
     Line* lastLine = _lines[endIndex];
+    NSLog(@"   > %@", lastLine.string);
     
     NSRange range = NSMakeRange(firstLine.position, NSMaxRange(lastLine.range) - firstLine.position);
+    NSLog(@"   • %lu, %lu", range.location, range.length);
     
     return [self heightForRange:range];
 }
@@ -633,7 +640,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
     BeatPaginationPage* page;
     NSInteger blockIndex = NSNotFound;
-    
+        
     for (NSInteger i=pageIndex; i<self.pages.count; i++) {
         page = self.pages[pageIndex];
         blockIndex = [page nearestBlockIndexForRange:(NSRange){ range.location, 0 }];
@@ -642,10 +649,13 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
             break;
         }
     }
-    
     if (blockIndex == NSNotFound || page == nil) {
         return 0.0;
     }
+
+    NSLog(@"   • on page: %@", page);
+    NSLog(@"   -> %@", self.pages[pageIndex].blocks[blockIndex].lines.firstObject);
+    
     
 	CGFloat height = 0.0;
     

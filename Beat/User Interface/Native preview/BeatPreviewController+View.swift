@@ -32,7 +32,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	var renderer:BeatRendering?
 	@objc var timer:Timer?
 	var paginationUpdated = false
-	var lastChangeAt = 0
+	var lastChangeAt = NSMakeRange(0, 0)
 	
 	/// Returns export settings from editor
 	var settings:BeatExportSettings {
@@ -91,14 +91,14 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	/// Preview data can be created either in background (async) or in main thread (sync).
 	/// - note: This method doesn't create the actual preview yet, just paginates it and prepares the data ready for display.
-	@objc func createPreview(changeAt index:Int, sync:Bool) {
+	@objc func createPreview(changedRange range:NSRange, sync:Bool) {
 		// Add index to changed indices
-		changedIndices.add(index)
+		changedIndices.add(in: range)
 		
 		// Let's invalidate the timer (if it exists)
 		self.timer?.invalidate()
 		self.paginationUpdated = false
-		self.lastChangeAt = index
+		self.lastChangeAt = range
 		
 		guard let parser = delegate?.parser else { return }
 		
@@ -107,7 +107,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			self.delegate?.bakeRevisions()
 			
 			// Create pagination
-			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: range.location)
 			
 			if self.delegate?.previewVisible() ?? false {
 				renderOnScreen()
@@ -120,15 +120,15 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				self.delegate?.bakeRevisions()
 
 				// Dispatch pagination to a background thread after one second
-				DispatchQueue.global(qos: .utility).async {
-					self.pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+				DispatchQueue.global(qos: .utility).async { [weak self] in
+					self?.pagination?.newPagination(screenplay: parser.forPrinting(), settings: self?.settings ?? BeatExportSettings(), forEditor: true, changeAt: self?.changedIndices.firstIndex ?? 0)
 				}
 			})
 		}
 	}
 	
-	@objc func invalidatePreview(at index:Int) {
-		self.createPreview(changeAt: index, sync: false)
+	@objc func invalidatePreview(at range:NSRange) {
+		self.createPreview(changedRange: range, sync: false)
 	}
 	
 	@objc func resetPreview() {
@@ -142,7 +142,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 
 			self.renderOnScreen()
 		} else {
-			self.createPreview(changeAt: 0, sync: false)
+			self.createPreview(changedRange: NSMakeRange(0, self.delegate?.text().count ?? 0), sync: false)
 		}
 	}
 	
@@ -166,8 +166,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		// Check if pagination is up to date
 		if !paginationUpdated {
-			print("Pagination IS NOT UPDATED")
-			createPreview(changeAt: self.lastChangeAt, sync: true)
+			createPreview(changedRange: NSMakeRange(self.changedIndices.firstIndex, 0), sync: true)
 		}
 				
 		// Create page strings in background

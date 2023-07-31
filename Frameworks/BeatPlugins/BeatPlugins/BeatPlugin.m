@@ -1424,7 +1424,7 @@
 }
 
 - (void)createPreviewAt:(NSInteger)location {
-	[self.delegate createPreviewAt:location sync:true];
+	[self.delegate createPreviewAt:NSMakeRange(location, 0) sync:true];
 }
 
 - (void)resetPreview
@@ -1510,7 +1510,7 @@
         
         if (settings[@"margins"]) {
             NSArray* margins = settings[@"margins"];
-            NSArray* keys = @[@"marginTop", @"marginRight", @"marginBottom", @"marginLeft"];
+            
             for (NSInteger i=0; i<margins.count; i++) {
                 NSNumber* n = margins[i];
                 if (i == 0) printInfo.topMargin = n.floatValue;
