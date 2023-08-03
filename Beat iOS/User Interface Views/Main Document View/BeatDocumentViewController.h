@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
 
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
 // Editor flags
 @property (nonatomic) bool revisionMode;

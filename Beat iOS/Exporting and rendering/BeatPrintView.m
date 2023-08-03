@@ -34,7 +34,7 @@
 
 #import "BeatPrintView.h"
 #import "BeatHTMLRenderer.h"
-#import "Beat_iOS-Swift.h"
+#import "Beat-Swift.h"
 //#import "Document.h"
 
 #define WEBKIT true

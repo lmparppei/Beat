@@ -51,6 +51,7 @@
 		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
 		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
 		B696BC472A7426750078BA79 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B696BC462A7426750078BA79 /* dragula.js */; };
+		B696BC4B2A7938860078BA79 /* CustoTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC4A2A7938860078BA79 /* CustoTextView.swift */; };
 		B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
@@ -123,8 +124,6 @@
 		B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateCell.swift; sourceTree = "<group>"; };
 		B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateDataSource.swift; sourceTree = "<group>"; };
 		B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController Extensions.swift"; sourceTree = "<group>"; };
-		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
-		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
@@ -149,10 +148,11 @@
 		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
 		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B696BC4A2A7938860078BA79 /* CustoTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustoTextView.swift; sourceTree = "<group>"; };
 		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
-		B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6CB96F0282FEB6500C7AFC7 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
 		B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSDocument.swift; sourceTree = "<group>"; };
@@ -212,7 +212,7 @@
 		B138B57419E1C973000489C4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */,
+				B6CB96F0282FEB6500C7AFC7 /* Beat.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -312,11 +312,9 @@
 		B63D9F5C2830366B00D027B6 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
-				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
-				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
 				B678D69C2A1A212A00BD79D8 /* BeatEditorFormatting.h */,
 				B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */,
 			);
@@ -410,6 +408,7 @@
 				B6F61400299FF051002188C0 /* BeatPopover.swift */,
 				B610166929A7D14B0090235A /* BeatQuickSettings.swift */,
 				B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */,
+				B696BC4A2A7938860078BA79 /* CustoTextView.swift */,
 			);
 			path = "User Interface Views";
 			sourceTree = "<group>";
@@ -456,7 +455,7 @@
 			);
 			name = "Beat iOS";
 			productName = "Beat iOS";
-			productReference = B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */;
+			productReference = B6CB96F0282FEB6500C7AFC7 /* Beat.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -550,6 +549,7 @@
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
 				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatQuickSettings.swift in Sources */,
+				B696BC4B2A7938860078BA79 /* CustoTextView.swift in Sources */,
 				B619DE5E29F80DB3007D1838 /* TemplateCollectionViewController.m in Sources */,
 				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
 				B633C152298C58130011449D /* BeatPreview.m in Sources */,
@@ -725,11 +725,11 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -775,10 +775,10 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

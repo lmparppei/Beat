@@ -24,6 +24,7 @@ class BeatQuickSettingsTableController:UITableViewController {
 	@IBOutlet var showPageNumbers:UISwitch?
 	@IBOutlet var showSceneNumbers:UISwitch?
 	@IBOutlet var revisionMode:UISwitch?
+	@IBOutlet var highlightRevisions:UISwitch?
 	@IBOutlet var pageSizeSwitch:UISegmentedControl?
 	@IBOutlet var revisionGeneration:UISegmentedControl?
 	
@@ -37,6 +38,7 @@ class BeatQuickSettingsTableController:UITableViewController {
 		showPageNumbers?.setOn(delegate.showPageNumbers, animated: false)
 		showSceneNumbers?.setOn(delegate.showSceneNumberLabels, animated: false)
 		revisionMode?.setOn(delegate.revisionMode, animated: false)
+		highlightRevisions?.setOn(delegate.showRevisions, animated: false)
 		
 		pageSizeSwitch?.selectedSegmentIndex = delegate.pageSize.rawValue
 		
@@ -75,6 +77,12 @@ class BeatQuickSettingsTableController:UITableViewController {
 		let gen = generations[sender.selectedSegmentIndex]
 		
 		editorDelegate?.revisionColor = gen.color
+	}
+	
+	@IBAction func toggleHighlightRevisions(_ sender:UISwitch) {
+		let val = NSNumber(booleanLiteral: (sender.isOn))
+		BeatUserDefaults.shared().save(val, forKey: BeatSettingShowRevisions)
+		editorDelegate?.getTextView().setNeedsDisplay()
 	}
 }
 

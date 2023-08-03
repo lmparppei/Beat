@@ -54,6 +54,8 @@ class OutlineDataItem:Hashable {
 	var markers:[[String:String]]
 	var sceneNumber:String
 	var uuid:UUID
+	var range:NSRange
+	var selected:Bool
 	
 	
 	init(with scene:OutlineScene) {
@@ -64,6 +66,8 @@ class OutlineDataItem:Hashable {
 		self.markers = scene.markers as! [[String : String]]
 		self.sceneNumber = scene.sceneNumber ?? ""
 		self.uuid = scene.line.uuid!
+		self.range = scene.range()
+		self.selected = false
 	}
 	
 	func hash(into hasher: inout Hasher) {

@@ -10,7 +10,8 @@ import UIKit
 
 
 class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocumentBrowserViewControllerDelegate {
-    
+    var betaNoteShown = false
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         		
@@ -24,7 +25,19 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         // Update the style of the UIDocumentBrowserViewController
         browserUserInterfaceStyle = .dark
         view.tintColor = .white
+		
+		if (!betaNoteShown) {
+			showBetaNote()
+		}
     }
+	
+	func showBetaNote() {
+		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+		let vc = storyBoard.instantiateViewController(withIdentifier: "Beta")
+		vc.modalPresentationStyle = .automatic
+		self.present(vc, animated: true)
+		betaNoteShown = true
+	}
     
     
     // MARK: UIDocumentBrowserViewControllerDelegate
@@ -75,5 +88,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 			self.present(navigationController, animated: true, completion: nil)
 		}
     }
+	
+	// MARK: - Beta notification
 }
 

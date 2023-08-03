@@ -45,11 +45,16 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		layoutManager.addTextContainer(textContainer)
 		textStorage.addLayoutManager(layoutManager)
 		
-		// Create the text view and connect the container + layout anager
+		// Create the text view and connect the container + layout manager
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
 		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
-		textView.textContainer.widthTracksTextView = false
-		textView.autocorrectionType = .no
+		textView.textContainer.widthTracksTextView = true
+		textView.isScrollEnabled = false
+		
+		textView.smartDashesType = .no
+		textView.smartQuotesType = .no
+		textView.smartInsertDeleteType = .no
+		//textView.autocorrectionType = .no
 		
 		// Set up the container views
 		textView.pageView = pageView
@@ -120,6 +125,8 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		
 		resizePaper()
 		resize()
+		
+		print("setup")
 		
 		setupInputAssistantButtons()
 	}
@@ -221,6 +228,14 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		}
 	}
 	
+	@objc func firstResize() {
+		let newSize = sizeThatFits(CGSize(width: self.documentWidth, height: CGFloat.greatestFiniteMagnitude))
+		let inset = self.textContainerInset
+		
+		self.frame.size = newSize
+		self.enclosingScrollView.contentSize = CGSize(width: contentSize.width + inset.left + inset.right, height: contentSize.height + inset.top + inset.bottom)
+	}
+	
 	@objc func resizeScrollViewContent() {
 		let layoutManager = self.layoutManager
 		let inset = self.textContainerInset
@@ -228,17 +243,20 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		// Calculate the index of the last glyph that fits within the available height
 		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
 		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
+	
 
 		// Get the rectangle of the line fragment that contains the last glyph
 		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
+		
 		var lastLineY = lastLineRect.maxY
-		if lastLineRect.origin.y == 0.0 {
+		if lastLineRect.origin.y <= 0.0 {
 			lastLineRect = layoutManager.extraLineFragmentRect
-			lastLineY = lastLineRect.maxY * -1
+			lastLineY = abs(lastLineRect.maxY)
 		}
 		
 		let factor = self.enclosingScrollView.zoomScale
 		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
+		
 		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
 								height: (contentSize.height + inset.top + inset.bottom) * factor)
 
@@ -611,15 +629,26 @@ extension BeatUITextView {
 		self.assistantView?.leadingActions = [
 			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue)),
 			InputAssistantAction(image: UIImage(named: "Shortcut.INT")!, target: self, action: #selector(addINT)),
-			InputAssistantAction(image: UIImage(named: "Shortcut.EXT")!, target: self, action: #selector(addEXT))
+			InputAssistantAction(image: UIImage(named: "Shortcut.EXT")!, target: self, action: #selector(addEXT)),
+			InputAssistantAction(image: UIImage(named: "Shortcut.Section")!, target: self, action: #selector(addSection)),
+			InputAssistantAction(image: UIImage(named: "Shortcut.Synopsis")!, target: self, action: #selector(addSynopsis))
 		]
 		self.assistantView?.trailingActions = [
-			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo))
+			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo)),
+			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.forward")!, target: self, action: #selector(redo))
 		]
 	}
 	
 	@objc func addINT() {
 		self.editorDelegate?.textActions.addNewParagraph("INT.")
+	}
+	
+	@objc func addSection() {
+		self.editorDelegate?.textActions.addNewParagraph("# ")
+	}
+	
+	@objc func addSynopsis() {
+		self.editorDelegate?.textActions.addNewParagraph("= ")
 	}
 	
 	@objc func addEXT() {
@@ -633,10 +662,10 @@ extension BeatUITextView {
 	@objc func undo() {
 		self.editorDelegate?.undoManager.undo()
 	}
-	
 	@objc func redo() {
 		self.editorDelegate?.undoManager.redo()
 	}
+	
 	
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
 		guard let editorDelegate = self.editorDelegate else { return }

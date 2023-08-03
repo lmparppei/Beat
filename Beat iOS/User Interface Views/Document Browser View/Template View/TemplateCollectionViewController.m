@@ -13,7 +13,7 @@
  */
 
 #import "TemplateCollectionViewController.h"
-#import "Beat_iOS-Swift.h"
+#import "Beat-Swift.h"
 
 @interface TemplateCollectionViewController ()
 @property (nonatomic) NSArray *templates;

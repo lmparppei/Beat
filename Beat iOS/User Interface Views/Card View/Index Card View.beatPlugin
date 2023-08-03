@@ -374,7 +374,6 @@ Beat.custom = {
 		refreshHTML()
 	},
 	returnToEditor: () => {
-		Beat.log("Return to editor")
 		window.closePanel()
 	},
 	printCards: () => {

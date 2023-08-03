@@ -22,7 +22,7 @@
 #import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2.h>
 #import "BeatHTMLRenderer.h"
-#import "Beat_iOS-Swift.h"
+#import "Beat-Swift.h"
 
 @interface BeatPreview ()
 @property (nonatomic) BeatHTMLRenderer *renderer;

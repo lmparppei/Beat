@@ -15,7 +15,7 @@
 #import "BeatEditorFormatting.h"
 #import "BeatPreview.h"
 
-#import "Beat_iOS-Swift.h"
+#import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
 @interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
@@ -31,8 +31,6 @@
 @property (nonatomic) BeatPreviewView* previewView;
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
-
-@property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
@@ -88,6 +86,10 @@
 
 @property (nonatomic) NSMutableAttributedString* formattedTextBuffer;
 
+@property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
+
+@property (nonatomic, weak) NSDictionary* typingAttributes;
+
 //@objc var hideFountainMarkup: Bool = false
 @property (nonatomic) bool closing;
 @end
@@ -116,7 +118,7 @@
 	[self.textView removeFromSuperview];
 	self.textView = textView;
 	[self.pageView addSubview:self.textView];
-	
+		
 	self.textView.delegate = self;
 	self.textView.editorDelegate = self;
 	self.textView.enclosingScrollView = self.scrollView;
@@ -125,6 +127,10 @@
 	self.textView.font = self.courier;
 	
 	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
+}
+
+- (NSUndoManager *)undoManager {
+	return self.textView.undoManager;
 }
 
 - (void)viewDidLoad {
@@ -139,6 +145,7 @@
 	
 	// Setup document title menu
 	[self setupTitleMenu];
+	[self setupScreenplayMenuWithButton:self.screenplayButton];
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
@@ -224,6 +231,13 @@
 	
 	// Data source
 	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
+
+	// Restore caret position
+	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+	if (position < self.text.length) {
+		[self.textView setSelectedRange:NSMakeRange(position, 0)];
+		[self.textView scrollToRange:self.textView.selectedRange];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -236,9 +250,11 @@
 		[_textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, _textView.text.length)];
 		[_textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, _textView.text.length) actualCharacterRange:nil];
 		
-		CGRect r = [self.textView rectForRangeWithRange:NSMakeRange(_textView.text.length - 10, 9)];
-		
 		[_textView resize];
+		[_textView firstResize];
+		[_textView resize];
+		
+		_documentIsLoading = false;
 	}
 }
 
@@ -656,7 +672,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.textView.textStorage setAttributes:attributes range:range];
 }
 - (void)setTypingAttributes:(NSDictionary*)attrs {
-	self.textView.typingAttributes = attrs;
+	_typingAttributes = attrs;
+	//self.textView.typingAttributes = attrs;
 }
 
 
@@ -873,7 +890,21 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	[self.textView updateAssistingViews];
+	
 	if (self.outlineView.visible) [self.outlineView update];
+	
+	// Show review if needed
+	// Review items
+	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
+		NSInteger pos = self.selectedRange.location;
+		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
+		if (reviewItem && !reviewItem.emptyReview) {
+			[_review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			//[self.textView.window makeFirstResponder:self.textView];
+		} else {
+			[_review closePopover];
+		}
+	}
 }
 
 /// Forces text reformat and editor view updates
@@ -1215,11 +1246,15 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges
 {
+	[self.textStorage beginEditing];
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 		if (idx >= self.parser.lines.count) return;
 		[_formatting formatLine:self.parser.lines[idx]];
 	}];
+	[self.textStorage endEditing];
+	
 	[self.parser.changedIndices removeAllIndexes];
+	[self.textView setTypingAttributes:self.typingAttributes];
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
@@ -1358,18 +1393,23 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
+		self.outlineView.contentInset = insets;
 	} completion:^(BOOL finished) {
 		[self.textView resize];
 		
 		if (self.selectedRange.location == NSNotFound) return;
 		
 		CGRect rect = [self.textView rectForRangeWithRange:self.selectedRange];
+		// Make sure we never hide the selection
+		rect.origin.y += 100.0;
+		rect.size.height += 24.0;
 		CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
 		[self.scrollView scrollRectToVisible:visible animated:true];
 	}];
 }
 
 -(void)keyboardWillHide {
+	self.outlineView.contentInset = UIEdgeInsetsZero;
 	self.scrollView.contentInset = UIEdgeInsetsZero;
 }
 
