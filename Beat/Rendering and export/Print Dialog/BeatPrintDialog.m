@@ -49,8 +49,6 @@
 @property (weak) IBOutlet NSButton* revisionThird;
 @property (weak) IBOutlet NSButton* revisionFourth;
 
-@property (weak) IBOutlet BeatCustomExportStyles* exportStyles;
-
 @property (nonatomic) NSString *compareWith;
 
 @property (nonatomic) bool automaticPreview;
@@ -131,10 +129,7 @@ static CGFloat panelWidth;
 	// Get setting from document
 	if (_documentDelegate.printSceneNumbers) [_printSceneNumbers setState:NSOnState];
 	else [_printSceneNumbers setState:NSOffState];
-	
-	// Update export styles
-	[_exportStyles reloadData];
-	
+		
 	// We have to show the panel here to be able to set the radio buttons (???)
 	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
 		[self.documentDelegate releasePrintDialog];
@@ -310,14 +305,10 @@ static CGFloat panelWidth;
 	
 	// Set header
 	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
-	
-	// Get custom CSS
-	NSString *css = self.exportStyles.customCSS;
-	
+		
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
 
 	settings.paperSize = self.documentDelegate.pageSize;
-	settings.customCSS = css;
 			
 	return settings;
 }
