@@ -176,6 +176,52 @@ static NSString *revisionAttribute = @"Revision";
     _delegate.characterInput = YES;
 }
 
+
+#pragma mark Scene numbers
+
+- (IBAction)lockSceneNumbers:(id)sender
+{
+    NSInteger sceneNumber = [self.delegate.documentSettings getInt:DocSettingSceneNumberStart];
+    if (sceneNumber == 0) sceneNumber = 1;
+    
+    NSArray* lines = self.delegate.parser.lines.copy;
+    
+    for (Line* line in lines) {
+        if (line.type != heading) continue;
+        
+        if (line.sceneNumberRange.length == 0) {
+            NSString * sn = [NSString stringWithFormat:@" #%lu#", sceneNumber];
+            [self.delegate addString:sn atIndex:line.textRange.location + line.textRange.length];
+            sceneNumber++;
+        } else {
+            
+        }
+    }
+    
+#if TARGET_OS_IOS
+    [self.delegate.getTextView setNeedsDisplay];
+#else
+    self.delegate.getTextView.needsDisplay = true;
+#endif
+}
+- (IBAction)unlockSceneNumbers:(id)sender
+{
+    NSArray* outline = self.delegate.parser.outline.copy;
+    
+    for (OutlineScene* scene in outline) {
+        NSRange r = scene.line.sceneNumberRange;
+        if (r.length > 0) {
+            [self.delegate replaceRange:NSMakeRange(scene.line.position + r.location - 1, r.length + 2) withString:@""];
+        }
+    }
+    
+#if TARGET_OS_IOS
+    [self.delegate.getTextView setNeedsDisplay];
+#else
+    self.delegate.getTextView.needsDisplay = true;
+#endif
+}
+
 #pragma mark Pure formatting and blocks
 
 - (IBAction)addPageBreak:(id)sender

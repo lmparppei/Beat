@@ -33,6 +33,10 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 - (void)addCue;
 
+- (IBAction)addTitlePage:(id)sender;
+- (IBAction)lockSceneNumbers:(id)sender;
+- (IBAction)unlockSceneNumbers:(id)sender;
+
 - (IBAction)makeBold:(id)sender;
 - (IBAction)makeItalic:(id)sender;
 - (IBAction)makeUnderlined:(id)sender;
@@ -40,6 +44,12 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (IBAction)makeOmitted:(id)sender;
 - (IBAction)omitScene:(id)sender;
 - (IBAction)makeSceneNonNumbered:(id)sender;
+
+- (IBAction)forceHeading:(id)sender;
+- (IBAction)forceAction:(id)sender;
+- (IBAction)forceCharacter:(id)sender;
+- (IBAction)forceTransition:(id)sender;
+- (IBAction)forceLyrics:(id)sender;
 
 @end
 

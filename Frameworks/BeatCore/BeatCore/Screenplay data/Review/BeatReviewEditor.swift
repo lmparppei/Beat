@@ -65,18 +65,25 @@ protocol BeatReviewEditorDelegate:AnyObject {
             popover?.show(relativeTo: rect, of:sender!, preferredEdge: NSRectEdge.maxY)
             
         #elseif os(iOS)
+            self.editor?.modalPresentationStyle = .popover
+        
             guard let popoverController = self.editor?.popoverPresentationController,
                 let editor = self.editor
-            else {
-                print("NO POPOVER CONTROLLER")
-                return
-            }
+            else { return }
             
-            popoverController.sourceView = sender
-            popoverController.sourceRect = rect
+            var sourceRect = rect
+            sourceRect.origin.y += 5.0
+            sourceRect.origin.x += rect.size.width / 2
+            sourceRect.size.width = rect.size.width / 2
         
-            self.delegate.delegate?.getTextView().window?.rootViewController?.present(editor, animated: true)
-
+            popoverController.sourceView = sender
+            popoverController.sourceRect = sourceRect
+            
+            popoverController.permittedArrowDirections = [.up]
+            
+            if let vc = self.delegate.delegate as? UIViewController {
+                vc.present(editor, animated: true)
+            } 
         #endif
     }
     
@@ -162,9 +169,11 @@ public protocol BeatReviewDelegate: AnyObject {
         self.textView = nil
         self.editButton = nil
     }
+
 }
 #elseif os(iOS)
-@objc class BeatReviewEditorView: UIViewController, BeatReviewDelegate, UXTextViewDelegate {
+typealias BeatReviewEditorView = BeatReviewEditorViewiOS
+@objc public class BeatReviewEditorViewiOS: UIViewController, BeatReviewDelegate, UXTextViewDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
     @IBOutlet weak var editButton:UXButton?
     
@@ -172,7 +181,8 @@ public protocol BeatReviewDelegate: AnyObject {
     var item:BeatReviewItem
     var shown:Bool = false
     
-    let editorContentSize = CGSizeMake(200, 160)
+    
+    let editorContentSize = CGSizeMake(250, 160)
     
     var editable = false {
         didSet {
@@ -187,8 +197,11 @@ public protocol BeatReviewDelegate: AnyObject {
         
         let bundle = Bundle(for: type(of: self))
         super.init(nibName: "BeatReviewEditor iOS", bundle: bundle)
+        
+        self.view.insetsLayoutMarginsFromSafeArea = true
     }
     required init?(coder: NSCoder) {
+        print("VIA CODER")
         self.item = BeatReviewItem(reviewString: "")
         super.init(coder: coder)
     }
@@ -196,7 +209,17 @@ public protocol BeatReviewDelegate: AnyObject {
         self.textView = nil
         self.editButton = nil
     }
+    
+    public override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        guard let direction = self.popoverPresentationController?.arrowDirection else { return }
+        if (direction != .up) {
+            self.additionalSafeAreaInsets = UIEdgeInsets(top: -20.0, left: 0.0, bottom: 0.0, right: 0.0)
+        }
+    }
 }
+
 #endif
 
 extension BeatReviewEditorView {
@@ -218,10 +241,10 @@ extension BeatReviewEditorView {
     
     /// Update editor mode when setting `editable` property
     func updateEditorMode() {
-        guard let textView = self.textView, let editButton = self.editButton else { return }
-
+        guard let textView = self.textView else { return }
+        
         textView.isEditable = editable
-        editButton.isHidden = editable
+        editButton?.isHidden = editable
         
         if (!editable) {
             // Calculate appropriate size for the content
@@ -229,7 +252,6 @@ extension BeatReviewEditorView {
             let insetHeight = textView.getInsets().height
             
             let size = CGSizeMake(editorContentSize.width, 40 + textSize * 1.1 + insetHeight * 2)
-            
             self.setContentSize(size)
         } else {
             self.setContentSize(editorContentSize)
@@ -265,7 +287,7 @@ extension BeatReviewEditorView {
         #if os(macOS)
         delegate?.popover?.contentSize = size
         #elseif os(iOS)
-        self.view.frame.size = size
+        self.preferredContentSize = size
         #endif
     }
 }

@@ -258,6 +258,7 @@
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
 
 - (void)toggleMode:(BeatEditorMode)mode;
+- (IBAction)toggleSidebar:(id)sender;
 
 // A hack to provide text storage interface to both iOS and macOS ports
 - (NSTextStorage*)textStorage;

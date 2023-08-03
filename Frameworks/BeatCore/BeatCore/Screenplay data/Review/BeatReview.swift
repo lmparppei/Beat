@@ -25,7 +25,7 @@ public protocol BeatReviewInterface {
     func deleteReview(item:BeatReviewItem)
 }
 
-// MARK: Review item
+// MARK: - Review item
 
 @objc public class BeatReviewItem:NSObject, NSCopying, NSCoding {
 	@objc public var string:NSString! = ""
@@ -61,7 +61,7 @@ public protocol BeatReviewInterface {
 }
 
 
-// MARK: Review manager class
+// MARK: - Review manager
 
 @objc public class BeatReview: NSObject {
 	@IBOutlet var delegate:BeatEditorDelegate?
@@ -222,9 +222,9 @@ public protocol BeatReviewInterface {
 }
 
 
-// MARK: - Review popover view
+// MARK: - Review popover view (cross-platform)
+
 extension BeatReview {
-    
 	@objc public func showReviewIfNeeded(range:NSRange, forEditing:Bool) {
 		guard let delegate = self.delegate else { return }
 		
@@ -256,7 +256,7 @@ extension BeatReview {
 		var reviewRange = range
 		
 		// This is a NEW, empty review. We'll check if there's another item right next to it and join the ranges.
-		if (reviewItem.emptyReview) {
+		if (reviewItem.emptyReview && forEditing) {
 			delegate.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
 				let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem.init(reviewString: "")
 				
@@ -288,7 +288,6 @@ extension BeatReview {
     }
     
     func editorDidClose(for item:BeatReviewItem) {
-		print("Editor did close")
         let string = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
         if string.count == 0 {
             deleteReview(item: item)
@@ -302,9 +301,9 @@ extension BeatReview {
 extension BeatReview {
 	var popoverVisible:Bool {
 		#if os(macOS)
-		return self.reviewEditor?.popover?.isShown ?? false
+            return self.reviewEditor?.popover?.isShown ?? false
 		#elseif os(iOS)
-		return (self.reviewEditor?.editor?.presentingViewController?.presentingViewController == self)
+            return (self.reviewEditor?.editor?.presentingViewController?.presentingViewController == self)
 		#endif
 	}
 	

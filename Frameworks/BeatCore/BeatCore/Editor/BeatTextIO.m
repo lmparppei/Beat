@@ -97,12 +97,16 @@
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
-    
+
+#if !TARGET_OS_IOS
+    // I don't know why, but we shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
+#endif
     
     // Restore position on iOS
     [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
 }
+
 
 /// Removes a range. This is here for backwards-compatibility.
 - (void)removeAt:(NSUInteger)index length:(NSUInteger)length {
@@ -119,6 +123,7 @@
     
     // Replace with undo registration
     NSString *oldString = [_delegate.text substringWithRange:range];
+    
     [self replaceCharactersInRange:range withString:newString];
     [[_delegate.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
     
@@ -474,14 +479,14 @@
     }
     else if (previous.type != empty) {
         position = NSMaxRange(self.delegate.currentLine.textRange);
-        [self addString:@"\n" atIndex:position];
+        [self addString:@"\n" atIndex:position skipAutomaticLineBreaks:true];
         self.delegate.selectedRange = NSMakeRange(position + 1, 0);
     }
 
     // If current or next line are not empty, add two line breaks at current line.
     Line* next = [self.delegate.parser nextLine:self.delegate.currentLine];
     if (next.string.length > 0) {
-        [self addString:@"\n" atIndex:NSMaxRange(self.delegate.currentLine.textRange)];
+        [self addString:@"\n" atIndex:NSMaxRange(self.delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
         self.delegate.selectedRange = NSMakeRange(NSMaxRange(self.delegate.currentLine.textRange) - 1, 0);
     }
     
