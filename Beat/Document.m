@@ -3018,6 +3018,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return self.splitHandle.bottomOrLeftView.frame.size.width;
 }
 
+- (IBAction)toggleSidebar:(id)sender {
+	[self toggleSidebarView:sender];
+}
 - (IBAction)toggleSidebarView:(id)sender
 {
 	self.sidebarVisible = !self.sidebarVisible;
