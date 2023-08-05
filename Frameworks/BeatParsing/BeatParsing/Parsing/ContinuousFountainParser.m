@@ -501,6 +501,8 @@ static NSDictionary* patterns;
     
     if (line.isOutlineElement) [self removeOutlineElementForLine:line];
     
+    [self addUpdateToOutlineIfNeededAt:index];
+    
     [self.lines removeObjectAtIndex:index];
     [self decrementLinePositionsFromIndex:index amount:line.range.length];
 }
@@ -584,7 +586,8 @@ static NSDictionary* patterns;
             currentLine.noteRanges.count > 0 ||
             currentLine.type == synopse ||
             currentLine.markerRange.length ||
-            currentLine.isOutlineElement
+            currentLine.isOutlineElement ||
+            (oldType == synopse && currentLine.type != synopse)
             ) {
             [self addUpdateToOutlineAtLine:currentLine];
         }
@@ -593,10 +596,7 @@ static NSDictionary* patterns;
     // Mark the current index as changed
 	[self.changedIndices addIndex:index];
 	
-    
-	// Parse multi-line note ranges
-    // notesNeedParsing = [self parseNotesAt:index didBleedNoteOut:oldNoteOut didReceiveNote:oldNoteIn didEndNoteBlock:oldEndsNoteBlock];
-	
+    	
 	if (index > 0) {
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
 		
@@ -1541,7 +1541,7 @@ static NSDictionary* patterns;
 - (OutlineScene*)outlineElementInRange:(NSRange)range
 {
     for (OutlineScene *scene in self.safeOutline) {
-        if (NSIntersectionRange(range, scene.range).length > 0) {
+        if (NSIntersectionRange(range, scene.range).length > 0 || NSLocationInRange(range.location, scene.range)) {
             return scene;
         }
     }
@@ -1664,6 +1664,10 @@ static NSDictionary* patterns;
 /// Adds an update to this line, but only if needed
 - (void)addUpdateToOutlineIfNeededAt:(NSInteger)lineIndex
 {
+    // Don't go out of range
+    if (self.lines.count == 0) return;
+    else if (lineIndex >= self.lines.count) lineIndex = self.lines.count - 1;
+    
     Line* line = self.safeLines[lineIndex];
 
     // Nothing to update
