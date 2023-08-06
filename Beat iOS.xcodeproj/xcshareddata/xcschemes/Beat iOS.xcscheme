@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B6CB96EF282FEB6500C7AFC7"
-               BuildableName = "Beat iOS.app"
+               BuildableName = "Beat.app"
                BlueprintName = "Beat iOS"
                ReferencedContainer = "container:Beat iOS.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B6CB96EF282FEB6500C7AFC7"
-            BuildableName = "Beat iOS.app"
+            BuildableName = "Beat.app"
             BlueprintName = "Beat iOS"
             ReferencedContainer = "container:Beat iOS.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B6CB96EF282FEB6500C7AFC7"
-            BuildableName = "Beat iOS.app"
+            BuildableName = "Beat.app"
             BlueprintName = "Beat iOS"
             ReferencedContainer = "container:Beat iOS.xcodeproj">
          </BuildableReference>

@@ -13,7 +13,7 @@
         <!--Document Browser View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController modalPresentationStyle="pageSheet" id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="pageSheet" id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -363,15 +363,15 @@ Lauri-Matti</string>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="thv-1O-oKd">
                                 <rect key="frame" x="230" y="74" width="1136" height="950"/>
                                 <subviews>
-                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999999999999" id="a5I-w2-fVd" customClass="BeatScrollView" customModule="Beat_iOS" customModuleProvider="target">
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999999999999" id="a5I-w2-fVd" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="1136" height="950"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esq-Xm-Lfw" customClass="BeatPageView" customModule="Beat_iOS" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esq-Xm-Lfw" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="-1" width="796" height="953"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="THIS IS HERE JUST AS A PLACEHOLDER. Actual text view is created in code." textAlignment="natural" layoutManager="textKit1" id="3C3-uS-JZp" customClass="BeatUITextView" customModule="Beat_iOS" customModuleProvider="target">
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="THIS IS HERE JUST AS A PLACEHOLDER. Actual text view is created in code." textAlignment="natural" layoutManager="textKit1" id="3C3-uS-JZp" customClass="BeatUITextView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="1" y="0.0" width="796" height="953"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -402,15 +402,15 @@ Lauri-Matti</string>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L6d-7A-aQd">
                                 <rect key="frame" x="0.0" y="74" width="230" height="950"/>
                                 <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="9d5-dC-tki" customClass="BeatiOSOutlineView" customModule="Beat_iOS" customModuleProvider="target">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="9d5-dC-tki" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="230" height="950"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="hf6-e0-5ah" rowHeight="20" style="IBUITableViewCellStyleDefault" id="XUA-IV-pnT" customClass="BeatOutlineViewCell" customModule="Beat_iOS" customModuleProvider="target">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="hf6-e0-5ah" rowHeight="20" style="IBUITableViewCellStyleDefault" id="XUA-IV-pnT" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="50" width="230" height="20"/>
                                                 <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XUA-IV-pnT" id="x9e-ag-m6i" customClass="BeatOutlineViewCell" customModule="Beat_iOS" customModuleProvider="target">
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XUA-IV-pnT" id="x9e-ag-m6i" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="230" height="20"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
@@ -464,7 +464,7 @@ Lauri-Matti</string>
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem image="filemenu.and.selection" catalog="system" id="b7L-my-Myg"/>
+                            <barButtonItem image="ellipsis.circle" catalog="system" id="b7L-my-Myg"/>
                             <barButtonItem title="Settings" id="57u-GR-Hn4">
                                 <imageReference key="image" image="gearshape.fill" catalog="system" symbolScale="default"/>
                                 <connections>
@@ -512,7 +512,7 @@ Lauri-Matti</string>
         <!--Beat Preview View-->
         <scene sceneID="LHN-S5-hsX">
             <objects>
-                <viewController storyboardIdentifier="Preview" modalPresentationStyle="fullScreen" id="VDS-CY-Eht" customClass="BeatPreviewView" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Preview" modalPresentationStyle="fullScreen" id="VDS-CY-Eht" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="JDo-k1-H6O">
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -577,7 +577,7 @@ Lauri-Matti</string>
         <!--Beat Export View Controller-->
         <scene sceneID="aZk-OS-lpt">
             <objects>
-                <viewController storyboardIdentifier="ExportPanel" id="cTZ-MQ-L3k" customClass="BeatExportViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ExportPanel" id="cTZ-MQ-L3k" customClass="BeatExportViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vov-F1-EAw">
                         <rect key="frame" x="0.0" y="0.0" width="538" height="751"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -619,7 +619,7 @@ Lauri-Matti</string>
         <!--Beat Quick Settings Table Controller-->
         <scene sceneID="DQX-af-bao">
             <objects>
-                <tableViewController id="HAz-LJ-FEM" customClass="BeatQuickSettingsTableController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="HAz-LJ-FEM" customClass="BeatQuickSettingsTableController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="insetGrouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="3T0-tz-Oyj">
                         <rect key="frame" x="0.0" y="0.0" width="402" height="563"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -818,7 +818,7 @@ Lauri-Matti</string>
         <!--Beat Quick Settings-->
         <scene sceneID="Ez1-VE-dLe">
             <objects>
-                <viewController storyboardIdentifier="QuickSettings" id="X4t-9A-WDL" customClass="BeatQuickSettings" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="QuickSettings" id="X4t-9A-WDL" customClass="BeatQuickSettings" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="I6f-hr-Fcd">
                         <rect key="frame" x="0.0" y="0.0" width="350" height="385"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -844,7 +844,7 @@ Lauri-Matti</string>
         <!--Beat Export Setting Controller-->
         <scene sceneID="ZxL-Wj-Jkf">
             <objects>
-                <tableViewController storyboardIdentifier="ExportSettingsTable" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ExportSettingsTable" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb">
                         <rect key="frame" x="0.0" y="0.0" width="543" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1043,7 +1043,7 @@ Lauri-Matti</string>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" reuseIdentifier="Cell" id="6JP-MJ-Et5" customClass="BeatTemplateCell" customModule="Beat_iOS" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" reuseIdentifier="Cell" id="6JP-MJ-Et5" customClass="BeatTemplateCell" customModule="Beat" customModuleProvider="target">
                                         <rect key="frame" x="330" y="0.0" width="666" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="GUE-A0-eih">
@@ -1100,7 +1100,7 @@ Lauri-Matti</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JGZ-op-YYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <customObject id="p9m-T7-vBu" customClass="BeatTemplateDataSource" customModule="Beat_iOS" customModuleProvider="target"/>
+                <customObject id="p9m-T7-vBu" customClass="BeatTemplateDataSource" customModule="Beat" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="25.915080527086381" y="-15.234374999999998"/>
         </scene>
@@ -1112,8 +1112,8 @@ Lauri-Matti</string>
         <image name="Color_Purple" width="15" height="15"/>
         <image name="Icon-MacOS-512x512" width="512" height="512"/>
         <image name="doc" catalog="system" width="115" height="128"/>
+        <image name="ellipsis.circle" catalog="system" width="128" height="123"/>
         <image name="eye.fill" catalog="system" width="128" height="80"/>
-        <image name="filemenu.and.selection" catalog="system" width="128" height="93"/>
         <image name="folder" catalog="system" width="128" height="96"/>
         <image name="gearshape.fill" catalog="system" width="128" height="123"/>
         <image name="printer" catalog="system" width="128" height="111"/>
