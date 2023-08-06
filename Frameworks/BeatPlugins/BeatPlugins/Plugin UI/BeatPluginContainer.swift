@@ -81,6 +81,8 @@ import UXKit
         self.host?.end()
         
         // Remove
+        self.onViewWillDraw = nil
+        self.onViewDidHide = nil
         self.host = nil
         self.webView = nil
     }
