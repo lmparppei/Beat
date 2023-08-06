@@ -1784,6 +1784,7 @@
 
 - (void)newDocument:(NSString*)string
 {
+    if (![string isKindOfClass:NSString.class]) return;
 #if !TARGET_OS_IOS
     id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
 	if (string.length) [delegate newDocumentWithContents:string];
@@ -1793,6 +1794,7 @@
 
 - (id)newDocumentObject:(NSString*)string
 {
+    if (![string isKindOfClass:NSString.class]) return nil;
 #if !TARGET_OS_IOS
     id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
 	if (string.length) return [delegate newDocumentWithContents:string];
