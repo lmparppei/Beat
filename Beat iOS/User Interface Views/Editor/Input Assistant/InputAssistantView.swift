@@ -20,8 +20,10 @@ public struct InputAssistantAction {
 	public weak var target: AnyObject?
 	public let action: Selector?
 	
-	public init(title:String = "", image: UIImage, target: AnyObject? = nil, action: Selector? = nil) {
-		self.image = image; self.target = target; self.action = action; self.title = title;
+	public let menu:UIMenu?
+	
+	public init(title:String = "", image: UIImage, target: AnyObject? = nil, action: Selector? = nil, menu:UIMenu? = nil) {
+		self.image = image; self.target = target; self.action = action; self.title = title; self.menu = menu;
 	}
 }
 
@@ -273,8 +275,15 @@ open class InputAssistantView: UIInputView {
 				let width = (action.image.size.width / action.image.size.height) * 25
 				button.setImage(action.image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
 				
+				// Add target
 				if let target = action.target, let action = action.action {
 					button.addTarget(target, action: action, for: .touchUpInside)
+				}
+				
+				// Add menu if available
+				if let menu = action.menu {
+					button.menu = menu
+					button.showsMenuAsPrimaryAction = true
 				}
 
 				// If possible, the button should be at least 40px wide for a good sized tap target
