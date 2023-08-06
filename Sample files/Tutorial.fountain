@@ -1,7 +1,7 @@
 Title: Beat Tutorial
 Credit: Written by
 Author: Lauri-Matti Parppei
-Draft date: Version 2, 8.7.2020
+Draft date: Version 3, 6.8.2023
 Contact:
 beat@kapitan.fi
 www.kapitan.fi/beat
@@ -71,22 +71,22 @@ INT./EXT. BEACH HOUSE - NIGHT
 
 Text formatting can be done with the usual commands used in any software, (⌘B, ⌘I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
 
-Basically, text formatting works so that anything inside dual apostrophes is **bolded** and single apostrophes make it *italic*. You can also _underline_ stuff.
+Basically, text formatting works so that anything inside dual asterisks is **bolded** and single asterisks make it *italic*. You can also _underline_ stuff using underscores.
 
-Every element also has a way of forcing it. Take a look at the Format menu. Elements can be quickly forced by pressing ⌥↩ (alt-enter). Try it now!
+You can also force any element when it's not recognized automatically -- take a look at the *Format* menu. Press ⌥↩ (alt-enter) to quickly force an element type. Try it now!
 
-Centering text is done using surrounding it with > and <.
+Text can be centered by surrounding it with > and <
 
 >Centered text<
 
-Transitions can be forced (⌘⇧T):
+Transitions can be forced using single >
 
 > Forced, surprisingly slow transition...
 
 
-= Dual dialogue & other special elements
+EXT. STREET - NIGHT [[BLUE]]
 
-EXT. STREET - NIGHT [[COLOR BLUE]]
+= Dual dialogue & other special elements
 
 You can set the color for your scene just by typing it out as above, or by right-clicking a scene either in any of the other views (Outline, Index Cards, Timeline).
 
@@ -100,7 +100,7 @@ CHARACTER 2 ^
 Leave me alone.
 
 
-INT. NIGHT CLUB - NIGHT [[COLOR RED]]
+INT. NIGHT CLUB - NIGHT [[RED]]
 
 Here's some lyrics:
 
@@ -110,9 +110,18 @@ Here's some lyrics:
 
 That's about it. Edit this file and try out stuff. If you ever mess something up, you can usually reformat it by just removing something and adding it back.
 
+
+EXT. UNIVERSITY CLASSROOM - MORNING
+
 There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it) and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
+
+[[marker You can also add markers to indicate parts that need work or attention.]]
+[[marker pink: This is a pink marker!]]
 
 You can find more information about the Fountain markup language at http://www.fountain.io/
 
 > FADE OUT
 
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[4018,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Window Width":1070,"Caret Position":4336,"Changed Indices":{"115":"blue"},"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4067,9,"blue"]]},"Active Plugins":["Index Card View (in container)"],"Revision Color":"","Window Height":1020} END_BEAT */
