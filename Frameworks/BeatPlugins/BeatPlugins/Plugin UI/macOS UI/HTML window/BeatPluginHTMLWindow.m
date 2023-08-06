@@ -98,7 +98,8 @@
 }
 
 - (void)focus {
-	[self makeFirstResponder:self.contentView];
+    [self makeKeyAndOrderFront:self];
+	[self makeFirstResponder:self.webView];
 }
 
 - (void)setDark:(bool)dark {
