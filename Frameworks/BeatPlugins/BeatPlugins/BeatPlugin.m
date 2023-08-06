@@ -1784,8 +1784,10 @@
 
 - (void)newDocument:(NSString*)string
 {
-    if (![string isKindOfClass:NSString.class]) return;
 #if !TARGET_OS_IOS
+    // This fixes a rare and weird NSResponder issue. Forward this call to the actual document, no questions asked.
+    if (![string isKindOfClass:NSString.class]) [self.delegate.document newDocument:nil];
+    
     id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
 	if (string.length) [delegate newDocumentWithContents:string];
 	else [NSDocumentController.sharedDocumentController newDocument:nil];
@@ -1794,7 +1796,6 @@
 
 - (id)newDocumentObject:(NSString*)string
 {
-    if (![string isKindOfClass:NSString.class]) return nil;
 #if !TARGET_OS_IOS
     id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
 	if (string.length) return [delegate newDocumentWithContents:string];
