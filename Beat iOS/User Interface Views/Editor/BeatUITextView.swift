@@ -196,6 +196,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		var frame = pageView.frame
 		var zoom = enclosingScrollView.zoomScale
 		
+		// Make sure the page view height is at least the height of the screen
 		if (frame.height * zoom < enclosingScrollView.frame.height) {
 			var targetHeight = frame.height
 			if (self.frame.height < enclosingScrollView.frame.height) {
@@ -220,6 +221,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		var textViewFrame = self.frame
 		textViewFrame.origin.x = 0.0
 		textViewFrame.size.width = self.documentWidth + self.insets.left + self.insets.right
+		textViewFrame.size.height = self.pageView.frame.size.height
 		self.frame = textViewFrame
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
@@ -634,6 +636,44 @@ extension BeatUITextView {
 			InputAssistantAction(image: UIImage(named: "Shortcut.Synopsis")!, target: self, action: #selector(addSynopsis))
 		]
 		self.assistantView?.trailingActions = [
+			InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
+				UIMenu(title:"Force element...", children: [
+					UIAction(title: "Scene heading", handler: { (_) in
+						self.editorDelegate?.formattingActions.forceHeading(self)
+					}),
+					UIAction(title: "Action", handler: { (_) in
+						self.editorDelegate?.formattingActions.forceAction(self)
+					}),
+					UIAction(title: "Character", handler: { (_) in
+						self.editorDelegate?.formattingActions.forceCharacter(self)
+					}),
+					UIAction(title: "Transition", handler: { (_) in
+						self.editorDelegate?.formattingActions.forceTransition(self)
+					}),
+					UIAction(title: "Lyrics", handler: { (_) in
+						self.editorDelegate?.formattingActions.forceLyrics(self)
+					}),
+				]),
+				
+				UIMenu(title:"", options: [.displayInline], preferredElementSize: .small, children: [
+					UIAction(image: UIImage(systemName: "bold"), handler: { (_) in
+						self.editorDelegate?.formattingActions.makeBold(self)
+					}),
+					UIAction(image: UIImage(systemName: "italic"), handler: { (_) in
+						self.editorDelegate?.formattingActions.makeItalic(self)
+					}),
+					UIAction(image: UIImage(systemName: "underline"), handler: { (_) in
+						self.editorDelegate?.formattingActions.makeUnderlined(nil)
+					})
+				]),
+				UIAction(title: "Omit", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeOmitted(self)
+				}),
+				UIAction(title: "Note", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeNote(self)
+				}),
+
+			])),
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo)),
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.forward")!, target: self, action: #selector(redo))
 		]

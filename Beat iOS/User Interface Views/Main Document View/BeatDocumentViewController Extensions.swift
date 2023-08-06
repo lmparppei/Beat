@@ -36,23 +36,6 @@ extension BeatDocumentViewController {
 				UIAction(title: "Remove locked scene numbers", image: UIImage(systemName: "lock.open"), handler: { (_) in
 					self.formattingActions.unlockSceneNumbers(self)
 				}),
-			]),
-			UIMenu(title:"Force element...", children: [
-				UIAction(title: "Scene heading", handler: { (_) in
-					self.formattingActions.forceHeading(self)
-				}),
-				UIAction(title: "Action", handler: { (_) in
-					self.formattingActions.forceAction(self)
-				}),
-				UIAction(title: "Character", handler: { (_) in
-					self.formattingActions.forceCharacter(self)
-				}),
-				UIAction(title: "Transition", handler: { (_) in
-					self.formattingActions.forceTransition(self)
-				}),
-				UIAction(title: "Lyrics", handler: { (_) in
-					self.formattingActions.forceLyrics(self)
-				}),
 			])
 		])
 		button.primaryAction = nil

@@ -893,6 +893,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	if (self.outlineView.visible) [self.outlineView update];
 	
+	[self.textView scrollRangeToVisible:textView.selectedRange];
+	
 	// Show review if needed
 	// Review items
 	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
@@ -1388,8 +1390,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Keyboard manager delegate
 
+// TODO: Move this to the text view
+
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + 200.0, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
