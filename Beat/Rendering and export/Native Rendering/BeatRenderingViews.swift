@@ -381,10 +381,22 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		
 		NSGraphicsContext.saveGraphicsState()
 		
-		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
+		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
 			let markerRect = NSMakeRect(container.size.width - 20, usedRect.origin.y - 2.0, 15, usedRect.size.height)
 			
 			var highestRevision = ""
+			var range = originalRange
+			
+			// This is a fix for some specific languages. Sometimes you might have more characters in range than what are stored in text storage.
+			if (NSMaxRange(range) > self.textStorage!.string.count) {
+				let len = max(self.textStorage!.string.count - NSMaxRange(range), 0)
+				range = NSMakeRange(range.location, len)
+				
+				if (range.length == 0) {
+					return
+				}
+			}
+			
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
 				if (obj == nil) { return }
 				let revision = obj as! String

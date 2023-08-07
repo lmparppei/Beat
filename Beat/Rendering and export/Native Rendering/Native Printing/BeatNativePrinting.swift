@@ -113,6 +113,7 @@ class BeatNativePrinting:NSView {
 	}
 	
 	var data:NSMutableData = NSMutableData()
+	/// Paginates all the screenplays in queue and renders them onto screen
 	func paginateAndRender() {
 		DispatchQueue.global(qos: .userInteractive).async {
 			for i in 0 ..< self.screenplays.count {
