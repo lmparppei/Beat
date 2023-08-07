@@ -22,6 +22,9 @@
 		B61FD05E2A66D4A400A40883 /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
 		B62117162A7062F90053228F /* BeatPlugins.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117152A7062F90053228F /* BeatPlugins.framework */; };
 		B62117172A7062F90053228F /* BeatPlugins.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B62117152A7062F90053228F /* BeatPlugins.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B621D1BF2A803EBB00D072E6 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */; };
+		B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; };
+		B621D1C52A803EE700D072E6 /* UnzipKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
 		B633C152298C58130011449D /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C150298C58130011449D /* BeatPreview.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
@@ -88,6 +91,7 @@
 				B6D32030298EC64C003DA45D /* BeatDynamicColor.framework in Embed Frameworks */,
 				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
 				B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */,
+				B621D1C52A803EE700D072E6 /* UnzipKit.framework in Embed Frameworks */,
 				B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */,
 				B62117172A7062F90053228F /* BeatPlugins.framework in Embed Frameworks */,
 				B60A9F3B29774F7A00916FAA /* BeatThemes.framework in Embed Frameworks */,
@@ -111,6 +115,7 @@
 		B619DE6129F80E40007D1838 /* New Document.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "New Document.fountain"; sourceTree = "<group>"; };
 		B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatIndexCardView.swift; sourceTree = "<group>"; };
 		B62117152A7062F90053228F /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B621D1C32A803EE700D072E6 /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B633C14D298C566E0011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
@@ -187,9 +192,11 @@
 				B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */,
 				B60A9F3729774F6C00916FAA /* BeatParsing.framework in Frameworks */,
 				B62117162A7062F90053228F /* BeatPlugins.framework in Frameworks */,
+				B621D1BF2A803EBB00D072E6 /* BeatDynamicColor.framework in Frameworks */,
 				B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */,
 				B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */,
 				B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */,
+				B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */,
 				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
 				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
 				B6D3202F298EC64C003DA45D /* BeatDynamicColor.framework in Frameworks */,
@@ -359,6 +366,7 @@
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B621D1C32A803EE700D072E6 /* UnzipKit.framework */,
 				B62117152A7062F90053228F /* BeatPlugins.framework */,
 				B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */,
 				B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */,
@@ -716,7 +724,9 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Beat iOS/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "(beat)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -728,7 +738,7 @@
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -766,7 +776,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Beat iOS/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "(beat)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -777,7 +789,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

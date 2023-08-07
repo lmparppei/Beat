@@ -18,7 +18,6 @@
 				<string>fi.KAPITAN.fountain</string>
 			</array>
 		</dict>
-		<dict/>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict/>
@@ -31,6 +30,8 @@
 		<string>Courier Prime Bold Italic.ttf</string>
 		<string>Courier Prime Italic.ttf</string>
 	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -53,9 +54,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
 </dict>
 </plist>

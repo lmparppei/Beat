@@ -20,6 +20,9 @@
       location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Frameworks/BeatThemes/../BeatDynamicColor/BeatDynamicColor.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Frameworks/BeatThemes/BeatThemes.xcodeproj">
    </FileRef>
    <FileRef
