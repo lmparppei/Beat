@@ -347,12 +347,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
 		if (NSMaxRange(range) <= selectedRange.location) {
+			self.didProcessForcedCharacterCue = true;
 			[self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
+			self.didProcessForcedCharacterCue = false;
+			
 			line.string = line.string.uppercaseString;
 			[_delegate setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
-			[self addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
+			//[self addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.textRange];
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.

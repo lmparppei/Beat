@@ -7,10 +7,23 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 
 class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocumentBrowserViewControllerDelegate {
     var betaNoteShown = false
+	
+	override init(forOpening contentTypes: [UTType]?) {
+		super.init(forOpening: contentTypes)
+	}
+	
+	required init?(coder: NSCoder) {
+		//super.init(coder: coder)
+		let uti = UTType(filenameExtension: "fountain")
+		let arr = (uti != nil) ? [uti!] : nil
+		
+		super.init(forOpening: arr)
+	}
 	
     override func viewDidLoad() {
         super.viewDidLoad()

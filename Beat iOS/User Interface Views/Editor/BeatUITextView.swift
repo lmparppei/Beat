@@ -14,6 +14,7 @@ import BeatParsing
 	@objc var revisionTracking:BeatRevisions { get }
 	@objc var formattingActions:BeatEditorFormattingActions { get }
 	@objc var textActions:BeatTextIO { get }
+	@objc var formatting:BeatEditorFormatting { get }
 }
 
 class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
@@ -697,6 +698,7 @@ extension BeatUITextView {
 	
 	@objc func addCue() {
 		self.editorDelegate?.formattingActions.addCue()
+		self.editorDelegate?.formatting.forceEmptyCharacterCue()
 	}
 	
 	@objc func undo() {

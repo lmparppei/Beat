@@ -824,8 +824,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Text view delegation
 
 /// The main method where changes are parsed
-- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
+{
 	if (self.documentIsLoading) return;
+	else if (self.formatting.didProcessForcedCharacterCue) return;
 	
 	// Don't parse anything when editing attributes
 	if (editedMask == NSTextStorageEditedAttributes) {
@@ -879,12 +881,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		}
 	}
 	
+	if (affectedRange.length == 0 && self.currentLine == self.characterInputForLine && self.characterInput) {
+		string = string.uppercaseString;
+	}
+	
 	[self.parser parseChangeInRange:affectedRange withString:string];
 	
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView {
-	if (self.currentLine != self.characterInputForLine) {
+	if (self.characterInputForLine != nil && self.currentLine != self.characterInputForLine) {
+		NSLog(@"Current line: %@", self.currentLine);
 		self.characterInput = false;
 		self.characterInputForLine = nil;
 	}
@@ -961,7 +968,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
 	// We won't allow tabs to be inserted
-	if ([text isEqualToString:@"\t"]) return false;
+	if ([text isEqualToString:@"\t"]) {
+		[self handleTabPress];
+		return false;
+	}
 	
 	Line* currentLine = self.currentLine;
 	
@@ -969,6 +979,19 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (range.length == 1 && [text isEqualToString:@""] && self.characterInput && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
 		[self.textView cancelCharacterInput];
 		return NO;
+	}
+	
+	if ([text isEqualToString:@"\n"]) {
+		// Process line break after a forced character input
+		if (_characterInput && _characterInputForLine) {
+			// If the cue is empty, reset it
+			if (_characterInputForLine.string.length == 0) {
+				_characterInputForLine.type = empty;
+				[_formatting formatLine:_characterInputForLine];
+			} else {
+				_characterInputForLine.forcedCharacterCue = YES;
+			}
+		}
 	}
 	
 	if (!self.undoManager.isUndoing && !self.undoManager.isRedoing && self.selectedRange.length == 0 && currentLine != nil) {
@@ -1248,12 +1271,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges
 {
-	[self.textStorage beginEditing];
+	//[self.textStorage beginEditing];
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 		if (idx >= self.parser.lines.count) return;
 		[_formatting formatLine:self.parser.lines[idx]];
 	}];
-	[self.textStorage endEditing];
+	//[self.textStorage endEditing];
 	
 	[self.parser.changedIndices removeAllIndexes];
 	[self.textView setTypingAttributes:self.typingAttributes];
@@ -1328,9 +1351,11 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (self.textView.assistantView.numberOfSuggestions > 0) {
 		//Select the first one
 		[self.textView.assistantView selectItemAt:0];
+		return;
 	}
 	
 	[self.formattingActions addCue];
+	[self.formatting forceEmptyCharacterCue];
 }
 
 -(void)focusEditor {

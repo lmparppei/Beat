@@ -21,6 +21,7 @@ typedef enum {
 + (CGFloat)dialogueLeft;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
+@property (nonatomic) bool didProcessForcedCharacterCue;
 
 -(instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
 
