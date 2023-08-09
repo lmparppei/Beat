@@ -7,37 +7,30 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
-		<array>
-			<dict>
-				<key>CFBundleTypeExtensions</key>
-				<array>
-					<string>fountain</string>
-				</array>
-				<key>CFBundleTypeIconFile</key>
-				<string>BeatDocumentIcon</string>
-				<key>CFBundleTypeName</key>
-				<string>Fountain script</string>
-				<key>CFBundleTypeOSTypes</key>
-				<array>
-					<string>fountain</string>
-				</array>
-				<key>CFBundleTypeRole</key>
-				<string>Editor</string>
-				<key>LSHandlerRank</key>
-				<string>Owner</string>
-				<key>LSTypeIsPackage</key>
-				<integer>0</integer>
-				<key>NSDocumentClass</key>
-				<string>Document</string>
-				<!--
-				<key>LSItemContentTypes</key>
-				<array>
-					<string>fi.KAPITAN.fountain</string>
-				</array>
-				-->
-			</dict>
-
-		</array>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fountain</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>BeatDocumentIcon</string>
+			<key>CFBundleTypeName</key>
+			<string>Fountain script</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>fountain</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
+			<key>NSDocumentClass</key>
+			<string>Document</string>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
@@ -85,7 +78,6 @@
 	<string>NSApplication</string>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
-
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>

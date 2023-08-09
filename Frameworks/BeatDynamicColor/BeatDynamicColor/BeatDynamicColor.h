@@ -15,4 +15,4 @@ FOUNDATION_EXPORT const unsigned char BeatDynamicColorVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <BeatDynamicColor/PublicHeader.h>
 
-#import "DynamicColor.h"
+#import <BeatDynamicColor/DynamicColor.h>
