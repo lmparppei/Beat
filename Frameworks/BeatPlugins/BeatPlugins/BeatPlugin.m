@@ -93,7 +93,8 @@
     BeatPlugin* plugin = BeatPlugin.new;
     plugin.delegate = delegate;
     plugin.container = container;
-        
+    plugin.restorable = false;
+    
     return plugin;
 }
 
@@ -113,8 +114,9 @@
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-	
+    
     [self setupVM];
+    self.restorable = true;
 	
 	return self;
 }
