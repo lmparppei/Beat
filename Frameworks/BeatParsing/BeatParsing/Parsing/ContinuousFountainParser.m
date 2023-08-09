@@ -289,7 +289,7 @@ static NSDictionary* patterns;
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
 	if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
-	
+    
 	_lastEditedLine = nil;
 	_editedIndex = -1;
     _editedRange = range;
@@ -367,6 +367,7 @@ static NSDictionary* patterns;
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
+    if (_delegate.characterInputForLine) NSLog(@"... input: %@ / this: %@", _delegate.characterInputForLine, line);
     
     [changedIndices addIndex:lineIndex];
 	
@@ -748,6 +749,7 @@ static NSDictionary* patterns;
 	// Using regexes would be much easier, but also about 10 times more costly in CPU time.
 	
     LineType oldType = line.type;
+    line.escapeRanges = NSMutableIndexSet.new;
     line.type = [self parseLineTypeFor:line atIndex:index];
     
     NSUInteger length = line.string.length;
@@ -766,15 +768,13 @@ static NSDictionary* patterns;
 	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
     
     Line* previousLine = (index <= self.lines.count && index > 0) ? self.lines[index-1] : nil;
-    
+        
     line.omittedRanges = [self rangesOfOmitChars:charArray
                                         ofLength:length
                                           inLine:line
                                  lastLineOmitOut:previousLine.omitOut
                                      saveStarsIn:excluded];
     
-    line.escapeRanges = NSMutableIndexSet.new;
-
     line.boldRanges = [self rangesInChars:charArray
                                  ofLength:length
                                   between:BOLD_PATTERN
@@ -846,9 +846,11 @@ static NSDictionary* patterns;
 	}
 }
 
+/// Parses the line type for given line. It *has* to know its line index.
+/// This bunch of spaghetti should be refactored and split into smaller functions.
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    Line *nextLine = (index < self.lines.count - 1 && self.lines.count > 0) ? self.lines[index+1] : nil;
+    Line *nextLine = (line != self.lines.lastObject) ? self.lines[index+1] : nil;
 
     bool previousIsEmpty = false;
     
@@ -856,9 +858,9 @@ static NSDictionary* patterns;
     
     // Check for everything that is considered as empty
     if (previousLine.effectivelyEmpty || index == 0) previousIsEmpty = true;
-    
+        
     // Check if this line was forced to become a character cue in editor (by pressing tab)
-    if (line.forcedCharacterCue) {
+    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
         line.forcedCharacterCue = NO;
         // 94 = ^ (this is here to avoid issues with Turkish alphabet
         if (line.lastCharacter == 94) return dualDialogueCharacter;
@@ -873,7 +875,7 @@ static NSDictionary* patterns;
 
             // If preceeded by a character cue, always return dialogue
             if (previousLine.type == character) return dialogue;
-            if (previousLine.type == dualDialogueCharacter) return dualDialogue;
+            else if (previousLine.type == dualDialogueCharacter) return dualDialogue;
             
             // If it's any other dialogue line, return dialogue
             if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical) && previousLine.length > 0 && (nextLine.length == 0 || nextLine == nil)) {
@@ -888,13 +890,18 @@ static NSDictionary* patterns;
     unichar firstChar = [line.string characterAtIndex:0];
     unichar lastChar = line.lastCharacter;
     
+    // Also, lets add the first \ as an escape character
+    if (firstChar == '\\') [line.escapeRanges addIndex:0];
+    
     // Forced whitespace
     bool containsOnlyWhitespace = line.string.containsOnlyWhitespace; // Save to use again later
     bool twoSpaces = (firstChar == ' ' && lastChar == ' ' && line.length > 1); // Contains at least two spaces
     
     if (containsOnlyWhitespace && !twoSpaces) return empty;
         
-    if ([trimmedString isEqualToString:@"==="]) return pageBreak;
+    if ([trimmedString isEqualToString:@"==="]) {
+        return pageBreak;
+    }
     else if (firstChar == '!') {
         // Action or shot
         if (line.length > 1) {
@@ -921,65 +928,14 @@ static NSDictionary* patterns;
     else if (firstChar == '#') return section;
     else if (firstChar == '@' && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if (firstChar == '.' && previousIsEmpty) return heading;
-    else if ([trimmedString isEqualToString:@"==="]) return pageBreak;
 
     // Title page
-    // TODO: Rewrite this
     if (previousLine == nil || previousLine.isTitlePage) {
-        NSString *key = line.titlePageKey;
-        
-        if (key.length > 0) {
-            NSString* value = line.titlePageValue;
-            if (value == nil) value = @"";
-            
-            // Store title page data
-            NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
-            [_titlePage addObject:titlePageData];
-            
-            // Set this key as open (in case there are additional title page lines)
-            _openTitlePageKey = key;
-            
-            if ([key isEqualToString:@"title"]) {
-                return titlePageTitle;
-            } else if ([key isEqualToString:@"author"] || [key isEqualToString:@"authors"]) {
-                return titlePageAuthor;
-            } else if ([key isEqualToString:@"credit"]) {
-                return titlePageCredit;
-            } else if ([key isEqualToString:@"source"]) {
-                return titlePageSource;
-            } else if ([key isEqualToString:@"contact"]) {
-                return titlePageContact;
-            } else if ([key isEqualToString:@"contacts"]) {
-                return titlePageContact;
-            } else if ([key isEqualToString:@"contact info"]) {
-                return titlePageContact;
-            } else if ([key isEqualToString:@"draft date"]) {
-                return titlePageDraftDate;
-            } else {
-                return titlePageUnknown;
-            }
-        }
-        else if (previousLine.isTitlePage) {
-            NSString *key = @"";
-            NSInteger i = index - 1;
-            while (i >= 0) {
-                Line *pl = self.lines[i];
-                if (pl.titlePageKey.length > 0) {
-                    key = pl.titlePageKey;
-                    break;
-                }
-                i -= 1;
-            }
-            if (key.length > 0) {
-                NSMutableDictionary* dict = _titlePage.lastObject;
-                [(NSMutableArray*)dict[key] addObject:line.string];
-            }
-            
-            return previousLine.type;
-        }
+        LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
+        if (titlePageType != NSNotFound) return titlePageType;
     }
     
-    // Handle items which require an empty line before them
+    // Handle items which require an empty line before them (and we're not forcing character input)
     if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
         
         // Heading
@@ -991,8 +947,9 @@ static NSDictionary* patterns;
             [firstChars isEqualToString:@"i/e"]) {
             
             // If it's just under 4 characters, return heading
-            if (line.length == 3) return heading;
-            else {
+            if (line.length == 3) {
+                return heading;
+            } else {
                 // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
                 unichar nextChar = [line.string characterAtIndex:3];
                 if (nextChar == '.' || nextChar == ' ' || nextChar == '/')  return heading;
@@ -1031,6 +988,10 @@ static NSDictionary* patterns;
             }
         }
     }
+    else if (_delegate.characterInputForLine == line) {
+        NSLog(@"!");
+        return character;
+    }
     
     if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
         if (firstChar == '(') return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
@@ -1054,6 +1015,63 @@ static NSDictionary* patterns;
     }
         
     return action;
+}
+
+- (LineType)parseTitlePageLineTypeFor:(Line*)line previousLine:(Line*)previousLine lineIndex:(NSInteger)index
+{
+    NSString *key = line.titlePageKey;
+    
+    if (key.length > 0) {
+        NSString* value = line.titlePageValue;
+        if (value == nil) value = @"";
+        
+        // Store title page data
+        NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
+        [_titlePage addObject:titlePageData];
+        
+        // Set this key as open (in case there are additional title page lines)
+        _openTitlePageKey = key;
+        
+        if ([key isEqualToString:@"title"]) {
+            return titlePageTitle;
+        } else if ([key isEqualToString:@"author"] || [key isEqualToString:@"authors"]) {
+            return titlePageAuthor;
+        } else if ([key isEqualToString:@"credit"]) {
+            return titlePageCredit;
+        } else if ([key isEqualToString:@"source"]) {
+            return titlePageSource;
+        } else if ([key isEqualToString:@"contact"]) {
+            return titlePageContact;
+        } else if ([key isEqualToString:@"contacts"]) {
+            return titlePageContact;
+        } else if ([key isEqualToString:@"contact info"]) {
+            return titlePageContact;
+        } else if ([key isEqualToString:@"draft date"]) {
+            return titlePageDraftDate;
+        } else {
+            return titlePageUnknown;
+        }
+    }
+    else if (previousLine.isTitlePage) {
+        NSString *key = @"";
+        NSInteger i = index - 1;
+        while (i >= 0) {
+            Line *pl = self.lines[i];
+            if (pl.titlePageKey.length > 0) {
+                key = pl.titlePageKey;
+                break;
+            }
+            i -= 1;
+        }
+        if (key.length > 0) {
+            NSMutableDictionary* dict = _titlePage.lastObject;
+            [(NSMutableArray*)dict[key] addObject:line.string];
+        }
+        
+        return previousLine.type;
+    }
+    
+    return NSNotFound;
 }
 
 - (void)makeCharacterAwareOfItsDualSiblingFrom:(NSInteger)index {
