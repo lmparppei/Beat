@@ -364,6 +364,7 @@
     return NO;
 }
 
+/// If the user types `)` where there already is a closing parentheses, jump over the `)`.
 - (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange
 {
     // Jump over matched parentheses
@@ -381,14 +382,12 @@
     return NO;
 }
 
+/**
+ Finds a matching closure for parenthesis, notes and omissions.
+ It works by checking the entered symbol and if the previous symbol in text matches its counterpart (like with `*`, if the previous is `/`, terminator is appended.
+ */
 - (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
-    /**
-     This method finds a matching closure for parenthesis, notes and omissions.
-     It works by checking the entered symbol and if the previous symbol in text
-     matches its counterpart (like with *, if the previous is /, terminator is appended.
-     */
-    
     if (replacementString.length > 1) return;;
     
     static NSDictionary *matches;
@@ -429,6 +428,7 @@
     [_delegate setSelectedRange:affectedCharRange];
 }
 
+/// Check if we should add `CONT'D` at the the current character cue
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
     Line *currentLine = _delegate.currentLine;
