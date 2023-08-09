@@ -367,7 +367,6 @@ static NSDictionary* patterns;
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
-    if (_delegate.characterInputForLine) NSLog(@"... input: %@ / this: %@", _delegate.characterInputForLine, line);
     
     [changedIndices addIndex:lineIndex];
 	
