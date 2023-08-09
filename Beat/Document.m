@@ -1142,8 +1142,8 @@ static NSWindow __weak *currentKeyWindow;
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
 	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
 	
-	// Store currently running plugins
-	[_documentSettings set:DocSettingActivePlugins as:self.runningPlugins.allKeys];
+	// Store currently running plugins (which should be saved)
+	[_documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
 	
 	// Save reviewed ranges
 	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
@@ -1576,6 +1576,7 @@ static NSWindow __weak *currentKeyWindow;
 			NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
 			
 			if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
+				self.characterInputForLine = nil;
 				[self addString:contdString atIndex:currentLine.position + currentLine.length];
 				return YES;
 			}
@@ -2051,6 +2052,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Character input
 
 - (void)handleTabPress {
+	// TODO: Move this to text view
 	// Force character if the line is suitable
 	Line *currentLine = self.currentLine;
 	
@@ -2062,6 +2064,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)addCharacterExtension {
+	// TODO: Move this to text I/O
 	Line * currentLine = self.currentLine;
 	
 	if (currentLine.hasExtension) {
@@ -2077,6 +2080,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)forceCharacterInput {
+	// TODO: Move this to text view
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
@@ -4176,6 +4180,21 @@ static NSArray<Line*>* cachedTitlePage;
  
  */
 
+
+/// Returns every plugin that should be registered to be saved
+- (NSArray*)runningPluginsForSaving
+{
+	NSMutableArray* plugins = NSMutableArray.new;
+	for (NSString* pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin* plugin = self.runningPlugins[pluginName];
+		if (!plugin.restorable) continue;
+		
+		[plugins addObject:pluginName];
+	}
+	return plugins;
+}
+
+/// Called from `BeatPluginMenuItem`, which contains the plugin name to be run in this window.
 - (IBAction)runPlugin:(id)sender {
 	// Get plugin filename from menu item
 	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
@@ -4184,6 +4203,7 @@ static NSArray<Line*>* cachedTitlePage;
 	[self runPluginWithName:pluginName];
 }
 
+/// Runs a plugin with a name in plugin manager.
 - (void)runPluginWithName:(NSString*)pluginName {
 	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
 	
@@ -4208,6 +4228,7 @@ static NSArray<Line*>* cachedTitlePage;
 	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
 	
 	BeatPlugin* plugin = [BeatPlugin withName:pluginName script:script delegate:self];
+	plugin.restorable = false;
 	return plugin;
 }
 
