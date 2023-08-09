@@ -518,7 +518,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)addTemporaryAttribute:(NSString*)key value:(id)value range:(NSRange)range {
 	//[_delegate.layoutManager addTemporaryAttribute:key value:value forCharacterRange:range];
-	[_delegate.textStorage addAttribute:key value:value range:range];
+	
+	// Don't go out of range
+	if (NSMaxRange(range) >= self.delegate.text.length) {
+		range.length = self.delegate.textStorage.length - range.location;
+	}
+	
+	if (range.length > 0) [_delegate.textStorage addAttribute:key value:value range:range];
 }
 
 
