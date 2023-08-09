@@ -112,6 +112,7 @@ import UXKit
     @objc public func setup() {
         if self.host == nil {
             self.host = BeatPlugin()
+            self.host?.restorable = false
         }
         
         self.host?.delegate = self.delegate

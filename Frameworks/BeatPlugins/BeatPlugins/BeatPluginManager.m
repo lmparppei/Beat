@@ -459,7 +459,7 @@ static BeatPluginManager *sharedManager;
 	}
     
     if (error != nil) {
-        NSLog(@"Plugin manager error: %@", error);
+        NSLog(@"Plugin manager error: %@ - %@", name, error);
     }
 	
 	// Make the script a self-running function. This allows us to avoid some namespacing issues in JS.
