@@ -77,14 +77,7 @@ let current = ""
 if (Beat.currentScene != null) current = Beat.currentScene.line.uuidString()
 
 // Create UI
-ui = Beat.localize(ui)
-		.replaceAll("{{html}}", html)
-		.replaceAll("{{css}}", css)
-		.replaceAll("{{dragula}}", js)
-		.replaceAll("{{mode}}", mode)
-		.replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false'))
-		.replaceAll("{{iOS-css}}", additionalCSS,)
-		.replaceAll("{{current}}", current)
+ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current)
 
 // Create window.
 // We'll choose the appropriate view to use as the HTML view.
