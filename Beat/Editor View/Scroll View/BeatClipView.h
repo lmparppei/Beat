@@ -11,8 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatClipView : NSClipView
+@interface BeatClipView : NSClipView 
 @property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
+@property (nonatomic) bool animating;
+
 @end
 
 NS_ASSUME_NONNULL_END

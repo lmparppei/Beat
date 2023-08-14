@@ -192,6 +192,7 @@ double clampf(double d, double min, double max) {
 	return t > max ? max : t;
 }
 
+
 @end
 /*
 

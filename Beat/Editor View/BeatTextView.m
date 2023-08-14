@@ -37,6 +37,7 @@
 #import "BeatPasteboardItem.h"
 #import "Beat-Swift.h"
 #import "BeatEditorFormatting.h"
+#import "BeatClipView.h"
 
 // Editor line height
 #define LINE_HEIGHT 1.1
@@ -311,7 +312,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Key events
 
 -(void)keyUp:(NSEvent *)event {
-	if (self.editorDelegate.typewriterMode) [self typewriterScroll];
+	if (self.editorDelegate.typewriterMode) {
+		[self typewriterScroll];
+	}
 }
 - (void)keyDown:(NSEvent *)theEvent {
 	if (self.editorDelegate.contentLocked) {
@@ -473,44 +476,32 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (y < viewOrigin || y > viewOrigin + viewHeight) [self typewriterScroll];
 }
 
+
+
 - (void)typewriterScroll {
 	if (self.needsLayout) [self layout];
 	[self.layoutManager ensureLayoutForCharacterRange:self.editorDelegate.currentLine.range];
-
-	NSClipView *clipView = self.enclosingScrollView.documentView;
-
+	
+	BeatClipView* clipView = (BeatClipView*)self.enclosingScrollView.contentView;
+	
 	// Find the rect for current range
 	NSRect rect = [self rectForRange:self.selectedRange];
-	//NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
-	//NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 
 	// Calculate correct scroll position
-	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
+	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize * 3) * self.editorDelegate.magnification;
 	
 	// Take find & replace bar height into account
 	CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
-	
-	CGFloat boundsY = clipView.bounds.size.height + findBarHeight + clipView.bounds.origin.y;
-	CGFloat maxY = self.frame.size.height;
-	CGFloat pixelsToBottom = maxY - boundsY;
-	if (pixelsToBottom < self.editorDelegate.fontSize * _editorDelegate.magnification * 0.5 && pixelsToBottom > 0) {
-		scrollY -= 5 * _editorDelegate.magnification;
-	}
-	
-
+			
 	// Calculate container height with insets
 	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
 	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
 		
-	// how many pixels the view should shift
-	CGFloat delta = fabs(scrollY - self.superview.bounds.origin.y);
+	NSRect bounds = NSMakeRect(clipView.bounds.origin.x, scrollY, clipView.bounds.size.width, clipView.bounds.size.height);
 	
-	CGFloat fontSize = self.editorDelegate.fontSize * self.editorDelegate.magnification;
-	if (scrollY < containerHeight && delta > fontSize) {
-		//scrollY = containerHeight - _textClipView.frame.size.height;
-		[self.superview.animator setBoundsOrigin:NSMakePoint(self.superview.bounds.origin.x, scrollY)];
-	}
+	[self.superview.animator setBoundsOrigin:bounds.origin];
 }
+
 -(void)scrollWheel:(NSEvent *)event {
 	// If the user scrolls, let's ignore any other scroll behavior
 	_selectionAtEnd = NO;
@@ -689,7 +680,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	// Update view position if needed
-	if (self.editorDelegate.typewriterMode) [self updateTypewriterView];
+	//if (self.editorDelegate.typewriterMode) [self updateTypewriterView];
 	
 	// If selection moves by more than just one character, hide autocomplete
 	if ((self.selectedRange.location - self.lastPos) > 1) {
@@ -1339,7 +1330,8 @@ Line *cachedRectLine;
 - (CGFloat)setInsets {
 	// Top/bottom insets
 	if (_editorDelegate.typewriterMode) {
-		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2) * (1 + (1 - _editorDelegate.magnification));
+		// What the actual fuck is this math ha ha ha
+		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (1 + (1 - self.zoomLevel));
 		self.textInsetY = insetY;
 	} else {
 		self.textInsetY = TEXT_INSET_TOP;

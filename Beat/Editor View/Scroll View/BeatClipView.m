@@ -7,6 +7,7 @@
 //
 
 #import "BeatClipView.h"
+#import "BeatTextView.h"
 
 @implementation BeatClipView
 
@@ -30,5 +31,12 @@
 		[super layout];
 	}
 }
+
+
+- (NSRect)constrainBoundsRect:(NSRect)proposedBounds {
+	if (!_editorDelegate.typewriterMode) return [super constrainBoundsRect:proposedBounds];
+	return proposedBounds;
+}
+
 
 @end

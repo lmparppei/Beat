@@ -92,6 +92,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (weak) IBOutlet BeatTagging *tagging;
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
 
+@property (nonatomic) bool didType;
+
 @property CGFloat textInsetY;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
