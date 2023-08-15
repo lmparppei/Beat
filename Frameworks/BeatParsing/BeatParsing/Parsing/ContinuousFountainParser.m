@@ -595,7 +595,6 @@ static NSDictionary* patterns;
     
     // Mark the current index as changed
 	[self.changedIndices addIndex:index];
-	
     	
 	if (index > 0) {
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
@@ -876,8 +875,10 @@ static NSDictionary* patterns;
             if (previousLine.type == character) return dialogue;
             else if (previousLine.type == dualDialogueCharacter) return dualDialogue;
             
-            // If it's any other dialogue line, return dialogue
-            if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical) && previousLine.length > 0 && (nextLine.length == 0 || nextLine == nil)) {
+            NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0;
+            
+            // If it's any other dialogue line and we're editing it, return dialogue
+            if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical) && previousLine.length > 0 && (nextLine.length == 0 || nextLine == nil) && NSLocationInRange(selection, line.range)) {
                 return (previousLine.isDialogue) ? dialogue : dualDialogue;
             }
         }
@@ -934,9 +935,13 @@ static NSDictionary* patterns;
         if (titlePageType != NSNotFound) return titlePageType;
     }
     
+    // Check for Transitions
+    if (line.length > 2 && line.lastCharacter == ':' && line.string.containsOnlyUppercase && previousIsEmpty) {
+        return transitionLine;
+    }
+    
     // Handle items which require an empty line before them (and we're not forcing character input)
-    if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
-        
+    else if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
         // Heading
         NSString* firstChars = [line.string substringToIndex:3].lowercaseString;
         
@@ -954,12 +959,13 @@ static NSDictionary* patterns;
                 if (nextChar == '.' || nextChar == ' ' || nextChar == '/')  return heading;
             }
         }
-        
+        /*
         // Check for transitions
         NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
         if (transitionRange.location != NSNotFound && transitionRange.location == trimmedString.length - 3) {
             return transitionLine;
         }
+        */
         
         // Character
         if (line.string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
@@ -988,7 +994,6 @@ static NSDictionary* patterns;
         }
     }
     else if (_delegate.characterInputForLine == line) {
-        NSLog(@"!");
         return character;
     }
     
