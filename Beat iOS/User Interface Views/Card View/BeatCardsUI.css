@@ -74,13 +74,27 @@ body {
 
 	width: calc(100% / 4);
 	
-	aspect-ratio: 2.5/2;
+	-webkit-aspect-ratio: 2.5/2;
 
 	color: #333;
 
 	position: relative;
 	background: transparent !important;
 }
+@supports not (-webkit-aspect-ratio: 2.5/2) {
+	.card::before {
+		float: left;
+		padding-top: 80%;
+		content: "";
+	}
+
+	.card::after {
+		display: block;
+		content: "";
+		clear: both;
+	}
+}
+
 .card-content {
 	position: absolute;
 	
