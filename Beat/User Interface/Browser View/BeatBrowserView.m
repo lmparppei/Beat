@@ -93,7 +93,14 @@
 }
 
 - (void)loadURL:(NSURL*)url {
-	[self.webview loadFileURL:url allowingReadAccessToURL:url.URLByDeletingLastPathComponent];
+	if (![url.absoluteString containsString:@"http"]) {
+		// Open local URL
+		[self.webview loadFileURL:url allowingReadAccessToURL:url.URLByDeletingLastPathComponent];
+	} else {
+		NSURLRequest* request = [NSURLRequest.alloc initWithURL:url];
+		[self.webview loadRequest:request];
+	}
+	
 }
 
 - (void)windowDidLoad {
