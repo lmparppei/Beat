@@ -1201,7 +1201,7 @@ static NSWindow __weak *currentKeyWindow;
 	return revisions;
 }
 - (void)bakeRevisions {
-	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines.copy text:self.getAttributedText];
 }
 - (NSArray*)shownRevisions {
 	return BeatRevisions.revisionColors;

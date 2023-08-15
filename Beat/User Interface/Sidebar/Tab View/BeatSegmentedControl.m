@@ -24,7 +24,7 @@
 	return BeatSegmentedCell.class;
 }
 
-- (id) initWithFrame:(NSRect)frameRect
+- (id)initWithFrame:(NSRect)frameRect
 {
 	self = [super initWithFrame:frameRect];
 	return self;
@@ -50,7 +50,6 @@
 - (void)awakeFromNib
 {
 	[self.cell setTrackingMode:NSSegmentSwitchTrackingSelectOne];
-	
 	self.wantsLayer = true;
 }
 
@@ -96,31 +95,35 @@
 	CGFloat width = rect.size.width / [self segmentCount];
 	
 	for (NSInteger i = 0; i < self.segmentCount; i++) {
-		if (i == self.segmentCount - 1 && ![self widgetsVisible]) continue;
+		if (i == self.segmentCount - 1 && !self.widgetsVisible) continue;
 		
-		NSImage *img = [self imageForSegment:i].copy;
-		
-		NSColor *tint;
-		if (@available(macOS 10.14, *)) {
-			tint = NSColor.controlAccentColor;
-			if (i != self.selectedSegment) {
-				tint = [tint colorWithAlphaComponent:.5];
-			}
-		} else {
-			// Fallback on earlier versions
-			tint = NSColor.secondaryLabelColor;
-			if (i == self.selectedSegment) tint = NSColor.whiteColor;
-		}
-		
-		[img lockFocus];
-		[tint set];
-		NSRect imageRect = {NSZeroPoint, img.size};
-		NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceIn);
-		[img unlockFocus];
-	
+		NSImage *img = [self tintedImage:[self imageForSegment:i] selected:(i == self.selectedSegment)];
+
 		NSRect segmentRect = (NSRect) { i * width, 0 + self.frame.size.height - 30, width, 30  };
 		[self drawCenteredImage:img inFrame:segmentRect];
 	}
+}
+
+- (NSImage*)tintedImage:(NSImage*)img selected:(bool)selected {
+	img = img.copy;
+	
+	NSColor *tint;
+	if (@available(macOS 10.14, *)) {
+		tint = NSColor.controlAccentColor;
+		if (!selected) tint = [NSColor.tertiaryLabelColor colorWithAlphaComponent:.4];
+	} else {
+		// Fallback on earlier versions
+		tint = NSColor.secondaryLabelColor;
+		if (!selected) tint = NSColor.whiteColor;
+	}
+	
+	[img lockFocus];
+	[tint set];
+	NSRect imageRect = {NSZeroPoint, img.size};
+	NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceIn);
+	[img unlockFocus];
+	
+	return img;
 }
 
 - (NSImage *)imageResize:(NSImage*)anImage newSize:(NSSize)newSize {

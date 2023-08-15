@@ -411,8 +411,6 @@
 		B6E66792292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E66790292C29BA007A4108 /* BeatUserDefaultCheckbox.swift */; };
 		B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */; };
 		B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */; };
-		B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBB267A686800BBD2A2 /* Index Card Window.beatPlugin */; };
-		B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBB267A686800BBD2A2 /* Index Card Window.beatPlugin */; };
 		B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
 		B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
 		B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F0F3882714A2BA006A359D /* BeatDocumentController.m */; };
@@ -2102,7 +2100,6 @@
 				B6F9DF22276B908A00D4C263 /* beat_manual_script.js in Resources */,
 				B6C401392810339F00330AC3 /* review_mode.jpg in Resources */,
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
-				B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */,
 				B696BC3A2A73BCDD0078BA79 /* BeatCardsPrint.css in Resources */,
 				B6E099D82766861B005E7827 /* FooterTemplate.html in Resources */,
@@ -2181,7 +2178,6 @@
 				B68B60A3260B849300463AD8 /* CardView.js in Resources */,
 				B6E3894B270DDE120067DD0C /* outline.png in Resources */,
 				B68B60A5260B849300463AD8 /* BeatStatisticsPanel.html in Resources */,
-				B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B6F9DF23276B908A00D4C263 /* beat_manual_script.js in Resources */,
 				B6C4013A2810339F00330AC3 /* review_mode.jpg in Resources */,
 				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
@@ -2999,7 +2995,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133201;
+				CURRENT_PROJECT_VERSION = 133207;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3018,7 +3014,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.996.1;
+				MARKETING_VERSION = 1.996.3;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3043,7 +3039,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133201;
+				CURRENT_PROJECT_VERSION = 133207;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3062,7 +3058,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.996.1;
+				MARKETING_VERSION = 1.996.3;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3088,7 +3084,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133201;
+				CURRENT_PROJECT_VERSION = 133207;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3132,7 +3128,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133201;
+				CURRENT_PROJECT_VERSION = 133207;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

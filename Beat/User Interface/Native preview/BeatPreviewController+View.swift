@@ -121,7 +121,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 
 				// Dispatch pagination to a background thread after one second
 				DispatchQueue.global(qos: .utility).async { [weak self] in
-					self?.pagination?.newPagination(screenplay: parser.forPrinting(), settings: self?.settings ?? BeatExportSettings(), forEditor: true, changeAt: self?.changedIndices.firstIndex ?? 0)
+					self?.pagination?.newPagination(screenplay: parser.forPrinting(),
+													settings: self?.settings ?? BeatExportSettings(),
+													forEditor: true,
+													changeAt: self?.changedIndices.firstIndex ?? 0)
 				}
 			})
 		}
