@@ -137,6 +137,7 @@ import UXKit
     }
 
     public func containerViewDidHide() {
+        self.displayed = false
         onViewDidHide?.call(withArguments: [self])
     }
 }
@@ -170,6 +171,7 @@ import UXKit
         } else {
             // The VC was instantiated some other way, let's just dismiss it.
             viewController?.dismiss(animated: true)
+            self.displayed = false
         }
     }
     
