@@ -1178,13 +1178,25 @@ static NSWindow __weak *currentKeyWindow;
 	return [self readFromData:data ofType:typeName error:outError reverting:NO];
 }
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting {
-	// Read settings
 	if (!_documentSettings) _documentSettings = BeatDocumentSettings.new;
-	
-	// Load text & remove settings block
-	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
-	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
+
+	__block NSString* text = @"";
+	/*
+	if ([typeName isEqualToString:@"Final Draft"]) {
+		// FINAL DRAFT
+		__block FDXImport* import;
+		import = [FDXImport.alloc initWithData:data importNotes:true completion:^{
+			text = import.scriptAsString;
+		}];
+	} else {
+	 */
+		// Fountain
+		// Load text & remove settings block from Fountain
+		text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+		
+		NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
+		text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
+	//}
 
 	// Remove unwanted control characters
 	NSArray* t = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];

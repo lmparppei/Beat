@@ -43,7 +43,6 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 	
 	@objc @IBAction func showPatchNotes(sender: Any?) {
 		guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else {
-			print("...")
 			return
 		}
 	

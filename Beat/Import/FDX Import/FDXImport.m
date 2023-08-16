@@ -68,35 +68,56 @@
 {
 	self = [super init];
 	if (self) {
-		_elementText = NSMutableString.new;
-		_attrText = NSMutableAttributedString.new;
-		_script = NSMutableArray.new;
-		_titlePage = NO;
-		_dualDialogue = -1;
-		_attrContents = NSMutableAttributedString.new;
-		_notes = NSMutableArray.new;
 		_importNotes = importNotes;
+		
+		[self setup];
 
 		// Thank you, RIPtutorial
 		// Fetch xml data
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-			
-			self.xmlParser = [[NSXMLParser alloc] initWithData:data];
-			self.xmlParser.delegate = self;
-			if ([self.xmlParser parse]){
-				callback();
-			} else {
-				NSLog(@"ERROR: %@", self.xmlParser.parserError);
-			}
-			
+			[self parse:data callback:callback];
 		}];
 			
 		[task resume];
 		
 	}
 	return self;
+}
+
+- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(void))callback
+{
+	self = [super init];
+	if (self) {
+		_importNotes = importNotes;
+		[self parse:data callback:callback];
+	}
+	
+	return self;
+}
+
+- (void)setup
+{
+	_elementText = NSMutableString.new;
+	_attrText = NSMutableAttributedString.new;
+	_script = NSMutableArray.new;
+	_titlePage = NO;
+	_dualDialogue = -1;
+	_attrContents = NSMutableAttributedString.new;
+	_notes = NSMutableArray.new;
+
+}
+
+- (void)parse:(NSData*)data callback:(void(^)(void))callback
+{
+	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
+	self.xmlParser.delegate = self;
+	if ([self.xmlParser parse]){
+		callback();
+	} else {
+		NSLog(@"ERROR: %@", self.xmlParser.parserError);
+	}
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict

@@ -107,7 +107,7 @@
                                             </buttonCell>
                                             <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                             <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.kapitan.fi/beat/support.html"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.kapitan.fi/beat/support.html?origin=appStore"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="openURLwithButtonWithSender:" target="9uD-mB-xHs" id="Qdt-wq-Xn1"/>
@@ -498,7 +498,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="usj-3b-jHu"/>
+        <segue reference="VEG-h6-WbV"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="B_256" width="256" height="256"/>
