@@ -589,7 +589,9 @@ static NSDictionary* patterns;
             currentLine.isOutlineElement ||
             (oldType == synopse && currentLine.type != synopse)
             ) {
-            [self addUpdateToOutlineAtLine:currentLine];
+            // For any changes to outline elements, we also need to add update the preceding line
+            bool didChangeType = (currentLine.type != oldType);
+            [self addUpdateToOutlineAtLine:currentLine didChangeType:true];
         }
     }
     
@@ -1702,7 +1704,7 @@ static NSDictionary* patterns;
         Line* line = lines[i];
         
         if (line.isOutlineElement) {
-            [self addUpdateToOutlineAtLine:line];
+            [self addUpdateToOutlineAtLine:line didChangeType:false];
             return;
         }
     }
@@ -1710,9 +1712,19 @@ static NSDictionary* patterns;
 
 
 /// Forces an update to the outline element which contains the given line. No additional checks.
-- (void)addUpdateToOutlineAtLine:(Line*)line {
+- (void)addUpdateToOutlineAtLine:(Line*)line didChangeType:(bool)didChangeType
+{
     OutlineScene* scene = [self outlineElementInRange:line.textRange];
     if (scene) [_outlineChanges.updated addObject:scene];
+    
+    // In some cases we also need to update the surrounding elements
+    if (didChangeType) {
+        OutlineScene* previousScene = [self outlineElementInRange:NSMakeRange(line.position - 1, 0)];
+        OutlineScene* nextScene = [self outlineElementInRange:NSMakeRange(NSMaxRange(scene.range) + 1, 0)];
+        
+        if (previousScene != nil) [_outlineChanges.updated addObject:previousScene];
+        if (nextScene != nil) [_outlineChanges.updated addObject:nextScene];
+    }
 }
 
 
