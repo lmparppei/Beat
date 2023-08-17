@@ -65,6 +65,8 @@
 - (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
 
 - (Line *)lineWithUUID:(NSString *)uuid;
+
+- (NSArray*)safeLines;
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>

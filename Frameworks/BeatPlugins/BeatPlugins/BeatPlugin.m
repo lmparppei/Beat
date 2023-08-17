@@ -1750,8 +1750,9 @@
 /// Returns all lines as JSON
 - (NSString*)linesAsJSON {
 	NSMutableArray *linesToSerialize = NSMutableArray.new;
+    NSArray* lines = self.delegate.parser.lines.copy;
 	
-	for (Line* line in self.delegate.parser.lines) { 
+	for (Line* line in lines) {
 		[linesToSerialize addObject:line.forSerialization];
 	}
 	
