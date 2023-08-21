@@ -1744,16 +1744,19 @@
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:0 error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 	
-	return json;
+	return json;    
 }
 
 /// Returns all lines as JSON
 - (NSString*)linesAsJSON {
 	NSMutableArray *linesToSerialize = NSMutableArray.new;
     NSArray* lines = self.delegate.parser.lines.copy;
-	
+    
 	for (Line* line in lines) {
-		[linesToSerialize addObject:line.forSerialization];
+        Line* l = line;
+        if (!NSThread.mainThread) l = line.clone; // Clone the line for background operations
+		
+        [linesToSerialize addObject:l.forSerialization];
 	}
 	
 	return linesToSerialize.json;
