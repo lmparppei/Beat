@@ -1936,7 +1936,8 @@ static NSDictionary* patterns;
 - (NSDictionary<NSUUID*, Line*>*)uuidsToLines
 {
     // Return the cached version when possible
-    if ([self.cachedLines isEqualToArray:self.lines]) {
+    NSArray* lines = self.lines.copy;
+    if ([self.cachedLines isEqualToArray:lines]) {
         return _uuidsToLines;
     }
 
@@ -1944,7 +1945,6 @@ static NSDictionary* patterns;
     self.cachedLines = self.lines.copy;
 
     // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
-    NSArray* lines = self.lines.copy;
     NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:self.lines.count];
 
     for (Line* line in lines) {
