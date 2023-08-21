@@ -591,7 +591,7 @@ static NSDictionary* patterns;
             ) {
             // For any changes to outline elements, we also need to add update the preceding line
             bool didChangeType = (currentLine.type != oldType);
-            [self addUpdateToOutlineAtLine:currentLine didChangeType:true];
+            [self addUpdateToOutlineAtLine:currentLine didChangeType:didChangeType];
         }
     }
     
@@ -848,17 +848,17 @@ static NSDictionary* patterns;
 
 /// Parses the line type for given line. It *has* to know its line index.
 /// This bunch of spaghetti should be refactored and split into smaller functions.
-- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index {
+- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index { @synchronized (self) {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    Line *nextLine = (line != self.lines.lastObject) ? self.lines[index+1] : nil;
-
+    Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
+    
     bool previousIsEmpty = false;
     
     NSString *trimmedString = (line.string.length > 0) ? [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] : @"";
     
     // Check for everything that is considered as empty
     if (previousLine.effectivelyEmpty || index == 0) previousIsEmpty = true;
-        
+    
     // Check if this line was forced to become a character cue in editor (by pressing tab)
     if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
         line.forcedCharacterCue = NO;
@@ -872,7 +872,7 @@ static NSDictionary* patterns;
         if (previousLine.isDialogue || previousLine.isDualDialogue) {
             // If preceding line is formatted as dialogue BUT it's empty, we'll just return empty.
             if (previousLine.string.length == 0) return empty;
-
+            
             // If preceeded by a character cue, always return dialogue
             if (previousLine.type == character) return dialogue;
             else if (previousLine.type == dualDialogueCharacter) return dualDialogue;
@@ -887,7 +887,7 @@ static NSDictionary* patterns;
         
         return empty;
     }
-        
+    
     // Check forced elements
     unichar firstChar = [line.string characterAtIndex:0];
     unichar lastChar = line.lastCharacter;
@@ -900,7 +900,7 @@ static NSDictionary* patterns;
     bool twoSpaces = (firstChar == ' ' && lastChar == ' ' && line.length > 1); // Contains at least two spaces
     
     if (containsOnlyWhitespace && !twoSpaces) return empty;
-        
+    
     if ([trimmedString isEqualToString:@"==="]) {
         return pageBreak;
     }
@@ -930,7 +930,7 @@ static NSDictionary* patterns;
     else if (firstChar == '#') return section;
     else if (firstChar == '@' && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if (firstChar == '.' && previousIsEmpty) return heading;
-
+    
     // Title page
     if (previousLine == nil || previousLine.isTitlePage) {
         LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
@@ -962,12 +962,12 @@ static NSDictionary* patterns;
             }
         }
         /*
-        // Check for transitions
-        NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
-        if (transitionRange.location != NSNotFound && transitionRange.location == trimmedString.length - 3) {
-            return transitionLine;
-        }
-        */
+         // Check for transitions
+         NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
+         if (transitionRange.location != NSNotFound && transitionRange.location == trimmedString.length - 3) {
+         return transitionLine;
+         }
+         */
         
         // Character
         if (line.string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
@@ -990,7 +990,7 @@ static NSDictionary* patterns;
                         return action;
                     }
                 }
-
+                
                 return character;
             }
         }
@@ -1006,9 +1006,9 @@ static NSDictionary* patterns;
     
     // Fix some parsing mistakes
     if (previousLine.type == action && previousLine.length > 0 && previousLine.string.onlyUppercaseUntilParenthesis &&
-             line.length > 0 &&
-             !previousLine.forced &&
-             [self previousLine:previousLine].type == empty) {
+        line.length > 0 &&
+        !previousLine.forced &&
+        [self previousLine:previousLine].type == empty) {
         // Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when the text is changed to have some dialogue follow it.
         // (94 = ^, we'll use the numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^')
         if (previousLine.lastCharacter == 94) previousLine.type = dualDialogueCharacter;
@@ -1019,9 +1019,10 @@ static NSDictionary* patterns;
         if (line.length > 0 && [line.string characterAtIndex:0] == '(') return parenthetical;
         else return dialogue;
     }
-        
+    
     return action;
-}
+} }
+
 
 - (LineType)parseTitlePageLineTypeFor:(Line*)line previousLine:(Line*)previousLine lineIndex:(NSInteger)index
 {
