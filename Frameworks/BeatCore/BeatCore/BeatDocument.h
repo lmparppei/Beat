@@ -10,11 +10,11 @@
 
 @class BeatRevisions;
 
-/*
-@protocol BeatDocumentDelegate
-- (NSAttributedString* _Nullable)attributedString;
+
+@protocol BeatDocumentViewDelegate
+//- (NSAttributedString* _Nullable)attributedString;
 @end
- */
+
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -257,7 +257,6 @@
 		B68B6098260B849300463AD8 /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69EF5522465AA2000C5B78C /* CardPrintCSS.css */; };
 		B68B609B260B849300463AD8 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
-		B68B609D260B849300463AD8 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
 		B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD432549AF6500201BC9 /* Tutorial.fountain */; };
 		B68B60A0260B849300463AD8 /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */; };
 		B68B60A2260B849300463AD8 /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */; };
@@ -384,7 +383,6 @@
 		B6D37F822A2A208B0069C515 /* TemplateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D37F802A2A208B0069C515 /* TemplateView.swift */; };
 		B6D37F832A2A254B0069C515 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D37F862A2A254B0069C515 /* Launch Screen.storyboard */; };
 		B6D37F842A2A254B0069C515 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D37F862A2A254B0069C515 /* Launch Screen.storyboard */; };
-		B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
 		B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA8602721882900CBE9BC /* BeatSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85F2721882900CBE9BC /* BeatSegmentedCell.m */; };
@@ -2077,7 +2075,6 @@
 				B69A929C2319609100FE6A3E /* dragula.js in Resources */,
 				B6D37F832A2A254B0069C515 /* Launch Screen.storyboard in Resources */,
 				B607519128CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,
-				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E3894E270DDE130067DD0C /* cards.png in Resources */,
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B688F2C9274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
@@ -2165,7 +2162,6 @@
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B67C2CEA2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */,
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
-				B68B609D260B849300463AD8 /* Patch Notes.html in Resources */,
 				B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */,
 				B688F2CA274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B63525162A48C53700510B95 /* BeatOutlineSettings.xib in Resources */,
@@ -2995,7 +2991,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133207;
+				CURRENT_PROJECT_VERSION = 133211;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3014,7 +3010,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.996.3;
+				MARKETING_VERSION = 1.996.4;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3039,7 +3035,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133207;
+				CURRENT_PROJECT_VERSION = 133211;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3058,7 +3054,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.996.3;
+				MARKETING_VERSION = 1.996.4;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3084,7 +3080,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133207;
+				CURRENT_PROJECT_VERSION = 133211;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3128,7 +3124,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133207;
+				CURRENT_PROJECT_VERSION = 133211;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

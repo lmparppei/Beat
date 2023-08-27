@@ -22,13 +22,17 @@
     NSError* error;
     NSString* string = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
     
-    self.url = url;
-    
     if (error) {
         NSLog(@"ERROR: Failed to open URL");
         return nil;
     }
-        
+    
+    return [BeatDocument.alloc initWithString:string url:url];
+}
+
+- (instancetype)initWithData:(NSData*)data url:(NSURL* _Nullable)url
+{
+    NSString* string = [NSString.alloc initWithData:data encoding:NSUTF8StringEncoding];
     return [BeatDocument.alloc initWithString:string url:url];
 }
 
@@ -38,15 +42,20 @@
     if (self) {
         self.url = url;
         
-        self.settings = BeatDocumentSettings.new;
-        NSRange settingRange = [self.settings readSettingsAndReturnRange:string];
-        
-        string = [string stringByRemovingRange:settingRange];
-        self.parser = [ContinuousFountainParser.alloc initWithString:string];
-        
-        [BeatRevisions bakeRevisionsIntoLines:self.parser.lines revisions:[self.settings get:DocSettingRevisions] string:self.parser.rawText];
+        [self readFountain:string];
     }
     return self;
+}
+
+- (void)readFountain:(NSString*)string
+{
+    self.settings = BeatDocumentSettings.new;
+    NSRange settingRange = [self.settings readSettingsAndReturnRange:string];
+    
+    string = [string stringByRemovingRange:settingRange];
+    self.parser = [ContinuousFountainParser.alloc initWithString:string];
+    
+    [BeatRevisions bakeRevisionsIntoLines:self.parser.lines revisions:[self.settings get:DocSettingRevisions] string:self.parser.rawText];
 }
 
 
