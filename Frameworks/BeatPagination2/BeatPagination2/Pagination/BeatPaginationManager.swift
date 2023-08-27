@@ -300,9 +300,11 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	@objc public func heightToEights(_ height:CGFloat) -> [Int] {
 		if height == 0 { return [0,0] }
 		
-		var pageCount = Int(floor(height / self.maxPageHeight))
-		let remainder = height - (CGFloat(pageCount) * self.maxPageHeight)
-		var eights = Int(round((remainder / self.maxPageHeight) / (1.0/8.0)))
+        print("...",height)
+        
+        var pageCount = Int(floor(height / 1.0))
+		let remainder = height - CGFloat(pageCount)
+		var eights = Int(round(remainder / (1.0/8.0)))
 		
 		// It's almost a full page, so let's report it so
 		if eights == 8 {
@@ -315,6 +317,8 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			eights = 1
 		}
 		
+        print("   -> page count", pageCount, "/", eights)
+        
 		return [pageCount, eights]
 	}
 	
