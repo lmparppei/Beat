@@ -537,11 +537,11 @@ static BeatAppDelegate *appDelegate;
 	[self.review setup]; // Setup review system
 	[self.tagging setup]; // Setup tagging
 	
-	// Document loading has ended
-	self.documentIsLoading = NO;
-	
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
 	
+	// Document loading has ended
+	self.documentIsLoading = NO;
+		
 	// Ensure layout with pagination
 	[self setupLayoutWithPagination:YES];
 	
@@ -578,7 +578,7 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	// Open all plugins
+	// Restore all plugins
 	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
 		// Pressing shift stops plugins from loading and stores and empty array instead
 		[self.documentSettings set:DocSettingActivePlugins as:@[]];
@@ -1275,7 +1275,8 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (NSString *)text {
-	return self.textView.string;
+	if (!NSThread.isMainThread) return _attrTextCache.string;
+	else return self.textView.string;
 }
 
 - (void)loadCaret {

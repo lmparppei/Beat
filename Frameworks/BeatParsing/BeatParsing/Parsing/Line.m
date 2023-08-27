@@ -274,6 +274,44 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 
+#pragma mark - Thread-safe getters
+
+
+/// Length of the string
+-(NSInteger)length {
+    @synchronized (self.string) {
+        return self.string.length;
+    }
+}
+
+/// Range for the full line (incl. line break)
+-(NSRange)range
+{
+    @synchronized (self) {
+        return NSMakeRange(self.position, self.length + 1);
+    }
+}
+
+/// Range for text content only (excl. line break)
+-(NSRange)textRange
+{
+    return NSMakeRange(self.position, self.length);
+}
+
+/// Returns the line position in document
+-(NSInteger)position
+{
+    if (_representedLine == nil) {
+        @synchronized (self) {
+            return _position;
+        }
+    } else {
+        return _representedLine.position;
+    }
+}
+
+
+
 #pragma mark - Cloning
 
 /* This should be implemented as NSCopying */
@@ -409,18 +447,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-/// Range for the full line (incl. line break)
--(NSRange)range {
-	return NSMakeRange(self.position, self.string.length + 1);
-}
-
-
-/// Range for text content only (excl. line break)
--(NSRange)textRange {
-	// Range for the text only
-	return NSMakeRange(self.position, self.string.length);
-}
-
 /// Converts a global (document-wide) range into local range inside the line
 -(NSRange)globalRangeToLocal:(NSRange)range {
 	// Insert a range and get a LOCAL range in the line
@@ -433,11 +459,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 -(NSRange)globalRangeFromLocal:(NSRange)range
 {
     return NSMakeRange(range.location + self.position, range.length);
-}
-
-/// Length of the string
--(NSInteger)length {
-	return self.string.length;
 }
 
 
@@ -1386,31 +1407,24 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - Identity
 
-- (BOOL)matchesUUID:(NSUUID*)uuid {
+- (BOOL)matchesUUID:(NSUUID*)uuid
+{
 	if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid.UUIDString.lowercaseString]) return true;
 	else return false;
 }
-- (BOOL)matchesUUIDString:(NSString*)uuid {
+
+- (BOOL)matchesUUIDString:(NSString*)uuid
+{
     if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid]) return true;
     else return false;
 }
-- (NSUUID *)uuid {
-    if (_uuid) return _uuid;
-    _uuid = NSUUID.new;
-    return _uuid;
-}
-- (NSString*)uuidString {
-    //NSLog(@"... %@", _uuid);
+
+- (NSString*)uuidString
+{
     return self.uuid.UUIDString;
 }
 
 #pragma mark - Ranges
-
-/// Returns the line position in document
--(NSInteger)position {
-	if (_representedLine == nil) return _position;
-	else return _representedLine.position;
-}
 
 - (bool)rangeInStringRange:(NSRange)range {
 	if (range.location + range.length <= self.string.length) return YES;

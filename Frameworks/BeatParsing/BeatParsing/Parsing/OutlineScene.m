@@ -149,7 +149,7 @@
 {
 	if (!_delegate) return _length;
 	
-	NSArray <Line*> *lines = self.delegate.lines;
+	NSArray <Line*> *lines = self.delegate.lines.copy;
 	NSInteger index = [lines indexOfObject:self.line];
 	
 	NSInteger length = -1;

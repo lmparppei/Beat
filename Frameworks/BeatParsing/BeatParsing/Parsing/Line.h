@@ -43,7 +43,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @class OutlineScene;
 
 @protocol LineExports <JSExport>
-@property (nonatomic) NSUUID *uuid; // You can actually write into the UUID
+@property (atomic) NSUUID *uuid; // You can actually write into the UUID
 
 @property (readonly) LineType type;
 @property (readonly) NSInteger position;
@@ -205,7 +205,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 #pragma mark - Identity
 
-@property (nonatomic) NSUUID *uuid;
+@property (atomic) NSUUID *uuid;
 @property (nonatomic, weak) Line *representedLine; /// The line in editor/parser from which this one was copied from, can be nil
 
 - (BOOL)matchesUUID:(NSUUID*)uuid;
@@ -244,7 +244,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 #pragma mark Formatting
 
 /// The type which this line was previously formatted as. Can be used for checking if the type has changed before reformatting.
-@property (nonatomic) LineType formattedAs;
+@property (atomic) LineType formattedAs;
 /// The resulting formatting in custom format (not compatible with AppKit/UIKit formatting)
 @property (nonatomic) NSAttributedString* formattedString;
 
