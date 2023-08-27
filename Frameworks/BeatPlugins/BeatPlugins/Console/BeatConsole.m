@@ -58,13 +58,14 @@
 	if (self) {
 		self.logs = NSMutableDictionary.new;
 		self.currentContext = NSDocumentController.sharedDocumentController.currentDocument;
-
-		self.window.title = @"";
-		//[self.window setFrame:NSMakeRect(0, 0, 450, 150) display:true];
-		self.window.minSize = NSMakeSize(300, 100);
 		
 		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(switchContext:) name:@"Document changed" object:nil];
-		[self updateTitle];
+        
+        // Oh well. We need to do this in main thread, if the console was opened from another thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.window.minSize = NSMakeSize(300, 100);
+            [self updateTitle];
+        });
 	}
 	
     return self;
@@ -265,9 +266,15 @@
 -(void)setCurrentContext:(id<BeatEditorDelegate>)currentContext
 {
 	_currentContext = currentContext;
-	
 	[self reloadContexts];
-	[self loadBufferForContext:currentContext];
+    
+    if (NSThread.isMainThread) {
+        [self loadBufferForContext:currentContext];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadBufferForContext:currentContext];
+        });
+    }
 	
 	
 	// Create a plugin interface if needed
@@ -280,8 +287,10 @@
 
 - (void)updateTitle {
 #if !TARGET_OS_IOS
-	NSString* title = (_currentContext.fileNameString != nil) ? _currentContext.fileNameString : @"Untitled";
-    self.window.title = [NSString stringWithFormat:@"Console — %@", title];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString* title = (self.currentContext.fileNameString != nil) ? self.currentContext.fileNameString : @"Untitled";
+        self.window.title = [NSString stringWithFormat:@"Console — %@", title];
+    });
 #endif
 }
 
