@@ -6,8 +6,8 @@ New Outline
 */
 
 // Require the Beat template engine
-require("Template")
 require("MojaveSupport")
+require("Template")
 
 let json
 let window 
