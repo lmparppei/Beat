@@ -75,6 +75,9 @@
 
 @property (atomic) bool preprocessing;
 
+@property NSObject* parseLock;
+@property bool parsing;
+
 @end
 
 @implementation ContinuousFountainParser
@@ -289,24 +292,26 @@ static NSDictionary* patterns;
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
 	if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
-    
-	_lastEditedLine = nil;
-	_editedIndex = -1;
-    _editedRange = range;
 
-	NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
-    if (range.length == 0) { // Addition
-		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-		
-    } else if (string.length == 0) { // Removal
-		[changedIndices addIndexes:[self parseRemovalAt:range]];
-		
-    } else { //Replacement
-		[changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
-		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
+    _lastEditedLine = nil;
+    _editedIndex = -1;
+    _editedRange = range;
+    
+    @synchronized (self.lines) {
+        NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+        if (range.length == 0) { // Addition
+            [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
+            
+        } else if (string.length == 0) { // Removal
+            [changedIndices addIndexes:[self parseRemovalAt:range]];
+            
+        } else { //Replacement
+            [changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
+            [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
+        }
+        
+        [self correctParsesInLines:changedIndices];
     }
-	    	
-    [self correctParsesInLines:changedIndices];
 }
 
 /// Ensures that the given line is parsed correctly. Continuous parsing only. A bit confusing to use.
@@ -1934,29 +1939,29 @@ static NSDictionary* patterns;
 	else return self.outline.copy;
 }
 
+/// Returns a map with the UUID as key to identify actual line objects.
 - (NSDictionary<NSUUID*, Line*>*)uuidsToLines
 {
-    // Return the cached version when possible -- or when we are not in the main thread.
-    NSArray* lines = self.lines.copy;
-    if ([self.cachedLines isEqualToArray:lines]) {
+    @synchronized (self.lines) {
+        // Return the cached version when possible -- or when we are not in the main thread.
+        NSArray* lines = self.lines.copy;
+        if ([self.cachedLines isEqualToArray:lines]) return _uuidsToLines;
+        
+        // Store the current state of lines
+        self.cachedLines = self.lines.copy;
+        
+        // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
+        NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:self.lines.count];
+        
+        for (Line* line in lines) {
+            if (line == nil) continue;
+            uuids[line.uuid] = line;
+        }
+        
+        _uuidsToLines = uuids;
+        
         return _uuidsToLines;
-    } else if (!NSThread.isMainThread) {
-        return (_uuidsToLines) ? _uuidsToLines.copy : NSDictionary.new;
     }
-    
-    // Store the current state of lines
-    self.cachedLines = self.lines.copy;
-    
-    // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
-    NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:self.lines.count];
-    
-    for (Line* line in lines) {
-        if (line == nil) continue;
-        uuids[line.uuid] = line;
-    }
-    
-    _uuidsToLines = uuids;
-    return _uuidsToLines;
 }
 
 

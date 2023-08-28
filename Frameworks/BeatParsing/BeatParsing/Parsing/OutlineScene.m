@@ -67,31 +67,33 @@
 /// Returns JSON data for scene properties
 - (NSDictionary*)forSerialization
 {
-    NSMutableArray <NSDictionary*>*synopsis = [NSMutableArray arrayWithCapacity:_synopsis.count];
-    for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
-    
-    NSDictionary* json = @{
-        // String values have to be guarded so we don't try to put nil into NSDictionary
-        @"string": (self.string != nil) ? self.string.copy : @"",
-        @"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
-        @"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
-        @"storylines": (self.storylines) ? self.storylines.copy : @[],
-        @"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
-        @"color": (self.color) ? self.color.copy : @"",
-        @"sectionDepth": @(self.sectionDepth),
-        @"markerColors": (self.markerColors.count) ? self.markerColors.allObjects.copy : @[],
-        @"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
-        @"sceneStart": @(self.position),
-        @"sceneLength": @(self.length),
-        @"omitted": @(self.omitted),
-        @"synopsis": synopsis,
-        @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
-        @"line": self.line.forSerialization,
-        @"notes": [self notesAsJSON],
-        @"uuid": self.line.uuidString
-    };    
-    
-    return json;
+    @synchronized (self) {
+        NSMutableArray <NSDictionary*>*synopsis = [NSMutableArray arrayWithCapacity:_synopsis.count];
+        for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
+        
+        NSDictionary* json = @{
+            // String values have to be guarded so we don't try to put nil into NSDictionary
+            @"string": (self.string != nil) ? self.string.copy : @"",
+            @"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
+            @"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
+            @"storylines": (self.storylines) ? self.storylines.copy : @[],
+            @"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
+            @"color": (self.color) ? self.color.copy : @"",
+            @"sectionDepth": @(self.sectionDepth),
+            @"markerColors": (self.markerColors.count) ? self.markerColors.allObjects.copy : @[],
+            @"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+            @"sceneStart": @(self.position),
+            @"sceneLength": @(self.length),
+            @"omitted": @(self.omitted),
+            @"synopsis": synopsis,
+            @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
+            @"line": self.line.forSerialization,
+            @"notes": [self notesAsJSON],
+            @"uuid": self.line.uuidString
+        };
+        
+        return json;
+    }
 }
 
 - (NSArray*)serializedBeats
@@ -148,27 +150,28 @@
 -(NSUInteger)length
 {
 	if (!_delegate) return _length;
-	
-	NSArray <Line*> *lines = self.delegate.lines.copy;
-	NSInteger index = [lines indexOfObject:self.line];
-	
-	NSInteger length = -1;
-	
-	for (NSInteger i = index + 1; i < lines.count; i++) {
-		// To avoid any race conditions, let's break this loop if the lines array was changed
-		if (!lines[i] || i >= lines.count) break;
-		
-		Line *line = lines[i];
-		if ((line.type == heading || line.type == section) && line != self.line) {
-			return line.position - self.position;
-		}
-	}
-	
-	if (length == -1) {
-		return NSMaxRange(lines.lastObject.textRange) - self.position;
-	}
-	
-	return length;
+    @synchronized (self.delegate.lines) {
+        NSArray <Line*> *lines = self.delegate.lines.copy;
+        NSInteger index = [lines indexOfObject:self.line];
+        
+        NSInteger length = -1;
+        
+        for (NSInteger i = index + 1; i < lines.count; i++) {
+            // To avoid any race conditions, let's break this loop if the lines array was changed
+            if (!lines[i] || i >= lines.count) break;
+            
+            Line *line = lines[i];
+            if ((line.type == heading || line.type == section) && line != self.line) {
+                return line.position - self.position;
+            }
+        }
+        
+        if (length == -1) {
+            return NSMaxRange(lines.lastObject.textRange) - self.position;
+        }
+        
+        return length;
+    }
 }
 
 /// Fetches the lines for this scene.
