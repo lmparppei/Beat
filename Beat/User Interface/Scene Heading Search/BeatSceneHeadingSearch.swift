@@ -41,8 +41,14 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		textField?.delegate = self
 		delegate?.parser.createOutline()
 		results = delegate?.parser.outline as! [OutlineScene]
-		addCloseOnOutsideClick()
 	}
+	
+	override func windowDidLoad() {
+		super.windowDidLoad()
+		guard let textField = self.textField, let tableView = self.tableView else { addCloseOnOutsideClick(); return; }
+		addCloseOnOutsideClick(ignoring: [textField, tableView])
+	}
+
 	
 	deinit {
 		removeCloseOnOutsideClick()
@@ -194,23 +200,18 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	// MARK: - Observe clicks outside the modal
 	private var monitor: Any?
 	func addCloseOnOutsideClick(ignoring ignoringViews: [NSView]? = nil) {
+		
 		monitor = NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown) { [weak self] (event) -> NSEvent? in
-			guard let self = self else { return event }
+			guard let self = self,
+				  let contentView = self.window?.contentView
+			else {
+				return event
+			}
 			
-			if self.window!.contentView!.frame.contains(event.locationInWindow) {
-				// If the click is in any of the specified views to ignore, don't hide
-				for ignoreView in ignoringViews ?? [NSView]() {
-					let frameInWindow: NSRect = ignoreView.convert(ignoreView.bounds, to: nil)
-					if frameInWindow.contains(event.locationInWindow) {
-						// Abort if clicking in an ignored view
-						return event
-					}
-				}
-				
-				// Getting here means the click should hide the view
-				// Perform your hiding code here
+			if !contentView.frame.contains(event.locationInWindow) {
 				self.closeModal()
 			}
+			
 			return event
 		}
 	}
