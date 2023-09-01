@@ -2509,12 +2509,12 @@ NSInteger previousIndex = NSNotFound;
 
 - (NSArray*)preprocessForPrinting
 {
-    return [self preprocessForPrintingWithLines:self.safeLines printNotes:NO];
+    return [self preprocessForPrintingWithLines:self.safeLines exportSettings:nil screenplayData:nil];
 }
 
-- (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes
+- (NSArray*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings
 {
-	return [self preprocessForPrintingWithLines:self.safeLines printNotes:printNotes];
+    return [self preprocessForPrintingWithLines:self.safeLines exportSettings:exportSettings screenplayData:nil];
 }
 
 
@@ -2533,13 +2533,17 @@ NSInteger previousIndex = NSNotFound;
 }
  */
 
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay
 {
 	if (!lines) lines = self.safeLines;
-	return [ContinuousFountainParser preprocessForPrintingWithLines:lines printNotes:printNotes settings:self.documentSettings];
+	return [ContinuousFountainParser preprocessForPrintingWithLines:lines documentSettings:self.documentSettings exportSettings:settings screenplay:screenplay];
 }
 
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings
+{
+    return [ContinuousFountainParser preprocessForPrintingWithLines:lines documentSettings:documentSettings exportSettings:nil screenplay:nil];
+}
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
 {
     // The array for printable elements
     NSMutableArray *elements = NSMutableArray.new;
@@ -2554,7 +2558,7 @@ NSInteger previousIndex = NSNotFound;
         // Preprocess split paragraphs
         Line *l = linesForPrinting.lastObject;
         
-        if (l.note && !printNotes) continue;
+        if (l.note && !exportSettings.printNotes) continue;
         
         // Reset dual dialogue
         else if (l.type == character) l.nextElementIsDualDialogue = false;
@@ -2590,7 +2594,7 @@ NSInteger previousIndex = NSNotFound;
 		
 		// Skip over certain elements. Leave notes if needed.
 		if (line.type == synopse || line.type == section || (line.omitted && !line.note)) continue;
-		else if (!printNotes && line.note) continue;
+		else if (!exportSettings.printNotes && line.note) continue;
         else if (line.effectivelyEmpty) {
             previousLine = line;
             continue;

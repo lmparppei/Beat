@@ -635,40 +635,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return false;
 }
 
-/*
--(bool)cancelsNoteBlock
-{
-    return self.type == empty;
-}
-
--(bool)terminatesNoteBlock
-{
-    if (![self.string containsString:@"]]"]) return false;
-    for (NSInteger i=0; i<self.length; i++) {
-        unichar c1 = [self.string characterAtIndex:i];
-        unichar c2 = [self.string characterAtIndex:i+1];
-        
-        if (c1 == ']' && c2 == ']') return true;
-        else if (c1 == '[' && c2 == '[') return false;
-    }
-    
-    return false;
-}
-- (bool)beginsNoteBlock
-{
-    if (![self.string containsString:@"[["]) return false;
-    for (NSInteger i=0; i<self.length; i++) {
-        unichar c1 = [self.string characterAtIndex:i];
-        unichar c2 = [self.string characterAtIndex:i+1];
-        
-        if (c1 == '[' && c2 == '[') return true;
-        else if (c1 == ']' && c2 == ']') return false;
-    }
-    
-    return false;
-}
-*/
-
 - (NSArray*)noteContents
 {
     return [self noteContentsWithRanges:false];
@@ -729,173 +695,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     else return strings;
 }
 
-/**
- This method completely breaks Beat design pattern. Usually all parsing is handled in the parser, but notes are VERY TRICKY.
- `.noteData` is called when rendering *and* when parsing to find out the actual note ranges, rather than parsing them in parser.
- 
- Please dread lightly.
- */
-
-/*
-- (NSArray*)noteData
-{
-    return [self noteDataWithLineIndex:NSNotFound];
-}
-
-- (NSArray*)noteDataWithLineIndex:(NSInteger)lineIndex
-{
-    self.noteIn = false;
-    self.noteOut = false;
-    [self.noteRanges removeAllIndexes];
-    
-    if (self.length > 30000) return @[];
-    
-    __block NSMutableArray<BeatNoteData*>* noteData = NSMutableArray.new;
-    __block NSRange noteRange = NSMakeRange(NSNotFound, 0);
-
-    bool lookBack = false;
-    
-    unichar chrs[self.length];
-    [self.string getCharacters:chrs];
-    
-    for (NSInteger i = 0; i < self.length - 1; i++) {
-        unichar c1 = chrs[i];
-        unichar c2 = chrs[i + 1];
-        
-        if (c1 == '[' && c2 == '[') {
-            // A note begins
-            noteRange.location = i;
-        }
-        else if (c1 == ']' && c2 == ']' && noteRange.location != NSNotFound) {
-            // We are terminating a normal note
-            noteRange.length = i + 2 - noteRange.location;
-            
-            NSRange contentRange = NSMakeRange(noteRange.location + 2, noteRange.length - 4);
-            NSString* content = [self.string substringWithRange:contentRange];
-            
-            BeatNoteData* note = [BeatNoteData withNote:content range:noteRange];
-            [noteData addObject:note];
-            [self.noteRanges addIndexesInRange:noteRange];
-            
-            noteRange = NSMakeRange(NSNotFound, 0);
-        }
-        else if (c1 == ']' && c2 == ']') {
-            // We need to look back to see if this note is part of a note block
-            lookBack = true;
-        }
-    }
-        
-    // Return notes if there was no unfinished note.
-    if (noteRange.location == NSNotFound && !lookBack) {
-        return noteData;
-    }
-    
-    if (lineIndex == NSNotFound) lineIndex = [_parser.lines indexOfObject:self];
-    if (lineIndex == NSNotFound) return noteData; // No line found
-        
-    // Look behind to make sure if this line is *actually* part of a note block
-    if (lookBack) {
-        Line* noteBegin;
-        NSInteger idx = NSNotFound;
-        NSInteger noteBeginIndex = NSNotFound;
-        
-        NSMutableIndexSet* affectedLines = NSMutableIndexSet.new;
-        
-        for (NSInteger i = lineIndex-1; i>=0; i--) {
-            Line* l = _parser.lines[i];
-            
-            if (l.type == empty) break;
-            else if ([l canBeginNoteBlockWithActualIndex:&idx]) {
-                noteBegin = l;
-                noteBeginIndex = i;
-
-                break;
-            }
-            
-            [affectedLines addIndex:i];
-        }
-        
-        if (noteBegin && idx != NSNotFound) {
-            NSRange endRange = NSMakeRange(0, [self.string rangeOfString:@"]]"].location + 2);
-            noteBegin.noteOut = true;
-            [noteBegin.noteRanges addIndexesInRange:NSMakeRange(idx, noteBegin.length - idx)];
-            
-            self.noteIn = true;
-            [self.noteRanges addIndexesInRange:endRange];
-            
-            [_parser.changedIndices addIndex:noteBeginIndex];
-            
-            [affectedLines enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-                Line* l = _parser.lines[idx];
-                
-                l.noteIn = true;
-                l.noteOut = true;
-                [l.noteRanges addIndexesInRange:NSMakeRange(0, l.length)];
-            }];
-            
-            BeatNoteData* startNote = [BeatNoteData withNote:@"" range:endRange];
-            NSString* blockStart = [noteBegin.string substringFromIndex:idx + 2];
-            
-            if ([blockStart containsString:@":"]) {
-                NSString* color = [blockStart substringToIndex:[blockStart rangeOfString:@":"].location];
-                startNote.color = color;
-            }
-            
-            [noteData addObject:startNote];
-        }
-    }
-    
-    if (noteRange.location == NSNotFound) return noteData;
-    
-    // If there was an unfinished note, let's find where it ends (or doesn't)
-    NSMutableArray<Line*>* noteBlock = NSMutableArray.new;
-    Line* noteEnd;
-    NSInteger noteEndIndex = NSNotFound;
-    NSMutableIndexSet* affectedLines = NSMutableIndexSet.new;
-
-    for (NSInteger i = lineIndex+1; i<_parser.lines.count; i++) {
-        Line* l = _parser.lines[i];
-        
-        if (l.type == empty) {
-            break;
-        } else if (l.canTerminateNoteBlock) {
-            noteEnd = l;
-            noteEndIndex = i;
-            break;
-        }
-        
-        [affectedLines addIndex:i];
-        [noteBlock addObject:l];
-    }
-    
-    // No end for the note found
-    if (!noteEnd) {
-        [self.noteRanges removeIndexesInRange:NSMakeRange(noteRange.location, self.length - noteRange.location)];
-        self.noteOut = false;
-        
-        [_parser.changedIndices addIndex:lineIndex];
-        
-        return noteData;
-    }
-    
-    NSString* tail = [self.string substringFromIndex:noteRange.location + 2];
-    NSRange tailRange = NSMakeRange(noteRange.location, self.string.length - noteRange.location);
-    
-    NSMutableString* content = [NSMutableString.alloc initWithString:tail];
-    for (Line* line in noteBlock) [content appendFormat:@" %@", line.string];
-    
-    NSString* e = [noteEnd.string substringToIndex:[noteEnd.string rangeOfString:@"]]"].location];
-    [content appendFormat:@" %@", e];
-    
-    BeatNoteData* note = [BeatNoteData withNote:content range:tailRange];
-    [noteData addObject:note];
-    
-    self.noteOut = true;
-    
-    return noteData;
-}
-*/
-
 - (NSArray*)notes
 {
     return self.noteData;
@@ -909,6 +708,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
     return notes;
 }
+
+
+
 
 #pragma mark Centered
 
@@ -1195,6 +997,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
 		[string addAttribute:@"BeatTag" value:tagValue range:range];
 	}
+    
+    // Loop through macro ranges
+    
 	
 	return string;
 }

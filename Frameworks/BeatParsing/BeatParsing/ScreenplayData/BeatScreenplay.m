@@ -24,7 +24,7 @@
     screenplay.titlePage = [ContinuousFountainParser titlePageForString:parser.titlePageAsString];
     screenplay.titlePageContent = parser.parseTitlePage;
     
-    if (settings.printNotes) screenplay.lines = [parser preprocessForPrintingPrintNotes:YES];
+    if (settings.printNotes) screenplay.lines = [parser preprocessForPrintingWithExportSettings:settings];
     else screenplay.lines = parser.preprocessForPrinting;
     
     return screenplay;

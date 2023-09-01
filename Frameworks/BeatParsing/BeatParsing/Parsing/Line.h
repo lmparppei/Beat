@@ -259,6 +259,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet* highlightRanges;
 @property (nonatomic) NSMutableIndexSet* strikeoutRanges;
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
+@property (nonatomic) NSMutableIndexSet* macroRanges;
 
 - (bool)isBoldedAt:(NSInteger)index;
 - (bool)isItalicAt:(NSInteger)index;
@@ -356,6 +357,13 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Returns  title page line value (ie. `Title: Something -> `something`
 - (NSString*)titlePageValue;
 
+
+#pragma mark - Preprocessing macros
+
+/// Preprocessor stores these values in the line for rendering
+@property (nonatomic) NSDictionary* macroValues;
+/// Output macros in this line, eg. `{{ name }}`
+@property (nonatomic) NSDictionary* macroData;
 
 
 #pragma mark - Pagination information

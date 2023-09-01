@@ -86,7 +86,7 @@
 
 @property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
 
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings;
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay;
 + (NSArray*)titlePageForString:(NSString*)string;
 
 // Initialization for both CONTINUOUS and STATIC parsing
@@ -127,7 +127,8 @@
 - (NSString*)screenplayForSaving;
 /// Preprocesses parsed lines, stripping away invisible lines and making sure dual dialogue blocks are held together.
 - (NSArray*)preprocessForPrinting;
-- (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes;
+- (NSArray*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings;
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay;
 /// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
 
