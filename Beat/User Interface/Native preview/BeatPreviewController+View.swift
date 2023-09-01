@@ -75,7 +75,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		// Let's tell the delegate this, too
 		self.delegate?.paginationFinished(operation, indices: self.changedIndices)
-		
+
 		//  Clear changed indices
 		self.changedIndices.removeAllIndexes()
 	}
@@ -156,6 +156,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	/// Renders pages on screen
 	@objc func renderOnScreen() {
+		print("RENDERING ON SCREEN")
 		// Show spinner while loading
 		self.spinner?.isHidden = false
 		self.spinner?.startAnimation(nil)
@@ -240,10 +241,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	}
 	
 	@objc func scrollToRange(_ range:NSRange) {
-		guard let scrollView = self.scrollView else { return }
+		guard let scrollView = self.scrollView, let previewView = self.previewView else { return }
 		
 		// First find the actual page view
-		for pageView in previewView!.pageViews {
+		for pageView in previewView.pageViews {
 			guard let page = pageView.page,
 				let textView = pageView.textView
 			else { continue }

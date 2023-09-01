@@ -411,10 +411,11 @@
         NSRange beginRange = lBegin.range;
         NSRange endRange = lEnd.range;
         
-        if (lBegin == nil) beginRange = end.range;
+        if (lBegin == nil) beginRange = begin.range;
         if (lEnd == nil) endRange = end.range;
         
-        return NSMakeRange(beginRange.location, (endRange.location + endRange.length) - beginRange.location);
+        NSRange range = NSMakeRange(beginRange.location, NSMaxRange(endRange) - beginRange.location);
+        return range;
     }
 }
 

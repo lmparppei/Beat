@@ -128,6 +128,7 @@ class BeatPaginationPageView:NSView {
 	// Update content
 	func update(page:BeatPaginationPage, settings:BeatExportSettings) {
 		self.settings = settings
+		self.page = page
 		
 		// Update container frame if paper size has changed
 		if (self.settings.paperSize != self.paperSize) {
@@ -136,7 +137,6 @@ class BeatPaginationPageView:NSView {
 		}
 		
 		self.textView?.textStorage?.setAttributedString(page.attributedString())
-		
 	}
 	
 	override func cancelOperation(_ sender: Any?) {

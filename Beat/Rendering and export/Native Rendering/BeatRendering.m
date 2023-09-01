@@ -207,6 +207,10 @@
 			
 			NSIndexSet* revisions = line.revisedRanges[color];
 			[revisions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+
+				if (NSMaxRange(range) > attributedString.length) range.length = attributedString.length - NSMaxRange(range);
+				if (range.length <= 0 || range.length > attributedString.length) return;
+
 				[attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
 			}];
 		}
