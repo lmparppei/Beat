@@ -29,7 +29,7 @@
 @implementation BeatEditorFormatting
 
 // Base font settings
-#define SECTION_FONT_SIZE 16.0 // base value for section sizes
+#define SECTION_FONT_SIZE 17.0 // base value for section sizes
 #define LINE_HEIGHT 1.1
 
 // Set character width
@@ -200,29 +200,33 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	BXFont* font;
 	
+	// Section fonts are generated on the fly
 	if (line.type == section) {
-		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1);
+		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 1.2;
 		
 		// Make lower sections a bit smaller
-		size = size - line.sectionDepth;
-		if (size < 15) size = 15.0;
+		//size = size - line.sectionDepth;
+		if (size < 13) size = 13.0;
 		
 		font = [_delegate sectionFontWithSize:size];
 	}
 	else if (fonts[@(line.type)] != nil) {
+		// Check if we have stored a specific font for this line type
 		font = fonts[@(line.type)];
 	}
 	else {
+		// Otherwise use plain courier
 		font = _delegate.courier;
 	}
 	
 	return font;
 }
 
-
+/// Sets the font for given line (if needed)
 - (void)setFontForLine:(Line*)line {
 	[self setFontForLine:line force:false];
 }
+/// Sets the font for given line. You can force it if needed.
 - (void)setFontForLine:(Line*)line force:(bool)force {
 	NSTextStorage *textStorage = _delegate.textStorage;
 	
