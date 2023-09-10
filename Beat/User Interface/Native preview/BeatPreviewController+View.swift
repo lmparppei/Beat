@@ -130,11 +130,17 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		}
 	}
 	
+	/// Creates a new preview based on change in given range
 	@objc func invalidatePreview(at range:NSRange) {
 		self.createPreview(changedRange: range, sync: false)
 	}
 	
+	/// Rebuilds the whole preview
 	@objc func resetPreview() {
+		if !Thread.isMainThread {
+			print("WARNING: resetPreview() should only be called from main thread.")
+		}
+		
 		self.previewView?.clear()
 		
 		self.pagination?.finishedPagination = nil
@@ -156,7 +162,6 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	/// Renders pages on screen
 	@objc func renderOnScreen() {
-		print("RENDERING ON SCREEN")
 		// Show spinner while loading
 		self.spinner?.isHidden = false
 		self.spinner?.startAnimation(nil)
@@ -172,7 +177,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		if !paginationUpdated {
 			createPreview(changedRange: NSMakeRange(self.changedIndices.firstIndex, 0), sync: true)
 		}
-				
+		
 		// Create page strings in background
 		// At least some of the pages are usually cached, so this should be pretty fast.
 		DispatchQueue.global(qos: .userInteractive).async {
@@ -219,13 +224,6 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				
 				// Update container size
 				previewView.updateSize()
-				/*
-				if (self.quickLookView != nil) {
-					var f = self.quickLookView!.frame
-					f.size.height = previewView.frame.height
-					self.quickLookView?.frame = f
-				}
-				 */
 				
 				// Scroll view to the last edited position
 				if (self.settings.operation != .ForQuickLook) {
