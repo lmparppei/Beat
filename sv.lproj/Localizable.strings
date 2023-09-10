@@ -1,7 +1,3 @@
-
-"plugins.errorRunningScript" = "Ett fel uppstod när skriptet kördes";
-"plugins.input.select" = "Välja...";
-
 /* (No Comment) */
 "app.manual" = "Manual";
 
@@ -16,6 +12,9 @@
 
 /* (No Comment) */
 "backup.reverting.title" = "Återgå";
+
+/* (No Comment) */
+"backup.revertToSaved" = "Återgå till sparad";
 
 /* (No Comment) */
 "cardView.noScenes" = "Inga scener";
@@ -83,6 +82,9 @@
 /* (No Comment) */
 "force.lyrics" = "Lyrik";
 
+/* No comment provided by engineer. */
+"gender." = "Genus";
+
 /* (No Comment) */
 "gender.man" = "Man";
 
@@ -111,11 +113,16 @@
 "general.cancel" = "Avbryt";
 
 /* (No Comment) */
+"general.close" = "Stäng";
+
+/* (No Comment) */
 "general.no" = "Nej";
 
 /* (No Comment) */
-"general.OK" = "OK";
 "general.ok" = "OK";
+
+/* (No Comment) */
+"general.OK" = "OK";
 
 /* (No Comment) */
 "general.redo" = "Gör om";
@@ -125,6 +132,9 @@
 
 /* (No Comment) */
 "general.undo" = "Ångra";
+
+/* (No Comment) */
+"general.untitled" = "Namnlös";
 
 /* Localizable.strings
   Beat
@@ -168,6 +178,12 @@
 
 /* (No Comment) */
 "plugins.download" = "Ladda ner";
+
+/* (No Comment) */
+"plugins.errorRunningScript" = "Ett fel uppstod när skriptet kördes";
+
+/* (No Comment) */
+"plugins.input.select" = "Välj...";
 
 /* (No Comment) */
 "plugins.installed" = "Installerad";
@@ -269,19 +285,68 @@
 "statisticsPanel.title" = "Statistik för manus";
 
 /* (No Comment) */
+"storyline.add" = "Lägg till storyline";
+
+/* (No Comment) */
+"storyline.placeholder" = "Nytt namn på storyline";
+
+/* (No Comment) */
+"templates.comicBook.description" = "Enkel mall för serietidning";
+
+/* (No Comment) */
+"templates.comicBook.title" = "Serietidning";
+
+/* (No Comment) */
+"templates.outliningTutorial.description" = "Avancerade outlining-trick";
+
+/* (No Comment) */
+"templates.outliningTutorial.title" = "Outlining självstudie";
+
+/* (No Comment) */
+"templates.templates" = "Självstudier";
+
+/* (No Comment) */
+"templates.tutorial.description" = "Kom igång med Beat!";
+
+/* (No Comment) */
+"templates.tutorial.title" = "Självstudie";
+
+/* Tutorials */
+"templates.tutorials" = "Självstudier";
+
+/* (No Comment) */
+"textView.information.characters" = "Tecken";
+
+/* (No Comment) */
+"textView.information.document" = "Dokument";
+
+/* (No Comment) */
+"textView.information.page" = "Sida";
+
+/* (No Comment) */
+"textView.information.pages" = "Sidor";
+
+/* Selection / information */
+"textView.information.selection" = "Markering";
+
+/* (No Comment) */
+"textView.information.words" = "Ord";
+
+/* (No Comment) */
+"timer.charactersRemoved" = "tecken borttagna";
+
+/* (No Comment) */
+"timer.charactersTyped" = "tecken skrivna";
+
+/* (No Comment) */
+"timer.reset" = "Återställ";
+
+/* (No Comment) */
+"timer.start" = "Starta";
+
+/* (No Comment) */
 "unlock_document.confirm" = "Är du säker på att du vill låsa upp dokumentet och tillåta ändringar?";
 
 /* (No Comment) */
 "unlock_document.title" = "Lås upp dokument";
 
-"timer.reset" = "Återställa";
-"timer.start" = "Starta";
-"timer.charactersRemoved" = "tecken borttagna";
-"timer.charactersTyped" = "tecken skriven";
-
-"textView.information.selection" = "Val";
-"textView.information.document" = "Dokument";
-"textView.information.pages" = "Sidor";
-"textView.information.page" = "Sida";
-"textView.information.characters" = "Tecken";
-"textView.information.words" = "Ord";

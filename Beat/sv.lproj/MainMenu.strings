@@ -1,3 +1,6 @@
+/* Class = "NSMenuItem"; title = "Add Marker"; ObjectID = "0iR-5D-OWq"; */
+"0iR-5D-OWq.title" = "Lägg till bokmärke";
+
 /* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "0KX-h8-z4v"; */
 "0KX-h8-z4v.title" = "Smart kopiera/klistra";
 
@@ -23,10 +26,13 @@
 "3x7-V3-rMc.title" = "Anpassa scennummer...";
 
 /* Class = "NSMenuItem"; title = "Notepad"; ObjectID = "4fZ-b1-hYG"; */
-"4fZ-b1-hYG.title" = "Snabbnoteringar";
+"4fZ-b1-hYG.title" = "Snabbanteckningar";
 
 /* Class = "NSMenuItem"; title = "Quit Beat"; ObjectID = "4sb-4s-VLi"; */
 "4sb-4s-VLi.title" = "Avsluta Beat";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "4uc-VD-Viy"; */
+"4uc-VD-Viy.title" = "Blå";
 
 /* Class = "NSMenuItem"; title = "About Beat"; ObjectID = "5kV-Vb-QxS"; */
 "5kV-Vb-QxS.title" = "Om Beat";
@@ -76,8 +82,17 @@
 /* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "80c-ME-9pZ"; */
 "80c-ME-9pZ.title" = "Ersättningar";
 
+/* Class = "NSMenuItem"; title = "Open Plugin Developer Console..."; ObjectID = "A0Q-na-kPj"; */
+"A0Q-na-kPj.title" = "Öppna utvecklarkonsolen...";
+
+/* Class = "NSMenuItem"; title = "Marker With Text"; ObjectID = "a8t-0N-sFT"; */
+"a8t-0N-sFT.title" = "Bokmärke med text";
+
 /* Class = "NSMenuItem"; title = "Show Cards"; ObjectID = "ab0-W3-2f9"; */
 "ab0-W3-2f9.title" = "Visa indexkort";
+
+/* Class = "NSMenuItem"; title = "Underlining"; ObjectID = "ADX-2t-uCR"; */
+"ADX-2t-uCR.title" = "Understrykning";
 
 /* Class = "NSMenuItem"; title = "Mark Selection as Revised"; ObjectID = "Ah1-Kr-xrQ"; */
 "Ah1-Kr-xrQ.title" = "Slå på revision för markering";
@@ -157,6 +172,9 @@
 /* Class = "NSMenuItem"; title = "Smart Quotes"; ObjectID = "DYb-Gf-Awk"; */
 "DYb-Gf-Awk.title" = "Smarta citattecken";
 
+/* Class = "NSMenuItem"; title = "Text Color"; ObjectID = "efm-eP-Ffo"; */
+"efm-eP-Ffo.title" = "Textfärg";
+
 /* Class = "NSMenuItem"; title = "Format"; ObjectID = "ewI-gv-uGC"; */
 "ewI-gv-uGC.title" = "Format";
 
@@ -211,6 +229,9 @@
 /* Class = "NSMenuItem"; title = "Disable Formatting"; ObjectID = "hAp-vJ-Myg"; */
 "hAp-vJ-Myg.title" = "Stäng av formatering";
 
+/* Class = "NSMenuItem"; title = "Highlight Revisions Using..."; ObjectID = "hn7-em-kBb"; */
+"hn7-em-kBb.title" = "Visa revisioner med...";
+
 /* Class = "NSMenuItem"; title = "Clear Selected Markers"; ObjectID = "hrl-ti-1fN"; */
 "hrl-ti-1fN.title" = "Rensa markerade revisioner";
 
@@ -246,6 +267,9 @@
 
 /* Class = "NSMenu"; title = "Help"; ObjectID = "jA1-Lj-Irm"; */
 "jA1-Lj-Irm.title" = "Hjälp";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "JCS-BM-6XQ"; */
+"JCS-BM-6XQ.title" = "Rosa";
 
 /* Class = "NSMenuItem"; title = "Text Replacement"; ObjectID = "JDR-5g-yEn"; */
 "JDR-5g-yEn.title" = "Ersätt text";
@@ -289,8 +313,14 @@
 /* Class = "NSMenuItem"; title = "Typewriter Mode"; ObjectID = "Lej-vD-RFS"; */
 "Lej-vD-RFS.title" = "Skrivmaskinsläge";
 
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "lPg-kw-X04"; */
+"lPg-kw-X04.title" = "Orange";
+
 /* Class = "NSMenuItem"; title = "Find…"; ObjectID = "ltr-sy-WI6"; */
 "ltr-sy-WI6.title" = "Sök...";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "lVX-ro-v5U"; */
+"lVX-ro-v5U.title" = "Grön";
 
 /* Class = "NSMenuItem"; title = "Jump to Selection"; ObjectID = "mQ6-YH-j6X"; */
 "mQ6-YH-j6X.title" = "Gå till markering";
@@ -328,14 +358,14 @@
 /* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "noH-xX-7MC"; */
 "noH-xX-7MC.title" = "Omvandlingar";
 
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "nRa-kY-4lQ"; */
+"nRa-kY-4lQ.title" = "Brun";
+
 /* Class = "NSMenuItem"; title = "Screenplay"; ObjectID = "nrq-Qs-Sou"; */
 "nrq-Qs-Sou.title" = "Manuskript";
 
 /* Class = "NSMenuItem"; title = "Make Scene Non-Numbered"; ObjectID = "nRS-St-fYj"; */
 "nRS-St-fYj.title" = "Gör aktuell scen onumrerad";
-
-/* Class = "NSMenuItem"; title = "Highlight Revisions"; ObjectID = "nSA-Ck-Viv"; */
-"nSA-Ck-Viv.title" = "Stryk under revisioner";
 
 /* Class = "NSMenuItem"; title = "Previous Section of Current Depth"; ObjectID = "o3i-w3-weT"; */
 "o3i-w3-weT.title" = "Föregående sektion på samma nivå";
@@ -487,11 +517,17 @@
 /* Class = "NSMenuItem"; title = "Go to Previous Revision"; ObjectID = "ucQ-IG-VAd"; */
 "ucQ-IG-VAd.title" = "Gå till föregående revision";
 
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "uNu-t5-6hH"; */
+"uNu-t5-6hH.title" = "Röd";
+
 /* Class = "NSMenuItem"; title = "Widgets"; ObjectID = "upd-G6-QM0"; */
 "upd-G6-QM0.title" = "Widgets";
 
 /* Class = "NSMenu"; title = "Beat"; ObjectID = "uQy-DD-JDr"; */
 "uQy-DD-JDr.title" = "Beat";
+
+/* Class = "NSMenu"; title = "Highlight Revisions Using..."; ObjectID = "Uuq-ET-iMU"; */
+"Uuq-ET-iMU.title" = "Visa revisioner med...";
 
 /* Class = "NSMenuItem"; title = "Show Scene Numbers"; ObjectID = "V7o-Tn-OF3"; */
 "V7o-Tn-OF3.title" = "Visa scennummer";
@@ -520,11 +556,20 @@
 /* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
 "Was-JA-tGl.title" = "Ny";
 
+/* Class = "NSMenuItem"; title = "Add a Marker"; ObjectID = "WCJ-7Z-poa"; */
+"WCJ-7Z-poa.title" = "Lägg till bokmärke";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "WEe-Ln-H4v"; */
+"WEe-Ln-H4v.title" = "Cyan";
+
 /* Class = "NSMenuItem"; title = "Force Scene Heading"; ObjectID = "WPf-Ao-Wcs"; */
 "WPf-Ao-Wcs.title" = "Forcera scenhuvud";
 
 /* Class = "NSMenuItem"; title = "Italic"; ObjectID = "x90-pI-9f6"; */
 "x90-pI-9f6.title" = "Kursiv";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xGE-gP-9DS"; */
+"xGE-gP-9DS.title" = "Magenta";
 
 /* Class = "NSMenu"; title = "Zoom"; ObjectID = "xgR-jy-OLL"; */
 "xgR-jy-OLL.title" = "Zooma";
@@ -559,21 +604,3 @@
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "zZ3-DN-fPe"; */
 "zZ3-DN-fPe.title" = "Tal";
 
-
-"Uuq-ET-iMU.title" = "Markera revisioner med...";
-"ADX-2t-uCR.title" = "Understrykning";
-"efm-eP-Ffo.title" = "Text färg";
-
-"A0Q-na-kPj.title" = "Öppna utvecklarkonsolen...";
-
-"0iR-5D-OWq.title" = "Lägg till märkare";
-"WCJ-7Z-poa.title" = "Lägg till märkare";
-"a8t-0N-sFT.title" = "Märkare med text";
-"uNu-t5-6hH.title" = "Röd";
-"4uc-VD-Viy.title" = "Blå";
-"lVX-ro-v5U.title" = "Grön";
-"JCS-BM-6XQ.title" = "Rosa";
-"nRa-kY-4lQ.title" = "Brun";
-"WEe-Ln-H4v.title" = "Cyan";
-"lPg-kw-X04.title" = "Orange";
-"xGE-gP-9DS.title" = "Magenta";

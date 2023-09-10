@@ -161,10 +161,10 @@
 "UFH-LF-mx7.title" = "US Letter";
 
 /* Class = "NSButton"; ibExternalAccessibilityDescription = "Outline view"; ObjectID = "ULq-c1-qrj"; */
-"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Rakennenäkymä";
+"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Sivupalkki";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Toggle Outline"; ObjectID = "ULq-c1-qrj"; */
-"ULq-c1-qrj.ibShadowedToolTip" = "Näytä rakenne";
+"ULq-c1-qrj.ibShadowedToolTip" = "Näytä/kätke sivupalkki";
 
 /* Class = "NSMenuItem"; title = "Brown"; ObjectID = "Uq4-Ad-AU8"; */
 "Uq4-Ad-AU8.title" = "Ruskea";

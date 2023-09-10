@@ -1,6 +1,3 @@
-/* Class = "NSTextFieldCell"; title = "Review Mode"; ObjectID = "2DV-H2-pU8"; */
-"2DV-H2-pU8.title" = "Kommentarsläge";
-
 /* Class = "NSMenuItem"; title = "Red"; ObjectID = "2lb-aO-myG"; */
 "2lb-aO-myG.title" = "Röd";
 
@@ -18,9 +15,6 @@
 
 /* Class = "NSMenuItem"; title = "Clear Revisions"; ObjectID = "6SY-H3-Ej1"; */
 "6SY-H3-Ej1.title" = "Rensa revisioner";
-
-/* Class = "NSTextFieldCell"; title = "Paper Size"; ObjectID = "6Yb-zo-0AS"; */
-"6Yb-zo-0AS.title" = "Papersstorlek";
 
 /* Class = "NSMenuItem"; title = "Green"; ObjectID = "8n7-A7-WU4"; */
 "8n7-A7-WU4.title" = "Grön";
@@ -54,12 +48,6 @@
 
 /* Class = "NSMenuItem"; title = "Omit Scene"; ObjectID = "ANY-cT-k2w"; */
 "ANY-cT-k2w.title" = "Göm scen";
-
-/* Class = "NSMenuItem"; title = "Third"; ObjectID = "bbu-dp-keE"; */
-"bbu-dp-keE.title" = "Tredje";
-
-/* Class = "NSMenuItem"; title = "A4"; ObjectID = "bd3-1f-TNb"; */
-"bd3-1f-TNb.title" = "A4";
 
 /* Class = "NSMenuItem"; title = "Blue"; ObjectID = "bJU-Vk-ZPT"; */
 "bJU-Vk-ZPT.title" = "Blå";
@@ -118,17 +106,8 @@
 /* Class = "NSButtonCell"; title = "OK"; ObjectID = "FCG-mm-dLY"; */
 "FCG-mm-dLY.title" = "OK";
 
-/* Class = "NSTextFieldCell"; title = "Scene Numbers"; ObjectID = "FcY-wT-YPP"; */
-"FcY-wT-YPP.title" = "Scennummer";
-
 /* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "fE1-Z4-bDc"; */
 "fE1-Z4-bDc.title" = "Cyan";
-
-/* Class = "NSTextFieldCell"; title = "Revision Mode"; ObjectID = "fPt-b4-RaB"; */
-"fPt-b4-RaB.title" = "Revisionsläge";
-
-/* Class = "NSMenuItem"; title = "Fourth"; ObjectID = "gJz-gC-KoS"; */
-"gJz-gC-KoS.title" = "Fjärde";
 
 /* Class = "NSPopoverTouchBarItem"; collapsedRepresentationLabel = "💡"; ObjectID = "GmR-Ks-GH7"; */
 "GmR-Ks-GH7.collapsedRepresentationLabel" = "💡";
@@ -144,9 +123,6 @@
 
 /* Class = "NSWindow"; title = "Window"; ObjectID = "IUI-JC-aZs"; */
 "IUI-JC-aZs.title" = "Fönster";
-
-/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "JLw-Th-DgB"; */
-"JLw-Th-DgB.title" = "Sidnummer";
 
 /* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "KUg-Bv-fNP"; */
 "KUg-Bv-fNP.title" = "Magenta";
@@ -172,9 +148,6 @@
 /* Class = "NSTextFieldCell"; title = "When you add review notes to the screenplay, you'll see them listed here"; ObjectID = "M5R-75-VTw"; */
 "M5R-75-VTw.title" = "Kommentarer som läggs till i manuset listas här";
 
-/* Class = "NSTextFieldCell"; title = "Quick Settings"; ObjectID = "mg9-HW-sgj"; */
-"mg9-HW-sgj.title" = "Snabbinställningar";
-
 /* Class = "NSTextFieldCell"; title = "Start Scene Numbers From"; ObjectID = "mRh-Qz-Ja7"; */
 "mRh-Qz-Ja7.title" = "Börja scennummer från";
 
@@ -186,9 +159,6 @@
 
 /* Class = "NSMenuItem"; title = "Red"; ObjectID = "ndy-dL-efa"; */
 "ndy-dL-efa.title" = "Röd";
-
-/* Class = "NSMenuItem"; title = "Second"; ObjectID = "NfX-B5-spN"; */
-"NfX-B5-spN.title" = "Andra";
 
 /* Class = "NSTextFieldCell"; title = "Character"; ObjectID = "NLd-GN-ebP"; */
 "NLd-GN-ebP.title" = "Karaktär";
@@ -247,38 +217,26 @@
 /* Class = "NSButtonCell"; title = "Start"; ObjectID = "sxo-w9-MOL"; */
 "sxo-w9-MOL.title" = "Start";
 
-/* Class = "NSTextFieldCell"; title = "Revision"; ObjectID = "Teo-oJ-Dwq"; */
-"Teo-oJ-Dwq.title" = "Revision";
-
 /* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "TEo-XN-bNc"; */
 "TEo-XN-bNc.label" = "Punkt 2";
 
-/* Class = "NSMenuItem"; title = "First"; ObjectID = "Thz-O0-hCD"; */
-"Thz-O0-hCD.title" = "Första";
-
 /* Class = "NSMenuItem"; title = "Green"; ObjectID = "tLV-bS-9E1"; */
 "tLV-bS-9E1.title" = "Grön";
-
-/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "UFH-LF-mx7"; */
-"UFH-LF-mx7.title" = "US Letter";
 
 /* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "uIu-iR-xUP"; */
 "uIu-iR-xUP.title" = "Magenta";
 
 /* Class = "NSButton"; ibExternalAccessibilityDescription = "Outline view"; ObjectID = "ULq-c1-qrj"; */
-"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Outline-vy";
+"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Sidofältet";
 
-/* Class = "NSButton"; ibShadowedToolTip = "Toggle Outline"; ObjectID = "ULq-c1-qrj"; */
-"ULq-c1-qrj.ibShadowedToolTip" = "Slå på/av outline";
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Sidebar"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibShadowedToolTip" = "Slå på/av sidofältet";
 
 /* Class = "NSMenuItem"; title = "Brown"; ObjectID = "Uq4-Ad-AU8"; */
 "Uq4-Ad-AU8.title" = "Brun";
 
 /* Class = "NSMenuItem"; title = "Orange"; ObjectID = "uq9-i5-BtV"; */
 "uq9-i5-BtV.title" = "Orange";
-
-/* Class = "NSTextFieldCell"; title = "Dark Mode"; ObjectID = "vbP-uh-iii"; */
-"vbP-uh-iii.title" = "Mörkt läge";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Show Filters"; ObjectID = "vzo-na-BYD"; */
 "vzo-na-BYD.ibShadowedToolTip" = "Visa filter";
@@ -309,12 +267,6 @@
 
 /* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
 "Y9s-uT-czv.title" = "Grön";
-
-/* Class = "NSTabViewItem"; label = "Render"; ObjectID = "Ycm-en-OeX"; */
-"Ycm-en-OeX.label" = "Skapa";
-
-/* Class = "NSButtonCell"; title = "Show synopsis"; ObjectID = "YI8-dS-5dg"; */
-"YI8-dS-5dg.title" = "Visa synopsis";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "Ypu-rU-vo4"; */
 "Ypu-rU-vo4.title" = "Textruta";

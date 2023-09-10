@@ -79,6 +79,9 @@
 /* Class = "NSTextFieldCell"; title = "Section Text"; ObjectID = "QCU-q7-Dab"; */
 "QCU-q7-Dab.title" = "Sektionstext";
 
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "r3S-jp-Pwd"; */
+"r3S-jp-Pwd.title" = "Anteckning";
+
 /* Class = "NSTextFieldCell"; title = "Omitted Scene"; ObjectID = "rMb-4q-N2D"; */
 "rMb-4q-N2D.title" = "Gömd scen";
 

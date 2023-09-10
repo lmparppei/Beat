@@ -16,20 +16,11 @@
 /* Class = "NSButtonCell"; title = "  Print  "; ObjectID = "BTh-vA-fQk"; */
 "BTh-vA-fQk.title" = "  Skriv ut  ";
 
-/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Esx-Jo-Itg"; */
-"Esx-Jo-Itg.title" = "Tabellruta";
-
 /* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "Gug-Yv-fGM"; */
 "Gug-Yv-fGM.title" = "Pappersstorlek";
 
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "GXe-Aj-Gd5"; */
-"GXe-Aj-Gd5.title" = "Textruta";
-
 /* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "HOf-0E-WLn"; */
 "HOf-0E-WLn.placeholderString" = "Revision, Version, ...";
-
-/* Class = "NSTextFieldCell"; title = "Custom Styles"; ObjectID = "JRa-aX-aLe"; */
-"JRa-aX-aLe.title" = "Anpassade stilar";
 
 /* Class = "NSMenuItem"; title = "Red"; ObjectID = "jyA-d7-eqg"; */
 "jyA-d7-eqg.title" = "Röd";

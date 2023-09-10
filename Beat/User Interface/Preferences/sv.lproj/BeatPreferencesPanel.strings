@@ -37,6 +37,9 @@
 /* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
 "d0m-zv-bHH.title" = "Föreslå automatiskt scenhuvud och karaktärsnamn";
 
+/* Class = "NSTextFieldCell"; title = "Outline Font Size"; ObjectID = "dtT-V5-EVi"; */
+"dtT-V5-EVi.title" = "Textstorlek på sidopanel";
+
 /* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
 "EHa-PH-tc4.title" = "Avstånd före scenhuvud";
 
@@ -76,6 +79,9 @@
 /* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
 "Mb6-nH-PQK.label" = "Vy";
 
+/* Class = "NSMenuItem"; title = "Big"; ObjectID = "MNC-PG-DYp"; */
+"MNC-PG-DYp.title" = "Stor";
+
 /* Class = "NSButtonCell"; title = "Custom"; ObjectID = "moV-CN-wy9"; */
 "moV-CN-wy9.title" = "Anpassat";
 
@@ -109,11 +115,17 @@
 /* Class = "NSTabViewItem"; label = "View"; ObjectID = "vls-Bk-euL"; */
 "vls-Bk-euL.label" = "Visa";
 
+/* Class = "NSMenuItem"; title = "Small"; ObjectID = "VQS-1g-QZ6"; */
+"VQS-1g-QZ6.title" = "Liten";
+
 /* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
 "VTU-wq-qyb.title" = "Courier Prime";
 
 /* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
 "w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
+"WAb-8C-Sjl.title" = "Medelstor";
 
 /* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
 "Wyn-hc-s1G.title" = "Skärmtypsnitt";
@@ -124,6 +136,9 @@
 /* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
 "yde-p1-D3O.title" = "Visa sidnummer";
 
+/* Class = "NSMenuItem"; title = "Very big"; ObjectID = "YEd-uH-lo0"; */
+"YEd-uH-lo0.title" = "Mycket stor";
+
 /* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
 "yHb-oc-ujO.title" = "Stil på scenhuvuden";
 
@@ -133,10 +148,3 @@
 /* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
 "Zfa-HM-161.title" = "Understruken";
 
-
-"dtT-V5-EVi.title" = "Textstorlek på sidobar";
-
-"VQS-1g-QZ6.title" = "Liten";
-"WAb-8C-Sjl.title" = "Medelstor";
-"MNC-PG-DYp.title" = "Stor";
-"YEd-uH-lo0.title" = "Väldig stor";
