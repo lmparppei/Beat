@@ -387,10 +387,16 @@
         
         
         // This line doesn't.
-        if (line.isAnyParenthetical && [splittableIndices containsIndex:i]) {
-            // After a parenthetical that doesn't fit we'll just hop on to next page
-            cutoff = i;
-            pageBreakItem = line;
+        if (line.isAnyParenthetical) {
+            if ([splittableIndices containsIndex:i]) {
+                // After a parenthetical deeper in the block that doesn't fit we'll just hop on to next page
+                cutoff = i;
+                pageBreakItem = line;
+            } else {
+                // This is the first item. We'll just toss the whole block onto the next page.
+                cutoff = 1;
+                pageBreakItem = dialogueBlock.firstObject;
+            }
             
             break;
         } else if (line.isAnyDialogue) {
