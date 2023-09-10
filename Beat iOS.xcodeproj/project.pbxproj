@@ -155,6 +155,7 @@
 		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B696BC4A2A7938860078BA79 /* CustoTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustoTextView.swift; sourceTree = "<group>"; };
 		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
+		B6A56AC32AA9D83B00925350 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -492,6 +493,7 @@
 				en,
 				Base,
 				fi,
+				sv,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
@@ -579,6 +581,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				B6CB96FB282FEB6600C7AFC7 /* Base */,
+				B6A56AC32AA9D83B00925350 /* sv */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

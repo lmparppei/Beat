@@ -491,7 +491,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize * 3) * self.editorDelegate.magnification;
 	
 	// Take find & replace bar height into account
-	CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
+	// CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
 			
 	// Calculate container height with insets
 	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
@@ -1236,6 +1236,7 @@ Line *cachedRectLine;
 	[super setNeedsDisplayInRect:invalidRect];
 }
 
+
 #pragma mark - Update layout elements
 
 - (void)refreshLayoutElements {
@@ -1271,7 +1272,6 @@ Line *cachedRectLine;
 	
 	[super otherMouseUp:event];
 }
-
 
 - (void)mouseMoved:(NSEvent *)event {
 	// point in this scaled text view
@@ -1354,7 +1354,6 @@ Line *cachedRectLine;
 
 #pragma mark - Context Menu
 
-
 -(NSMenu *)menu {
 	static NSMenu* menu;
 	if (menu == nil) {
@@ -1367,7 +1366,6 @@ Line *cachedRectLine;
 	}
 	
 	return menu;
-	//return self.contextMenu.copy;
 }
 
 
@@ -1621,12 +1619,16 @@ double clamp(double d, double min, double max) {
 
 #pragma mark - Layout Manager delegation
 
--(void)redrawAllGlyphs {
+/// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
+-(void)redrawAllGlyphs
+{
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){0, self.string.length} changeInLength:0 actualCharacterRange:nil];
 	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
 }
 
--(void)updateMarkupVisibility {
+/// Updates the markup based on caret position.
+-(void)updateMarkupVisibility
+{
 	if (!_editorDelegate.hideFountainMarkup || _editorDelegate.documentIsLoading) return;
 	if (!self.string.length) return;
 	
@@ -1647,17 +1649,20 @@ double clamp(double d, double min, double max) {
 	prevLine = line;
 }
 
+/// Toggles markup hiding on/off
 -(void)toggleHideFountainMarkup
 {
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
 	[self updateMarkupVisibility];
 }
 
+/// Temporary attributes (unused for now)
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange
 {
 	return attrs;
 }
 
+/// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
 	
@@ -1668,12 +1673,18 @@ double clamp(double d, double min, double max) {
 	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range) || NSIntersectionRange(self.selectedRange, line.range).length > 0;
 
 	// Ignore story markers
-	if (line.type == section || line.type == synopse) return 0;
+	// if (line.type == section || line.type == synopse) return 0;
 	
 	// Clear formatting characters etc.
 	NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
 	[muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
+	
+	// We won't hide notes, except for colors
 	if (line.colorRange.length) [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+	// Don't remove # and = for sections and synopsis lines
+	if (line.type == section || line.type == synopse) {
+		[muIndices removeIndexesInRange:(NSRange){ line.position, line.numberOfPrecedingFormattingCharacters }];
+	}
 	
 	// Marker indices
 	NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];

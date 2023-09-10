@@ -202,8 +202,9 @@
 	
 	// Invalidate previews for all documents when layout settings are changed after loading
 	if (!windowDidLoad) {
-		for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
-			[doc invalidatePreview];
+		for (id<BeatEditorDelegate>editor in NSDocumentController.sharedDocumentController.documents) {
+			[(BeatPreviewController*)editor.previewController reloadStyles];
+			[(BeatPreviewController*)editor.previewController resetPreview];
 		}
 	}
 }

@@ -2979,7 +2979,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)invalidatePreview {
 	[self.previewController resetPreview];
-	return;
 }
 
 - (void)invalidatePreviewAt:(NSInteger)index {
