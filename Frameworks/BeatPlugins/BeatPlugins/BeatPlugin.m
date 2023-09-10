@@ -1216,8 +1216,9 @@
 	if (_delegate.documentWindow.attachedSheet) return;
 
     BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:html width:width height:height + 35.0 host:self cancelButton:cancelButton callback:callback];
-	
     self.htmlPanel = panel;
+    
+    [self makeResident];
     
     [self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
         self.htmlPanel = nil;
