@@ -69,11 +69,13 @@
     
     NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1]];
     
+    NSMutableAttributedString* renderedString;
+    
     // If the page hasn't been rendered, do it now.
-    if (_renderedString == nil) {
+    if (_renderedString == nil || _renderedString.length == 0) {
         // Make a copy of the block so we won't disturb other threads
         NSArray* blocks = self.safeBlocks;
-        NSMutableAttributedString* renderedString = NSMutableAttributedString.new;
+        renderedString = NSMutableAttributedString.new;
         
         for (BeatPaginationBlock* block in blocks) {
             bool firstElement = (block == blocks.firstObject) ? true : false;
@@ -83,10 +85,12 @@
         }
         
         _renderedString = renderedString;
+    } else {
+        renderedString = _renderedString.copy;
     }
     
     // Add rendered content to the header block
-    [result appendAttributedString:_renderedString];
+    if (renderedString != nil) [result appendAttributedString:self.renderedString];
     return result;
 }
 
