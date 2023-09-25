@@ -48,8 +48,8 @@ class BeatNativePrinting:NSView {
 	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
-		if (delegate != nil) {
-			self.screenplays = [delegate!.parser.forPrinting()]
+		if let screenplay = BeatScreenplay.from(delegate?.parser, settings: settings) {
+			self.screenplays = [screenplay]
 		} else {
 			self.screenplays = screenplays ?? [BeatScreenplay()]
 		}

@@ -45,8 +45,6 @@
 - (NSUInteger)indexOfLine:(Line*)line;
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSArray*)linesInRange:(NSRange)range;
-- (NSDictionary*)scriptForPrinting;
-- (BeatScreenplay*)forPrinting;
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
@@ -110,19 +108,32 @@
 - (NSArray*)scenes;
 /// Ensures parsing issues. Only for debugging.
 - (void)ensurePositions;
+/// Returns the lines for given scene
 - (NSArray*)linesForScene:(OutlineScene*)scene;
+/// Returns the line preceding given line
 - (Line*)previousLine:(Line*)line;
+/// Returns the line following given line
 - (Line*)nextLine:(Line*)line;
+/// Reparses the given lines
 - (void)correctParsesForLines:(NSArray*)lines;
 
-// Thread safety convenience methods
+/// Returns thread-safe lines
 - (NSArray*)safeLines;
+/// Returns thread-safe outline
 - (NSArray*)safeOutline;
 
-#pragma mark -  Preprocess for printing & saving
 
-/// Returns a `BeatScrenplay` object which is preprocessed for printing and has a separate title page dictionary.
-- (BeatScreenplay*)forPrinting;
+#pragma mark - Outline data
+
+/// UUIDs mapped to heading string. Used for saving the identifiers of outline elements.
+-(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs;
+
+/// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.
+- (id)changesInOutline;
+
+
+#pragma mark - Preprocess for printing & saving
+
 /// Returns the raw string for the screenplay. Preprocesses some lines.
 - (NSString*)screenplayForSaving;
 /// Preprocesses parsed lines, stripping away invisible lines and making sure dual dialogue blocks are held together.
@@ -131,6 +142,7 @@
 - (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay;
 /// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
+
 
 #pragma mark - Convenience Methods
 
@@ -172,14 +184,8 @@
 /// Get the line with this UUID
 - (Line*)lineWithUUID:(NSString*)uuid;
 
-//Convenience Methods for Outlineview data
-/// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.
-- (id)changesInOutline;
 /// Checks if the given line is visible in print, and if not. returns its closest printed sibling.
 - (Line*)closestPrintableLineFor:(Line*)line;
-
-/// Returns the starting line of a note block which the given line is part of. You can skip the `idx` parameter. Pass a pointer for `positionInLine` to get the actual line index of starting note.
-- (NSInteger)findNoteBlockStartIndexFor:(Line*)line at:(NSInteger)idx positionInLine:(NSInteger*)position;
 
 - (NSString*)description;
 @end

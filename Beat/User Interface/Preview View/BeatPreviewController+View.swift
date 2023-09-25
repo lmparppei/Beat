@@ -36,12 +36,12 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	/// Returns export settings from editor
 	var settings:BeatExportSettings {
-		if self.delegate?.exportSettings == nil {
+		guard let settings = self.delegate?.exportSettings else {
 			// This shouldn't ever happen, but if the delegate fails to return settings, we'll just create our own.
 			return BeatExportSettings.operation(.ForPrint, document: nil, header: "", printSceneNumbers: true)
-		} else {
-			return self.delegate!.exportSettings
 		}
+
+		return settings
 	}
 	
 	var exportSettings:BeatExportSettings? {
@@ -107,7 +107,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			self.delegate?.bakeRevisions()
 			
 			// Create pagination
-			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: range.location)
+			if let screenplay = BeatScreenplay.from(parser, settings: self.settings) {
+				pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changeAt: range.location)
+			}
 			
 			if self.delegate?.previewVisible() ?? false {
 				renderOnScreen()
@@ -121,10 +123,12 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 
 				// Dispatch pagination to a background thread after one second
 				DispatchQueue.global(qos: .utility).async { [weak self] in
-					self?.pagination?.newPagination(screenplay: parser.forPrinting(),
-													settings: self?.settings ?? BeatExportSettings(),
-													forEditor: true,
-													changeAt: self?.changedIndices.firstIndex ?? 0)
+					if let screenplay = BeatScreenplay.from(parser, settings: self?.settings) {
+						self?.pagination?.newPagination(screenplay: screenplay,
+														settings: self?.settings ?? BeatExportSettings(),
+														forEditor: true,
+														changeAt: self?.changedIndices.firstIndex ?? 0)
+					}
 				}
 			})
 		}

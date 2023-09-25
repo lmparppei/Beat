@@ -57,78 +57,78 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Initialization
 
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser {
-	self = [super init];
-	if (self) {
-		if (string == nil) string = @"";
-		
-		_string = string;
-		_type = type;
-		_position = position;
-		_formattedAs = -1;
-		_parser = parser;
-		
-		_boldRanges = NSMutableIndexSet.indexSet;
-		_italicRanges = NSMutableIndexSet.indexSet;
-		_underlinedRanges = NSMutableIndexSet.indexSet;
-		_boldItalicRanges = NSMutableIndexSet.indexSet;
-		_strikeoutRanges = NSMutableIndexSet.indexSet;
-		_noteRanges = NSMutableIndexSet.indexSet;
-		_omittedRanges = NSMutableIndexSet.indexSet;
-		_escapeRanges = NSMutableIndexSet.indexSet;
-		_removalSuggestionRanges = NSMutableIndexSet.indexSet;
-		_uuid = NSUUID.UUID;
-	}
-	return self;
+    self = [super init];
+    if (self) {
+        if (string == nil) string = @"";
+        
+        _string = string;
+        _type = type;
+        _position = position;
+        _formattedAs = -1;
+        _parser = parser;
+        
+        _boldRanges = NSMutableIndexSet.indexSet;
+        _italicRanges = NSMutableIndexSet.indexSet;
+        _underlinedRanges = NSMutableIndexSet.indexSet;
+        _boldItalicRanges = NSMutableIndexSet.indexSet;
+        _strikeoutRanges = NSMutableIndexSet.indexSet;
+        _noteRanges = NSMutableIndexSet.indexSet;
+        _omittedRanges = NSMutableIndexSet.indexSet;
+        _escapeRanges = NSMutableIndexSet.indexSet;
+        _removalSuggestionRanges = NSMutableIndexSet.indexSet;
+        _uuid = NSUUID.UUID;
+    }
+    return self;
 }
 
 - (Line*)initWithString:(NSString*)string position:(NSInteger)position
 {
-	return [[Line alloc] initWithString:string type:0 position:position parser:nil];
+    return [[Line alloc] initWithString:string type:0 position:position parser:nil];
 }
 - (Line*)initWithString:(NSString*)string position:(NSInteger)position parser:(id<LineDelegate>)parser
 {
-	return [[Line alloc] initWithString:string type:0 position:position parser:parser];
+    return [[Line alloc] initWithString:string type:0 position:position parser:parser];
 }
 - (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSInteger)position {
-	return [[Line alloc] initWithString:string type:type position:position parser:nil];
+    return [[Line alloc] initWithString:string type:type position:position parser:nil];
 }
 
 /// Init a line for non-continuous parsing
 - (Line*)initWithString:(NSString *)string type:(LineType)type {
-	return [[Line alloc] initWithString:string type:type position:-1 parser:nil];
+    return [[Line alloc] initWithString:string type:type position:-1 parser:nil];
 }
 
 /// Use this ONLY for creating temporary lines while paginating.
 - (Line*)initWithString:(NSString *)string type:(LineType)type pageSplit:(bool)pageSplit {
-	self = [super init];
-	if (self) {
-		_string = string;
-		_type = type;
-		_unsafeForPageBreak = YES;
-		_formattedAs = -1;
-		_uuid = NSUUID.UUID;
-		
-		if (pageSplit) [self resetFormatting];
-	}
-	return self;
+    self = [super init];
+    if (self) {
+        _string = string;
+        _type = type;
+        _unsafeForPageBreak = YES;
+        _formattedAs = -1;
+        _uuid = NSUUID.UUID;
+        
+        if (pageSplit) [self resetFormatting];
+    }
+    return self;
 }
 
 #pragma mark - Shorthands
 
 + (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
-	return [[Line alloc] initWithString:string type:type position:0 parser:parser];
+    return [[Line alloc] initWithString:string type:type position:0 parser:parser];
 }
 + (Line*)withString:(NSString*)string type:(LineType)type {
-	return [[Line alloc] initWithString:string type:type];
+    return [[Line alloc] initWithString:string type:type];
 }
 
 /// Use this ONLY for creating temporary lines while paginating
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
-	return [[Line alloc] initWithString:string type:type pageSplit:YES];
+    return [[Line alloc] initWithString:string type:type pageSplit:YES];
 }
 
 + (NSArray*)markupCharacters {
-	return @[@".", @"@", @"~", @"!"];
+    return @[@".", @"@", @"~", @"!"];
 }
 
 #pragma mark - Type
@@ -136,17 +136,17 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Used by plugin API to create constants for matching line types to enumerated integer values
 + (NSDictionary*)typeDictionary
 {
-	NSMutableDictionary *types = NSMutableDictionary.dictionary;
-	
-	NSInteger max = typeCount;
-	for (NSInteger i = 0; i < max; i++) {
-		LineType type = i;
+    NSMutableDictionary *types = NSMutableDictionary.dictionary;
+    
+    NSInteger max = typeCount;
+    for (NSInteger i = 0; i < max; i++) {
+        LineType type = i;
         NSString *typeName = [Line typeName:type];
         
-		[types setValue:@(i) forKey:typeName];
-	}
-	
-	return types;
+        [types setValue:@(i) forKey:typeName];
+    }
+    
+    return types;
 }
 
 + (NSString*)typeName:(LineType)type {
@@ -211,66 +211,66 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns line type as string
 + (NSString*)typeAsString:(LineType)type {
-	switch (type) {
-		case empty:
-			return @"Empty";
-		case section:
-			return @"Section";
-		case synopse:
-			return @"Synopse";
-		case titlePageTitle:
-			return @"Title Page Title";
-		case titlePageAuthor:
-			return @"Title Page Author";
-		case titlePageCredit:
-			return @"Title Page Credit";
-		case titlePageSource:
-			return @"Title Page Source";
-		case titlePageContact:
-			return @"Title Page Contact";
-		case titlePageDraftDate:
-			return @"Title Page Draft Date";
-		case titlePageUnknown:
-			return @"Title Page Unknown";
-		case heading:
-			return @"Heading";
-		case action:
-			return @"Action";
-		case character:
-			return @"Character";
-		case parenthetical:
-			return @"Parenthetical";
-		case dialogue:
-			return @"Dialogue";
-		case dualDialogueCharacter:
-			return @"DD Character";
-		case dualDialogueParenthetical:
-			return @"DD Parenthetical";
-		case dualDialogue:
-			return @"DD Dialogue";
-		case transitionLine:
-			return @"Transition";
-		case lyrics:
-			return @"Lyrics";
-		case pageBreak:
-			return @"Page Break";
-		case centered:
-			return @"Centered";
-		case shot:
-			return @"Shot";
-		case more:
-			return @"More";
-		case dualDialogueMore:
-			return @"DD More";
-		case typeCount:
-			return @"";
-	}
+    switch (type) {
+        case empty:
+            return @"Empty";
+        case section:
+            return @"Section";
+        case synopse:
+            return @"Synopse";
+        case titlePageTitle:
+            return @"Title Page Title";
+        case titlePageAuthor:
+            return @"Title Page Author";
+        case titlePageCredit:
+            return @"Title Page Credit";
+        case titlePageSource:
+            return @"Title Page Source";
+        case titlePageContact:
+            return @"Title Page Contact";
+        case titlePageDraftDate:
+            return @"Title Page Draft Date";
+        case titlePageUnknown:
+            return @"Title Page Unknown";
+        case heading:
+            return @"Heading";
+        case action:
+            return @"Action";
+        case character:
+            return @"Character";
+        case parenthetical:
+            return @"Parenthetical";
+        case dialogue:
+            return @"Dialogue";
+        case dualDialogueCharacter:
+            return @"DD Character";
+        case dualDialogueParenthetical:
+            return @"DD Parenthetical";
+        case dualDialogue:
+            return @"DD Dialogue";
+        case transitionLine:
+            return @"Transition";
+        case lyrics:
+            return @"Lyrics";
+        case pageBreak:
+            return @"Page Break";
+        case centered:
+            return @"Centered";
+        case shot:
+            return @"Shot";
+        case more:
+            return @"More";
+        case dualDialogueMore:
+            return @"DD More";
+        case typeCount:
+            return @"";
+    }
 }
 
 /// Retuns line type as string
 - (NSString*)typeAsString
 {
-	return [Line typeAsString:self.type];
+    return [Line typeAsString:self.type];
 }
 
 
@@ -317,43 +317,43 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /* This should be implemented as NSCopying */
 
 -(id)copy {
-	return [self clone];
+    return [self clone];
 }
 
 - (Line*)clone {
-	Line* newLine = [Line withString:self.string type:self.type];
-	newLine.representedLine = self; // For live pagination, refers to the line in PARSER
-	newLine.uuid = self.uuid;
-	newLine.position = self.position;
-	
-	newLine.changed = self.changed;
-	
-	newLine.isSplitParagraph = self.isSplitParagraph;
-	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
-	newLine.unsafeForPageBreak = self.unsafeForPageBreak;
-	newLine.sceneIndex = self.sceneIndex;
-	
-	
-	newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
-	if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
-	
-	if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
-	if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
-	if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
-	if (self.noteRanges.count) newLine.noteRanges = self.noteRanges.mutableCopy;
-	if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
-	if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
-	if (self.sceneNumberRange.length) newLine.sceneNumberRange = self.sceneNumberRange;
-	if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
-	if (self.removalSuggestionRanges.count) newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
-	if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
-	
-	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
-	if (self.color) newLine.color = [NSString stringWithString:self.color];
-	
-	newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
-	
-	return newLine;
+    Line* newLine = [Line withString:self.string type:self.type];
+    newLine.representedLine = self; // For live pagination, refers to the line in PARSER
+    newLine.uuid = self.uuid;
+    newLine.position = self.position;
+    
+    newLine.changed = self.changed;
+    
+    newLine.isSplitParagraph = self.isSplitParagraph;
+    newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
+    newLine.unsafeForPageBreak = self.unsafeForPageBreak;
+    newLine.sceneIndex = self.sceneIndex;
+    
+    
+    newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
+    if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
+    
+    if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
+    if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
+    if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
+    if (self.noteRanges.count) newLine.noteRanges = self.noteRanges.mutableCopy;
+    if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
+    if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
+    if (self.sceneNumberRange.length) newLine.sceneNumberRange = self.sceneNumberRange;
+    if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
+    if (self.removalSuggestionRanges.count) newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
+    if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
+    
+    if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
+    if (self.color) newLine.color = [NSString stringWithString:self.color];
+    
+    newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
+    
+    return newLine;
 }
 
 #pragma mark - Delegate methods
@@ -361,25 +361,25 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Returns the index of this line in the parser.
 /// @warning VERY slow, this should be fixed to conform with the new, circular search methods.
 - (NSUInteger)index {
-	if (!self.parser) return NSNotFound;
-	return [self.parser.lines indexOfObject:self];
+    if (!self.parser) return NSNotFound;
+    return [self.parser.lines indexOfObject:self];
 }
 
 
 #pragma mark - String methods
-	
+
 - (NSString*)stringForDisplay {
-	if (!self.omitted)	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-	else {
-		Line *line = self.clone;
-		[line.omittedRanges removeAllIndexes];
-		return [line.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-	}
+    if (!self.omitted)	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    else {
+        Line *line = self.clone;
+        [line.omittedRanges removeAllIndexes];
+        return [line.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    }
 }
 
 /// @warning Legacy method. Use `line.stripFormatting`
 - (NSString*)textContent {
-	return self.stripFormatting;
+    return self.stripFormatting;
 }
 
 /// Returns the last character as `unichar`
@@ -400,60 +400,61 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Strip formatting
 
 /// Strip any Fountain formatting from the line
-- (NSString*)stripFormatting {
-	NSIndexSet *contentRanges = self.contentRanges;
-	
-	__block NSMutableString *content = NSMutableString.string;
-	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		// Let's make sure we don't have bad data here (can happen in some multithreaded instances)
+- (NSString*)stripFormatting
+{
+    NSIndexSet *contentRanges = self.contentRanges;
+    
+    __block NSMutableString *content = NSMutableString.string;
+    [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        // Let's make sure we don't have bad data here (can happen in some multithreaded instances)
         if (NSMaxRange(range) > self.string.length) {
             range.length = self.string.length - NSMaxRange(range);
             if (range.length <= 0) return;
         }
         
         [content appendString:[self.string substringWithRange:range]];
-	}];
-
-	return content;
+    }];
+    
+    return content;
 }
 
 /// Returns a string with notes removed
 - (NSString*)stripNotes {
-	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
-	__block NSUInteger offset = 0;
-	
-	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.location - offset + range.length > string.length) {
-			range = NSMakeRange(range.location, string.length - range.location - offset);
-		}
-		
-		@try {
-			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
-		}
-		@catch (NSException* exception) {
-			NSLog(@"cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
-		}
-		@finally {
-			offset += range.length;
-		}
-	}];
-	
-	return string;
+    __block NSMutableString *string = [NSMutableString stringWithString:self.string];
+    __block NSUInteger offset = 0;
+    
+    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.location - offset + range.length > string.length) {
+            range = NSMakeRange(range.location, string.length - range.location - offset);
+        }
+        
+        @try {
+            [string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
+        }
+        @catch (NSException* exception) {
+            NSLog(@"cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
+        }
+        @finally {
+            offset += range.length;
+        }
+    }];
+    
+    return string;
 }
 
 /// Returns a string with the scene number stripped
 - (NSString*)stripSceneNumber {
-	NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
-	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
+    return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
 /// Converts a global (document-wide) range into local range inside the line
 -(NSRange)globalRangeToLocal:(NSRange)range {
-	// Insert a range and get a LOCAL range in the line
-	NSRange lineRange = (NSRange){ self.position, self.string.length };
-	NSRange intersection = NSIntersectionRange(range, lineRange);
-	
-	return (NSRange){ intersection.location - self.position, intersection.length };
+    // Insert a range and get a LOCAL range in the line
+    NSRange lineRange = (NSRange){ self.position, self.string.length };
+    NSRange intersection = NSIntersectionRange(range, lineRange);
+    
+    return (NSRange){ intersection.location - self.position, intersection.length };
 }
 /// Converts a global (document-wide) range into local range inside the line
 -(NSRange)globalRangeFromLocal:(NSRange)range
@@ -471,86 +472,92 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns TRUE for scene, section and synopsis elements
 - (bool)isOutlineElement {
-	if (self.type == heading
-		|| self.type == section
-		// || self.type == synopse
+    if (self.type == heading
+        || self.type == section
+        // || self.type == synopse
         ) return YES;
-	else return NO;
+    else return NO;
 }
 
 /// Returns TRUE for any title page element
 - (bool)isTitlePage {
-	if (self.type == titlePageTitle ||
-		self.type == titlePageCredit ||
-		self.type == titlePageAuthor ||
-		self.type == titlePageDraftDate ||
-		self.type == titlePageContact ||
-		self.type == titlePageSource ||
-		self.type == titlePageUnknown) return YES;
-	else return NO;
+    if (self.type == titlePageTitle ||
+        self.type == titlePageCredit ||
+        self.type == titlePageAuthor ||
+        self.type == titlePageDraftDate ||
+        self.type == titlePageContact ||
+        self.type == titlePageSource ||
+        self.type == titlePageUnknown) return YES;
+    else return NO;
 }
 
 /// Checks if the line is completely non-printing
 - (bool)isInvisible {
-	if (self.omitted ||
-		self.type == section ||
-		self.type == synopse ||
-		self.isTitlePage) return YES;
-	else return NO;
+    if (self.omitted ||
+        self.type == section ||
+        self.type == synopse ||
+        self.isTitlePage) return YES;
+    else return NO;
 }
 
 /// Returns TRUE if the line type is forced
 - (bool)forced {
-	if (self.numberOfPrecedingFormattingCharacters > 0) return YES;
-	else return NO;
+    if (self.numberOfPrecedingFormattingCharacters > 0) return YES;
+    else return NO;
 }
 
 #pragma mark Dialogue
 
 /// Returns `true` for any dialogue element, including character cue
 - (bool)isDialogue {
-	if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
-	else return NO;
+    if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
+    else return NO;
 }
 
 /// Returns `true` for dialogue block elements, excluding character cues
 - (bool)isDialogueElement {
-	// Is SUB-DIALOGUE element
-	if (self.type == parenthetical || self.type == dialogue) return YES;
-	else return NO;
+    // Is SUB-DIALOGUE element
+    if (self.type == parenthetical || self.type == dialogue) return YES;
+    else return NO;
 }
 
 /// Returns `true` for any dual dialogue element, including character cue
 - (bool)isDualDialogue {
-	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
-	else return NO;
+    if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
+    else return NO;
 }
 
 /// Returns `true` for dual dialogue block elements, excluding character cues
 - (bool)isDualDialogueElement {
-	if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
-	else return NO;
+    if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
+    else return NO;
 }
 
 /// Returns `true` for ANY character cue (single or dual)
 - (bool)isAnyCharacter {
-	if (self.type == character || self.type == dualDialogueCharacter) return YES;
-	else return NO;
+    if (self.type == character || self.type == dualDialogueCharacter) return YES;
+    else return NO;
 }
 
 /// Returns `true` for ANY parenthetical line (single or dual)
 - (bool)isAnyParenthetical {
-	if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
-	return NO;
+    if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
+    return NO;
 }
 
 /// Returns `true` for ANY dialogue line (single or dual)
 - (bool)isAnyDialogue {
-	if (self.type == dialogue || self.type == dualDialogue) return YES;
-	else return NO;
+    if (self.type == dialogue || self.type == dualDialogue) return YES;
+    else return NO;
 }
 
 #pragma mark Omissions & notes
+
+/// Returns `true` for ACTUALLY omitted lines, so not only for effectively omitted. This is a silly thing for legacy compatibility.
+- (bool)isOmitted
+{
+    return (self.omittedRanges.count >= self.string.length);
+}
 
 /// Returns TRUE if the block is omitted
 /// @warning This also includes lines that have 0 length, meaning the method will return YES for empty lines too.

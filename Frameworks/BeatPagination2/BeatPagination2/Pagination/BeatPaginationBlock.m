@@ -60,6 +60,8 @@
 - (CGFloat)height {
 	if (_calculatedHeight > 0.0) return _calculatedHeight;
 	
+    BeatExportSettings* settings = self.delegate.settings;
+    
 	CGFloat height = 0.0;
 	if (self.dualDialogueContainer) {
 		CGFloat leftHeight = self.leftColumnBlock.height;
@@ -69,7 +71,9 @@
 		else height = rightHeight;
 	} else {
 		for (Line* line in self.lines) {
-			if (line.isInvisible) continue;
+			if (line.isInvisible && !([settings.additionalTypes containsIndex:line.type] ||
+                                     (line.note && settings.printNotes)
+                                     )) continue;
 			CGFloat lineHeight = [self heightForLine:line];
 			height += lineHeight;
 		}

@@ -42,11 +42,17 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) NSString * _Nullable pageRevisionColor;
 @property (nonatomic) bool coloredPages;
+
 @property (nonatomic) bool printNotes;
+//@property (nonatomic) bool printSections;
+//@property (nonatomic) bool printSynopsis;
 @property (nonatomic) bool printSceneNumbers;
+
+@property (nonatomic) NSIndexSet* additionalTypes; // This is actually LineType
+
 @property (nonatomic) NSString *fileName;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;
-//@property (nonatomic) NSString * _Nullable currentScene;
+
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
 

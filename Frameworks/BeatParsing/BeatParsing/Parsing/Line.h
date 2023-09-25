@@ -310,8 +310,10 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Whether the line starts a note and doesn't finish it
 @property (nonatomic) bool omitOut;
 
-/// The line is omitted completely from print — either inside an omission block or a note
+/// The line is omitted completely from print — either inside an omission block or a note. Legacy compatibility.
 - (bool)omitted;
+/// This line is actually only omitted (wrapped between `/* */`.
+- (bool)isOmitted;
 /// The line is centered (wtf)
 - (bool)centered;
 /// Return `true` if the line either bleeds out an omission or closes an existing one

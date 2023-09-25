@@ -41,6 +41,24 @@ heading {
 	uppercase: true;
 }
 
+section {
+    width-a4: 60ch;
+    width-us: 62ch;
+
+    margin-top: userSetting(sceneHeadingSpacing)l;
+    bold: true;
+    color: gray;
+}
+
+synopsis {
+    width-a4: 60ch;
+    width-us: 62ch;
+    
+    margin-top: 1l;
+    italic: true;
+    color: darkGray;
+}
+
 action {
     width-a4: 60ch;
     width-us: 62ch;

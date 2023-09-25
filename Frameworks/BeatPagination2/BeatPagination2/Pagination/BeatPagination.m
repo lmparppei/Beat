@@ -249,7 +249,7 @@
 				
 		// Get the first object in the queue array until no lines are left
 		Line* line = _lineQueue[0];
-		
+        
 		// Let's see if we can use cached pages here
 		if (_pages.count == pageCountAtStart+2 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
 			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
@@ -265,9 +265,14 @@
 		if (line.string.length == 0 ||
 			line.type == empty ||
 			line.isTitlePage ||
-			(line.isInvisible && !(_settings.printNotes && line.note)) ||
-			line.type == synopse ||
-			line.type == section) {
+			(line.isOmitted) ||
+            (line.note && !_settings.printNotes) ||
+
+            // Check if the line is invisible AND it's not spared in export settings.
+            (line.isInvisible &&
+                !([_settings.additionalTypes containsIndex:line.type] || (line.note && _settings.printNotes))
+             )
+            ) {
 			[_lineQueue removeObjectAtIndex:0];
 			continue;
 		}
@@ -325,7 +330,7 @@
 	if (pageBlocks.count == 0) return;
 	
 	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks];
-	
+    
 	if (_currentPage.remainingSpace >= group.height) {
 		// Add blocks on current page
 		for (BeatPaginationBlock *pageBlock in pageBlocks) {

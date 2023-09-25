@@ -113,7 +113,7 @@
 	}
 	
 	// Create a script dict required by the HTML module
-	BeatScreenplay *script = self.parser.forPrinting;
+	BeatScreenplay *script = [BeatScreenplay from:self.parser settings:settings];
 	
 	if (previewType == BeatQuickLookPreview) { // Quick look preview
 		_renderer = [BeatHTMLRenderer.alloc initWithLines:script.lines settings:settings];

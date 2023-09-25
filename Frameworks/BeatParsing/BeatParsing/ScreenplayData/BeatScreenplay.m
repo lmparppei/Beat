@@ -16,16 +16,16 @@
  Usage: [BeatScreenplay from:parser settings:settings];
  */
 
-+(instancetype)from:(ContinuousFountainParser*)parser {
++(instancetype)from:(ContinuousFountainParser*)parser
+{
     return [self from:parser settings:nil];
 }
-+(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings {
++(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings
+{
     BeatScreenplay *screenplay = BeatScreenplay.new;
     screenplay.titlePage = [ContinuousFountainParser titlePageForString:parser.titlePageAsString];
     screenplay.titlePageContent = parser.parseTitlePage;
-    
-    if (settings.printNotes) screenplay.lines = [parser preprocessForPrintingWithExportSettings:settings];
-    else screenplay.lines = parser.preprocessForPrinting;
+    screenplay.lines = [parser preprocessForPrintingWithExportSettings:settings];
     
     return screenplay;
 }

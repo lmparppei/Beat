@@ -275,8 +275,7 @@
 	if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
 		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
 	}
-	
-	
+		
 	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
 	if (line.type == heading) {
 		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
@@ -517,8 +516,14 @@
 	if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
 		RenderStyle *style = [self styleForType:type];
 		
+		BXColor* textColor = BXColor.blackColor;
+		if (style.color.length > 0) {
+			BXColor* c = [BeatColors color:style.color];
+			if (c != nil) textColor = c;
+		}
+		
 		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
-			NSForegroundColorAttributeName: BXColor.blackColor
+			NSForegroundColorAttributeName: textColor,
 		}];
 		
 		if (style.italic && style.bold) styles[NSFontAttributeName] = self.fonts.boldItalicCourier;
@@ -526,13 +531,13 @@
 		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
 		else 							styles[NSFontAttributeName] = self.fonts.courier;
 		
-		CGFloat width = (paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-		CGFloat blockWidth = width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
+		CGFloat width 		= (paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+		CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
 		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
 		
 		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-		pStyle.headIndent = style.marginLeft;
-		pStyle.firstLineHeadIndent = style.marginLeft;
+		pStyle.headIndent 				= style.marginLeft;
+		pStyle.firstLineHeadIndent 		= style.marginLeft;
 		
 		// Add additional indent for parenthetical lines
 		if (line.type == parenthetical) {
@@ -549,11 +554,11 @@
 		
 		if (!isDualDialogue && !line.isTitlePage) {
 			// Add content padding where needed
-			pStyle.firstLineHeadIndent += self.styles.page.contentPadding;
-			pStyle.headIndent += self.styles.page.contentPadding;
+			pStyle.firstLineHeadIndent 	+= self.styles.page.contentPadding;
+			pStyle.headIndent 			+= self.styles.page.contentPadding;
 		} else if (!line.isTitlePage) {
-			pStyle.firstLineHeadIndent = style.marginLeft;
-			pStyle.headIndent = style.marginLeft;
+			pStyle.firstLineHeadIndent 	= style.marginLeft;
+			pStyle.headIndent 			= style.marginLeft;
 		}
 		
 		// Create text block for non-title page elements to restrict horizontal size

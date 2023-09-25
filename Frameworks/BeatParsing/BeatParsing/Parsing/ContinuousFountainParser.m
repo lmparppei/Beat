@@ -145,6 +145,17 @@ static NSDictionary* patterns;
 	return [self initWithString:string delegate:nil];
 }
 
+
+#pragma mark - Document setting getter
+
+/// Returns either document settings OR static document settings. Note that if static document settings are provided, they are preferred.
+- (BeatDocumentSettings*)documentSettings
+{
+    if (self.staticDocumentSettings != nil) return self.staticDocumentSettings;
+    else return self.delegate.documentSettings;
+}
+
+
 #pragma mark - Saved file processing
 
 - (NSString*)screenplayForSaving {
@@ -191,11 +202,7 @@ static NSDictionary* patterns;
 
 #pragma mark Bulk parsing
 
-- (void)parseText:(NSString*)text {
-    [self parseText:text outlineUUIDs:@[]];
-}
-
-- (void)parseText:(NSString*)text outlineUUIDs:(NSArray*)outlineUUIDs
+- (void)parseText:(NSString*)text
 {
 	_firstTime = YES;
 	_lines = NSMutableArray.new;
@@ -251,8 +258,8 @@ static NSDictionary* patterns;
 	[self createOutline];
     self.outlineChanges = OutlineChanges.new;
 	
-    // Set identifiers
-    if (outlineUUIDs.count) [self setIdentifiersForOutlineElements:outlineUUIDs];
+    // Set identifiers (if applicable)
+    [self setIdentifiersForOutlineElements:[self.documentSettings get:DocSettingHeadingUUIDs]];
     
 	_firstTime = NO;
 }
@@ -1661,6 +1668,20 @@ static NSDictionary* patterns;
     return changes;
 }
 
+/// Returns an array of dictionaries with UUID mapped to the actual string.
+-(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs
+{
+    NSMutableArray* outline = NSMutableArray.new;
+    for (OutlineScene* scene in self.outline) {
+        [outline addObject:@{
+            @"uuid": scene.line.uuid.UUIDString,
+            @"string": scene.line.string
+        }];
+    }
+    
+    return outline;
+}
+
 
 #pragma mark - Handling changes to outline
 
@@ -2592,14 +2613,20 @@ NSInteger previousIndex = NSNotFound;
 		// Fix a weird bug for first line
 		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
 		
-		// Skip over certain elements. Leave notes if needed.
-		if (line.type == synopse || line.type == section || (line.omitted && !line.note)) continue;
-		else if (!exportSettings.printNotes && line.note) continue;
-        else if (line.effectivelyEmpty) {
-            previousLine = line;
+		// Check if we should spare some non-printing objects or not.
+        bool notEmpty = false;
+        
+        
+        if ((line.isInvisible || line.effectivelyEmpty) && !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
+            
+            // Lines which are *effectively* empty have to be remembered.
+            if (line.effectivelyEmpty) previousLine = line;
+
             continue;
+        } else {
+            NSLog(@"Spare: %@", line);
         }
-		
+        
 		// Add scene numbers
 		if (line.type == heading) {
 			if (line.sceneNumberRange.length > 0) {
@@ -2690,50 +2717,20 @@ NSInteger previousIndex = NSNotFound;
 /// Sets the given UUIDs to each outline element at the same index
 - (void)setIdentifiersForOutlineElements:(NSArray*)uuids
 {
-    NSInteger i = 0;
-    
-    for (Line* line in self.safeLines) {
-        if (!line.isOutlineElement) continue;
+    for (NSInteger i=0; i<self.outline.count; i++) {
+        OutlineScene* scene = self.outline[i];
+        NSDictionary* item = uuids[i];
         
-        NSUUID* uuid;
-                
-        // We can supply both UUID objects and strings
-        id item = uuids[i];
-        if ([item isKindOfClass:NSString.class]) uuid = [NSUUID.alloc initWithUUIDString:item];
-        else if ([item isKindOfClass:NSUUID.class]) uuid = item;
+        NSString* uuidString = item[@"uuid"];
+        NSString* string = item[@"string"];
         
-        line.uuid = uuid;
-
-        i += 1;
-        
-        if (i >= uuids.count) break; // Don't go out of range
+        if ([scene.string.lowercaseString isEqualToString:string.lowercaseString]) {
+            NSUUID* uuid = [NSUUID.alloc initWithUUIDString:uuidString];
+            scene.line.uuid = uuid;
+        }
     }
 }
 
-#pragma mark - Document settings
-
-- (BeatDocumentSettings*)documentSettings
-{
-	if (self.delegate) return self.delegate.documentSettings;
-	else if (self.staticDocumentSettings) return self.staticDocumentSettings;
-	else return nil;
-}
-
-
-#pragma mark - Separate title page & content for printing
-
-- (BeatScreenplay*)forPrinting
-{
-	return [BeatScreenplay from:self];
-}
-
-- (NSDictionary*)scriptForPrinting {
-	// NOTE: Use ONLY for static parsing
-	return @{
-		@"title page": self.titlePage,
-		@"script": [self preprocessForPrinting]
-	};
-}
 
 
 #pragma mark - Note parsing

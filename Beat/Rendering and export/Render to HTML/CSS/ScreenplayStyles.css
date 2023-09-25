@@ -227,6 +227,17 @@ body > p:first-child {
 	padding-right: 4ch; /*was nil, but added not to collide with scene numbers*/
 }
 
+.section {
+	margin-top: calc(#sceneHeadingSpacing# * var(--line-height));
+	font-weight: bold;
+	color: #999;
+}
+
+.synopsis {
+	font-style: italic;
+	color: #999;
+}
+
 .transition {
 	position: relative;
 	text-align: right;

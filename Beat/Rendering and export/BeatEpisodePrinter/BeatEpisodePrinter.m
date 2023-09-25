@@ -293,7 +293,8 @@
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
 	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text];
 	
-	return parser.forPrinting;
+	BeatScreenplay* screenplay = [BeatScreenplay from:parser settings:exportSettings];
+	return screenplay;
 }
 
 -(void)alertPanelWithTitle:(NSString*)title content:(NSString*)content {

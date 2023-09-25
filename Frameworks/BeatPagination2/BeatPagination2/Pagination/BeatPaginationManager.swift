@@ -180,8 +180,10 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     @objc public func newPagination() {
         self.settings = self.delegate!.exportSettings!
         
-        let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
-        runPagination(pagination: operation)
+        if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
+            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
+            runPagination(pagination: operation)
+        }
     }
     
     /// Paginates given screenplay object

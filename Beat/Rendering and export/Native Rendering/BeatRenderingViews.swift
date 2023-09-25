@@ -84,7 +84,7 @@ class BeatPaginationPageView:NSView {
 
 		self.textView?.linkTextAttributes = [
 			NSAttributedString.Key.font: fonts.courier,
-			NSAttributedString.Key.foregroundColor: NSColor.black,
+//			NSAttributedString.Key.foregroundColor: NSColor.black,
 			NSAttributedString.Key.cursor: NSCursor.pointingHand
 		]
 		self.textView?.displaysLinkToolTips = false

@@ -106,6 +106,8 @@ import OSLog
 	@objc public var defaultWidthA4:CGFloat = 0
 	@objc public var defaultWidthLetter:CGFloat = 0
 	
+    @objc public var color:String = ""
+    
     public init(rules:[String:Any]) {
 		super.init()
 

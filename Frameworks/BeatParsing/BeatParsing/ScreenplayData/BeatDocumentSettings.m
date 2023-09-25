@@ -38,6 +38,8 @@ NSString * const DocSettingReviews = @"Review Ranges";
 NSString * const DocSettingSidebarVisible = @"Sidebar Visible";
 NSString * const DocSettingSidebarWidth = @"Sidebar Width";
 
+NSString * const DocSettingHeadingUUIDs = @"Heading UUIDs";
+
 NSString * const DocSettingWindowWidth = @"Window Width";
 NSString * const DocSettingWindowHeight = @"Window Height";
 
