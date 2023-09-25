@@ -5,14 +5,17 @@
 //  Created by Lauri-Matti Parppei on 24.9.2023.
 //  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+
+ N.B. — This class takes a lot of inspiration from CodeEditor for SwiftUI, but doesn't directly use its code.
+ 
+ */
 
 import AppKit
 import BeatCore
 
 class BeatMinimapView: NSTextView {
-	//@IBOutlet weak var textView: NSTextView?
 	weak var editorDelegate:BeatEditorDelegate?
-	
 	/// The actual editor text view
 	var editorView:NSTextView?
 	
@@ -29,15 +32,16 @@ class BeatMinimapView: NSTextView {
 		minimapView.editorDelegate = editorDelegate
 		minimapView.editorView = editorView
 		
+		minimapView.textContainer?.widthTracksTextView  = true
+		minimapView.textContainer?.heightTracksTextView = false
+		minimapView.textContainer?.lineBreakMode        = .byWordWrapping
+		
 		minimapView.autoresizingMask                    = [.height]
 		minimapView.isEditable                          = false
 		minimapView.isSelectable                        = false
 		minimapView.isHorizontallyResizable             = false
 		minimapView.isVerticallyResizable               = true
 		minimapView.textContainerInset                  = CGSize(width: 0, height: 0)
-		minimapView.textContainer?.widthTracksTextView  = true
-		minimapView.textContainer?.heightTracksTextView = false
-		minimapView.textContainer?.lineBreakMode        = .byWordWrapping
 		
 		minimapView.layoutManager?.typesetter = BeatMinimapTypeSetter()
 		minimapView.textContainer?.lineFragmentPadding = BeatMinimapLayoutManager.minimapFontSize()

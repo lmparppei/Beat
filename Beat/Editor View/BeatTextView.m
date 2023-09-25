@@ -136,7 +136,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
-@property (nonatomic) NSMutableDictionary *markerLayers;
+@property (nonatomic) BeatMinimapView *minimap;
 
 @end
 
@@ -146,17 +146,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return 50.0;
 }
 
--(instancetype)initWithCoder:(NSCoder *)coder {
+-(instancetype)initWithCoder:(NSCoder *)coder
+{
 	self = [super initWithCoder:coder];
-	
-	// Load custom layout manager and set a bit bigger line fragment padding
-	// to fit our revision markers in the margin
-	
-	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
-	[self.textContainer replaceLayoutManager:layoutMgr];
-	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
-	
-	self.textStorage.delegate = self;
+		
+	// Setup layout manager and minimap
+	[self setupLayoutManager];
 	
 	// Setup magnification
 	[self setupZoom];
@@ -164,18 +159,49 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return self;
 }
 
-- (void)awakeFromNib {
+- (void)setupLayoutManager
+{
+	// Set text storage delegate
+	self.textStorage.delegate = self;
+	
+	// Load custom layout manager and set a bit bigger line fragment padding
+	// to fit our revision markers in the margin
+	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
+	[self.textContainer replaceLayoutManager:layoutMgr];
+	self.textContainer.lineFragmentPadding = BeatTextView.linePadding;
+}
+
+- (void)setupMinimap
+{
+	_minimap = [BeatMinimapView createMinimapWithEditorDelegate:self.editorDelegate textStorage:self.textStorage editorView:self];
+	
+	[self.enclosingScrollView addFloatingSubview:_minimap forAxis:NSEventGestureAxisHorizontal];
+	[_minimap setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin | NSViewHeightSizable];
+	
+	[_minimap resizeMinimap];
+}
+
+- (void)awakeFromNib
+{
+	// We are connecting the editor delegate via IBOutlet, so we need to forward it to layout manager here.
 	((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
+	self.layoutManager.delegate = self;
 	
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
 	
+	// The previous position of caret
 	self.lastPos = -1;
 
+	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
+	
+	// Observer for selection change. It's posted to text view delegate as well, but we'll handle
+	// popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
 	
-	self.layoutManager.delegate = self;
+	// For future generations
+	// [self setupMinimap];
 }
 
 -(void)setup {
