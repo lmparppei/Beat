@@ -195,8 +195,10 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Returns a trimmed string
 - (NSString*)trimmed;
 
-/// An attributed string with Final Draft compatible attribute names for styling
+/// An attributed string with Final Draft compatible attribute names.
 - (NSAttributedString*)attributedStringForFDX;
+/// An attributed string with Final Draft compatible attribute names.
+- (NSAttributedString*)attributedString;
 
 /// Returns and caches the line with attributes.
 /// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
@@ -287,6 +289,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
 /// Indices of printed content (excluding formatting symbols etc.)
 - (NSIndexSet*)contentRanges;
+/// Indices of printed content (excluding formatting symbols etc.) *including* given ranges.
+- (NSIndexSet*)contentRangesIncluding:(NSIndexSet*)includedRanges;
 /// Indices of printed content (excluding formatting symbols etc.), but with notes
 - (NSIndexSet*)contentRangesWithNotes;
 /// Character name, excluding any extensions

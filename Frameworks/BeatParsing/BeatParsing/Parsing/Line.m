@@ -922,8 +922,15 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	return _attrString;
 }
 
-/// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
-- (NSAttributedString*)attributedStringForFDX {
+- (NSAttributedString*)attributedStringForFDX
+{
+    return [self attributedString];
+}
+
+/// Returns a string with style attributes.
+/// - note N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML/PDF.
+- (NSAttributedString*)attributedString
+{
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
 		
 	// Make (forced) character names uppercase
@@ -1005,8 +1012,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		[string addAttribute:@"BeatTag" value:tagValue range:range];
 	}
     
-    // Loop through macro ranges
-    
+    // TODO: Loop through macro ranges
 	
 	return string;
 }
@@ -1246,13 +1252,22 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Returns ranges with content ONLY (useful for reconstructing the string with no Fountain stylization)
 - (NSIndexSet*)contentRanges
 {
-	NSMutableIndexSet *contentRanges = NSMutableIndexSet.indexSet;
-	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
-	
-	NSIndexSet *formattingRanges = self.formattingRanges;
-	[contentRanges removeIndexes:formattingRanges];
-	
-	return contentRanges;
+    return [self contentRangesIncluding:nil];
+}
+- (NSIndexSet*)contentRangesIncluding:(NSIndexSet*)includedRanges
+{
+    NSMutableIndexSet *contentRanges = NSMutableIndexSet.indexSet;
+    [contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
+    
+    // Get formatting ranges.
+    // We can provide ranges that are excluded from formatting ranges and included in the resulting string.
+    NSMutableIndexSet *formattingRanges = self.formattingRanges.mutableCopy;
+    [formattingRanges removeIndexes:includedRanges];
+    
+    // Remove formatting indices from content indices.
+    [contentRanges removeIndexes:formattingRanges];
+    
+    return contentRanges;
 }
 
 /// Returns content ranges, including notes

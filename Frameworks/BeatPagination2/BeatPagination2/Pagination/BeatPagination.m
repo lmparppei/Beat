@@ -382,7 +382,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	else if (line.type != heading &&
              line.type != lyrics &&
              line.type != centered &&
-             line.type != shot) {
+             line.type != shot &&
+             line.type != section) {
 		return @[block];
 	}
 	
@@ -394,8 +395,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		return @[block];
 	}
 	
-	// Headings and shots swallow up the whole next block
-	if (line.type == heading || line.type == shot) {
+	// Headings, shots and sections swallow up the whole next block
+	if (line.type == heading || line.type == shot || line.type == section) {
 		NSArray* followingBlocks = [self blocksForLineAt:i];
 		NSMutableArray *blocks = [NSMutableArray arrayWithObject:block];
 		[blocks addObjectsFromArray:followingBlocks];

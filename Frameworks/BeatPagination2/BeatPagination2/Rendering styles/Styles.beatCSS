@@ -192,3 +192,7 @@ titlePageDraftDate {
 titlePageUnknown {
 	margin-top: 1l;
 }
+
+note {
+    color: gray;
+}

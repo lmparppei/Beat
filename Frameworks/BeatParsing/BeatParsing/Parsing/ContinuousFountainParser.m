@@ -2614,17 +2614,12 @@ NSInteger previousIndex = NSNotFound;
 		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
 		
 		// Check if we should spare some non-printing objects or not.
-        bool notEmpty = false;
-        
-        
         if ((line.isInvisible || line.effectivelyEmpty) && !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
             
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
 
             continue;
-        } else {
-            NSLog(@"Spare: %@", line);
         }
         
 		// Add scene numbers

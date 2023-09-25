@@ -216,6 +216,15 @@
 		}
 	}
 	
+	// Colors for notes
+	if (line.noteRanges.count) {
+		[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			RenderStyle* noteStyle = [self.styles forElement:@"note"];
+			NSColor* c = [BeatColors color:noteStyle.color];
+			[attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : NSColor.grayColor range:range];
+		}];
+	}
+	
 	// If the block has line breaks in it, we need to remove margin spacing.
 	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
 	bool multiline = [line.string containsString:@"\n"];
@@ -259,10 +268,23 @@
 	}
 			
 	// Strip invisible stuff
-	NSMutableIndexSet* contentRanges = [NSMutableIndexSet.alloc initWithIndexSet:line.contentRanges];
+	
+	// We might include notes, sections and synopsis lines
+	NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
+	if (self.settings.printNotes) {
+		[includedRanges addIndexes:line.noteRanges];
+	}
+	// Let's include markup characters (#, =) in section and synopsis lines.
+	if (line.type == section || line.type == synopse) {
+		[includedRanges addIndexesInRange:NSMakeRange(0, line.numberOfPrecedingFormattingCharacters)];
+	}
+	
+	// Create actual content ranges
+	NSMutableIndexSet* contentRanges = [line contentRangesIncluding:includedRanges].mutableCopy;
+	
 	[contentRanges addIndex:attributedString.length - 1]; // Add the last index to include our newly-added line break
 	NSMutableAttributedString *result = NSMutableAttributedString.new;
-		
+
 	// Enumerate visible ranges and build up the resulting string
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length == 0) return;

@@ -49,6 +49,10 @@
 @property (weak) IBOutlet NSButton* revisionThird;
 @property (weak) IBOutlet NSButton* revisionFourth;
 
+@property (weak) IBOutlet NSButton* printSections;
+@property (weak) IBOutlet NSButton* printSynopsis;
+@property (weak) IBOutlet NSButton* printNotes;
+
 @property (nonatomic) NSString *compareWith;
 
 @property (nonatomic) bool automaticPreview;
@@ -65,26 +69,30 @@
 
 static CGFloat panelWidth;
 
-+ (BeatPrintDialog*)showForPDF:(id)delegate {
++ (BeatPrintDialog*)showForPDF:(id)delegate
+{
 	BeatPrintDialog *dialog = [BeatPrintDialog.alloc initWithWindowNibName:self.className];
 	dialog.documentDelegate = delegate;
 	[dialog openForPDF:nil];
 	return dialog;
 }
-+ (BeatPrintDialog*)showForPrinting:(id)delegate {
++ (BeatPrintDialog*)showForPrinting:(id)delegate
+{
 	BeatPrintDialog *dialog = [BeatPrintDialog.alloc initWithWindowNibName:self.className];
 	dialog.documentDelegate = delegate;
 	[dialog open:nil];
 	return dialog;
 }
 
--(instancetype)initWithWindowNibName:(NSNibName)windowNibName {
+-(instancetype)initWithWindowNibName:(NSNibName)windowNibName
+{
 	return [super initWithWindowNibName:windowNibName owner:self];
 }
 
 #pragma mark - Window actions
 
--(void)awakeFromNib {
+-(void)awakeFromNib
+{
 	self.renderQueue = NSMutableArray.new;
 	
 	// Show advanced options?
@@ -95,7 +103,8 @@ static CGFloat panelWidth;
 	[self toggleAdvancedOptions:_advancedOptionsButton];
 }
 
-- (IBAction)open:(id)sender {
+- (IBAction)open:(id)sender
+{
 	[self openPanel];
 	
 	// Change panel title
@@ -109,7 +118,8 @@ static CGFloat panelWidth;
 	_secondaryButton.action = @selector(pdf:);
 }
 
-- (IBAction)openForPDF:(id)sender {
+- (IBAction)openForPDF:(id)sender
+{
 	[self openPanel];
 	
 	// Change panel title
@@ -122,7 +132,9 @@ static CGFloat panelWidth;
 	_secondaryButton.title = NSLocalizedString(@"print.printButton", nil);
 	_secondaryButton.action = @selector(print:);
 }
-- (void)openPanel {
+
+- (void)openPanel
+{
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
 			
@@ -142,11 +154,14 @@ static CGFloat panelWidth;
 		
 	// Reload PDF preview
 	[self loadPreview];
-
 }
-- (IBAction)close:(id)sender {
+
+- (IBAction)close:(id)sender
+{
+	// Remove timer
 	[self.previewTimer invalidate];
 	
+	// End sheet in host window and release this dialog
 	[self.documentDelegate.documentWindow endSheet:self.window];
 	[self.documentDelegate releasePrintDialog];
 	
@@ -154,7 +169,10 @@ static CGFloat panelWidth;
 
 #pragma mark - Printing
 
-- (void)exportWithType:(BeatPrintingOperation)type {
+/// Exports the file using the given print operation (pdf/print)
+- (void)exportWithType:(BeatPrintingOperation)type
+{
+	// Create a print operation and add it to the render queue.
 	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:[self exportSettings] delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
 		// Remove from queue
 		[self.renderQueue removeObject:operation];
@@ -163,21 +181,27 @@ static CGFloat panelWidth;
 
 	// Add to render queue (to keep the printing operation in memory)
 	[self.renderQueue addObject:printing];
-
 }
 
-- (IBAction)print:(id)sender {
+- (IBAction)print:(id)sender
+{
 	[self exportWithType:BeatPrintingOperationToPrint];
 }
-- (IBAction)pdf:(id)sender {
+
+- (IBAction)pdf:(id)sender
+{
 	[self exportWithType:BeatPrintingOperationToPDF];
 }
 
-- (void)printingDidFinish {
+/// Once the operation finishes, we'll close this dialog
+- (void)printingDidFinish
+{
 	[self.documentDelegate.documentWindow endSheet:self.window];
 }
 
-- (void)loadPreview {
+/// Recreates PDF preview after a small delay.
+- (void)loadPreview
+{
 	[self.previewTimer invalidate];
 
 	// Start progress indicator
@@ -189,7 +213,9 @@ static CGFloat panelWidth;
 	}];
 }
 
-- (void)updatePreview {
+/// Creates a PDF preview with current settings.
+- (void)updatePreview
+{
 	// Update PDF preview
 	BeatExportSettings *settings = [self exportSettings];
 	
@@ -207,11 +233,41 @@ static CGFloat panelWidth;
 
 #pragma mark - Export settings
 
-- (IBAction)headerTextChange:(id)sender {
+- (BeatExportSettings*)exportSettings
+{
+	// Set how we see revisions
+	bool coloredPages = NO;
+	if (_colorCodePages.state == NSOnState) coloredPages = YES;
+	
+	NSString *revisionColor = @"";
+	if (coloredPages) revisionColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
+	
+	// Set header
+	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
+
+	settings.paperSize = self.documentDelegate.pageSize;
+	settings.printNotes = (_printNotes.state == NSOnState);
+	
+	NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
+	if (_printSections.state == NSOnState) [additionalTypes addIndex:section];
+	if (_printSynopsis.state == NSOnState) [additionalTypes addIndex:synopse];
+	settings.additionalTypes = additionalTypes;
+			
+	return settings;
+}
+
+
+#pragma mark - Export setting actions
+
+- (IBAction)headerTextChange:(id)sender
+{
 	[self loadPreview];
 }
 
-- (IBAction)selectPaperSize:(id)sender {
+- (IBAction)selectPaperSize:(id)sender
+{
 	BeatPaperSize oldSize = _documentDelegate.pageSize;
 	
 	if ([(NSButton*)sender tag] == 1) {
@@ -227,7 +283,9 @@ static CGFloat panelWidth;
 		[self loadPreview];
 	}
 }
-- (IBAction)selectSceneNumberPrinting:(id)sender {
+
+- (IBAction)selectSceneNumberPrinting:(id)sender
+{
 	if (_printSceneNumbers.state == NSOnState) {
 		[_documentDelegate setPrintSceneNumbers:YES];
 	} else {
@@ -237,7 +295,8 @@ static CGFloat panelWidth;
 	[self loadPreview];
 }
 
-- (IBAction)toggleAdvancedOptions:(id)sender {
+- (IBAction)toggleAdvancedOptions:(id)sender
+{
 	NSButton *button = sender;
 	
 	NSRect frame = self.window.contentView.frame;
@@ -252,14 +311,17 @@ static CGFloat panelWidth;
 	[self.window.animator setFrame:frame display:YES];
 }
 
-- (IBAction)toggleColorCodePages:(id)sender {
+- (IBAction)toggleColorCodePages:(id)sender
+{
 	NSButton *checkbox = sender;
 	if (checkbox.state == NSOnState) [_documentDelegate.documentSettings setBool:DocSettingColorCodePages as:YES];
 	else [_documentDelegate.documentSettings setBool:DocSettingColorCodePages as:NO];
 
 	[self loadPreview];
 }
-- (IBAction)setRevisedPageColor:(id)sender {
+
+- (IBAction)setRevisedPageColor:(id)sender
+{
 	NSPopUpButton *menu = sender;
 	NSString *color = menu.selectedItem.title.lowercaseString;
 	
@@ -267,12 +329,18 @@ static CGFloat panelWidth;
 	[self loadPreview];
 }
 
-- (IBAction)toggleRevision:(id)sender {
+- (IBAction)toggleRevision:(id)sender
+{
 	[self loadPreview];
 }
 
+- (IBAction)toggleInvisibleElement:(id)sender
+{
+	[self loadPreview];
+}
 
-- (void)didFinishPreviewAt:(NSURL *)url {
+- (void)didFinishPreviewAt:(NSURL *)url
+{
 	// Stop progress indicator
 	[self.progressIndicator stopAnimation:nil];
 	self.pdfView.alphaValue = 1.0;
@@ -293,24 +361,6 @@ static CGFloat panelWidth;
 	// Load the old bounds (if this is not the first time preview was loaded)
 	if (!_firstPreview) scrollView.contentView.bounds = frame;
 	_firstPreview = NO;
-}
-
-- (BeatExportSettings*)exportSettings {
-	// Set how we see revisions
-	bool coloredPages = NO;
-	if (_colorCodePages.state == NSOnState) coloredPages = YES;
-	
-	NSString *revisionColor = @"";
-	if (coloredPages) revisionColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
-	
-	// Set header
-	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
-		
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
-
-	settings.paperSize = self.documentDelegate.pageSize;
-			
-	return settings;
 }
 
 - (NSArray*)printedRevisions {
