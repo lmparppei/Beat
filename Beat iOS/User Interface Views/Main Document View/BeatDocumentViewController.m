@@ -587,12 +587,14 @@ static bool buildPreviewImmediately = false;
 	if (sync) {
 		NSLog(@"%@", self.pagination);
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:range.location];
+		BeatScreenplay* screenplay = [BeatScreenplay from:self.parser settings:self.exportSettings];
+		[self.pagination newPaginationWithScreenplay:screenplay settings:self.exportSettings forEditor:true changeAt:range.location];
 	} else {
 		self.previewTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:false block:^(NSTimer * _Nonnull timer) {
 			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
 				[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-				[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:range.location];
+				BeatScreenplay* screenplay = [BeatScreenplay from:self.parser settings:self.exportSettings];
+				[self.pagination newPaginationWithScreenplay:screenplay settings:self.exportSettings forEditor:true changeAt:range.location];
 			});
 		}];
 	}
