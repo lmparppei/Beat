@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
-@property (atomic) BeatDocumentSettings * _Nonnull documentSettings;
+@property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSMutableArray<Line*>* _Nonnull)lines;
 @end
 

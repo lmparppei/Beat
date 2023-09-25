@@ -116,6 +116,10 @@
 		B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
 		B649CB63286F8090001271E2 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B649CB62286F8090001271E2 /* BeatAutocomplete.m */; };
 		B649CB64286F8090001271E2 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B649CB62286F8090001271E2 /* BeatAutocomplete.m */; };
+		B64EFA8C2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */; };
+		B64EFA8D2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */; };
+		B64EFA8F2AC079A70042C9B7 /* BeatMinimapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */; };
+		B64EFA902AC079A70042C9B7 /* BeatMinimapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */; };
 		B655AC25296B3124006C647F /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B604C8DC290CF7E400CBB32D /* BeatParsing.framework */; };
 		B655AC26296B3124006C647F /* BeatParsing.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B604C8DC290CF7E400CBB32D /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B655B1052714607700BA52ED /* BeatMarkerScroller.m */; };
@@ -638,6 +642,8 @@
 		B649CB61286F8090001271E2 /* BeatAutocomplete.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAutocomplete.h; path = ../../Frameworks/BeatCore/BeatCore/Editor/BeatAutocomplete.h; sourceTree = "<group>"; };
 		B649CB62286F8090001271E2 /* BeatAutocomplete.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAutocomplete.m; path = ../../Frameworks/BeatCore/BeatCore/Editor/BeatAutocomplete.m; sourceTree = "<group>"; };
 		B64C3B2A26E7C9F200A5022E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = ../en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMinimapLayoutManager.swift; sourceTree = "<group>"; };
+		B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMinimapView.swift; sourceTree = "<group>"; };
 		B655B1042714607700BA52ED /* BeatMarkerScroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMarkerScroller.h; sourceTree = "<group>"; };
 		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
 		B656E0002A4EE7FB00CEAEA4 /* BeatCharacterEditorPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCharacterEditorPopover.swift; sourceTree = "<group>"; };
@@ -1201,12 +1207,12 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
-		B623D15829391F2000B5F0CA /* Native preview */ = {
+		B623D15829391F2000B5F0CA /* Preview View */ = {
 			isa = PBXGroup;
 			children = (
 				B623D15929391F3400B5F0CA /* BeatPreviewController+View.swift */,
 			);
-			path = "Native preview";
+			path = "Preview View";
 			sourceTree = "<group>";
 		};
 		B62A616B284C008E0068F139 /* Backup */ = {
@@ -1302,6 +1308,15 @@
 			path = "Native Rendering";
 			sourceTree = "<group>";
 		};
+		B64EFA8A2AC02F5F0042C9B7 /* Minimap */ = {
+			isa = PBXGroup;
+			children = (
+				B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */,
+				B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */,
+			);
+			path = Minimap;
+			sourceTree = "<group>";
+		};
 		B66716CB2971D1B5005B8C55 /* Theme Editor */ = {
 			isa = PBXGroup;
 			children = (
@@ -1318,7 +1333,7 @@
 			children = (
 				B69C74D12773CC7D0022D9D5 /* Launch Screen */,
 				B66716CB2971D1B5005B8C55 /* Theme Editor */,
-				B623D15829391F2000B5F0CA /* Native preview */,
+				B623D15829391F2000B5F0CA /* Preview View */,
 				B611EB9C28CA911B0067D104 /* Scene Heading Search */,
 				B69FCF61272313E20022A9D9 /* Sidebar */,
 				B68AE21526EDEE9700F6DF59 /* Preferences */,
@@ -1334,15 +1349,15 @@
 				B6E1E7B92700AF7700442CA7 /* Buttons etc */,
 				B6E1E7B72700AF3F00442CA7 /* Misc */,
 				B6E1E7BA2700AFC400442CA7 /* Colors */,
+				B649CB60286F78B8001271E2 /* BeatEditorMode.h */,
 				B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */,
 				B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */,
 				B61061E82590DB66001947D6 /* BeatModalInput.h */,
 				B61061E92590DB66001947D6 /* BeatModalInput.m */,
-				B6F58B68279B81DC009522C1 /* BeatValidationItem.swift */,
 				B60D192526B0811E005C2693 /* BeatNotifications.h */,
 				B60D192626B0811E005C2693 /* BeatNotifications.m */,
+				B6F58B68279B81DC009522C1 /* BeatValidationItem.swift */,
 				B61443DA280EE6E8007219AA /* BeatModeDisplay.swift */,
-				B649CB60286F78B8001271E2 /* BeatEditorMode.h */,
 				B6B37F6628F0585C00657F5F /* BeatFontManager.swift */,
 				B6E66790292C29BA007A4108 /* BeatUserDefaultCheckbox.swift */,
 				B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */,
@@ -1661,6 +1676,7 @@
 		B6A79C9127B64A05008D3AFC /* Editor View */ = {
 			isa = PBXGroup;
 			children = (
+				B64EFA8A2AC02F5F0042C9B7 /* Minimap */,
 				B6A79C9227B64A64008D3AFC /* Scroll View */,
 				B616518629FC490000D20882 /* BeatTextView.h */,
 				B616518529FC490000D20882 /* BeatTextView.m */,
@@ -2261,6 +2277,7 @@
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6B80BE02726949E00557461 /* BeatPieGraph.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
+				B64EFA8C2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */,
 				B61443DB280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
 				B637EE152A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
@@ -2316,6 +2333,7 @@
 				B692D0ED2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */,
 				B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */,
 				B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */,
+				B64EFA8F2AC079A70042C9B7 /* BeatMinimapView.swift in Sources */,
 				B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86427219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
@@ -2395,6 +2413,7 @@
 				B68B6031260B849300463AD8 /* BeatOutlineView.m in Sources */,
 				B6B80BE12726949E00557461 /* BeatPieGraph.m in Sources */,
 				B68B6033260B849300463AD8 /* Document.m in Sources */,
+				B64EFA8D2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */,
 				B61443DC280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B68B6035260B849300463AD8 /* BeatTimeline.m in Sources */,
 				B637EE162A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
@@ -2450,6 +2469,7 @@
 				B692D0EE2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */,
 				B68B6062260B849300463AD8 /* ITSwitch.m in Sources */,
 				B68B6063260B849300463AD8 /* FlatButton.swift in Sources */,
+				B64EFA902AC079A70042C9B7 /* BeatMinimapView.swift in Sources */,
 				B6F0F38A2714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B68B6064260B849300463AD8 /* ColorView.m in Sources */,

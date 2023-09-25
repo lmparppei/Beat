@@ -604,7 +604,7 @@ static BeatAppDelegate *appDelegate;
 
 	settings.paperSize = self.pageSize;
 	settings.revisions = BeatRevisions.revisionColors;
-	
+		
 	return settings;
 }
 
@@ -1111,6 +1111,8 @@ static NSWindow __weak *currentKeyWindow;
 	return dataRepresentation;
 }
 
+// TODO: Move these into an OS-agnostic class
+
 - (NSString*)createDocumentFile {
 	return [self createDocumentFileWithAdditionalSettings:nil];
 }
@@ -1148,6 +1150,9 @@ static NSWindow __weak *currentKeyWindow;
 	// Save reviewed ranges
 	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
 	[_documentSettings set:DocSettingReviews as:reviews];
+	
+	// Save heading/section info
+	[_documentSettings set:DocSettingHeadingUUIDs as:self.parser.outlineUUIDs];
 	
 	// Save caret position
 	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];

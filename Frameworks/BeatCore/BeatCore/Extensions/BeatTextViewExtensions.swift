@@ -60,4 +60,17 @@ extension UXTextView {
         return CGRect.zero
         #endif
     }
+    
+    public func boundingRect(for range: NSRange? = nil) -> CGRect? {
+        guard let layoutManager = self.layoutManager,
+              let textContainer = self.textContainer,
+              let textStorage = self.textStorage
+        else { return nil }
+        
+        let charRange = range ?? NSRange(location: 0, length: textStorage.length)
+        let glyphRange = layoutManager.glyphRange(forCharacterRange: charRange, actualCharacterRange: nil)
+        
+        let rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+        return rect.offsetBy(dx: textContainerOrigin.x, dy: textContainerOrigin.y)
+    }
 }
