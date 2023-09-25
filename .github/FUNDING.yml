@@ -3,5 +3,5 @@
 github: [lmparppei]
 ko_fi: beatApp
 liberapay: # Replace with a single Liberapay username
-custom: ["https://www.paypal.com/donate/?hosted_button_id=TY82JG68NSZMJ"]
-custom: ["https://www.beat-app.fi/support-the-development/"|Support the development]
+custom: ["https://www.beat-app.fi/support-the-development/"]
+custom: [PayPal|"https://www.paypal.com/donate/?hosted_button_id=TY82JG68NSZMJ"]
