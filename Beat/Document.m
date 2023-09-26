@@ -108,7 +108,7 @@
 #import "BeatEditorButton.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate>
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -130,9 +130,12 @@
 @property (nonatomic, weak) IBOutlet NSButton *outlineButton;
 @property (nonatomic, weak) IBOutlet NSButton *previewButton;
 @property (nonatomic, weak) IBOutlet NSButton *timelineButton;
-@property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
 @property (nonatomic, weak) IBOutlet NSButton *cardsButton;
 @property (nonatomic, weak) IBOutlet BeatLockButton *lockButton;
+
+// Quick settings
+@property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
+@property (nonatomic) NSPopover *quickSettingsPopover;
 
 // Text view
 @property (weak, nonatomic) IBOutlet BeatTextView *textView;
@@ -993,9 +996,10 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-#pragma mark - Quick Settings Popup
+#pragma mark - Quick Settings Popover
 
-- (IBAction)showQuickSettings:(id)sender {
+- (IBAction)showQuickSettings:(id)sender
+{
 	if (sender == nil) return;
 	
 	NSPopover* popover = NSPopover.new;
@@ -1006,6 +1010,14 @@ static NSWindow __weak *currentKeyWindow;
 	popover.behavior = NSPopoverBehaviorTransient;
 	[popover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSRectEdgeMaxY];
 	
+	popover.delegate = self;
+	
+	_quickSettingsPopover = popover;
+}
+
+- (void)popoverWillClose:(NSNotification *)notification
+{
+	if (notification.object == _quickSettingsPopover) _quickSettingsButton.state = NSOffState;
 }
 
 #pragma mark - Zooming & layout
