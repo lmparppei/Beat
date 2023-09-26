@@ -318,9 +318,12 @@ DQ
                                         <button verticalHuggingPriority="750" id="GTV-2p-SXF">
                                             <rect key="frame" x="0.0" y="130" width="196" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Sections" bezelStyle="regularSquare" imagePosition="left" inset="2" id="DrB-io-gNd">
+                                            <buttonCell key="cell" type="check" title="Sections" bezelStyle="regularSquare" imagePosition="left" inset="2" id="DrB-io-gNd" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printSections"/>
+                                                </userDefinedRuntimeAttributes>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="FLj-Y6-TXp"/>
@@ -329,9 +332,12 @@ DQ
                                         <button verticalHuggingPriority="750" id="ptb-NP-jOd">
                                             <rect key="frame" x="0.0" y="108" width="195" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Synopsis" bezelStyle="regularSquare" imagePosition="left" inset="2" id="p05-ak-YGH">
+                                            <buttonCell key="cell" type="check" title="Synopsis" bezelStyle="regularSquare" imagePosition="left" inset="2" id="p05-ak-YGH" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printSynopsis"/>
+                                                </userDefinedRuntimeAttributes>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="4B1-Lp-wC8"/>
@@ -340,9 +346,12 @@ DQ
                                         <button verticalHuggingPriority="750" id="qVw-JB-cjH">
                                             <rect key="frame" x="0.0" y="86" width="195" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Notes" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hsE-MS-Br7">
+                                            <buttonCell key="cell" type="check" title="Notes" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hsE-MS-Br7" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printNotes"/>
+                                                </userDefinedRuntimeAttributes>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="lJq-3z-5Pg"/>

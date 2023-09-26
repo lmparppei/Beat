@@ -100,6 +100,11 @@ static CGFloat panelWidth;
 	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY];
 	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
 	
+	// Restore settings for note/synopsis/section printing
+	if ([self.documentDelegate.documentSettings getBool:@"printSections"]) _printSections.state = NSOnState;
+	if ([self.documentDelegate.documentSettings getBool:@"printSynopsis"]) _printSynopsis.state = NSOnState;
+	if ([self.documentDelegate.documentSettings getBool:@"printNotes"]) _printNotes.state = NSOnState;
+	
 	[self toggleAdvancedOptions:_advancedOptionsButton];
 }
 
@@ -336,6 +341,12 @@ static CGFloat panelWidth;
 
 - (IBAction)toggleInvisibleElement:(id)sender
 {
+	NSButton* checkbox = sender;
+	BeatUserDefaultCheckboxCell* cell = checkbox.cell;
+
+	if (cell.userDefaultKey) {
+		[self.documentDelegate.documentSettings setBool:cell.userDefaultKey as:(cell.state == NSOnState)];
+	}
 	[self loadPreview];
 }
 
