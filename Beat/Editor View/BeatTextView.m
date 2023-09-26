@@ -155,6 +155,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Setup magnification
 	[self setupZoom];
+
+	// Restore spell checking setting
+	self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	
 	return self;
 }
@@ -1876,6 +1879,12 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 
 
 #pragma mark - Spell Checking
+
+- (void)toggleContinuousSpellChecking:(id)sender
+{
+	[super toggleContinuousSpellChecking:sender];
+	[BeatUserDefaults.sharedDefaults saveBool:(self.continuousSpellCheckingEnabled) forKey:BeatSettingContinuousSpellChecking];
+}
 
 - (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
 	
