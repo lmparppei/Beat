@@ -1,5 +1,5 @@
 //
-//  BeatRendering.m
+//  BeatRenderer.m
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 19.12.2022.
@@ -12,11 +12,12 @@
  
  */
 
-#import "BeatRendering.h"
+#import "BeatRenderer.h"
 #import <BeatPagination2/BeatPagination2.h>
 #import "Beat-Swift.h"
+#import <BeatCore/BeatFonts.h>
 
-@interface BeatRendering()
+@interface BeatRenderer()
 //@property (nonatomic) id<BeatPageDelegate> delegate;
 @property (nonatomic) BeatRenderStyles* styles;
 @property (nonatomic, weak) BeatFonts* fonts;
@@ -24,7 +25,7 @@
 
 @end
 
-@implementation BeatRendering
+@implementation BeatRenderer
 
 - (instancetype)initWithSettings:(BeatExportSettings*)settings  {
 	self = [super init];
@@ -274,10 +275,6 @@
 	if (self.settings.printNotes) {
 		[includedRanges addIndexes:line.noteRanges];
 	}
-	// Let's include markup characters (#, =) in section and synopsis lines.
-	if (line.type == section || line.type == synopse) {
-		[includedRanges addIndexesInRange:NSMakeRange(0, line.numberOfPrecedingFormattingCharacters)];
-	}
 	
 	// Create actual content ranges
 	NSMutableIndexSet* contentRanges = [line contentRangesIncluding:includedRanges].mutableCopy;
@@ -510,6 +507,35 @@
 	return [self.styles forElement:[Line typeName:type]];
 }
 
+- (NSFont*)fontWith:(RenderStyle *)style
+{
+	NSFont* font;
+	
+	if (style.font.length == 0) {
+		// Plain courier fonts
+		if (style.italic && style.bold) font = self.fonts.boldItalicCourier;
+		else if (style.italic) 			font = self.fonts.italicCourier;
+		else if (style.bold) 			font = self.fonts.boldCourier;
+		else 							font = self.fonts.courier;
+	} else {
+		// Non-courier fonts
+		if ([style.font isEqualToString:@"system"]) {
+			// System font
+			BXFontDescriptorSymbolicTraits traits = 0;
+			if (style.italic) traits |= BXFontDescriptorTraitItalic;
+			if (style.bold) traits |= BXFontDescriptorTraitBold;
+			
+			CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
+			font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
+		} else {
+			// Custom font
+			font = [NSFont fontWithName:style.font size:self.fonts.courier.pointSize];
+		}
+	}
+	
+	return font;
+}
+
 /// Returns attribute dictionary for given line. We are caching the styles.
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
 	BeatPaperSize paperSize = self.settings.paperSize;
@@ -538,6 +564,10 @@
 	if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
 		RenderStyle *style = [self styleForType:type];
 		
+		// Get font
+		NSFont* font = [self fontWith:style];
+		
+		// Get text color
 		BXColor* textColor = BXColor.blackColor;
 		if (style.color.length > 0) {
 			BXColor* c = [BeatColors color:style.color];
@@ -546,17 +576,15 @@
 		
 		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
 			NSForegroundColorAttributeName: textColor,
+			NSFontAttributeName: (font != nil) ? font : self.fonts.courier
 		}];
 		
-		if (style.italic && style.bold) styles[NSFontAttributeName] = self.fonts.boldItalicCourier;
-		else if (style.italic) 			styles[NSFontAttributeName] = self.fonts.italicCourier;
-		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
-		else 							styles[NSFontAttributeName] = self.fonts.courier;
-		
+		// Block sizing
 		CGFloat width 		= (paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 		CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
 		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
 		
+		// Paragraph style
 		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 		pStyle.headIndent 				= style.marginLeft;
 		pStyle.firstLineHeadIndent 		= style.marginLeft;

@@ -17,6 +17,18 @@
     #define BXFont NSFont
 #endif
 
+#if TARGET_OS_IOS
+    #define BXFontDescriptorSymbolicTraits UIFontDescriptorSymbolicTraits
+    #define BXFontDescriptor UIFontDescriptor
+    #define BXFontDescriptorTraitBold UIFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic UIFontDescriptorTraitItalic
+#else
+    #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
+    #define BXFontDescriptor NSFontDescriptor
+    #define BXFontDescriptorTraitBold NSFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic NSFontDescriptorTraitItalic
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatFonts : NSObject
@@ -36,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BXFont*)withSize:(CGFloat)size;
 - (BXFont*)boldWithSize:(CGFloat)size;
+
++ (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -107,6 +107,8 @@ import OSLog
 	@objc public var defaultWidthLetter:CGFloat = 0
 	
     @objc public var color:String = ""
+    @objc public var font:String = ""
+    @objc public var fontSize:CGFloat = 0
     
     public init(rules:[String:Any]) {
 		super.init()
@@ -155,6 +157,8 @@ import OSLog
             return "marginLeftLetter"
         case "margin-left-a4":
             return "marginLeftA4"
+        case "font-size":
+            return "fontSize"
 		default:
 			return name
 		}

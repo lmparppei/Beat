@@ -149,6 +149,9 @@
 - (void)toggleMode:(BeatEditorMode)mode {}
 - (NSUUID *)uuid { return NSUUID.new; }
 
+- (void)toggleSidebar:(id)sender {}
+
+
 - (nonnull NSArray<NSString *> *)shownRevisions {
 	return BeatRevisions.revisionColors;
 }

@@ -19,7 +19,7 @@ public final class CssParser {
 	var styles:[String:RenderStyle] = [:]
 	
 	// Map property names to types
-	let stringTypes:Set = ["textAlign", "text-align", "color"]
+	let stringTypes:Set = ["textAlign", "text-align", "color", "font"]
 	let boolTypes:Set = ["bold", "italic", "underline", "uppercase"]
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 

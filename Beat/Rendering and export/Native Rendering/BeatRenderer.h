@@ -1,5 +1,5 @@
 //
-//  BeatRendering.h
+//  BeatRenderer.h
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 19.12.2022.
@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatRendering : NSObject <BeatRendererDelegate>
+@interface BeatRenderer : NSObject <BeatRendererDelegate>
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic, weak) BeatPaginationManager* pagination;
 

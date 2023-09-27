@@ -1,5 +1,5 @@
 //
-//  BeatRendering.swift
+//  BeatRenderingViews.swift
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 18.12.2022.
@@ -202,7 +202,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		leftColumn.string = ""
 		rightColumn.string = ""
 		
-		let renderer = BeatRendering(settings: self.settings)
+		let renderer = BeatRenderer(settings: self.settings)
 		
 		var top:[Line] = []
 				

@@ -8,7 +8,7 @@
  
  "Class" names are internal type names, not .typeAsString names.
  
- © Lauri-Matti Parppei 2021-2022
+ © Lauri-Matti Parppei 2021-2023
 
 */
 
@@ -47,7 +47,9 @@ section {
 
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: true;
-    color: gray;
+    
+    font: system;
+    fontSize: 12;
 }
 
 synopsis {
@@ -57,6 +59,8 @@ synopsis {
     margin-top: 1l;
     italic: true;
     color: darkGray;
+    
+    font: system;
 }
 
 action {

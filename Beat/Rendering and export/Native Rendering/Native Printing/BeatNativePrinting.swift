@@ -23,7 +23,7 @@ class BeatNativePrinting:NSView {
 	
 	var settings:BeatExportSettings
 	//var pagination:BeatPaginationManager
-	var renderer:BeatRendering
+	var renderer:BeatRenderer
 	var screenplays:[BeatScreenplay]
 	var callback:(BeatNativePrinting, AnyObject?) -> ()
 	var progressPanel:NSPanel = NSPanel(contentRect: NSMakeRect(0, 0, 350, 30), styleMask: [.docModalWindow], backing: .buffered, defer: false)
@@ -57,7 +57,7 @@ class BeatNativePrinting:NSView {
 		self.host = window
 		self.callback = callback
 		
-		self.renderer = BeatRendering(settings: settings)
+		self.renderer = BeatRenderer(settings: settings)
 		self.settings = settings
 
 		// Create a pagination for each of these screenplays

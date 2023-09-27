@@ -10,18 +10,6 @@
 #import "BeatFonts.h"
 #import <TargetConditionals.h>
 
-#if TARGET_OS_IOS
-    #define BXFontDescriptorSymbolicTraits UIFontDescriptorSymbolicTraits
-    #define BXFontDescriptor UIFontDescriptor
-    #define BXFontDescriptorTraitBold UIFontDescriptorTraitBold
-    #define BXFontDescriptorTraitItalic UIFontDescriptorTraitItalic
-#else
-    #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
-    #define BXFontDescriptor NSFontDescriptor
-    #define BXFontDescriptorTraitBold NSFontDescriptorTraitBold
-    #define BXFontDescriptorTraitItalic NSFontDescriptorTraitItalic
-#endif
-
 @implementation BeatFonts
 
 + (BeatFonts*)sharedFonts {
@@ -89,16 +77,23 @@
     self.boldItalicCourier = [BXFont fontWithName:@"CourierPrimeSans-BoldItalic" size:12.0];
 }
 
-- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits {
+- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits
+{
 	return [self fontWithTrait:traits font:self.courier];
 }
 
-- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont {
-	BXFontDescriptor *fd = [originalFont.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
-	BXFont *font = [BXFont fontWithDescriptor:fd size:originalFont.pointSize];
-	
-	if (font == nil) return originalFont;
-	else return font;
+- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont
+{
+    return [BeatFonts fontWithTrait:traits font:originalFont];
+}
+
++ (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont
+{
+    BXFontDescriptor *fd = [originalFont.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
+    BXFont *font = [BXFont fontWithDescriptor:fd size:originalFont.pointSize];
+    
+    if (font == nil) return originalFont;
+    else return font;
 }
 
 - (BXFont*)boldWithSize:(CGFloat)size {
