@@ -100,21 +100,36 @@
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight = BeatPagination.lineHeight;
 	
-	NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:line.stripFormatting attributes:@{
-		NSFontAttributeName: _delegate.fonts.courier,
-		NSParagraphStyleAttributeName: pStyle
-	}];
-		
-	// If this is a *dual dialogue column*, we'll need to convert the style.
-	LineType type = line.type;
-	if (self.dualDialogueElement) {
-		if (type == dialogue) type = dualDialogue;
-		else if (type == character) type = dualDialogueCharacter;
-		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
-	}
-	
+    // If this is a *dual dialogue column*, we'll need to convert the style.
+    LineType type = line.type;
+    if (self.dualDialogueElement) {
+        if (type == dialogue) type = dualDialogue;
+        else if (type == character) type = dualDialogueCharacter;
+        else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
+    }
+
+    // Get style
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
 	CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
+    
+    // Set font for this element
+    NSFont* font = _delegate.fonts.courier;
+    if (style.font) {
+        if ([style.font isEqualToString:@"system"]) {
+            BXFontDescriptorSymbolicTraits traits = 0;
+            if (style.italic) traits |= BXFontDescriptorTraitItalic;
+            if (style.bold) traits |= BXFontDescriptorTraitBold;
+            
+            CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
+            font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
+        }
+    }
+    
+    NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:line.stripFormatting attributes:@{
+        NSFontAttributeName: font,
+        NSParagraphStyleAttributeName: pStyle
+    }];
+
 
 	// Calculate the line height
 	CGFloat height = 0.0;
@@ -480,24 +495,31 @@
 	NSMutableArray<NSString*>* sentences = NSMutableArray.new;
 	NSInteger length = 0;
 	
-	// Gather matches
-	for (NSTextCheckingResult *match in matches) {
-		NSString *str = [string substringWithRange:match.range];
-		length += str.length;
-		
-		[sentences addObject:str];
-	}
-	
+    // Break into sentences
+    for (NSTextCheckingResult *match in matches) {
+        NSString *str = [string substringWithRange:match.range];
+        length += str.length;
+        
+        [sentences addObject:str];
+    }
+    	
 	// Make sure we're not missing anything
 	if (length < string.length) {
 		NSString *str = [string substringWithRange:NSMakeRange(length, string.length - length)];
 		[sentences addObject:str];
 	}
-	
+
+    // A fallback if we are paginating something that isn't really split into sentences.
+    // Let's split it in words in that case.
+    NSInteger firstSentenceHeight = [self heightForString:sentences.firstObject lineType:line.type];
+    if ((CGFloat)firstSentenceHeight > self.delegate.maxPageHeight - self.delegate.styles.page.lineHeight * 2) {
+        sentences = [string componentsSeparatedByString:@" "].mutableCopy;
+    }
+    
 	NSMutableString* text = NSMutableString.new;
 	NSInteger breakLength = 0;
 	CGFloat breakPosition = 0.0;
-	
+
 	for (NSString *sentence in sentences) { @autoreleasepool {
 		[text appendString:sentence];
 		CGFloat h = [self heightForString:text lineType:line.type];
@@ -509,7 +531,7 @@
 			break;
 		}
 	} }
-	
+        
 	NSArray *p = [line splitAndFormatToFountainAt:breakLength];
 	BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:breakPosition element:line reason:@"Break paragraph"];
 	return @[p[0], p[1], pageBreak];
