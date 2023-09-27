@@ -38,7 +38,7 @@ class BeatMinimapLayoutManager:NSLayoutManager {
 	///
 	/// - Parameter action: The action that should be done if and when layout is complete.
 	///
-	func layoutFinished(action: @escaping () -> ()) {
+	func onLayoutFinished(action: @escaping () -> ()) {
 		if hasUnlaidCharacters {
 			addPostLayout(action: action)
 		} else {
@@ -72,11 +72,13 @@ class BeatMinimapLayoutManager:NSLayoutManager {
 					color.withAlphaComponent(0.30).setFill()
 				}
 				
-				NSBezierPath(rect: CGRect(x: origin.x + CGFloat(index),
-										  y: origin.y,
-										  width: width,
-										  height: usedRect.size.height))
-				.fill()
+				let rectRepresentation = CGRect(x: origin.x + CGFloat(index),
+									  y: origin.y,
+									  width: width,
+									  height: usedRect.size.height)
+				
+				// Draw the fragment
+				NSBezierPath(rect: rectRepresentation).fill()
 			}
 		}
 	}

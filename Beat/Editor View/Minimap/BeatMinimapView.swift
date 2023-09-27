@@ -27,47 +27,45 @@ class BeatMinimapView: NSTextView {
 		let textContainer = NSTextContainer(containerSize: NSSize(width: 100.0, height: CGFloat.greatestFiniteMagnitude))
 		layoutManager.addTextContainer(textContainer)
 		
-		let minimapView = BeatMinimapView(frame: NSMakeRect(0.0, 0.0, 0.0, editorView.enclosingScrollView?.frame.height ?? 100.0), textContainer: textContainer)
+		let minimap = BeatMinimapView(frame: NSMakeRect(0.0, 0.0, 0.0, editorView.enclosingScrollView?.frame.height ?? 100.0), textContainer: textContainer)
 		
-		minimapView.editorDelegate = editorDelegate
-		minimapView.editorView = editorView
+		minimap.editorDelegate = editorDelegate
+		minimap.editorView = editorView
 		
-		minimapView.textContainer?.widthTracksTextView  = true
-		minimapView.textContainer?.heightTracksTextView = false
-		minimapView.textContainer?.lineBreakMode        = .byWordWrapping
+		minimap.layoutManager?.typesetter = BeatMinimapTypeSetter()
 		
-		minimapView.autoresizingMask                    = [.height]
-		minimapView.isEditable                          = false
-		minimapView.isSelectable                        = false
-		minimapView.isHorizontallyResizable             = false
-		minimapView.isVerticallyResizable               = true
-		minimapView.textContainerInset                  = CGSize(width: 0, height: 0)
+		minimap.textContainer?.widthTracksTextView  = true
+		minimap.textContainer?.heightTracksTextView = false
+		minimap.textContainer?.lineBreakMode        = .byWordWrapping
 		
-		minimapView.layoutManager?.typesetter = BeatMinimapTypeSetter()
-		minimapView.textContainer?.lineFragmentPadding = BeatMinimapLayoutManager.minimapFontSize()
+		minimap.translatesAutoresizingMaskIntoConstraints = true
+		minimap.autoresizingMask                    = [.height, .maxXMargin]
 		
-		minimapView.textContainerInset = NSMakeSize(0, BeatMinimapLayoutManager.minimapFontSize())
-		minimapView.backgroundColor = .clear
+		minimap.isEditable                          = false
+		minimap.isSelectable                        = false
+		minimap.isHorizontallyResizable             = false
+		minimap.isVerticallyResizable               = true
+		minimap.textContainerInset                  = CGSize(width: 0, height: 0)
 		
-		return minimapView
+		minimap.textContainer?.lineFragmentPadding = BeatMinimapLayoutManager.minimapFontSize()
+		minimap.textContainerInset = NSMakeSize(0, BeatMinimapLayoutManager.minimapFontSize())
+		minimap.backgroundColor = .clear
+		
+		return minimap
 	}
 	
-	// Highlight the current line.
+	/// Highlights the current line
 	override func drawBackground(in rect: NSRect) {
 		super.drawBackground(in: rect)
 		
 		// Highlight the current line
-		// UPDATE THIS TO SUPPORT PARSER
-		/*
-		guard let layoutManager = layoutManager, let textView = self.textView else { return }
-		 
-		NSColor.lightGray.setFill()
-		if let location = textView.insertionPoint {
-			layoutManager.enumerateFragmentRects(forLineContaining: location) { rect in
+		guard let range = self.editorDelegate?.currentLine().textRange() else { return }
+		if range.location != NSNotFound {
+			NSColor.lightGray.setFill()
+			layoutManager?.enumerateFragmentRects(forLineContaining: range.location, using: { rect in
 				NSBezierPath(rect: rect).fill()
-			}
+			})
 		}
-		 */
 	}
 	
 	
@@ -98,7 +96,7 @@ class BeatMinimapView: NSTextView {
 	}
 	
 	@objc
-	func adjustScrollPositionOfMinimap() {
+	func adjustPosition() {
 		//guard viewLayout.showMinimap else { return }
 		
 		guard let layoutManager = self.layoutManager as? BeatMinimapLayoutManager,
@@ -106,26 +104,26 @@ class BeatMinimapView: NSTextView {
 			  let scrollView = self.editorView?.enclosingScrollView
 		else { return }
 				
-		layoutManager.layoutFinished { [self] in
+		layoutManager.onLayoutFinished { [self] in
 			let textViewHeight 		= textView.frame.height,
 				textHeight     		= textView.boundingRect()?.height ?? 0,
 				minimapHeight  		= self.boundingRect()?.height ?? 0,
 				documentVisibleRect = scrollView.documentVisibleRect,
 				visibleHeight  		= scrollView.documentVisibleRect.size.height
 			
-			let scrollFactor: CGFloat
+			let factor: CGFloat
 			
 			if minimapHeight < visibleHeight || textHeight <= visibleHeight {
-				scrollFactor = 1
+				factor = 1
 			} else {
-				scrollFactor = 1 - (minimapHeight - visibleHeight) / (textHeight - visibleHeight)
+				factor = 1 - (minimapHeight - visibleHeight) / (textHeight - visibleHeight)
 			}
 			
 			
 			// We box the positioning of the minimap at the top and the bottom of the code view (with the `max` and `min`
 			// expessions. This is necessary as the minimap will otherwise be partially cut off by the enclosing clip view.
 			// To get Xcode-like behaviour, where the minimap sticks to the top, it being a floating view is not sufficient.
-			let newOriginY = floor(min(max(documentVisibleRect.origin.y * scrollFactor, 0), textViewHeight - minimapHeight))
+			let newOriginY = floor(min(max(documentVisibleRect.origin.y * factor, 0), textViewHeight - minimapHeight))
 			
 			// Avoid updating the frame if it hasn't changed.
 			if self.frame.origin.y != newOriginY {
