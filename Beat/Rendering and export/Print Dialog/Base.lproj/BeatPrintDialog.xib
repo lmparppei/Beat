@@ -369,7 +369,7 @@ DQ
                     </box>
                     <button verticalHuggingPriority="750" id="mu6-Go-Nii">
                         <rect key="frame" x="366" y="62" width="249" height="18"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="check" title="Show advanced options" bezelStyle="regularSquare" imagePosition="right" alignment="right" inset="2" id="K23-C7-mRO">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>

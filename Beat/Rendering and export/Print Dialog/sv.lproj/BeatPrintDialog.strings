@@ -53,7 +53,7 @@
 "tAR-96-UAV.title" = "Skriv ut revisionsmarkeringar";
 
 /* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "vz7-gT-RKM"; */
-"vz7-gT-RKM.title" = "Inkludera sidhuvud";
+"vz7-gT-RKM.title" = "Sidhuvud";
 
 /* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "XaA-mb-KGd"; */
 "XaA-mb-KGd.title" = "US Letter";
@@ -67,3 +67,10 @@
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "y6u-Lj-RR8"; */
 "y6u-Lj-RR8.title" = "Avbryt";
 
+"3ot-50-kVK.title" = "Inkludera osynliga element";
+
+"DrB-io-gNd.ttile" = "Sektioner";
+
+"p05-ak-YGH.title" = "Synopsis";
+
+"hsE-MS-Br7.title" = "Anteckningar";

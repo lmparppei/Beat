@@ -69,10 +69,18 @@
 "s1c-o3-r3e.title" = "Toinen";
 
 /* Class = "NSTextFieldCell"; title = "Print Revision Markers"; ObjectID = "tAR-96-UAV"; */
-"tAR-96-UAV.title" = "Tulosta korjausmerkinnät";
+"tAR-96-UAV.title" = "Sisällytä korjausmerkinnät";
 
 /* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "vz7-gT-RKM"; */
-"vz7-gT-RKM.title" = "Sisällytä otsake";
+"vz7-gT-RKM.title" = "Sivun otsake";
 
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "y6u-Lj-RR8"; */
 "y6u-Lj-RR8.title" = "Peruuta";
+
+"3ot-50-kVK.title" = "Sisällytä näkymättömiä elementtejä";
+
+"DrB-io-gNd.ttile" = "Osiot";
+
+"p05-ak-YGH.title" = "Synopsikset";
+
+"hsE-MS-Br7.title" = "Muistiinpanot";
