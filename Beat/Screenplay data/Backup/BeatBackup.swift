@@ -24,27 +24,73 @@ class BeatBackupFile:NSObject {
 
 class BeatBackup:NSObject {
 	@objc class var backupURLKey:String { return "backupURL" }
+	@objc class var bookmarkKey:String { return "backupBookmark"}
 	
-	class var separator:String {
-		return " Backup "
+	class var separator:String { return " Backup " }
+	class var defaultURL:URL {
+		let delegate = NSApp.delegate as! BeatAppDelegate
+		return delegate.appDataPath("Backup")
 	}
-	
+
 	class var backupURL:URL {
 		// Check if there is an external URL set
 		let backupPath:String = BeatUserDefaults.shared().get(BeatBackup.backupURLKey) as? String ?? ""
-		if (backupPath.count > 0) {
-			if FileManager.default.fileExists(atPath: backupPath) {
-				return URL(fileURLWithPath: backupPath)
+		let backupURL = URL(fileURLWithPath: backupPath)
+		
+		if backupPath.count > 0  {
+			if BeatBackup.hasAccess(to: backupURL) {
+				return backupURL
 			}
 		}
 		
-		let delegate = NSApp.delegate as! BeatAppDelegate
-		return delegate.appDataPath("Backup")
+		return BeatBackup.defaultURL
 	}
 	class var autosaveURL:URL {
 		let url = BeatBackup.backupURL
 		return url.appendingPathComponent("Autosave/")
+	}
+	
+	/// Try to access the backup URL
+	class func hasAccess(to url:URL) -> Bool {
+		if BeatBackup.hasBookmark(for: url) != nil {
+			if FileManager.default.fileExists(atPath: url.path) {
+				return true
+			}
+		}
 		
+		return false
+	}
+	
+	/// Tries to access the bookmarked URL
+	@objc class func hasBookmark(for url:URL) -> Data? {
+		guard let bookmark = UserDefaults.standard.data(forKey: BeatBackup.bookmarkKey) else {
+			// No bookmark data, forget about it
+			return nil
+		}
+		
+		var isStale = false;
+		
+		do {
+			_ = try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale);
+		} catch {
+			print("WARNING: Can't access the bookmark")
+		}
+		
+		if (!isStale) { return bookmark }
+		else { return nil }
+	}
+	
+	/// Tries to gain access to a new backup URL
+	@objc class func bookmarkBackupFolder(url: URL) -> Data? {
+		do {
+			let bookmark = try url.bookmarkData(options: [.withSecurityScope])
+			UserDefaults.standard.set(bookmark, forKey: BeatBackup.bookmarkKey)
+			
+			return bookmark
+		} catch {
+			print("ERROR: Unable to access backup url")
+			return nil
+		}
 	}
 	
 	class var formatter:DateFormatter {
@@ -61,6 +107,12 @@ class BeatBackup:NSObject {
 
 		let date = documentURL.modificationDate
 		let backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
+		
+		// If we are outside the sandbox, start accessing resources
+		if (backupFolderURL != BeatBackup.defaultURL) {
+			_ = backupFolderURL.startAccessingSecurityScopedResource()
+		}
+		
 		let delegate = NSApp.delegate as! BeatAppDelegate
 		
 		let prefix = (autosave) ? "Autosave" : "Backup"
@@ -105,6 +157,11 @@ class BeatBackup:NSObject {
 			} else {
 				BeatBackup.manageBackups(url: backupFolderURL)
 			}
+		}
+		
+		// If we are outside the sandbox, stop accessing resources
+		if (backupFolderURL != BeatBackup.defaultURL) {
+			backupFolderURL.stopAccessingSecurityScopedResource()
 		}
 		return result
 	}
