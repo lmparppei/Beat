@@ -9,7 +9,6 @@
 import UXKit
 
 extension UXTextView {
-    
     /// Returns X/Y insets for the text view for cross-platform compatibility.
     func getInsets() -> CGSize {
         #if os(macOS)
@@ -39,6 +38,24 @@ extension UXTextView {
         get { return self.string }
         set { self.string = newValue }
     }
+
+    var textContainerOrigin: CGPoint {
+        return CGPoint(x: getInsets().width, y: getInsets().height)
+    }
+    
+    public func boundingRect(for range: NSRange? = nil) -> CGRect? {
+        guard let layoutManager = self.layoutManager,
+              let textContainer = self.textContainer,
+              let textStorage = self.textStorage
+        else { return nil }
+        
+        let charRange = range ?? NSRange(location: 0, length: textStorage.length)
+        let glyphRange = layoutManager.glyphRange(forCharacterRange: charRange, actualCharacterRange: nil)
+        
+        let rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+        return rect.offsetBy(dx: textContainerOrigin.x, dy: textContainerOrigin.y)
+    }
+    
     #endif
     
     // MARK: Easy rects for iOS
@@ -61,16 +78,5 @@ extension UXTextView {
         #endif
     }
     
-    public func boundingRect(for range: NSRange? = nil) -> CGRect? {
-        guard let layoutManager = self.layoutManager,
-              let textContainer = self.textContainer,
-              let textStorage = self.textStorage
-        else { return nil }
-        
-        let charRange = range ?? NSRange(location: 0, length: textStorage.length)
-        let glyphRange = layoutManager.glyphRange(forCharacterRange: charRange, actualCharacterRange: nil)
-        
-        let rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
-        return rect.offsetBy(dx: textContainerOrigin.x, dy: textContainerOrigin.y)
-    }
+    
 }

@@ -8,8 +8,14 @@
 
 import Foundation
 
+@objc public class BeatUserDefaultCheckbox:NSButton {
+	@objc var userDefaultKey:String {
+		let cell = self.cell as? BeatUserDefaultCheckboxCell
+		return cell?.userDefaultKey ?? ""
+	}
+}
 
-class BeatUserDefaultCheckboxCell:NSButtonCell {
+@objc class BeatUserDefaultCheckboxCell:NSButtonCell {
 	@IBInspectable var userDefaultKey:String = ""
 	
 	override func awakeFromNib() {

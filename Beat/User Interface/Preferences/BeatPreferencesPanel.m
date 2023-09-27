@@ -260,8 +260,15 @@
 	
 	[panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse result) {
 		if (result != NSModalResponseOK) return;
-		[BeatUserDefaults.sharedDefaults save:panel.URL.path forKey:BeatSettingBackupURL];
-		self.backupURLdisplay.stringValue = panel.URL.path;
+		
+		// Access the bookmark
+		id bookmark = [BeatBackup bookmarkBackupFolderWithUrl:panel.URL];
+		if (bookmark) {
+			[BeatUserDefaults.sharedDefaults save:panel.URL.path forKey:BeatSettingBackupURL];
+			self.backupURLdisplay.stringValue = panel.URL.path;
+		} else {
+			[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingBackupURL];
+		}
 	}];
 }
 

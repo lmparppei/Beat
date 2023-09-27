@@ -1,5 +1,24 @@
 # Changelog
 
+## Beat 1.99.69
+
+- Fixed popover button on/off glitch
+- Added options to print sections, synopsis lines and notes (which required a ton of refactoring here and there)
+
+
+## Beat 1.99.x
+
+I've forgotten to update the log, but here it goes:
+
+- Tons of changes for cross-platform compatibility
+- Modularization of code
+- Better export settings and preprocessing
+- Lots and lots of bug fixes
+- Plugin API enhancements, including stuff with pagination data
+- Rewritten note parsing
+- Visual cues for beats and markers  
+
+
 ## Beat 1.98.x
 
 - Native rendering rewritten from scratch, once again, almost working already. Pagination and rendering are also separated from each other, with protocols for rendering on different platforms.

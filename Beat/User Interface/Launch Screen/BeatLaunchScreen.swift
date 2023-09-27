@@ -8,48 +8,14 @@
 
 import Cocoa
 
-class BeatLaunchScreen : NSWindowController {
-	
-	@IBOutlet var recentFiles: NSOutlineView!
-	@IBOutlet var versionField: NSTextField!
-	@IBOutlet var recentFilesSource: RecentFiles!
-	
-	init() {
-		super.init(window: nil)
-		Bundle.main.loadNibNamed("LaunchScreen", owner: self, topLevelObjects: nil)
-	}
-	required init?(coder: NSCoder) {
-		super.init(coder: coder)
-		Bundle.main.loadNibNamed("LaunchScreen", owner: self, topLevelObjects: nil)
-	}
-	override func close() {
-		self.window?.close()
-	}
-	
-	override func awakeFromNib() {
-		self.window?.isMovableByWindowBackground = true
-
-		// Set version field value
-		var version:String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-		version = "beat " + version
-		versionField.stringValue = version
-		
-		// Reload recent file source + view
-		recentFilesSource.reload()
-		recentFiles.reloadData()
-		
-		recentFiles.doubleAction = #selector(self.recentFilesSource.doubleClickDocument(_:))
-		recentFiles.target = self.recentFilesSource
-	}
-}
-
-
 class BeatLaunchScreenView : NSViewController {
 	
-	@IBOutlet var recentFiles: NSOutlineView!
-	@IBOutlet var versionField: NSTextField!
-	@IBOutlet var noRecentFilesLabel: NSTextField?
+	@IBOutlet weak var recentFiles: NSOutlineView!
+	@IBOutlet weak var versionField: NSTextField!
+	@IBOutlet weak var noRecentFilesLabel: NSTextField?
 	var recentFilesSource = RecentFiles()
+	
+	@IBOutlet weak var supportButton: BeatURLButton?
 	
 	func close() {
 		self.view.window?.close()
@@ -59,8 +25,8 @@ class BeatLaunchScreenView : NSViewController {
 		self.view.window?.isMovableByWindowBackground = true
 
 		// Set version field value
-		versionField.stringValue =  Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-		
+		let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+		versionField.stringValue = version
 		
 		recentFiles.dataSource = recentFilesSource
 		recentFiles.delegate = recentFilesSource
@@ -78,12 +44,17 @@ class BeatLaunchScreenView : NSViewController {
 		recentFiles.doubleAction = #selector(self.recentFilesSource.doubleClickDocument(_:))
 		recentFiles.target = self.recentFilesSource
 	}
-	/*
-	@IBAction func openWebResource(sender:BeatURLButton?) {
-		guard let url = sender?.url else { return }
-		webResources.openURLwithButton(sender: sender)
+	
+	override func viewWillAppear() {
+		super.viewWillAppear()
+		guard let supportButton = self.supportButton else { return }
+		
+		// Add the version number if needed
+		if !supportButton.website.contains("?version") {
+			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+			supportButton.website += "?version=" + version
+		}
 	}
-	 */
 }
 
 class SameWindowStoryboardSegue: NSStoryboardSegue {

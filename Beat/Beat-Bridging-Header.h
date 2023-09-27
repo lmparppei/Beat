@@ -24,7 +24,7 @@
 #import "BeatTextView.h"
 #import "BeatBrowserView.h"
 
-#import "BeatRendering.h"
+#import "BeatRenderer.h"
 
 #import "ITSwitch.h"
 

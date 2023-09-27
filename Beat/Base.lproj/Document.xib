@@ -154,7 +154,7 @@
                                                                                 <rect key="frame" x="0.0" y="117" width="300" height="348"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="348"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="348"/>
@@ -1067,7 +1067,7 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
@@ -1125,11 +1125,11 @@
                                                             </connections>
                                                         </customView>
                                                         <customView wantsLayer="YES" id="MJt-fS-Zk9" userLabel="Button View">
-                                                            <rect key="frame" x="15" y="502" width="635" height="24"/>
+                                                            <rect key="frame" x="15" y="509" width="640" height="20"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <subviews>
                                                                 <button toolTip="Quick Settings" allowsExpansionToolTips="YES" id="piN-SW-wNh" userLabel="Quick Settings Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="608" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="615" y="0.0" width="25" height="20"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="SettingIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="yVk-AR-Glo">
                                                                         <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -1144,7 +1144,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="575" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="583" y="0.0" width="25" height="20"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1156,11 +1156,11 @@
                                                                     </connections>
                                                                 </button>
                                                                 <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6aa-Mu-dRU">
-                                                                    <rect key="frame" x="760" y="2" width="0.0" height="0.0"/>
+                                                                    <rect key="frame" x="760" y="-2" width="0.0" height="0.0"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                 </stackView>
                                                                 <button toolTip="Toggle Sidebar" allowsExpansionToolTips="YES" id="ULq-c1-qrj" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="0.0" y="-0.5" width="22" height="26"/>
+                                                                    <rect key="frame" x="0.0" y="-2.5" width="22" height="25"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="sidebar.left" catalog="system" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
                                                                         <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -1174,20 +1174,8 @@
                                                                         <action selector="toggleSidebarView:" target="-2" id="HaT-7J-qLQ"/>
                                                                     </connections>
                                                                 </button>
-                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="538" y="1" width="27" height="22"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <accessibility description="Show Print Preview"/>
-                                                                    <connections>
-                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
-                                                                    </connections>
-                                                                </button>
                                                                 <button toolTip="Toggle Timeline" allowsExpansionToolTips="YES" id="SU7-uh-HJD" userLabel="Timeline Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="35" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="33" y="0.0" width="26" height="20"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="3LY-u6-Jq0">
                                                                         <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -1202,7 +1190,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <button toolTip="Go to scene..." allowsExpansionToolTips="YES" id="L0v-T6-wwt" userLabel="Timeline Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="75" y="2" width="23" height="19"/>
+                                                                    <rect key="frame" x="72" y="0.0" width="18" height="20"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="Search" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="pLs-bo-IGr">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1214,12 +1202,12 @@
                                                                     </connections>
                                                                 </button>
                                                                 <customView hidden="YES" appearanceType="darkAqua" id="pf2-1r-P3e" customClass="BeatModeDisplay" customModule="Beat" customModuleProvider="target">
-                                                                    <rect key="frame" x="211" y="0.0" width="210" height="24"/>
+                                                                    <rect key="frame" x="213" y="-2" width="210" height="24"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <subviews>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zip-rI-oJi">
                                                                             <rect key="frame" x="5" y="5" width="147" height="14"/>
-                                                                            <autoresizingMask key="autoresizingMask"/>
+                                                                            <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                             <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" alignment="center" title="Mode Indicator" id="pmw-EE-q6r">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1227,10 +1215,10 @@
                                                                             </textFieldCell>
                                                                         </textField>
                                                                         <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="VrF-1f-6qb">
-                                                                            <rect key="frame" x="152" y="0.0" width="5" height="25"/>
+                                                                            <rect key="frame" x="152" y="2" width="5" height="20"/>
                                                                         </box>
                                                                         <button verticalHuggingPriority="750" id="dRS-5f-0gk">
-                                                                            <rect key="frame" x="154" y="0.0" width="56" height="25"/>
+                                                                            <rect key="frame" x="154" y="2" width="56" height="20"/>
                                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                             <buttonCell key="cell" type="bevel" title="Exit" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="cfc-Bs-BT3">
                                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1252,6 +1240,18 @@
                                                                         <outlet property="title" destination="zip-rI-oJi" id="qw4-fp-es2"/>
                                                                     </connections>
                                                                 </customView>
+                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="551" y="0.0" width="24" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Print Preview"/>
+                                                                    <connections>
+                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
+                                                                    </connections>
+                                                                </button>
                                                             </subviews>
                                                         </customView>
                                                         <customView hidden="YES" appearanceType="darkAqua" id="ftJ-Zm-jkE" customClass="BeatLockButton">
@@ -1311,7 +1311,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
@@ -1388,7 +1388,7 @@
                                                     <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
                                                         <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
                                                                 <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>

@@ -29,7 +29,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	@IBOutlet weak var quickLookView:NSView?
 	
 	@objc var pagination:BeatPaginationManager?
-	var renderer:BeatRendering?
+	var renderer:BeatRenderer?
 	@objc var timer:Timer?
 	var paginationUpdated = false
 	var lastChangeAt = NSMakeRange(0, 0)
@@ -54,7 +54,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		super.init()
 			
 		// Create render manager
-		self.renderer = BeatRendering(settings: settings)
+		self.renderer = BeatRenderer(settings: settings)
 		self.pagination = BeatPaginationManager(settings: settings, delegate: self, renderer: self.renderer, livePagination: true)
 	}
 	

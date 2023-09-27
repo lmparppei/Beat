@@ -46,7 +46,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Hdk-28-NJb">
-                                                                    <rect key="frame" x="36" y="25" width="264" height="16"/>
+                                                                    <rect key="frame" x="36" y="25" width="263" height="16"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" title="Filename" id="EY0-Ql-hX0">
                                                                         <font key="font" usesAppearanceFont="YES"/>
@@ -55,7 +55,7 @@
                                                                     </textFieldCell>
                                                                 </textField>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Hsd-DQ-5X7">
-                                                                    <rect key="frame" x="36" y="11" width="265" height="11"/>
+                                                                    <rect key="frame" x="36" y="11" width="263" height="11"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Date" id="d9P-af-E8t">
                                                                         <font key="font" metaFont="miniSystem"/>
@@ -100,14 +100,14 @@
                                     <subviews>
                                         <button verticalHuggingPriority="750" id="6T8-Bj-yWC" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="16" y="16" width="186" height="16"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="ZFK-os-h00">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="smallSystem"/>
                                             </buttonCell>
                                             <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                             <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.kapitan.fi/beat/support.html?origin=appStore"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.beat-app.fi/support-the-development/"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="openURLwithButtonWithSender:" target="9uD-mB-xHs" id="Qdt-wq-Xn1"/>
@@ -183,7 +183,7 @@
                                         </button>
                                         <button verticalHuggingPriority="750" id="sR9-2D-XCB" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="16" y="36" width="186" height="14"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="osl-e8-t6d">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="smallSystem"/>
@@ -228,9 +228,9 @@
                                     <action selector="openDocument:" target="9uD-mB-xHs" id="JuP-ck-oqH"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ieF-S2-ZIH">
-                                <rect key="frame" x="371" y="191" width="330" height="25"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ieF-S2-ZIH">
+                                <rect key="frame" x="371" y="197" width="330" height="19"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No recent screenplays" id="Zf8-Dc-Df3">
                                     <font key="font" metaFont="systemLight" size="16"/>
                                     <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -242,6 +242,7 @@
                     <connections>
                         <outlet property="noRecentFilesLabel" destination="ieF-S2-ZIH" id="fGg-SB-xqk"/>
                         <outlet property="recentFiles" destination="wBD-iY-AmA" id="o9O-8v-heF"/>
+                        <outlet property="supportButton" destination="6T8-Bj-yWC" id="qY7-bk-sgJ"/>
                         <outlet property="versionField" destination="rD0-de-jUn" id="hDi-Cb-aGB"/>
                     </connections>
                 </viewController>
@@ -463,22 +464,22 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
+                                        <button verticalHuggingPriority="750" id="atm-er-Pj2">
+                                            <rect key="frame" x="20" y="294" width="29" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="bevel" title="Button" bezelStyle="rounded" image="chevron.backward" catalog="system" imagePosition="only" alignment="center" inset="2" id="Wvt-te-p5O">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="dismissController:" target="Xcy-ek-Jzn" id="yos-dw-Rpl"/>
+                                                <segue destination="bU7-R8-ocO" kind="custom" customClass="SameWindowStoryboardSegue" customModule="Beat" customModuleProvider="target" id="usj-3b-jHu"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                                 <color key="fillColor" red="0.086274509799999996" green="0.090196078430000007" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
                             </box>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="atm-er-Pj2">
-                                <rect key="frame" x="13" y="293" width="29" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="bevel" title="Button" bezelStyle="rounded" image="chevron.backward" catalog="system" imagePosition="only" alignment="center" inset="2" id="Wvt-te-p5O">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="dismissController:" target="Xcy-ek-Jzn" id="yos-dw-Rpl"/>
-                                    <segue destination="bU7-R8-ocO" kind="custom" customClass="SameWindowStoryboardSegue" customModule="Beat" customModuleProvider="target" id="usj-3b-jHu"/>
-                                </connections>
-                            </button>
                         </subviews>
                     </view>
                 </viewController>
