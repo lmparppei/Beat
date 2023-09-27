@@ -47,7 +47,8 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 		}
 	
 		//guard let url = Bundle.main.url(forResource: "Patch Notes", withExtension: "html") else { return }
-		if let url = URL(string: "https://kapitan.fi/beat/patchNotes/" + version + ".html") {
+		if let url = URL(string: "https://www.beat-app.fi/patch-notes/" + version.replacingOccurrences(of: ".", with: "-") + "/?version=" + version) {
+			print(url)
 			self.browser.showBrowser(url, withTitle: NSLocalizedString("app.patchNotes", comment: ""), width: 550, height: 640, onTop: true)
 		}	
 	}
