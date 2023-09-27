@@ -156,8 +156,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Setup magnification
 	[self setupZoom];
 
-	// Restore spell checking setting
-	self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
+	// Restore spell checking setting. A hack to see if the system returns a different value.
+	if (self.continuousSpellCheckingEnabled) {
+		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
+	}
 	
 	return self;
 }
