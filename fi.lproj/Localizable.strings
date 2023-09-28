@@ -138,8 +138,8 @@
 
 "launch.templates.subtitle" = "Aloita tästä, jos olet uusi käyttäjä!";
 
-"templates.tutorials" = "Tutorials";
-"templates.templates" = "Templates";
+"templates.tutorials" = "Tutoriaalit";
+"templates.templates" = "Mallipohjat";
 
 "templates.tutorial.title" = "Tutoriaali";
 "templates.tutorial.description" = "Pikaopas Beatin käyttöön";
@@ -154,4 +154,6 @@
 "templates.onePageSynopsis.description" = "Tiivistä tarinasi yhteen sivuun";
 
 "templates.threeActOutline.title" = "Kolminäytöksinen pohja";
-"templates.threeActOutline.description" = "Pohja klassisen elokuvan rakenteelle";
+"templates.threeActOutline.description" = "Klassinen elokuvan rakenteen mallipohja";
+
+"templates.showTutorialsAndTemplates" = "Näytä tutoriaalit ja mallit...";

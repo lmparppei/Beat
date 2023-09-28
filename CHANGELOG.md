@@ -4,6 +4,9 @@
 
 - Fixed popover button on/off glitch
 - Added options to print sections, synopsis lines and notes (which required a ton of refactoring here and there)
+- Fixed a bug with long dialogue blocks with no sentence breaks
+- Fixed the tutorial
+- Added support for non-monospaced fonts (macOS)
 
 
 ## Beat 1.99.x

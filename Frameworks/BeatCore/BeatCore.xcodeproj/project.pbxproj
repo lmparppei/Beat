@@ -77,6 +77,7 @@
 		B6D32028298EBE45003DA45D /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201D298EBE2B003DA45D /* BeatTag.m */; };
 		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
 /* End PBXBuildFile section */
@@ -151,6 +152,7 @@
 		B6D3201F298EBE2B003DA45D /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
 		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
+		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
 		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -259,6 +261,7 @@
 			children = (
 				B633C1E9298C631E0011449D /* BeatLocalization.h */,
 				B633C1EA298C631E0011449D /* BeatLocalization.m */,
+				B6E0E0F52AC4CAE400948752 /* Localizable.swift */,
 			);
 			path = Localization;
 			sourceTree = "<group>";
@@ -495,6 +498,7 @@
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */,
+				B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */,
 				B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */,
 				B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */,
 				B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */,

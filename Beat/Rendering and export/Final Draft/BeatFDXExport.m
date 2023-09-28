@@ -742,7 +742,7 @@ static NSDictionary *fdxIds;
 		[self escapeString:text];
 		
 		// Remove old-style carriage returns (just in case)
-		NSString* c = [NSString stringWithFormat:@"%c", 0x03];
+		// NSString* c = [NSString stringWithFormat:@"%c", 0x03];
 		
 		// Remove unwanted characters
 		NSArray* l = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];

@@ -229,13 +229,16 @@ body > p:first-child {
 
 .section {
 	margin-top: calc(#sceneHeadingSpacing# * var(--line-height));
+	font-family: "Helvetica", sans-serif;
 	font-weight: bold;
-	color: #999;
+	color: #888;
 }
 
 .synopsis {
+	margin-top: var(--line-height);
+	font-family: "Helvetica", sans-serif;
 	font-style: italic;
-	color: #999;
+	color: #aaa;
 }
 
 .transition {

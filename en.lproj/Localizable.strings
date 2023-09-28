@@ -167,3 +167,10 @@
 "textView.information.characters" = "Characters";
 "textView.information.words" = "Words";
 
+"export.includeInvisibleElements" = "Include Invisible Elements";
+"export.printSections" = "Sections";
+"export.printSynopsis" = "Synopsis";
+"export.printNotes" = "Notes";
+
+"templates.showTutorialsAndTemplates" = "Show Tutorials and Templates...";
+
