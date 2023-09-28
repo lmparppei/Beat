@@ -200,6 +200,9 @@ DQ
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.includeInvisibleElements"/>
+                                            </userDefinedRuntimeAttributes>
                                         </textField>
                                         <box verticalHuggingPriority="750" boxType="separator" id="UKb-DO-gZj">
                                             <rect key="frame" x="-1" y="319" width="197" height="5"/>
@@ -322,9 +325,12 @@ DQ
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                                 <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printSections"/>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Sections"/>
                                                 </userDefinedRuntimeAttributes>
                                             </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSections"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="FLj-Y6-TXp"/>
                                             </connections>
@@ -336,9 +342,12 @@ DQ
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                                 <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printSynopsis"/>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Synopsis"/>
                                                 </userDefinedRuntimeAttributes>
                                             </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSynopsis"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="4B1-Lp-wC8"/>
                                             </connections>
@@ -350,9 +359,12 @@ DQ
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                                 <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="printNotes"/>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Notes"/>
                                                 </userDefinedRuntimeAttributes>
                                             </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printNotes"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="lJq-3z-5Pg"/>
                                             </connections>
@@ -379,7 +391,7 @@ DQ
                         </connections>
                     </button>
                     <progressIndicator maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" id="1qf-XO-k41">
-                        <rect key="frame" x="160" y="201" width="32" height="32"/>
+                        <rect key="frame" x="159" y="201" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     </progressIndicator>
                 </subviews>

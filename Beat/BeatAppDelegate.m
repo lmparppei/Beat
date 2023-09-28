@@ -391,12 +391,20 @@
 	}
 }
 
-#pragma mark - Misc UI
+#pragma mark - Launch screen
 
-static NSWindow* launchWindow;
+-(void)showLaunchScreen
+{
+	[self showLaunchScreenWithViewControllerName:@"LaunchScreen"];
+}
 
--(void)showLaunchScreen {
-	
+-(void)showTemplates
+{
+	[self showLaunchScreenWithViewControllerName:@"Templates"];
+}
+
+- (void)showLaunchScreenWithViewControllerName:(NSString*)viewControllerName
+{
 	if (_welcomeWindow == nil) {
 		_welcomeWindow = [NSWindow.alloc initWithContentRect:NSMakeRect(0, 0, 0, 0) styleMask:NSWindowStyleMaskFullSizeContentView | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:false];
 		_welcomeWindow.title = @"";
@@ -409,7 +417,7 @@ static NSWindow* launchWindow;
 	}
 
 	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"Launch Screen" bundle:NSBundle.mainBundle];
-	NSViewController* vc = [storyboard instantiateControllerWithIdentifier:@"LaunchScreen"];
+	NSViewController* vc = [storyboard instantiateControllerWithIdentifier:viewControllerName];
 
 	NSRect frame = vc.view.frame;
 	NSSize screen = _welcomeWindow.screen.frame.size;
@@ -421,11 +429,6 @@ static NSWindow* launchWindow;
 	_welcomeWindow.contentViewController = vc;
 	[_welcomeWindow makeCentered];
 	[_welcomeWindow makeKeyAndOrderFront:nil];
-	
-	/*
-	if (!self.welcomeWindow) self.welcomeWindow = BeatLaunchScreen.alloc.init;
-	[self.welcomeWindow.window makeKeyAndOrderFront:nil];
-	 */
 }
 
 - (void)closeLaunchScreen

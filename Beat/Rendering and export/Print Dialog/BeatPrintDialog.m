@@ -101,9 +101,9 @@ static CGFloat panelWidth;
 	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
 	
 	// Restore settings for note/synopsis/section printing
-	if ([self.documentDelegate.documentSettings getBool:@"printSections"]) _printSections.state = NSOnState;
-	if ([self.documentDelegate.documentSettings getBool:@"printSynopsis"]) _printSynopsis.state = NSOnState;
-	if ([self.documentDelegate.documentSettings getBool:@"printNotes"]) _printNotes.state = NSOnState;
+	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSections]) _printSections.state = NSOnState;
+	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis]) _printSynopsis.state = NSOnState;
+	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes.state = NSOnState;
 	
 	[self toggleAdvancedOptions:_advancedOptionsButton];
 }

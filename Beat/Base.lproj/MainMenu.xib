@@ -73,6 +73,14 @@
                                     <action selector="newDocument:" target="-1" id="4Si-XN-c54"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="New Using Template" id="otc-RL-GwA" userLabel="New Using Templates">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="New Using Template" id="1eK-9B-xOY">
+                                    <connections>
+                                        <outlet property="delegate" destination="8f3-H4-i5J" id="8HU-jc-Fjn"/>
+                                    </connections>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
                                 <connections>
                                     <action selector="openDocument:" target="-1" id="bVn-NM-KNZ"/>
@@ -1175,6 +1183,7 @@ DQ
                 <outlet property="pluginMenuManager" destination="c8Z-dk-uIi" id="gUa-of-xAI"/>
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
                 <outlet property="spellCheckingUtils" destination="Ibp-oA-JIB" id="dE7-Pz-M2x"/>
+                <outlet property="templateMenuProvider" destination="8f3-H4-i5J" id="UWU-Hw-hHd"/>
                 <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
             </connections>
         </customObject>
@@ -1184,6 +1193,7 @@ DQ
             </connections>
         </customObject>
         <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
+        <customObject id="8f3-H4-i5J" customClass="BeatTemplateMenuProvider" customModule="Beat" customModuleProvider="target"/>
         <userDefaultsController representsSharedInstance="YES" id="62Y-BT-kav"/>
         <customObject id="c8Z-dk-uIi" customClass="BeatPluginMenuManager" customModule="Beat" customModuleProvider="target">
             <connections>

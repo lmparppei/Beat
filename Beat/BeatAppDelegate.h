@@ -50,4 +50,6 @@
 
 - (IBAction)showReference:(id)sender;
 
+- (void)showTemplates;
+
 @end
