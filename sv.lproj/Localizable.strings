@@ -157,6 +157,7 @@
 
 /* (No Comment) */
 "launch.tutorial.subtitle" = "Börja här om du inte har använt Beat tidigare";
+"launch.templates.subtitle" = "Börja här om du inte har använt Beat tidigare";
 
 /* (No Comment) */
 "lock.clickToUnlock" = "Klicka för att låsa upp";
@@ -350,3 +351,21 @@
 /* (No Comment) */
 "unlock_document.title" = "Lås upp dokument";
 
+
+"templates.tutorials" = "Handledningar";
+"templates.templates" = "Mallar";
+
+"templates.tutorial.title" = "Handledning";
+"templates.tutorial.description" = "Kom igång snabbt med Beat!";
+
+"templates.outliningTutorial.title" = "Översiktshandledning";
+"templates.outliningTutorial.description" = "Lär dig mer avancerade översiktsknep";
+
+"templates.comicBook.title" = "Seriebok";
+"templates.comicBook.description" = "En enkel mall för serieböcker";
+
+"templates.onePageSynopsis.title" = "Synopsis på en sida";
+"templates.onePageSynopsis.description" = "Skapa en kort version av din historia";
+
+"templates.threeActOutline.title" = "Tre-akters mall";
+"templates.threeActOutline.description" = "Den klassiska berättarstrukturen i 8 sekvenser";

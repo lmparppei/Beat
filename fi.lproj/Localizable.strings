@@ -8,6 +8,7 @@
 
 "launch.newDocument.subtitle" = "Luo uusi projekti";
 "launch.tutorial.subtitle" = "Aloita tästä, jos olet uusi käyttäjä";
+
 "app.manual" = "Manuaali";
 "app.patchNotes" = "Päivityksen tiedot";
 
@@ -134,3 +135,23 @@
 "textView.information.page" = "Sivu";
 "textView.information.characters" = "Merkkejä";
 "textView.information.words" = "Sanoja";
+
+"launch.templates.subtitle" = "Aloita tästä, jos olet uusi käyttäjä!";
+
+"templates.tutorials" = "Tutorials";
+"templates.templates" = "Templates";
+
+"templates.tutorial.title" = "Tutoriaali";
+"templates.tutorial.description" = "Pikaopas Beatin käyttöön";
+
+"templates.outliningTutorial.title" = "Rakennetutoriaali";
+"templates.outliningTutorial.description" = "Opas tarinan rakentamiseen";
+
+"templates.comicBook.title" = "Sarjakuva";
+"templates.comicBook.description" = "Yksinkertainen sarjakuvapohja";
+
+"templates.onePageSynopsis.title" = "Sivun synopsis";
+"templates.onePageSynopsis.description" = "Tiivistä tarinasi yhteen sivuun";
+
+"templates.threeActOutline.title" = "Kolminäytöksinen pohja";
+"templates.threeActOutline.description" = "Pohja klassisen elokuvan rakenteelle";

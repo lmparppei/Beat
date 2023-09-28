@@ -29,7 +29,7 @@
 	<array>
 		<dict>
 			<key>filename</key>
-			<string>Tutorial.fountain</string>
+			<string>One Page Synopsis.fountain</string>
 			<key>title</key>
 			<string>templates.onePageSynopsis.title</string>
 			<key>description</key>
@@ -39,7 +39,7 @@
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>Tutorial.fountain</string>
+			<string>Three-act Outline.fountain</string>
 			<key>title</key>
 			<string>templates.threeActOutline.title</string>
 			<key>description</key>
@@ -49,7 +49,7 @@
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>Tutorial.fountain</string>
+			<string>Comic Book Template.fountain</string>
 			<key>title</key>
 			<string>templates.comicBook.title</string>
 			<key>description</key>

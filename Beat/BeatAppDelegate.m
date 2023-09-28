@@ -59,6 +59,8 @@
 @property (nonatomic) IBOutlet BeatWebResources *resources;
 @property (nonatomic) IBOutlet BeatSpellCheckingUtils *spellCheckingUtils;
 
+@property (nonatomic) IBOutlet BeatTemplateMenuProvider *templateMenuProvider;
+
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
 @property (nonatomic) IBOutlet SPUUpdater *updater;
@@ -362,6 +364,7 @@
 }
 
 - (void)showTemplate:(NSString*)name {
+	name = [name stringByReplacingOccurrencesOfString:@".fountain" withString:@""];
 	NSURL *url = [NSBundle.mainBundle URLForResource:name withExtension:@"fountain"];
 	
 	if (url) [[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:url copying:YES displayName:name error:nil];

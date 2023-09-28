@@ -70,7 +70,7 @@ class BeatLaunchScreenButton: NSButtonCell {
 			attrStr.addAttribute(NSAttributedString.Key.foregroundColor, value:topColor, range: NSMakeRange(0, topTitle.count))
 
 			attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, topTitle.count))
-			attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 8.5), range: NSMakeRange(topTitle.count + 1, bottomTitle.count))
+			attrStr.addAttribute(NSAttributedString.Key.font, value:NSFont.systemFont(ofSize: 8.55), range: NSMakeRange(topTitle.count + 1, bottomTitle.count))
 			
 			stringRect = NSMakeRect(controlView.frame.size.height + 8, (controlView.frame.size.height - attrStr.size().height) / 2 - 1,
 										attrStr.size().width, attrStr.size().height)

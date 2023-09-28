@@ -13,6 +13,14 @@
 
 /* Class = "NSButtonCell"; title = "Tutorial"; ObjectID = "a4h-hr-bBC"; */
 "a4h-hr-bBC.title" = "Tutoriaali";
+"HWI-6m-SnF.title" = "Tutoriaali ja työpohjat";
+
+
+"UjG-qn-mj6.title" = "Tutoriaalit";
+"fj0-pi-Ae8.title" = "Käsikirjoituspohjat";
+
+"u0S-ze-FnT.title" = "Tutoriaalit";
+"XSB-VA-eAB.title" = "Työpohjat";
 
 /* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2023"; ObjectID = "b0H-0Y-Klb"; */
 "b0H-0Y-Klb.title" = "© Lauri-Matti Parppei 2019–2023";
@@ -24,10 +32,11 @@
 "osl-e8-t6d.title" = "→ Discord-yhteisö";
 
 /* Class = "NSTextFieldCell"; title = "Tutorials & Templates"; ObjectID = "u0S-ze-FnT"; */
-"u0S-ze-FnT.title" = "Tutorials & Templates";
+"u0S-ze-FnT.title" = "Oppaat & työpohjat";
 
 /* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "uau-QP-8yL"; */
 "uau-QP-8yL.title" = "Versio";
 
 /* Class = "NSButtonCell"; title = "Browse..."; ObjectID = "w3a-gm-hjm"; */
 "w3a-gm-hjm.title" = "Selaa...";
+

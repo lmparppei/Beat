@@ -8,61 +8,19 @@
 
 import AppKit
 
-struct BeatTemplateFile {
-	var filename:String
-	var title:String
-	var description:String
-	var icon:String?
-}
-
 class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
-	
-	/*
-	var templates = [
-		"Tutorials": [
-			BeatTemplateFile(filename: "Tutorial.fountain", display: "Tutorial", description: "Start here if you are new to Beat!", icon: "map"),
-			BeatTemplateFile(filename: "Tutorial.fountain", display: "Outlining", description: "Get started with advanced outlining", icon: "list.and.film")
-			],
-		"Templates": [
-			BeatTemplateFile(filename: "Tutorial.fountain", display: "One-Page Synopsis", description: "Write a compact one-page synopsis"),
-			BeatTemplateFile(filename: "Tutorial.fountain", display: "Three-Act Outline", description: "Get started with a three-act feature film outline"),
-			BeatTemplateFile(filename: "Tutorial.fountain", display: "Comic Book", description: "Simple template for comic book script"),
-		]
-	]
-	 */
-	
-	var templates:[String:[BeatTemplateFile]] = [:]
+	var templates = BeatTemplates.shared()
 
+	// Set this in IB to adjust which family of templates we are showing
 	@IBInspectable var family:String = "Templates"
-	
-	override func awakeFromNib() {
-		guard let url = Bundle.main.url(forResource: "Templates And Tutorials", withExtension: "plist") else { return }
-		let data = try! Data(contentsOf: url)
 		
-		guard let plist = try! PropertyListSerialization.propertyList(from: data, format: nil) as? [String:[[String:String]]] else { return }
-		for key in plist.keys {
-			guard let templates = plist[key] else { continue }
-
-			if self.templates[key] == nil {
-				self.templates[key] = []
-			}
-			
-			for template in templates {
-				let t = BeatTemplateFile(filename: template["filename"] ?? "", title: template["title"] ?? "", description: template["description"] ?? "", icon: template["icon"] ?? "")
-				self.templates[key]?.append(t)
-			}
-		}
-		
-	}
-	
 	func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
 		if item != nil { return 0 }
-		
-		return templates[family]?.count ?? 0
+		return templates.forFamily(self.family).count
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-		return templates[family]?[index] as Any
+		return templates.forFamily(self.family)[index] as Any
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { return false }
@@ -77,6 +35,22 @@ class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDel
 		return view
 	}
 	
+	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+		// Load the selected template
+		guard let template = item as? BeatTemplateFile,
+			  let url = Bundle.main.url(forResource: template.filename, withExtension: nil)
+		else { return false }
+
+		do {
+			let string = try String(contentsOf: url)
+			let appDelegate = NSApp.delegate as? BeatAppDelegate
+			appDelegate?.newDocument(withContents: string)
+		} catch {
+			print("Error loading template")
+		}
+		
+		return false
+	}
 }
 
 class BeatTemplateCell:NSTableCellView {
@@ -95,8 +69,8 @@ class BeatTemplateCell:NSTableCellView {
 	}
 	
 	func load(template:BeatTemplateFile) {
-		self.textField?.stringValue = BeatLocalization.localizedString(forKey: template.title)
-		self.subtitle?.stringValue = BeatLocalization.localizedString(forKey: template.description)
+		self.textField?.stringValue = template.title
+		self.subtitle?.stringValue = template.description
 		
 		if (template.icon?.count ?? 0 > 0) {
 			var icon = NSImage(named: template.icon!)
@@ -106,7 +80,6 @@ class BeatTemplateCell:NSTableCellView {
 					icon = NSImage(systemSymbolName: template.icon!, accessibilityDescription: "")
 				}
 			}
-			
 			
 			if (icon != nil) { image?.image = icon }
 		}

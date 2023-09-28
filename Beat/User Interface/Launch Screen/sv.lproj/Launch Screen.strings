@@ -45,10 +45,15 @@
 
 /* Class = "NSTextFieldCell"; title = "Templates"; ObjectID = "XSB-VA-eAB"; */
 "XSB-VA-eAB.title" = "Mallar";
+"UjG-qn-mj6.title" = "Handledningar";
 
 /* Class = "NSTextFieldCell"; title = "No recent screenplays"; ObjectID = "Zf8-Dc-Df3"; */
 "Zf8-Dc-Df3.title" = "Inga senaste dokument";
 
 /* Class = "NSButtonCell"; title = "→ Support Beat"; ObjectID = "ZFK-os-h00"; */
 "ZFK-os-h00.title" = "→ Stöd Beat";
+
+"u0S-ze-FnT.title" = "Handledningar & mallar";
+
+"HWI-6m-SnF.title" = "Självstudie & mallar";
 

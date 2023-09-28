@@ -25,6 +25,7 @@
 
 "launch.newDocument.subtitle" = "Start a new, blank project";
 "launch.tutorial.subtitle" = "Begin here, if you are new to Beat";
+"launch.templates.subtitle" = "Learn Beat and get started quickly!";
 
 "unlock_document.title" = "Unlock Document";
 "unlock_document.confirm" = "Are you sure you want to unlock the document and allow changes?";
@@ -140,7 +141,7 @@
 /* Tutorials */
 
 "templates.tutorials" = "Tutorials";
-"templates.templates" = "Tutorials";
+"templates.templates" = "Templates";
 
 "templates.tutorial.title" = "Tutorial";
 "templates.tutorial.description" = "Get started quickly with Beat!";
@@ -151,6 +152,12 @@
 "templates.comicBook.title" = "Comic Book";
 "templates.comicBook.description" = "A simple comic book template";
 
+"templates.onePageSynopsis.title" = "One-Page Synopsis";
+"templates.onePageSynopsis.description" = "Draft a condensed version of your story";
+
+"templates.threeActOutline.title" = "Three-Act Outline";
+"templates.threeActOutline.description" = "The classical story structure in 8 sequences";
+
 /* Selection / information */
 
 "textView.information.selection" = "Selection";
@@ -159,3 +166,4 @@
 "textView.information.page" = "Page";
 "textView.information.characters" = "Characters";
 "textView.information.words" = "Words";
+

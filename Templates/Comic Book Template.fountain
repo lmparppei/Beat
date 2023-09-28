@@ -1,0 +1,32 @@
+= **Comic Book/Graphic Novel Template**
+= For now, you can't automatically set the script page numbers and you'll have to adjust them by hand as you make changes. This will be possible in future versions of Beat though, so keep your app updated. :-)
+
+#Script page #
+
+.Panel #
+
+Panel and action description goes here.
+
+CHARACTER NAME
+Dialogue goes here
+
+.Panel #
+
+Panel and action description goes here.
+
+CHARACTER NAME (sarcastically)
+Dialogue goes here
+
+.Panel #
+
+Panel and action description goes here.
+
+CHARACTER NAME
+Dialogue goes here
+
+ANOTHER CHARACTER
+More Dialogue
+
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Sidebar Visible":true} END_BEAT */
