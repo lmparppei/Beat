@@ -7,6 +7,7 @@
 - Fixed a bug with long dialogue blocks with no sentence breaks
 - Fixed the tutorial
 - Added support for non-monospaced fonts (macOS)
+- Template support
 
 
 ## Beat 1.99.x

@@ -2,7 +2,7 @@
 
 A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
 
-[Official website](https://kapitan.fi/beat/)  
+[Official website](https://www.beat-app.fi/)  
 [Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)   
 [Discord Community](https://discord.gg/FPHjfH7ms3)
 
@@ -44,11 +44,9 @@ Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Wri
 
 ## Building from repo
 
-**Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
+**Note:** This repository follows my development, so it DOES NOT match the latest release version. I still can't use branches. Dread lightly, dear friend!
 
-Use the `Beat` workspace.  When building for development, use the *Beat App Store* target. The ad hoc distribution is currently not maintained, and might not be buildable. 
-
-You will need `BeatParsing` framework built, but no external libraries or frameworks should be needed.
+Use the `Beat` workspace.  When building for development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but no external libraries or frameworks are be needed. If you want to build the ad hoc target (which is currently not maintained) you will need the latest Sparkle package.  
 
 
 ## FAQ
@@ -63,11 +61,11 @@ You can download the latest public plugins (and learn more about creating your o
 
 ### iOS Version
 
-Closed beta will start duing summer 2023. You can subscribe to [**Patreon**](https://www.patreon.com/user?u=61753992) to be a part of it!  
+Beat for iOS is in closed beta since August 2023. You can subscribe to [**Patreon**](https://www.patreon.com/user?u=61753992) to be a part of it!
 
 ### Will There Be a Windows Version? 
 
-Unfortunately no. Beat is written in Objective C and relies on native macOS APIs. There are no good Fountain editors on Windows, and somebody should really write one!
+Unfortunately not. Beat is written in Objective C and relies on native macOS APIs. There are no good Fountain editors on Windows, and somebody should really write one! You might be able to use the Beat parser as starting point.
 
 ### Can I help?
 
@@ -76,7 +74,7 @@ Please do! The person behind this project is not a real programmer but an artist
 
 ### Support Beat
 
-You can help to keep the project alive by [donating](https://kapitan.fi/beat/support.html) some pennies or by subscribing to the Patreon. However, the creator of this app is a well-off person from a social-democratic welfare country, so you can also send your loose change to NGOs and charities.
+You can help to keep the project alive by [donating](https://www.beat-app.fi) some pennies or by subscribing to the Patreon. However, the creator of this app is a well-off person from a social-democratic welfare country, so you can also send your loose change to NGOs and charities.
 
 
 ## Post-mortem
@@ -85,9 +83,9 @@ You can help to keep the project alive by [donating](https://kapitan.fi/beat/sup
 
 Beat will stay free and open source forever. I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Don't steal it from an individual, though.
 
-If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL, so you will need to share your derivative work publicly.
+If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
 
 The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
 
-Lauri-Matti Parppei  
+Lauri-Matti Parppei    
 www.parppei.com  
