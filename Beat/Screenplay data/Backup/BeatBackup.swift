@@ -86,6 +86,12 @@ class BeatBackup:NSObject {
 			let bookmark = try url.bookmarkData(options: [.withSecurityScope])
 			UserDefaults.standard.set(bookmark, forKey: BeatBackup.bookmarkKey)
 			
+			// Create autosave subfolder for later use
+			var autosaveURL = url
+			autosaveURL.appendPathComponent("Autosave/")
+			
+			try FileManager.default.createDirectory(at: autosaveURL, withIntermediateDirectories: true)
+			
 			return bookmark
 		} catch {
 			print("ERROR: Unable to access backup url")
