@@ -386,8 +386,10 @@ final class BeatPreviewView:NSView {
 		if owner.responds(to: #selector(cancelOperation)) {
 			owner.cancelOperation(sender)
 		}
-	}
+	}	
 }
+
+// MARK: - Assisting views
 
 final class CenteringClipView: NSClipView {
 	// Stolen from Victor Gama, https://vito.io/articles/2021-12-04-centered-nsscrollview

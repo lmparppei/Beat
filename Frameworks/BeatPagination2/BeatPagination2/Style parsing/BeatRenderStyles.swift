@@ -18,6 +18,7 @@ import OSLog
 @objc public class BeatRenderStyles:NSObject {
 	@objc static public let shared = BeatRenderStyles()
 	@objc static public let editor = BeatRenderStyles(stylesheet: "EditorStyles")
+    
     public var styles:[String:RenderStyle] = [:]
 	
 	weak var delegate:BeatRenderStyleDelegate?

@@ -108,7 +108,7 @@
 #import "BeatEditorButton.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate>
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -207,9 +207,8 @@
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
-@property (nonatomic) NSString *htmlString;
-//@property (nonatomic) IBOutlet BeatPreview *preview;
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
+@property (nonatomic) NSPopover* previewOptionsPopover;
 
 // Analysis
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
@@ -603,11 +602,9 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(BeatExportSettings*)exportSettings {
-	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
-
-	settings.paperSize = self.pageSize;
+	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
 	settings.revisions = BeatRevisions.revisionColors;
-		
+	
 	return settings;
 }
 
@@ -2981,6 +2978,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Preview
 
+- (void)resetPreview { [self.previewController resetPreview]; }
+- (void)invalidatePreview { [self.previewController resetPreview]; }
+
 - (void)createPreviewAt:(NSRange)range
 {
 	[self.previewController createPreviewWithChangedRange:range sync:false];
@@ -2990,17 +2990,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.previewController createPreviewWithChangedRange:range sync:sync];
 }
 
-- (void)resetPreview {
-	[self.previewController resetPreview];
-}
-
-- (void)invalidatePreview {
-	[self.previewController resetPreview];
-}
-
-- (void)invalidatePreviewAt:(NSInteger)index {
-	[self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
-}
+- (void)invalidatePreviewAt:(NSInteger)index { [self.previewController invalidatePreviewAt:NSMakeRange(index, 0)]; }
 
 - (IBAction)preview:(id)sender
 {
@@ -3028,6 +3018,19 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			[plugin escapePressed];
 		}
 	}
+}
+
+- (IBAction)showPreviewOptions:(id)sender
+{
+	NSButton* button = (NSButton*)sender;
+	
+	self.previewOptionsPopover = NSPopover.new;
+	BeatPreviewOptions* previewOptions = BeatPreviewOptions.new;
+	previewOptions.editorDelegate = self;
+	
+	self.previewOptionsPopover.contentViewController = previewOptions;
+	self.previewOptionsPopover.behavior = NSPopoverBehaviorTransient;
+	[self.previewOptionsPopover showRelativeToRect:button.bounds ofView:sender preferredEdge:NSRectEdgeMinY];
 }
 
 /*

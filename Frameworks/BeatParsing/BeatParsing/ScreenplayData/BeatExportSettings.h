@@ -21,10 +21,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OutlineScene;
+@class BeatDocumentSettings;
 
 @protocol BeatExportSettingDelegate
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool showSceneNumbers;
 @property (nonatomic) id document;
+@property (nonatomic) BeatDocumentSettings* documentSettings;
 - (NSArray<NSString*>*)shownRevisions;
 - (NSString*)fileNameString;
 - (BeatPaperSize)pageSize;

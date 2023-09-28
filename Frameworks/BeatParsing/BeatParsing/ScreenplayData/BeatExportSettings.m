@@ -8,6 +8,7 @@
 
 #import "BeatExportSettings.h"
 #import "OutlineScene.h"
+#import <BeatParsing/BeatParsing.h>
 
 @implementation BeatExportSettings
 
@@ -61,14 +62,19 @@
         _printSceneNumbers = delegate.printSceneNumbers;
         _revisions = delegate.shownRevisions;
         
-        _printNotes = false;
-        
         _coloredPages = false;
         _pageRevisionColor = @"";
         
         _paperSize = delegate.pageSize;
                 
         _fileName = delegate.fileNameString;
+        
+        NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
+        if ([delegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes = true;
+        if ([delegate.documentSettings getBool:DocSettingPrintSections]) [additionalTypes addIndex:section];
+        if ([delegate.documentSettings getBool:DocSettingPrintSynopsis]) [additionalTypes addIndex:synopse];
+        
+        _additionalTypes = additionalTypes;
     }
     
     return self;

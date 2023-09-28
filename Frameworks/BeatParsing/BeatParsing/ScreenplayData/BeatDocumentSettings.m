@@ -49,6 +49,10 @@ NSString * const DocSettingPageSize = @"Page Size";
 
 NSString * const DocSettingCharacterGenders = @"CharacterGenders";
 
+NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
+NSString * const DocSettingPrintSections = @"Print Sections";
+NSString * const DocSettingPrintNotes    = @"Print Notes";
+
 
 -(id)init
 {
