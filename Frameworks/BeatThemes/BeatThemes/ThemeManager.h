@@ -7,7 +7,6 @@
 //
 
 #import <TargetConditionals.h>
-#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -20,6 +19,7 @@
 //#import "BeatTheme.h"
 
 @class BeatTheme;
+@class DynamicColor;
 
 @protocol BeatThemeDelegate
 - (NSURL*)appDataPath:(NSString*)path;
@@ -46,30 +46,30 @@
 //Access the current theme
 - (BeatTheme*) theme;
 
-- (DynamicColor*)backgroundColor;
-- (DynamicColor*)marginColor;
-- (DynamicColor*)selectionColor;
-- (DynamicColor*)textColor;
-- (DynamicColor*)invisibleTextColor;
-- (DynamicColor*)caretColor;
-- (DynamicColor*)commentColor;
-- (DynamicColor*)pageNumberColor;
-- (DynamicColor*)sectionTextColor;
-- (DynamicColor*)synopsisTextColor;
-- (DynamicColor*)highlightColor;
+@property (nonatomic) NSString* test;
 
-- (DynamicColor*)genderWomanColor;
-- (DynamicColor*)genderManColor;
-- (DynamicColor*)genderOtherColor;
-- (DynamicColor*)genderUnspecifiedColor;
-
-- (DynamicColor*)outlineHighlight;
-- (DynamicColor*)outlineBackground;
-- (DynamicColor*)outlineSection;
-- (DynamicColor*)outlineItem;
-- (DynamicColor*)outlineItemOmitted;
-- (DynamicColor*)outlineSceneNumber;
-- (DynamicColor*)outlineSynopsis;
-- (DynamicColor*)outlineNote;
+@property (nonatomic) DynamicColor* backgroundColor;
+@property (nonatomic) DynamicColor* marginColor;
+@property (nonatomic) DynamicColor* selectionColor;
+@property (nonatomic) DynamicColor* textColor;
+@property (nonatomic) DynamicColor* invisibleTextColor;
+@property (nonatomic) DynamicColor* caretColor;
+@property (nonatomic) DynamicColor* commentColor;
+@property (nonatomic) DynamicColor* pageNumberColor;
+@property (nonatomic) DynamicColor* sectionTextColor;
+@property (nonatomic) DynamicColor* synopsisTextColor;
+@property (nonatomic) DynamicColor* highlightColor;
+@property (nonatomic) DynamicColor* genderWomanColor;
+@property (nonatomic) DynamicColor* genderManColor;
+@property (nonatomic) DynamicColor* genderOtherColor;
+@property (nonatomic) DynamicColor* genderUnspecifiedColor;
+@property (nonatomic) DynamicColor* outlineHighlight;
+@property (nonatomic) DynamicColor* outlineBackground;
+@property (nonatomic) DynamicColor* outlineSection;
+@property (nonatomic) DynamicColor* outlineItem;
+@property (nonatomic) DynamicColor* outlineItemOmitted;
+@property (nonatomic) DynamicColor* outlineSceneNumber;
+@property (nonatomic) DynamicColor* outlineSynopsis;
+@property (nonatomic) DynamicColor* outlineNote;
 
 @end

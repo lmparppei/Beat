@@ -15,5 +15,5 @@ FOUNDATION_EXPORT const unsigned char BeatThemesVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <BeatThemes/PublicHeader.h>
 
-#import "ThemeManager.h"
-
+#import <BeatThemes/ThemeManager.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>

@@ -73,6 +73,7 @@
     }
     return self;
 }
+
 -(void)loadThemes {
 	_themes = NSMutableDictionary.new;
 	NSDictionary* themes = [self loadThemeFile];

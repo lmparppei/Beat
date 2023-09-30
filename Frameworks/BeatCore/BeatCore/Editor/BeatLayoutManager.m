@@ -11,6 +11,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatCore/BeatMeasure.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #import "BeatRevisions.h"
 

@@ -16,7 +16,7 @@ class BeatAutomaticAppearanceView:NSView {
 		let delegate = NSApplication.shared.delegate as? BeatAppDelegate
 		let dark = delegate?.isDark() ?? false
 
-		guard let bgColor = (dark) ? ThemeManager.shared().outlineBackground().darkAquaColor : ThemeManager.shared().outlineBackground().aquaColor
+		guard let bgColor = (dark) ? ThemeManager.shared().outlineBackground.darkAquaColor : ThemeManager.shared().outlineBackground.aquaColor
 		else { return true }
 		
 		// Calculate perceived luminance

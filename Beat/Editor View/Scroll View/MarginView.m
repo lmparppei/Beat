@@ -10,6 +10,7 @@
 #import "MarginView.h"
 #import <BeatThemes/BeatThemes.h>
 #import <QuartzCore/QuartzCore.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #define WHITESPACE 50
 #define SHADOW_WIDTH 20

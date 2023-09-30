@@ -11,6 +11,7 @@
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatMeasure.h>
 #import <BeatCore/BeatAutocomplete.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
