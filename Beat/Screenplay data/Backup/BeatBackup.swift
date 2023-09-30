@@ -24,7 +24,8 @@ class BeatBackupFile:NSObject {
 
 class BeatBackup:NSObject {
 	@objc class var backupURLKey:String { return "backupURL" }
-	@objc class var bookmarkKey:String { return "backupBookmark"}
+	@objc class var bookmarkKeyBackup:String { return "backupBookmark"}
+	@objc class var bookmarkKeyAutosave:String { return "autosaveBookmark"}
 	
 	class var separator:String { return " Backup " }
 	class var defaultURL:URL {
@@ -38,21 +39,43 @@ class BeatBackup:NSObject {
 		let backupURL = URL(fileURLWithPath: backupPath)
 		
 		if backupPath.count > 0  {
-			if BeatBackup.hasAccess(to: backupURL) {
-				return backupURL
+			// Return the URL if we can resolve it
+			if let url = BeatBackup.resolve(url: backupURL, key: BeatBackup.bookmarkKeyBackup) { return url }
+		}
+				
+		return BeatBackup.defaultURL
+	}
+	
+	class var autosaveURL:URL {
+		// Check if there is an external URL set
+		let backupPath:String = BeatUserDefaults.shared().get(BeatBackup.backupURLKey) as? String ?? ""
+		let autosaveURL = URL(fileURLWithPath: backupPath + "/Autosave/")
+		
+		if backupPath.count > 0  {
+			// Return the URL if we can resolve it
+			if let url = BeatBackup.resolve(url: autosaveURL, key: BeatBackup.bookmarkKeyAutosave) { return url }
+		}
+		
+		// Return default sandbox container URL
+		return BeatBackup.defaultURL.appendingPathComponent("Autosave/")
+	}
+	
+	class func resolve(url:URL, key:String) -> URL? {
+		if let bookmark = BeatBackup.hasBookmark(for: url, key: key) {
+			var stale = false
+			do {
+				return try URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], bookmarkDataIsStale: &stale)
+			} catch {
+				print("Failed to retrieve autosave bookmark for", url)
 			}
 		}
 		
-		return BeatBackup.defaultURL
-	}
-	class var autosaveURL:URL {
-		let url = BeatBackup.backupURL
-		return url.appendingPathComponent("Autosave/")
+		return nil
 	}
 	
 	/// Try to access the backup URL
-	class func hasAccess(to url:URL) -> Bool {
-		if BeatBackup.hasBookmark(for: url) != nil {
+	class func hasAccess(to url:URL, key:String) -> Bool {
+		if BeatBackup.hasBookmark(for: url, key: key) != nil {
 			if FileManager.default.fileExists(atPath: url.path) {
 				return true
 			}
@@ -62,8 +85,8 @@ class BeatBackup:NSObject {
 	}
 	
 	/// Tries to access the bookmarked URL
-	@objc class func hasBookmark(for url:URL) -> Data? {
-		guard let bookmark = UserDefaults.standard.data(forKey: BeatBackup.bookmarkKey) else {
+	@objc class func hasBookmark(for url:URL, key:String) -> Data? {
+		guard let bookmark = UserDefaults.standard.data(forKey: key) else {
 			// No bookmark data, forget about it
 			return nil
 		}
@@ -83,16 +106,20 @@ class BeatBackup:NSObject {
 	/// Tries to gain access to a new backup URL
 	@objc class func bookmarkBackupFolder(url: URL) -> Data? {
 		do {
-			let bookmark = try url.bookmarkData(options: [.withSecurityScope])
-			UserDefaults.standard.set(bookmark, forKey: BeatBackup.bookmarkKey)
+			let backupBookmark = try url.bookmarkData(options: [.withSecurityScope])
+			UserDefaults.standard.set(backupBookmark, forKey: BeatBackup.bookmarkKeyBackup)
 			
 			// Create autosave subfolder for later use
 			var autosaveURL = url
 			autosaveURL.appendPathComponent("Autosave/")
 			
+			// Create folder
 			try FileManager.default.createDirectory(at: autosaveURL, withIntermediateDirectories: true)
 			
-			return bookmark
+			let autosaveBookmark = try autosaveURL.bookmarkData(options: [.withSecurityScope])
+			UserDefaults.standard.set(autosaveBookmark, forKey: BeatBackup.bookmarkKeyAutosave)
+						
+			return backupBookmark
 		} catch {
 			print("ERROR: Unable to access backup url")
 			return nil
@@ -116,7 +143,9 @@ class BeatBackup:NSObject {
 		
 		// If we are outside the sandbox, start accessing resources
 		if (backupFolderURL != BeatBackup.defaultURL) {
-			_ = backupFolderURL.startAccessingSecurityScopedResource()
+			if !backupFolderURL.startAccessingSecurityScopedResource() {
+				print(" ... failed to open autosave url")
+			}
 		}
 		
 		let delegate = NSApp.delegate as! BeatAppDelegate
@@ -205,7 +234,6 @@ class BeatBackup:NSObject {
 				let filename = URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent
 				let r = filename.range(of: BeatBackup.separator)
 				if (r == nil) { continue }
-				
 				
 				let range = NSRange(r!, in: file)
 				let actualName = filename.substring(range: NSMakeRange(0, range.location))
