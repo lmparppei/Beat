@@ -107,7 +107,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	@objc public init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		// Load default styles if none were explicitly delivered through export settings
 		if (settings.styles == nil) {
-			settings.styles = BeatRenderStyles.shared
+            settings.styles = BeatStyles.shared.defaultStyles
 		}
         
 		self.settings = settings
@@ -128,7 +128,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		self.editorDelegate = editorDelegate
 		
 		if (settings.styles == nil) {
-			settings.styles = BeatRenderStyles.shared
+			settings.styles = BeatStyles.shared.defaultStyles
 		}
 		
 		super.init()
@@ -379,7 +379,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     /// Returns the default content height when no finished pagination is available
     var defaultMaxHeight:CGFloat {
         let size = BeatPaperSizing.size(for: settings.paperSize)
-        let style = BeatRenderStyles.shared.page()
+        let style = BeatStyles.shared.defaultStyles.page()
         
         return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight() * 3
     }

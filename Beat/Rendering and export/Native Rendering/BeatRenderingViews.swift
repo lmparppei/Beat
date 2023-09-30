@@ -50,12 +50,8 @@ class BeatPaginationPageView:NSView {
 			self.attributedString = content
 		}
 		
-		let styles = self.settings.styles as? BeatRenderStyles
-		if (styles != nil) {
-			self.pageStyle = styles!.page()
-		} else {
-			self.pageStyle = BeatRenderStyles.shared.page()
-		}
+		let styles = self.settings.styles as? BeatStylesheet
+		self.pageStyle = styles?.page() ?? RenderStyle(rules: [:])
 		
 		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
 		

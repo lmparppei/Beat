@@ -27,6 +27,9 @@
 
 @property (nonatomic) bool documentIsLoading;
 
+@property (nonatomic) BeatStylesheet* styles;
+@property (nonatomic) BeatStylesheet* editorStyles;
+
 @property (nonatomic) BeatPreview* preview;
 @property (nonatomic) BeatPreviewView* previewView;
 @property (nonatomic) bool previewUpdated;
@@ -279,6 +282,26 @@
 	[self dismissViewControllerAnimated:true completion:^{
 		[self.document closeWithCompletionHandler:nil];
 	}];
+}
+
+
+#pragma mark - Editor styles
+
+- (BeatStylesheet *)editorStyles {
+	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[_documentSettings getString:@"Stylesheet"]];
+	return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
+}
+- (BeatStylesheet *)styles {
+	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[_documentSettings getString:@"Stylesheet"]];
+	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
+}
+
+/// Reloads all styles
+- (void)reloadStyles
+{
+	[self.styles reload];
+	[self.editorStyles reload];
+	[self resetPreview];
 }
 
 

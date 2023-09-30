@@ -78,7 +78,7 @@ static bool underlinedHeading;
 
 
 - (void)reloadStyles {
-	[BeatRenderStyles.shared reload];
+	[(BeatStylesheet*)self.settings.styles reload];
 }
 
 - (NSString *)html

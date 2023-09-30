@@ -131,9 +131,9 @@
 }
 
 /// Returns either the shared render styles or custom styles included in export settings (if available)
-- (BeatRenderStyles*)styles {
+- (BeatStylesheet*)styles {
 	if (_settings.styles != nil) return _settings.styles;
-	else return BeatRenderStyles.shared;
+	else return BeatStyles.shared.defaultStyles;
 }
 
 #pragma mark - Convenience stuff

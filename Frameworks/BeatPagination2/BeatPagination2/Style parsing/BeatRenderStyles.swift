@@ -16,56 +16,70 @@ import OSLog
 }
 
 @objc public class BeatRenderStyles:NSObject {
+    /*
 	@objc static public let shared = BeatRenderStyles()
-	@objc static public let editor = BeatRenderStyles(stylesheet: "EditorStyles")
+	@objc static public let editor = BeatRenderStyles(stylesheet: "Screenplay-editor")
+    */
     
     public var styles:[String:RenderStyle] = [:]
+    public var editorStyles:[String:RenderStyle] = [:]
 	
+    
 	weak var delegate:BeatRenderStyleDelegate?
 	var settings:BeatExportSettings?
+    
+    var renderStylesheet:String?
+    var editorStylesheet:String?
 	
-    public init(stylesheet:String, delegate:BeatRenderStyleDelegate? = nil, settings:BeatExportSettings? = nil) {
+    public init(url:URL, delegate:BeatRenderStyleDelegate? = nil, settings:BeatExportSettings? = nil) {
 		self.delegate = delegate
 		self.settings = settings
-		
+        		
 		super.init()
-		loadStyles(stylesheet: stylesheet)
-	}
-	
-	override private init() {
-		super.init()
+        
+        let editorStyleURL = url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent.replacingOccurrences(of: ".beatCSS", with: "-editor.beatCSS"))
+
+        // Load renderer stylesheet
+        do {
+            self.renderStylesheet = try String(contentsOf: url)
+            self.editorStylesheet = try String(contentsOf: editorStyleURL)
+        } catch {
+            print("Error loading editor stylesheet")
+        }
+        
 		loadStyles()
 	}
-	
-	private init(stylesheet:String) {
-		super.init()
-		loadStyles(stylesheet: stylesheet)
+        
+	/// Parses the style string
+    public func loadStyles(additionalStyles:String = "") {
+        let settings = (self.delegate != nil) ? self.delegate!.settings : self.settings
+        let parser = CssParser()
+        
+        // Parse render styles
+        if self.renderStylesheet != nil {
+            var stylesheet = String(stringLiteral: self.renderStylesheet ?? "")
+            stylesheet.append("\n\n" + additionalStyles)
+            
+            styles = parser.parse(fileContent: stylesheet, settings: settings)
+        }
+        
+        // Parse editor styles
+        if self.editorStylesheet != nil {
+            var stylesheet = String(stringLiteral: self.editorStylesheet ?? "")
+            stylesheet.append("\n\n" + additionalStyles)
+            
+            styles = parser.parse(fileContent: stylesheet, settings: settings)
+        }
 	}
 	
-    public func loadStyles(stylesheet:String = "Styles", additionalStyles:String = "") {
-		let bundle = Bundle(for: type(of: self))
-		let url = bundle.url(forResource: stylesheet, withExtension: "beatCSS")
-		
-		do {
-			var stylesheet = try String(contentsOf: url!)
-			stylesheet.append("\n\n" + additionalStyles)
-			
-			let parser = CssParser()
-			let settings = (self.delegate != nil) ? self.delegate!.settings : self.settings
-			
-			styles = parser.parse(fileContent: stylesheet, settings: settings)
-		} catch {
-			os_log("BeatRenderStyles - WARNING: Loading stylesheet failed")
-		}
-	}
-	
+    /// Reloads the given style
 	@objc public func reload() {
 		self.loadStyles()
 	}
-	
-	@objc public func page() -> RenderStyle {
+    
+    @objc public func page() -> RenderStyle {
 		guard let pageStyle = styles["page"] else {
-			os_log("BeatRenderStyles - WARNING: No page style defined in stylesheet")
+			os_log("WARNING: No page style defined in stylesheet")
 			return RenderStyle(rules: [:])
 		}
 		return pageStyle
@@ -76,100 +90,7 @@ import OSLog
 	}
 }
 
-// MARK: - Render style
-
-@objc public class RenderStyle:NSObject {
-	@objc public var bold:Bool = false
-	@objc public var italic:Bool = false
-	@objc public var underline:Bool = false
-	@objc public var uppercase:Bool = false
-	
-	@objc public var textAlign:String = "left"
-	
-	@objc public var marginTop:CGFloat = 0
-    
-    @objc public var marginLeft:CGFloat = 0
-    
-    @objc public var marginLeftA4:CGFloat = 0
-    @objc public var marginLeftLetter:CGFloat = 0
-    
-	@objc public var marginBottom:CGFloat = 0
-	@objc public var marginRight:CGFloat = 0
-	@objc public var paddingLeft:CGFloat = 0
-    
-	@objc public var contentPadding:CGFloat = 0
-
-	@objc public var lineHeight:CGFloat = 0
-	
-	@objc public var widthA4:CGFloat = 0
-	@objc public var widthLetter:CGFloat = 0
-	
-	@objc public var defaultWidthA4:CGFloat = 0
-	@objc public var defaultWidthLetter:CGFloat = 0
-	
-    @objc public var color:String = ""
-    @objc public var font:String = ""
-    @objc public var fontSize:CGFloat = 0
-    
-    public init(rules:[String:Any]) {
-		super.init()
-
-		for key in rules.keys {
-			// Create property name based on the rule key
-			let value = rules[key]!
-			let property = styleNameToProperty(name: key)
-			
-			// Check that the property exists to avoid any unnecessary crashes
-			if (self.responds(to: Selector(property))) {
-				self.setValue(value, forKey: property)
-			} else {
-				print("Warning: Unrecognized BeatCSS key: ", property)
-			}
-		}
-	}
-	
-    public func styleNameToProperty (name:String) -> String {
-		switch name.lowercased() {
-		case "width-a4":
-			return "widthA4"
-		case "width-us":
-			return "widthLetter"
-		case "text-align":
-			return "textAlign"
-		case "margin-top":
-			return "marginTop"
-		case "margin-bottom":
-			return "marginBottom"
-		case "margin-left":
-			return "marginLeft"
-		case "margin-right":
-			return "marginRight"
-		case "padding-left":
-			return "paddingLeft"
-		case "line-height":
-			return "lineHeight"
-		case "default-width-a4":
-			return "defaultWidthA4"
-		case "default-width-us":
-			return "defaultWidthLetter"
-		case "content-padding":
-			return "contentPadding"
-        case "margin-left-us":
-            return "marginLeftLetter"
-        case "margin-left-a4":
-            return "marginLeftA4"
-        case "font-size":
-            return "fontSize"
-		default:
-			return name
-		}
-	}
-	
-	override public class func setValue(_ value: Any?, forUndefinedKey key: String) {
-		print("RenderStyle: Unknown key: ", key)
-	}
-}
-
+// MARK: Shorthands for the styles
 @objc extension BeatRenderStyles {
     @objc public var action:RenderStyle {
         return self.forElement(Line.typeName(.action))

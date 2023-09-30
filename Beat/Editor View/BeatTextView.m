@@ -31,6 +31,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatTextView.h"
 #import "ScrollView.h"
@@ -1346,14 +1347,8 @@ Line *cachedRectLine;
 }
 
 - (CGFloat)documentWidth {
-	CGFloat width = 0.0;
+	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter;
 	CGFloat padding = self.textContainer.lineFragmentPadding;
-	
-	if (_editorDelegate.pageSize == BeatA4) {
-		width = BeatRenderStyles.shared.action.widthA4;
-	} else {
-		width = BeatRenderStyles.shared.action.widthLetter;
-	}
 	
 	return width + padding * 2;
 }

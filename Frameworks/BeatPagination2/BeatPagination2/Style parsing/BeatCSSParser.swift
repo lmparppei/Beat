@@ -19,7 +19,7 @@ public final class CssParser {
 	var styles:[String:RenderStyle] = [:]
 	
 	// Map property names to types
-	let stringTypes:Set = ["textAlign", "text-align", "color", "font"]
+	let stringTypes:Set = ["textAlign", "text-align", "color", "font", "content"]
 	let boolTypes:Set = ["bold", "italic", "underline", "uppercase"]
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 
@@ -29,7 +29,7 @@ public final class CssParser {
 	/// - Parameter fileContent: CSS file content.
 	/// - Returns: Array of CSS styles.
 	func parse(fileContent: String, settings:BeatExportSettings? = nil) -> [String: RenderStyle] {
-		self.settings = settings
+        self.settings = settings
 		
 		var styles:[String: Dictionary<String, String>] = [:]
 		
@@ -83,16 +83,23 @@ public final class CssParser {
 			}
 			else if character == "}" {
 				pendingStyleName = pendingStyleName.trimmingCharacters(in: .whitespaces)
-				
-				if var existingStyles = styles[pendingStyleName] {
-					// Style already exists, let's overwrite rules when needed
-					for styleKey in pendingStyleProperties.keys {
-						existingStyles[styleKey] = pendingStyleProperties[styleKey]
-					}
-				} else {
-					// Style doesn't exist, create new
-					styles[pendingStyleName] = pendingStyleProperties
-				}
+                
+                let styleNames = pendingStyleName.components(separatedBy: ",")
+                
+                for styleName in styleNames {
+                    let key = styleName.trimmingCharacters(in: .whitespaces)
+                    
+                    if var existingStyles = styles[key] {
+                        // Style already exists, let's overwrite rules when needed
+                        for ruleKey in pendingStyleProperties.keys {
+                            existingStyles[ruleKey] = pendingStyleProperties[ruleKey]
+                        }
+                        styles[key] = existingStyles // These are not pointers in Swift (?) so we need to add the style back to dictionary.
+                    } else {
+                        // Style doesn't exist, create new
+                        styles[key] = pendingStyleProperties
+                    }
+                }
 				
 				pendingStyleProperties.removeAll()
 				pendingStyleName = ""
@@ -122,7 +129,7 @@ public final class CssParser {
 			
 			self.styles[key] = RenderStyle(rules: rules)
 		}
-		
+		        
 		return self.styles
 	}
 	

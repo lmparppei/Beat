@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 };
 
 @class BeatReview;
+@class BeatStylesheet;
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
@@ -57,6 +58,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 @property (nonatomic, readonly) Line *currentLine;
+
+@property (nonatomic, readonly) BeatStylesheet *editorStyles;
 
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (NSArray*)getOutlineItems;

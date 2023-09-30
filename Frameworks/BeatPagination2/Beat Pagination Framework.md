@@ -25,7 +25,7 @@ A dialogue block begins with `CHARACTER CUE`, followed by parentheticals and dia
 
 `BeatPaginationPage` contains `BeatPaginationBlocks`, and while paginating, we'll create `BeatPaginationBlockGroup`s to handle the aforementioned situations. If something doesn't fit on a page, we'll call the `split` method on either a group or a single block and provide the remaining space. Some block types have their respective methods of breaking themselves apart across pages.
 
-`BeatRenderStyles` define sizing for different elements, with a fixed font size. Styles are read from a faux-CSS file with a custom parser. Each block will remember its own sizing once it is added on a page. 
+`BeatStylesheet` defines sizing for different elements, with a fixed font size. Styles are read from a faux-CSS file with a custom parser. Each block will remember its own sizing once it is added on a page. 
 
 **NOTE** that NOTHING is actually rendered onto a page, or turned into an attributed string or HTML, or anything at this point. Everything is imaginary and happens in a black box. 
 

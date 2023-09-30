@@ -53,6 +53,8 @@ NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
 NSString * const DocSettingPrintSections = @"Print Sections";
 NSString * const DocSettingPrintNotes    = @"Print Notes";
 
+NSString * const DocSettingStylesheet    = @"Stylesheet";
+
 
 -(id)init
 {

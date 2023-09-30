@@ -25,8 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatExportSettingDelegate
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) bool showSceneNumbers;
+@property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) id document;
+@property (nonatomic) id styles;
 @property (nonatomic) BeatDocumentSettings* documentSettings;
 - (NSArray<NSString*>*)shownRevisions;
 - (NSString*)fileNameString;

@@ -38,6 +38,8 @@ extern NSString * const DocSettingPrintSynopsis;
 extern NSString * const DocSettingPrintSections;
 extern NSString * const DocSettingPrintNotes;
 
+extern NSString * const DocSettingStylesheet;
+
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;
 

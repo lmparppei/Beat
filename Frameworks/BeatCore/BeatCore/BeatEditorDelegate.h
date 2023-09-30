@@ -43,6 +43,7 @@
 @class NSLayoutManager;
 @class NSTextStorage;
 @class UITextRange;
+@class BeatStylesheet;
 
 @protocol BeatEditorView
 - (void)reloadInBackground;
@@ -117,6 +118,7 @@
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 
 - (void)bakeRevisions;
+
 
 #pragma mark - Editing the text content
 
@@ -206,6 +208,10 @@
 
 
 #pragma mark - Formatting
+
+@property (nonatomic, readonly) BeatStylesheet* editorStyles;
+@property (nonatomic, readonly) BeatStylesheet* styles;
+- (void)reloadStyles;
 
 - (void)formatAllLines;
 - (void)forceFormatChangesInRange:(NSRange)range;

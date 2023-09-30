@@ -26,7 +26,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class BeatFonts;
-@class BeatRenderStyles;
+@class BeatStylesheet;
 @class BeatPagination;
 @class BeatPaginationPage;
 @class BeatPaginationBlock;
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPageDelegate
 @property (nonatomic, readonly) bool canceled;
 @property (nonatomic, weak) id<BeatRendererDelegate> __nullable renderer;
-@property (nonatomic, readonly) BeatRenderStyles* styles;
+@property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatExportSettings *settings;
 @property (nonatomic, readonly) BeatFonts *fonts;
 @property (nonatomic, readonly) NSMutableArray<BeatPaginationPage*>* pages;

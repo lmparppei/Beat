@@ -145,6 +145,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			print("WARNING: resetPreview() should only be called from main thread.")
 		}
 		
+		// Reset styles
+		self.renderer?.reloadStyles()
+		
 		self.previewView?.clear()
 		
 		self.pagination?.finishedPagination = nil
@@ -152,18 +155,13 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		if self.delegate?.previewVisible() ?? false {
 			// If the preview was cleared when in preview mode, let's create it in sync
-
 			self.renderOnScreen()
 		} else {
 			self.createPreview(changedRange: NSMakeRange(0, self.delegate?.text().count ?? 0), sync: false)
 		}
 	}
 	
-	@objc func reloadStyles() {
-		self.renderer?.reloadStyles()
-		
-	}
-	
+
 	/// Renders pages on screen
 	@objc func renderOnScreen() {
 		// Show spinner while loading

@@ -13,8 +13,8 @@ FOUNDATION_EXPORT double BeatPagination2VersionNumber;
 //! Project version string for BeatPagination2.
 FOUNDATION_EXPORT const unsigned char BeatPagination2VersionString[];
 
-#import "BeatPagination.h"
-#import "BeatPaginationBlock.h"
-#import "BeatPageBreak.h"
-#import "BeatPaginationPage.h"
-#import "BeatPaginationBlockGroup.h"
+#import <BeatPagination2/BeatPagination.h>
+#import <BeatPagination2/BeatPaginationBlock.h>
+#import <BeatPagination2/BeatPageBreak.h>
+#import <BeatPagination2/BeatPaginationPage.h>
+#import <BeatPagination2/BeatPaginationBlockGroup.h>

@@ -1,0 +1,52 @@
+/*
+
+ Novel Stylesheet for Beat.
+ This is not actual CSS, just uses similar markup.
+
+ Changing values without knowing what you are doing can very
+ well cause a crash. Dread lightly.
+ 
+ "Class" names are internal type names as strings, not .typeAsString names.
+ 
+ © Lauri-Matti Parppei 2021-2022
+
+*/
+
+preprocessing {
+    printSections: true;
+}
+
+page {
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 60;
+    margin-top: 40;
+    margin-bottom: 60;
+    
+    default-width-a4: 60ch;
+    default-width-us: 62ch;
+    
+    line-height: 18;
+    
+    content-padding: 7ch;
+ 
+    margin-left-a4: 0;
+    margin-left-us: 0;
+}
+
+section {
+    content: ***;
+    text-align: center;
+}
+
+action, dialogue, character, parenthetical {
+    margin-left-a4: 0;
+    margin-left-us: 0;
+    
+    margin-top: 1l;
+}
+
+action {
+    first-line-indent: 3ch;
+}
+

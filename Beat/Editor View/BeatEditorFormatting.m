@@ -56,12 +56,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 + (CGFloat)editorLineHeight {
 	return 16.0;
 }
-+ (CGFloat)characterLeft {
-	return BeatRenderStyles.shared.character.marginLeft;
-}
-+ (CGFloat)dialogueLeft {
-	return BeatRenderStyles.shared.dialogue.marginLeft;
-}
 
 -(instancetype)init {
 	self = [super init];
@@ -89,7 +83,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// We need to get left margin here to avoid issues with extended line types
 	if (line.isTitlePage) type = titlePageUnknown;
-	RenderStyle* elementStyle = [BeatRenderStyles.editor forElement:[Line typeName:type]];
+	RenderStyle* elementStyle = [_delegate.editorStyles forElement:[Line typeName:type]];
 	
 	CGFloat leftMargin = elementStyle.marginLeft;
 	CGFloat rightMargin = elementStyle.marginLeft + ((_delegate.pageSize == BeatA4) ? elementStyle.widthA4 : elementStyle.widthLetter);
@@ -823,8 +817,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)forceEmptyCharacterCue
 {
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleForType:character];
-	paragraphStyle.maximumLineHeight = BeatEditorFormatting.editorLineHeight;
-	paragraphStyle.firstLineHeadIndent = BeatEditorFormatting.characterLeft;
+	paragraphStyle.maximumLineHeight = _delegate.editorStyles.page.lineHeight;
+	paragraphStyle.firstLineHeadIndent = _delegate.editorStyles.character.marginLeft;
 	
 	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.courier } ];
 }

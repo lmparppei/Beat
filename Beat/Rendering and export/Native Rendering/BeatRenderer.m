@@ -14,12 +14,13 @@
 
 #import "BeatRenderer.h"
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 #import "Beat-Swift.h"
 #import <BeatCore/BeatFonts.h>
 
 @interface BeatRenderer()
 //@property (nonatomic) id<BeatPageDelegate> delegate;
-@property (nonatomic) BeatRenderStyles* styles;
+@property (nonatomic) BeatStylesheet* styles;
 @property (nonatomic, weak) BeatFonts* fonts;
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSDictionary*>*>* lineTypeAttributes;
 
@@ -50,15 +51,15 @@
 }
 
 - (void)reloadStyles {
-	[BeatRenderStyles.shared reload];
-	self.lineTypeAttributes = NSMutableDictionary.new;
+	[self.lineTypeAttributes removeAllObjects];
 }
 
-- (BeatRenderStyles*)styles {
-	if ([self.settings.styles isKindOfClass:BeatRenderStyles.class] && self.settings.styles != nil) {
+
+- (BeatStylesheet*)styles {
+	if ([self.settings.styles isKindOfClass:BeatStylesheet.class] && self.settings.styles != nil) {
 		return self.settings.styles;
 	} else {
-		return BeatRenderStyles.shared;
+		return BeatStyles.shared.defaultStyles;
 	}
 }
 
@@ -145,6 +146,7 @@
 	// Get string content and apply transforms if needed
 	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
 	if (style.uppercase) string = string.uppercaseString;
+
 	
 	// Create attributed string with attributes for current style
 	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
@@ -298,6 +300,13 @@
 	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
 	if (line.type == heading) {
 		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
+	}
+	
+	// And after all this, if the style has a content rule, we'll replace the text while keeping the original attributes
+	if (style.content != nil) {
+		NSString* content = [NSString stringWithFormat:@"%@\n", style.content];
+		NSDictionary* attrs = [result attributesAtIndex:0 effectiveRange:nil];
+		[result replaceCharactersInRange:NSMakeRange(0, result.length) withAttributedString:[NSAttributedString.alloc initWithString:content attributes:attrs]];
 	}
 	
 	return result;
@@ -501,6 +510,7 @@
 }
 
 
+
 #pragma mark - Attribute management
 
 - (RenderStyle*)styleForType:(LineType)type {
@@ -538,102 +548,106 @@
 
 /// Returns attribute dictionary for given line. We are caching the styles.
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
-	BeatPaperSize paperSize = self.settings.paperSize;
-	LineType type = line.type;
-	
-	if (isDualDialogue) {
-		if (line.type == character) type = dualDialogueCharacter;
-		else if (line.type == parenthetical) type = dualDialogueParenthetical;
-		else if (line.type == dialogue) type = dualDialogue;
-		else if (line.type == more) type = dualDialogueMore;
+	@synchronized (self.lineTypeAttributes) {
+		BeatPaperSize paperSize = self.settings.paperSize;
+		LineType type = line.type;
+		
+		if (isDualDialogue) {
+			if (line.type == character) type = dualDialogueCharacter;
+			else if (line.type == parenthetical) type = dualDialogueParenthetical;
+			else if (line.type == dialogue) type = dualDialogue;
+			else if (line.type == more) type = dualDialogueMore;
+		}
+		
+		// A dictionary of styles for current paper size.
+		NSNumber* paperSizeKey = @(paperSize);
+		if (_lineTypeAttributes[paperSizeKey] == nil) _lineTypeAttributes[paperSizeKey] = NSMutableDictionary.new;
+		
+		// Dictionary for the actual attributes
+		NSNumber* typeKey = @(type);
+		
+		// We'll create additional, special attributes for some rules.
+		// Let's add 100 to the type to create separate keys for split-paragraph rules.
+		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered)) {
+			typeKey = @(type + 100);
+		}
+		
+		if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
+			RenderStyle *style = [self styleForType:type];
+			
+			// Get font
+			NSFont* font = [self fontWith:style];
+			
+			// Get text color
+			BXColor* textColor = BXColor.blackColor;
+			if (style.color.length > 0) {
+				BXColor* c = [BeatColors color:style.color];
+				if (c != nil) textColor = c;
+			}
+			
+			NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
+				NSForegroundColorAttributeName: textColor,
+				NSFontAttributeName: (font != nil) ? font : self.fonts.courier
+			}];
+			
+			// Block sizing
+			CGFloat width = [style widthWithPageSize:paperSize];
+			if (style.width == 0.0) width = [self.styles.page defaultWidthWithPageSize:paperSize];
+			
+			CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
+			if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
+			
+			// Paragraph style
+			NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+			pStyle.headIndent 				= style.marginLeft + style.indent;
+			pStyle.firstLineHeadIndent 		= style.marginLeft + style.firstLineIndent;
+			
+			// Add additional indent for parenthetical lines
+			if (line.type == parenthetical) {
+				blockWidth += 7.25;
+				pStyle.headIndent += 7.25;
+			}
+			
+			pStyle.paragraphSpacingBefore = style.marginTop;
+			
+			pStyle.paragraphSpacing = style.marginBottom;
+			pStyle.tailIndent = -1 * style.marginRight; // Negative value;
+			
+			pStyle.maximumLineHeight = BeatPagination.lineHeight;
+			
+			if (!isDualDialogue && !line.isTitlePage) {
+				// Add content padding where needed
+				pStyle.firstLineHeadIndent 	+= self.styles.page.contentPadding;
+				pStyle.headIndent 			+= self.styles.page.contentPadding;
+			} else if (!line.isTitlePage) {
+				pStyle.firstLineHeadIndent 	= style.marginLeft;
+				pStyle.headIndent 			= style.marginLeft;
+			}
+			
+			// Create text block for non-title page elements to restrict horizontal size
+			if (!line.isTitlePage) {
+				NSTextBlock* textBlock = NSTextBlock.new;
+				[textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
+				pStyle.textBlocks = @[textBlock];
+			}
+			
+			// Text alignment
+			if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
+			else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
+			
+			// Special rules for some blocks
+			if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
+				pStyle.paragraphSpacingBefore = 0;
+			}
+			
+			styles[NSParagraphStyleAttributeName] = pStyle;
+			
+			// Apply to existing styles
+			_lineTypeAttributes[paperSizeKey][typeKey] = [NSDictionary dictionaryWithDictionary:styles];
+		}
+		
+		return _lineTypeAttributes[paperSizeKey][typeKey];
 	}
-	
-	// A dictionary of styles for current paper size.
-	NSNumber* paperSizeKey = @(paperSize);
-	if (_lineTypeAttributes[paperSizeKey] == nil) _lineTypeAttributes[paperSizeKey] = NSMutableDictionary.new;
-	
-	// Dictionary for the actual attributes
-	NSNumber* typeKey = @(type);
-	
-	// We'll create additional, special attributes for some rules.
-	// Let's add 100 to the type to create separate keys for split-paragraph rules.
-	if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered)) {
-		typeKey = @(type + 100);
-	}
-	
-	if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
-		RenderStyle *style = [self styleForType:type];
-		
-		// Get font
-		NSFont* font = [self fontWith:style];
-		
-		// Get text color
-		BXColor* textColor = BXColor.blackColor;
-		if (style.color.length > 0) {
-			BXColor* c = [BeatColors color:style.color];
-			if (c != nil) textColor = c;
-		}
-		
-		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
-			NSForegroundColorAttributeName: textColor,
-			NSFontAttributeName: (font != nil) ? font : self.fonts.courier
-		}];
-		
-		// Block sizing
-		CGFloat width 		= (paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-		CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
-		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
-		
-		// Paragraph style
-		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-		pStyle.headIndent 				= style.marginLeft;
-		pStyle.firstLineHeadIndent 		= style.marginLeft;
-		
-		// Add additional indent for parenthetical lines
-		if (line.type == parenthetical) {
-			blockWidth += 7.25;
-			pStyle.headIndent += 7.25;
-		}
-		
-		pStyle.paragraphSpacingBefore = style.marginTop;
-		
-		pStyle.paragraphSpacing = style.marginBottom;
-		pStyle.tailIndent = -1 * style.marginRight; // Negative value;
-		
-		pStyle.maximumLineHeight = BeatPagination.lineHeight;
-		
-		if (!isDualDialogue && !line.isTitlePage) {
-			// Add content padding where needed
-			pStyle.firstLineHeadIndent 	+= self.styles.page.contentPadding;
-			pStyle.headIndent 			+= self.styles.page.contentPadding;
-		} else if (!line.isTitlePage) {
-			pStyle.firstLineHeadIndent 	= style.marginLeft;
-			pStyle.headIndent 			= style.marginLeft;
-		}
-		
-		// Create text block for non-title page elements to restrict horizontal size
-		if (!line.isTitlePage) {
-			NSTextBlock* textBlock = NSTextBlock.new;
-			[textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
-			pStyle.textBlocks = @[textBlock];
-		}
-		
-		// Text alignment
-		if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
-		else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
-				
-		// Special rules for some blocks
-		if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
-			pStyle.paragraphSpacingBefore = 0;
-		}
-		
-		styles[NSParagraphStyleAttributeName] = pStyle;
-		
-		// Apply to existing styles
-		_lineTypeAttributes[paperSizeKey][typeKey] = [NSDictionary dictionaryWithDictionary:styles];
-	}
-	
-	return _lineTypeAttributes[paperSizeKey][typeKey];
 }
 
 

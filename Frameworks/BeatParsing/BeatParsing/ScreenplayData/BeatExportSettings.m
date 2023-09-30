@@ -58,8 +58,10 @@
         _operation = operation;
         _document = delegate.document;
         
+        _styles = delegate.styles;
+        
         _header = @"";
-        _printSceneNumbers = delegate.printSceneNumbers;
+        _printSceneNumbers = delegate.printSceneNumbers || delegate.showSceneNumberLabels;
         _revisions = delegate.shownRevisions;
         
         _coloredPages = false;

@@ -95,11 +95,7 @@
     
     // Page breaks have 0 height
     if (line.type == pageBreak) return 0.0;
-
-	// Create a bare-bones paragraph style
-	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-	pStyle.maximumLineHeight = BeatPagination.lineHeight;
-	
+    
     // If this is a *dual dialogue column*, we'll need to convert the style.
     LineType type = line.type;
     if (self.dualDialogueElement) {
@@ -108,10 +104,18 @@
         else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
     }
 
-    // Get style
-	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
-	CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
+    BeatPaperSize pageSize = self.delegate.settings.paperSize;
     
+    // Get render style
+    RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
+    CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
+    
+	// Create a bare-bones paragraph style
+	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+	pStyle.maximumLineHeight    = BeatPagination.lineHeight;
+    pStyle.firstLineHeadIndent  = style.firstLineIndent;
+    pStyle.headIndent           = style.firstLineIndent;
+        
     // Set font for this element
     NSFont* font = _delegate.fonts.courier;
     if (style.font) {
@@ -132,9 +136,11 @@
 
 
 	// Calculate the line height
-	CGFloat height = 0.0;
-	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-	height = [string heightWithContainerWidth:width] + topMargin;
+    CGFloat width = [style widthWithPageSize:pageSize];
+    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:pageSize];
+	
+    CGFloat height = 0.0;
+    height = [string heightWithContainerWidth:width] + topMargin;
 		
 	// Save the calculated top margin for full block if this is the first element on page
 	if (line == self.lines.firstObject) self.topMargin = topMargin;

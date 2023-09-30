@@ -167,9 +167,6 @@
 	[self updateHeadingSample:NO];
 }
 - (void)updateHeadingSample:(bool)windowDidLoad {
-	// Reload global styles whenever something was changed style-wise
-	[BeatRenderStyles.shared reload];
-	
 	// Save the original heading
 	if (!_headingSample) _headingSample = self.sampleHeading.stringValue.copy;
 	
@@ -202,12 +199,17 @@
 	
 	// Invalidate previews for all documents when layout settings are changed after loading
 	if (!windowDidLoad) {
-		for (id<BeatEditorDelegate>editor in NSDocumentController.sharedDocumentController.documents) {
-			[(BeatPreviewController*)editor.previewController reloadStyles];
-			[(BeatPreviewController*)editor.previewController resetPreview];
-		}
+		[self reloadStyles];
 	}
 }
+
+- (void)reloadStyles
+{
+	for (id<BeatEditorDelegate>editor in NSDocumentController.sharedDocumentController.documents) {
+		[editor reloadStyles];
+	}
+}
+
 - (void)show {
 	[self showWindow:self.window];
 	[self.window makeKeyAndOrderFront:self.window];
@@ -221,11 +223,7 @@
 	if (sender == _headingSpacing1) [BeatUserDefaults.sharedDefaults saveInteger:1 forKey:@"sceneHeadingSpacing"];
 	else if (sender == _headingSpacing2) [BeatUserDefaults.sharedDefaults saveInteger:2 forKey:@"sceneHeadingSpacing"];
 	
-	[BeatRenderStyles.shared reload];
-	for (id<BeatEditorDelegate>editor in NSDocumentController.sharedDocumentController.documents) {
-		[(BeatPreviewController*)editor.previewController reloadStyles];
-		[(BeatPreviewController*)editor.previewController resetPreview];
-	}
+	[self reloadStyles];
 	
 	[self updateHeadingSample];
 }
