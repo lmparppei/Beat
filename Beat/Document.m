@@ -119,6 +119,9 @@
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
 
+@property (nonatomic) BeatStylesheet* styles;
+@property (nonatomic) BeatStylesheet* editorStyles;
+
 // Autosave
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
@@ -601,19 +604,44 @@ static BeatAppDelegate *appDelegate;
 	}
 }
 
--(BeatExportSettings*)exportSettings {
+-(void)awakeFromNib
+{
+	// Set up recovery file saving
+	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[self scheduleAutosaving];
+	
+	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
+}
+
+
+#pragma mark - Export settings
+
+-(BeatExportSettings*)exportSettings
+{
 	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
 	settings.revisions = BeatRevisions.revisionColors;
 	
 	return settings;
 }
 
--(void)awakeFromNib {
-	// Set up recovery file saving
-	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
-	[self scheduleAutosaving];
-	
-	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
+
+#pragma mark - Editor styles
+
+- (BeatStylesheet *)editorStyles {
+	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[_documentSettings getString:DocSettingStylesheet]];
+	return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
+}
+- (BeatStylesheet *)styles {
+	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[_documentSettings getString:DocSettingStylesheet]];
+	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
+}
+
+/// Reloads all styles
+- (void)reloadStyles
+{
+	[self.styles reload];
+	[self.editorStyles reload];
+	[self.previewController resetPreview];
 }
 
 	

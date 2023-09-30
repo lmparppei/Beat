@@ -164,7 +164,14 @@
 		pStyle = pStyle.mutableCopy;
 		pStyle.paragraphSpacingBefore = 0.0;
 		[attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, attributedString.length)];
+		
+		// If this is a SPLIT ELEMENT and rules say so, we'll remove its indentation.
+		if (line.unsafeForPageBreak && !style.indentSplitElements) {
+			pStyle.headIndent 			-= style.indent;
+			pStyle.firstLineHeadIndent 	-= style.firstLineIndent;
+		}
 	}
+	
 	
 	// Inline stylization
 	if (!line.noFormatting) {

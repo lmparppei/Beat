@@ -45,6 +45,7 @@ import Foundation
     
     @objc public var indent:CGFloat = 0
     @objc public var firstLineIndent:CGFloat = 0
+    @objc public var indentSplitElements:Bool = true
     
     @objc public var content:String?
     
@@ -99,6 +100,8 @@ import Foundation
             return "fontSize"
         case "first-line-indent":
             return "firstLineIndent"
+        case "indent-split-elements":
+            return "indentSplitElements"
         default:
             return name
         }

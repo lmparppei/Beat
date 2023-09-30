@@ -114,20 +114,12 @@
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight    = BeatPagination.lineHeight;
     pStyle.firstLineHeadIndent  = style.firstLineIndent;
-    pStyle.headIndent           = style.firstLineIndent;
+    pStyle.headIndent           = style.indent;
+
         
     // Set font for this element
     NSFont* font = _delegate.fonts.courier;
-    if (style.font) {
-        if ([style.font isEqualToString:@"system"]) {
-            BXFontDescriptorSymbolicTraits traits = 0;
-            if (style.italic) traits |= BXFontDescriptorTraitItalic;
-            if (style.bold) traits |= BXFontDescriptorTraitBold;
-            
-            CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
-            font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
-        }
-    }
+    if (style.font) font = [self fontFor:style];
     
     NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:line.stripFormatting attributes:@{
         NSFontAttributeName: font,
@@ -147,6 +139,23 @@
 	
 	self.lineHeights[line.uuid] = [NSNumber numberWithFloat:height];
 	return height;
+}
+
+- (BXFont*)fontFor:(RenderStyle*)style
+{
+    BXFont* font;
+    
+    if ([style.font isEqualToString:@"system"]) {
+        BXFontDescriptorSymbolicTraits traits = 0;
+        if (style.italic) traits |= BXFontDescriptorTraitItalic;
+        if (style.bold) traits |= BXFontDescriptorTraitBold;
+        
+        CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
+        font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
+    }
+    if (font == nil) font = _delegate.fonts.courier;
+    
+    return font;
 }
 
 /// Returns the line which resides at given Y coordinate within the local height of this block.
@@ -300,11 +309,15 @@
 	NSString *str = line.stripFormatting;
 	NSString *retain = @"";
 
+    BeatPaperSize paperSize = self.delegate.settings.paperSize;
+    
+    // Get block size
 	RenderStyle *style = [self.delegate.styles forElement:line.typeName];
-	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+    CGFloat width = [style widthWithPageSize:paperSize];
+    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
 	
 	// Create the layout manager for remaining space calculation
-	NSLayoutManager *lm = [self heightCalculatorForString:str width:width];
+	NSLayoutManager *lm = [self layoutManagerForString:str type:line.type];
 	
 	// We'll get the number of lines rather than calculating exact size in NSTextField
 	__block NSInteger numberOfLines = 0;
@@ -595,28 +608,53 @@
 	return numberOfLines * lineHeight;
 }
 
-- (NSLayoutManager*)heightCalculatorForString:(NSString*)string width:(CGFloat)width {
-	BXFont *font = _delegate.fonts.courier;
-	if (string == nil) string = @"";
-	
+/// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
+- (NSLayoutManager*)layoutManagerForString:(NSString*)string type:(LineType)type
+{
+    // If this is a *dual dialogue* column, we'll need to convert the style.
+    if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
+        if (type == dialogue) type = dualDialogue;
+        else if (type == character) type = dualDialogueCharacter;
+        else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
+    }
+    
+    NSString* lineType = [Line typeName:type];
+    
+    RenderStyle *style = [self.delegate.styles forElement:lineType];
+    
+    BXFont* font = _delegate.fonts.courier;
+    if (style.font) font = [self fontFor:style];
+    
+    BeatPaperSize paperSize = self.delegate.settings.paperSize;
+    CGFloat width = [style widthWithPageSize:paperSize];
+    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
+    
+    NSParagraphStyle* pStyle = [self.delegate paragraphStyleFor:lineType];
+    
 #if TARGET_OS_IOS
-	// Set font size to 80% on iOS
-	font = [font fontWithSize:font.pointSize * 0.8];
+    // Set font size to 80% on iOS
+    // font = [font fontWithSize:font.pointSize * 0.8];
 #endif
-	
-	// set up the layout manager
-	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
-	NSLayoutManager *layoutManager = NSLayoutManager.new;
-
-	NSTextContainer *textContainer = NSTextContainer.new;
-	[textContainer setSize:CGSizeMake(width, MAXFLOAT)];
-
-	[layoutManager addTextContainer:textContainer];
-	[textStorage addLayoutManager:layoutManager];
-	[textContainer setLineFragmentPadding:0];
-	[layoutManager glyphRangeForTextContainer:textContainer];
-	
-	return layoutManager;
+    
+    // set up the layout manager
+    NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{
+        NSFontAttributeName: font,
+        NSParagraphStyleAttributeName: pStyle
+    }];
+    NSLayoutManager *layoutManager = NSLayoutManager.new;
+    
+    NSTextContainer *textContainer = NSTextContainer.new;
+    [textContainer setSize:CGSizeMake(width, MAXFLOAT)];
+    
+    [layoutManager addTextContainer:textContainer];
+    [textStorage addLayoutManager:layoutManager];
+    [textContainer setLineFragmentPadding:0];
+    [layoutManager glyphRangeForTextContainer:textContainer];
+    
+    // Perform layout
+    NSInteger numberOfGlyphs = layoutManager.numberOfGlyphs;
+    
+    return layoutManager;
 }
 
 
@@ -637,10 +675,17 @@
 	return [_delegate.renderer renderBlock:self firstElementOnPage:isFirstElement];
 }
 
-- (CGFloat)widthFor:(Line*)line {
-	RenderStyle* style = [_delegate.styles forElement:line.typeName];
-	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-	return width;
+- (CGFloat)widthFor:(Line*)line
+{
+    return [self widthForType:line.typeName];
+}
+- (CGFloat)widthForType:(NSString*)typeName
+{
+    RenderStyle* style = [_delegate.styles forElement:typeName];
+    CGFloat width = [style widthWithPageSize:_delegate.settings.paperSize];
+    if (width == 0.0) width = [_delegate.styles.page defaultWidthWithPageSize:_delegate.settings.paperSize];
+    
+    return width;
 }
 
 #pragma mark - Convenience

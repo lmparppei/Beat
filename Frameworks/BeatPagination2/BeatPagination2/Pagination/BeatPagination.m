@@ -74,7 +74,11 @@
 /// Reusable pages from the previous pagination operation.
 @property (nonatomic) NSArray<BeatPaginationPage*>* _Nullable cachedPages;
 
+/// UUID -> line dictionary
 @property (nonatomic) NSMutableDictionary* UUIDsToLines;
+
+/// Reusable styles for paragraph sizing
+@property (nonatomic) NSMutableDictionary<NSString*, NSParagraphStyle*>* paragraphStyles;///
 
 @end
 
@@ -724,6 +728,27 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	 return height
  }
  */
+
+#pragma mark - Paragraph sizing
+
+- (NSParagraphStyle*)paragraphStyleFor:(NSString*)lineType
+{
+    // If we've already created this style, return it
+    if (_paragraphStyles[lineType]) return _paragraphStyles[lineType];
+    
+    RenderStyle* style = [self.styles forElement:lineType];
+    
+    // Create a bare-bones paragraph style. We only need to know indent and line height.
+    NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+    pStyle.maximumLineHeight    = (style.lineHeight > 0.0) ? style.lineHeight : self.styles.page.lineHeight;
+    pStyle.firstLineHeadIndent  = style.firstLineIndent;
+    pStyle.headIndent           = style.indent;
+    
+    if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
+    _paragraphStyles[lineType] = pStyle;
+    
+    return pStyle;
+}
 
 
 #pragma mark - CONT'D and (MORE)
