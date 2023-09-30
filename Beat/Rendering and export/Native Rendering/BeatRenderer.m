@@ -599,7 +599,7 @@
 			
 			// Block sizing
 			CGFloat width = [style widthWithPageSize:paperSize];
-			if (style.width == 0.0) width = [self.styles.page defaultWidthWithPageSize:paperSize];
+			if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:paperSize];
 			
 			CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
 			if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
@@ -662,7 +662,9 @@
 
 - (CGFloat)widthFor:(Line*)line {
 	RenderStyle* style = [self.styles forElement:line.typeName];
-	CGFloat width = (self.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+	CGFloat width = [style widthWithPageSize:self.settings.paperSize];
+	if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
+		
 	return width;
 }
 
