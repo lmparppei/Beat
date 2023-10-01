@@ -70,6 +70,15 @@
 	[self.previewController.scrollView scrollPoint:NSMakePoint(0, 0)];
 }
 
+#pragma mark - Styles
+
+- (BeatStylesheet *)editorStyles {
+	return BeatStyles.shared.defaultEditorStyles;
+}
+- (BeatStylesheet *)styles {
+	return BeatStyles.shared.defaultStyles;
+}
+
 
 #pragma mark - Delegate methods
 
