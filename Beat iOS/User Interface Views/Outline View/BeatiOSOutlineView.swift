@@ -127,7 +127,7 @@ class BeatOutlineViewCell:UITableViewCell {
 		self.backgroundColor = .black
 
 		let selectionView = UIView()
-		selectionView.backgroundColor = ThemeManager.shared().outlineHighlight()
+		selectionView.backgroundColor = ThemeManager.shared().outlineHighlight
 		self.selectedBackgroundView = selectionView
 
 	}

@@ -311,7 +311,7 @@
 	return self.textView;
 }
 - (CGFloat)editorLineHeight {
-	return BeatPagination.lineHeight;
+	return self.editorStyles.page.lineHeight;
 }
 
 
@@ -1110,9 +1110,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Export options
 
-- (BeatExportSettings*)exportSettings  {
+- (BeatExportSettings*)exportSettings
+{
 	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
-	
 	return settings;
 }
 

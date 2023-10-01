@@ -66,6 +66,10 @@ final class BeatExportSettingController:UITableViewController {
 	@IBOutlet var paperSize:UISegmentedControl?
 	@IBOutlet var printSceneNumbers:UISwitch?
 	
+	@IBOutlet var printNotes:UISwitch?
+	@IBOutlet var printSections:UISwitch?
+	@IBOutlet var printSynopsis:UISwitch?
+	
 	weak var editorDelegate:BeatEditorDelegate?
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +77,18 @@ final class BeatExportSettingController:UITableViewController {
 		
 		printSceneNumbers?.setOn(editorDelegate.showSceneNumberLabels, animated: false)
 		paperSize?.selectedSegmentIndex = editorDelegate.pageSize.rawValue
+		
+		printNotes?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintNotes), animated: false)
+		printSections?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintSections), animated: false)
+		printSynopsis?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintSynopsis), animated: false)
+	}
+	
+	@IBAction func toggleSetting(sender:BeatUserSettingSwitch?) {
+		guard let button = sender,
+			  let key = sender?.setting
+		else { return }
+		
+		editorDelegate?.documentSettings.setBool(key, as: button.isOn)
 	}
 	
 	func exportSettings() -> BeatExportSettings {
@@ -96,4 +112,8 @@ final class BeatExportSettingController:UITableViewController {
 		
 		return settings
 	}
+}
+
+class BeatUserSettingSwitch:UISwitch {
+	@IBInspectable var setting:String?
 }
