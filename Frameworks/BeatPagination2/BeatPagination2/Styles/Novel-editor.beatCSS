@@ -12,10 +12,6 @@
 
 */
 
-preprocessing {
-    printSections: true;
-}
-
 page {
     margin-left: 25;
     margin-right: 25;
@@ -34,7 +30,7 @@ page {
     margin-left-us: 0;
 }
 
-section {
+heading {
     text-align: center;
 }
 

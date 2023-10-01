@@ -64,7 +64,7 @@ public class BeatStyles:NSObject {
     
     @objc public func editorStyles(for styleName:String = "") -> BeatStylesheet {
         // Make sure the name isn't just an empty string
-        let name = (styleName.count > 0) ? styleName : BeatStyles.defaultStyleName + "-editor"
+        let name = (styleName.count > 0) ? (styleName + "-editor") : (BeatStyles.defaultStyleName + "-editor")
         
         if _loadedStyles[name] != nil {
             return _loadedStyles[name]!

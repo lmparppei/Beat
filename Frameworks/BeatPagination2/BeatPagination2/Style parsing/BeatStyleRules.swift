@@ -10,6 +10,8 @@ import Foundation
 // MARK: - Render style
 
 @objc public class RenderStyle:NSObject {
+    @objc public var name:String = ""
+    
     @objc public var bold:Bool = false
     @objc public var italic:Bool = false
     @objc public var underline:Bool = false
@@ -48,6 +50,8 @@ import Foundation
     @objc public var indentSplitElements:Bool = true
     
     @objc public var content:String?
+    
+    @objc public var sceneNumber:Bool = true
     
     public init(rules:[String:Any]) {
         super.init()
@@ -102,6 +106,8 @@ import Foundation
             return "firstLineIndent"
         case "indent-split-elements":
             return "indentSplitElements"
+        case "scene-number":
+            return "sceneNumber"
         default:
             return name
         }

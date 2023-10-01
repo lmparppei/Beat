@@ -17,10 +17,11 @@ public protocol BeatCssParserDelegate {
 public final class CssParser {
 	
 	var styles:[String:RenderStyle] = [:]
-	
+    var lineHeight = BeatPagination.lineHeight()
+    
 	// Map property names to types
 	let stringTypes:Set = ["textAlign", "text-align", "color", "font", "content"]
-	let boolTypes:Set = ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements"]
+	let boolTypes:Set = ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements", "sceneNumber", "scene-number"]
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 
 	var settings:BeatExportSettings?
@@ -123,11 +124,20 @@ public final class CssParser {
 				else if (boolTypes.contains(ruleKey)) {
 					rules[ruleKey] = readValue(string: value, type: Bool.self)
 				} else {
-					rules[ruleKey] = readValue(string: value, type: Double.self)
+                    let value = readValue(string: value, type: Double.self)
+					rules[ruleKey] = value
+                    
+                    // Line height can be set DYNAMICALLY, and will affect other value calculations
+                    if key == "page" && (ruleKey == "lineHeight" || ruleKey == "line-height") {
+                        self.lineHeight = value as? CGFloat ?? BeatPagination.lineHeight()
+                    }
 				}
 			}
-			
-			self.styles[key] = RenderStyle(rules: rules)
+		
+            let style = RenderStyle(rules: rules)
+            style.name = key
+            
+			self.styles[key] = style
 		}
 		        
 		return self.styles
@@ -185,12 +195,13 @@ public final class CssParser {
 				
 		// Calculate different units based on *fixed values*
 		value = value.replacingOccurrences(of: "ch", with: "* 7.25")
-		value = value.replacingOccurrences(of: "l", with: "* \(BeatPagination.lineHeight())")
+        value = value.replacingOccurrences(of: "l", with: "* \(self.lineHeight)")
 		value = value.replacingOccurrences(of: "px", with: "")
 		value = value.replacingOccurrences(of: " ", with: "")
 		
 		// ... and to be even more *safe* and *transparent*, let's use NSExpression 🍄
 		let exp = NSExpression(format: value)
+                
 		return exp.expressionValue(with: nil, context: nil) ?? 0
 	}
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B616519229FC643500D20882 /* Screenplay-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B616519129FC643500D20882 /* Screenplay-editor.beatCSS */; };
+		B64E436C2AC97518003B947F /* Novel-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B64E436B2AC9675C003B947F /* Novel-editor.beatCSS */; };
 		B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A69C29F1C3940036FE6B /* BeatPagination2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */; };
 		B663A6CA29F1C3D80036FE6B /* BeatPaginationBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -227,6 +228,7 @@
 				B6E0E10B2AC6C50B00948752 /* Novel.beatCSS in Resources */,
 				B663A6EC29F1C5FC0036FE6B /* Styles.beatCSS in Resources */,
 				B6CD61AA2AC7607200BCDEB7 /* Screenplay.beatCSS in Resources */,
+				B64E436C2AC97518003B947F /* Novel-editor.beatCSS in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

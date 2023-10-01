@@ -303,17 +303,17 @@
 	if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
 		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
 	}
-		
-	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
-	if (line.type == heading) {
-		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
-	}
 	
 	// And after all this, if the style has a content rule, we'll replace the text while keeping the original attributes
 	if (style.content != nil) {
 		NSString* content = [NSString stringWithFormat:@"%@\n", style.content];
 		NSDictionary* attrs = [result attributesAtIndex:0 effectiveRange:nil];
 		[result replaceCharactersInRange:NSMakeRange(0, result.length) withAttributedString:[NSAttributedString.alloc initWithString:content attributes:attrs]];
+	}
+	
+	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
+	if (line.type == heading && style.sceneNumber) {
+		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
 	}
 	
 	return result;
@@ -482,12 +482,12 @@
 	NSMutableParagraphStyle* headerStyle = NSMutableParagraphStyle.new;
 	headerStyle.textBlocks = @[headerCell];
 	headerStyle.alignment = NSTextAlignmentCenter;
-	headerStyle.maximumLineHeight = BeatPagination.lineHeight;
+	headerStyle.maximumLineHeight = self.styles.page.lineHeight;
 	
 	NSMutableParagraphStyle* rightStyle = NSMutableParagraphStyle.new;
 	rightStyle.textBlocks = @[rightCell];
 	rightStyle.alignment = NSTextAlignmentRight;
-	rightStyle.maximumLineHeight = BeatPagination.lineHeight;
+	rightStyle.maximumLineHeight = BeatPagination.lineHeight; // We'll use standard line heights here
 	rightStyle.paragraphSpacing = BeatPagination.lineHeight * 2;
 	
 	// Left cell is just empty, no additional styles needed
@@ -620,7 +620,7 @@
 			pStyle.paragraphSpacing = style.marginBottom;
 			pStyle.tailIndent = -1 * style.marginRight; // Negative value;
 			
-			pStyle.maximumLineHeight = BeatPagination.lineHeight;
+			pStyle.maximumLineHeight = self.styles.page.lineHeight;
 			
 			if (!isDualDialogue && !line.isTitlePage) {
 				// Add content padding where needed
