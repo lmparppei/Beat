@@ -32,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		B616519129FC643500D20882 /* Screenplay-editor.beatCSS */ = {isa = PBXFileReference; explicitFileType = text.css; path = "Screenplay-editor.beatCSS"; sourceTree = "<group>"; };
+		B64E436B2AC9675C003B947F /* Novel-editor.beatCSS */ = {isa = PBXFileReference; explicitFileType = text.css; path = "Novel-editor.beatCSS"; sourceTree = "<group>"; };
 		B663A69929F1C3940036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B663A69C29F1C3940036FE6B /* BeatPagination2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPagination2.h; sourceTree = "<group>"; };
 		B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
@@ -143,6 +144,7 @@
 				B6E0E1092AC6C04700948752 /* Screenplay.beatCSS */,
 				B616519129FC643500D20882 /* Screenplay-editor.beatCSS */,
 				B6E0E10A2AC6C50B00948752 /* Novel.beatCSS */,
+				B64E436B2AC9675C003B947F /* Novel-editor.beatCSS */,
 			);
 			path = Styles;
 			sourceTree = "<group>";

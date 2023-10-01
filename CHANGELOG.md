@@ -8,6 +8,7 @@
 - Fixed the tutorial
 - Added support for non-monospaced fonts (macOS)
 - Template support
+- Fixed issues with color customization
 
 
 ## Beat 1.99.x
