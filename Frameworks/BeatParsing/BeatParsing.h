@@ -9,18 +9,18 @@
 #define BeatParsing_h
 #pragma clang system_header
 
-#import "ContinuousFountainParser.h"
-#import "Line.h"
-#import "OutlineScene.h"
-#import "FountainRegexes.h"
-#import "BeatDocumentSettings.h"
+#import <BeatParsing/ContinuousFountainParser.h>
+#import <BeatParsing/Line.h>
+#import <BeatParsing/OutlineScene.h>
+#import <BeatParsing/FountainRegexes.h>
+#import <BeatParsing/BeatDocumentSettings.h>
 
-#import "RegExCategories.h"
-#import "NSString+CharacterControl.h"
-#import "NSString+Regex.h"
-#import "NSMutableString+Regex.h"
+#import <BeatParsing/RegExCategories.h>
+#import <BeatParsing/NSString+CharacterControl.h>
+#import <BeatParsing/NSString+Regex.h>
+#import <BeatParsing/NSMutableString+Regex.h>
 
-#import "NSCharacterSet+BadControlCharacters.h"
-#import "NSString+EMOEmoji.h"
+#import <BeatParsing/NSCharacterSet+BadControlCharacters.h>
+#import <BeatParsing/NSString+EMOEmoji.h>
 
 #endif /* BeatParsing_h */

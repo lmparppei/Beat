@@ -464,56 +464,45 @@
 		NSMutableString *open = NSMutableString.new;
 		NSMutableString *close = NSMutableString.new;
 		
-		NSString *styleString = attrs[@"Style"];
+		NSMutableSet* styles = attrs[@"Style"];
 
 		// Append corresponding HTML tags to opening & closing strings, ie. open = "<b>", close = "</b>"
-		if (styleString.length) {
-			NSMutableArray *styleArray = [styleString componentsSeparatedByString:@","].mutableCopy;
-			[styleArray removeObject:@""];
-						
-			if ([styleArray containsObject:@"Bold"]) {
+		if (styles.count > 0) {
+			if ([styles containsObject:@"Bold"]) {
 				[open appendString:BOLD_OPEN];
 				[close appendString:BOLD_CLOSE];
 			}
-			if ([styleArray containsObject:@"Italic"]) {
+			if ([styles containsObject:@"Italic"]) {
 				[open appendString:ITALIC_OPEN];
 				[close appendString:ITALIC_CLOSE];
 			}
-			if ([styleArray containsObject:@"Underline"]) {
+			if ([styles containsObject:@"Underline"]) {
 				[open appendString:UNDERLINE_OPEN];
 				[close appendString:UNDERLINE_CLOSE];
 			}
-			if ([styleArray containsObject:@"Strikeout"]) {
+			if ([styles containsObject:@"Strikeout"]) {
 				[open appendString:STRIKEOUT_OPEN];
 				[close appendString:STRIKEOUT_CLOSE];
 			}
-			if ([styleArray containsObject:@"RemovalSuggestion"]) {
+			if ([styles containsObject:@"RemovalSuggestion"]) {
 				[open appendString:STRIKEOUT_OPEN];
 				[close appendString:STRIKEOUT_CLOSE];
 			}
-			if ([styleArray containsObject:@"Addition"]) {
+			if ([styles containsObject:@"Addition"]) {
 				//open = [open stringByAppendingString:ADDITION_OPEN];
 				//close = [close stringByAppendingString:ADDITION_OPEN];
 			}
-			if ([styleArray containsObject:@"Note"]) {
+			if ([styles containsObject:@"Note"]) {
 				[open appendString:NOTE_OPEN];
 				[close appendString:NOTE_CLOSE];
 			}
-			
-			// Iterate through possible revisions baked into the line
-			for (NSString *key in styleArray.copy) {
-				// A revision style attribute is formatted as "Revision:color"
-				if ([key containsString:@"Revision:"]) {
-					[styleArray removeObject:key];
-					
-					NSArray *revisionComponents = [key componentsSeparatedByString:@":"];
-					if (revisionComponents.count < 2) continue;
-					NSString *revColor = revisionComponents[1];
-					
-					[open appendFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revColor];
-					[close appendString:@"</span>"];
-				}
-			}
+		}
+		
+		// Iterate through possible revisions baked into the line
+		NSString* revision = attrs[@"Revision"];
+		if (revision.length > 0) {
+			[open appendFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revision];
+			[close appendString:@"</span>"];
 		}
 		
 		// Append snippet to paragraph

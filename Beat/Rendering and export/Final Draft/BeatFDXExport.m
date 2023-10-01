@@ -677,57 +677,46 @@ static NSDictionary *fdxIds;
 	}];
 	
 	NSMutableString *xmlString = [NSMutableString string];
-		
+	__block NSString* styleString = @"";
+	
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
 		
 		// Get stylization in the current attribute range
-		NSString *styles = @"";
-		NSString *styleString = attrs[@"Style"];
+		NSMutableSet* styles = attrs[@"Style"];
+		NSString* additionalStyles = @"";
 		
-		NSString *additionalStyles = @"";
-		
-		if (styleString.length) {
-			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
-			[styleArray removeObject:@""];
-			
-			// Highlighting, Addition and Removal don't not conform to FDX styles
-			if ([styleArray containsObject:@"Highlight"]) {
-				[styleArray removeObject:@"Highlight"];
+		if (styles.count > 0) {
+			// Highlighting, Addition and Removal do not conform to FDX styles
+			if ([styles containsObject:@"Highlight"]) {
+				[styles removeObject:@"Highlight"];
 				NSString *highlightColor = [BeatColors colorWith16bitHex:@"blue"];
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\"", highlightColor.uppercaseString];
 			}
-			if ([styleArray containsObject:@"RemovalSuggestion"]) {
-				[styleArray removeObject:@"RemovalSuggestion"];
-				[styleArray addObject:@"Strikeout"];
+			if ([styles containsObject:@"RemovalSuggestion"]) {
+				[styles removeObject:@"RemovalSuggestion"];
+				[styles addObject:@"Strikeout"];
 				NSString *highlightColor = [BeatColors colorWith16bitHex:@"fdxRemoval"];
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Background=\"#%@\"", highlightColor.uppercaseString];
 			}
-			
-			for (NSString *key in styleArray.copy) {
-				if ([key containsString:@"Revision:"]) {
-					[styleArray removeObject:key];
-					
-					NSArray *revisionComponents = [key componentsSeparatedByString:@":"];
-					if (revisionComponents.count < 2) continue;
-					NSString *revColor = revisionComponents[1];
-
-					NSString *highlightColor = [BeatColors colorWith16bitHex:revColor];
-					
-					NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revColor] + 1;
-					additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
-				}
-			}
-			
-			NSString *styleClasses = @"";
-			// Set stylization for action, dialogue and dual dialogue elements.
-			// Ignore other blocks, because Final Draft doesn't like additional styles in those.
-			if (styleArray.count &&
-				(line.type == action || line.type == dialogue || line.type == dualDialogue))
-				styleClasses = [NSString stringWithFormat:@"Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];
-			
-			styles = [NSString stringWithFormat:@" %@%@", styleClasses, additionalStyles];
 		}
+		
+		NSString* revision = attrs[@"Revision"];
+		if (revision.length > 0) {
+			// Get color for revision.
+			NSString *highlightColor = [BeatColors colorWith16bitHex:revision];
+			NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revision] + 1; // + 1 as arrays begin from 0
+			additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
+		}
+		
+		NSString *styleClasses = @"";
+		// Set stylization for action, dialogue and dual dialogue elements.
+		// Ignore other blocks, because Final Draft doesn't like additional styles in those.
+		if (styles.count > 0 &&
+			(line.type == action || line.type == dialogue || line.type == dualDialogue))
+			styleClasses = [NSString stringWithFormat:@"Style=\"%@\"", [styles.allObjects componentsJoinedByString:@"+"]];
+		
+		styleString = [NSString stringWithFormat:@" %@%@", styleClasses, additionalStyles];
 		
 		// Tags for the current range
 		BeatTag *tag = attrs[@"BeatTag"];
@@ -749,7 +738,7 @@ static NSDictionary *fdxIds;
 		[text setString:[l componentsJoinedByString:@""]];
 		
 		// Append snippet to paragraph
-		[xmlString appendString:[NSString stringWithFormat:@"      <Text%@%@>%@</Text>\n", styles, tagAttribute, text]];
+		[xmlString appendString:[NSString stringWithFormat:@"      <Text%@%@>%@</Text>\n", styleString, tagAttribute, text]];
 	}];
 	
 	return xmlString;
@@ -789,3 +778,8 @@ static NSDictionary *fdxIds;
 }
 
 @end
+/*
+ 
+ pelkään että olen kuollut sisältä
+ 
+ */

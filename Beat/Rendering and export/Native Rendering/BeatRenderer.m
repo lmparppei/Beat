@@ -177,10 +177,9 @@
 	if (!line.noFormatting) {
 		NSAttributedString* inlineAttrs = line.attributedStringForFDX;
 		[inlineAttrs enumerateAttribute:@"Style" inRange:NSMakeRange(0, inlineAttrs.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			NSString* styleStr = (NSString*)value;
-			if (styleStr.length == 0) return;
+			NSSet* styleNames = (NSSet*)value;
+			if (styleNames.count == 0) return;
 			
-			NSArray* styleNames = [styleStr componentsSeparatedByString:@","];
 			NSFontTraitMask traits = 0;
 			
 			if ([styleNames containsObject:@"Bold"]) traits |= NSBoldFontMask;

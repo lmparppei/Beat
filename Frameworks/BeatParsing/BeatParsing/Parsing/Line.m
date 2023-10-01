@@ -7,11 +7,13 @@
 //  (most) parts copyright © 2019-2021 Lauri-Matti Parppei / Lauri-Matti Parppei. All Rights reserved.
 
 #import "Line.h"
+#import "BeatExportSettings.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
 #import "NSString+CharacterControl.h"
 #import "NSString+EMOEmoji.h"
 #import "BeatMeasure.h"
+#import <BeatParsing/BeatParsing-Swift.h>
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
@@ -400,9 +402,15 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Strip formatting
 
 /// Strip any Fountain formatting from the line
+/// // Strip any Fountain formatting from the line
 - (NSString*)stripFormatting
 {
-    NSIndexSet *contentRanges = self.contentRanges;
+    return [self stripFormattingWithSettings:nil];
+}
+- (NSString*)stripFormattingWithSettings:(BeatExportSettings*)settings
+{
+    NSMutableIndexSet *contentRanges = self.contentRanges.mutableCopy;
+    if (settings.printNotes) [contentRanges addIndexes:self.noteRanges];
     
     __block NSMutableString *content = NSMutableString.string;
     [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -447,21 +455,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
     return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
-
-/// Converts a global (document-wide) range into local range inside the line
--(NSRange)globalRangeToLocal:(NSRange)range {
-    // Insert a range and get a LOCAL range in the line
-    NSRange lineRange = (NSRange){ self.position, self.string.length };
-    NSRange intersection = NSIntersectionRange(range, lineRange);
-    
-    return (NSRange){ intersection.location - self.position, intersection.length };
-}
-/// Converts a global (document-wide) range into local range inside the line
--(NSRange)globalRangeFromLocal:(NSRange)range
-{
-    return NSMakeRange(range.location + self.position, range.length);
-}
-
 
 #pragma mark - Element booleans
 
@@ -883,8 +876,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		NSMutableString *close = [NSMutableString stringWithString:@""];
 		NSMutableString *openClose = [NSMutableString stringWithString:@""];
 		
-		NSString *styleString = attrs[@"Style"];
-		NSArray *styles = [styleString componentsSeparatedByString:@","];
+		NSSet *styles = attrs[@"Style"];
 		
 		if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
 		if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
@@ -940,7 +932,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	}
     
 	// Add font stylization
-    
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:ITALIC_STYLE toString:string range:range];
@@ -994,9 +985,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	if (self.revisedRanges.count) {
 		for (NSString *key in _revisedRanges.allKeys) {
 			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-				NSString *attrName = [NSString stringWithFormat:@"Revision:%@", key];
                 if ([self rangeInStringRange:range]) {
-                    [self addAttr:attrName toString:string range:range];
                     [string addAttribute:@"Revision" value:key range:range];
                 }
 			}];
@@ -1025,16 +1014,47 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	// Make a copy and enumerate attributes.
 	// Add style to the corresponding range while retaining the existing attributes, if applicable.
 	[string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-		NSString *style = @"";
-		if (attrs[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", attrs[@"Style"], name];
-		else style = name;
-		
+        NSMutableSet* style;
+        if (attrs[@"Style"]) {
+            style = (NSMutableSet*)style;
+            [style addObject:name];
+        } else {
+            style = [NSMutableSet.alloc initWithArray:@[name]];
+        }
+
 		[string addAttribute:@"Style" value:style range:range];
 	}];
 }
 
+/// Returns an attributed string without formatting markup
+- (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings
+{
+    NSAttributedString* attrStr = self.attributedStringForFDX;
+    
+    // We might include notes, sections and synopsis lines
+    NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
+    if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
+    
+    // Create actual content ranges
+    NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
+
+    // Enumerate visible ranges and build up the resulting string
+    NSMutableAttributedString* result = NSMutableAttributedString.new;
+    [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length == 0) return;
+        
+        NSAttributedString* content = [attrStr attributedSubstringFromRange:range];
+        [result appendAttributedString:content];
+    }];
+    
+    // Replace macro ranges here. Enumerate Macro attribute and call macro solver.
+    
+    return result;
+}
+
+
 /**
- 
+
  Splits a line at a given PRINTING index, meaning that the index was calculated from
  the actually printing string, with all formatting removed. That's why we'll first create an attributed string,
  and then format it back to Fountain.
@@ -1243,6 +1263,20 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 #pragma mark - Ranges
+
+/// Converts a global (document-wide) range into local range inside the line
+-(NSRange)globalRangeToLocal:(NSRange)range {
+    // Insert a range and get a LOCAL range in the line
+    NSRange lineRange = (NSRange){ self.position, self.string.length };
+    NSRange intersection = NSIntersectionRange(range, lineRange);
+    
+    return (NSRange){ intersection.location - self.position, intersection.length };
+}
+/// Converts a global (document-wide) range into local range inside the line
+-(NSRange)globalRangeFromLocal:(NSRange)range
+{
+    return NSMakeRange(range.location + self.position, range.length);
+}
 
 - (bool)rangeInStringRange:(NSRange)range {
 	if (range.location + range.length <= self.string.length) return YES;

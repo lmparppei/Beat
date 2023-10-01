@@ -10,6 +10,7 @@
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */ = {isa = PBXBuildFile; fileRef = B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */; };
+		B64E43882AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */; };
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
 		B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */; };
@@ -57,6 +58,7 @@
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
 		B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineChanges.h; sourceTree = "<group>"; };
 		B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineChanges.m; sourceTree = "<group>"; };
+		B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSIndexSet+ReplaceRange.swift"; sourceTree = "<group>"; };
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
 		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
 		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
@@ -120,7 +122,6 @@
 				B67E5DD0290EB3E5001FC051 /* BeatParsing.md */,
 				B604C8DF290CF82700CBB32D /* BeatParsing.h */,
 				B6B37F0528F01A8700657F5F /* BeatParsing */,
-				B6B37F3628F0275800657F5F /* RegExCategories */,
 				B6B37E8428F018A100657F5F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -197,13 +198,13 @@
 				B6B37F3728F0275800657F5F /* RegExCategories.m */,
 				B6B37F3828F0275800657F5F /* RegExCategories.h */,
 			);
-			name = RegExCategories;
-			path = ../../Libraries/RegExCategories;
+			path = RegExCategories;
 			sourceTree = "<group>";
 		};
 		B6B37F3B28F0279700657F5F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				B6B37F3628F0275800657F5F /* RegExCategories */,
 				B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */,
 				B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */,
 				B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */,
@@ -220,6 +221,7 @@
 				B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */,
 				B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */,
 				B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */,
+				B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -288,7 +290,7 @@
 				TargetAttributes = {
 					B6B37E8228F018A100657F5F = {
 						CreatedOnToolsVersion = 14.0.1;
-						LastSwiftMigration = 1400;
+						LastSwiftMigration = 1420;
 					};
 				};
 			};
@@ -343,6 +345,7 @@
 				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,
 				B6B37F2728F01B5A00657F5F /* BeatDocumentSettings.m in Sources */,
 				B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */,
+				B64E43882AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift in Sources */,
 				B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */,
 				B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */,
 				B6D53C7A29379A740039DF88 /* BeatMeasure.m in Sources */,

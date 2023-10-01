@@ -120,8 +120,9 @@
     // Set font for this element
     NSFont* font = _delegate.fonts.courier;
     if (style.font) font = [self fontFor:style];
-    
-    NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:line.stripFormatting attributes:@{
+
+    NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
+    NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:stringWithoutFormatting attributes:@{
         NSFontAttributeName: font,
         NSParagraphStyleAttributeName: pStyle
     }];
@@ -306,7 +307,7 @@
 
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
 	Line *line = self.lines.firstObject;
-	NSString *str = line.stripFormatting;
+	NSString *str = [line stripFormattingWithSettings:self.delegate.settings];
 	NSString *retain = @"";
 
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
@@ -508,7 +509,7 @@
 /// Splits a line of dialogue, retaining as much as possible in given remaining space.
 - (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace {
 	NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
-	NSString* string = line.stripFormatting;
+    NSString* string = [line stripFormattingWithSettings:self.delegate.settings];
 	NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, string.length)];
 	
 	NSMutableArray<NSString*>* sentences = NSMutableArray.new;

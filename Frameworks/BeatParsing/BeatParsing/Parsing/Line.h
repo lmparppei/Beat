@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 };
 
 @class OutlineScene;
+@class BeatExportSettings;
 
 @protocol LineExports <JSExport>
 @property (atomic) NSUUID *uuid; // You can actually write into the UUID
@@ -188,6 +189,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSString*)stripSceneNumber;
 /// Returns a string with all formatting removed. Also removes any hidden ranges.
 - (NSString*)stripFormatting;
+/// Returns a string with all formatting removed, taking export settings into account. Also removes any hidden ranges.
+- (NSString*)stripFormattingWithSettings:(BeatExportSettings*)settings;
 /// Returns a string with all of the note ranges removed.
 - (NSString*)stripNotes;
 /// Returns line string content with no formatting, but doesn't return an empty string if the line is omitted in the screenplay.
