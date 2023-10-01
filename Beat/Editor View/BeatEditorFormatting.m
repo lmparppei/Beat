@@ -28,41 +28,16 @@
 
 @implementation BeatEditorFormatting
 
-// Base font settings
-#define SECTION_FONT_SIZE 17.0 // base value for section sizes
-#define LINE_HEIGHT 1.1
-
 // Set character width
 #define CHR_WIDTH 7.25
-#define TEXT_INSET_TOP 80
 
-#define DIALOGUE_RIGHT 47 * CHR_WIDTH
+// Base font settings
+#define SECTION_FONT_SIZE 17.0 // base value for section sizes
 
-#define DD_CHARACTER_INDENT 30 * CHR_WIDTH
-#define DD_PARENTHETICAL_INDENT 27 * CHR_WIDTH
-#define DUAL_DIALOGUE_INDENT 21 * CHR_WIDTH
 #define DD_RIGHT 59 * CHR_WIDTH
 
-#define DD_BLOCK_INDENT 0.0
-#define DD_BLOCK_CHARACTER_INDENT 9 * CHR_WIDTH
-#define DD_BLOCK_PARENTHETICAL_INDENT 6 * CHR_WIDTH
-
 static NSString *underlinedSymbol = @"_";
-static NSString *strikeoutSymbolOpen = @"{{";
-static NSString *strikeoutSymbolClose = @"}}";
-
 static NSString* const BeatRepresentedLineKey = @"representedLine";
-
-+ (CGFloat)editorLineHeight {
-	return 16.0;
-}
-
--(instancetype)init {
-	self = [super init];
-	
-	
-	return self;
-}
 
 /// Returns paragraph style for given line type
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
@@ -77,16 +52,18 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	LineType type = line.type;
 	
 	// Catch forced character cue
-	if (_delegate.characterInputForLine == line && _delegate.characterInput) {
-		type = character;
-	}
+	if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
 	
 	// We need to get left margin here to avoid issues with extended line types
 	if (line.isTitlePage) type = titlePageUnknown;
 	RenderStyle* elementStyle = [_delegate.editorStyles forElement:[Line typeName:type]];
 	
+	// Paragraph sizing
+	CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];
+	if (width == 0.0) width = [_delegate.editorStyles.page defaultWidthWithPageSize:_delegate.pageSize];
+		
 	CGFloat leftMargin = elementStyle.marginLeft;
-	CGFloat rightMargin = elementStyle.marginLeft + ((_delegate.pageSize == BeatA4) ? elementStyle.widthA4 : elementStyle.widthLetter);
+	CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
 	
 	// Extended types for title page fields and sections
 	if (line.isTitlePage && line.titlePageKey.length == 0) {
@@ -96,7 +73,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		type = (LineType)subSection;
 	}
 	
-
 	// This is an idea for storing paragraph styles, but it doesn't seem to work for forced character cues.
 	BeatPaperSize paperSize = self.delegate.pageSize;
 	NSNumber* paperSizeKey = @(paperSize);
@@ -111,54 +87,33 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		return _paragraphStyles[paperSizeKey][typeKey];
 	}
 
-	
+	// Create paragraph style
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	style.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
+	style.minimumLineHeight = self.delegate.editorStyles.page.lineHeight;
 	
-	style.firstLineHeadIndent = leftMargin;
-	style.headIndent = leftMargin;
+	// Alignment
+	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
+	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
+	
+	// Indents are used as left/right margins, and indents in stylesheet are appended to that
+	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;
+	style.headIndent = leftMargin + elementStyle.indent;
+	style.tailIndent = rightMargin;
+	
 	if (line.isAnyParenthetical) style.headIndent += CHR_WIDTH;
 	
 	// TODO: Need to add calculations for tail indents. This is a mess.
 	
-	if (type == lyrics || type == centered || type == pageBreak) {
-		style.alignment = NSTextAlignmentCenter;
-	}
-	else if (type == titlePageSubField) {
+	if (type == titlePageSubField) {
 		style.firstLineHeadIndent = leftMargin * 1.25;
 		style.headIndent = leftMargin * 1.25;
 	}
-	else if (line.isTitlePage) {
-		style.firstLineHeadIndent = leftMargin;
-		style.headIndent = leftMargin;
-	}
-	else if (type == transitionLine) {
-		style.alignment = NSTextAlignmentRight;
-		
-	} else if (line.type == parenthetical) {
-		style.tailIndent = rightMargin;
-		
-	} else if (line.type == dialogue) {
-		style.tailIndent = rightMargin;
-		
-	} else if (line.type == character) {
-		style.tailIndent = rightMargin;
-		
-	} else if (line.type == dualDialogueCharacter) {
-		style.tailIndent = DD_RIGHT;
-		
-	} else if (line.type == dualDialogueParenthetical) {
-		style.tailIndent = DD_RIGHT;
-		
-	} else if (line.type == dualDialogue) {
-		style.tailIndent = DD_RIGHT;
-	}
 	else if (type == subSection) {
-		style.paragraphSpacingBefore = 20.0;
+		style.paragraphSpacingBefore = _delegate.editorStyles.page.lineHeight;
 		style.paragraphSpacing = 0.0;
 	}
 	else if (type == section) {
-		style.paragraphSpacingBefore = 30.0;
+		style.paragraphSpacingBefore = _delegate.editorStyles.page.lineHeight * 1.5;
 		style.paragraphSpacing = 0.0;
 	}
 	
@@ -244,10 +199,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
 	}
 	
-	
-	if (resetFont) {
-		[textStorage addAttribute:NSFontAttributeName value:font range:range];
-	}
+	// Avoid extra work and only add the font attribute when needed
+	if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
 }
 
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
@@ -494,9 +447,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	[line.underlinedRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
-	}];
-	[line.strikeoutRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
 	}];
 }
 

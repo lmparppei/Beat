@@ -11,16 +11,19 @@
 
 @implementation BeatPageBreak
 
--(instancetype)initWithY:(CGFloat)y element:(Line*)line {
-	return [BeatPageBreak.alloc initWithY:y element:line reason:@""];
+-(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight
+{
+	return [BeatPageBreak.alloc initWithY:y element:line lineHeight:lineHeight reason:@""];
 }
 
--(instancetype)initWithY:(CGFloat)y element:(Line*)line reason:(NSString*)reason {
+-(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight reason:(NSString*)reason
+{
 	self = [super init];
 	if (self) {
 		self.y = y;
 		self.element = line;
 		self.reason = reason;
+        self.lineHeight = lineHeight;
 	}
 	
 	return self;

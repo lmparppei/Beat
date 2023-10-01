@@ -1,6 +1,6 @@
 /*
 
- Novel Stylesheet for Beat.
+ Novel Editor Stylesheet for Beat.
  This is not actual CSS, just uses similar markup.
 
  Changing values without knowing what you are doing can very
@@ -35,7 +35,6 @@ page {
 }
 
 section {
-    content: ***;
     text-align: center;
 }
 

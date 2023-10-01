@@ -1082,27 +1082,29 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages {
 	NSMutableArray* breakPositions = NSMutableArray.new;
 	
-	CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
-	CGFloat UIlineHeight = BeatEditorFormatting.editorLineHeight; // Line height in UI
+	CGFloat UIlineHeight = self.editorDelegate.editorStyles.page.lineHeight; // Line height in UI
 	
 	for (BeatPaginationPage* page in pages) {
 		BeatPageBreak* pageBreak = page.pageBreak;
 		
 		Line* line = pageBreak.element;
+		CGFloat lineHeight = pageBreak.lineHeight; // Line height from pagination
 		CGFloat position = pageBreak.y;
+		
+		CGFloat linePosition = 0.0;
 		
 		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
 		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-				
+		
 		if (position >= 0) {
-			position = round(position / lineHeight) * UIlineHeight;
-			position = rect.origin.y + position;
+			// Round the value to make it position evenly on lines
+			linePosition =  rect.origin.y + (round(pageBreak.y / lineHeight) * UIlineHeight);
 		} else {
 			// Position -1 from pagination means that we'll position the line break after this element
-			position = rect.origin.y;
+			linePosition = rect.origin.y;
 		}
 		
-		[breakPositions addObject:@(position)];
+		[breakPositions addObject:@(linePosition)];
 	}
 	
 	[self updatePageNumbers:breakPositions];
@@ -1126,7 +1128,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
 		CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
-		CGFloat UIlineHeight = BeatEditorFormatting.editorLineHeight; // Line height in UI
+		CGFloat UIlineHeight = self.editorDelegate.lineHeight; // Line height in UI
 		CGFloat y;
 		
 		Line *line = pageBreak[@"line"];

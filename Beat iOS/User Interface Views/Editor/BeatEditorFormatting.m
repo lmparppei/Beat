@@ -51,10 +51,6 @@ static NSString *strikeoutSymbolClose = @"}}";
 
 static NSString* const BeatRepresentedLineKey = @"representedLine";
 
-+ (CGFloat)editorLineHeight {
-	return 16.0;
-}
-
 -(instancetype)init {
 	self = [super init];
 	return self;
@@ -118,7 +114,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 	
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	style.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
+	style.minimumLineHeight = self.delegate.editorStyles.page.lineHeight;
 	
 	style.firstLineHeadIndent = leftMargin;
 	style.headIndent = leftMargin;

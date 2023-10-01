@@ -42,7 +42,8 @@
 /**
  - returns `NSArray` with `[onThisPage<Line*>, onNextPage<Line*>, BeatPageBreak]`
  */
--(NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace {
+-(NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace styles:(BeatStylesheet*)styles
+{
 	CGFloat space = remainingSpace;
 	NSMutableArray<BeatPaginationBlock*>* passedBlocks = NSMutableArray.new;
 	
@@ -73,7 +74,7 @@
 		// Shot and heading are *never* left behind
 		BeatPaginationBlock *passedBlock = passedBlocks.firstObject;
 		if (passedBlock.type == heading || passedBlock.type == shot) {
-			return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject reason:@"Block group"]];
+			return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"Block group"]];
 		}
 	}
 	
@@ -85,7 +86,7 @@
 	if (offendingBlock == nil) {
 		// There was no offending block for some reason?
 		// To be on the safe side, push everything on next page.
-		return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject reason:@"Something went wrong when breaking a block"]];
+		return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"Something went wrong when breaking a block"]];
 	}
 		
 	NSArray* pageBreak = [offendingBlock breakBlockWithRemainingSpace:space];

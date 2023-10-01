@@ -17,7 +17,6 @@ typedef enum {
 } ParagraphStyleType;
 
 @interface BeatEditorFormatting : NSObject
-+ (CGFloat)editorLineHeight;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 

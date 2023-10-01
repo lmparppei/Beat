@@ -285,14 +285,14 @@
 		if (line.type == pageBreak) {
 			[_lineQueue removeObjectAtIndex:0];
 			
-			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1.0 element:line reason:@"Forced page break"];
+			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1.0 element:line lineHeight:self.styles.page.lineHeight reason:@"Forced page break"];
 			[self addPage:@[line] toQueue:@[] pageBreak:pageBreak];
 			continue;
 		}
 		
 		// Add initial page break when needed
 		if (self.pages.count == 0 && _currentPage.blocks.count == 0) {
-			_currentPage.pageBreak = [BeatPageBreak.alloc initWithY:0 element:line reason:@"Initial page break"];
+			_currentPage.pageBreak = [BeatPageBreak.alloc initWithY:0 element:line lineHeight:self.styles.page.lineHeight reason:@"Initial page break"];
 		}
 		
 		/**
@@ -348,12 +348,12 @@
 	
 	// If remaining space is less than 1 line, just roll on to next page
 	if (remainingSpace < BeatPagination.lineHeight) {
-		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0 element:group.blocks.firstObject.lines.firstObject reason:@"Nothing fit"];
+		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0 element:group.blocks.firstObject.lines.firstObject lineHeight:self.styles.page.lineHeight reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}
 	else if (group.blocks.count > 0) {
         // Break the block group
-		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace];
+		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace styles:self.styles];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
 	}
 	else {

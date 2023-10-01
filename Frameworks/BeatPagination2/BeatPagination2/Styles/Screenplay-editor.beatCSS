@@ -8,6 +8,8 @@
  
  "Class" names are internal type names as strings, not .typeAsString names.
  
+ Avoid using margin-top values in editor.
+ 
  © Lauri-Matti Parppei 2021-2022
 
 */
@@ -22,7 +24,7 @@ page {
     default-width-a4: 60ch;
     default-width-us: 62ch;
     
-    line-height: 12;
+    line-height: 15;
     
     content-padding: 7ch;
 }
@@ -31,7 +33,6 @@ heading {
     width-a4: 60ch - 2ch;
     width-us: 62ch - 2ch;
     
-    margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);
     underline: userSetting(headingStyleUnderline);
     
@@ -42,14 +43,12 @@ action {
     width-a4: 60ch;
     width-us: 62ch;
 
-    margin-top: 1l;
 }
 
 centered {
     width-a4: 60ch;
     width-us: 62ch;
 
-    margin-top: 1l;
     text-align: center;
 }
 
@@ -58,7 +57,6 @@ character {
     width-us: 40ch;
     
     margin-left: 19ch;
-    margin-top: 1l;
 }
 
 parenthetical {
@@ -66,15 +64,17 @@ parenthetical {
     width-us: 28ch;
     
     margin-left: 15ch;
-    margin-top: 0;
 }
 
 dialogue {
     width-a4: 35ch;
     width-us: 35ch;
     
-    margin-top: 0;
     margin-left: 10ch;
+}
+
+section {
+    margin-top: 1l;
 }
 
 more {
@@ -82,14 +82,12 @@ more {
     width-us: 38ch;
     
     margin-left: 130px;
-    margin-top: 0;
 }
 
 dualDialogueCharacter {
     width-a4: 38ch;
     width-us: 40ch;
 
-    margin-top: 1l;
     margin-left: 30ch;
 }
 
@@ -97,7 +95,6 @@ dualDialogueParenthetical {
     width-a4: 28ch;
     width-us: 28ch;
 
-    margin-top: 0;
     margin-left: 27ch;
 }
 dualDialogue {
@@ -105,15 +102,13 @@ dualDialogue {
     width-us: 35ch;
 
     margin-left: 21ch;
-    margin-right: 1ch;
+    margin-right: 0;
 }
 
 transition {
     width-a4: 60ch;
     width-us: 62ch;
-    
-    margin-top: 1l;
-    
+        
     text-align: right;
     uppercase: true;
 }
@@ -122,7 +117,6 @@ lyrics {
     width-a4: 60ch;
     width-us: 62ch;
     
-    margin-top: 1l;
     text-align: center;
     italic: true;
 }
@@ -134,9 +128,12 @@ shot {
     uppercase: true;
     
     bold: userSetting(headingStyleBold);
-    margin-top: userSetting(sceneHeadingSpacing)l;
 }
 
 titlePageUnknown {
     margin-left: 10ch;
+}
+
+pageBreak {
+    center: true;
 }

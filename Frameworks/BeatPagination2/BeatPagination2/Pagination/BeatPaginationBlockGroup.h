@@ -11,12 +11,13 @@
 NS_ASSUME_NONNULL_BEGIN
 @class BeatPaginationBlock;
 @class Line;
+@class BeatStylesheet;
 
 @interface BeatPaginationBlockGroup : NSObject
 @property (nonatomic) NSArray<BeatPaginationBlock*>* blocks;
 @property (nonatomic) CGFloat height;
 + (BeatPaginationBlockGroup*)withBlocks:(NSArray<BeatPaginationBlock*>*)blocks;
-- (NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace;
+- (NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace styles:(BeatStylesheet*)styles;
 - (NSArray<Line*>*)lines;
 @end
 

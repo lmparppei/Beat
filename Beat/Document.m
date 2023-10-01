@@ -2184,7 +2184,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
  Actual formatting is handled in BeatFormatting, and these methods either forward there or handle specific tasks, such as formatting all lines etc.
  */
 
-- (CGFloat)editorLineHeight { return BeatEditorFormatting.editorLineHeight; }
+- (CGFloat)editorLineHeight {
+	return self.editorStyles.page.lineHeight;
+}
 
 - (void)formatLine:(Line*)line {
 	// Forwarding for delegation
@@ -2472,8 +2474,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return BeatFonts.sharedFonts.courier.pointSize;
 }
 
-- (CGFloat)lineHeight {
-	return LINE_HEIGHT;
+/// Returns LINE HEIGHT MODIFIER (!!!), not actual line height
+- (CGFloat)lineHeight
+{
+	return self.editorStyles.page.lineHeight / 12.0;
 }
 
 
@@ -4458,6 +4462,12 @@ static NSArray<Line*>* cachedTitlePage;
 	}
 }
 
+
+#pragma mark - Copy
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+	return [Document.alloc initWithContentsOfURL:self.fileURL ofType:self.fileType error:nil];
+}
 
 @end
 

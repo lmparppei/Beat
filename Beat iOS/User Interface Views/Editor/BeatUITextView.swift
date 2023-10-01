@@ -302,7 +302,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		
 		let paragraphStyle = NSMutableParagraphStyle()
 		paragraphStyle.firstLineHeadIndent = 0.0
-		paragraphStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight()
+		paragraphStyle.minimumLineHeight = self.editorDelegate?.editorStyles.page().lineHeight ?? 12.0
 		
 		let attributes:[NSAttributedString.Key:Any] = [
 			NSAttributedString.Key.font: editorDelegate.courier!,

@@ -13,10 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPageBreak : NSObject
 @property (nonatomic) CGFloat y;
+@property (nonatomic) CGFloat lineHeight;
 @property (nonatomic) Line* element;
 @property (nonatomic) NSString* reason;
--(instancetype)initWithY:(CGFloat)y element:(Line*)line reason:(NSString*)reason;
--(instancetype)initWithY:(CGFloat)y element:(Line*)line;
+-(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight reason:(NSString*)reason;
+-(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight;
 @end
 
 NS_ASSUME_NONNULL_END
