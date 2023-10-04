@@ -37,6 +37,7 @@
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
 #import "BeatMeasure.h"
+#import <BeatParsing/BeatParsing-Swift.h>
 
 #define NEW_OUTLINE YES
 
@@ -77,6 +78,8 @@
 
 @property NSObject* parseLock;
 @property bool parsing;
+
+@property (nonatomic) BeatMacroParser* macros;
 
 @end
 
@@ -136,6 +139,7 @@ static NSDictionary* patterns;
 		else _staticParser = NO;
 		
 		[self parseText:string];
+        [self updateMacros];
 	}
 	
 	return self;
@@ -605,6 +609,9 @@ static NSDictionary* patterns;
             bool didChangeType = (currentLine.type != oldType);
             [self addUpdateToOutlineAtLine:currentLine didChangeType:didChangeType];
         }
+        
+        // Update all macros
+        if (currentLine.macroRanges.count > 0) [self updateMacros];
     }
     
     // Mark the current index as changed
@@ -728,32 +735,40 @@ static NSDictionary* patterns;
 }
 
 
+#pragma mark - Macros
+
+- (void)updateMacros
+{
+    BeatMacroParser* parser = BeatMacroParser.new;
+    NSArray* lines = self.safeLines;
+    
+    for (NSInteger i=0; i<lines.count; i++) {
+        Line* l = lines[i];
+        if (l.macroRanges.count == 0) continue;
+        
+        [self resolveMacrosOn:l parser:parser];
+        if (l.isOutlineElement || l.type == synopse) {
+            [self addUpdateToOutlineAtLine:l didChangeType:false];
+        }
+    }
+}
+
+- (void)resolveMacrosOn:(Line*)line parser:(BeatMacroParser*)macroParser
+{
+    NSDictionary* macros = line.macros;
+    
+    line.resolvedMacros = NSMutableDictionary.new;
+    
+    for (NSValue* range in macros.allKeys) {
+        NSString* macro = macros[range];
+        id value = [macroParser parseMacro:macro];
+        
+        if (value != nil) line.resolvedMacros[range] = [NSString stringWithFormat:@"%@", value];
+    }
+}
+
 
 #pragma mark - Parsing Core
-
-#define BOLD_PATTERN "**"
-#define ITALIC_PATTERN "*"
-#define UNDERLINE_PATTERN "_"
-#define NOTE_OPEN_PATTERN "[["
-#define NOTE_CLOSE_PATTERN "]]"
-#define OMIT_OPEN_PATTERN "/*"
-#define OMIT_CLOSE_PATTERN "*/"
-
-#define HIGHLIGHT_OPEN_PATTERN "<<"
-#define HIGHLIGHT_CLOSE_PATTERN ">>"
-#define STRIKEOUT_OPEN_PATTERN "{{"
-#define STRIKEOUT_CLOSE_PATTERN "}}"
-
-#define BOLD_PATTERN_LENGTH 2
-#define ITALIC_PATTERN_LENGTH 1
-#define UNDERLINE_PATTERN_LENGTH 1
-#define NOTE_PATTERN_LENGTH 2
-#define OMIT_PATTERN_LENGTH 2
-#define HIGHLIGHT_PATTERN_LENGTH 2
-#define STRIKEOUT_PATTERN_LENGTH 2
-
-#define COLOR_PATTERN "color"
-#define STORYLINE_PATTERN "storyline"
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
@@ -789,35 +804,43 @@ static NSDictionary* patterns;
     
     line.boldRanges = [self rangesInChars:charArray
                                  ofLength:length
-                                  between:BOLD_PATTERN
-                                      and:BOLD_PATTERN
+                                  between:BOLD_CHAR
+                                      and:BOLD_CHAR
                                withLength:BOLD_PATTERN_LENGTH
                          excludingIndices:excluded
 									 line:line];
 	
     line.italicRanges = [self rangesInChars:charArray
                                    ofLength:length
-                                    between:ITALIC_PATTERN
-                                        and:ITALIC_PATTERN
+                                    between:ITALIC_CHAR
+                                        and:ITALIC_CHAR
                                  withLength:ITALIC_PATTERN_LENGTH
                            excludingIndices:excluded
 									   line:line];
     
     line.underlinedRanges = [self rangesInChars:charArray
                                        ofLength:length
-                                        between:UNDERLINE_PATTERN
-                                            and:UNDERLINE_PATTERN
+                                        between:UNDERLINE_CHAR
+                                            and:UNDERLINE_CHAR
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
 										   line:line];
-	
+	/*
 	line.strikeoutRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:STRIKEOUT_OPEN_PATTERN
-									  and:STRIKEOUT_CLOSE_PATTERN
-							   withLength:STRIKEOUT_PATTERN_LENGTH
-						 excludingIndices:nil
-										line:line];
+                                      ofLength:length
+                                       between:STRIKEOUT_OPEN_PATTERN
+                                           and:STRIKEOUT_CLOSE_PATTERN
+                                    withLength:STRIKEOUT_PATTERN_LENGTH
+                              excludingIndices:nil
+                                          line:line];
+    */
+    line.macroRanges = [self rangesInChars:charArray
+                                  ofLength:length
+                                   between:MACRO_OPEN_CHAR
+                                       and:MACRO_CLOSE_CHAR
+                                withLength:2
+                          excludingIndices:nil
+                                      line:line];
 	
 	// Intersecting indices between bold & italic are boldItalic
 	if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
@@ -1110,7 +1133,7 @@ static NSDictionary* patterns;
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
 	// Let's use the asym method here, just put in our symmetric delimiters.
-	return [self asymRangesInChars:string ofLength:length between:startString and:startString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
+	return [self asymRangesInChars:string ofLength:length between:startString and:endString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
 }
 
 - (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
@@ -2572,13 +2595,34 @@ NSInteger previousIndex = NSNotFound;
     // Create a copy of parsed lines
     NSMutableArray *linesForPrinting = NSMutableArray.array;
     Line *precedingLine;
+
+    BeatMacroParser* macros = BeatMacroParser.new;
     
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
                 
-        // Preprocess split paragraphs
         Line *l = linesForPrinting.lastObject;
+
+        // Preprocess macros
+        if (l.macroRanges.count > 0) {
+            
+            l.resolvedMacros = NSMutableDictionary.new;
+            for (NSValue* range in l.macros.allKeys) {
+                NSString* macro = l.macros[range];
+                id value = [macros parseMacro:macro];
+                
+                if (value != nil) l.resolvedMacros[range] = [NSString stringWithFormat:@"%@", value];
+            }
+        }
+        // Skip line if it's a macro and has no results
+        if (l.macroRanges.count == l.length && l.resolvedMacros.count == 0) {
+            [linesForPrinting removeLastObject];
+            l.type = empty;
+            precedingLine = l;
+            continue;
+        }
         
+        // Skip notes
         if (l.note && !exportSettings.printNotes) continue;
         
         // Reset dual dialogue

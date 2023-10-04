@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 };
 
 @interface BeatExportSettings : NSObject
+
 @property (nonatomic, weak) id<BeatExportSettingDelegate> delegate;
 @property (nonatomic) NSString *header;
 @property (nonatomic) BeatHTMLOperation operation;
@@ -48,11 +49,9 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) bool coloredPages;
 
 @property (nonatomic) bool printNotes;
-//@property (nonatomic) bool printSections;
-//@property (nonatomic) bool printSynopsis;
 @property (nonatomic) bool printSceneNumbers;
 
-@property (nonatomic) NSIndexSet* additionalTypes; // This is actually LineType
+@property (nonatomic) NSIndexSet* additionalTypes; // LineType enums in an index set
 
 @property (nonatomic) NSString *fileName;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;

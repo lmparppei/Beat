@@ -1,23 +1,24 @@
 = **Comic Book/Graphic Novel Template**
-= For now, you can't automatically set the script page numbers and you'll have to adjust them by hand as you make changes. This will be possible in future versions of Beat though, so keep your app updated. :-)
+= This teplate uses a new feature called preprocesing macros to automatically adjust page number for sections. Once you've defined "serial page" you can just use "page" macro after that. Serial means the number will automatically increment by one.
 
-#Script page #
+#Script page {{serial page = 1}}
 
-.Panel #
+.Panel 1
 
 Panel and action description goes here.
 
 CHARACTER NAME
 Dialogue goes here
 
-.Panel #
+.Panel 2
 
 Panel and action description goes here.
 
-CHARACTER NAME (sarcastically)
+CHARACTER NAME
+(sarcastically)
 Dialogue goes here
 
-.Panel #
+.Panel 3
 
 Panel and action description goes here.
 
@@ -27,6 +28,11 @@ Dialogue goes here
 ANOTHER CHARACTER
 More Dialogue
 
+# Script page {{page}}
+
+# Script page {{page}}
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Sidebar Visible":true} END_BEAT */
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Caret Position":289,"Sidebar Visible":true,"Print Sections":true} END_BEAT */

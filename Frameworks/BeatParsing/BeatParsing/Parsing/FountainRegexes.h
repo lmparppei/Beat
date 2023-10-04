@@ -80,6 +80,7 @@ extern NSString * const MULTI_LINE_DATA_PATTERN;
 extern NSString * const DUAL_DIALOGUE_PATTERN;
 extern NSString * const CENTERED_TEXT_PATTERN;
 
+/*
 // Extra regexes -- not used by the code in this project
 // styling for FDX
 extern NSString * const BOLD_ITALIC_UNDERLINE_PATTERN;
@@ -98,3 +99,4 @@ extern NSString * const ITALIC_UNDERLINE_TEMPLATE;
 extern NSString * const BOLD_TEMPLATE;
 extern NSString * const ITALIC_TEMPLATE;
 extern NSString * const UNDERLINE_TEMPLATE;
+*/

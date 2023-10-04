@@ -22,6 +22,8 @@ import BeatDynamicColor
     @objc public var synopsisTextColor: DynamicColor!
     @objc public var pageNumberColor: DynamicColor!
     @objc public var highlightColor: DynamicColor!
+
+    @objc public var macroColor: DynamicColor!
     
     @objc public var genderWomanColor: DynamicColor!
     @objc public var genderManColor: DynamicColor!
@@ -55,6 +57,7 @@ import BeatDynamicColor
             "synopsisTextColor": "SynopsisText",
             "sectionTextColor": "SectionText",
             "highlightColor": "Highlight",
+            "macroColor": "Macro",
             "genderWomanColor": "Woman",
             "genderManColor": "Man",
             "genderOtherColor": "Other",

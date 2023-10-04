@@ -143,14 +143,21 @@
 		
 	RenderStyle* style = [self styleForType:line.type];
 	
-	// Get string content and apply transforms if needed
-	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
-	if (style.uppercase) string = string.uppercaseString;
-
-	
 	// Create attributed string with attributes for current style
 	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
-	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
+	
+	NSMutableAttributedString* lineAttrStr = [line attributedStringForOutputWith:self.settings].mutableCopy;
+	
+	// Apply transforms if needed. This is silly and super inefficient, but what can I say. We *could* do this in layout manager as well, but this is more reliable.
+	if (style.uppercase) {
+		[lineAttrStr.copy enumerateAttributesInRange:NSMakeRange(0, lineAttrStr.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+			[lineAttrStr replaceCharactersInRange:range withAttributedString:[NSAttributedString.alloc initWithString:[lineAttrStr.string.uppercaseString substringWithRange:range] attributes:attrs]];
+		}];
+	}
+	
+	NSMutableAttributedString* attributedString = [NSMutableAttributedString.alloc initWithAttributedString:lineAttrStr];
+	[attributedString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+	[attributedString addAttributes:attrs range:NSMakeRange(0, attributedString.length)];
 	
 	// Underlining
 	if (style.underline) {
@@ -172,12 +179,9 @@
 		}
 	}
 	
-	
-	// Inline stylization
-	if (!line.noFormatting) {
-		NSAttributedString* inlineAttrs = line.attributedStringForFDX;
-		[inlineAttrs enumerateAttribute:@"Style" inRange:NSMakeRange(0, inlineAttrs.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			NSSet* styleNames = (NSSet*)value;
+	[attributedString.copy enumerateAttributesInRange:NSMakeRange(0,attributedString.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+		if (attrs[@"Style"]) {
+			NSSet* styleNames = attrs[@"Style"];
 			if (styleNames.count == 0) return;
 			
 			NSFontTraitMask traits = 0;
@@ -191,131 +195,38 @@
 				[attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
 				[attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:range];
 			}
-		}];
-	}
-	
-	// Emoji replacement
-	if (line.hasEmojis) {
-		for (NSValue* value in line.emojiRanges) {
-			NSRange r = value.rangeValue;
-			if (r.location == NSNotFound || NSMaxRange(r) > line.length) continue;
-			
-			[attributedString addAttribute:NSFontAttributeName value:_fonts.emojis range:r];
-		}
-	}
-	
-	// Apply revisions.
-	if (line.revisedRanges.count) {
-		// By default, we'll display revisions defined in export settings,
-		// but if no revisions were supplied (the value is nil), let's render all of them.
-		NSArray* revisionColors = self.settings.revisions;
-		if (revisionColors == nil) revisionColors = BeatRevisions.revisionColors;
-		
-		for (NSString* color in revisionColors) {
-			if (line.revisedRanges[color] == nil) continue;
-			
-			NSIndexSet* revisions = line.revisedRanges[color];
-			[revisions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-
-				if (NSMaxRange(range) > attributedString.length) range.length = attributedString.length - NSMaxRange(range);
-				if (range.length <= 0 || range.length > attributedString.length) return;
-
-				[attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
-			}];
-		}
-	}
-	
-	// Colors for notes
-	if (line.noteRanges.count) {
-		[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			RenderStyle* noteStyle = [self.styles forElement:@"note"];
-			NSColor* c = [BeatColors color:noteStyle.color];
-			[attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : NSColor.grayColor range:range];
-		}];
-	}
-	
-	// If the block has line breaks in it, we need to remove margin spacing.
-	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
-	bool multiline = [line.string containsString:@"\n"];
-	if (multiline) {
-		
-		NSMutableParagraphStyle* topStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
-		NSMutableParagraphStyle* bottomStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
-		NSMutableParagraphStyle* noSpacingStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
-		
-		// No bottom spacing for topmost style
-		topStyle.paragraphSpacing = 0.0;
-		
-		// No spacing for lines in the middle
-		noSpacingStyle.paragraphSpacingBefore = 0.0;
-		noSpacingStyle.paragraphSpacing = 0.0;
-		
-		// No top spacing for bottom style
-		bottomStyle.paragraphSpacingBefore = 0.0;
-		
-		NSArray<NSString*>* lines = [attributedString.string componentsSeparatedByString:@"\n"];
-		if (lines.lastObject.length == 0 && lines.count > 2) lines = [lines subarrayWithRange:NSMakeRange(0, lines.count - 1)];
-		
-		NSInteger idx = 0;
-		for (NSString* l in lines) {
-			if (l == lines.firstObject) {
-				// Top style for first line
-				[attributedString addAttribute:NSParagraphStyleAttributeName value:topStyle range:NSMakeRange(idx, l.length + 1)];
+			if ([styleNames containsObject:@"Note"]) {
+				RenderStyle* noteStyle = [self.styles forElement:@"note"];
+				NSColor* c = [BeatColors color:noteStyle.color];
+				[attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : BXColor.grayColor range:range];
 			}
-			else if (l == lines.lastObject) {
-				// Bottom style for last line
-				[attributedString addAttribute:NSParagraphStyleAttributeName value:bottomStyle range:NSMakeRange(idx, l.length)];
-			}
-			else {
-				[attributedString addAttribute:NSParagraphStyleAttributeName value:noSpacingStyle range:NSMakeRange(idx, l.length + 1)];
-			}
-			
-			idx += l.length + 1;
-			if (l == lines.lastObject) idx -= 1; // No line break for last item
-
 		}
-	}
-			
-	// Strip invisible stuff
-	
-	// We might include notes, sections and synopsis lines
-	NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
-	if (self.settings.printNotes) {
-		[includedRanges addIndexes:line.noteRanges];
-	}
-	
-	// Create actual content ranges
-	NSMutableIndexSet* contentRanges = [line contentRangesIncluding:includedRanges].mutableCopy;
-	
-	[contentRanges addIndex:attributedString.length - 1]; // Add the last index to include our newly-added line break
-	NSMutableAttributedString *result = NSMutableAttributedString.new;
-
-	// Enumerate visible ranges and build up the resulting string
-	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length == 0) return;
 		
-		NSAttributedString* content = [attributedString attributedSubstringFromRange:range];
-		[result appendAttributedString:content];
+		if (attrs[@"Revision"]) {
+			NSString* color = attrs[@"Revision"];
+			if (color != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
+		}
+		
 	}];
 	
 	// Add hyperlink for the represented line
 	if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
-		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
+		[attributedString addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, attributedString.length - 1)];
 	}
 	
 	// And after all this, if the style has a content rule, we'll replace the text while keeping the original attributes
 	if (style.content != nil) {
 		NSString* content = [NSString stringWithFormat:@"%@\n", style.content];
-		NSDictionary* attrs = [result attributesAtIndex:0 effectiveRange:nil];
-		[result replaceCharactersInRange:NSMakeRange(0, result.length) withAttributedString:[NSAttributedString.alloc initWithString:content attributes:attrs]];
+		NSDictionary* attrs = [attributedString attributesAtIndex:0 effectiveRange:nil];
+		[attributedString replaceCharactersInRange:NSMakeRange(0, attributedString.length) withAttributedString:[NSAttributedString.alloc initWithString:content attributes:attrs]];
 	}
 	
 	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
 	if (line.type == heading && style.sceneNumber) {
-		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
+		attributedString = [self renderHeading:line content:attributedString firstElementOnPage:firstElementOnPage];
 	}
 	
-	return result;
+	return attributedString;
 }
 
 /// Adds scene numbers to a heading block

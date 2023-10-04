@@ -46,7 +46,7 @@
 //Access the current theme
 - (BeatTheme*) theme;
 
-@property (nonatomic) NSString* test;
+#pragma mark - Shorthands
 
 @property (nonatomic) DynamicColor* backgroundColor;
 @property (nonatomic) DynamicColor* marginColor;
@@ -59,6 +59,7 @@
 @property (nonatomic) DynamicColor* sectionTextColor;
 @property (nonatomic) DynamicColor* synopsisTextColor;
 @property (nonatomic) DynamicColor* highlightColor;
+@property (nonatomic) DynamicColor* macroColor;
 @property (nonatomic) DynamicColor* genderWomanColor;
 @property (nonatomic) DynamicColor* genderManColor;
 @property (nonatomic) DynamicColor* genderOtherColor;
@@ -71,5 +72,6 @@
 @property (nonatomic) DynamicColor* outlineSceneNumber;
 @property (nonatomic) DynamicColor* outlineSynopsis;
 @property (nonatomic) DynamicColor* outlineNote;
+
 
 @end

@@ -40,6 +40,49 @@ typedef NS_ENUM(NSUInteger, LineType) {
 	typeCount // This is the the max number of line types, for data storing purposes
 };
 
+#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
+
+#define ITALIC_PATTERN @"*"
+#define ITALIC_CHAR "*"
+#define BOLD_PATTERN @"**"
+#define BOLD_CHAR "**"
+#define UNDERLINE_PATTERN @"_"
+#define UNDERLINE_CHAR "_"
+#define OMIT_PATTERN @"/*"
+#define NOTE_PATTERN @"[["
+
+#define NOTE_OPEN_CHAR "[["
+#define NOTE_CLOSE_CHAR "]]"
+
+#define MACRO_OPEN_CHAR "{{"
+#define MACRO_CLOSE_CHAR "}}"
+
+#define NOTE_OPEN_PATTERN "[["
+#define NOTE_CLOSE_PATTERN "]]"
+#define OMIT_OPEN_PATTERN "/*"
+#define OMIT_CLOSE_PATTERN "*/"
+
+#define BOLD_PATTERN_LENGTH 2
+#define ITALIC_PATTERN_LENGTH 1
+#define UNDERLINE_PATTERN_LENGTH 1
+#define NOTE_PATTERN_LENGTH 2
+#define OMIT_PATTERN_LENGTH 2
+#define HIGHLIGHT_PATTERN_LENGTH 2
+#define STRIKEOUT_PATTERN_LENGTH 2
+
+#define COLOR_PATTERN "color"
+#define STORYLINE_PATTERN "storyline"
+
+// For FDX compatibility & attribution
+#define BOLD_STYLE @"Bold"
+#define ITALIC_STYLE @"Italic"
+#define BOLDITALIC_STYLE @"BoldItalic"
+#define UNDERLINE_STYLE @"Underline"
+#define STRIKEOUT_STYLE @"Strikeout"
+#define OMIT_STYLE @"Omit"
+#define NOTE_STYLE @"Note"
+#define MACRO_STYLE @"Macro"
+
 @class OutlineScene;
 @class BeatExportSettings;
 
@@ -202,6 +245,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSAttributedString*)attributedStringForFDX;
 /// An attributed string with Final Draft compatible attribute names.
 - (NSAttributedString*)attributedString;
+/// An attributed string with macros resolved and formatting ranges removed
+- (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings;
 
 /// Returns and caches the line with attributes.
 /// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
@@ -370,9 +415,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 #pragma mark - Preprocessing macros
 
 /// Preprocessor stores these values in the line for rendering
-@property (nonatomic) NSDictionary* macroValues;
-/// Output macros in this line, eg. `{{ name }}`
-@property (nonatomic) NSDictionary* macroData;
+@property (nonatomic) NSMutableDictionary<NSValue*,NSString*>* resolvedMacros;
 
 
 #pragma mark - Pagination information

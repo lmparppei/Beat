@@ -290,6 +290,8 @@
 - (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
 - (DynamicColor*)highlightColor { return _theme.highlightColor; }
 
+- (DynamicColor*)macroColor { return _theme.macroColor; }
+
 - (DynamicColor*)genderWomanColor { return _theme.genderWomanColor; }
 - (DynamicColor*)genderManColor { return _theme.genderManColor; }
 - (DynamicColor*)genderOtherColor { return _theme.genderOtherColor; }

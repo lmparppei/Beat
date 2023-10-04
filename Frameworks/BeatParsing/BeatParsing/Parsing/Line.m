@@ -15,34 +15,6 @@
 #import "BeatMeasure.h"
 #import <BeatParsing/BeatParsing-Swift.h>
 
-#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
-
-#define ITALIC_PATTERN @"*"
-#define ITALIC_CHAR "*"
-#define BOLD_PATTERN @"**"
-#define BOLD_CHAR "**"
-#define UNDERLINE_PATTERN @"_"
-#define UNDERLINE_CHAR "_"
-#define OMIT_PATTERN @"/*"
-#define NOTE_PATTERN @"[["
-
-#define HIGHLIGHT_PATTERN @"<<"
-#define STRIKEOUT_PATTERN @"{{"
-#define STRIKEOUT_CLOSE_PATTERN @"}}"
-#define STRIKEOUT_OPEN_CHAR "{{"
-#define STRIKEOUT_CLOSE_CHAR "}}"
-#define NOTE_OPEN_CHAR "[["
-#define NOTE_CLOSE_CHAR "]]"
-
-// For FDX compatibility & attribution
-#define BOLD_STYLE @"Bold"
-#define ITALIC_STYLE @"Italic"
-#define BOLDITALIC_STYLE @"BoldItalic"
-#define UNDERLINE_STYLE @"Underline"
-#define STRIKEOUT_STYLE @"Strikeout"
-#define OMIT_STYLE @"Omit"
-#define NOTE_STYLE @"Note"
-
 @interface Line()
 @property (nonatomic) NSUInteger oldHash;
 @property (nonatomic) NSString* cachedString;
@@ -349,6 +321,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
     if (self.removalSuggestionRanges.count) newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
     if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
+    if (self.macroRanges) newLine.macroRanges = self.macroRanges.mutableCopy;
     
     if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
     if (self.color) newLine.color = [NSString stringWithString:self.color];
@@ -371,8 +344,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - String methods
 
 - (NSString*)stringForDisplay {
-    if (!self.omitted)	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-    else {
+    if (!self.omitted) {
+        return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    } else {
         Line *line = self.clone;
         [line.omittedRanges removeAllIndexes];
         return [line.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -411,7 +385,54 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 {
     NSMutableIndexSet *contentRanges = self.contentRanges.mutableCopy;
     if (settings.printNotes) [contentRanges addIndexes:self.noteRanges];
+
+    __block NSMutableString *content = NSMutableString.string;
+    NSDictionary* macros = self.resolvedMacros;
     
+    [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        // Let's make sure we don't have bad data here (can happen in some multithreaded instances)
+        if (NSMaxRange(range) > self.string.length) {
+            range.length = self.string.length - NSMaxRange(range);
+            if (range.length <= 0) return;
+        }
+        
+        NSMutableString *strippedContent = NSMutableString.new;
+        
+        // We need to replace macros. This is a more efficient way than using attributed strings.
+        for (NSValue *macroRange in macros) {
+            NSRange replacementRange = macroRange.rangeValue;
+            NSString *macroValue = macros[macroRange];
+            
+            // Check if the replacement range intersects with the current range
+            NSRange intersectionRange = NSIntersectionRange(range, replacementRange);
+            
+            if (intersectionRange.length > 0) {
+                // There is an intersection, so replace the intersecting part with the replacement string
+                if (intersectionRange.location > range.location) {
+                    NSRange prefixRange = NSMakeRange(range.location, intersectionRange.location - range.location);
+                    [strippedContent appendString:[self.string substringWithRange:prefixRange]];
+                }
+                
+                [strippedContent appendString:macroValue];
+                
+                // Update the range for the next iteration
+                range.location = NSMaxRange(intersectionRange);
+                range.length -= NSMaxRange(intersectionRange);
+            }
+        }
+        
+        // Append any remaining content after replacements
+        if (range.location < NSMaxRange(range)) {
+            NSRange remainingRange = NSMakeRange(range.location, NSMaxRange(range) - range.location);
+            [strippedContent appendString:[self.string substringWithRange:remainingRange]];
+        }
+        
+        [content appendString:strippedContent];
+    }];
+    
+    return content;
+    
+/*
     __block NSMutableString *content = NSMutableString.string;
     [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         // Let's make sure we don't have bad data here (can happen in some multithreaded instances)
@@ -424,6 +445,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }];
     
     return content;
+ */
 }
 
 /// Returns a string with notes removed
@@ -836,22 +858,24 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
                                       between:ITALIC_CHAR
                                           and:ITALIC_CHAR
                                    withLength:1];
+        
         self.underlinedRanges = [self rangesInChars:charArray
                                            ofLength:length
                                             between:UNDERLINE_CHAR
                                                 and:UNDERLINE_CHAR
                                          withLength:1];
-                
-        self.strikeoutRanges = [self rangesInChars:charArray
-                                     ofLength:length
-                                      between:STRIKEOUT_OPEN_CHAR
-                                          and:STRIKEOUT_CLOSE_CHAR
-                                   withLength:2];
+        
         self.noteRanges = [self rangesInChars:charArray
                                      ofLength:length
                                       between:NOTE_OPEN_CHAR
                                           and:NOTE_CLOSE_CHAR
                                    withLength:2];
+        
+        self.macroRanges = [self rangesInChars:charArray
+                                      ofLength:length
+                                       between:MACRO_OPEN_CHAR
+                                           and:MACRO_CLOSE_CHAR
+                                    withLength:2];
     }
     @catch (NSException* e) {
         NSLog(@"Error when trying to reset formatting: %@", e);
@@ -881,12 +905,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
 		if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
 		if ([styles containsObject:UNDERLINE_STYLE]) [openClose appendString:UNDERLINE_PATTERN];
-		
-		if ([styles containsObject:STRIKEOUT_STYLE]) {
-			[open appendString:STRIKEOUT_PATTERN];
-			[close appendString:STRIKEOUT_CLOSE_PATTERN];
-		}
-		
+        if ([styles containsObject:NOTE_STYLE]) {
+            [open appendString:[NSString stringWithFormat:@"%s", NOTE_OPEN_CHAR]];
+            [close appendString:[NSString stringWithFormat:@"%s", NOTE_CLOSE_CHAR]];
+        }
+        				
 		[result appendString:open];
 		[result appendString:openClose];
 		[result appendString:string];
@@ -934,53 +957,61 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	// Add font stylization
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:ITALIC_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:ITALIC_STYLE toString:string range:range];
 		}
 	}];
 
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:BOLD_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLD_STYLE toString:string range:range];
 		}
 	}];
 	
 	[self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:BOLDITALIC_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLDITALIC_STYLE toString:string range:range];
 		}
 	}];
 	
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > UNDERLINE_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:UNDERLINE_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:UNDERLINE_STYLE toString:string range:range];
 		}
 	}];
 		
 	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > OMIT_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:OMIT_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
 		}
 	}];
 	
 	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > NOTE_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:NOTE_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:NOTE_STYLE toString:string range:range];
 		}
 	}];
-		
+/*
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > STRIKEOUT_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:STRIKEOUT_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addStyleAttr:STRIKEOUT_STYLE toString:string range:range];
 		}
 	}];
-		
+*/
 	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addAttr:OMIT_STYLE toString:string range:range];
+		if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
 	}];
 		
 	[self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addAttr:@"RemovalSuggestion" toString:string range:range];
+		if ([self rangeInStringRange:range]) [self addStyleAttr:@"RemovalSuggestion" toString:string range:range];
 	}];
+    
+    // Add macro attributes
+    for (NSValue* r in self.macros) {
+        NSRange range = r.rangeValue;
+        NSString* resolvedMacro = self.resolvedMacros[r];
+        
+        [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+    }
 	
 	if (self.revisedRanges.count) {
 		for (NSString *key in _revisedRanges.allKeys) {
@@ -1000,14 +1031,14 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
 		[string addAttribute:@"BeatTag" value:tagValue range:range];
 	}
-    
-    // TODO: Loop through macro ranges
 	
 	return string;
 }
 
 /// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
-- (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
+- (void)addStyleAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
+    if (name == nil) NSLog(@"WARNING: Null value passed to attributes");
+    
 	// We are going out of range. Abort.
 	if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
 	
@@ -1015,25 +1046,41 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	// Add style to the corresponding range while retaining the existing attributes, if applicable.
 	[string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         NSMutableSet* style;
-        if (attrs[@"Style"]) {
-            style = (NSMutableSet*)style;
+        if (attrs[@"Style"] != nil) {
+            style = (NSMutableSet*)attrs[@"Style"];
             [style addObject:name];
         } else {
             style = [NSMutableSet.alloc initWithArray:@[name]];
         }
-
+        
 		[string addAttribute:@"Style" value:style range:range];
 	}];
+}
+
+- (NSAttributedString*)attributedStringWithMacros
+{
+    NSMutableAttributedString* string = [NSMutableAttributedString.alloc initWithString:self.string];
+    // Add macro attributes
+    for (NSValue* r in self.macros) {
+        NSRange range = r.rangeValue;
+        NSString* resolvedMacro = self.resolvedMacros[r];
+        
+        [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+    }
+    return string;
 }
 
 /// Returns an attributed string without formatting markup
 - (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings
 {
-    NSAttributedString* attrStr = self.attributedStringForFDX;
+    // We can skip stylized attributed string if needed. In that case we'll only include macros.
+    NSAttributedString* attrStr = self.attributedString;
     
     // We might include notes, sections and synopsis lines
     NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
     if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
+    
+    if (settings.printNotes) NSLog(@"Yes, print notes! %@", self);
     
     // Create actual content ranges
     NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
@@ -1047,8 +1094,14 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         [result appendAttributedString:content];
     }];
     
-    // Replace macro ranges here. Enumerate Macro attribute and call macro solver.
-    
+    // Replace macro ranges. All macros should be resolved by now.
+    [result.copy enumerateAttribute:@"Macro" inRange:NSMakeRange(0,result.length) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        if (value == nil) return;
+        NSDictionary* attrs = [result attributesAtIndex:range.location effectiveRange:nil];
+        NSAttributedString* resolved = [NSAttributedString.alloc initWithString:value attributes:attrs];
+        [result replaceCharactersInRange:range withAttributedString:resolved];
+    }];
+        
     return result;
 }
 
@@ -1404,10 +1457,12 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		[indices addIndexesInRange:NSMakeRange(range.location +offset, UNDERLINE_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
 	}];
+    /*
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[indices addIndexesInRange:NSMakeRange(range.location, STRIKEOUT_PATTERN.length +offset)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - STRIKEOUT_PATTERN.length +offset, STRIKEOUT_PATTERN.length)];
 	}];
+     */
 			
 	// Add note ranges
 	if (includeNotes) [indices addIndexes:self.noteRanges];

@@ -65,6 +65,12 @@
 					<integer>129</integer>
 					<integer>239</integer>
 				</array>
+				<key>Macro</key>
+				<array>
+					<integer>0</integer>
+					<integer>181</integer>
+					<integer>175</integer>
+				</array>
 				<key>Comment</key>
 				<array>
 					<integer>100</integer>
@@ -199,6 +205,12 @@
 					<integer>0</integer>
 					<integer>129</integer>
 					<integer>239</integer>
+				</array>
+				<key>Macro</key>
+				<array>
+					<integer>0</integer>
+					<integer>181</integer>
+					<integer>175</integer>
 				</array>
 				<key>Comment</key>
 				<array>

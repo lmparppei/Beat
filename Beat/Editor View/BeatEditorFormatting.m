@@ -582,7 +582,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Text color
 
 - (void)setTextColorFor:(Line*)line {
-	// Foreground color attributes (NOTE: These are TEMPORARY attributes)
+	// Foreground color attributes
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
 	if (line.omitted && !line.note) {
@@ -615,7 +615,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
 	}];
-		
+	
+	// Enumerate MACRO RANGES
+	[line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self setForegroundColor:themeManager.macroColor line:line range:range];
+	}];
+	
 	NSArray* notes = line.noteData;
 	for (BeatNoteData* note in notes) {
 		NSRange range = note.range;
