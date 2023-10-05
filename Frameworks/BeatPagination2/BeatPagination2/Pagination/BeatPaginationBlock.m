@@ -42,10 +42,8 @@
 		_dualDialogueElement = dualDialogueElement;
 		
 		if (!_dualDialogueElement) {
-			Line *firstLine = _lines.firstObject;
-			if (firstLine.nextElementIsDualDialogue) {
-				_dualDialogueContainer = true;
-			}
+			Line* firstLine = _lines.firstObject;
+			if (firstLine.nextElementIsDualDialogue) _dualDialogueContainer = true;
 		}
 	}
 	return self;

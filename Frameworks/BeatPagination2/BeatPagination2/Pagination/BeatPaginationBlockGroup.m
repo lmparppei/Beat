@@ -18,14 +18,17 @@
 
 @implementation BeatPaginationBlockGroup
 
-+(BeatPaginationBlockGroup*)withBlocks:(NSArray<BeatPaginationBlock*>*)blocks {
-	return [BeatPaginationBlockGroup.alloc initWithBlocks:blocks];
++(BeatPaginationBlockGroup*)withBlocks:(NSArray<BeatPaginationBlock*>*)blocks delegate:(id<BeatPageDelegate>)delegate
+{
+	return [BeatPaginationBlockGroup.alloc initWithBlocks:blocks delegate:delegate];
 }
 
--(instancetype)initWithBlocks:(NSArray<BeatPaginationBlock*>*)blocks {
+-(instancetype)initWithBlocks:(NSArray<BeatPaginationBlock*>*)blocks delegate:(id<BeatPageDelegate>)delegate
+{
 	self = [super init];
 	if (self) {
 		_blocks = blocks;
+        _delegate = delegate;
 	}
 	return self;
 }
@@ -52,7 +55,8 @@
 	
 	NSInteger idx = 0;
 	BeatPaginationBlock *offendingBlock;
-	
+    NSArray* brokenBlock;
+    
 	for (BeatPaginationBlock *block in self.blocks) {
 		CGFloat h = block.height;
 		
@@ -66,16 +70,22 @@
 		else {
 			// This block won't fit.
 			offendingBlock = block;
+            
+            // Let's try to break the element apart
+            brokenBlock = [block breakBlockWithRemainingSpace:space];
+            
 			break;
 		}
 	}
 	
 	if (passedBlocks.count == 1) {
-		// Shot and heading are *never* left behind
-		BeatPaginationBlock *passedBlock = passedBlocks.firstObject;
-		if (passedBlock.type == heading || passedBlock.type == shot) {
-			return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"Block group"]];
-		}
+		// The starting item of a block is *never* left behind. We'll need to try to break the next item.
+        BeatPaginationBlock* retainedBlock = [BeatPaginationBlock withLines:brokenBlock[0] delegate:_delegate];
+        
+        // We'll require at least 3 lines to lay on this page. If it's less, we'll just roll the scene on next page. (4 = 3 + top margin)
+        if (brokenBlock.count && retainedBlock.height < _delegate.styles.page.lineHeight * 4) {
+            return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"2nd element in block group didn't fit on this page"]];
+        }
 	}
 	
 	// Add anything that was passed

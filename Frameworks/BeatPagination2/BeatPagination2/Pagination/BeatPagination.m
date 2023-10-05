@@ -333,7 +333,7 @@
 	
 	if (pageBlocks.count == 0) return;
 	
-	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks];
+	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks delegate:self];
     
 	if (_currentPage.remainingSpace >= group.height) {
 		// Add blocks on current page
