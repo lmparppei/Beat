@@ -471,13 +471,35 @@
 }
 
 /// Creates a listener for when document was saved.
-- (void)onDocumentSaved:(JSValue*)updateMethod {
+- (void)onDocumentSaved:(JSValue*)updateMethod
+{
 	_documentSavedCallback = updateMethod;
 	[self makeResident];
 }
 - (void)documentWasSaved {
 	[_documentSavedCallback callWithArguments:nil];
 }
+
+
+#pragma mark - Access other documents
+
+#if !TARGET_OS_IOS
+/// Returns all document instances
+- (NSArray<id<BeatPluginDelegate>>*)documents
+{
+    return (NSArray<id<BeatPluginDelegate>>*)NSDocumentController.sharedDocumentController.documents;
+}
+- (BeatPlugin*)interface:(id<BeatPluginDelegate>)document
+{
+    BeatPlugin* interface = BeatPlugin.new;
+    interface.delegate = document;
+    return interface;
+}
+- (id)document
+{
+    return self.delegate.document;
+}
+#endif
 
 #pragma mark - Resident plugin data providers
 

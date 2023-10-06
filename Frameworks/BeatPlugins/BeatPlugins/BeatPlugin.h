@@ -254,8 +254,13 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
     JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback);
     /// Displays a save dialog
     JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
+
+    /// Returns all document instances
+    - (NSArray<id>*)documents;
+    /// Returns a plugin interface for given document
+    - (id)interface:(id)document;
 #endif
- 
+
 #pragma mark Tagging
 /// Returns all tags in the scene
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
@@ -371,6 +376,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 	JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
 	JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
 	JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
+    - (id)document;
 #endif
 @end
 
@@ -384,6 +390,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
+
+/// Returns the file name without extension
+- (NSString*)displayName;
 
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;

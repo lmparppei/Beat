@@ -101,7 +101,7 @@
 }
 
 - (void)frameDidChange {
-	NSLog(@"Change");
+	
 }
 
 - (void)show:(BeatPluginUIView*)widget {

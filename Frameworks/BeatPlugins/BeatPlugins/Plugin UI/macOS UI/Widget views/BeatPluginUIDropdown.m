@@ -61,6 +61,9 @@
 - (NSString*)selected {
 	return self.selectedItem.title;
 }
+-(NSInteger)selectedIndex {
+    return [self.itemArray indexOfObject:self.selectedItem];
+}
 
 #pragma mark - Range protections
 
