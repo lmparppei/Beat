@@ -81,6 +81,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         _unsafeForPageBreak = YES;
         _formattedAs = -1;
         _uuid = NSUUID.UUID;
+        _nextElementIsDualDialogue = false;
         
         if (pageSplit) [self resetFormatting];
     }
@@ -990,13 +991,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			if ([self rangeInStringRange:range]) [self addStyleAttr:NOTE_STYLE toString:string range:range];
 		}
 	}];
-/*
-	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > STRIKEOUT_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:STRIKEOUT_STYLE toString:string range:range];
-		}
-	}];
-*/
+
 	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
 	}];

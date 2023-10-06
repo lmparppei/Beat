@@ -686,6 +686,15 @@ static NSDictionary *fdxIds;
 		NSMutableSet* styles = attrs[@"Style"];
 		NSString* additionalStyles = @"";
 		
+		// Add revisions
+		NSString* revision = attrs[@"Revision"];
+		if (revision.length > 0) {
+			// Get color for revision.
+			NSString *highlightColor = [BeatColors colorWith16bitHex:revision];
+			NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revision] + 1; // + 1 as arrays begin from 0
+			additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
+		}
+		
 		if (styles.count > 0) {
 			// Highlighting, Addition and Removal do not conform to FDX styles
 			if ([styles containsObject:@"Highlight"]) {
@@ -700,15 +709,7 @@ static NSDictionary *fdxIds;
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Background=\"#%@\"", highlightColor.uppercaseString];
 			}
 		}
-		
-		NSString* revision = attrs[@"Revision"];
-		if (revision.length > 0) {
-			// Get color for revision.
-			NSString *highlightColor = [BeatColors colorWith16bitHex:revision];
-			NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revision] + 1; // + 1 as arrays begin from 0
-			additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
-		}
-		
+				
 		NSString *styleClasses = @"";
 		// Set stylization for action, dialogue and dual dialogue elements.
 		// Ignore other blocks, because Final Draft doesn't like additional styles in those.

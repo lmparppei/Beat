@@ -61,11 +61,13 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @class BeatTextView;
 @class BeatReview;
 @class BeatWidgetView;
+@class BeatTextIO;
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
 @property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSMutableArray<Line*>* _Nonnull)lines;
+- (NSString*)displayName;
 @end
 
 @interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>

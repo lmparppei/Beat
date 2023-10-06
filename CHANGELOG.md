@@ -9,6 +9,8 @@
 - Added support for non-monospaced fonts (macOS)
 - Template support
 - Fixed issues with color customization
+- Added macros: `{{ macro }}`, `{{ serial page = num }}`
+- Made some edge case pagination situations a bit more pleasing  
 
 
 ## Beat 1.99.x

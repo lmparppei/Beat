@@ -6,6 +6,7 @@
 //
 
 #import <TargetConditionals.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
 #define BXTextView UITextView
@@ -19,6 +20,16 @@
 @class OutlineScene;
 @class ContinuousFountainParser;
 @class Line;
+
+@protocol BeatTextIOExports <JSExport>
+JSExportAs(replaceCharactersInRange,- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
+JSExportAs(addString, - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
+JSExportAs(remove, - (void)removeAt:(NSUInteger)index length:(NSUInteger)length);
+JSExportAs(replaceRange, - (void)replaceRange:(NSRange)range withString:(NSString*)newString);
+JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)position);
+
+- (void)addNewParagraph:(NSString*)string;
+@end
 
 @protocol BeatTextIODelegate
 @property (nonatomic) ContinuousFountainParser* parser;
@@ -38,7 +49,7 @@
 #endif
 @end
 
-@interface BeatTextIO : NSObject
+@interface BeatTextIO : NSObject <BeatTextIOExports>
 @property (nonatomic, weak) id<BeatTextIODelegate> delegate;
 
 - (instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate;
