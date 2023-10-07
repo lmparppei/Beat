@@ -308,6 +308,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     newLine.unsafeForPageBreak = self.unsafeForPageBreak;
     newLine.sceneIndex = self.sceneIndex;
     
+    newLine.resolvedMacros = self.resolvedMacros.mutableCopy;
     
     newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
     if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
@@ -1001,10 +1002,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	}];
     
     // Add macro attributes
-    for (NSValue* r in self.macros) {
-        NSRange range = r.rangeValue;
+    for (NSValue* r in self.macros.allKeys) {
         NSString* resolvedMacro = self.resolvedMacros[r];
         
+        NSRange range = r.rangeValue;
         [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
     }
 	

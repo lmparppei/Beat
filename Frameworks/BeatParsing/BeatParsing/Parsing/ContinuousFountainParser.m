@@ -759,7 +759,12 @@ static NSDictionary* patterns;
     
     line.resolvedMacros = NSMutableDictionary.new;
     
-    for (NSValue* range in macros.allKeys) {
+    NSArray<NSValue*>* keys = [macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {
+        if (obj1.rangeValue.location > obj2.rangeValue.location) return true;
+        return false;
+    }];
+
+    for (NSValue* range in keys) {
         NSString* macro = macros[range];
         id value = [macroParser parseMacro:macro];
         
@@ -2595,7 +2600,6 @@ NSInteger previousIndex = NSNotFound;
     // Create a copy of parsed lines
     NSMutableArray *linesForPrinting = NSMutableArray.array;
     Line *precedingLine;
-
     BeatMacroParser* macros = BeatMacroParser.new;
     
 	for (Line* line in lines) {
@@ -2606,14 +2610,19 @@ NSInteger previousIndex = NSNotFound;
         // Preprocess macros
         if (l.macroRanges.count > 0) {
             
+            NSArray<NSValue*>* macroKeys = [l.macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {
+                return (obj1.rangeValue.location > obj2.rangeValue.location);
+            }];
+            
             l.resolvedMacros = NSMutableDictionary.new;
-            for (NSValue* range in l.macros.allKeys) {
+            for (NSValue* range in macroKeys) {
                 NSString* macro = l.macros[range];
                 id value = [macros parseMacro:macro];
                 
                 if (value != nil) l.resolvedMacros[range] = [NSString stringWithFormat:@"%@", value];
             }
         }
+         
         // Skip line if it's a macro and has no results
         if (l.macroRanges.count == l.length && l.resolvedMacros.count == 0) {
             [linesForPrinting removeLastObject];
