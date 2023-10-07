@@ -292,7 +292,7 @@
 		
 		// Add initial page break when needed
 		if (self.pages.count == 0 && _currentPage.blocks.count == 0) {
-			_currentPage.pageBreak = [BeatPageBreak.alloc initWithY:0 element:line lineHeight:self.styles.page.lineHeight reason:@"Initial page break"];
+			_currentPage.pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:line lineHeight:self.styles.page.lineHeight reason:@"Initial page break"];
 		}
 		
 		/**
@@ -348,7 +348,7 @@
 	
 	// If remaining space is less than 1 line, just roll on to next page
 	if (remainingSpace < BeatPagination.lineHeight) {
-		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0 element:group.blocks.firstObject.lines.firstObject lineHeight:self.styles.page.lineHeight reason:@"Nothing fit"];
+		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:group.blocks.firstObject.lines.firstObject lineHeight:self.styles.page.lineHeight reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}
 	else if (group.blocks.count > 0) {

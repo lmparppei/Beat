@@ -286,7 +286,7 @@
 		
 	NSInteger pageBreakIndex = [self pageBreakIndexWithRemainingSpace:remainingSpace];
 	if (pageBreakIndex == NSNotFound) {
-		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
+		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
 	}
 	
 	Line* spiller = [self findSpillerAt:remainingSpace];
@@ -299,7 +299,7 @@
 		return [self splitDialogueAt:spiller remainingSpace:remainingSpace];
 	}
 	else {
-		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
+		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
 	}
 }
 
@@ -378,7 +378,7 @@
 		return @[onThisPage, onNextPage, rightResult[2]];
 	}
 	
-	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"Nothing was left on page with dual dialogue container"];
+	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"Nothing was left on page with dual dialogue container"];
 	return @[@[], self.lines, pageBreak];
 }
 
@@ -497,7 +497,7 @@
         NSInteger pageBreakIndex = [self.lines indexOfObject:pageBreakItem];
         if ((pageBreakIndex == NSNotFound || pageBreakIndex <= 1) && onThisPage.count == 0) pageBreakItem = self.lines.firstObject;
     
-        pageBreak = [BeatPageBreak.alloc initWithY:0 element:pageBreakItem lineHeight:self.delegate.styles.page.lineHeight];
+        pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:pageBreakItem lineHeight:self.delegate.styles.page.lineHeight];
     }
     
     return @[ onThisPage, onNextPage, pageBreak ];
