@@ -509,6 +509,10 @@
 /// Move to next revision marker
 - (void)nextRevision
 {
+    [self nextRevisionOfGeneration:nil];
+}
+- (void)nextRevisionOfGeneration:(NSString*)generation
+{
 	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
 	if (selectedRange.location == _delegate.text.length && selectedRange.location > 0) selectedRange.location -= 1;
@@ -523,7 +527,6 @@
 		revisionColor = revision.colorName;
 	}
 	
-	
 	__block NSRange revisionRange = NSMakeRange(NSNotFound, 0);
 	__block NSRange previousRange = NSMakeRange(searchLocation, 0);
 	
@@ -534,9 +537,12 @@
 		BeatRevisionItem *revision = value;
 		if (revision.type == RevisionNone) return;
 		
-		if (range.location != NSMaxRange(previousRange) || ![revisionColor isEqualToString:revision.colorName]) {
-			*stop = YES;
-			revisionRange = range;
+        bool correctGeneration = true;
+        if (generation != nil && ![revision.colorName.lowercaseString isEqualToString:generation.lowercaseString]) correctGeneration = false;
+        
+		if ((range.location != NSMaxRange(previousRange) || ![revisionColor isEqualToString:revision.colorName]) && correctGeneration) {
+                *stop = YES;
+                revisionRange = range;
 		}
 		
 		previousRange = range;
@@ -549,6 +555,11 @@
 
 /// Move to previous revision marker
 - (void)previousRevision
+{
+    [self previousRevisionOfGeneration:nil];
+}
+
+- (void)previousRevisionOfGeneration:(NSString*)generation
 {
 	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
@@ -575,8 +586,11 @@
                                    usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *revision = value;
 		if (revision.type == RevisionNone) return;
-			
-		if (NSMaxRange(range) != previousRange.location || ![revisionColor isEqualToString:revision.colorName]) {
+        
+        bool correctGeneration = true;
+        if (generation != nil && ![revision.colorName isEqualToString:generation]) correctGeneration = false;
+        
+		if ((NSMaxRange(range) != previousRange.location || ![revisionColor isEqualToString:revision.colorName]) && correctGeneration) {
 			*stop = YES;
 			revisionRange = range;
 		}
@@ -590,17 +604,29 @@
 }
 
 
+
 #pragma mark - Revisions
 
 /// Jumps to next revision
-- (IBAction)nextRevision:(id)sender {
+- (IBAction)nextRevision:(id)sender
+{
 	[self nextRevision];
 }
 /// Jumps to previous revision
-- (IBAction)previousRevision:(id)sender {
+- (IBAction)previousRevision:(id)sender
+{
 	[self previousRevision];
 }
 
+- (IBAction)previousRevisionOfCurrentGeneration:(id)sender
+{
+    [self previousRevisionOfGeneration:self.delegate.revisionColor];
+}
+
+- (IBAction)nextRevisionOfCurrentGeneration:(id)sender
+{
+    [self nextRevisionOfGeneration:self.delegate.revisionColor];
+}
 
 
 /// Generic method for adding a revisino marker, no matter the type
