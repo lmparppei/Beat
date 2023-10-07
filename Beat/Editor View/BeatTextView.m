@@ -1088,7 +1088,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		BeatPageBreak* pageBreak = page.pageBreak;
 		
 		Line* line = pageBreak.element;
-		CGFloat lineHeight = pageBreak.lineHeight; // Line height from pagination
+		CGFloat lineHeight = (pageBreak.lineHeight > 0) ? pageBreak.lineHeight : BeatPagination.lineHeight; // Line height from pagination or get the default from pagination
 		CGFloat position = pageBreak.y;
 		
 		CGFloat linePosition = 0.0;
@@ -1108,52 +1108,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	[self updatePageNumbers:breakPositions];
-}
-
-- (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks {
-	// Sort page breaks based on their position
-	NSMutableArray *breakPositions = NSMutableArray.new;
-	NSArray<NSDictionary*>* sortedPageBreaks = [pageBreaks sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-		NSDictionary *pageBreak1 = obj1;
-		NSDictionary *pageBreak2 = obj2;
-		
-		NSNumber *pos1 = @(((Line*)pageBreak1[@"line"]).position);
-		NSNumber *pos2 = @(((Line*)pageBreak2[@"line"]).position);
-		
-		return [pos1 compare:pos2];
-	}];
-	
-	// We could add exclusion paths at page breaks:
-	// NSMutableArray* exclusionPaths = NSMutableArray.new;
-	
-	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
-		CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
-		CGFloat UIlineHeight = self.editorDelegate.lineHeight; // Line height in UI
-		CGFloat y;
-		
-		Line *line = pageBreak[@"line"];
-		CGFloat position = [pageBreak[@"position"] floatValue];
-		
-		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-		
-		// We return -1 for elements that should have page break after them
-		if (position >= 0) {
-			y =  rect.origin.y + (position / lineHeight) * UIlineHeight;
-		}
-		else y = rect.origin.y + rect.size.height;
-	
-		// This is how you add the exclusion paths, while also continuously laying out the text:
-		//NSRect exclusion = NSMakeRect(0, y, self.frame.size.width, 50);
-		//NSBezierPath* path = [NSBezierPath bezierPathWithRect:exclusion];
-		//[exclusionPaths addObject:path];
-		//self.textContainer.exclusionPaths = exclusionPaths;
-		
-		[breakPositions addObject:@(y)];
-	} }
-	
-	[self updatePageNumbers:breakPositions];
-	[self setNeedsDisplay:YES];
 }
 
 - (void)resetPageNumberLabels {
@@ -1199,7 +1153,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		else label = self.pageNumberLabels[pageNumber - 1];
 		
 		[label setStringValue:page];
-		
+
 		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
 		label.frame = rect;
 		
