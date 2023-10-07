@@ -367,7 +367,7 @@ class BeatRenderLayoutManager:NSLayoutManager {
 	
 	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
-				
+		
 		let container = self.textContainers.first!
 		let revisions = pageView?.settings.revisions as? [String] ?? []
 		
@@ -378,7 +378,7 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		NSGraphicsContext.saveGraphicsState()
 		
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
-			let markerRect = NSMakeRect(container.size.width - 20, usedRect.origin.y - 2.0, 15, usedRect.size.height)
+			let markerRect = NSMakeRect(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
 			
 			var highestRevision = ""
 			var range = originalRange

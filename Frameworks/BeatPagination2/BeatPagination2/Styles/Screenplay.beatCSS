@@ -26,8 +26,8 @@ page {
 	
 	content-padding: 7ch;
  
-    margin-left-a4: 0;
-    margin-left-us: 28;
+    margin-left-a4: 15;
+    margin-left-us: 25;
 }
 
 heading {
