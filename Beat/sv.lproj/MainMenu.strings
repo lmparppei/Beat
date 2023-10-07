@@ -62,7 +62,9 @@
 "8a1-24-Jc9.title" = "Mörkt läge";
 
 /* Class = "NSMenuItem"; title = "Go to Next Revision"; ObjectID = "8bv-zg-FyC"; */
-"8bv-zg-FyC.title" = "Gå till nästa revision";
+"8bv-zg-FyC.title" = "Nästa revision";
+"wPU-0q-4I9.title" = "Nästa revision av samma generation";
+"rTO-cq-yuC.title" = "Gå till revision";
 
 /* Class = "NSMenuItem"; title = "Undo"; ObjectID = "8MR-vZ-fmM"; */
 "8MR-vZ-fmM.title" = "Ångra";
@@ -515,7 +517,8 @@
 "uCf-KN-clX.title" = "Stavning";
 
 /* Class = "NSMenuItem"; title = "Go to Previous Revision"; ObjectID = "ucQ-IG-VAd"; */
-"ucQ-IG-VAd.title" = "Gå till föregående revision";
+"ucQ-IG-VAd.title" = "Föregående revision";
+"zP7-Lz-ODv.title" = "Föregående revision av samma generation";
 
 /* Class = "NSMenuItem"; title = "Red"; ObjectID = "uNu-t5-6hH"; */
 "uNu-t5-6hH.title" = "Röd";

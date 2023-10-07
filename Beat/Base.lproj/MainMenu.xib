@@ -832,17 +832,36 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="oQ7-Kk-dvf"/>
-                            <menuItem title="Go to Previous Revision" keyEquivalent="" id="ucQ-IG-VAd">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="previousRevision:" target="-1" id="ZUA-mS-ypq"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Go to Next Revision" keyEquivalent="" id="8bv-zg-FyC">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="nextRevision:" target="-1" id="lR2-A6-7dS"/>
-                                </connections>
+                            <menuItem title="Go To Revision" id="rTO-cq-yuC">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Go To Revision" id="ZbY-dg-pdP">
+                                    <items>
+                                        <menuItem title="Previous Revision" keyEquivalent="" id="ucQ-IG-VAd">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousRevision:" target="-1" id="ZUA-mS-ypq"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Revision" keyEquivalent="" id="8bv-zg-FyC">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextRevision:" target="-1" id="lR2-A6-7dS"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Previous Revision of Current Generation" keyEquivalent="" id="zP7-Lz-ODv">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousRevisionOfCurrentGeneration:" target="-1" id="4Sy-yl-cb1"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Revision of Current Generation" keyEquivalent="" id="wPU-0q-4I9">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextRevisionOfCurrentGeneration:" target="-1" id="9MM-Gk-9Rv"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ooU-ON-iUL"/>
                             <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">

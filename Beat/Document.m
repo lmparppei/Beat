@@ -3796,9 +3796,7 @@ static NSArray<Line*>* cachedTitlePage;
 	// We might be in a background thread, so make sure to dispach this call to main thread
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update pagination in text view
-		if (self.showPageNumbers) {
-			[self.textView updatePagination:operation.pages];
-		}
+		if (self.showPageNumbers) [self.textView updatePagination:operation.pages];
 		
 		// Tell plugins the preview has been finished
 		for (NSString *name in self.runningPlugins.allKeys) {

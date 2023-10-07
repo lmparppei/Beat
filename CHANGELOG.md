@@ -1,6 +1,6 @@
 # Changelog
 
-## Beat 1.99.69
+## Beat 1.996.9
 
 - Fixed popover button on/off glitch
 - Added options to print sections, synopsis lines and notes (which required a ton of refactoring here and there)
@@ -11,6 +11,8 @@
 - Fixed issues with color customization
 - Added macros: `{{ macro }}`, `{{ serial page = num }}`
 - Made some edge case pagination situations a bit more pleasing  
+- Move to next/prev revision of current generation
+- Interface with other open documents via plugin API
 
 
 ## Beat 1.99.x

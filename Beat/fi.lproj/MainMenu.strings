@@ -568,8 +568,11 @@
 
 "H1U-Aa-dJH.title" = "Hyväksy korjaukset";
 
-"ucQ-IG-VAd.title" = "Siirry edelliseen korjaukseen";
-"8bv-zg-FyC.title" = "Siirry seuraavaan korjaukseen";
+"rTO-cq-yuC.title" = "Siirry korjaukseen";
+"ucQ-IG-VAd.title" = "Edellinen korjaus";
+"8bv-zg-FyC.title" = "Seuraava korjaus";
+"zP7-Lz-ODv.title" = "Edellinen saman tason korjaus";
+"wPU-0q-4I9.title" = "Seuraava saman tason korjaus";
 
 "dmq-UY-1zc.title" = "Kommenttitila";
 "SxS-6o-8ac.title" = "Lisää kommentti valintaan";
