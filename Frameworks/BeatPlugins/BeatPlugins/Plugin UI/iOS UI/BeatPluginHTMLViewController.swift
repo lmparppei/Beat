@@ -42,7 +42,7 @@ import UIKit
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("Finished navigation")
+        
     }
     
     @objc public func setHTML(_ html:String) {

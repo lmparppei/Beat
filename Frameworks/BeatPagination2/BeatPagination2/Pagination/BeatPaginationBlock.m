@@ -110,7 +110,9 @@
     
 	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-	pStyle.maximumLineHeight    = BeatPagination.lineHeight;
+    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
+    
+	pStyle.maximumLineHeight    = lineHeight;
     pStyle.firstLineHeadIndent  = style.firstLineIndent;
     pStyle.headIndent           = style.indent;
 
@@ -324,13 +326,14 @@
 	// Iterate through line fragments
 	__block CGFloat pageBreakPos = 0;
 	__block NSInteger length = 0;
-	
+    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
+    
 	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
-		if (numberOfLines < remainingSpace / BeatPagination.lineHeight) {
+		if (numberOfLines < remainingSpace / lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
 			length += charRange.length;
-			pageBreakPos = numberOfLines * BeatPagination.lineHeight;
+			pageBreakPos = numberOfLines * lineHeight;
 		} else {
 			*stop = true;
 		}
@@ -349,8 +352,8 @@
 }
 
 - (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
-	NSArray *left = [self leftSideDialogue];
-	NSArray *right = [self rightSideDialogue];
+	NSArray *left = self.leftSideDialogue;
+	NSArray *right = self.rightSideDialogue;
 	
 	BeatPaginationBlock *leftBlock = [BeatPaginationBlock.alloc initWithLines:left delegate:_delegate isDualDialogueElement:true];
 	BeatPaginationBlock *rightBlock = [BeatPaginationBlock.alloc initWithLines:right delegate:_delegate isDualDialogueElement:true];
@@ -384,7 +387,7 @@
 
 /// Splits a **block** of dialogue, retaining as much as possible in given remaining space.
 - (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
-    remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
+    //remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
     
     NSMutableArray* dialogueBlock = self.lines.mutableCopy;
     NSMutableArray<Line*>* onThisPage = NSMutableArray.new;
@@ -561,7 +564,7 @@
 {
 	// This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
 	
-	CGFloat lineHeight = BeatPagination.lineHeight;
+    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
 	if (string.length == 0) return lineHeight;
 	
 	// If this is a *dual dialogue* column, we'll need to convert the style.
@@ -580,8 +583,15 @@
 	font = [font fontWithSize:font.pointSize * 0.8];
 #endif
 	
+    // Create paragraph style
+    NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+    pStyle.maximumLineHeight = lineHeight;
+    
 	// set up the layout manager
-	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
+	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{
+        NSFontAttributeName: font,
+        NSParagraphStyleAttributeName: pStyle
+    }];
 	NSLayoutManager *layoutManager = NSLayoutManager.new;
 	
 	NSTextContainer *textContainer = NSTextContainer.new;

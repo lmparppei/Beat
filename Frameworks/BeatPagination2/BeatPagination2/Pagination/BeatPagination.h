@@ -90,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
 @property (nonatomic) bool success;
 @property (nonatomic) bool canceled;
+@property (nonatomic) bool running;
 
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic) NSDate* startTime;

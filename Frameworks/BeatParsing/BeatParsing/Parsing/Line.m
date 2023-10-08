@@ -1076,8 +1076,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
     if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
     
-    if (settings.printNotes) NSLog(@"Yes, print notes! %@", self);
-    
     // Create actual content ranges
     NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
 

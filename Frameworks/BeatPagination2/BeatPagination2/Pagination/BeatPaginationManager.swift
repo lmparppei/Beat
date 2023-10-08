@@ -139,23 +139,41 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		
 	/// Run an Objc pagination operation
 	func runPagination(pagination: BeatPagination) {
+        if operationQueue.contains(pagination) {
+            // Trying to run pagination which is already in queue. Ignore.
+            // This *shouldn't* happen, but multithreading can be weird.
+            return
+        }
+        
 		// Cancel any running operations
-		cancelAllObjcOperations()
+		cancelAllOperations()
 		
-		operationQueue.append(pagination)
-		
-		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
-		if operationQueue.last != nil {
-            
-			operationQueue.last!.paginate()
+        // Add operation to queue
+        operationQueue.append(pagination)
+        
+		// If the queue was empty, run our new pagination operation right away.
+        // Otherwise it will be run once other paginations have finished.
+		if operationQueue.first == pagination {
+			operationQueue.first!.paginate()
 		}
 	}
 		
 	/// Cancels all background operations
-	func cancelAllObjcOperations() {
-		for operation in operationQueue {
-			operation.canceled = true
-		}
+	func cancelAllOperations() {
+        // Because of multithreading, some operations can be left behind in queue.
+        // This operation both cancels running operations AND removes dormant ones.
+        var i = 0
+        while i < operationQueue.count {
+            let operation = operationQueue[i]
+            operation.canceled = true
+            
+            // This is a dormant operation left behind for some reason. Remove it from queue.
+            if !operation.running {
+                operationQueue.remove(at: i)
+            } else {
+                i += 1
+            }
+        }
 	}
 	
     // MARK: - Create a new operation
@@ -173,6 +191,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		self.settings = settings
 		
 		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: changeAt)
+        
 		runPagination(pagination: operation)
 	}
     
@@ -217,7 +236,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		if i != NSNotFound {
 			var n = 0
 			while (n < i+1) {
-                if(operationQueue.count > 0) {
+                if (operationQueue.count > 0) {
                     operationQueue.remove(at: 0)
                 }
 				n += 1
@@ -229,7 +248,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
         if (finishedPagination != nil && pagination.startTime < self.finishedPagination!.startTime) {
             return
         }
-
 		
         // If the pagination was successful, let's make it the latest finished pagination
 		if pagination.success {
@@ -240,9 +258,8 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		}
 		
         // Move on to the next pagination operation in queue
-		let lastOperation = operationQueue.last
-		if (lastOperation != nil) {
-			runPagination(pagination: lastOperation!)
+		if let lastOperation = operationQueue.last {
+			runPagination(pagination: lastOperation)
 		}
 	}
 	

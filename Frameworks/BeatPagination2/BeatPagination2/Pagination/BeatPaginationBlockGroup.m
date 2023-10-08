@@ -48,6 +48,7 @@
 -(NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace styles:(BeatStylesheet*)styles
 {
 	CGFloat space = remainingSpace;
+    CGFloat lineHeight = (styles.page.lineHeight >= 0) ? styles.page.lineHeight : BeatPagination.lineHeight;
 	NSMutableArray<BeatPaginationBlock*>* passedBlocks = NSMutableArray.new;
 	
 	NSMutableArray<Line*>* onThisPage = NSMutableArray.new;
@@ -82,9 +83,9 @@
 		// The starting item of a block is *never* left behind. We'll need to try to break the next item.
         BeatPaginationBlock* retainedBlock = [BeatPaginationBlock withLines:brokenBlock[0] delegate:_delegate];
         
-        // We'll require at least 3 lines to lay on this page. If it's less, we'll just roll the scene on next page. (4 = 3 + top margin)
-        if (brokenBlock.count && retainedBlock.height < _delegate.styles.page.lineHeight * 4) {
-            return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"2nd element in block group didn't fit on this page"]];
+        // We'll require at least 2 lines to lay on this page. If it's less, we'll just roll the scene on next page. (3 = 2 + top margin)
+        if (brokenBlock.count && retainedBlock.height < _delegate.styles.page.lineHeight * 3) {
+            return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:lineHeight reason:@"2nd element in block group didn't fit on this page"]];
         }
 	}
 	
@@ -119,7 +120,8 @@
 	return @[onThisPage, onNextPage, pageBreakItem];
 }
 
-- (NSArray<Line*>*)lines {
+- (NSArray<Line*>*)lines
+{
 	NSMutableArray<Line*>* lines = NSMutableArray.new;
 	
 	for (BeatPaginationBlock* block in self.blocks) {

@@ -152,6 +152,7 @@
 /// Called when this operation is finished.
 - (void)paginationFinished
 {
+    _running = false;
 	[self.delegate paginationFinished:self];
 }
 
@@ -161,10 +162,14 @@
     RenderStyle* style = self.styles.page;
     if (_settings == nil) _settings = self.delegate.settings;
     
+    CGFloat lineHeight = (style.lineHeight > 0) ? style.lineHeight : BeatPagination.lineHeight;
     CGSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
-    CGFloat headerHeight = BeatPagination.lineHeight * 3;
+    CGFloat headerHeight = lineHeight * 3;
     
-	return size.height - style.marginTop - style.marginBottom - headerHeight;
+    // Additional margin for paper size
+    CGFloat additionalMargin = (_settings.paperSize == BeatA4) ? style.marginBottomA4 : style.marginBottomLetter;
+    
+	return size.height - style.marginTop - style.marginBottom - headerHeight - additionalMargin;
 }
 
 #pragma mark - Actual pagination
@@ -180,6 +185,7 @@
 - (void)paginate
 {
 	NSInteger startIndex = 0;
+    _running = true;
 	
     /**
         For live pagination, we'll check if we can reuse some of the earlier pages.
@@ -345,9 +351,10 @@
 	
 	// Nothing fit, let's break it apart
 	CGFloat remainingSpace = _currentPage.remainingSpace;
+    CGFloat lineHeight = (self.styles.page.lineHeight >= 0) ? self.styles.page.lineHeight : BeatPagination.lineHeight;
 	
 	// If remaining space is less than 1 line, just roll on to next page
-	if (remainingSpace < BeatPagination.lineHeight) {
+	if (remainingSpace < lineHeight) {
 		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:group.blocks.firstObject.lines.firstObject lineHeight:self.styles.page.lineHeight reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}

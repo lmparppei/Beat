@@ -75,9 +75,16 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		// Let's tell the delegate this, too
 		self.delegate?.paginationFinished(operation, indices: self.changedIndices)
-
+		
 		//  Clear changed indices
 		self.changedIndices.removeAllIndexes()
+		
+		// Return to main thread and render stuff on screen if needed
+		DispatchQueue.main.async { [weak self] in
+			if self?.delegate?.previewVisible() ?? false {
+				self?.renderOnScreen()
+			}
+		}
 	}
 
 	
@@ -110,14 +117,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			if let screenplay = BeatScreenplay.from(parser, settings: self.settings) {
 				pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changeAt: range.location)
 			}
-			
-			if self.delegate?.previewVisible() ?? false {
-				renderOnScreen()
-			}
-			
 		} else {
 			// Paginate and create preview with 1 second delay
-			timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
+			self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
 				// Store revisions into lines in sync
 				self.delegate?.bakeRevisions()
 
@@ -167,13 +169,19 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		// Show spinner while loading
 		self.spinner?.isHidden = false
 		self.spinner?.startAnimation(nil)
-		
+			
 		guard let previewView = self.previewView,
 			  let pagination = self.pagination
 		else {
 			print("Preview / pagination failed")
 			return
 		}
+		
+		// Hide pages
+		for page in self.previewView?.pageViews ?? [] {
+			page.alphaValue = 0.5
+		}
+
 		
 		// Check if pagination is up to date
 		if !paginationUpdated {
@@ -182,7 +190,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		// Create page strings in background
 		// At least some of the pages are usually cached, so this should be pretty fast.
-		DispatchQueue.global(qos: .userInteractive).async {
+		DispatchQueue.global(qos: .userInitiated).async {
 			guard let pages = self.pagination?.pages
 			else { return }
 			
@@ -194,10 +202,12 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			
 			DispatchQueue.main.async {
 				// Back in main thread, create (or reuse) page content
+				let finishedPagination = self.pagination?.finishedPagination
 				
 				// Iterate through paginated pages
 				for i in 0 ..< pages.count {
 					let page = pages[i]
+					if page.delegate == nil { page.delegate = finishedPagination as? BeatPageDelegate }
 					
 					var pageView:BeatPaginationPageView
 					if i < previewView.pageViews.count {
@@ -213,6 +223,8 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 						pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self)
 						previewView.addPage(page: pageView)
 					}
+					
+					pageView.alphaValue = 1.0
 				}
 				
 				// Remove excess views

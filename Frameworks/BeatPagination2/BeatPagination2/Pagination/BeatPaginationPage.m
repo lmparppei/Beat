@@ -81,7 +81,7 @@
             bool firstElement = (block == blocks.firstObject) ? true : false;
             
             NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
-            [renderedString appendAttributedString:renderedBlock];
+            if (renderedBlock != nil) [renderedString appendAttributedString:renderedBlock];
         }
         
         _renderedString = renderedString;

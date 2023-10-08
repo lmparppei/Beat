@@ -27,6 +27,9 @@ import Foundation
     @objc public var marginLeftLetter:CGFloat = 0
     
     @objc public var marginBottom:CGFloat = 0
+    @objc public var marginBottomA4:CGFloat = 0
+    @objc public var marginBottomLetter:CGFloat = 0
+    
     @objc public var marginRight:CGFloat = 0
     @objc public var paddingLeft:CGFloat = 0
     
@@ -82,6 +85,10 @@ import Foundation
             return "marginTop"
         case "margin-bottom":
             return "marginBottom"
+        case "margin-bottom-us":
+            return "marginBottomLetter"
+        case "margin-bottom-a4":
+            return "marginBottomA4"
         case "margin-left":
             return "marginLeft"
         case "margin-right":

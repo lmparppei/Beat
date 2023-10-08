@@ -13,6 +13,7 @@
 - Made some edge case pagination situations a bit more pleasing  
 - Move to next/prev revision of current generation
 - Interface with other open documents via plugin API
+- Fixed some logical issues with race conditions
 
 
 ## Beat 1.99.x
