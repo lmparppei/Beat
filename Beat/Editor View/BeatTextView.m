@@ -1303,10 +1303,10 @@ Line *cachedRectLine;
 }
 
 - (CGFloat)documentWidth {
-	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter;
+	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter; 
 	CGFloat padding = self.textContainer.lineFragmentPadding;
 	
-	return width + padding * 2;
+	return width + padding * 2 + 1.0;
 }
 
 - (CGFloat)setInsets {

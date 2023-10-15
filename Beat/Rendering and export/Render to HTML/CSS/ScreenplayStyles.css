@@ -119,7 +119,7 @@ body {
 
 body.us-letter{  /* all values not present here are the same as for A4 */
 
-	--action-width: 62.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
+	--action-width: 63.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
 	--character-width: 40ch;
 
 	width: calc(8.5in - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */

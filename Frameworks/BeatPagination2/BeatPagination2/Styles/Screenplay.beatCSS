@@ -22,14 +22,14 @@ page {
     margin-bottom-a4: 10;
 	
 	default-width-a4: 60ch;
-	default-width-us: 62ch;
+	default-width-us: 63ch;
 	
 	line-height: 12;
 	
 	content-padding: 7ch;
  
-    margin-left-a4: 15;
-    margin-left-us: 25;
+    margin-left-a4: 20;
+    margin-left-us: 22;
 }
 
 heading {
@@ -44,9 +44,6 @@ heading {
 }
 
 section {
-    width-a4: 60ch;
-    width-us: 62ch;
-
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: true;
     
@@ -55,9 +52,6 @@ section {
 }
 
 synopsis {
-    width-a4: 60ch;
-    width-us: 62ch;
-    
     margin-top: 1l;
     italic: true;
     color: darkGray;
@@ -66,9 +60,6 @@ synopsis {
 }
 
 action {
-    width-a4: 60ch;
-    width-us: 62ch;
-
     margin-top: 1l;
 }
 
@@ -84,7 +75,7 @@ character {
     width-a4: 38ch;
 	width-us: 40ch;
     
-    margin-left: 19ch;
+    margin-left: 20ch;
     margin-top: 1l;
 }
 
@@ -92,7 +83,7 @@ parenthetical {
     width-a4: 28ch;
 	width-us: 28ch;
 	
-    margin-left: 15ch;
+    margin-left: 16ch;
     margin-top: 0;
 }
 
@@ -101,14 +92,14 @@ dialogue {
 	width-us: 35ch;
     
     margin-top: 0;
-    margin-left: 10ch;
+    margin-left: 11ch;
 }
 
 more {
     width-a4: 38ch;
 	width-us: 38ch;
     
-    margin-left: 130px;
+    margin-left: 136px;
     margin-top: 0;
 }
 
@@ -142,9 +133,6 @@ dualDialogue {
 }
 
 transition {
-    width-a4: 60ch;
-	width-us: 62ch;
-	
     margin-top: 1l;
 	
     text-align: right;
@@ -152,18 +140,12 @@ transition {
 }
 
 lyrics {
-	width-a4: 60ch;
-	width-us: 62ch;
-	
     margin-top: 1l;
     text-align: center;
 	italic: true;
 }
 
 shot {
-	width-a4: 60ch;
-	width-us: 62ch;
-	
 	uppercase: true;
 	
 	bold: userSetting(headingStyleBold);

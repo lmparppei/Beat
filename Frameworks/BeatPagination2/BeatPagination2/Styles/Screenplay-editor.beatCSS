@@ -22,7 +22,7 @@ page {
     margin-bottom: 60;
     
     default-width-a4: 60ch;
-    default-width-us: 62ch;
+    default-width-us: 63ch;
     
     line-height: 15;
     
@@ -39,16 +39,7 @@ heading {
     uppercase: true;
 }
 
-action {
-    width-a4: 60ch;
-    width-us: 62ch;
-
-}
-
 centered {
-    width-a4: 60ch;
-    width-us: 62ch;
-
     text-align: center;
 }
 
@@ -56,21 +47,21 @@ character {
     width-a4: 38ch;
     width-us: 40ch;
     
-    margin-left: 19ch;
+    margin-left: 20ch;
 }
 
 parenthetical {
     width-a4: 28ch;
     width-us: 28ch;
     
-    margin-left: 15ch;
+    margin-left: 16ch;
 }
 
 dialogue {
     width-a4: 35ch;
     width-us: 35ch;
     
-    margin-left: 10ch;
+    margin-left: 11ch;
 }
 
 section {
@@ -106,25 +97,16 @@ dualDialogue {
 }
 
 transition {
-    width-a4: 60ch;
-    width-us: 62ch;
-        
     text-align: right;
     uppercase: true;
 }
 
 lyrics {
-    width-a4: 60ch;
-    width-us: 62ch;
-    
     text-align: center;
     italic: true;
 }
 
 shot {
-    width-a4: 60ch;
-    width-us: 62ch;
-    
     uppercase: true;
     
     bold: userSetting(headingStyleBold);
