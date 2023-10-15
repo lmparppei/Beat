@@ -42,4 +42,3 @@ for (const scene of scenes) {
 
 if (result.length == 0) Beat.alert("No Scenes Found", "No scenes with " + color + " were found. Did you mistype it?");
 else Beat.newDocument(result);
-
