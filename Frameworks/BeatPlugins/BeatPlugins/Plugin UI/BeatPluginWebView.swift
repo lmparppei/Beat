@@ -36,6 +36,7 @@ import WebKit
 
 @objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports {
     @objc weak public var host:BeatPlugin?
+    var baseURL:URL?
     
     @objc
     public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
@@ -64,8 +65,12 @@ import WebKit
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #endif
         
+        webView.host = host
+        webView.baseURL = (host.pluginURL != nil) ? host.pluginURL : nil
+        
+        
         webView.setHTML(html)
-                
+        
         return webView
     }
 
@@ -109,7 +114,25 @@ import WebKit
         
         // Add the HTML to template and load the HTML in web view
         template = template.replacingOccurrences(of: "<!-- CONTENT -->", with: html)
-        self.loadHTMLString(template, baseURL: nil)
+        
+        var loadedURL = false
+        if let baseURL = self.baseURL {
+            // Write a temporary file from which to load this page
+            let tempURL = baseURL.appendingPathComponent("__beat_tmp.html")
+            do {
+                try template.write(to: tempURL, atomically: true, encoding: .utf8)
+                self.loadFileURL(tempURL, allowingReadAccessTo: baseURL)
+                loadedURL = true
+            } catch {
+                print("Couldn't write temporary HTML file")
+            }
+            
+        }
+        
+        // If we couldn't load a URL, let's load the string instead
+        if (!loadedURL) {
+            self.loadHTMLString(template, baseURL: nil)
+        }
     }
     
     #if os(macOS)

@@ -125,6 +125,10 @@
 	}
 }
 
+- (void)keyDown:(NSEvent *)event{
+    return;
+}
+
 #pragma mark - Organizing windows
 
 /// This doesn't actually hide the window, but makes it drop behind current key window

@@ -441,7 +441,8 @@ static BeatPluginManager *sharedManager;
 		if (pluginPath == nil) return nil;
 		
 		plugin.script = [NSString stringWithContentsOfFile:pluginPath encoding:NSUTF8StringEncoding error:&error];
-		
+        plugin.url = [NSURL fileURLWithPath:pluginPath.stringByDeletingLastPathComponent];
+        
 		// Also, read the folder contents and allow file access to the plugin
 		NSArray *files = [fileManager contentsOfDirectoryAtPath:pluginPath.stringByDeletingLastPathComponent error:nil];
 		NSMutableArray *pluginFiles = [NSMutableArray array];
