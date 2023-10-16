@@ -33,7 +33,7 @@
 		<div id='page'>
 			<section>
 				<h1>Welcome to Beat</h1>
-				<p>This manual will guide you through Beat's basic functions. The app should easy to learn, but some of its best features can be easily missed.</p>
+				<p>This manual will guide you through Beat's basic functions. The app is designed to be easy to learn, and lets your write in a flow, but some of its best features can be easily missed.</p>
 
 			</section>
 
@@ -43,7 +43,7 @@
 				<h1>Getting Started</h1>
 				<h2 id='c_newdocument'>New Document</h2>
 				<p>Go and create your first document! If you want some reference on how to use Beat, you can find a tutorial in the first screen, or via <b>Help → Beat Tutorial</b>.</p>
-				<p>Easiest way to learn Beat is just to play around with the Tutorial template, and see how it works both in editor and as a printed document.</p>
+				<p>The easiest way to learn Beat is to play around with the <b>Tutorial</b> template, and see how it works both in editor and as a printed document.</p>
 
 				<h2>What Is Fountain?</h2>
 				<p>This guide will cover the basics of writing a Fountain script, but you can find more advanced info in the <a href='beat_manual.html#FountainSyntax'>Fountain Syntax</a> section or on the <a href='https://fountain.io'>Fountain website</a>.</p>
@@ -87,9 +87,9 @@
 
 				<h2>Stylization</h2>
 
-				<p>Because Fountain is a plain-text format, bold, italic and underline all work with markup characters. This means that single apostrophes mean <i>*italic*</i>, double apostrophes mean <b>**bold**</b>, and underscores mean <span style='text-decoration: underline;'>underline</span>.</p>
+				<p>Because Fountain is a plain-text markup standard, you need to use markup characters to format text. Wrapping something in single apostrophes makes it <i>*italic*</i>, double apostrophes <b>**bold**</b>, and underscores <span style='text-decoration: underline;'>underline</span> the text.</p>
 
-				<p>And of course, normal keyboard shortcuts work: <kbd>⌘cmd</kbd>+<kbd>B</kbd> for bold, <kbd>⌘cmd</kbd>+<kbd>I</kbd> for italic, and <kbd>⌘cmd</kbd>+<kbd>U</kbd> for underline.</p>
+				<p>And of course, the common universal keyboard shortcuts work as well: <kbd>⌘cmd</kbd>+<kbd>B</kbd> for bold, <kbd>⌘cmd</kbd>+<kbd>I</kbd> for italic, and <kbd>⌘cmd</kbd>+<kbd>U</kbd> for underline.</p>
 
 				<div class='blockExample' id='stylization'></div>
 
@@ -117,33 +117,33 @@
 
 				<p>Toggle print preview (<kbd>⌘cmd</kbd>+<kbd>E</kbd>) to see how your title page looks.</p>
 
+				<p><em>Tip: See <a href='#Macros'>Macros</a> to update your date automatically</em></p>
+
 			</section>
 
 			<section>
 
 				<h1>Advanced Formatting</h1>
 
-				<p><b>Note:</b> At any time, you can open the <b>Force Elements</b> menu by pressing <kbd>⌥opt</kbd>+<kbd>↩enter</kbd> while editing.</p>
+				<p><b>Note:</b> You don't need to memorize these &mdash; open the <b>Force Elements</b> menu by pressing <kbd>⌥opt</kbd>+<kbd>↩enter</kbd> at any time.</p>
 
 				<h2>Dual Dialogue</h2>
 
-				<p>Due to the linear and plain-text nature of Fountain screenplay format, writing dual dialogue requires a small trick. Type in <code>^</code> after the character cue you want to appear alongside the first dialogue.</p>
+				<p>Due to the linear and plain-text nature of Fountain screenplay format, writing dual dialogue requires a small trick. Type in <code>^</code> after the second character cue you want to appear alongside the preceding dialogue block.</p>
 
 				<pre class='blockExample dialogue' id='dualDialogue'>        HUMAN
-Can I come over, I need to rest.
-To lay down for awhile, recollect.
+How are you doing?
  
                      PERSON <span class='fSymbol'>^</span>
-              Was the night long, day even
-              longer? Of course you can.</pre>
+              How are you -- you beat me to it.</pre>
 
-				<p>This might seem a bit weird and could require you to constantly check your print preview at first. Just remember that special character (<code>^</code>).</p>
+				<p>This might seem a bit weird and could require you to constantly check your print preview at first. Just remember that special character (<code>^</code>). You can also select <b>Format → Dual Dialogue</b> or press <kbd>⌘cmd</kbd>+<kbd>⇧shift</kbd>+<kbd>2</kbd> anywhere in the second block to make it dual dialogue.</p>
 
 				<p>Check out the <b>Tutorial</b> for an example.</p>
 
 				<h2>Omitting Scenes</h2>
 
-				<p>All text between <code>/*</code> and <code>*/</code> is omitted, so it won't print out, but will still remain inside you script. You can omit large chunks of text by pressing <kbd>⌘cmd</kbd>+<kbd>⇧shift</kbd>+<kbd>E</kbd></b> or selecting <b>Format → Omit</b>.</p>
+				<p>All text between <code>/*</code> and <code>*/</code> is omitted, so it won't print out, but will still remain editable in its place. You can omit large chunks of text by pressing <kbd>⌘cmd</kbd>+<kbd>⇧shift</kbd>+<kbd>E</kbd></b> or selecting <b>Format → Omit</b>.</p>
 
 				<pre class='blockExample omit'>/* 
 
@@ -171,6 +171,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<pre class='blockExample centered'><span class='fSymbol'>></span> I am centered <span class='fSymbol'>&lt;</span></pre>
 
+
 				<h2>Transitions</h2>
 
 				<p>Anything in all caps, followed by <code>TO:</code> (ie. <code>CUT TO:</code>) is a transition.</p>
@@ -182,6 +183,21 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 				<p>To make a custom transition, use <code>> TRANSITION:</code></p>
 
 				<pre class='blockExample transition'><span class='fSymbol'>></span> Custom transition:</pre>
+
+
+				<h2>Shots</h2>
+
+				<p><em><b>Note:</b> Shots are a Beat-specific feature and standard Fountain markup. They might print out with an exclamation mark in front of them in other Fountain editors.</em></p>
+
+				<p>If you need a line that is visually similar to a scene heading but doesn't create a new scene, you can use the Beat-exclusive shot line type. Shots will stay together with any following block (action, dialogue, etc.) when paginating, so they'll never be left alone at the end of a page.</p>
+
+				<pre><b>INT. HOUSE PARTY - NIGHT</b>
+
+Everyone is having fun they hear the front door open.
+
+<b><span class='fSymbol'>!!</span>IN THE HALLWAY</b>
+
+a doppelganger of our main character enters the house.</pre>
 
 				<h2>Forced Elements</h2>
 
@@ -213,11 +229,27 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
                       <span class='fSymbol'>@</span>Character
 		Let's sing something.
 
-              <em><span class='fSymbol'>~</span>I'm in love with your brother...</em></pre>
+              <em><span class='fSymbol'>~</span>I'm in love with your brother...</em>
 
-				<p>You can find all of the forced elements in the <b>Formatting</b> menu.</p>
+<div class='fSymbol' style="text-align: center;">===</div>
+This text is on the text page.
+</pre>
+
+
+				<p>Every element can also be forced through the <b>Formatting</b> menu.</p>
 
 			</section>
+
+
+			<section id='plugins'>
+				<h1>Plugins</h1>
+				<p><b>Tools → Plugin Library</b> lets you download official plugins which extend the functionality of Beat. Any installed plugins will be automatically updated unless you turn auto-update off in Preferences.</p>
+				<p>You should absolutely check out <b>FTOutliner</b> (a full-featured outlining plugin), <b>Dialogue Editor</b> (lets you edit the lines of a single character) and <b>Cherry-Pick Scenes</b> (useful for creating daily scripts for actors, for example).</p>
+
+				<p>You can also write your own plugins if you know some JavaScript &mdash; visit the Beat Website to learn more!</p>
+
+			</section>
+
 
 			<section id='views'>
 
@@ -232,9 +264,9 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<h3>Filtering</h3>
 
-				<p>The search box in the bottom of the Outline View can be used to filter the scenes by their heading. Note that you can also type in colors, if you have color-coded your scenes.</p>
+				<p>Type anything in the search box at the bottom of the Outline View to filter the scenes by their heading. You can also type in colors, if you have color-coded your scenes.</p>
 
-				<p>Aside the search box there is a button which collapses the other filtering options. You can filter the scenes by their color, and also by character. Selecting a character name from the drop-down list shows only scenes in which the character has dialogue or actions in.</p>
+				<p>Aside the search box there is a button which collapses the other filtering options. You can filter the scenes by their color, and also by character. Select a character name from the drop-down list to filter out scenes in which the character doesn't have dialogue.</p>
 
 
 				<h2>Index Card View <span class='shortcut'>(⌘⇧D)</span></h2>
@@ -281,7 +313,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 			<section id='outlining'>
 				<h1>Outlining The Story</h1>
 
-				<h2>Synopsis and Sections</h2>
+				<h2>Sections and Synopses</h2>
 
 				<p>You can split your script into sections and synopses, which make the scene lists and other outlining views much easier to read.</p>
 				<p>A section is created by typing in <code>#</code> followed by its section name; a synopsis is created in the same way but with <code>=</code> instead.</p>
@@ -303,7 +335,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 <b><span style='color: #0055ff'>EXT. STREET - MORNING</span> <span class="fSymbol">[[blue]]</span></b>
 </pre>
 
-				<p>The same applies to section and synopsis lines as well.</p>
+				<p>The same applies to section and synopses as well.</p>
 
 				<h2>Markers</h2>
 
