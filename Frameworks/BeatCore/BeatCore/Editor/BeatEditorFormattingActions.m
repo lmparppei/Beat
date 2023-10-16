@@ -83,51 +83,49 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction)dualDialogue:(id)sender
 {
 	Line *currentLine = _delegate.currentLine;
-	
-	// Current line is character
-	if (currentLine.type == character) {
-		// We won't allow making a first dialogue block dual, let's see if there is another block of dialogue
-		NSInteger index = [_delegate.parser.lines indexOfObject:currentLine] - 1;
-		bool previousDialogueFound = NO;
-		
-		while (index >= 0) {
-			Line* previousLine = [_delegate.parser.lines objectAtIndex:index];
-			if (previousLine.type == character) { previousDialogueFound = YES; break; }
-			if ((previousLine.type == action && previousLine.string.length > 0) || previousLine.type == heading) break;
-			index--;
-		}
-		
-		if (previousDialogueFound) [_delegate addString:forceDualDialogueSymbol atIndex:currentLine.position + currentLine.string.length];
-	
-	// if it's already a dual dialogue cue, remove the symbol
-	} else if (currentLine.type == dualDialogueCharacter) {
-		NSRange range = [currentLine.string rangeOfString:forceDualDialogueSymbol];
-		// Remove symbol
-        [_delegate replaceRange:NSMakeRange(currentLine.position + range.location, 1) withString:@""];
-		
-	// Dialogue block. Find the character cue and add/remove dual dialogue symbol
-	} else if (currentLine.type == dialogue ||
-			   currentLine.type == dualDialogue ||
-			   currentLine.type == parenthetical ||
-			   currentLine.type == dualDialogueParenthetical) {
-		NSInteger index = [_delegate.parser.lines indexOfObject:currentLine] - 1;
-		while (index >= 0) {
-			Line* previousLine = [_delegate.parser.lines objectAtIndex:index];
+    
+    if (!currentLine.isDialogue && !currentLine.isDualDialogue) return;
+    
+    NSInteger idx = [_delegate.parser.lines indexOfObject:currentLine];
+    
+    if (currentLine.isDialogue) {
+        // This block is not dual dialogue, let's find out where we should start the block.
+        Line* leftCue;
+        Line* rightCue;
 
-			if (previousLine.type == character) {
-				// Add
-				[_delegate addString:forceDualDialogueSymbol atIndex:NSMaxRange(previousLine.textRange)];
-				break;
-			}
-			if (previousLine.type == dualDialogueCharacter) {
-				// Remove
-				NSRange range = [previousLine.string rangeOfString:forceDualDialogueSymbol];
-                [_delegate replaceRange:NSMakeRange(currentLine.position + range.location, 1) withString:@""];
-				break;
-			}
-			index--;
-		}
-	}
+        while (idx >= 0) {
+            Line* l = _delegate.parser.lines[idx];
+            if (l.type == character && rightCue == nil) rightCue = l;
+            else if (l.type == character && leftCue == nil) leftCue = l;
+            else if (!l.isDialogue && !l.isDialogue && l.type != empty) break;
+            
+            if (rightCue && leftCue) break;
+            
+            idx--;
+        }
+        
+        // We'll require both left and right cues to exist.
+        if (leftCue && rightCue) [self.delegate addString:@"^" atIndex:NSMaxRange(rightCue.textRange)];
+    }
+    else if (currentLine.isDualDialogue) {
+        // Remove dual dialogue
+        Line* cue;
+        while (idx >= 0) {
+            Line* l = _delegate.parser.lines[idx];
+            if (l.type == dualDialogueCharacter) {
+                cue = l;
+                break;
+            }
+            idx--;
+        }
+        
+        if (cue) {
+            NSInteger i = [cue.string rangeOfString:@"^" options:NSBackwardsSearch].location;
+            if (i != NSNotFound) {
+                [self.delegate replaceRange:NSMakeRange(cue.position + i, 1) withString:@""];
+            }
+        }
+    }
 }
 
 /// Adds a character cue in the current position. **Note** that you might need to set the typing attributes for text view separately for the cue to take action.
