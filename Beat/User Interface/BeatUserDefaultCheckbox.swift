@@ -8,15 +8,38 @@
 
 import Foundation
 
+@objc public class BeatUserDefaultControl:NSControl {
+	@objc @IBInspectable var userDefaultKey:String = ""
+	@objc @IBInspectable var requiresRefresh = false
+}
+
 @objc public class BeatUserDefaultCheckbox:NSButton {
-	@objc var userDefaultKey:String {
-		let cell = self.cell as? BeatUserDefaultCheckboxCell
-		return cell?.userDefaultKey ?? ""
+	@objc @IBInspectable var userDefaultKey:String {
+		get {
+			let cell = self.cell as? BeatUserDefaultCheckboxCell
+			return cell?.userDefaultKey ?? ""
+		}
+		set {
+			let cell = self.cell as? BeatUserDefaultCheckboxCell
+			cell?.userDefaultKey = newValue
+		}
+	}
+	
+	@objc @IBInspectable var requiresRefresh:Bool {
+		get {
+			let cell = self.cell as? BeatUserDefaultCheckboxCell
+			return cell?.requiresRefresh ?? false
+		}
+		set {
+			let cell = self.cell as? BeatUserDefaultCheckboxCell
+			cell?.requiresRefresh = newValue
+		}
 	}
 }
 
 @objc class BeatUserDefaultCheckboxCell:NSButtonCell {
 	@IBInspectable var userDefaultKey:String = ""
+	@objc @IBInspectable var requiresRefresh = false
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()

@@ -298,9 +298,7 @@
 				NSString *defaultValue = [BeatUserDefaults.sharedDefaults defaultValueFor:key];
 				
 				// Get default value if the string is empty
-				if (newValue.length == 0) {
-					newValue = defaultValue;
-				}
+				if (newValue.length == 0) newValue = defaultValue;
 				
 				// If the value is equal to default value, remove it, because we might
 				// want to change the default at some point in the future.
@@ -315,6 +313,7 @@
 	}
 	
 	if (sender == _headingStyleBold || sender == _headingStyleUnderline) [self updateHeadingSample];
+	if (sender == _screenplayItemMore || sender == _screenplayItemContd) [self reloadStyles];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc applyUserSettings];

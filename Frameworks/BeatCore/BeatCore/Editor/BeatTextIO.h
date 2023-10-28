@@ -53,6 +53,7 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 @property (nonatomic, weak) id<BeatTextIODelegate> delegate;
 
 - (instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate;
+
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;

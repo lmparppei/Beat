@@ -253,7 +253,6 @@
 		B68B60AF260B849300463AD8 /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
 		B68B60B1260B849300463AD8 /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
-		B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */; };
 		B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
 		B68B60B8260B849300463AD8 /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B66ED8BC25AA5BF100C77A03 /* Credits.pdf */; };
 		B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */; };
@@ -323,7 +322,6 @@
 		B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
 		B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
 		B6C024ED2978162000249445 /* BeatAutomaticAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */; };
-		B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */; };
 		B6C35D5D2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
 		B6C35D5E2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
 		B6C401392810339F00330AC3 /* review_mode.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6C401382810339F00330AC3 /* review_mode.jpg */; };
@@ -779,7 +777,6 @@
 		B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans.ttf"; sourceTree = "<group>"; };
 		B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold Italic.ttf"; sourceTree = "<group>"; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentFiles.h; sourceTree = "<group>"; };
-		B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Plugin HTML template.html"; path = "Beat/Plugin API/Plugin HTML template.html"; sourceTree = SOURCE_ROOT; };
 		B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatWebResources.swift; sourceTree = "<group>"; };
 		B6C401382810339F00330AC3 /* review_mode.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = review_mode.jpg; sourceTree = "<group>"; };
 		B6C629AC2A249074003FB7FD /* BeatQuickLookDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatQuickLookDelegate.swift; sourceTree = "<group>"; };
@@ -984,13 +981,12 @@
 				B6907E39233FE16200741071 /* Statistics */,
 				B1509A3D1CB5C0B400884918 /* Rendering and export */,
 				B667796623C5D1D20029D508 /* Import */,
-				B6BBF3CD24AC80E800503EFB /* Plugin API */,
+				B62C0FF4262C91C6007659F8 /* Plugin Library */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
 				B623BD512549B11B00201BC9 /* Fonts */,
 				B623BD4C2549B03700201BC9 /* Icons */,
 				B68AC7B32219732800E02466 /* Sample files */,
 				B60A593125993FBE00207D00 /* Plugins */,
-				B61BE987271D5038008FFA0F /* Dev Tools */,
 				B69C74DE2773D9A40022D9D5 /* Extensions and Categories */,
 			);
 			path = Beat;
@@ -1124,13 +1120,6 @@
 				B607519428CB27A700F4E68F /* BeatSceneHeadingSearch.xib */,
 			);
 			path = "Scene Heading Search";
-			sourceTree = "<group>";
-		};
-		B61BE987271D5038008FFA0F /* Dev Tools */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Dev Tools";
 			sourceTree = "<group>";
 		};
 		B623BD4C2549B03700201BC9 /* Icons */ = {
@@ -1691,15 +1680,6 @@
 			path = BeatQuickLook;
 			sourceTree = "<group>";
 		};
-		B6BBF3CD24AC80E800503EFB /* Plugin API */ = {
-			isa = PBXGroup;
-			children = (
-				B62C0FF4262C91C6007659F8 /* Plugin Library */,
-				B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */,
-			);
-			path = "Plugin API";
-			sourceTree = "<group>";
-		};
 		B6C84CA825AA566700BDF974 /* About Screen */ = {
 			isa = PBXGroup;
 			children = (
@@ -2062,7 +2042,6 @@
 				B6C70251295DFF5C00920D82 /* Courier Prime Bold Italic.ttf in Resources */,
 				B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B6C7024D295DFF5C00920D82 /* Courier Prime Bold.ttf in Resources */,
-				B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */,
 				B6E0E0DE2AC4B7D200948752 /* One Page Synopsis.fountain in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
@@ -2136,7 +2115,6 @@
 				B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B696BC352A7151D50078BA79 /* BeatCardsUI.html in Resources */,
 				B6E0E0E22AC4BF8600948752 /* Three-act Outline.fountain in Resources */,
-				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
 				B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
 				B696BC322A7151D50078BA79 /* BeatCardsUI.css in Resources */,

@@ -61,11 +61,12 @@
 
 /**
  If it's a long string with no line breaks, let's do some basic sanitization.
- // This won't be perfect, but a good starting point. The method adds e
+ This won't be perfect, but a good starting point. We'll detect scene headings and character cues.
  */
 + (NSString*)sanitizeString:(NSString*)string {
 	// Convert line breaks and separate lines into an array
 	string = [string stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	string = [string stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
 	
 	if ([string rangeOfString:@"\n"].location == NSNotFound) return string;
 	
@@ -100,9 +101,8 @@
 	
 		[result appendString:lineToAdd];
 		
-		if (i < lines.count - 1) {
-			[result appendString:@"\n"];
-		}
+		// Add a line break for everything else except the last line
+		if (i < lines.count - 1) [result appendString:@"\n"];
 		
 		previousLine = lineToAdd;
 	}

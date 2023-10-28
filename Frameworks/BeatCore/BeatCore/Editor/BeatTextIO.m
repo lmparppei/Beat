@@ -4,6 +4,12 @@
 //
 //  Created by Lauri-Matti Parppei on 18.2.2023.
 //
+/**
+ 
+ Common editor text manipulation methods for both macOS and iOS.
+ Note that the OSs work differently when adding/removing text. On iOS, the cursor has to be readjusted after each operation.
+ 
+ */
 
 #import "BeatTextIO.h"
 #import <TargetConditionals.h>
@@ -48,8 +54,8 @@
 
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
- - NOTE: __Don't use__ this for adding text, but go through the intermediate methods instead, `addString`, `removeString` etc.
- */
+ @warning __Don't use__ this for adding text. Go through the intermediate methods instead, `addString`, `removeString` etc.
+*/
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
     BXTextView* textView = self.delegate.getTextView;
@@ -307,7 +313,7 @@
 #pragma mark - Additional editor convenience stuff
 
 /// Checks if we should add additional line breaks. Returns `true` if line breaks were added.
-/// **Warning:** Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
+/// @warning: Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange
 {
     if (_skipAutomaticLineBreaks) {
@@ -368,14 +374,13 @@
 - (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange
 {
     // Jump over matched parentheses
-    if ([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) {
-        if (affectedCharRange.location < _delegate.text.length) {
-            unichar currentCharacter = [_delegate.text characterAtIndex:affectedCharRange.location];
-            if ((currentCharacter == ')' && [replacementString isEqualToString:@")"]) ||
-                (currentCharacter == ']' && [replacementString isEqualToString:@"]"])) {
-                [_delegate setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
-                return YES;
-            }
+    if (([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) &&
+        affectedCharRange.location < _delegate.text.length) {
+        unichar currentCharacter = [_delegate.text characterAtIndex:affectedCharRange.location];
+        if ((currentCharacter == ')' && [replacementString isEqualToString:@")"]) ||
+            (currentCharacter == ']' && [replacementString isEqualToString:@"]"])) {
+            [_delegate setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
+            return YES;
         }
     }
     
@@ -384,11 +389,12 @@
 
 /**
  Finds a matching closure for parenthesis, notes and omissions.
- It works by checking the entered symbol and if the previous symbol in text matches its counterpart (like with `*`, if the previous is `/`, terminator is appended.
+ This works by checking both the entered symbol and the previous symbol in text. If both match the terminator counterpart, the block is closed.
+ For example: If the users enters  `*`, and the previous symbol in that range is `/`, we'll close the omission.
  */
 - (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
-    if (replacementString.length > 1) return;;
+    if (replacementString.length > 1) return;
     
     static NSDictionary *matches;
     if (matches == nil) matches = @{
@@ -415,17 +421,35 @@
         return;
     }
     else if (match.length > 1) {
+        // Check for dual symbol matches, and don't add them if the previous character doesn't match
         if (affectedCharRange.location == 0) return;
         
-        // Check for dual symbol matches, and don't allow them if the previous character doesn't match
         unichar characterBefore = [_delegate.text characterAtIndex:affectedCharRange.location-1];
-        if (characterBefore != [match characterAtIndex:0]) {
-            return;
+        if (characterBefore != [match characterAtIndex:0]) return;
+    }
+    
+    // After this, we'l also make sure we're not adding extraneous closing brackets anywhere.
+    Line* line = _delegate.currentLine;
+    NSString* terminator = matches[match];
+    bool found = false;
+    for (NSInteger i=affectedCharRange.location - line.position; i<=line.length - terminator.length; i++) {
+        // Don't go out of range
+        if (line.position + i + terminator.length >= _delegate.text.length) break;
+        
+        NSString* s = [line.string substringWithRange:NSMakeRange(i, terminator.length)];
+        if ([s isEqualToString:terminator]) {
+            found = true;
+            break;
+        } else if ([s isEqualToString:match]) {
+            break;
         }
     }
     
-    [self addString:matches[match] atIndex:affectedCharRange.location];
-    [_delegate setSelectedRange:affectedCharRange];
+    // If a terminator was not found, close the brackets.
+    if (!found) {
+        [self addString:matches[match] atIndex:affectedCharRange.location];
+        [_delegate setSelectedRange:affectedCharRange];
+    }
 }
 
 /// Check if we should add `CONT'D` at the the current character cue

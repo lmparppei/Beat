@@ -5,6 +5,11 @@
 //  Created by Lauri-Matti Parppei on 9.6.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ This is a collection of IBAction methods for screenplay editing.
+ 
+ */
 
 #import "BeatEditorFormattingActions.h"
 #import <BeatCore/BeatLocalization.h>
@@ -80,9 +85,12 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
+
+#pragma mark - Dialogue and character cues
+
 - (IBAction)dualDialogue:(id)sender
 {
-	Line *currentLine = _delegate.currentLine;
+    Line *currentLine = _delegate.currentLine;
     
     if (!currentLine.isDialogue && !currentLine.isDualDialogue) return;
     
@@ -127,6 +135,7 @@ static NSString *revisionAttribute = @"Revision";
         }
     }
 }
+
 
 /// Adds a character cue in the current position. **Note** that you might need to set the typing attributes for text view separately for the cue to take action.
 - (void)addCue
@@ -315,26 +324,10 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (bool)rangeHasFormatting:(NSRange)range open:(NSString*)open end:(NSString*)end
-{
-	if (range.location < 0 || range.location == NSNotFound) return NO;
-	
-	// Check that the range actually intersects with text
-	if (NSIntersectionRange(range, (NSRange){ 0, _delegate.text.length }).length == range.length) {
-		// Grab formatting symbols in given range
-		NSString *leftSide = [_delegate.text substringWithRange:(NSRange){ range.location, open.length }];
-		NSString *rightSide = [_delegate.text substringWithRange:(NSRange){ range.location + range.length - end.length, end.length }];
-		
-		if ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]) return YES;
-		else return NO;
-	
-	} else {
-		return NO;
-	}
-}
-
 - (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(BeatFormatting)style
 {
+    // Looking at this in 2023... oh my. TODO: Fix this at some point.
+    
 	// Don't go out of range
 	if (cursorLocation.location  + cursorLocation.length > _delegate.text.length) return;
 	
@@ -502,14 +495,6 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (IBAction)addHighlight:(id)sender {
-	NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
-	[self format:range startingSymbol:highlightSymbolOpen endSymbol:highlightSymbolClose style:Block];
-}
-- (IBAction)addStrikeout:(id)sender {
-	NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
-	[self format:range startingSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose style:Block];
-}
 - (NSRange)rangeUntilLineBreak:(NSRange)range {
 	NSString *text = [_delegate.text substringWithRange:range];
 	if ([text rangeOfString:@"\n"].location != NSNotFound) {
@@ -536,6 +521,28 @@ static NSString *revisionAttribute = @"Revision";
         marker = [NSString stringWithFormat:@" %@", marker];
     }
     [self.delegate replaceRange:self.delegate.selectedRange withString:marker];
+}
+
+
+#pragma mark - Helper methods
+
+/// Returns `true` if the selected range actually is wrapped by formatting symbols
+- (bool)rangeHasFormatting:(NSRange)range open:(NSString*)open end:(NSString*)end
+{
+    if (range.location < 0 || range.location == NSNotFound) return NO;
+    
+    // Check that the range actually intersects with text
+    if (NSIntersectionRange(range, (NSRange){ 0, _delegate.text.length }).length == range.length) {
+        // Grab formatting symbols in given range
+        NSString *leftSide = [_delegate.text substringWithRange:(NSRange){ range.location, open.length }];
+        NSString *rightSide = [_delegate.text substringWithRange:(NSRange){ range.location + range.length - end.length, end.length }];
+        
+        if ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]) return YES;
+        else return NO;
+    
+    } else {
+        return NO;
+    }
 }
 
 @end
