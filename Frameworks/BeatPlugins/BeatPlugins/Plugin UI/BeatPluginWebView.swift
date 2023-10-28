@@ -36,7 +36,10 @@ import WebKit
 
 @objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports {
     @objc weak public var host:BeatPlugin?
+    /// The folder URL provided by plugin host (if applicable)
     var baseURL:URL?
+    /// A temporary URL for the displayed page. Can be `nil` if we're not loading a plugin.
+    var tempURL:URL?
     
     @objc
     public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
@@ -52,7 +55,7 @@ import WebKit
         config.userContentController.add(host, name: "sendData")
         config.userContentController.add(host, name: "call")
         config.userContentController.add(host, name: "log")
-
+        
         if #available(macOS 12.3, iOS 15.0, *) {
             config.preferences.isElementFullscreenEnabled = true
         }
@@ -61,6 +64,11 @@ import WebKit
         let webView = BeatPluginWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: config)
         #if os(macOS)
         webView.autoresizingMask = [.width, .height]
+
+        if #available(macOS 13.3, *) {
+            //webView.isInspectable = true
+        }
+
         #elseif os(iOS)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #endif
@@ -73,7 +81,19 @@ import WebKit
         
         return webView
     }
+    
+    
+    /// On deinit, we'll remove the temporary HTML file
+    deinit {
+        guard let url = self.tempURL else { return }
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            print("Temporary file couldn't be removed")
+        }
+    }
 
+    /// Evaluates JavaScript in the view and runs callback
     public func runJS(_ js:String, _ callback:JSValue?) {
         self.evaluateJavaScript(js) { returnValue, error in
             if error != nil { return }
@@ -117,16 +137,19 @@ import WebKit
         
         var loadedURL = false
         if let baseURL = self.baseURL {
-            // Write a temporary file from which to load this page
-            let tempURL = baseURL.appendingPathComponent("__beat_tmp.html")
-            do {
-                try template.write(to: tempURL, atomically: true, encoding: .utf8)
-                self.loadFileURL(tempURL, allowingReadAccessTo: baseURL)
-                loadedURL = true
-            } catch {
-                print("Couldn't write temporary HTML file")
+            // Write a temporary file from which to load this page. Reuse the URL if possible.
+            if let tempURL = (self.tempURL == nil) ? baseURL.appendingPathComponent("__beat_tmp_" + NSUUID().uuidString + ".html") : self.tempURL {
+                do {
+                    try template.write(to: tempURL, atomically: true, encoding: .utf8)
+                    self.loadFileURL(tempURL, allowingReadAccessTo: baseURL)
+                    
+                    // Successfully loaded the temporary file.
+                    loadedURL = true
+                    self.tempURL = tempURL
+                } catch {
+                    print("Couldn't write temporary HTML file")
+                }
             }
-            
         }
         
         // If we couldn't load a URL, let's load the string instead
