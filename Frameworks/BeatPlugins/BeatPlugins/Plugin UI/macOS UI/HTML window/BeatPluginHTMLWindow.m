@@ -94,6 +94,8 @@
 }
 
 - (void)closeWindow {
+    [self.webView removeFromSuperview];
+    self.webView = nil;
 	[super close];
 }
 
