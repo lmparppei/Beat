@@ -13,6 +13,7 @@
  */
 
 import Cocoa
+import BeatCore
 
 class BeatNativePrinting:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {
