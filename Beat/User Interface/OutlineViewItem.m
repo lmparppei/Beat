@@ -57,12 +57,12 @@
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
 	ThemeManager* theme = ThemeManager.sharedManager;
-	BXColor* sceneNumberColor  = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
-	BXColor* outlineItemColor  = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
-	BXColor* omittedItemColor  = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
-	BXColor* sectionItemColor  = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
-	BXColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkAquaColor : theme.outlineSynopsis.aquaColor;
-	BXColor* noteItemColor     = (dark) ? theme.outlineNote.darkAquaColor : theme.outlineNote.aquaColor;
+	BXColor* sceneNumberColor  = (dark) ? theme.outlineSceneNumber.darkColor : theme.outlineSceneNumber.lightColor;
+	BXColor* outlineItemColor  = (dark) ? theme.outlineItem.darkColor : theme.outlineItem.lightColor;
+	BXColor* omittedItemColor  = (dark) ? theme.outlineItemOmitted.darkColor : theme.outlineItemOmitted.lightColor;
+	BXColor* sectionItemColor  = (dark) ? theme.outlineSection.darkColor : theme.outlineSection.lightColor;
+	BXColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkColor : theme.outlineSynopsis.lightColor;
+	BXColor* noteItemColor     = (dark) ? theme.outlineNote.darkColor : theme.outlineNote.lightColor;
 
 	
 	NSMutableAttributedString *resultString = NSMutableAttributedString.new;

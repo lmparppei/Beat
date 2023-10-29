@@ -137,7 +137,6 @@
 		B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */; };
 		B66E2CC229EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */; };
 		B66E2CC329EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */; };
-		B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B66ED8BC25AA5BF100C77A03 /* Credits.pdf */; };
 		B66F46332565ADA0003748DA /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */; };
 		B66F46352565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46262565AD9F003748DA /* NSMutableDictionary+DMPExtensions.m */; };
 		B66F46372565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46282565AD9F003748DA /* NSString+UnicharUtilities.m */; };
@@ -174,6 +173,9 @@
 		B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA82AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA92AEED3E000977F7D /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
+		B67E7BD02AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
+		B67E7BD12AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
+		B67E7BD22AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B680B7C82A6EC44C00FCD805 /* BeatPlugins.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */; };
 		B680B7C92A6EC44D00FCD805 /* BeatPlugins.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -258,7 +260,6 @@
 		B68B60B1260B849300463AD8 /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
 		B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
-		B68B60B8260B849300463AD8 /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B66ED8BC25AA5BF100C77A03 /* Credits.pdf */; };
 		B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */; };
 		B68B60BA260B849300463AD8 /* Outlining.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3A2549AEDD00201BC9 /* Outlining.fountain */; };
 		B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D6260BA8D600463AD8 /* beat_manual.html */; };
@@ -651,7 +652,6 @@
 		B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintDialog.m; sourceTree = "<group>"; };
 		B66CDF222817449E00EF4137 /* Uppercase actions.beatStyle */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Uppercase actions.beatStyle"; sourceTree = "<group>"; };
 		B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentWindow.swift; sourceTree = "<group>"; };
-		B66ED8BC25AA5BF100C77A03 /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B66F46222565AD9F003748DA /* DiffMatchPatchCFUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchCFUtilities.h; sourceTree = "<group>"; };
 		B66F46232565AD9F003748DA /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
 		B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UriCompatibility.m"; sourceTree = "<group>"; };
@@ -691,6 +691,7 @@
 		B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B67C2CFE2A2D29BB00B88B0F /* Templates And Tutorials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Templates And Tutorials.plist"; sourceTree = "<group>"; };
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
+		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
 		B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6829BF825AB727600C0595B /* BeatEpisodePrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEpisodePrinter.h; sourceTree = "<group>"; };
@@ -703,7 +704,6 @@
 		B68AE23426EDF7E300F6DF59 /* BeatPreferencesPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPreferencesPanel.h; sourceTree = "<group>"; };
 		B68AE23526EDF7E300F6DF59 /* BeatPreferencesPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPreferencesPanel.m; sourceTree = "<group>"; };
 		B68B60C5260B849300463AD8 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B68B60CA260BA8A800463AD8 /* Silent as Murderers.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Silent as Murderers.fountain"; sourceTree = "<group>"; };
 		B68B60D1260BA8D600463AD8 /* cards.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cards.png; sourceTree = "<group>"; };
 		B68B60D2260BA8D600463AD8 /* timeline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = timeline.png; sourceTree = "<group>"; };
 		B68B60D3260BA8D600463AD8 /* outline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = outline.png; sourceTree = "<group>"; };
@@ -1000,11 +1000,10 @@
 		B138B57619E1C973000489C4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B6F632FA28416FB600494BD7 /* Icon-MacOS-256x256@1x.png */,
-				B68B60CA260BA8A800463AD8 /* Silent as Murderers.fountain */,
-				B623BD472549AFDA00201BC9 /* B_256_logo.png */,
-				B66ED8BC25AA5BF100C77A03 /* Credits.pdf */,
+				B67E7BCF2AEF12CE00977F7D /* Credits.pdf */,
 				B6D2B72B2218B51D005B8447 /* Credits.rtf */,
+				B6F632FA28416FB600494BD7 /* Icon-MacOS-256x256@1x.png */,
+				B623BD472549AFDA00201BC9 /* B_256_logo.png */,
 				B6D2B7192218B408005B8447 /* main.m */,
 			);
 			path = "Supporting Files";
@@ -2009,6 +2008,7 @@
 				B6BE1AD42567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */,
 				B65BBF78280C3FD500FCA23E /* BeatAboutScreen.xib in Resources */,
 				B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
+				B67E7BD02AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B606FDC22817F09C00D89CD6 /* BeatPrintDialog.xib in Resources */,
 				B6763E5A2782295E00284907 /* Localizable.strings in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
@@ -2043,7 +2043,6 @@
 				B6E0E0DE2AC4B7D200948752 /* One Page Synopsis.fountain in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
-				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
 				B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */,
 				B6F712A9276BC78D00C4489B /* PreviewStyles.css in Resources */,
 				B696BC2B2A7151D40078BA79 /* BeatCardsUI.css in Resources */,
@@ -2083,6 +2082,7 @@
 				B67C2CEA2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */,
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
 				B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */,
+				B67E7BD12AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B688F2CA274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B63525162A48C53700510B95 /* BeatOutlineSettings.xib in Resources */,
 				B6C70250295DFF5C00920D82 /* Courier Prime Italic.ttf in Resources */,
@@ -2117,7 +2117,6 @@
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
 				B696BC322A7151D50078BA79 /* BeatCardsUI.css in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
-				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
 				B67C2D002A2D29BB00B88B0F /* Templates And Tutorials.plist in Resources */,
 				B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */,
 				B6F712AA276BC78D00C4489B /* PreviewStyles.css in Resources */,
@@ -2136,6 +2135,7 @@
 				B6C629B62A249D98003FB7FD /* Courier Prime Sans Italic.ttf in Resources */,
 				B6C629B22A249D98003FB7FD /* Courier Prime Sans.ttf in Resources */,
 				B6C629B12A249D98003FB7FD /* Courier Prime Bold.ttf in Resources */,
+				B67E7BD22AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B6C629B72A249D98003FB7FD /* Courier Prime Sans Bold.ttf in Resources */,
 				B6C629B52A249D98003FB7FD /* Courier Prime.ttf in Resources */,
 				B6C629B42A249D98003FB7FD /* Courier Prime Italic.ttf in Resources */,

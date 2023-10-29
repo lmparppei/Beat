@@ -55,7 +55,7 @@
 
 - (void)updateBackground {
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-	NSColor *bgColor = (dark) ? ThemeManager.sharedManager.outlineBackground.darkAquaColor : ThemeManager.sharedManager.outlineBackground.aquaColor;
+	NSColor *bgColor = (dark) ? ThemeManager.sharedManager.outlineBackground.darkColor : ThemeManager.sharedManager.outlineBackground.lightColor;
 	self.layer.backgroundColor = bgColor.CGColor;
 }
 

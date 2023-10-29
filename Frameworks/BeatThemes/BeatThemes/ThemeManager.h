@@ -35,12 +35,19 @@
 
 + (ThemeManager*)sharedManager;
 
+/// Returns the default theme.
 - (BeatTheme*)defaultTheme;
+/// Turns a property list into a theme.
 - (BeatTheme*)dictionaryToTheme:(NSDictionary*)values;
-- (void)revertToSaved; /// Loads default and saved custom themes and applies them
-- (void)readTheme:(BeatTheme*)theme; /// Read a single, preprocessed theme
+/// Loads default and saved custom themes and applies them
+- (void)revertToSaved;
+/// Read a single, preprocessed theme
+- (void)readTheme:(BeatTheme*)theme;
+/// Reloads the UI for each open document.
 - (void)loadThemeForAllDocuments;
+/// Resets themes to bundled default, removing any user customization.
 - (void)resetToDefault;
+/// Saves the current theme in user directory.
 - (void)saveTheme;
 
 //Access the current theme

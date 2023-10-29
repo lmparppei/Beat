@@ -49,12 +49,12 @@
 		
 		// CALayer doesn't read the effective color
 		if (_editor.isDark) {
-			self.paper.backgroundColor = _themeManager.backgroundColor.darkAquaColor.CGColor;
-			self.layer.backgroundColor = _themeManager.marginColor.darkAquaColor.CGColor;
+			self.paper.backgroundColor = _themeManager.backgroundColor.darkColor.CGColor;
+			self.layer.backgroundColor = _themeManager.marginColor.darkColor.CGColor;
 		}
 		else {
-			self.paper.backgroundColor = _themeManager.backgroundColor.aquaColor.CGColor;
-			self.layer.backgroundColor = _themeManager.marginColor.aquaColor.CGColor;
+			self.paper.backgroundColor = _themeManager.backgroundColor.lightColor.CGColor;
+			self.layer.backgroundColor = _themeManager.marginColor.lightColor.CGColor;
 		}
 		
 		_paper.masksToBounds = NO;
@@ -86,12 +86,12 @@
 	
 	// CALayer doesn't read the effective color
 	if (_editor.isDark) {
-		self.paper.backgroundColor = _themeManager.backgroundColor.darkAquaColor.CGColor;
-		self.layer.backgroundColor = _themeManager.marginColor.darkAquaColor.CGColor;
+		self.paper.backgroundColor = _themeManager.backgroundColor.darkColor.CGColor;
+		self.layer.backgroundColor = _themeManager.marginColor.darkColor.CGColor;
 	}
 	else {
-		self.paper.backgroundColor = _themeManager.backgroundColor.aquaColor.CGColor;
-		self.layer.backgroundColor = _themeManager.marginColor.aquaColor.CGColor;
+		self.paper.backgroundColor = _themeManager.backgroundColor.lightColor.CGColor;
+		self.layer.backgroundColor = _themeManager.marginColor.lightColor.CGColor;
 	}
 
 	[CATransaction commit];

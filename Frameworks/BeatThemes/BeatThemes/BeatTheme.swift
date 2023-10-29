@@ -129,5 +129,9 @@ import BeatDynamicColor
         
         return theme
     }
+    
+    public override class func setValue(_ value: Any?, forUndefinedKey key: String) {
+        print("BeatTheme: Trying to set value for unknown key", key)
+    }
 }
 

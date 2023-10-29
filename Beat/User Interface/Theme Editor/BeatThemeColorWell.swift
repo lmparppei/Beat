@@ -29,6 +29,6 @@ import BeatDynamicColor
 			return
 		}
 		
-		self.color = (self.darkColor) ? (color.darkAquaColor ?? color.aquaColor) : color.aquaColor
+		self.color = (self.darkColor) ? (color.darkColor ?? color.lightColor) : color.lightColor
 	}
 }

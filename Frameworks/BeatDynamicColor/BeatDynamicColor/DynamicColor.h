@@ -11,11 +11,11 @@
 @end
 
 @interface DynamicColor : NSColor <NSCopying>
-@property (nonatomic, strong, nonnull) NSColor *aquaColor;
-@property (nonatomic, strong, nullable) NSColor *darkAquaColor;
+@property (nonatomic, strong, nonnull) NSColor *lightColor;
+@property (nonatomic, strong, nullable) NSColor *darkColor;
 
-- (instancetype _Nullable )initWithAquaColor:(NSColor *__nonnull)aquaColor
-      darkAquaColor:(NSColor *__nullable)darkAquaColor;
+- (instancetype _Nullable )initWithLightColor:(NSColor *__nonnull)lightColor
+      darkColor:(NSColor *__nullable)darkColor;
 
 - (NSColor *_Nonnull)effectiveColor;
 
@@ -30,10 +30,10 @@
 #include <UIKit/UIKit.h>
 
 @interface DynamicColor : UIColor
-@property (nonatomic, strong, nonnull) UIColor *aquaColor;
-@property (nonatomic, strong, nullable) UIColor *darkAquaColor;
+@property (nonatomic, strong, nonnull) UIColor *lightColor;
+@property (nonatomic, strong, nullable) UIColor *darkColor;
 
-- (instancetype _Nullable )initWithAquaColor:(UIColor * _Nonnull)aquaColor darkAquaColor:(UIColor * _Nullable)darkAquaColor;
+- (instancetype _Nullable )initWithLightColor:(UIColor * _Nonnull)lightColor darkColor:(UIColor * _Nullable)darkColor;
 
 - (UIColor *_Nonnull)effectiveColor;
 

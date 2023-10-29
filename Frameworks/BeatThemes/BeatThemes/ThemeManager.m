@@ -74,7 +74,11 @@
     return self;
 }
 
--(void)loadThemes {
+
+#pragma mark - Loading themems
+
+-(void)loadThemes
+{
 	_themes = NSMutableDictionary.new;
 	NSDictionary* themes = [self loadThemeFile];
 	
@@ -82,11 +86,6 @@
 		NSString* name = theme[@"Name"];
 		[_themes setValue:theme forKey:name];
 	}
-}
-- (void)revertToSaved {
-	[self loadThemes];
-	[self readTheme];
-	[self loadThemeForAllDocuments];
 }
 
 /// Load both bundled default theme file, as well as the one customized by user.
@@ -97,6 +96,7 @@
 #if !TARGET_OS_IOS
 	NSDictionary *customPlist = [self loadCustomTheme];
 	if (customPlist) {
+        // If a custom plist file exists, we'll add the theme to "themes" dictionary in our plist
 		NSMutableArray *themes = contents[THEMES_KEY];
 		[themes addObject:customPlist];
 	}
@@ -106,7 +106,8 @@
 }
 
 /// Read user-created theme file into a dictionary
-- (NSDictionary*)loadCustomTheme {
+- (NSDictionary*)loadCustomTheme
+{
 	// Read user-created theme file
     id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)BXApp.delegate;
     
@@ -126,13 +127,24 @@
 
 /// Returns the default theme
 -(BeatTheme*)defaultTheme {
-	BeatTheme* theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
-	return theme;
+    BeatTheme* theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
+    return theme;
 }
+
+
+#pragma mark - Reading themes
 
 /// Resets current theme to the default one
 -(void)resetToDefault {
-	_theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
+    _theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
+}
+
+
+/// Reverts the theme to its saved state
+- (void)revertToSaved {
+    [self loadThemes];
+    [self readTheme];
+    [self loadThemeForAllDocuments];
 }
 
 -(BeatTheme*)dictionaryToTheme:(NSDictionary*)values {
@@ -165,33 +177,34 @@
 	return theme;
 }
 
--(void)readTheme:(BeatTheme*)theme {
-	/**
-	 Adding new customizable values could result in null value problems.
-	 We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
-	 */
-	
-	// First load DEFAULT theme into memory
-	_theme = [self dictionaryToTheme:_themes[DEFAULT_KEY]];
-	
-	// Load custom theme
-	BeatTheme* customTheme = theme;
-    NSDictionary* propertyToValue = BeatTheme.propertyValues;
-	
-	// If custom theme exists, we'll get the property names from that and overwrite those in default theme.
-	if (customTheme) {
-		for (NSString *property in propertyToValue) {
-			if ([customTheme valueForKey:property]) {
-				[_theme setValue:[customTheme valueForKey:property] forKey:property];
-			}
-		}
-	}
+/// Reads the default theme
+-(void)readTheme
+{
+    [self readTheme:nil];
 }
 
--(void)readTheme {
-	BeatTheme* customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
-	[self readTheme:customTheme];
+/**
+ Reads a single, preprocessed theme.
+ - Note: Adding new, customizable values to themes could result in null value problems. We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
+ */
+-(void)readTheme:(BeatTheme*)theme {
+	// First load DEFAULT theme into memory
+    _theme = self.defaultTheme;
+	
+    if (theme) {
+        // Gget the property names from that and overwrite those in default theme.
+        // This way we'll never end up with null values, as long as the default theme covers all those.
+        NSDictionary* propertyToValue = BeatTheme.propertyValues;
+        
+        // Iterate through property values and if custom theme has the value, override it in our  default theme
+        for (NSString *property in propertyToValue) {
+            if ([theme valueForKey:property]) [_theme setValue:[theme valueForKey:property] forKey:property];
+        }
+    }
 }
+
+
+#pragma mark - Saving themes
 
 -(void)saveTheme {
 #if !TARGET_OS_IOS
@@ -217,6 +230,9 @@
 #endif
 }
 
+
+#pragma mark - Color conversion
+
 /// Returns a color from an array of doubles: `[r, g, b]`
 - (BXColor*)colorFromArray:(NSArray*)array
 {
@@ -240,10 +256,12 @@
 }
 
 - (DynamicColor*)dynamicColorFromColor:(BXColor*)color {
-	return [[DynamicColor new] initWithAquaColor:color darkAquaColor:color];
+	return [[DynamicColor new] initWithLightColor:color darkColor:color];
 }
 
-- (DynamicColor*)dynamicColorFromArray:(NSArray*)lightArray darkArray:(NSArray*)darkArray {
+/// Creates a dynamic color from two arrays using `[r,g,b]` format. Each value is a `NSNumber` double/float.
+- (DynamicColor*)dynamicColorFromArray:(NSArray*)lightArray darkArray:(NSArray*)darkArray
+{
 	if (!lightArray || !darkArray) return nil;
 	
 	NSNumber* redValueLight = lightArray[0];
@@ -264,17 +282,17 @@
 
 #if TARGET_OS_IOS
 	return [[DynamicColor new]
-			initWithAquaColor:[UIColor.clearColor initWithRed:redLight green:greenLight blue:blueLight alpha:1.0]
-			darkAquaColor:[UIColor.clearColor initWithRed:redDark green:greenDark blue:blueDark alpha:1.0]];
+			initWithLightColor:[UIColor.clearColor initWithRed:redLight green:greenLight blue:blueLight alpha:1.0]
+			darkColor:[UIColor.clearColor initWithRed:redDark green:greenDark blue:blueDark alpha:1.0]];
 #else
 	return [[DynamicColor new]
-			initWithAquaColor:[NSColor colorWithCalibratedRed:redLight green:greenLight blue:blueLight alpha:1.0]
-			darkAquaColor:[NSColor colorWithCalibratedRed:redDark green:greenDark blue:blueDark alpha:1.0]];
+			initWithLightColor:[NSColor colorWithCalibratedRed:redLight green:greenLight blue:blueLight alpha:1.0]
+			darkColor:[NSColor colorWithCalibratedRed:redDark green:greenDark blue:blueDark alpha:1.0]];
 #endif
 }
 
 
-#pragma mark - Accessing theme values
+#pragma mark - Quick access for current theme values
 
 - (BeatTheme*)theme { return _theme; }
 
@@ -305,6 +323,7 @@
 - (DynamicColor*)outlineNote { return _theme.outlineNote; }
 - (DynamicColor*)outlineSceneNumber { return _theme.outlineSceneNumber; }
 - (DynamicColor*)outlineSynopsis { return _theme.outlineSynopsis; }
+
 
 #pragma mark - Load selected theme for ALL documents
 

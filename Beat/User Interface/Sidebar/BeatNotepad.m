@@ -44,7 +44,7 @@
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 10.0;
 		self.layer.backgroundColor = [NSColor.darkGrayColor colorWithAlphaComponent:0.3].CGColor;
-		self.textColor = ThemeManager.sharedManager.textColor.darkAquaColor;
+		self.textColor = ThemeManager.sharedManager.textColor.darkColor;
 		
 		[self setTextContainerInset:(NSSize){ 5, 5 }];
 	}
@@ -73,7 +73,7 @@
 	ColorCheckbox *box = sender;
 	_currentColorName = box.colorName;
 	
-	if ([_currentColorName isEqualToString:@"lightGray"]) _currentColor = ThemeManager.sharedManager.textColor.darkAquaColor;
+	if ([_currentColorName isEqualToString:@"lightGray"]) _currentColor = ThemeManager.sharedManager.textColor.darkColor;
 	else _currentColor = [BeatColors color:_currentColorName];
 	
 	for (ColorCheckbox *button in _buttons) {

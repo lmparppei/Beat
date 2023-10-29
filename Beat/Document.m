@@ -2922,7 +2922,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	// Set global background
-	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkAquaColor : self.themeManager.outlineBackground.aquaColor;
+	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkColor : self.themeManager.outlineBackground.lightColor;
 	self.backgroundView.layer.backgroundColor = bgColor.CGColor;
 	
 	[self.textScrollView layoutButtons];
