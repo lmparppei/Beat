@@ -1,5 +1,15 @@
 # Changelog
 
+## Beat 1.997.0
+
+- Fixes issues with Cyrillic ѐ (ye with grave)
+- Toggle dual dialogue now works correctly again
+- Fixed faulty revision markers when editing character cues
+- Adding parenthesis before a closing parenthesis no longer creates extra symbols
+- Preview is no longer empty when the document has only a title page 
+- Plugin HTML views now support loading content from the bundle 
+
+
 ## Beat 1.996.9
 
 - Fixed popover button on/off glitch
