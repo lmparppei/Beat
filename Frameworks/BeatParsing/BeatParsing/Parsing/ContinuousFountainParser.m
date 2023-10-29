@@ -2766,6 +2766,8 @@ NSInteger previousIndex = NSNotFound;
 - (void)setIdentifiersForOutlineElements:(NSArray*)uuids
 {
     for (NSInteger i=0; i<self.outline.count; i++) {
+        if (i >= uuids.count) break;
+        
         OutlineScene* scene = self.outline[i];
         NSDictionary* item = uuids[i];
         
