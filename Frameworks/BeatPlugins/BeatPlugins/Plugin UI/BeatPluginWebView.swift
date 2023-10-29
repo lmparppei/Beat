@@ -122,18 +122,7 @@ import WebKit
     /// Sets the HTML string and loads the template, which includes Beat code injections.
     @objc public func setHTML(_ html:String) {
         // Load template
-        let bundle = Bundle(for: self.classForCoder)
-        guard let templateURL = bundle.url(forResource: "Plugin HTML template", withExtension: "html") else {
-            host?.reportError("No plugin HTML teplate found!", withText: "There might be something wrong with your bundle. Reinstall app.")
-            return
-        }
-        
-        guard var template = try? String(contentsOf: templateURL, encoding: .utf8) else {
-            fatalError("Failed to load HTML template content!")
-        }
-        
-        // Add the HTML to template and load the HTML in web view
-        template = template.replacingOccurrences(of: "<!-- CONTENT -->", with: html)
+        var template = BeatPluginHTMLTemplate.html(content: html)
         
         var loadedURL = false
         if let baseURL = self.baseURL {

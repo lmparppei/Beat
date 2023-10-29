@@ -6,6 +6,8 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         
+        <script>{{polyfill}}</script>
+        
 		<title>Beat Plugin Panel</title>
 
 		<style type="text/css">
@@ -18,27 +20,27 @@
 			{
 				font-family: 'Courier Prime';
 				font-weight: normal;
-				src: url("Courier Prime.ttf");
+				src: url("{{font-url}}/Courier Prime.ttf");
 			}
 
 			@font-face
 			{
 				font-family: 'Courier Prime';
 				font-weight: bold;
-				src: url("Courier Prime Bold.ttf");
+				src: url("{{font-url}}/Courier Prime Bold.ttf");
 			}
 			@font-face
 			{
 				font-family: 'Courier Prime';
 				font-style: italic;
-				src: url("Courier Prime Italic.ttf");
+				src: url("{{font-url}}/Courier Prime Italic.ttf");
 			}
 			@font-face
 			{
 				font-family: 'Courier Prime';
 				font-weight: bold;
 				font-style: italic;
-				src: url("Courier Prime Bold Italic.ttf");
+				src: url("{{font-url}}/Courier Prime Bold Italic.ttf");
 			}
 			
 			body {
@@ -316,5 +318,6 @@
 		</script>
 		
 		<!-- CONTENT -->
+        
 	</body>
 </html>
