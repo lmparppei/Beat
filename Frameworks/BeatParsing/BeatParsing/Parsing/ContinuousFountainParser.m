@@ -1176,8 +1176,7 @@ static NSDictionary* patterns;
             for (NSInteger k=0; k<startLength; k++) {
                 if (i+k >= length) {
                     break;
-                }
-                else if (startString[k] != string[i+k]) {
+                } else if (startString[k] != string[i+k]) {
                     found = false;
                     break;
                 }
@@ -1189,7 +1188,7 @@ static NSDictionary* patterns;
             range.location = i;
             
             // Pass the starting string
-            i += startLength;
+            i += startLength-1;
             
         } else {
             // We have found a range, let's see if we find a closing string.
@@ -1213,8 +1212,8 @@ static NSDictionary* patterns;
             
             range.location = -1;
             
-            // Pass the ending string
-            i += delimLength;
+            // Move past the ending string
+            i += delimLength - 1;
         }
     }
     
