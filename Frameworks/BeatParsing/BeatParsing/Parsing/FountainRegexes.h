@@ -80,16 +80,17 @@ extern NSString * const MULTI_LINE_DATA_PATTERN;
 extern NSString * const DUAL_DIALOGUE_PATTERN;
 extern NSString * const CENTERED_TEXT_PATTERN;
 
-/*
-// Extra regexes -- not used by the code in this project
+
+#pragma mark - Extra regexes -- used by HTML renderer for iOS
+
 // styling for FDX
-extern NSString * const BOLD_ITALIC_UNDERLINE_PATTERN;
-extern NSString * const BOLD_ITALIC_PATTERN;
-extern NSString * const BOLD_UNDERLINE_PATTERN;
-extern NSString * const ITALIC_UNDERLINE_PATTERN;
-extern NSString * const BOLD_PATTERN;
-extern NSString * const ITALIC_PATTERN;
-extern NSString * const UNDERLINE_PATTERN;
+extern NSString * const BOLD_ITALIC_UNDERLINE_FORMATTING_PATTERN;
+extern NSString * const BOLD_ITALIC_FORMATTING_PATTERN;
+extern NSString * const BOLD_UNDERLINE_FORMATTING_PATTERN;
+extern NSString * const ITALIC_UNDERLINE_FORMATTING_PATTERN;
+extern NSString * const BOLD_FORMATTING_PATTERN;
+extern NSString * const ITALIC_FORMATTING_PATTERN;
+extern NSString * const UNDERLINE_FORMATTING_PATTERN;
 
 // styling templates
 extern NSString * const BOLD_ITALIC_UNDERLINE_TEMPLATE;
@@ -99,4 +100,3 @@ extern NSString * const ITALIC_UNDERLINE_TEMPLATE;
 extern NSString * const BOLD_TEMPLATE;
 extern NSString * const ITALIC_TEMPLATE;
 extern NSString * const UNDERLINE_TEMPLATE;
-*/

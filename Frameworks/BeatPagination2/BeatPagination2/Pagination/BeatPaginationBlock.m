@@ -118,7 +118,7 @@
 
         
     // Set font for this element
-    NSFont* font = _delegate.fonts.courier;
+    BXFont* font = _delegate.fonts.courier;
     if (style.font) font = [self fontFor:style];
 
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
