@@ -354,21 +354,24 @@
 - (NSString*)singlePage:(BeatPaginationPage*)page pageNumber:(NSInteger)pageNumber {
 	NSMutableString *body = NSMutableString.string;
 	NSInteger dualDialogueCharacterCount = 0;
-	NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopse", @"Section", nil];
+	//NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopse", @"Section", nil];
 	
 	NSString *pageClass = @"";
 	
+	/*
 	// If we are coloring the revised pages, check for any changed lines here
 	if (_settings.coloredPages && _settings.pageRevisionColor.length && _settings.operation == ForPrint) {
 		bool revised = NO;
 		for (Line* line in page.lines) {
 			if (line.changed) {
-				revised = YES; break;
+				revised = YES;
+				break;
 			}
 		}
 		
 		if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _settings.pageRevisionColor];
 	}
+	*/
 	
 	
 	NSInteger elementCount = 0;
@@ -380,14 +383,9 @@
 	if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %lu.</p>\n", _settings.header, pageNumber];
 	else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", _settings.header];
 	
-	// We need to catch lyrics not to make them fill up a paragraph
-	LineType block = empty;
-	
 	for (Line *line in page.lines) { @autoreleasepool {
-		
-		if ([ignoringTypes containsObject:line.typeAsString] || line.type == pageBreak) {
-			continue;
-		}
+		// Skip line break
+		if (line.type == pageBreak) continue;
 		
 		// Stop dual dialogue
 		if ((dualDialogueCharacterCount == 2 && !line.isDualDialogueElement) ||
@@ -440,14 +438,15 @@
 }
 - (NSString*)htmlStringFor:(Line*)line {
 	// We use the FDX attributed string to create a HTML representation of Line objects
-	NSAttributedString *string = line.attributedStringForFDX;
+	NSAttributedString *string = [line attributedStringForOutputWith:self.settings];
 	
 	// Ignore any formatting and only include CONTENT ranges
 	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	
 	NSIndexSet *indices;
-	if (!_settings.printNotes) indices = line.contentRanges;
-	else {
+	if (!_settings.printNotes) {
+		indices = line.contentRanges;
+	} else {
 		indices = line.contentRangesWithNotes;
 	}
 	
@@ -534,11 +533,15 @@
 		if (self.underlinedHeading) [additionalClasses appendString:@" underline"];
 	}
 	
-
+	// Centered
 	if (line.type == centered) {
 		[additionalClasses appendString:@" center"];
 	}
-	if (line.canBeSplitParagraph && !line.beginsNewParagraph) [additionalClasses appendString:@" splitParagraph"];
+	
+	// Handlde split paragraphs
+	if (line.canBeSplitParagraph && !line.beginsNewParagraph) {
+		[additionalClasses appendString:@" splitParagraph"];
+	}
 	
 	// Mark as changed, if comparing against another file or the line contains added/removed text
 	if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
