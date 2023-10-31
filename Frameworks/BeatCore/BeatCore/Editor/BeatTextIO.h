@@ -15,7 +15,7 @@
 #define BXTextView NSTextView
 #endif
 
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 @class OutlineScene;
 @class ContinuousFountainParser;

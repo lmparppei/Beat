@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BeatTagging.h"
+#import <BeatCore/BeatTagging.h>
 @class Line;
 
 NS_ASSUME_NONNULL_BEGIN

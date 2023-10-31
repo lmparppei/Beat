@@ -22,30 +22,30 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
 
-#import "BeatColors.h"
-#import "BeatAttributes.h"
-#import "BeatRevisionItem.h"
-#import "BeatRevisions.h"
-#import "BeatLocalization.h"
-#import "BeatTagging.h"
-#import "BeatTag.h"
-#import "BeatTagItem.h"
-#import "NSString+Levenshtein.h"
-#import "BeatUserDefaults.h"
-#import "BeatLayoutManager.h"
-#import "BeatTextIO.h"
-#import "BeatFonts.h"
-#import "BeatTranslation.h"
-#import "BeatAutocomplete.h"
-#import "BeatEditorFormattingActions.h"
-#import "BeatMeasure.h"
-#import "BeatDocument.h"
-#import "NSArray+JSON.h"
-#import "NSString+VersionNumber.h"
-#import "BeatCompatibility.h"
+#import <BeatCore/BeatColors.h>
+#import <BeatCore/BeatAttributes.h>
+#import <BeatCore/BeatRevisionItem.h>
+#import <BeatCore/BeatRevisions.h>
+#import <BeatCore/BeatLocalization.h>
+#import <BeatCore/BeatTagging.h>
+#import <BeatCore/BeatTag.h>
+#import <BeatCore/BeatTagItem.h>
+#import <BeatCore/NSString+Levenshtein.h>
+#import <BeatCore/BeatUserDefaults.h>
+#import <BeatCore/BeatLayoutManager.h>
+#import <BeatCore/BeatTextIO.h>
+#import <BeatCore/BeatFonts.h>
+#import <BeatCore/BeatTranslation.h>
+#import <BeatCore/BeatAutocomplete.h>
+#import <BeatCore/BeatEditorFormattingActions.h>
+#import <BeatCore/BeatMeasure.h>
+#import <BeatCore/BeatDocument.h>
+#import <BeatCore/NSArray+JSON.h>
+#import <BeatCore/NSString+VersionNumber.h>
+#import <BeatCore/BeatCompatibility.h>
 
-#import "BeatNotificationDelegate.h"
+#import <BeatCore/BeatNotificationDelegate.h>
 
 #if !TARGET_OS_IOS
-#import "NSTextView+UX.h"
+#import <BeatCore/NSTextView+UX.h>
 #endif
