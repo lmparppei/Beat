@@ -29,13 +29,13 @@
 
 @implementation DynamicColor
 
-- (instancetype)initWithAquaColor:(NSColor *)aquaColor
-                    darkAquaColor:(NSColor *)darkAquaColor
+- (instancetype)initWithLightColor:(NSColor *)lightColor
+                         darkColor:(NSColor *)darkColor
 {
     self = [super init];
     if (self) {
-        _aquaColor = aquaColor;
-        _darkAquaColor = darkAquaColor;
+        _lightColor = lightColor;
+        _darkColor = darkColor;
     }
     return self;
 }
@@ -49,8 +49,8 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        _aquaColor = [coder decodeObjectOfClass:[NSColor class] forKey:@"aquaColor"];
-        _darkAquaColor = [coder decodeObjectOfClass:[NSColor class] forKey:@"darkAquaColor"];
+        _lightColor = [coder decodeObjectOfClass:[NSColor class] forKey:@"lightColor"];
+        _darkColor = [coder decodeObjectOfClass:[NSColor class] forKey:@"darkColor"];
     }
     return self;
 }
@@ -58,25 +58,25 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [super encodeWithCoder:aCoder];
-    [aCoder encodeObject:self.aquaColor forKey:@"aquaColor"];
-    if (self.darkAquaColor) {
-        [aCoder encodeObject:self.darkAquaColor forKey:@"darkAquaColor"];
+    [aCoder encodeObject:self.lightColor forKey:@"lightColor"];
+    if (self.darkColor) {
+        [aCoder encodeObject:self.darkColor forKey:@"darkColor"];
     }
 }
 
 -(id)copy {
-	DynamicColor *color = [DynamicColor.alloc initWithAquaColor:self.aquaColor darkAquaColor:self.darkAquaColor];
+	DynamicColor *color = [DynamicColor.alloc initWithLightColor:self.lightColor darkColor:self.darkColor];
 	return color;
 }
 -(id)copyWithZone:(NSZone *)zone {
-	DynamicColor *color = [[self.class allocWithZone:zone] initWithAquaColor:self.aquaColor darkAquaColor:self.aquaColor];
+	DynamicColor *color = [[self.class allocWithZone:zone] initWithLightColor:self.lightColor darkColor:self.lightColor];
 	return color;
 }
 
 - (NSColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (!NSThread.isMainThread) return self.aquaColor;
+	if (!NSThread.isMainThread) return self.lightColor;
 
 	if (@available(macOS 10.14, *)) {
 		id<BeatDarknessDelegate> delegate = (id<BeatDarknessDelegate>)NSApp.delegate;
@@ -84,14 +84,14 @@
 		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		
-		if (self.darkAquaColor != nil &&
+		if (self.darkColor != nil &&
 			([appearanceName isEqualToString:NSAppearanceNameDarkAqua] || delegate.isDark))
 		{
-			return self.darkAquaColor;
+			return self.darkColor;
 		}
 	}
 
-	return self.aquaColor;
+	return self.lightColor;
 
 }
 
@@ -221,11 +221,11 @@ FORWARD(localizedColorNameComponent, NSString *)
 			return color;
 	};
 	
-	NSColor *lightColor = convertColorToRGBSpace(self.aquaColor);
-	NSColor *darkColor = convertColorToRGBSpace(self.darkAquaColor);
+	NSColor *lightColor = convertColorToRGBSpace(self.lightColor);
+	NSColor *darkColor = convertColorToRGBSpace(self.darkColor);
 	
-	NSColor *lightOther = convertColorToRGBSpace(otherColor.aquaColor);
-	NSColor *darkOther = convertColorToRGBSpace(otherColor.darkAquaColor);
+	NSColor *lightOther = convertColorToRGBSpace(otherColor.lightColor);
+	NSColor *darkOther = convertColorToRGBSpace(otherColor.darkColor);
 	
 	CGColorSpaceRelease(colorSpaceRGB);
 	
@@ -234,8 +234,8 @@ FORWARD(localizedColorNameComponent, NSString *)
 }
 
 - (NSArray*)valuesAsRGB {
-	NSColor *light = [self convertToRGB:self.aquaColor];
-	NSColor *dark = [self convertToRGB:self.darkAquaColor];
+	NSColor *light = [self convertToRGB:self.lightColor];
+	NSColor *dark = [self convertToRGB:self.darkColor];
 	
 	NSArray *result = @[
 		@[ [NSNumber numberWithInt:(light.redComponent * 255)], [NSNumber numberWithInt:(light.greenComponent * 255)], [NSNumber numberWithInt:(light.blueComponent * 255)] ],
@@ -280,13 +280,13 @@ FORWARD(localizedColorNameComponent, NSString *)
 
 @implementation DynamicColor
 
-- (instancetype)initWithAquaColor:(UIColor *)aquaColor
-					darkAquaColor:(UIColor *)darkAquaColor
+- (instancetype)initWithLightColor:(UIColor *)lightColor
+					darkColor:(UIColor *)darkColor
 {
 	self = [super init];
 	if (self) {
-		_aquaColor = aquaColor;
-		_darkAquaColor = darkAquaColor;
+		_lightColor = lightColor;
+		_darkColor = darkColor;
 	}
 	return self;
 }
@@ -300,8 +300,8 @@ FORWARD(localizedColorNameComponent, NSString *)
 {
 	self = [super initWithCoder:coder];
 	if (self) {
-		_aquaColor = [coder decodeObjectOfClass:[UIColor class] forKey:@"aquaColor"];
-		_darkAquaColor = [coder decodeObjectOfClass:[UIColor class] forKey:@"darkAquaColor"];
+		_lightColor = [coder decodeObjectOfClass:[UIColor class] forKey:@"lightColor"];
+		_darkColor = [coder decodeObjectOfClass:[UIColor class] forKey:@"darkColor"];
 	}
 	return self;
 }
@@ -309,28 +309,28 @@ FORWARD(localizedColorNameComponent, NSString *)
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
 	[super encodeWithCoder:aCoder];
-	[aCoder encodeObject:self.aquaColor forKey:@"aquaColor"];
-	if (self.darkAquaColor) {
-		[aCoder encodeObject:self.darkAquaColor forKey:@"darkAquaColor"];
+	[aCoder encodeObject:self.lightColor forKey:@"lightColor"];
+	if (self.darkColor) {
+		[aCoder encodeObject:self.darkColor forKey:@"darkColor"];
 	}
 }
 
 - (UIColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (!NSThread.isMainThread) return self.aquaColor;
+	if (!NSThread.isMainThread) return self.lightColor;
 	
-	if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) return self.darkAquaColor;
-	else return self.aquaColor;
+	if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) return self.darkColor;
+	else return self.lightColor;
 }
 
 - (UIColor *)effectiveColorFor:(UIView*)view
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (!NSThread.isMainThread) return self.aquaColor;
+	if (!NSThread.isMainThread) return self.lightColor;
 	
-	if (view.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) return self.darkAquaColor;
-	else return self.aquaColor;
+	if (view.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) return self.darkColor;
+	else return self.lightColor;
 }
 
 
@@ -397,11 +397,11 @@ UIColor *(^convertColorToRGBSpace)(UIColor*) = ^(UIColor *color) {
 - (BOOL)isEqualToColor:(DynamicColor *)otherColor {
 	CGColorSpaceRef colorSpaceRGB = CGColorSpaceCreateDeviceRGB();
 	
-	UIColor *lightColor = convertColorToRGBSpace(self.aquaColor);
-	UIColor *darkColor = convertColorToRGBSpace(self.darkAquaColor);
+	UIColor *lightColor = convertColorToRGBSpace(self.lightColor);
+	UIColor *darkColor = convertColorToRGBSpace(self.darkColor);
 	
-	UIColor *lightOther = convertColorToRGBSpace(otherColor.aquaColor);
-	UIColor *darkOther = convertColorToRGBSpace(otherColor.darkAquaColor);
+	UIColor *lightOther = convertColorToRGBSpace(otherColor.lightColor);
+	UIColor *darkOther = convertColorToRGBSpace(otherColor.darkColor);
 	
 	CGColorSpaceRelease(colorSpaceRGB);
 	
@@ -410,8 +410,8 @@ UIColor *(^convertColorToRGBSpace)(UIColor*) = ^(UIColor *color) {
 }
 
 - (NSArray*)valuesAsRGB {
-	UIColor *light = [self convertToRGB:self.aquaColor];
-	UIColor *dark = [self convertToRGB:self.darkAquaColor];
+	UIColor *light = [self convertToRGB:self.lightColor];
+	UIColor *dark = [self convertToRGB:self.darkColor];
 	
 	CGFloat lRed, lBlue, lGreen, dRed, dBlue, dGreen;
 	[light getRed:&lRed green:&lGreen blue:&lBlue alpha:nil];

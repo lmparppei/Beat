@@ -7,7 +7,7 @@
 //
 
 #import <TargetConditionals.h>
-#import "BeatFont.h"
+#import <BeatCore/BeatFont.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>

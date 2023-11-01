@@ -241,10 +241,17 @@
 	return -1;
 }
 
-/// Returns the storylines (beats) in this scene
+/// Returns the storyline NAMES in this scene
 - (NSArray*)storylines
 {
-	return self.beats.copy;
+    NSMutableArray* beats = self.beats.copy;
+    NSMutableArray* storylines = NSMutableArray.new;
+    
+    for (Storybeat* beat in beats) {
+        [storylines addObject:beat.storyline];
+    }
+    
+    return storylines;
 }
 
 

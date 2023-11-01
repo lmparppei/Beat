@@ -468,7 +468,8 @@
     if (delta < 0 && length == 0) {
         // This is a removal.
         // In the near future, we'll add a removal marker here.
-        location -= labs(delta);
+        if (delta > 0) location -= labs(delta);
+        else location -= 1;
         length = 1;
     }
     

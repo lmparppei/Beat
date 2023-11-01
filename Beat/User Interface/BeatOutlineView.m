@@ -138,7 +138,7 @@
 		
 		NSBezierPath *bg = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3];
 		
-		NSColor* fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkAquaColor : ThemeManager.sharedManager.outlineHighlight.aquaColor;
+		NSColor* fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkColor : ThemeManager.sharedManager.outlineHighlight.lightColor;
 		[fillColor setFill];
 		
 		[bg fill];		

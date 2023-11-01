@@ -62,6 +62,7 @@
 	bounds.origin.x = x;
 	self.contentView.bounds = bounds;
 }
+
 -(void)pinch:(NSEvent*)event {
 	// Zoom using pinch gesture
 	

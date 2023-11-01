@@ -13,6 +13,7 @@
  */
 
 import Cocoa
+import BeatCore
 
 class BeatNativePrinting:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {
@@ -42,7 +43,7 @@ class BeatNativePrinting:NSView {
 	 - parameter operation: Either `.toPreview` (temporary PDF file), `.toPDF` (save result into a PDF)  or `.toPrint` (sends the result to macOS printing panel)
 	 - parameter settings: Export settings
 	 - parameter delegate: Optional document delegate. If set, `screenplay` object will be requested from the parser of current document.
-	 - parameter screenplay: Screenplay object (containing title page and lines). If you have a delegate set, this can be `nil`
+	 - parameter screenplays: An array of screenplay objects (containing title page and lines). If you have a delegate set, this can be `nil`.
 	 - parameter callback: Closure run after printing is done
 	 */
 	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {

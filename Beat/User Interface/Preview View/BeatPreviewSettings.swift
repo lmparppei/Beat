@@ -5,8 +5,13 @@
 //  Created by Lauri-Matti Parppei on 28.9.2023.
 //  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ Popover menu for adjusting what invisible elements should be included in the print.
+ 
+ */
 
-import Foundation
+import AppKit
 
 @objc class BeatPreviewOptions:NSViewController {
 	@IBOutlet weak var printSynopsis:NSButton?

@@ -14,8 +14,8 @@
  */
 
 #import <TargetConditionals.h>
-#import "BeatEditorMode.h"
-#import "BeatDocumentDelegate.h"
+#import <BeatCore/BeatEditorMode.h>
+#import <BeatCore/BeatDocumentDelegate.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>

@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSString* name;
 @property (nonatomic) NSString* script;
 @property (nonatomic) NSArray* files;
+@property (nonatomic) NSURL* url;
 @end
 
 @interface BeatPluginManager : NSObject

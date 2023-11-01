@@ -36,6 +36,10 @@ import WebKit
 
 @objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports {
     @objc weak public var host:BeatPlugin?
+    /// The folder URL provided by plugin host (if applicable)
+    var baseURL:URL?
+    /// A temporary URL for the displayed page. Can be `nil` if we're not loading a plugin.
+    var tempURL:URL?
     
     @objc
     public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
@@ -51,7 +55,7 @@ import WebKit
         config.userContentController.add(host, name: "sendData")
         config.userContentController.add(host, name: "call")
         config.userContentController.add(host, name: "log")
-
+        
         if #available(macOS 12.3, iOS 15.0, *) {
             config.preferences.isElementFullscreenEnabled = true
         }
@@ -60,15 +64,36 @@ import WebKit
         let webView = BeatPluginWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: config)
         #if os(macOS)
         webView.autoresizingMask = [.width, .height]
+
+        if #available(macOS 13.3, *) {
+            //webView.isInspectable = true
+        }
+
         #elseif os(iOS)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #endif
         
+        webView.host = host
+        webView.baseURL = (host.pluginURL != nil) ? host.pluginURL : nil
+        
+        
         webView.setHTML(html)
-                
+        
         return webView
     }
+    
+    
+    /// On deinit, we'll remove the temporary HTML file
+    deinit {
+        guard let url = self.tempURL else { return }
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            print("Temporary file couldn't be removed")
+        }
+    }
 
+    /// Evaluates JavaScript in the view and runs callback
     public func runJS(_ js:String, _ callback:JSValue?) {
         self.evaluateJavaScript(js) { returnValue, error in
             if error != nil { return }
@@ -97,19 +122,29 @@ import WebKit
     /// Sets the HTML string and loads the template, which includes Beat code injections.
     @objc public func setHTML(_ html:String) {
         // Load template
-        let bundle = Bundle(for: self.classForCoder)
-        guard let templateURL = bundle.url(forResource: "Plugin HTML template", withExtension: "html") else {
-            host?.reportError("No plugin HTML teplate found!", withText: "There might be something wrong with your bundle. Reinstall app.")
-            return
+        let template = BeatPluginHTMLTemplate.html(content: html)
+        
+        var loadedURL = false
+        if let baseURL = self.baseURL {
+            // Write a temporary file from which to load this page. Reuse the URL if possible.
+            if let tempURL = (self.tempURL == nil) ? baseURL.appendingPathComponent("__beat_tmp_" + NSUUID().uuidString + ".html") : self.tempURL {
+                do {
+                    try template.write(to: tempURL, atomically: true, encoding: .utf8)
+                    self.loadFileURL(tempURL, allowingReadAccessTo: baseURL)
+                    
+                    // Successfully loaded the temporary file.
+                    loadedURL = true
+                    self.tempURL = tempURL
+                } catch {
+                    print("Couldn't write temporary HTML file")
+                }
+            }
         }
         
-        guard var template = try? String(contentsOf: templateURL, encoding: .utf8) else {
-            fatalError("Failed to load HTML template content!")
+        // If we couldn't load a URL, let's load the string instead
+        if (!loadedURL) {
+            self.loadHTMLString(template, baseURL: nil)
         }
-        
-        // Add the HTML to template and load the HTML in web view
-        template = template.replacingOccurrences(of: "<!-- CONTENT -->", with: html)
-        self.loadHTMLString(template, baseURL: nil)
     }
     
     #if os(macOS)

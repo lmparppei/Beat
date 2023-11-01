@@ -103,51 +103,51 @@
 	[NSNotificationCenter.defaultCenter postNotification:[NSNotification notificationWithName:@"Reset theme" object:nil]];
 }
 - (void)loadTheme:(BeatTheme*)theme {
-	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
-	[_backgroundDark setColor:theme.backgroundColor.darkAquaColor];
-	[_textLight setColor:theme.textColor.aquaColor];
-	[_textDark setColor:theme.textColor.darkAquaColor];
-	[_marginLight setColor:theme.marginColor.aquaColor];
-	[_marginDark setColor:theme.marginColor.darkAquaColor];
-	[_selectionLight setColor:theme.selectionColor.aquaColor];
-	[_selectionDark setColor:theme.selectionColor.darkAquaColor];
-	[_invisibleTextLight setColor:theme.invisibleTextColor.aquaColor];
-	[_invisibleTextDark setColor:theme.invisibleTextColor.darkAquaColor];
-	[_commentLight setColor:theme.commentColor.aquaColor];
-	[_commentDark setColor:theme.commentColor.darkAquaColor];
-	[_pageNumberLight setColor:theme.pageNumberColor.aquaColor];
-	[_pageNumberDark setColor:theme.pageNumberColor.darkAquaColor];
-	[_caretLight setColor:theme.caretColor.aquaColor];
-	[_caretDark setColor:theme.caretColor.darkAquaColor];
-	[_synopsisLight setColor:theme.synopsisTextColor.aquaColor];
-	[_synopsisDark setColor:theme.synopsisTextColor.darkAquaColor];
-	[_sectionLight setColor:theme.sectionTextColor.aquaColor];
-	[_sectionDark setColor:theme.sectionTextColor.darkAquaColor];
+	[_backgroundLight setColor:theme.backgroundColor.lightColor];
+	[_backgroundDark setColor:theme.backgroundColor.darkColor];
+	[_textLight setColor:theme.textColor.lightColor];
+	[_textDark setColor:theme.textColor.darkColor];
+	[_marginLight setColor:theme.marginColor.lightColor];
+	[_marginDark setColor:theme.marginColor.darkColor];
+	[_selectionLight setColor:theme.selectionColor.lightColor];
+	[_selectionDark setColor:theme.selectionColor.darkColor];
+	[_invisibleTextLight setColor:theme.invisibleTextColor.lightColor];
+	[_invisibleTextDark setColor:theme.invisibleTextColor.darkColor];
+	[_commentLight setColor:theme.commentColor.lightColor];
+	[_commentDark setColor:theme.commentColor.darkColor];
+	[_pageNumberLight setColor:theme.pageNumberColor.lightColor];
+	[_pageNumberDark setColor:theme.pageNumberColor.darkColor];
+	[_caretLight setColor:theme.caretColor.lightColor];
+	[_caretDark setColor:theme.caretColor.darkColor];
+	[_synopsisLight setColor:theme.synopsisTextColor.lightColor];
+	[_synopsisDark setColor:theme.synopsisTextColor.darkColor];
+	[_sectionLight setColor:theme.sectionTextColor.lightColor];
+	[_sectionDark setColor:theme.sectionTextColor.darkColor];
 	
-	[_outlineBackgroundLight setColor:theme.outlineBackground.aquaColor];
-	[_outlineBackgroundDark setColor:theme.outlineBackground.darkAquaColor];
-	[_outlineHighlightLight setColor:theme.outlineHighlight.aquaColor];
-	[_outlineHighlightDark setColor:theme.outlineHighlight.darkAquaColor];
+	[_outlineBackgroundLight setColor:theme.outlineBackground.lightColor];
+	[_outlineBackgroundDark setColor:theme.outlineBackground.darkColor];
+	[_outlineHighlightLight setColor:theme.outlineHighlight.lightColor];
+	[_outlineHighlightDark setColor:theme.outlineHighlight.darkColor];
 
-	[_outlineSceneNumberLight setColor:theme.outlineSceneNumber.aquaColor];
-	[_outlineSceneNumberDark setColor:theme.outlineSceneNumber.darkAquaColor];
+	[_outlineSceneNumberLight setColor:theme.outlineSceneNumber.lightColor];
+	[_outlineSceneNumberDark setColor:theme.outlineSceneNumber.darkColor];
 	
-	[_outlineItemLight setColor:theme.outlineItem.aquaColor];
-	[_outlineItemDark setColor:theme.outlineItem.darkAquaColor];
+	[_outlineItemLight setColor:theme.outlineItem.lightColor];
+	[_outlineItemDark setColor:theme.outlineItem.darkColor];
 	
-	[_outlineItemOmittedLight setColor:theme.outlineItemOmitted.aquaColor];
-	[_outlineItemOmittedDark setColor:theme.outlineItemOmitted.darkAquaColor];
+	[_outlineItemOmittedLight setColor:theme.outlineItemOmitted.lightColor];
+	[_outlineItemOmittedDark setColor:theme.outlineItemOmitted.darkColor];
 	
-	[_outlineSectionLight setColor:theme.outlineSection.aquaColor];
-	[_outlineSectionDark setColor:theme.outlineSection.darkAquaColor];
+	[_outlineSectionLight setColor:theme.outlineSection.lightColor];
+	[_outlineSectionDark setColor:theme.outlineSection.darkColor];
 	
-	[_outlineSynopsisLight setColor:theme.outlineSynopsis.aquaColor];
-	[_outlineSynopsisDark setColor:theme.outlineSynopsis.darkAquaColor];
+	[_outlineSynopsisLight setColor:theme.outlineSynopsis.lightColor];
+	[_outlineSynopsisDark setColor:theme.outlineSynopsis.darkColor];
 		
-	[_genderWoman setColor:theme.genderWomanColor.aquaColor];
-	[_genderMan setColor:theme.genderManColor.aquaColor];
-	[_genderOther setColor:theme.genderOtherColor.aquaColor];
-	[_genderUnspecified setColor:theme.genderUnspecifiedColor.aquaColor];
+	[_genderWoman setColor:theme.genderWomanColor.lightColor];
+	[_genderMan setColor:theme.genderManColor.lightColor];
+	[_genderOther setColor:theme.genderOtherColor.lightColor];
+	[_genderUnspecified setColor:theme.genderUnspecifiedColor.lightColor];
 }
 
 -(IBAction)changeColor:(id)sender {
@@ -164,13 +164,13 @@
 	
 	if (colorWell.commonColor) {
 		// Set color for both styles
-		themeColor.darkAquaColor = color;
-		themeColor.aquaColor = color;
+		themeColor.darkColor = color;
+		themeColor.lightColor = color;
 	}
 	else if (colorWell.darkColor) {
-		themeColor.darkAquaColor = color;
+		themeColor.darkColor = color;
 	} else {
-		themeColor.aquaColor = color;
+		themeColor.lightColor = color;
 	}
 	
 	// Update changes after 0.5 seconds

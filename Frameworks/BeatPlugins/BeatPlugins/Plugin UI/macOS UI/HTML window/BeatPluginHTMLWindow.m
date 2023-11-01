@@ -94,6 +94,8 @@
 }
 
 - (void)closeWindow {
+    [self.webView removeFromSuperview];
+    self.webView = nil;
 	[super close];
 }
 
@@ -123,6 +125,10 @@
 		[[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
 		[[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
 	}
+}
+
+- (void)keyDown:(NSEvent *)event{
+    return;
 }
 
 #pragma mark - Organizing windows

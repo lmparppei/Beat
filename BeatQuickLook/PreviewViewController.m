@@ -211,6 +211,7 @@
 @synthesize showTags;
 @synthesize synopsisFont;
 @synthesize typewriterMode;
+@synthesize styles;
 
 @end
 

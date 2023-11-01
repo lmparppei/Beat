@@ -472,6 +472,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (weak) id<BeatPluginDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
+@property (readonly) NSURL* pluginURL;
 @property (nonatomic) bool restorable;
 
 @property (weak, nonatomic) id<BeatPluginContainer> container;

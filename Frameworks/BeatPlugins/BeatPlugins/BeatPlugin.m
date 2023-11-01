@@ -61,6 +61,8 @@
 @property (nonatomic) NSMutableArray *pluginWindows;
 @property (nonatomic) NSDictionary *type;
 
+@property (nonatomic) NSURL* pluginURL; // URL for a container
+
 #if !TARGET_OS_IOS
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
 @property (nonatomic) BeatPluginUIView *widgetView;
@@ -215,15 +217,14 @@
 	self.plugin = plugin;
 	self.pluginName = plugin.name;
     self.pluginData = plugin;
-	
+    self.pluginURL = plugin.url;
+        
     // For contained plugins we won't use the actual name to avoid conflicts. Also inform the container of this change.
     if (self.container != nil) {
         self.pluginName = [NSString stringWithFormat:@"%@ (in container)", self.pluginName];
         self.container.pluginName = self.pluginName;
     }
     
-	[BeatPluginManager.sharedManager pathForPlugin:plugin.name];
-
 	[self runScript:plugin.script];
 }
 

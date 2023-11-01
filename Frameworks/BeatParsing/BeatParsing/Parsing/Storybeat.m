@@ -9,7 +9,9 @@
 #import "Storybeat.h"
 
 @implementation Storybeat
-+ (Storybeat*)line:(Line*)line scene:(OutlineScene*)scene string:(NSString*)string range:(NSRange)range {
+/// Creates a storyline and automatically divides storyline and beat.
++ (Storybeat*)line:(Line*)line scene:(OutlineScene*)scene string:(NSString*)string range:(NSRange)range
+{
 	NSString *storyline = @"", *beat = @"";
 	
 	if ([string containsString:@":"]) {

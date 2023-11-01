@@ -91,62 +91,62 @@ static NSDictionary* patterns;
 
 /// Extracts the title page from given string
 + (NSArray*)titlePageForString:(NSString*)string {
-	NSArray <NSString*>*rawLines = [string componentsSeparatedByString:@"\n"];
-	
-	if (rawLines.count == 0) return @[];
-	else if (![rawLines.firstObject containsString:@":"]) return @[];
-	
-	NSMutableString *text = NSMutableString.new;
-	
-	for (NSString *l in rawLines) {
-		// Break at empty line
-		[text appendFormat:@"%@\n", l];
-		if ([l isEqualToString:@""]) break;
-	}
-	[text appendString:@"\n"];
-	
-	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:text];
-	return parser.titlePage;
+    NSArray <NSString*>*rawLines = [string componentsSeparatedByString:@"\n"];
+    
+    if (rawLines.count == 0) return @[];
+    else if (![rawLines.firstObject containsString:@":"]) return @[];
+    
+    NSMutableString *text = NSMutableString.new;
+    
+    for (NSString *l in rawLines) {
+        // Break at empty line
+        [text appendFormat:@"%@\n", l];
+        if ([l isEqualToString:@""]) break;
+    }
+    [text appendString:@"\n"];
+    
+    ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:text];
+    return parser.titlePage;
 }
 
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
-	return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
+    return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous {
-	return [self initWithString:string delegate:delegate settings:nil nonContinuous:nonContinuous];
+    return [self initWithString:string delegate:delegate settings:nil nonContinuous:nonContinuous];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
-	return [self initWithString:string delegate:delegate settings:nil];
+    return [self initWithString:string delegate:delegate settings:nil];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
-	return [self initWithString:string delegate:delegate settings:settings nonContinuous:NO];
+    return [self initWithString:string delegate:delegate settings:settings nonContinuous:NO];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous  {
-	self = [super init];
-	
-	if (self) {
-		_lines = NSMutableArray.array;
-		_outline = NSMutableArray.array;
-		_changedIndices = NSMutableIndexSet.indexSet;
-		_titlePage = NSMutableArray.array;
-		_storylines = NSMutableSet.set;
-		_delegate = delegate;
-		_nonContinuous = nonContinuous;
-		_staticDocumentSettings = settings;
-		 
-		// Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
-		if (_nonContinuous) _staticParser = YES;
-		else _staticParser = NO;
-		
-		[self parseText:string];
+    self = [super init];
+    
+    if (self) {
+        _lines = NSMutableArray.array;
+        _outline = NSMutableArray.array;
+        _changedIndices = NSMutableIndexSet.indexSet;
+        _titlePage = NSMutableArray.array;
+        _storylines = NSMutableSet.set;
+        _delegate = delegate;
+        _nonContinuous = nonContinuous;
+        _staticDocumentSettings = settings;
+        
+        // Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
+        if (_nonContinuous) _staticParser = YES;
+        else _staticParser = NO;
+        
+        [self parseText:string];
         [self updateMacros];
-	}
-	
-	return self;
+    }
+    
+    return self;
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string
 {
-	return [self initWithString:string delegate:nil];
+    return [self initWithString:string delegate:nil];
 }
 
 
@@ -163,42 +163,42 @@ static NSDictionary* patterns;
 #pragma mark - Saved file processing
 
 - (NSString*)screenplayForSaving {
-	NSArray *lines = [NSArray arrayWithArray:self.lines];
-	NSMutableString *content = [NSMutableString string];
-	
-	Line *previousLine;
-	for (Line* line in lines) {
-		if (!line) continue;
-		
-		NSString *string = line.string;
-		LineType type = line.type;
-		
-		// Ensure correct whitespace before elements
-		if ((line.type == character || line.type == heading) &&
-			previousLine.string.length > 0) {
-			[content appendString:@"\n"];
-		}
-		
-		// Make some lines uppercase
-		if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
-		
-		[content appendString:string];
-		if (line != self.lines.lastObject) [content appendString:@"\n"];
-		
-		previousLine = line;
-	}
-
-	return content;
+    NSArray *lines = [NSArray arrayWithArray:self.lines];
+    NSMutableString *content = [NSMutableString string];
+    
+    Line *previousLine;
+    for (Line* line in lines) {
+        if (!line) continue;
+        
+        NSString *string = line.string;
+        LineType type = line.type;
+        
+        // Ensure correct whitespace before elements
+        if ((line.type == character || line.type == heading) &&
+            previousLine.string.length > 0) {
+            [content appendString:@"\n"];
+        }
+        
+        // Make some lines uppercase
+        if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
+        
+        [content appendString:string];
+        if (line != self.lines.lastObject) [content appendString:@"\n"];
+        
+        previousLine = line;
+    }
+    
+    return content;
 }
 
 /// Returns the whole document as single string
 - (NSString*)rawText {
-	NSMutableString *string = [NSMutableString string];
-	for (Line* line in self.lines) {
-		if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
-		else [string appendFormat:@"%@", line.string];
-	}
-	return string;
+    NSMutableString *string = [NSMutableString string];
+    for (Line* line in self.lines) {
+        if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
+        else [string appendFormat:@"%@", line.string];
+    }
+    return string;
 }
 
 
@@ -208,20 +208,20 @@ static NSDictionary* patterns;
 
 - (void)parseText:(NSString*)text
 {
-	_firstTime = YES;
-	_lines = NSMutableArray.new;
-	
-	// Replace MS Word line breaks with macOS ones
+    _firstTime = YES;
+    _lines = NSMutableArray.new;
+    
+    // Replace MS Word line breaks with macOS ones
     if (text == nil) text = @"";
-	text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-	
+    text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+    
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
-	_indicesToLoad = lines.count;
+    _indicesToLoad = lines.count;
     
     NSUInteger position = 0; //To track at which position every line begins
-	NSUInteger sceneIndex = -1;
-	
-	Line *previousLine;
+    NSUInteger sceneIndex = -1;
+    
+    Line *previousLine;
     
     for (NSString *rawLine in lines) {
         NSInteger index = _lines.count;
@@ -230,51 +230,51 @@ static NSDictionary* patterns;
         
         [self parseTypeAndFormattingForLine:line atIndex:index];
         
-		// Quick fix for mistaking an ALL CAPS action to character cue
-		if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
-			previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
-			if (previousLine.type == character) previousLine.type = action;
-		}
-		
-		if (line.isOutlineElement) {
-			// A cloned version of the screenplay is used for preview & printing.
-			// sceneIndex ensures we know which scene heading is which, even when there are hidden outline items.
-			// This is used to jump into corresponding scenes from preview mode. There are smarter ways
-			// to do this, but this is how it was done back in the day and still remains so.
-			// Update 2022-11: I think this is not used anymore?
-			sceneIndex++;
-			line.sceneIndex = sceneIndex;
-		}
-
+        // Quick fix for mistaking an ALL CAPS action to character cue
+        if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
+            previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
+            if (previousLine.type == character) previousLine.type = action;
+        }
+        
+        if (line.isOutlineElement) {
+            // A cloned version of the screenplay is used for preview & printing.
+            // sceneIndex ensures we know which scene heading is which, even when there are hidden outline items.
+            // This is used to jump into corresponding scenes from preview mode. There are smarter ways
+            // to do this, but this is how it was done back in the day and still remains so.
+            // Update 2022-11: I think this is not used anymore?
+            sceneIndex++;
+            line.sceneIndex = sceneIndex;
+        }
+        
         //Mark change in buffered changes
-		[self.changedIndices addIndex:index];
+        [self.changedIndices addIndex:index];
         
         position += [rawLine length] + 1; // +1 for newline character
-		previousLine = line;
-		_indicesToLoad--;
+        previousLine = line;
+        _indicesToLoad--;
     }
-	
-	// Initial parse complete
-	_indicesToLoad = -1;
-	
+    
+    // Initial parse complete
+    _indicesToLoad = -1;
+    
     // Reset outline
     _changeInOutline = YES;
-	[self createOutline];
+    [self createOutline];
     self.outlineChanges = OutlineChanges.new;
-	
+    
     // Set identifiers (if applicable)
     [self setIdentifiersForOutlineElements:[self.documentSettings get:DocSettingHeadingUUIDs]];
     
-	_firstTime = NO;
+    _firstTime = NO;
 }
 
 // This sets EVERY INDICE as changed.
 - (void)resetParsing {
-	NSInteger index = 0;
-	while (index < self.lines.count) {
-		[self.changedIndices addIndex:index];
-		index++;
-	}
+    NSInteger index = 0;
+    while (index < self.lines.count) {
+        [self.changedIndices addIndex:index];
+        index++;
+    }
 }
 
 
@@ -292,18 +292,18 @@ static NSDictionary* patterns;
  there are two different methods for parsing the changes, and the other one is still used
  for parsing single-character edits. parseAddition/parseRemovalAt methods fall back to
  them when needed.
-
+ 
  Flow:
  parseChangeInRange ->
-	parseAddition/parseRemoval methods write changedIndices
-	-> correctParsesInLines processes changedIndices
+ parseAddition/parseRemoval methods write changedIndices
+ -> correctParsesInLines processes changedIndices
  
  */
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
-	if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
-
+    if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
+    
     _lastEditedLine = nil;
     _editedIndex = -1;
     _editedRange = range;
@@ -327,51 +327,51 @@ static NSDictionary* patterns;
 
 /// Ensures that the given line is parsed correctly. Continuous parsing only. A bit confusing to use.
 - (void)ensureDialogueParsingFor:(Line*)line {
-	if (!line.isAnyCharacter) return;
-	
-	NSInteger i = [self indexOfLine:line];
+    if (!line.isAnyCharacter) return;
+    
+    NSInteger i = [self indexOfLine:line];
     if (i == NSNotFound) return;
     
-	NSArray *lines = self.lines;
-
-	Line *nextLine;
-	
-	// Get the neighboring lines
-	if (i < self.lines.count - 1) nextLine = lines[i + 1];
-	
-	// Let's not do anything, if we are currently editing these lines.
-	if (nextLine != nil && nextLine.string.length == 0 &&
-		!NSLocationInRange(_delegate.selectedRange.location, nextLine.range) &&
-		!NSLocationInRange(_delegate.selectedRange.location, line.range) &&
+    NSArray *lines = self.lines;
+    
+    Line *nextLine;
+    
+    // Get the neighboring lines
+    if (i < self.lines.count - 1) nextLine = lines[i + 1];
+    
+    // Let's not do anything, if we are currently editing these lines.
+    if (nextLine != nil && nextLine.string.length == 0 &&
+        !NSLocationInRange(_delegate.selectedRange.location, nextLine.range) &&
+        !NSLocationInRange(_delegate.selectedRange.location, line.range) &&
         line.numberOfPrecedingFormattingCharacters == 0
         ) {
-
-		line.type = action;
-		[self.changedIndices addIndex:i];
-		[_delegate applyFormatChanges];
-	}
+        
+        line.type = action;
+        [self.changedIndices addIndex:i];
+        [_delegate applyFormatChanges];
+    }
 }
 
 /// This is a method to fix anything that might get broken. Use only when debugging.
 - (void)ensurePositions {
-	NSInteger previousPosition = 0;
-	NSInteger previousLength = 0;
-	NSInteger offset = 0;
-	
-	bool fixed = NO;
-	
-	for (Line * line in self.lines) {
-		if (line.position > previousPosition + previousLength + offset && !fixed) {
-			NSLog(@"🔴 [FIXING] %lu-%lu   %@", line.position, line.string.length, line.string);
-			offset -= line.position - (previousPosition + previousLength);
-			fixed = YES;
-		}
-		
-		line.position += offset;
-				
-		previousLength = line.string.length + 1;
-		previousPosition = line.position;
-	}
+    NSInteger previousPosition = 0;
+    NSInteger previousLength = 0;
+    NSInteger offset = 0;
+    
+    bool fixed = NO;
+    
+    for (Line * line in self.lines) {
+        if (line.position > previousPosition + previousLength + offset && !fixed) {
+            NSLog(@"🔴 [FIXING] %lu-%lu   %@", line.position, line.string.length, line.string);
+            offset -= line.position - (previousPosition + previousLength);
+            fixed = YES;
+        }
+        
+        line.position += offset;
+        
+        previousLength = line.string.length + 1;
+        previousPosition = line.position;
+    }
 }
 
 #pragma mark Parsing additions
@@ -380,14 +380,14 @@ static NSDictionary* patterns;
 {
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
     
-	// Get the line where into which we are adding characters
-	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+    // Get the line where into which we are adding characters
+    NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
     
     [changedIndices addIndex:lineIndex];
-	
+    
     NSUInteger indexInLine = position - line.position;
-            
+    
     // Cut the string in half
     NSString* tail = [line.string substringFromIndex:indexInLine];
     line.string = [line.string substringToIndex:indexInLine];
@@ -419,7 +419,7 @@ static NSDictionary* patterns;
             line = self.lines[lineIndex];
         }
     }
-
+    
     // Get the remaining string (if applicable)
     NSString* remainder = (currentRange >= 0) ? [string substringFromIndex:currentRange] : @"";
     line.string = [line.string stringByAppendingString:remainder];
@@ -526,7 +526,7 @@ static NSDictionary* patterns;
 - (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
     // Add a new line into place and increment positions
     Line *newLine = [Line.alloc initWithString:string position:position parser:self];
-        
+    
     [self.lines insertObject:newLine atIndex:index];
     [self incrementLinePositionsFromIndex:index+1 amount:1];
 }
@@ -536,56 +536,56 @@ static NSDictionary* patterns;
 
 - (void)correctParsesForLines:(NSArray *)lines
 {
-	// Intermediate method for getting indices for line objects
-	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
-	
-	for (Line* line in lines) {
-		NSInteger i = [lines indexOfObject:line];
-		if (i != NSNotFound) [indices addIndex:i];
-	}
-	
-	[self correctParsesInLines:indices];
+    // Intermediate method for getting indices for line objects
+    NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
+    
+    for (Line* line in lines) {
+        NSInteger i = [lines indexOfObject:line];
+        if (i != NSNotFound) [indices addIndex:i];
+    }
+    
+    [self correctParsesInLines:indices];
 }
 - (void)correctParsesInLines:(NSMutableIndexSet*)lineIndices
 {
-	while (lineIndices.count > 0) {
-		[self correctParseInLine:lineIndices.lowestIndex indicesToDo:lineIndices];
-	}
+    while (lineIndices.count > 0) {
+        [self correctParseInLine:lineIndices.lowestIndex indicesToDo:lineIndices];
+    }
 }
 
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
-	// Do nothing if we went out of range.
-	// Note: for code convenience and clarity, some methods can ask to reformat lineIndex-2 etc.,
-	// so this check is needed.
-	if (index < 0 || index == NSNotFound || index >= self.lines.count) {
-		[indices removeIndex:index];
-		return;
-	}
-	
-	bool lastToParse = YES;
-	if (indices.count) lastToParse = NO;
-	  
-	Line* currentLine = self.lines[index];
-	
-	// Remove index as done from array if in array
-	if (indices.count) {
-		NSUInteger lowestToDo = indices.lowestIndex;
-		if (lowestToDo == index) {
-			[indices removeIndex:index];
-		}
-	}
-    		
-	// Save the original line type
-	LineType oldType = currentLine.type;
-	bool oldOmitOut = currentLine.omitOut;
+    // Do nothing if we went out of range.
+    // Note: for code convenience and clarity, some methods can ask to reformat lineIndex-2 etc.,
+    // so this check is needed.
+    if (index < 0 || index == NSNotFound || index >= self.lines.count) {
+        [indices removeIndex:index];
+        return;
+    }
+    
+    bool lastToParse = YES;
+    if (indices.count) lastToParse = NO;
+    
+    Line* currentLine = self.lines[index];
+    
+    // Remove index as done from array if in array
+    if (indices.count) {
+        NSUInteger lowestToDo = indices.lowestIndex;
+        if (lowestToDo == index) {
+            [indices removeIndex:index];
+        }
+    }
+    
+    // Save the original line type
+    LineType oldType = currentLine.type;
+    bool oldOmitOut = currentLine.omitOut;
     
     NSRange oldMarker = currentLine.markerRange;
     NSIndexSet* oldNotes = currentLine.noteRanges.copy;
-	
+    
     // Parse correct type
-	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
-            
+    [self parseTypeAndFormattingForLine:currentLine atIndex:index];
+    
     // Add, remove or update outline elements
     if ((oldType == section || oldType == heading) && !currentLine.isOutlineElement) {
         // This line is no longer an outline element
@@ -615,16 +615,16 @@ static NSDictionary* patterns;
     }
     
     // Mark the current index as changed
-	[self.changedIndices addIndex:index];
-    	
-	if (index > 0) {
+    [self.changedIndices addIndex:index];
+    
+    if (index > 0) {
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
-		
+        
         Line *prevLine = self.lines[index - 1]; // Get previous line
         NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0; // Get selection
         
         // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
-		if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
+        if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
             NSInteger i = index - 1;
             
             while (i >= 0) {
@@ -645,58 +645,58 @@ static NSDictionary* patterns;
                 
                 i -= 1;
             }
- 		}
-	}
-	
-	//If there is a next element, check if it might need a reparse because of a change in type or omit out
-	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
-		currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
+        }
+    }
+    
+    //If there is a next element, check if it might need a reparse because of a change in type or omit out
+    if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
+        currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
         
-		if (index < self.lines.count - 1) {
-			Line* nextLine = self.lines[index+1];
-			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
-				currentLine.type == section ||
-				currentLine.type == synopse ||
-				currentLine.type == character ||        					    //if the line became anything to
-				currentLine.type == parenthetical ||        					//do with dialogue, it might cause
-				(currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
-				currentLine.type == dualDialogueCharacter ||
-				currentLine.type == dualDialogueParenthetical ||
-				currentLine.type == dualDialogue ||
-				currentLine.type == empty ||                //If the line became empty, it might
-															//enable the next on to be a heading
-															//or character
-				
-				nextLine.type == titlePageTitle ||          //if the next line is a title page,
-				nextLine.type == titlePageCredit ||         //it might not be anymore
-				nextLine.type == titlePageAuthor ||
-				nextLine.type == titlePageDraftDate ||
-				nextLine.type == titlePageContact ||
-				nextLine.type == titlePageSource ||
-				nextLine.type == titlePageUnknown ||
-				nextLine.type == section ||
-				nextLine.type == synopse ||
-				nextLine.type == heading ||                 //If the next line is a heading or
-				nextLine.type == character ||               //character or anything dialogue
-				nextLine.type == dualDialogueCharacter ||   //related, it might not be anymore
-				nextLine.type == parenthetical ||
-				nextLine.type == dialogue ||
-				nextLine.type == dualDialogueParenthetical ||
-				nextLine.type == dualDialogue ||
-				
-				// Look for unterminated omits & notes
-				nextLine.omitIn != currentLine.omitOut ||
-				//nextLine.noteIn != currentLine.noteOut ||
-//				currentLine.noteOut != oldNoteOut ||
-//				currentLine.cancelsNoteBlock != oldNoteTermination ||
-//				notesNeedParsing ||
-//				currentLine.endsNoteBlock != oldEndsNoteBlock ||
-				((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
-				) {
-				[self correctParseInLine:index+1 indicesToDo:indices];
-			}
-		}
-	}
+        if (index < self.lines.count - 1) {
+            Line* nextLine = self.lines[index+1];
+            if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
+                currentLine.type == section ||
+                currentLine.type == synopse ||
+                currentLine.type == character ||        					    //if the line became anything to
+                currentLine.type == parenthetical ||        					//do with dialogue, it might cause
+                (currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
+                currentLine.type == dualDialogueCharacter ||
+                currentLine.type == dualDialogueParenthetical ||
+                currentLine.type == dualDialogue ||
+                currentLine.type == empty ||                //If the line became empty, it might
+                //enable the next on to be a heading
+                //or character
+                
+                nextLine.type == titlePageTitle ||          //if the next line is a title page,
+                nextLine.type == titlePageCredit ||         //it might not be anymore
+                nextLine.type == titlePageAuthor ||
+                nextLine.type == titlePageDraftDate ||
+                nextLine.type == titlePageContact ||
+                nextLine.type == titlePageSource ||
+                nextLine.type == titlePageUnknown ||
+                nextLine.type == section ||
+                nextLine.type == synopse ||
+                nextLine.type == heading ||                 //If the next line is a heading or
+                nextLine.type == character ||               //character or anything dialogue
+                nextLine.type == dualDialogueCharacter ||   //related, it might not be anymore
+                nextLine.type == parenthetical ||
+                nextLine.type == dialogue ||
+                nextLine.type == dualDialogueParenthetical ||
+                nextLine.type == dualDialogue ||
+                
+                // Look for unterminated omits & notes
+                nextLine.omitIn != currentLine.omitOut ||
+                //nextLine.noteIn != currentLine.noteOut ||
+                //				currentLine.noteOut != oldNoteOut ||
+                //				currentLine.cancelsNoteBlock != oldNoteTermination ||
+                //				notesNeedParsing ||
+                //				currentLine.endsNoteBlock != oldEndsNoteBlock ||
+                ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
+                ) {
+                [self correctParseInLine:index+1 indicesToDo:indices];
+            }
+        }
+    }
 }
 
 
@@ -719,19 +719,19 @@ static NSDictionary* patterns;
 
 - (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
 {
-	for (; index < [self.lines count]; index++) {
-		Line* line = self.lines[index];
-		
-		line.position += amount;
-	}
+    for (; index < [self.lines count]; index++) {
+        Line* line = self.lines[index];
+        
+        line.position += amount;
+    }
 }
 
 - (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
 {
-	for (; index < self.lines.count; index++) {
-		Line* line = self.lines[index];
-		line.position -= amount;
-	}
+    for (; index < self.lines.count; index++) {
+        Line* line = self.lines[index];
+        line.position -= amount;
+    }
 }
 
 
@@ -763,7 +763,7 @@ static NSDictionary* patterns;
         if (obj1.rangeValue.location > obj2.rangeValue.location) return true;
         return false;
     }];
-
+    
     for (NSValue* range in keys) {
         NSString* macro = macros[range];
         id value = [macroParser parseMacro:macro];
@@ -777,9 +777,9 @@ static NSDictionary* patterns;
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
-	// Type and formatting are parsed by iterating through character arrays.
-	// Using regexes would be much easier, but also about 10 times more costly in CPU time.
-	
+    // Type and formatting are parsed by iterating through character arrays.
+    // Using regexes would be much easier, but also about 10 times more costly in CPU time.
+    
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
     line.type = [self parseLineTypeFor:line atIndex:index];
@@ -790,17 +790,17 @@ static NSDictionary* patterns;
     
     // Parse notes
     [self parseNotesFor:line at:index oldType:oldType];
-        
-	// Omits have stars in them, which can be mistaken for formatting characters.
-	// We store the omit asterisks into the "excluded" index set to avoid this mixup.
+    
+    // Omits have stars in them, which can be mistaken for formatting characters.
+    // We store the omit asterisks into the "excluded" index set to avoid this mixup.
     NSMutableIndexSet* excluded = NSMutableIndexSet.new;
-	
-	// First, we handle notes and omits, which can bleed over multiple lines.
-	// The cryptically named omitOut and noteOut mean that the line bleeds an omit out,
-	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
+    
+    // First, we handle notes and omits, which can bleed over multiple lines.
+    // The cryptically named omitOut and noteOut mean that the line bleeds an omit out,
+    // while omitIn and noteIn tell that they are part of a larger omitted/note block.
     
     Line* previousLine = (index <= self.lines.count && index > 0) ? self.lines[index-1] : nil;
-        
+    
     line.omittedRanges = [self rangesOfOmitChars:charArray
                                         ofLength:length
                                           inLine:line
@@ -813,15 +813,15 @@ static NSDictionary* patterns;
                                       and:BOLD_CHAR
                                withLength:BOLD_PATTERN_LENGTH
                          excludingIndices:excluded
-									 line:line];
-	
+                                     line:line];
+    
     line.italicRanges = [self rangesInChars:charArray
                                    ofLength:length
                                     between:ITALIC_CHAR
                                         and:ITALIC_CHAR
                                  withLength:ITALIC_PATTERN_LENGTH
                            excludingIndices:excluded
-									   line:line];
+                                       line:line];
     
     line.underlinedRanges = [self rangesInChars:charArray
                                        ofLength:length
@@ -829,16 +829,16 @@ static NSDictionary* patterns;
                                             and:UNDERLINE_CHAR
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
-										   line:line];
-	/*
-	line.strikeoutRanges = [self rangesInChars:charArray
-                                      ofLength:length
-                                       between:STRIKEOUT_OPEN_PATTERN
-                                           and:STRIKEOUT_CLOSE_PATTERN
-                                    withLength:STRIKEOUT_PATTERN_LENGTH
-                              excludingIndices:nil
-                                          line:line];
-    */
+                                           line:line];
+    /*
+     line.strikeoutRanges = [self rangesInChars:charArray
+     ofLength:length
+     between:STRIKEOUT_OPEN_PATTERN
+     and:STRIKEOUT_CLOSE_PATTERN
+     withLength:STRIKEOUT_PATTERN_LENGTH
+     excludingIndices:nil
+     line:line];
+     */
     line.macroRanges = [self rangesInChars:charArray
                                   ofLength:length
                                    between:MACRO_OPEN_CHAR
@@ -846,44 +846,43 @@ static NSDictionary* patterns;
                                 withLength:2
                           excludingIndices:nil
                                       line:line];
-	
-	// Intersecting indices between bold & italic are boldItalic
-	if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
+    
+    // Intersecting indices between bold & italic are boldItalic
+    if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
     else line.boldItalicRanges = NSMutableIndexSet.new;
-	
+    
     if (line.type == heading) {
-		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
+        line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
         
-		if (line.sceneNumberRange.length == 0) {
+        if (line.sceneNumberRange.length == 0) {
             line.sceneNumber = @"";
         } else {
             line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
         }
     }
-	
-	// set color for outline elements
-	if (line.type == heading || line.type == section || line.type == synopse) {
-		line.color = [self colorForHeading:line];
-	}
-	
-	// Markers
-	line.marker = [self markerForLine:line];
-	
-	// Beats
-	line.beatRanges = NSMutableIndexSet.indexSet;
-	NSArray *beats = [self beatsFor:line];
-	NSArray *storylines = [self storylinesFor:line]; // Include storylines for backwards-compatibility
-	line.beats = [beats arrayByAddingObjectsFromArray:storylines];
-	
-	
-	if (line.isTitlePage) {
-		if ([line.string containsString:@":"] && line.string.length > 0) {
-			// If the title doesn't begin with \t or space, format it as key name	
-			if ([line.string characterAtIndex:0] != ' ' &&
-				[line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
-			else line.titleRange = NSMakeRange(0, 0);
-		}
-	}
+    
+    // set color for outline elements
+    if (line.type == heading || line.type == section || line.type == synopse) {
+        line.color = [self colorForHeading:line];
+    }
+    
+    // Markers
+    line.marker = [self markerForLine:line];
+    
+    // Beats
+    //line.beatRanges = NSMutableIndexSet.indexSet;
+    //NSArray *beats = [self beatsFor:line];
+    //line.beats = [beats arrayByAddingObjectsFromArray:beats];
+    
+    
+    if (line.isTitlePage) {
+        if ([line.string containsString:@":"] && line.string.length > 0) {
+            // If the title doesn't begin with \t or space, format it as key name
+            if ([line.string characterAtIndex:0] != ' ' &&
+                [line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
+            else line.titleRange = NSMakeRange(0, 0);
+        }
+    }
 }
 
 /// Parses the line type for given line. It *has* to know its line index.
@@ -1125,7 +1124,7 @@ static NSDictionary* patterns;
     NSInteger i = index - 1;
     while (i >= 0) {
         Line *prevLine = [self.lines objectAtIndex:i];
-
+        
         if (prevLine.type == character) {
             prevLine.nextElementIsDualDialogue = YES;
             break;
@@ -1137,24 +1136,24 @@ static NSDictionary* patterns;
 
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
-	// Let's use the asym method here, just put in our symmetric delimiters.
-	return [self asymRangesInChars:string ofLength:length between:startString and:endString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
+    // Let's use the asym method here, just put in our symmetric delimiters.
+    return [self asymRangesInChars:string ofLength:length between:startString and:endString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
 }
 
 - (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
-	/*
-	 NOTE: This is a confusing method name, but only because it is based on the old rangesInChars method.
-	 However, it's basically the same code, but I've put in the ability to seek ranges between two
-	 delimiters that are **not** the same, and can have asymmetrical length.
-	 
-	 The original method now just calls this using the symmetrical delimiters.
-	 
-	 */
-	
-	NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    /*
+     NOTE: This is a confusing method name, but only because it is based on the old rangesInChars method.
+     However, it's basically the same code, but I've put in the ability to seek ranges between two
+     delimiters that are **not** the same, and can have asymmetrical length.
+     
+     The original method now just calls this using the symmetrical delimiters.
+     
+     */
+    
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
     if (length < startLength + delimLength) return indexSet;
-	
+    
     NSRange range = NSMakeRange(-1, 0);
     
     for (NSInteger i=0; i <= length - delimLength; i++) {
@@ -1176,8 +1175,7 @@ static NSDictionary* patterns;
             for (NSInteger k=0; k<startLength; k++) {
                 if (i+k >= length) {
                     break;
-                }
-                else if (startString[k] != string[i+k]) {
+                } else if (startString[k] != string[i+k]) {
                     found = false;
                     break;
                 }
@@ -1189,7 +1187,7 @@ static NSDictionary* patterns;
             range.location = i;
             
             // Pass the starting string
-            i += startLength;
+            i += startLength-1;
             
         } else {
             // We have found a range, let's see if we find a closing string.
@@ -1213,12 +1211,12 @@ static NSDictionary* patterns;
             
             range.location = -1;
             
-            // Pass the ending string
-            i += delimLength;
+            // Move past the ending string
+            i += delimLength - 1;
         }
     }
     
-	return indexSet;
+    return indexSet;
 }
 
 - (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
@@ -1255,26 +1253,26 @@ static NSDictionary* patterns;
     } else {
         line.omitOut = false;
     }
-     
+    
     return indexSet;
 }
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length
 {
     NSUInteger backNumberIndex = NSNotFound;
-	int note = 0;
-	
+    int note = 0;
+    
     for(NSInteger i = length - 1; i >= 0; i--) {
         unichar c = string[i];
-		
-		// Exclude note ranges: [[ Note ]]
-		if (c == ' ') continue;
-		if (c == ']' && note < 2) { note++; continue; }
-		if (c == '[' && note > 0) { note--; continue; }
-		
-		// Inside a note range
-		if (note == 2) continue;
-		
+        
+        // Exclude note ranges: [[ Note ]]
+        if (c == ' ') continue;
+        if (c == ']' && note < 2) { note++; continue; }
+        if (c == '[' && note > 0) { note--; continue; }
+        
+        // Inside a note range
+        if (note == 2) continue;
+        
         if (backNumberIndex == NSNotFound) {
             if (c == '#') backNumberIndex = i;
             else break;
@@ -1284,7 +1282,7 @@ static NSDictionary* patterns;
             }
         }
     }
-	
+    
     return NSMakeRange(0, 0);
 }
 
@@ -1292,14 +1290,14 @@ static NSDictionary* patterns;
     line.markerRange = (NSRange){0, 0};
     line.marker = @"";
     line.markerDescription = @"";
-
+    
     NSString *markerColor = @"";
     NSString *markerContent = @"";
-
+    
     // Get the last marker. If none is found, just return ""
     NSArray* marker = [line contentAndRangeForLastNoteWithPrefix:@"marker"];
     if (marker == nil) return @"";
-
+    
     // The correct way to add a marker is to write [[marker color:Content]], but we'll be gratitious here.
     NSRange range = ((NSNumber*)marker[0]).rangeValue;
     NSString* string = marker[1];
@@ -1335,7 +1333,7 @@ static NSDictionary* patterns;
     line.markerDescription = [markerContent stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     line.markerRange = range;
     
-	return markerColor;
+    return markerColor;
 }
 
 - (NSArray<NSString*>*)colors {
@@ -1350,7 +1348,7 @@ static NSDictionary* patterns;
     NSArray *colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
     
     __block NSString* headingColor = @"";
-	line.colorRange = NSMakeRange(0, 0);
+    line.colorRange = NSMakeRange(0, 0);
     
     NSDictionary<NSValue*, NSString*>* noteContents = line.noteContentsAndRanges;
     for (NSNumber* key in noteContents.allKeys) {
@@ -1375,10 +1373,12 @@ static NSDictionary* patterns;
             line.colorRange = range;
         }
     }
-
-	return headingColor;
+    
+    return headingColor;
 }
 
+
+/*
 - (NSArray *)beatsFor:(Line *)line {
     if (line.length == 0) return @[];
     
@@ -1434,7 +1434,7 @@ static NSDictionary* patterns;
 	
 	return beats;
 }
-
+*/
 
 
 #pragma mark - Accessing lines based on some other value
@@ -1815,7 +1815,9 @@ static NSDictionary* patterns;
     scene.beats = NSMutableArray.new;
     scene.notes = NSMutableArray.new;
     scene.markers = NSMutableArray.new;
-        
+    
+    NSMutableSet* beats = NSMutableSet.new;
+    
     for (NSInteger i=lineIndex; i<self.lines.count; i++) {
         Line* line = self.lines[i];
         
@@ -1829,6 +1831,10 @@ static NSDictionary* patterns;
             [scene.notes addObjectsFromArray:line.noteData];
         }
         
+        if (line.beats.count) {
+            [beats addObjectsFromArray:line.beats];
+        }
+        
         if (line.markerRange.length > 0) {
             [scene.markers addObject:@{
                 @"description": (line.markerDescription) ? line.markerDescription : @"",
@@ -1836,6 +1842,8 @@ static NSDictionary* patterns;
             }];
         }
     }
+    
+    scene.beats = beats.allObjects;
 }
 
 /// Inserts a new outline element with given line.
@@ -2766,6 +2774,8 @@ NSInteger previousIndex = NSNotFound;
 - (void)setIdentifiersForOutlineElements:(NSArray*)uuids
 {
     for (NSInteger i=0; i<self.outline.count; i++) {
+        if (i >= uuids.count) break;
+        
         OutlineScene* scene = self.outline[i];
         NSDictionary* item = uuids[i];
         

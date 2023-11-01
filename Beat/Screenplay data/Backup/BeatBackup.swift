@@ -32,6 +32,12 @@ class BeatBackup:NSObject {
 		let delegate = NSApp.delegate as! BeatAppDelegate
 		return delegate.appDataPath("Backup")
 	}
+	class var defaultAutosaveURL:URL {
+		let delegate = NSApp.delegate as! BeatAppDelegate
+		var url = BeatBackup.defaultURL
+		url = url.appendingPathComponent("Autosave/")
+		return url
+	}
 
 	class var backupURL:URL {
 		// Check if there is an external URL set
@@ -139,12 +145,13 @@ class BeatBackup:NSObject {
 		let fm = FileManager.default
 
 		let date = documentURL.modificationDate
-		let backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
+		var backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
 		
 		// If we are outside the sandbox, start accessing resources
-		if (backupFolderURL != BeatBackup.defaultURL) {
+		if ((!autosave && backupFolderURL != BeatBackup.defaultURL) || (autosave && backupFolderURL != BeatBackup.defaultAutosaveURL)) {
 			if !backupFolderURL.startAccessingSecurityScopedResource() {
-				print(" ... failed to open autosave url")
+				print(" ... failed to open autosave url", backupFolderURL)
+				backupFolderURL = (autosave) ? BeatBackup.defaultAutosaveURL : BeatBackup.defaultURL
 			}
 		}
 		

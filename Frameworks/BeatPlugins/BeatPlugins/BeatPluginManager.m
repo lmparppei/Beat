@@ -23,6 +23,7 @@
 #import "BeatPlugin.h"
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatCore/BeatLocalization.h>
+#import <BeatCore/BeatCore-Swift.h>
 #import <os/log.h>
 
 // Hard-coded JSON file URL
@@ -122,7 +123,7 @@ static BeatPluginManager *sharedManager;
 	if (sharedManager) return sharedManager;
 		
 	if (self) {
-		_pluginURL = [self appDataPath:PLUGIN_FOLDER];
+		_pluginURL = [BeatPaths appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];		
 	}
 	
@@ -191,27 +192,7 @@ static BeatPluginManager *sharedManager;
 #pragma mark - Plugin folder access
 
 - (NSURL*)pluginFolderURL {
-	return [self appDataPath:PLUGIN_FOLDER];
-}
-
-- (NSURL*)appDataPath:(NSString*)subPath {
-	NSString* pathComponent = @"Beat";
-	
-	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
-	
-	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-																		  NSUserDomainMask,
-																		  YES);
-	NSString* appSupportDir = [searchPaths firstObject];
-	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	if (![fileManager fileExistsAtPath:appSupportDir]) {
-		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-	}
-	
-	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+	return [BeatPaths appDataPath:PLUGIN_FOLDER];
 }
 
 
@@ -441,7 +422,8 @@ static BeatPluginManager *sharedManager;
 		if (pluginPath == nil) return nil;
 		
 		plugin.script = [NSString stringWithContentsOfFile:pluginPath encoding:NSUTF8StringEncoding error:&error];
-		
+        plugin.url = [NSURL fileURLWithPath:pluginPath.stringByDeletingLastPathComponent];
+        
 		// Also, read the folder contents and allow file access to the plugin
 		NSArray *files = [fileManager contentsOfDirectoryAtPath:pluginPath.stringByDeletingLastPathComponent error:nil];
 		NSMutableArray *pluginFiles = [NSMutableArray array];
@@ -683,7 +665,7 @@ static BeatPluginManager *sharedManager;
 	if (error || !container) return;
 		
 	// Get & create plugin path
-	NSURL *pluginURL = [self appDataPath:PLUGIN_FOLDER];
+	NSURL *pluginURL = [BeatPaths appDataPath:PLUGIN_FOLDER];
 	[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
 	
 	// Reload installed plugins

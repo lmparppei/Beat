@@ -37,16 +37,17 @@ h1 {
 }
 
 h2 {
-	margin-top: 1.8em;
-	font-size: 1.25em;
-	font-family: "Courier Prime", Courier, monospace;
-	font-weight: normal;
-	border-bottom: solid 1px #ddd;
+	margin-top: 1.9em;
+	padding-bottom: .3em;
+	font-size: 1.2em;
+	
+	font-weight: bold;
+	border-bottom: solid 1px #666;
 }
 
 h3 {
 	margin-top: 1.5em;
-	font-size: 1.1em;
+	font-size: 1em;
 }
 
 p {
@@ -376,7 +377,7 @@ MAIN CONTAINER
 }
 
 @media screen and (max-width: 800px) {
-	#menu {
+	#menuContainer {
 		display: none;
 	}
 }
@@ -388,11 +389,11 @@ MAIN CONTAINER
 	}
 
 	section {
-		background-color: #010101;
+		background-color: #151515;
 	}
 
 	h2 {
-		border-bottom: solid 1px #2f2f2f;
+	
 	}
 
 	ol li a:hover {
@@ -426,24 +427,19 @@ MAIN CONTAINER
 	}
 
 	code {
-		background-color: #080808;
-		border: 0.1rem solid #5f5f5f;
-		box-shadow: 1px 1px 2px #7f7f7f;
-	}
-
-	code {
-		background-color: #080808;
-		border: 0.1rem solid #282828;
+		background-color: #252525;
+		border: none;
+		padding: .1em .3em .1em .3em;
 	}
 
 	pre,
 	.blockExample {
-		background-color: #080808;
+		background-color: #222;
 		border: 0.1rem solid #282828;
 	}
 
 	.fSymbol, .makeItalic .symbol, .makeBold .symbol2, .makeUnderline .symbol3 {
-		color: #3f3f3f;
+		color: #666;
 	}
 
 	#storyOutlining {

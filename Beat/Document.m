@@ -2922,7 +2922,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	// Set global background
-	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkAquaColor : self.themeManager.outlineBackground.aquaColor;
+	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkColor : self.themeManager.outlineBackground.lightColor;
 	self.backgroundView.layer.backgroundColor = bgColor.CGColor;
 	
 	[self.textScrollView layoutButtons];
@@ -3011,6 +3011,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Preview
 
 - (void)resetPreview { [self.previewController resetPreview]; }
+
 - (void)invalidatePreview { [self.previewController resetPreview]; }
 
 - (void)createPreviewAt:(NSRange)range
@@ -3022,7 +3023,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.previewController createPreviewWithChangedRange:range sync:sync];
 }
 
-- (void)invalidatePreviewAt:(NSInteger)index { [self.previewController invalidatePreviewAt:NSMakeRange(index, 0)]; }
+- (void)invalidatePreviewAt:(NSInteger)index {
+	[self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
+}
 
 - (IBAction)preview:(id)sender
 {

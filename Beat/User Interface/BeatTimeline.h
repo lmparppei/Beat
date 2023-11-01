@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint;
 
 // Storylines
-@property (nonatomic) NSMutableArray *storylines;
+@property (nonatomic) NSMutableArray<NSString*>* storylines;
 @property (nonatomic) NSMutableArray *visibleStorylines;
 @property (nonatomic) OutlineScene * _Nullable clickedItem;
 

@@ -17,6 +17,7 @@
    selects it through [item select].
  - Items handle their own context menu and take care of setting their storyline.
    For colors, however, the action is connected into this class.
+ - We are using STORYLINE NAMES and not Storybeat objects here!
  
  */
 
@@ -84,13 +85,13 @@
 	// No item selected
 	_clickedItem = nil;
 	
-	_scenes = [NSMutableArray array];
-	_selectedItems = [NSMutableArray array];
+	_scenes = NSMutableArray.new;;
+	_selectedItems = NSMutableArray.new;;
 	
 	// Storyline elements
-	_storylineItems = [NSMutableArray array];
-	_storylines = [NSMutableArray array];
-	_storylineLabels = [NSMutableArray array];
+	_storylineItems = NSMutableArray.new;;
+	_storylines = NSMutableArray.new;;
+	_storylineLabels = NSMutableArray.new;;
 	[_storylinePopup setHidden:YES];
 	_storylineColors = @[[BeatColors color:@"blue"], [BeatColors color:@"magenta"], [BeatColors color:@"orange"], [BeatColors color:@"green"], [BeatColors color:@"yellow"]];
 	
@@ -114,7 +115,7 @@
 	[self.layer addSublayer:_playhead];
 	
 	// Storylines
-	_visibleStorylines = [NSMutableArray array];
+	_visibleStorylines = NSMutableArray.new;;
 	
 	// Setup "Add Storyline" popover
 	_storylinePopover = [[NSPopover alloc] init];
@@ -493,7 +494,8 @@
 
 #pragma mark - Storyline handling
 
-- (void)updateStorylines {
+- (void)updateStorylines
+{
 	[_storylines removeAllObjects];
 	
 	// Add storylines
@@ -506,10 +508,11 @@
 	}
 	
 	// If there are storylines present, show the popup
-	if (_storylines.count) [_storylinePopup setHidden:NO];
-	else {
+	if (_storylines.count) {
+		[_storylinePopup setHidden:NO];
+	} else {
 		[_storylinePopup setHidden:YES];
-		_visibleStorylines = [NSMutableArray array];
+		_visibleStorylines = NSMutableArray.new;;
 	}
 	
 	// Check that any removed storylines are not tracked
@@ -525,7 +528,8 @@
 	}
 }
 
-- (IBAction)selectStoryline:(id)sender {
+- (IBAction)selectStoryline:(id)sender
+{
 	NSMenuItem *item = [(NSPopUpButton*)sender selectedItem];
 	if (item.state == NSOnState) {
 		item.state = NSOffState;
@@ -540,14 +544,16 @@
 	[self updateScenesAndRebuild:YES];
 }
 
-- (void)removeStorylineLabels {
+- (void)removeStorylineLabels
+{
 	for (NSTextField *label in _storylineLabels) {
 		[label removeFromSuperview];
 	}
 	[_storylineLabels removeAllObjects];
 }
 
-- (void)updateStorylineLabels {
+- (void)updateStorylineLabels
+{
 	[self removeStorylineLabels];
 	
 	for (int i = 0; i < _visibleStorylines.count; i++) {

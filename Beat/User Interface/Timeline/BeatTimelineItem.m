@@ -352,8 +352,7 @@
 	NSMenuItem *menuItem = sender;
 	if (menuItem.state == NSOnState) {
 		[_delegate removeStoryline:storyline from:_representedItem];
-	}
-	else {
+	} else {
 		[_delegate addStoryline:storyline to:_representedItem];
 	}
 }

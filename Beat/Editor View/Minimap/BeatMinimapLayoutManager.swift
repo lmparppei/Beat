@@ -87,8 +87,7 @@ class BeatMinimapLayoutManager:NSLayoutManager {
 extension NSLayoutManager {
 	
 	/// Enumerate the fragment rectangles covering the characters located on the line with the given character index.
-	/// **NOTE:** This is stolen from CodeEditor which is under Apache license, so can't be used in a release.
-	/// The code has to be converted to rely on Beat's parser anyway.
+	/// **NOTE:** This is stolen from CodeEditor. The code has to be converted to rely on Beat's parser.
 	///
 	/// - Parameters:
 	///   - charIndex: The character index determining the line whose rectangles we want to enumerate.

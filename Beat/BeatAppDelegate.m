@@ -711,23 +711,7 @@
 	return [BeatAppDelegate appDataPath:subPath];
 }
 + (NSURL*)appDataPath:(NSString*)subPath {
-	NSString* pathComponent = APPNAME;
-	
-	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
-	
-	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-																		  NSUserDomainMask,
-																		  YES);
-	NSString* appSupportDir = [searchPaths firstObject];
-	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	if (![fileManager fileExistsAtPath:appSupportDir]) {
-		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-	}
-	
-	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+	return [BeatPaths appDataPath:subPath];
 }
 
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix

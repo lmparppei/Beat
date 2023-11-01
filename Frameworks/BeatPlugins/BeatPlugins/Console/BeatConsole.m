@@ -80,6 +80,7 @@
 
 -(void)awakeFromNib
 {
+    [super awakeFromNib];
 	[self reloadContexts];
 	[self updateTitle];
 }
