@@ -18,6 +18,8 @@
 @interface Line()
 @property (nonatomic) NSUInteger oldHash;
 @property (nonatomic) NSString* cachedString;
+
+@property (nonatomic) NSDictionary* beatRangesAndContents;
 @end
 
 @implementation Line
@@ -105,6 +107,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 + (NSArray*)markupCharacters {
     return @[@".", @"@", @"~", @"!"];
 }
+
 
 #pragma mark - Type
 
@@ -796,9 +799,40 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - Story beats
 
+- (NSArray<Storybeat *> *)beats
+{
+    _beatRanges = NSMutableIndexSet.new;
+    NSMutableSet* beats = NSMutableSet.new;
+    
+    for (BeatNoteData* note in self.noteData) {
+        if (note.type != NoteTypeBeat) continue;
+        [self.beatRanges addIndexesInRange:note.range];
+        
+        // This is an empty note, ignore
+        NSInteger i = [note.content rangeOfString:@" "].location;
+        if (i == NSNotFound) continue;
+        
+        NSString* beatContents = [note.content substringFromIndex:i];
+        NSArray* singleBeats = [beatContents componentsSeparatedByString:@","];
+        
+        for (NSString* b in singleBeats) {
+            Storybeat* beat = [Storybeat line:self scene:nil string:b.uppercaseString range:note.range];
+            [beats addObject:beat];
+        }
+    }
+    
+    return beats.allObjects;
+}
+- (NSMutableIndexSet *)beatRanges
+{
+    if (_beatRanges == nil) [self beats];
+    return _beatRanges;
+}
+
 - (bool)hasBeat {
 	if ([self.string.lowercaseString containsString:@"[[beat "] ||
-		[self.string.lowercaseString containsString:@"[[beat:"])
+		[self.string.lowercaseString containsString:@"[[beat:"] ||
+        [self.string.lowercaseString containsString:@"[[storyline"])
 		return YES;
 	else
 		return NO;
