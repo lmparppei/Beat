@@ -964,7 +964,7 @@ DQ
                                                 <action selector="toggleShowRevisions:" target="-1" id="Hv5-dG-SeW"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Text Color" tag="3" id="efm-eP-Ffo" customClass="BeatUserDefaultMenuItem" customModule="Beat" customModuleProvider="target">
+                                        <menuItem title="Text Color" tag="3" id="efm-eP-Ffo">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showRevisedTextColor"/>

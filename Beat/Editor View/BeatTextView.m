@@ -40,31 +40,25 @@
 #import "BeatEditorFormatting.h"
 #import "BeatClipView.h"
 
-// Editor line height
-#define LINE_HEIGHT 1.1
 
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
 
-#define HIGHLIGHT_STROKE_COLOR [NSColor selectedMenuItemColor]
-#define HIGHLIGHT_FILL_COLOR [NSColor selectedMenuItemColor]
-#define HIGHLIGHT_RADIUS 0.0
+// Autocomplete popover settings
 #define INTERCELL_SPACING NSMakeSize(20.0, 3.0)
-
-#define WORD_BOUNDARY_CHARS [NSCharacterSet newlineCharacterSet]
 #define POPOVER_WIDTH 300.0
 #define POPOVER_PADDING 0.0
-
-#define TEXT_INSET_TOP 50
-
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
-
-#define POPOVER_FONT [NSFont fontWithName:@"Courier Prime" size:12.0]
-// The font for the characters that have already been typed
-#define POPOVER_BOLDFONT [NSFont fontWithName:@"Courier Prime Bold" size:12.0]
 #define POPOVER_TEXTCOLOR [NSColor whiteColor]
 
-#define CARET_WIDTH 2
+// Word boundaries for autocompletion suggestions
+#define WORD_BOUNDARY_CHARS [NSCharacterSet newlineCharacterSet]
+
+// Default inset for text view
+#define TEXT_INSET_TOP 50
+
+// Beat draws a bit wider caret. The decimals are just a hack to trick Sonoma's drawing and avoiding integral values.
+#define CARET_WIDTH 1.999999999999
 
 @interface NCRAutocompleteTableRowView : NSTableRowView
 @end
@@ -72,17 +66,19 @@
 #pragma mark - Draw autocomplete table
 @implementation NCRAutocompleteTableRowView
 
-- (void)drawSelectionInRect:(NSRect)dirtyRect {
+- (void)drawSelectionInRect:(NSRect)dirtyRect
+{
 	if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone) {
 		NSRect selectionRect = NSInsetRect(self.bounds, 0.5, 0.5);
-		[HIGHLIGHT_STROKE_COLOR setStroke];
-		[HIGHLIGHT_FILL_COLOR setFill];
-		NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:HIGHLIGHT_RADIUS yRadius:HIGHLIGHT_RADIUS];
+		[NSColor.selectedMenuItemColor setStroke];
+		[NSColor.selectedMenuItemColor setFill];
+		NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:0.0 yRadius:0.0];
 		[selectionPath fill];
 		[selectionPath stroke];
 	}
 }
-- (NSBackgroundStyle)interiorBackgroundStyle {
+- (NSBackgroundStyle)interiorBackgroundStyle
+{
 	if (self.isSelected) {
 		return NSBackgroundStyleDark;
 	} else {
@@ -123,7 +119,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) NSUInteger linesBeforeLayout;
-@property (nonatomic) NSMutableArray <CATextLayer*>*sceneLayerLabels;
 
 // Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
@@ -162,6 +157,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	}
 	
+	self.wantsLayer = true;
+	self.canDrawSubviewsIntoLayer = true;
+	
 	return self;
 }
 
@@ -174,6 +172,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// to fit our revision markers in the margin
 	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
 	[self.textContainer replaceLayoutManager:layoutMgr];
+
 	self.textContainer.lineFragmentPadding = BeatTextView.linePadding;
 }
 
@@ -190,7 +189,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)awakeFromNib
 {
 	// We are connecting the editor delegate via IBOutlet, so we need to forward it to layout manager here.
-	((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
+	if ([self.layoutManager isKindOfClass:BeatLayoutManager.class]) ((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
 	self.layoutManager.delegate = self;
 	
 	self.matches = NSMutableArray.array;
@@ -1049,20 +1048,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return [[NCRAutocompleteTableRowView alloc] init];
 }
 
-#pragma mark - Rects for masking, page breaks etc.
-
-- (NSRect)rectForRange:(NSRange)range {
-	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
-	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-
-	return rect;
-}
-
+#pragma mark - Setting insets on resize
 
 -(void)viewDidEndLiveResize {
 	//[super viewDidEndLiveResize];
 	[self setInsets];
 }
+
+
+#pragma mark - Custom drawing
 
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
@@ -1071,9 +1065,29 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[super drawRect:dirtyRect];
 }
 
+- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag
+{
+	aRect.size.width = CARET_WIDTH;
+	aRect.origin.x -= 0.5;
+	NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:aRect xRadius:1.0 yRadius:1.0];
+	
+	[aColor setFill];
+	
+	if (flag) [path fill];
+
+	//[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
+}
+
 -(void)redrawUI {
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+}
+
+
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect
+{
+	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
+	[super setNeedsDisplayInRect:invalidRect];
 }
 
 
@@ -1173,7 +1187,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 }
 
-- (NSTextField *)createPageLabel: (NSString*) numberStr {
+- (NSTextField *)createPageLabel:(NSString*)numberStr {
 	NSTextField * label;
 	label = NSTextField.new;
 	
@@ -1212,17 +1226,6 @@ Line *cachedRectLine;
 
 
 
-#pragma mark - Draw custom caret
-
-- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
-	aRect.size.width = CARET_WIDTH;
-	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
-}
-
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
-	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
-	[super setNeedsDisplayInRect:invalidRect];
-}
 
 
 #pragma mark - Update layout elements
@@ -1577,7 +1580,7 @@ double clamp(double d, double min, double max) {
 					NSDictionary* customAttrs = [BeatAttributes stripUnnecessaryAttributesFrom:attrs];
 					[self.textStorage addAttributes:customAttrs range:NSMakeRange(pos + range.location, range.length)];
 					
-					Line *l = [self.parser lineAtPosition:pos + range.location];
+					Line *l = [self.editorDelegate.parser lineAtPosition:pos + range.location];
 					[linesToRender addObject:l];
 				}
 				/*
@@ -1600,6 +1603,8 @@ double clamp(double d, double min, double max) {
 }
 
 #pragma mark - Layout Manager delegation
+
+// TODO: Move this into a cross-platform Swift class -- or better yet, an extension
 
 /// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
 -(void)redrawAllGlyphs
@@ -1758,13 +1763,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	return glyphs;
 }
 
-
-#pragma mark - Text Storage delegation
-
--(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
-	[_editorDelegate textStorage:textStorage didProcessEditing:editedMask range:editedRange changeInLength:delta];
-}
-
 - (void)layoutManagerDidInvalidateLayout:(NSLayoutManager *)sender {
 	//if (_editorDelegate.documentIsLoading) return;
 	//[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
@@ -1786,7 +1784,45 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	 */
 }
 
-- (NSInteger)numberOfLines {
+
+#pragma mark - Layout manager convenience methods
+
+- (NSRect)rectForRange:(NSRange)range
+{
+	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+
+	return rect;
+}
+
+- (NSRange)lineFragmentRangeAtLocation:(NSUInteger)location
+{
+	NSRange tmpRange;
+	[self.layoutManager lineFragmentRectForGlyphAtIndex:location
+										 effectiveRange:&tmpRange];
+	return tmpRange;
+}
+
+- (NSMutableSet*)lineFragmentRangesFrom:(NSUInteger)location
+{
+	NSMutableSet *lineFragments = NSMutableSet.new;
+	for (NSInteger index = location; index < self.string.length;) {
+		NSRange fragmentRange = [self lineFragmentRangeAtLocation:index];
+		[lineFragments addObject:[NSNumber valueWithRange:fragmentRange]];
+		index = NSMaxRange(fragmentRange);
+	}
+	return lineFragments;
+}
+
+
+#pragma mark - Text Storage delegation
+
+-(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+	[_editorDelegate textStorage:textStorage didProcessEditing:editedMask range:editedRange changeInLength:delta];
+}
+
+- (NSInteger)numberOfLines
+{
 	// This causes jitter. Unusable.
 	
 	NSLayoutManager *layoutManager = self.layoutManager;
@@ -1802,33 +1838,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	
 	return numberOfLines;
 }
-
-- (NSRange)lineFragmentRangeAtLocation:(NSUInteger)location {
-	NSRange tmpRange;
-	[self.layoutManager lineFragmentRectForGlyphAtIndex:location
-										 effectiveRange:&tmpRange];
-	return tmpRange;
-}
-- (NSMutableSet*)lineFragmentRangesFrom:(NSUInteger)location {
-	NSMutableSet *lineFragments = NSMutableSet.new;
-	for (NSInteger index = location; index < self.string.length;) {
-		NSRange fragmentRange = [self lineFragmentRangeAtLocation:index];
-		[lineFragments addObject:[NSNumber valueWithRange:fragmentRange]];
-		index = NSMaxRange(fragmentRange);
-	}
-	return lineFragments;
-}
-
-
-/*
-- (nullable NSAttributedString *)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
-	<#code#>
-}
-
-- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
-	<#code#>
-}
-*/
 
 
 #pragma mark - Spell Checking
@@ -1868,13 +1877,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 
 	// default behaviors, including auto-correct
 	[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
-}
-
-
-#pragma mark - Text storage delegation
-
-- (ContinuousFountainParser*)parser {
-	return self.editorDelegate.parser;
 }
 
 @end

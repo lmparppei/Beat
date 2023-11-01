@@ -122,7 +122,7 @@ import WebKit
     /// Sets the HTML string and loads the template, which includes Beat code injections.
     @objc public func setHTML(_ html:String) {
         // Load template
-        var template = BeatPluginHTMLTemplate.html(content: html)
+        let template = BeatPluginHTMLTemplate.html(content: html)
         
         var loadedURL = false
         if let baseURL = self.baseURL {
