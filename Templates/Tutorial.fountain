@@ -6,7 +6,6 @@ Contact:
 beat@kapitan.fi
 www.beat-app.fi
 
-> FADE IN
 
 INT. SCHOOL ROOM - DAY
 
@@ -105,7 +104,7 @@ INT. NIGHT CLUB - NIGHT [[RED]]
 
 Here's some lyrics:
 
-~” If you come to my house, friend
+~”If you come to my house, friend
 ~bring me a lamp and a window I can look through
 ~at the crowd in the happy alley.”
 
@@ -126,4 +125,4 @@ You can find more information about the Fountain markup language at http://www.f
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4035,7]}],"Window Width":1557,"Caret Position":1074,"Heading UUIDs":[{"string":"INT. SCHOOL ROOM - DAY","uuid":"64F61355-D94A-4280-BC53-CF87013FF657"},{"string":"EXT. PARK - DAY","uuid":"E458D9E1-5832-4048-A60D-AF1746B9D4CE"},{"string":"# This is a new section","uuid":"5BD7BF5C-BE72-492D-B3D6-16326462C5E8"},{"string":"INT. TUNNEL - NIGHT ","uuid":"608CDA2A-3B2F-4B56-9665-C0379B7C33DC"},{"string":"INT.\/EXT. BEACH HOUSE - NIGHT","uuid":"786E77BD-D106-4B43-BD82-6C4D72925AD6"},{"string":"EXT. STREET - NIGHT [[BLUE]]","uuid":"83803C0B-C247-4DB3-AFA4-9FB7B81FB76D"},{"string":"INT. NIGHT CLUB - NIGHT [[RED]]","uuid":"9586CD92-688B-481D-A51D-135529225FC6"},{"string":"EXT. UNIVERSITY CLASSROOM - MORNING","uuid":"E5089D3A-ACE2-4A3D-B428-755FD3F0DDD3"}],"Changed Indices":{"116":"blue"},"Sidebar Visible":false,"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":"","Window Height":1285} END_BEAT */
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":""} END_BEAT */
