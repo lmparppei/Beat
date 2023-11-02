@@ -110,7 +110,7 @@
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-
+	
 	[self hideFilterView];
 }
 
@@ -620,9 +620,11 @@
 	NSButton *button = (NSButton*)sender;
 	
 	if (button.state == NSControlStateValueOn) {
+		self.filterView.hidden = false;
 		[self.filterViewHeight setConstant:80.0];
 		[self.editorDelegate.autocompletion collectCharacterNames];
 	} else {
+		self.filterView.hidden = true;
 		[_filterViewHeight setConstant:0.0];
 	}
 }

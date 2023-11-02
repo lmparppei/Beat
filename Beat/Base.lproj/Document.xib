@@ -151,13 +151,13 @@
                                                                                 </constraints>
                                                                             </box>
                                                                             <scrollView verifyAmbiguity="ignoreSizes" borderType="none" autohidesScrollers="YES" horizontalLineScroll="23" horizontalPageScroll="10" verticalLineScroll="23" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
-                                                                                <rect key="frame" x="0.0" y="117" width="300" height="348"/>
+                                                                                <rect key="frame" x="0.0" y="117" width="300" height="378"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="348"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
-                                                                                            <rect key="frame" x="0.0" y="0.0" width="300" height="348"/>
+                                                                                            <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <size key="intercellSpacing" width="0.0" height="8"/>
                                                                                             <color key="backgroundColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1040,9 +1040,7 @@
                                                                     <segment toolTip="Notepad" image="Notepad" width="46" selected="YES" tag="1"/>
                                                                     <segment toolTip="Characters and Dialogue" image="Dialogue" width="45"/>
                                                                     <segment image="Review" width="46"/>
-                                                                    <segment image="Plugins">
-                                                                        <nil key="label"/>
-                                                                    </segment>
+                                                                    <segment image="Plugins"/>
                                                                 </segments>
                                                                 <connections>
                                                                     <action selector="selectTab:" target="a6t-MZ-KDr" id="ffT-Pe-e55"/>
@@ -1516,7 +1514,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
