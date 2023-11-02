@@ -4,8 +4,9 @@ Author: Lauri-Matti Parppei
 Draft date: Version 3, 6.8.2023
 Contact:
 beat@kapitan.fi
-www.kapitan.fi/beat
+www.beat-app.fi
 
+> FADE IN
 
 INT. SCHOOL ROOM - DAY
 
@@ -31,7 +32,7 @@ Well done.
 
 You can also press Tab to force a character cue and not worry about writing in all caps.
 
-After one empty line break the format will change back to action. Beat automatically adds two line-breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
+After one empty line break the format will change back to action. Beat automatically adds two line breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
 
 You can also use transitions just by typing out something in all-caps and ending it with a colon, like this:
 
@@ -49,7 +50,7 @@ This is a note. It won't be printed or exported, don't worry. This way, you can 
 
 Oh, and check out the print preview, either by clicking on the eye icon, File → Toggle preview, or by pressing ⌘⌥P)
 
-Title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format → Add title page or use Format → Title Page Editor
+The title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format → Add title page or use Format → Title Page Editor
 
 */
 
@@ -67,9 +68,9 @@ Take a look at the outline view (top-left icon or ⌘D) and see how the structur
 
 INT./EXT. BEACH HOUSE - NIGHT
 
-[[Stylizing your script. If you use a note as the first paragraph, it will show up as the description of this scene the index card view.]]
+[[Stylizing your script. If you use a note as the first paragraph, it will show up as the description of this scene in the index card view.]]
 
-Text formatting can be done with the usual commands used in any software, (⌘B, ⌘I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
+Text formatting can be done with the usual commands used in any software, (⌘B, ⌘I, etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
 
 Basically, text formatting works so that anything inside dual asterisks is **bolded** and single asterisks make it *italic*. You can also _underline_ stuff using underscores.
 
@@ -90,7 +91,7 @@ EXT. STREET - NIGHT [[BLUE]]
 
 You can set the color for your scene just by typing it out as above, or by right-clicking a scene either in any of the other views (Outline, Index Cards, Timeline).
 
-Double dialogue can be written by adding a ^ symbol after character name.
+Double dialogue can be written by adding a ^ symbol after a character name.
 
 CHARACTER
 Hello, have you heard about Beat?
@@ -104,7 +105,7 @@ INT. NIGHT CLUB - NIGHT [[RED]]
 
 Here's some lyrics:
 
-~”if you come to my house, friend
+~” If you come to my house, friend
 ~bring me a lamp and a window I can look through
 ~at the crowd in the happy alley.”
 
@@ -113,7 +114,7 @@ That's about it. Edit this file and try out stuff. If you ever mess something up
 
 EXT. UNIVERSITY CLASSROOM - MORNING
 
-There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it) and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
+There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it), and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
 
 [[marker You can also add markers to indicate parts that need work or attention.]]
 [[marker pink: This is a pink marker!]]
@@ -124,4 +125,5 @@ You can find more information about the Fountain markup language at http://www.f
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[4018,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Changed Indices":{"115":"blue"},"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4067,9,"blue"]]}} END_BEAT */
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4035,7]}],"Window Width":1557,"Caret Position":1074,"Heading UUIDs":[{"string":"INT. SCHOOL ROOM - DAY","uuid":"64F61355-D94A-4280-BC53-CF87013FF657"},{"string":"EXT. PARK - DAY","uuid":"E458D9E1-5832-4048-A60D-AF1746B9D4CE"},{"string":"# This is a new section","uuid":"5BD7BF5C-BE72-492D-B3D6-16326462C5E8"},{"string":"INT. TUNNEL - NIGHT ","uuid":"608CDA2A-3B2F-4B56-9665-C0379B7C33DC"},{"string":"INT.\/EXT. BEACH HOUSE - NIGHT","uuid":"786E77BD-D106-4B43-BD82-6C4D72925AD6"},{"string":"EXT. STREET - NIGHT [[BLUE]]","uuid":"83803C0B-C247-4DB3-AFA4-9FB7B81FB76D"},{"string":"INT. NIGHT CLUB - NIGHT [[RED]]","uuid":"9586CD92-688B-481D-A51D-135529225FC6"},{"string":"EXT. UNIVERSITY CLASSROOM - MORNING","uuid":"E5089D3A-ACE2-4A3D-B428-755FD3F0DDD3"}],"Changed Indices":{"116":"blue"},"Sidebar Visible":false,"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":"","Window Height":1285} END_BEAT */
