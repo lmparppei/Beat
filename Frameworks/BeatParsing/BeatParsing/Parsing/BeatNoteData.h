@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic, readonly) NSString* color;
 @property (nonatomic, readonly) NSRange range;
 @property (nonatomic, readonly) bool multiline;
+/// Returns a JSON representation of the note
 - (NSDictionary*)json;
 @end
 

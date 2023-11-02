@@ -4,6 +4,14 @@
 //
 //  Created by Lauri-Matti Parppei on 1.4.2023.
 //
+/**
+ 
+ # Note Object
+ 
+ Note parsing is done by the parser. It creates `BeatNoteData` objects for each `[[note]]` on a line.
+ Each note knows its own `range`, `type` (whether it's a normal note, color, marker, or beat), `color` (if applicable) and if the note is part of a `multiline` note block.
+ 
+ */
 
 #import "BeatNoteData.h"
 
@@ -59,6 +67,7 @@
     return self;
 }
 
+/// Returns JSON representation
 -(NSDictionary *)json
 {
     return @{
@@ -68,6 +77,7 @@
         @"type": [self typeAsString]
     };
 }
+
 -(NSString*)typeAsString
 {
     switch (self.type) {
@@ -79,8 +89,9 @@
             return @"marker";
         case NoteTypeBeat:
             return @"beat";
+        default:
+            return @"";
     }
-    return @"";
 }
 
 @end
