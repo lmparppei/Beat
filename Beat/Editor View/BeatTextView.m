@@ -157,8 +157,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	}
 	
-	self.wantsLayer = true;
-	self.canDrawSubviewsIntoLayer = true;
+	//self.wantsLayer = true;
+	//self.canDrawSubviewsIntoLayer = true;
 	
 	return self;
 }
@@ -582,17 +582,20 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (wholeDocument) numberOfPages = _editorDelegate.numberOfPages;
 	else numberOfPages = [_editorDelegate getPageNumberAt:self.selectedRange.location];
 	
-	
 	// Create the string
 	NSString* infoString = [NSString stringWithFormat:
-							@"%@\
-							%@: %lu\n\
-							%@: %lu",
+							@"%@\n"
+							"%@: %lu\n"
+							"%@: %lu",
 							(wholeDocument) ? NSLocalizedString(@"textView.information.document", nil) : NSLocalizedString(@"textView.information.selection", nil),
 							NSLocalizedString(@"textView.information.words", nil),
 							words,
 							NSLocalizedString(@"textView.information.characters", nil),
 							symbols];
+	// Append page count
+	if (wholeDocument) {
+		infoString = [infoString stringByAppendingFormat:@"\n%@: %lu", NSLocalizedString(@"textView.information.pages", nil), numberOfPages];
+	}
 	
 	// Create the stylized string with a bolded heading
 	NSMutableAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:infoString];
@@ -605,19 +608,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[attrString addAttribute:NSFontAttributeName value:[NSFont boldSystemFontOfSize:NSFont.systemFontSize] range:NSMakeRange(0, [attrString.string rangeOfString:@"\n"].location)];
 	
 	// Display popover at selected position
-	NSRect rect;
-	if (!wholeDocument) {
-		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
-	} else {
-		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
-	}
+	NSInteger displayIndex = (wholeDocument) ? self.selectedRange.location : range.location;
 	
+	NSRect rect = [self firstRectForCharacterRange:NSMakeRange(displayIndex, 0) actualRange:NULL];
 	rect = [self.window convertRectFromScreen:rect];
 	rect = [self convertRect:rect fromView:nil];
 	rect.size.width = 5;
 
 	NSPopover* popover = [self createPopoverWithText:attrString];
+	popover.behavior = NSPopoverBehaviorTransient;
 	[popover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+	
 	[self.window makeFirstResponder:self];
 }
 
