@@ -110,7 +110,7 @@
 	NSColor *tint;
 	if (@available(macOS 10.14, *)) {
 		tint = NSColor.controlAccentColor;
-		if (!selected) tint = [NSColor.tertiaryLabelColor colorWithAlphaComponent:.4];
+		if (!selected) tint = [NSColor.tertiaryLabelColor colorWithAlphaComponent:.35];
 	} else {
 		// Fallback on earlier versions
 		tint = NSColor.secondaryLabelColor;

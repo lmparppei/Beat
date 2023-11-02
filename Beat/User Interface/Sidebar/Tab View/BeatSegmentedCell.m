@@ -10,5 +10,8 @@
 
 @implementation BeatSegmentedCell
 
+-(void)drawSegment:(NSInteger)segment inFrame:(NSRect)frame withView:(NSView *)controlView {
+	
+}
 
 @end
