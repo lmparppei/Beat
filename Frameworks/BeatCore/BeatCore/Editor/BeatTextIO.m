@@ -428,14 +428,15 @@
         if (characterBefore != [match characterAtIndex:0]) return;
     }
     
-    // After this, we'l also make sure we're not adding extraneous closing brackets anywhere.
+    // After this, we'll also make sure we're not adding extraneous closing brackets anywhere.
     Line* line = _delegate.currentLine;
     NSString* terminator = matches[match];
     bool found = false;
-    for (NSInteger i=affectedCharRange.location - line.position; i<=line.length - terminator.length; i++) {
+    for (NSInteger i=affectedCharRange.location - line.position; i<=line.length; i++) {
         // Don't go out of range
-        if (line.position + i + terminator.length >= _delegate.text.length) break;
+        if (i + terminator.length > line.string.length) break;
         
+        // Check if the line already has a closing bracket
         NSString* s = [line.string substringWithRange:NSMakeRange(i, terminator.length)];
         if ([s isEqualToString:terminator]) {
             found = true;
