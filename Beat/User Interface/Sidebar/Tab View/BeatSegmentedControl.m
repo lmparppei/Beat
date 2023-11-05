@@ -66,12 +66,11 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	[self.cell drawWithFrame:self.frame inView:self];
+	//[self.cell drawWithFrame:self.frame inView:self];
 	
 	NSRect rect = self.bounds;
 	rect.size.height -= 1;
 	[self drawItems:rect];
-	
 }
 
 -(void)drawCenteredImage:(NSImage*)image inFrame:(NSRect)frame

@@ -5,6 +5,15 @@
 //  Created by Lauri-Matti Parppei on 18.1.2023.
 //  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ It's been a while since I wrote this class, but IIRC, you can use this to create an `NSView` which automatically sets the appearance based on *how* dark its background value is.
+ This exists to support custom colors in sidebar. If you set a light enough background color, dark UI elements will be far to dark and vice versa.
+ The `IBInspectable` value doesn't seem to be used, but that could be fixed for future use.
+ 
+ The code even supports macOS Mojave.
+ 
+ */
 
 import AppKit
 

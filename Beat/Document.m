@@ -178,8 +178,6 @@
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
 @property (weak) IBOutlet NSTabView *sideBarTabs;
 @property (weak) IBOutlet BeatOutlineView *outlineView;
-@property (weak) NSArray *draggedNodes;
-@property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property (nonatomic) BOOL sidebarVisible;
@@ -3661,7 +3659,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
 	
 	if (!_timeline.visible) {
-		
 		[_timeline show];
 		[self ensureLayout];
 		[_timelineButton setState:NSOnState];

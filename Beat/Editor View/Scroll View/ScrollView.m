@@ -177,8 +177,8 @@
 	[super findBarViewDidChangeHeight];
 }
 
+CGFloat _originalZoomLevel;
 - (void)pinch:(NSEvent*)event {
-	static CGFloat _originalZoomLevel;
 	BeatTextView *textView = self.documentView;
 	
 	if (self.recognizer.state == NSGestureRecognizerStateBegan) _originalZoomLevel = textView.zoomLevel;

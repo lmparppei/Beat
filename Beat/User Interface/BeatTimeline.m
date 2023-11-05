@@ -52,6 +52,8 @@
 @property (nonatomic) CGFloat originalHeight;
 @property (nonatomic) NSTimer *refreshTimer;
 
+@property (nonatomic, weak) IBOutlet NSView* containerView;
+
 // Timeline data
 @property (nonatomic) NSInteger totalLength;
 @property (nonatomic) bool hasSections;
@@ -588,6 +590,7 @@
 
 - (void)show
 {
+	self.containerView.hidden = false;
 	[self desiredHeight];
 	[self reload];
 	self.enclosingScrollView.hasHorizontalScroller = YES;
@@ -596,6 +599,7 @@
 	self.visible = YES;
 }
 - (void)hide {
+	self.containerView.hidden = true;
 	self.enclosingScrollView.hasHorizontalScroller = NO;
 	_localHeightConstraint.constant = 0;
 	_heightConstraint.constant = 0;

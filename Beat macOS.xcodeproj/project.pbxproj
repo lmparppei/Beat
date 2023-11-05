@@ -368,6 +368,8 @@
 		B6D37F822A2A208B0069C515 /* BeatTemplateDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D37F802A2A208B0069C515 /* BeatTemplateDatasource.swift */; };
 		B6D37F832A2A254B0069C515 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D37F862A2A254B0069C515 /* Launch Screen.storyboard */; };
 		B6D37F842A2A254B0069C515 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D37F862A2A254B0069C515 /* Launch Screen.storyboard */; };
+		B6DC297C2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC297B2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift */; };
+		B6DC297D2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC297B2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift */; };
 		B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA8602721882900CBE9BC /* BeatSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85F2721882900CBE9BC /* BeatSegmentedCell.m */; };
@@ -821,6 +823,7 @@
 		B6D37F8A2A2A25A90069C515 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = "sv.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
 		B6D4BB142788B09100915682 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Document.strings; sourceTree = "<group>"; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Patch Notes.html"; path = "Patch Notes/Patch Notes.html"; sourceTree = SOURCE_ROOT; };
+		B6DC297B2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMarkdownTextStorage.swift; sourceTree = "<group>"; };
 		B6DCA85A272187E600CBE9BC /* BeatSegmentedControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedControl.h; sourceTree = "<group>"; };
 		B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSegmentedControl.m; sourceTree = "<group>"; };
 		B6DCA85E2721882900CBE9BC /* BeatSegmentedCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedCell.h; sourceTree = "<group>"; };
@@ -1602,8 +1605,7 @@
 				B67A9EA7280DAC5F00788586 /* Review View */,
 				B67A9EA3280DA92200788586 /* Tab View */,
 				B67A9EA2280DA91100788586 /* Character List */,
-				B6DCA86227219C3700CBE9BC /* BeatNotepad.h */,
-				B6DCA86327219C3700CBE9BC /* BeatNotepad.m */,
+				B6DC297A2AF5221900CF1285 /* Notepad */,
 				B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */,
 			);
 			path = Sidebar;
@@ -1705,6 +1707,16 @@
 			);
 			name = Comparison;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		B6DC297A2AF5221900CF1285 /* Notepad */ = {
+			isa = PBXGroup;
+			children = (
+				B6DCA86227219C3700CBE9BC /* BeatNotepad.h */,
+				B6DCA86327219C3700CBE9BC /* BeatNotepad.m */,
+				B6DC297B2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift */,
+			);
+			path = Notepad;
 			sourceTree = "<group>";
 		};
 		B6E099CC27661EDB005E7827 /* CSS */ = {
@@ -2232,6 +2244,7 @@
 				B66F46392565ADA0003748DA /* NSString+JavaSubstring.m in Sources */,
 				B69FCF64272314910022A9D9 /* BeatCharacterList.m in Sources */,
 				B60D192726B0811E005C2693 /* BeatNotifications.m in Sources */,
+				B6DC297C2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
 				B649CB63286F8090001271E2 /* BeatAutocomplete.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
@@ -2357,6 +2370,7 @@
 				B68B605A260B849300463AD8 /* NSString+JavaSubstring.m in Sources */,
 				B69FCF65272314910022A9D9 /* BeatCharacterList.m in Sources */,
 				B60D192826B0811E005C2693 /* BeatNotifications.m in Sources */,
+				B6DC297D2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */,
 				B68B605B260B849300463AD8 /* SceneFiltering.m in Sources */,
 				B649CB64286F8090001271E2 /* BeatAutocomplete.m in Sources */,
 				B68B605D260B849300463AD8 /* main.m in Sources */,
@@ -2808,7 +2822,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133249;
+				CURRENT_PROJECT_VERSION = 133251;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2852,7 +2866,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133249;
+				CURRENT_PROJECT_VERSION = 133251;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2897,7 +2911,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133249;
+				CURRENT_PROJECT_VERSION = 133251;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2941,7 +2955,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133249;
+				CURRENT_PROJECT_VERSION = 133251;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
