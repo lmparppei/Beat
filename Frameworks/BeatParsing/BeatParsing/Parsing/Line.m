@@ -1066,7 +1066,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 /// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
-- (void)addStyleAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
+- (void)addStyleAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range
+{
     if (name == nil) NSLog(@"WARNING: Null value passed to attributes");
     
 	// We are going out of range. Abort.
@@ -1077,7 +1078,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	[string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         NSMutableSet* style;
         if (attrs[@"Style"] != nil) {
-            style = (NSMutableSet*)attrs[@"Style"];
+            // We need to make a copy of the set, otherwise we'll add to the same set of attributes as earlier, causing issues with overlapping attributes.
+            style = ((NSMutableSet*)attrs[@"Style"]).mutableCopy;
             [style addObject:name];
         } else {
             style = [NSMutableSet.alloc initWithArray:@[name]];
