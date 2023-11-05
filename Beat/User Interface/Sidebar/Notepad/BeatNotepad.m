@@ -17,7 +17,7 @@
 #import <BeatThemes/BeatThemes.h>
 
 #import "BeatNotepad.h"
-
+#import "Beat-Swift.h"
 #import "ColorCheckbox.h"
 
 @interface BeatNotepad ()
@@ -34,6 +34,8 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonPink;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonCyan;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonMagenta;
+@property (nonatomic) BeatMarkdownTextStorageDelegate* mdDelegate;
+
 @end
 @implementation BeatNotepad
 
@@ -44,7 +46,7 @@
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 10.0;
 		self.layer.backgroundColor = [NSColor.darkGrayColor colorWithAlphaComponent:0.3].CGColor;
-		self.textColor = ThemeManager.sharedManager.textColor.darkColor;
+		self.textColor = [BeatColors color:@"lightGray"];
 		
 		[self setTextContainerInset:(NSSize){ 5, 5 }];
 	}
@@ -57,6 +59,11 @@
 	self.buttonDefault.state = NSOnState;
 	self.currentColorName = @"lightGray";
 	self.currentColor = [BeatColors color:_currentColorName];
+	self.textColor = self.currentColor;
+	
+	self.mdDelegate = BeatMarkdownTextStorageDelegate.new;
+	self.mdDelegate.textStorage = self.textStorage;
+	self.textStorage.delegate = self.mdDelegate;
 	
 	[self.textStorage setAttributedString:[self coloredRanges:self.string]];
 	
@@ -73,8 +80,7 @@
 	ColorCheckbox *box = sender;
 	_currentColorName = box.colorName;
 	
-	if ([_currentColorName isEqualToString:@"lightGray"]) _currentColor = ThemeManager.sharedManager.textColor.darkColor;
-	else _currentColor = [BeatColors color:_currentColorName];
+	_currentColor = [BeatColors color:_currentColorName];
 	
 	for (ColorCheckbox *button in _buttons) {
 		if ([button.colorName isEqualToString:_currentColorName]) button.state = NSOnState;
@@ -116,11 +122,13 @@
 	// and afterwards remove the tags enumerating the index set which contains ranges for tags.
 	
 	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:fullString];
-	[attrStr addAttribute:NSForegroundColorAttributeName value:NSColor.lightGrayColor range:(NSRange){ 0, attrStr.length }];
+	[attrStr addAttribute:NSForegroundColorAttributeName value:self.currentColor range:(NSRange){ 0, attrStr.length }];
 	
 	NSMutableIndexSet *keyRanges = NSMutableIndexSet.new;
 	
 	for (NSString *color in BeatColors.colors.allKeys) {
+		NSColor* colorObj = [BeatColors color:color];
+		
 		NSString *open = [NSString stringWithFormat:@"<%@>", color];
 		NSString *close = [NSString stringWithFormat:@"</%@>", color];
 		
@@ -135,7 +143,7 @@
 			closeRange = [attrStr.string rangeOfString:close options:0 range:NSMakeRange(prevLoc, attrStr.length - prevLoc)];
 			if (closeRange.location == NSNotFound) continue;
 			
-			[attrStr addAttribute:NSForegroundColorAttributeName value:[BeatColors color:color] range:(NSRange){ openRange.location, NSMaxRange(closeRange) - openRange.location }];
+			[attrStr addAttribute:NSForegroundColorAttributeName value:colorObj range:(NSRange){ openRange.location, NSMaxRange(closeRange) - openRange.location }];
 			
 			[keyRanges addIndexesInRange:openRange];
 			[keyRanges addIndexesInRange:closeRange];
