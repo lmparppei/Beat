@@ -26,6 +26,7 @@
  
  */
 
+#import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
@@ -156,7 +157,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.continuousSpellCheckingEnabled) {
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	}
-	
+
 	//self.wantsLayer = true;
 	//self.canDrawSubviewsIntoLayer = true;
 	
@@ -201,6 +202,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
 	
+	// Register dragged types
+	[self registerForDraggedTypes:@[BeatPasteboardItem.pasteboardType]];
+	
 	// Observer for selection change. It's posted to text view delegate as well, but we'll handle
 	// popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
@@ -221,6 +225,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.automaticDataDetectionEnabled = NO;
 	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;
+	
 	
 	//if (self.editorDelegate.hideFountainMarkup) self.layoutManager.allowsNonContiguousLayout = NO;
 	self.layoutManager.allowsNonContiguousLayout = YES;
@@ -1075,8 +1080,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[aColor setFill];
 	
 	if (flag) [path fill];
-
-	//[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
 }
 
 -(void)redrawUI {
@@ -1285,7 +1288,7 @@ Line *cachedRectLine;
 			//[super mouseMoved:event];
 			[NSCursor.IBeamCursor set];
 		} else if (point.x > 10) {
-			//[super mouseMoved:event];
+
 			[NSCursor.arrowCursor set];
 		}
 	}
@@ -1512,34 +1515,75 @@ double clamp(double d, double min, double max) {
 
 #pragma mark - Copy-paste
 
--(void)copy:(id)sender {
-	NSPasteboard *pasteBoard = NSPasteboard.generalPasteboard;
-	[pasteBoard clearContents];
-	
+- (NSAttributedString*)attributedStringForPasteboardFromRange:(NSRange)range
+{
 	// We create both a plaintext string & a custom pasteboard object
-	NSString *string = [self.string substringWithRange:self.selectedRange];
-	NSMutableAttributedString* attrString = [self.attributedString attributedSubstringFromRange:self.selectedRange].mutableCopy;
+	NSMutableAttributedString* attrString = [self.attributedString attributedSubstringFromRange:range].mutableCopy;
 	
 	// Remove the represented line, because it can't be encoded
 	if (attrString.length) [attrString removeAttribute:@"representedLine" range:NSMakeRange(0, attrString.length)];
-	
-	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:attrString];
-	
-	// Copy them on pasteboard
-	NSArray *copiedObjects = @[item, string];
-	[pasteBoard writeObjects:copiedObjects];
+
+	return attrString;
 }
 
--(NSArray<NSPasteboardType> *)writablePasteboardTypes {
-	return @[NSBundle.mainBundle.bundleIdentifier];
+-(void)copy:(id)sender {
+	NSPasteboard* pboard = NSPasteboard.generalPasteboard;
+	[pboard clearContents];
+	
+	NSAttributedString* attrString = [self attributedStringForPasteboardFromRange:self.selectedRange];
+	
+	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:attrString];
+	[pboard writeObjects:@[item, attrString.string]];
 }
--(NSArray<NSPasteboardType> *)readablePasteboardTypes {
-	return [NSArray arrayWithObjects:NSBundle.mainBundle.bundleIdentifier, NSPasteboardTypeString, nil];
+
+- (NSArray<NSPasteboardType> *)acceptableDragTypes
+{
+	NSMutableArray* types = [NSMutableArray arrayWithArray:[super acceptableDragTypes]];
+	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
+	return types;
+}
+
+-(NSArray<NSPasteboardType> *)writablePasteboardTypes
+{
+	NSMutableArray* types = [NSMutableArray arrayWithArray:[super writablePasteboardTypes]];
+	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
+	return types;
+}
+
+-(NSArray<NSPasteboardType> *)readablePasteboardTypes
+{
+	NSMutableArray* types = [NSMutableArray arrayWithArray:[super readablePasteboardTypes]];
+	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
+	return types;
+}
+
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSPasteboardType)type
+{
+	if ([type isEqualToString:BeatPasteboardItem.pasteboardType]) {
+		[pboard clearContents];
+		BeatPasteboardItem* item = [BeatPasteboardItem.alloc initWithAttrString:[self attributedStringForPasteboardFromRange:self.selectedRange]];
+		[pboard writeObjects:@[item]];
+		return true;
+	}
+	
+	return [super writeSelectionToPasteboard:pboard type:type];
+}
+
+- (void)draggingEnded:(id <NSDraggingInfo>)sender {
+	NSPasteboard *pasteboard = [sender draggingPasteboard];
+	NSArray<NSPasteboardType> *types = [pasteboard types];
+	
+	// If we've dragged a Beat pasteboard value, let's replace our selection with the correct attributed string.
+	if ([types containsObject:BeatPasteboardItem.pasteboardType]) {
+		BeatPasteboardItem *item = [pasteboard readObjectsForClasses:@[BeatPasteboardItem.class] options:nil][0];
+		if (item.attrString) {
+			[self.textStorage replaceCharactersInRange:self.selectedRange withAttributedString:item.attrString];
+		}
+	}
 }
 
 -(void)paste:(id)sender
 {
-	
 	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
 	NSDictionary *options = NSDictionary.new;

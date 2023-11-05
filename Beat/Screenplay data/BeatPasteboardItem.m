@@ -8,10 +8,11 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPasteboardItem.h"
-#define UTI @"com.kapitanFI.beat.copiedString"
+#define UTI @"com.kapitanFI.beat.pasteboardItem"
 
 @implementation BeatPasteboardItem
- 
+
+
 - (void)encodeWithCoder:(NSCoder *)coder {
 	[coder encodeObject:self.attrString forKey:@"attrString"];
 }
@@ -40,7 +41,13 @@
 	return [NSKeyedUnarchiver unarchiveObjectWithData:propertyList];
 }
 
-+(NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard {
++(NSString*)pasteboardType
+{
+	return UTI;
+}
+
++(NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard
+{
 	return @[UTI];
 }
 
@@ -49,7 +56,7 @@
 }
 
 - (id)pasteboardPropertyListForType:(NSString *)type {
-	if(![type isEqualToString:UTI]) return nil;
+	if (![type isEqualToString:UTI]) return nil;
 	return [NSKeyedArchiver archivedDataWithRootObject:self];
 }
 

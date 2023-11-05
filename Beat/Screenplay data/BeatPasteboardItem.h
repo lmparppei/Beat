@@ -12,7 +12,9 @@
 @interface BeatPasteboardItem : NSObject <NSCopying, NSPasteboardWriting, NSPasteboardReading, NSCoding>
 
 @property (nonatomic) NSAttributedString *attrString;
+
 - (id)initWithAttrString:(NSAttributedString*)string;
 + (NSString*)sanitizeString:(NSString*)string;
++ (NSString*)pasteboardType;
 @end
 
