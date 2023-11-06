@@ -47,6 +47,4 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 
 #import <BeatCore/BeatNotificationDelegate.h>
 
-#if !TARGET_OS_IOS
 #import <BeatCore/NSTextView+UX.h>
-#endif

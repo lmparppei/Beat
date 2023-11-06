@@ -127,6 +127,16 @@ final class BeatExportSettingController:UITableViewController {
 			// Save to user defaults
 			BeatUserDefaults.shared().save(button.isOn, forKey: key)
 		}
+		
+		refreshDocument()
+	}
+	
+	@IBAction func toggleSpacing(sender:UISegmentedControl?) {
+		guard let control = sender else { return }
+		
+		let spacing = (control.selectedSegmentIndex == 0) ? 2 : 1
+		
+		BeatUserDefaults.shared().save(spacing, forKey: BeatSettingSceneHeadingSpacing)
 	}
 	
 	@IBAction func toggleRevision(sender:UISwitch) {
@@ -137,6 +147,14 @@ final class BeatExportSettingController:UITableViewController {
 		self.editorDelegate?.documentSettings.set(DocSettingHiddenRevisions, as: self.hiddenRevisions)
 	}
 	
+	/// Refresh the underlying document
+	func refreshDocument() {
+		weak var editorDelegate = editorDelegate
+		Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+			editorDelegate?.refreshLayoutByExportSettings()
+		}
+		
+	}
 	
 	// MARK: Export settings
 	
@@ -164,3 +182,5 @@ class BeatUserSettingSwitch:UISwitch {
 	// If the given setting is a document settings and not a user default
 	@IBInspectable var documentSetting:Bool = false
 }
+
+

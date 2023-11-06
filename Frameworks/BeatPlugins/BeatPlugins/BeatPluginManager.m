@@ -277,10 +277,7 @@ static BeatPluginManager *sharedManager;
 		if (_availablePlugins[pluginName]) {
 			// The plugin is already available, check for updates
 			BeatPluginInfo *existingPlugin = _availablePlugins[pluginName];
-			
-			// Log version numbers for remote and local plugins for debugging
-			// NSLog(@"%@ / %@ – %@", remotePlugin[@"version"], existingPlugin[@"version"], remotePlugin[@"name"]);
-			
+						
 			if ([self isNewerVersion:remotePlugin.version old:existingPlugin.version]) {
 				// There's an update available, so show the remote info instead
 				existingPlugin.updateAvailable = remotePlugin.version;

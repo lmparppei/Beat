@@ -7,9 +7,9 @@
 
 #import <TargetConditionals.h>
 
-#define BXTextView NSTextView
 
 #if !TARGET_OS_IOS
+#define BXTextView NSTextView
 #import <Cocoa/Cocoa.h>
 
 @interface NSTextView (UX)

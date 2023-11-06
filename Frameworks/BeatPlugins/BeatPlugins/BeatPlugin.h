@@ -9,14 +9,14 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatCore/BeatCore.h>
-#import "BeatPluginManager.h"
+#import <BeatPlugins/BeatPluginManager.h>
 
 #import <WebKit/WebKit.h>
 #import <PDFKit/PDFKit.h>
 #import <BeatParsing/BeatParsing.h>
 
-#import "BeatPluginManager.h"
-#import "BeatPluginTimer.h"
+#import <BeatPlugins/BeatPluginManager.h>
+#import <BeatPlugins/BeatPluginTimer.h>
 
 
 #if !TARGET_OS_IOS

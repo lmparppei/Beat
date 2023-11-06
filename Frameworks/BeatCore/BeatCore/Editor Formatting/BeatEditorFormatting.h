@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <BeatCore/BeatEditorDelegate.h>
 
+#if TARGET_OS_IOS
+    #define _equalTo isEqual
+#else
+    #define _equalTo isEqualTo
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef enum {

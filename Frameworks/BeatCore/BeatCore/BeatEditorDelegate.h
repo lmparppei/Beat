@@ -96,7 +96,6 @@
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 
 - (Line*)currentLine;
-- (NSArray*)scenes;
 - (NSArray*)markers;
 
 
@@ -239,6 +238,7 @@
 #if TARGET_OS_IOS
 - (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
+- (void)refreshLayoutByExportSettings;
 #endif
 
 #if TARGET_OS_IOS

@@ -609,7 +609,6 @@ static bool buildPreviewImmediately = false;
 	self.preview.previewUpdated = false;
 	
 	if (sync) {
-		NSLog(@"%@", self.pagination);
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		BeatScreenplay* screenplay = [BeatScreenplay from:self.parser settings:self.exportSettings];
 		[self.pagination newPaginationWithScreenplay:screenplay settings:self.exportSettings forEditor:true changeAt:range.location];
@@ -1117,6 +1116,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return settings;
 }
 
+- (void)refreshLayoutByExportSettings
+{
+	// We need to reformat headings
+	[self.formatting formatAllLinesOfType:heading];
+	[self resetPreview];
+}
 
 #pragma mark - Editor text view values
 

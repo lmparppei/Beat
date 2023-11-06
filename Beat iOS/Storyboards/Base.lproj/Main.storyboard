@@ -1018,6 +1018,9 @@ Lauri-Matti</string>
                                                         <segment title="2 lines"/>
                                                         <segment title="1 line"/>
                                                     </segments>
+                                                    <connections>
+                                                        <action selector="toggleSpacingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="SZQ-HP-guY"/>
+                                                    </connections>
                                                 </segmentedControl>
                                             </subviews>
                                         </tableViewCellContentView>

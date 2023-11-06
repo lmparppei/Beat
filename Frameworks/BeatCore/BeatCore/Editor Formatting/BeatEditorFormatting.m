@@ -198,7 +198,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 /// Sets the font for given line. You can force it if needed.
 - (void)setFontForLine:(Line*)line force:(bool)force {
-	NSTextStorage *textStorage = _delegate.textStorage;
+    NSMutableAttributedString *textStorage = self.textStorage;
 	
 	NSRange range = line.textRange;
 
@@ -224,26 +224,20 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
 }
 
+/// Formats one line of screenplay.
+/// - note We're using `NSMutableAttributedString` in place of text storage to support ahead-of-time rendering.
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 { @autoreleasepool {
-	/*
-	 
-	 This method uses a mixture of permanent text attributes and temporary attributes
-	 to optimize performance.
-	 
-	 Colors are set using NSLayoutManager's temporary attributes, while everything else
-	 is stored into the attributed string in NSTextStorage.
-	 
-	 */
-	
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
 	
 	NSRange selectedRange = _delegate.selectedRange;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
-	NSTextStorage *textStorage = _delegate.textStorage;
-	bool alreadyEditing = (textStorage.editedMask != 0);
+    NSMutableAttributedString *textStorage = self.textStorage;
+    
+    // Get editing status from delegate
+	bool alreadyEditing = (_delegate.textStorage.editedMask != 0);
 	alreadyEditing = true;
 	
 	NSRange range = line.textRange; // range without line break
@@ -278,7 +272,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 		
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
-	if (![attributes[NSParagraphStyleAttributeName] isEqualTo:paragraphStyle]) {
+
+	if (![attributes[NSParagraphStyleAttributeName] _equalTo:paragraphStyle]) {
 		newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
 		
 		// Also update the paragraph style to current attributes
@@ -290,7 +285,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
 	// Do nothing for already formatted empty lines (except remove the background)
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle isEqualTo:attributes[NSParagraphStyleAttributeName]]) {
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		[_delegate setTypingAttributes:attributes];
 		
 		// If we need to update the line, do it here
@@ -317,7 +312,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// Foolproof fix for a strange, rare bug which changes multiple lines into character cues and the user is unable to undo the changes
 		if (NSMaxRange(range) <= selectedRange.location) {
             self.didProcessForcedCharacterCue = true; // Flag that we're processing a character cue (to avoid reparsing the change on iOS)
-			[_delegate.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
+			[self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
             self.didProcessForcedCharacterCue = false; // End processing
 
@@ -394,7 +389,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset {
-	NSTextStorage *textStorage = _delegate.textStorage;
+    NSMutableAttributedString *textStorage = self.textStorage;
 	NSRange range = NSMakeRange(0, line.length);
 
 	NSAttributedString* astr = line.attributedStringForFDX;
@@ -453,11 +448,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Stylize headings according to settings
 	if (line.type == heading) {
-		if (_delegate.headingStyleBold) [self applyTrait:NSBoldFontMask range:line.textRange textStorage:textStorage];
+		if (_delegate.headingStyleBold) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
 		if (_delegate.headingStyleUnderline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
 	}
 	else if (line.type == lyrics) {
-		[self applyTrait:NSFontItalicTrait range:line.textRange textStorage:textStorage];
+		[self applyTrait:BXItalicFontMask range:line.textRange textStorage:textStorage];
 	}
 	
 	//Add in bold, underline, italics and other stylization
@@ -479,16 +474,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}];
 }
 
-- (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSTextStorage*)textStorage
+- (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage
 {
 #if TARGET_OS_IOS
 	if ((trait & BXBoldFontMask) == BXBoldFontMask && (trait & BXItalicFontMask) == BXBoldFontMask) {
-		NSLog(@"Make bold");
-	}
-	else if (trait == BXItalicFontMask) {
-		NSLog(@"Make italic");
+        [textStorage addAttribute:NSFontAttributeName value:_delegate.boldItalicCourier range:range];
+	} else if (trait == BXItalicFontMask) {
+        [textStorage addAttribute:NSFontAttributeName value:_delegate.italicCourier range:range];
 	} else if (trait == BXBoldFontMask) {
-		NSLog(@"Make bold");
+        [textStorage addAttribute:NSFontAttributeName value:_delegate.boldCourier range:range];
 	}
 #else
 	[textStorage applyFontTraits:trait range:range];
@@ -497,7 +491,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Set foreground color
 
-- (void)setForegroundColor:(NSColor*)color line:(Line*)line range:(NSRange)localRange {
+- (void)setForegroundColor:(BXColor*)color line:(Line*)line range:(NSRange)localRange {
 	NSRange globalRange = [line globalRangeFromLocal:localRange];
 	
 	// Don't go out of range and add attributes
@@ -512,10 +506,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range {
 	// Don't go out of range
 	if (NSMaxRange(range) >= self.delegate.text.length) {
-		range.length = self.delegate.textStorage.length - range.location;
+		range.length = self.textStorage.length - range.location;
 	}
 	
-	if (range.length > 0) [_delegate.textStorage addAttribute:key value:value range:range];
+	if (range.length > 0) [self.textStorage addAttribute:key value:value range:range];
 }
 
 
@@ -639,7 +633,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Heading elements can be colorized using [[COLOR COLORNAME]],
 	// so let's respect that first
 	if (line.isOutlineElement || line.type == synopse) {
-		NSColor *color;
+		BXColor *color;
 		if (line.color.length > 0) {
 			color = [BeatColors color:line.color];
 		}
@@ -667,10 +661,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	NSArray* notes = line.noteData;
 	for (BeatNoteData* note in notes) {
 		NSRange range = note.range;
-		NSColor* color = themeManager.commentColor;
+		BXColor* color = themeManager.commentColor;
 		
 		if (note.color) {
-			NSColor* c = [BeatColors color:note.color];
+			BXColor* c = [BeatColors color:note.color];
 			if (c != nil) color = c;
 		}
 		
@@ -689,7 +683,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Color markers
 	else if (line.markerRange.length) {
-		NSColor *color;
+		BXColor *color;
 				
 		if (line.marker.length == 0) color = [BeatColors color:@"orange"];
 		else color = [BeatColors color:line.marker];
@@ -720,7 +714,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		effectiveRange = NSMakeRange(range.location + symLen, 0);
 	}
 	
-	if (key.length) [_delegate.textStorage addAttribute:key value:value range:[line globalRangeFromLocal:effectiveRange]];
+	if (key.length) [self.textStorage addAttribute:key value:value range:[line globalRangeFromLocal:effectiveRange]];
 }
 
 
@@ -728,7 +722,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Don't add a nil value
 	if (!value) return;
 	
-	NSTextStorage *textStorage = _delegate.textStorage;
+    NSMutableAttributedString *textStorage = self.textStorage;
 	NSRange effectiveRange;
 	
 	if (sym.length == 0) {
@@ -767,9 +761,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Revision colors
 
 - (void)revisedTextStyleForRange:(NSRange)globalRange {
-	[_delegate.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
-	
-	NSTextStorage* textStorage = _delegate.textStorage;
+    NSMutableAttributedString* textStorage = self.textStorage;
+    
+    [textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
 	
 	[textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:globalRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem* revision = value;
@@ -782,13 +776,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)revisedTextColorFor:(Line*)line {
 	if (![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor]) return;
 	
-	NSTextStorage *textStorage = _delegate.textStorage;
+    NSMutableAttributedString *textStorage = self.textStorage;
 	
 	[textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem* revision = value;
 		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
 		
-		NSColor* color = BeatColors.colors[revision.colorName];
+		BXColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
 		
 		[self addAttribute:NSForegroundColorAttributeName value:color range:range];
@@ -796,16 +790,18 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 - (void)refreshRevisionTextColors {
-	[_delegate.textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, _delegate.text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+#if !TARGET_OS_IOS
+	[self.textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, _delegate.text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem* revision = value;
 		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
 		
-		NSColor* color = BeatColors.colors[revision.colorName];
+		BXColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
 		
-		if (_delegate.showRevisedTextColor) [self addAttribute:NSForegroundColorAttributeName value:color range:range];
+		if (_delegate.showRevisedTextColor) [_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
 		else [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:range];
 	}];
+#endif
 }
 
 - (void)refreshRevisionTextColorsInRange:(NSRange)range {
