@@ -43,6 +43,7 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import <BeatCore/NSArray+JSON.h>
 #import <BeatCore/NSString+VersionNumber.h>
 #import <BeatCore/BeatCompatibility.h>
+#import <BeatCore/BeatEditorFormatting.h>
 
 #import <BeatCore/BeatNotificationDelegate.h>
 

@@ -8,7 +8,6 @@
 //
 
 import Foundation
-import BeatCore
 
 public protocol BeatCssParserDelegate {
 	func get(key:String)
@@ -17,7 +16,7 @@ public protocol BeatCssParserDelegate {
 public final class CssParser {
 	
 	var styles:[String:RenderStyle] = [:]
-    var lineHeight = BeatPagination.lineHeight()
+    var lineHeight = BeatStyles.lineHeight // default line height
     
 	// Map property names to types
 	let stringTypes:Set = ["textAlign", "text-align", "color", "font", "content"]
@@ -129,7 +128,7 @@ public final class CssParser {
                     
                     // Line height can be set DYNAMICALLY, and will affect other value calculations
                     if key == "page" && (ruleKey == "lineHeight" || ruleKey == "line-height") {
-                        self.lineHeight = value as? CGFloat ?? BeatPagination.lineHeight()
+                        self.lineHeight = value as? CGFloat ?? BeatStyles.lineHeight
                     }
 				}
 			}

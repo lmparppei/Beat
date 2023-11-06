@@ -150,7 +150,7 @@
 	NSMutableArray *sceneCards = [NSMutableArray array];
 	NSInteger index = 0;
 	
-	NSArray *outline = [self.delegate getOutlineItems];
+	NSArray *outline = self.delegate.parser.outline;
 
 	for (OutlineScene *scene in outline) {
 		if (scene.type == synopse ||
@@ -358,7 +358,7 @@
 	if ([message.name isEqualToString:@"cardClick"]) {
 		[_delegate toggleCards:nil];
 		
-		OutlineScene *scene = self.delegate.getOutline[[message.body intValue]];
+		OutlineScene *scene = self.delegate.parser.outline[[message.body intValue]];
 		if (scene != nil) [_delegate scrollToLine:scene.line];
 
 		return;
@@ -375,7 +375,7 @@
 			NSInteger changedIndex = -1;
 			if (from < to) changedIndex = to -1; else changedIndex = to;
 			
-			NSArray *outline = self.delegate.getOutlineItems;
+			NSArray *outline = self.delegate.parser.outline;
 			if (outline.count < 1) return;
 			
 			OutlineScene *scene = [outline objectAtIndex:from];

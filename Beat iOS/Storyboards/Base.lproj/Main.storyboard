@@ -41,14 +41,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Beat iOS beta build 5" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uJE-9r-peg">
-                                <rect key="frame" x="77" y="264" width="470" height="37"/>
+                                <rect key="frame" x="76" y="264" width="471" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="35"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Eg-eS-aRM">
-                                <rect key="frame" x="76" y="329" width="471" height="475"/>
+                                <rect key="frame" x="75" y="329" width="472" height="475"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <attributedString key="attributedText">
@@ -351,7 +351,7 @@ Lauri-Matti</string>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon-MacOS-512x512" translatesAutoresizingMaskIntoConstraints="NO" id="Qf1-4h-fbC">
-                                <rect key="frame" x="207" y="24" width="209" height="195"/>
+                                <rect key="frame" x="206" y="24" width="210" height="195"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -528,7 +528,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" id="hUb-18-I71">
-                                <rect key="frame" x="-4" y="20" width="1370" height="1004"/>
+                                <rect key="frame" x="-4" y="20" width="1370" height="1003"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -537,7 +537,7 @@ Lauri-Matti</string>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="1304" y="50" width="29" height="30"/>
+                                <rect key="frame" x="1304" y="50" width="28" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -589,18 +589,18 @@ Lauri-Matti</string>
             <objects>
                 <viewController storyboardIdentifier="ExportPanel" id="cTZ-MQ-L3k" customClass="BeatExportViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vov-F1-EAw">
-                        <rect key="frame" x="0.0" y="0.0" width="538" height="751"/>
+                        <rect key="frame" x="0.0" y="0.0" width="594" height="782"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Create PDF" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GeQ-hn-mHl">
-                                <rect key="frame" x="20" y="23" width="352" height="35"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Create PDF" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GeQ-hn-mHl">
+                                <rect key="frame" x="20" y="18" width="423" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="nAO-Zc-bHl">
-                                <rect key="frame" x="430" y="24" width="86" height="34"/>
+                                <rect key="frame" x="451" y="19" width="121" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Export"/>
@@ -609,7 +609,7 @@ Lauri-Matti</string>
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" id="7HU-hv-Dfh">
-                                <rect key="frame" x="0.0" y="50" width="538" height="701"/>
+                                <rect key="frame" x="-1" y="66" width="595" height="715"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="b5K-8U-mwc"/>
@@ -620,11 +620,36 @@ Lauri-Matti</string>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="538" height="751"/>
+                    <size key="freeformSize" width="594" height="782"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QsM-Aq-oio" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1540.4099560761347" y="1259.47265625"/>
+            <point key="canvasLocation" x="1552.2693997071742" y="1268.5546875"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="SRX-C8-T8D">
+            <objects>
+                <viewController id="evv-rp-poq" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="X5Z-jZ-SeG">
+                        <rect key="frame" x="0.0" y="0.0" width="490" height="785"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" id="V3j-D3-v3i">
+                                <rect key="frame" x="0.0" y="0.0" width="490" height="785"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="OPO-NW-28M"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6a0-ja-0AJ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <size key="freeformSize" width="490" height="785"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="e3f-Fc-Jyu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1819.3265007320642" y="1268.26171875"/>
         </scene>
         <!--Beat Quick Settings Table Controller-->
         <scene sceneID="DQX-af-bao">
@@ -803,7 +828,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="-2" y="-2" width="1367" height="1023"/>
+                                <rect key="frame" x="-2" y="-2" width="1367" height="1022"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
@@ -834,7 +859,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" id="NEB-De-fMw">
-                                <rect key="frame" x="-1" y="-2" width="350" height="385"/>
+                                <rect key="frame" x="-2" y="-2" width="351" height="385"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <segue destination="HAz-LJ-FEM" kind="embed" identifier="ToSettingsTable" id="CKM-B1-jv7"/>
@@ -856,27 +881,33 @@ Lauri-Matti</string>
             <objects>
                 <tableViewController storyboardIdentifier="ExportSettingsTable" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb">
-                        <rect key="frame" x="0.0" y="0.0" width="538" height="701"/>
+                        <rect key="frame" x="0.0" y="0.0" width="595" height="715"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <sections>
                             <tableViewSection headerTitle="Basic" id="rN0-KM-z31">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="6Mt-Kf-Tyf">
-                                        <rect key="frame" x="0.0" y="55.5" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6Mt-Kf-Tyf" id="tny-UM-U9c">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="XLb-yV-UnT">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="XLb-yV-UnT" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="16" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="printSceneNumbers"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="80E-eN-knT"/>
+                                                    </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Print Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Y5c-36-KGp">
-                                                    <rect key="frame" x="85" y="12" width="428" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Y5c-36-KGp">
+                                                    <rect key="frame" x="85" y="12" width="481" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -884,14 +915,14 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NpY-wm-OZj">
-                                        <rect key="frame" x="0.0" y="99" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="99" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NpY-wm-OZj" id="lLU-rr-q28">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="gh2-pi-ILw">
-                                                    <rect key="frame" x="364" y="6" width="155" height="32"/>
+                                                    <rect key="frame" x="421" y="6" width="155" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                                     <segments>
                                                         <segment title="A4"/>
@@ -899,7 +930,7 @@ Lauri-Matti</string>
                                                     </segments>
                                                 </segmentedControl>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paper Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Srs-ve-AYD">
-                                                    <rect key="frame" x="16" y="11" width="326" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="360" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -910,22 +941,108 @@ Lauri-Matti</string>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Scene Headings" id="Fib-N7-hu1">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="xAX-4R-fPE">
+                                        <rect key="frame" x="0.0" y="198.5" width="595" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xAX-4R-fPE" id="nG1-dD-84e">
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="Z3a-gl-jqf" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="16" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="headingStyleBold"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="gp7-Yb-VuH"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bolded" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9JD-eB-aMS">
+                                                    <rect key="frame" x="85" y="12" width="481" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="DNv-SW-2Lx">
+                                        <rect key="frame" x="0.0" y="242" width="595" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DNv-SW-2Lx" id="WNq-K1-3nY">
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="BLS-CE-7qL" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="16" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="headingStyleUnderline"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="C88-Go-KmL"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Underlined" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uzg-si-Fvs">
+                                                    <rect key="frame" x="85" y="12" width="481" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="slY-Sd-n4S">
+                                        <rect key="frame" x="0.0" y="285.5" width="595" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="slY-Sd-n4S" id="DcY-e9-cfb">
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading Spacing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2bc-pY-Rnx">
+                                                    <rect key="frame" x="16" y="11" width="360" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="BSJ-yG-6AA">
+                                                    <rect key="frame" x="456" y="6" width="119" height="32"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                                    <segments>
+                                                        <segment title="2 lines"/>
+                                                        <segment title="1 line"/>
+                                                    </segments>
+                                                </segmentedControl>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Advanced — Revisions" id="Yv8-mh-xoT">
                                 <string key="footerTitle">Select revision generations you want to have highlighted with markers. If you haven't used revisions, you can leave this untouched.</string>
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="ULA-kx-bx8">
-                                        <rect key="frame" x="0.0" y="206" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="392.5" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ULA-kx-bx8" id="NV9-Iz-A20">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="wAD-UQ-H34">
                                                     <rect key="frame" x="16" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="gRw-pU-ZbS"/>
+                                                    </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="U20-vL-3Kp">
-                                                    <rect key="frame" x="112" y="11" width="406" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="460" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -939,18 +1056,21 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="B4D-fq-NIz">
-                                        <rect key="frame" x="0.0" y="249.5" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="436" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="B4D-fq-NIz" id="txa-Em-pSW">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="4y9-mv-NAU">
                                                     <rect key="frame" x="16" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="7Go-5M-1k4"/>
+                                                    </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Second" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Yz4-pp-QPE">
-                                                    <rect key="frame" x="112" y="11" width="406" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="460" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -964,18 +1084,21 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4yk-Ho-OCt">
-                                        <rect key="frame" x="0.0" y="293" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="479.5" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4yk-Ho-OCt" id="W48-jZ-oE1">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="PGs-Py-6eF">
                                                     <rect key="frame" x="16" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="2lx-ur-xV1"/>
+                                                    </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Third" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZaR-tV-m5B">
-                                                    <rect key="frame" x="112" y="10" width="406" height="21"/>
+                                                    <rect key="frame" x="112" y="10" width="460" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -989,18 +1112,21 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="hxI-VH-DbY">
-                                        <rect key="frame" x="0.0" y="336.5" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="523" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hxI-VH-DbY" id="FIA-dm-ghJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="yHw-4s-Sle">
                                                     <rect key="frame" x="16" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="PPn-Iw-sTp"/>
+                                                    </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fourth" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="54L-g1-QPA">
-                                                    <rect key="frame" x="112" y="11" width="406" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="460" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1018,10 +1144,10 @@ Lauri-Matti</string>
                             <tableViewSection headerTitle="Advanced — Invisible elements" footerTitle="Includes selected invisible elements in your printout." id="TaO-aF-sl5">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="uK9-uA-bSU">
-                                        <rect key="frame" x="0.0" y="471.5" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="658" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uK9-uA-bSU" id="nJz-Is-x6g">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1029,13 +1155,14 @@ Lauri-Matti</string>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Sections"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Ufv-ha-Ec1"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUa-d2-ptJ">
-                                                    <rect key="frame" x="82" y="11" width="435" height="21"/>
+                                                    <rect key="frame" x="82" y="11" width="489" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1045,10 +1172,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="T98-YH-OcS">
-                                        <rect key="frame" x="0.0" y="515" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="701.5" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="T98-YH-OcS" id="tY2-xQ-a5K">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1056,13 +1183,14 @@ Lauri-Matti</string>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Synopsis"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Sw5-Ey-raa"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synopsis" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hzi-ti-rtG">
-                                                    <rect key="frame" x="82" y="11" width="435" height="21"/>
+                                                    <rect key="frame" x="82" y="11" width="489" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1072,10 +1200,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="lou-S8-ZDK">
-                                        <rect key="frame" x="0.0" y="558.5" width="538" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="745" width="595" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lou-S8-ZDK" id="GVy-EO-j8Y">
-                                            <rect key="frame" x="0.0" y="0.0" width="538" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1083,13 +1211,14 @@ Lauri-Matti</string>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Notes"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="0OH-TG-LKU"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jk1-en-hR5">
-                                                    <rect key="frame" x="82" y="10" width="435" height="21"/>
+                                                    <rect key="frame" x="82" y="10" width="489" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1108,7 +1237,13 @@ Lauri-Matti</string>
                     </tableView>
                     <connections>
                         <outlet property="paperSize" destination="gh2-pi-ILw" id="DM8-7W-yff"/>
+                        <outlet property="printNotes" destination="W2U-dT-KWo" id="UGc-3K-NiX"/>
                         <outlet property="printSceneNumbers" destination="XLb-yV-UnT" id="3od-lq-XaG"/>
+                        <outlet property="printSections" destination="ncs-aU-t6r" id="fdg-nt-Hkb"/>
+                        <outlet property="printSynopsis" destination="ncs-aU-t6r" id="Kiz-YL-rXM"/>
+                        <outlet property="sceneHeadingBolded" destination="Z3a-gl-jqf" id="Ys7-va-Tz9"/>
+                        <outlet property="sceneHeadingSpacing" destination="BSJ-yG-6AA" id="UiI-I6-PIn"/>
+                        <outlet property="sceneHeadingUnderlined" destination="BLS-CE-7qL" id="H8t-aj-m0z"/>
                         <outletCollection property="revisionSwitches" destination="wAD-UQ-H34" collectionClass="NSMutableArray" id="dFd-Yc-ocZ"/>
                         <outletCollection property="revisionSwitches" destination="4y9-mv-NAU" collectionClass="NSMutableArray" id="c2W-eW-70V"/>
                         <outletCollection property="revisionSwitches" destination="PGs-Py-6eF" collectionClass="NSMutableArray" id="8eO-gu-hfU"/>
@@ -1117,7 +1252,7 @@ Lauri-Matti</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5mG-Vs-h0d" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1540.6295754026353" y="1807.3242187499998"/>
+            <point key="canvasLocation" x="1702" y="1846"/>
         </scene>
         <!--Template Collection View Controller-->
         <scene sceneID="mMs-uE-X02">
@@ -1128,7 +1263,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KJ2-fc-psw">
-                                <rect key="frame" x="10" y="80" width="732" height="909"/>
+                                <rect key="frame" x="10" y="79" width="732" height="910"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TOx-BZ-voc">
@@ -1202,6 +1337,9 @@ Lauri-Matti</string>
             <point key="canvasLocation" x="-94.216691068814043" y="-17.578125"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="b5K-8U-mwc"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="Color_Blue" width="15" height="15"/>
         <image name="Color_Green" width="15" height="15"/>

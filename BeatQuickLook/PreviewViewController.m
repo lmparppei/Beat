@@ -106,8 +106,6 @@
 - (bool)contentLocked { return true; }
 - (Line *)currentLine { return self.parser.lines.firstObject; }
 - (CGFloat)editorLineHeight { return 12.0; }
-- (NSArray *)getOutline { return self.document.parser.outline; }
-- (NSArray<OutlineScene *> *)getOutlineItems { return [self getOutline]; }
 - (NSTextView *)getTextView { return nil; }
 - (bool)hasChanged { return false; }
 - (bool)isDark { return false; }

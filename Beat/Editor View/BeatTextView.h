@@ -62,7 +62,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (nonatomic, readonly) BeatStylesheet *editorStyles;
 
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-- (NSArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 - (bool)isDark;
 - (void)updateLayout;

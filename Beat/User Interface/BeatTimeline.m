@@ -441,7 +441,11 @@
 	
 	[(BeatTimelineItem*)item select];
 	NSInteger index = [_outline indexOfObject:[(BeatTimelineItem*)item representedItem]];
-	if (index != NSNotFound) [_delegate didSelectTimelineItem:index];
+	
+	if (index != NSNotFound) {
+		OutlineScene* scene = _outline[index];
+		[self.delegate scrollToScene:scene];
+	}
 }
 // Multiple timeline items were selected using CMD. Called by the item.
 - (void)addSelected:(id)item {

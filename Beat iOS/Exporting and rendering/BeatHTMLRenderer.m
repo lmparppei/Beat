@@ -441,18 +441,7 @@
 	NSAttributedString *string = [line attributedStringForOutputWith:self.settings];
 	
 	// Ignore any formatting and only include CONTENT ranges
-	NSMutableAttributedString *result = NSMutableAttributedString.new;
-	
-	NSIndexSet *indices;
-	if (!_settings.printNotes) {
-		indices = line.contentRanges;
-	} else {
-		indices = line.contentRangesWithNotes;
-	}
-	
-	[indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[result appendAttributedString:[string attributedSubstringFromRange:range]];
-	}];
+	NSMutableAttributedString *result = [NSMutableAttributedString.alloc initWithAttributedString:string];
 		
 	NSMutableString *htmlString = NSMutableString.string;
 	

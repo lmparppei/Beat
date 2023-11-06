@@ -12,7 +12,6 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPlugins/BeatPlugins.h>
 
-#import "BeatEditorFormatting.h"
 #import "BeatPreview.h"
 
 #import "Beat-Swift.h"
@@ -284,15 +283,25 @@
 	}];
 }
 
+- (void)ensureLayout
+{
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	
+	//if (self.showPageNumbers) [self.textView updatePageNumbers];
+	
+	[self.textView setNeedsDisplay];
+	[self.textView setNeedsLayout];
+}
+
 
 #pragma mark - Editor styles
 
 - (BeatStylesheet *)editorStyles {
-	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[_documentSettings getString:@"Stylesheet"]];
+	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[_documentSettings getString:DocSettingStylesheet]];
 	return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
 }
 - (BeatStylesheet *)styles {
-	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[_documentSettings getString:@"Stylesheet"]];
+	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[_documentSettings getString:DocSettingStylesheet]];
 	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
@@ -397,6 +406,11 @@
 
 
 #pragma mark - Getters for parser data
+/**
+ 
+ These shouldn't exist to be honest, save for maybe `currentScene`. This is mostly a backwards-compatibility thing, and any new classes should target the parser methods directly.
+ 
+ */
 
 - (OutlineScene*)currentScene {
 	// If we are not on the main thread, return the latest known scene
@@ -413,21 +427,8 @@
 	return _currentScene;
 }
 
-- (NSArray*)getOutlineItems {
-	// Make a copy of the outline to avoid threading issues
-	_outline = self.parser.outline.copy;
-	return _outline;
-}
-- (NSArray*)getOutline {
-	return [self getOutlineItems];
-}
-
 - (NSMutableArray<Line*>*)lines {
 	return self.parser.lines;
-}
-
-- (NSArray *)scenes {
-	return [self getOutlineItems];
 }
 
 - (NSArray*)linesForScene:(OutlineScene*)scene {
@@ -501,7 +502,7 @@
 }
 
 - (OutlineScene*)getPreviousScene {
-	NSArray *outline = [self getOutlineItems];
+	NSArray *outline = self.parser.outline;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = self.currentLine;
@@ -521,7 +522,7 @@
 	return nil;
 }
 - (OutlineScene*)getNextScene {
-	NSArray *outline = [self getOutlineItems];
+	NSArray *outline = self.parser.outline;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = self.currentLine;
@@ -1194,7 +1195,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 /// Selects the scene at given index and scrolls it into view
 - (void)scrollToSceneIndex:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	OutlineScene *scene = [self.parser.outline objectAtIndex:index];
 	if (!scene) return;
 	
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
@@ -1264,13 +1265,20 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Style getters
 
-- (bool)headingStyleBold {
+- (bool)headingStyleBold
+{
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
 }
-- (bool)headingStyleUnderline {
+- (bool)headingStyleUnderline
+{
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 }
 
+- (void)applySettingsAndRefresh
+{
+	[self.formatting formatAllLinesOfType:heading];
+	[self resetPreview];
+}
 
 
 #pragma mark - Formatting
@@ -1351,7 +1359,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (IBAction)openExportPanel:(id)sender {
 	BeatExportViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportPanel"];
-	vc.modalPresentationStyle = UIModalPresentationPopover;
+	vc.modalPresentationStyle = UIModalPresentationFormSheet;
 	vc.popoverPresentationController.barButtonItem = sender;
 	vc.senderButton = sender;
 	vc.senderVC = self;

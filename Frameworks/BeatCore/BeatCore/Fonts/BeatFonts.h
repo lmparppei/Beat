@@ -22,11 +22,18 @@
     #define BXFontDescriptor UIFontDescriptor
     #define BXFontDescriptorTraitBold UIFontDescriptorTraitBold
     #define BXFontDescriptorTraitItalic UIFontDescriptorTraitItalic
+
+    #define BXItalicFontMask 0x00000001
+    #define BXBoldFontMask 0x00000002
+
 #else
     #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
     #define BXFontDescriptor NSFontDescriptor
     #define BXFontDescriptorTraitBold NSFontDescriptorTraitBold
     #define BXFontDescriptorTraitItalic NSFontDescriptorTraitItalic
+
+    #define BXItalicFontMask NSItalicFontMask
+    #define BXBoldFontMask NSBoldFontMask
 #endif
 
 NS_ASSUME_NONNULL_BEGIN

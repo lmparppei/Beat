@@ -24,6 +24,7 @@
 @implementation BeatDocumentSettings
 
 NSString * const DocSettingRevisions = @"Revision";
+NSString * const DocSettingHiddenRevisions = @"Hidden Revisions";
 NSString * const DocSettingRevisionColor = @"Revision Color";
 NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";

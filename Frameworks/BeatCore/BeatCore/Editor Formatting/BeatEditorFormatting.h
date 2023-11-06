@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatEditorDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,11 +21,16 @@ typedef enum {
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 @property (nonatomic) bool didProcessForcedCharacterCue;
 
--(instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
+- (instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
 
+/// Formats a single line
 - (void)formatLine:(Line*)line;
+/// Formats a single line (for the first time if set)
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime;
+/// Format all lines in given range (including intersecting ones)
 - (void)formatLinesInRange:(NSRange)range;
+/// Format all lines of given type in the whole document
+- (void)formatAllLinesOfType:(LineType)type;
 
 - (void)forceEmptyCharacterCue;
 - (void)refreshRevisionTextColors;

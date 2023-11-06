@@ -92,9 +92,6 @@
 
 #pragma mark Shorthands for parser data. These should be deprecated and only accessed via the parser
 
-- (NSArray<OutlineScene*>*)getOutlineItems;
-- (NSArray*)getOutline; // Shorthand alias
-
 - (NSAttributedString*)attributedString;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 
@@ -141,6 +138,8 @@
 /// Forces text reformat and editor view updates
 - (void)textDidChange:(NSNotification *)notification;
 
+/// Ensures layout of the text view
+- (void)ensureLayout;
 
 #pragma mark - Editor item visibility
 
@@ -165,6 +164,7 @@
 - (void)scrollToLine:(Line*)line;
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
+- (void)scrollToScene:(OutlineScene*)scene;
 - (void)setTypingAttributes:(NSDictionary*)attrs;
 - (void)refreshTextViewLayoutElements;
 - (void)refreshTextViewLayoutElementsFrom:(NSInteger)location;

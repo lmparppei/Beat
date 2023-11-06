@@ -37,7 +37,6 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 @property (nonatomic, readwrite) NSRange selectedRange;
 @optional @property (nonatomic) NSUndoManager* undoManager;
 - (Line*)currentLine;
-- (NSArray<OutlineScene*>*)getOutlineItems;
 - (BXTextView*)getTextView;
 - (NSString*)text;
 - (void)textDidChange:(NSNotification *)notification;

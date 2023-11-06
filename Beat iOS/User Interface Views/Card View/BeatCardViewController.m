@@ -124,7 +124,7 @@
  */
 
 - (NSArray*)outline {
-	if (!_outline) _outline = self.editorDelegate.getOutline;
+	if (!_outline) _outline = self.editorDelegate.parser.outline.copy;
 	return _outline;
 }
 

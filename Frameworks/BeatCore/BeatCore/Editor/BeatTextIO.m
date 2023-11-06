@@ -255,7 +255,7 @@
     }
     
     // Create a new outline before trusting it
-    NSArray *outline = [self.delegate getOutlineItems];
+    NSArray *outline = self.delegate.parser.outline;
     
     // When an item is dropped at the end, its target index will be +1 from the last item
     bool moveToEnd = false;

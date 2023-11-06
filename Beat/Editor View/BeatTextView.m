@@ -38,7 +38,6 @@
 #import "ScrollView.h"
 #import "BeatPasteboardItem.h"
 #import "Beat-Swift.h"
-#import "BeatEditorFormatting.h"
 #import "BeatClipView.h"
 
 

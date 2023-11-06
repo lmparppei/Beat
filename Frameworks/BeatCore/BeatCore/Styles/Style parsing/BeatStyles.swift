@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import BeatCore
 
 struct BeatStylesheetInfo {
     var name:String = ""
@@ -18,10 +17,17 @@ public class BeatStyles:NSObject {
     @objc static public let shared = BeatStyles()
     @objc static public var defaultStyleName = "Screenplay"
     
+    /// Default styles for exporting
     @objc public var defaultStyles:BeatStylesheet { return self.styles() }
+    /// Default styles for editor
     @objc public var defaultEditorStyles:BeatStylesheet { return self.editorStyles() }
     
+    /// Default line height
+    @objc class var lineHeight:CGFloat { return 12.0 }
+    
+    /// Available stylesheets
     var _stylesheets:[String:URL]?
+    /// Currently loaded styles
     private var _loadedStyles:[String:BeatStylesheet] = [:]
 
     /// Returns stylesheet dictionary with `name: url`

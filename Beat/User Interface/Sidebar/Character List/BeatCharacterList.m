@@ -95,6 +95,7 @@
 	[self.editorDelegate registerEditorView:self];
 }
 
+#pragma mark - Drawing
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
@@ -115,6 +116,8 @@
 	}
 }
 
+#pragma mark - Table data source
+
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 
 	return _characterNames.count;
@@ -124,6 +127,7 @@
 	NSString *key = [self sortCharactersByLines][row];
 	return _characterNames[key];
 }
+
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
 	BeatCharacter *character = [tableView.dataSource tableView:tableView objectValueForTableColumn:tableColumn row:row];
 	
@@ -140,7 +144,27 @@
 	}
 }
 
--(void)reloadView {
+-(void)didClick:(id)sender
+{
+	if (self.clickedRow == _previouslySelected) {
+		//[_popover close];
+		[self deselectAll:nil];
+		_previouslySelected = -1;
+	} else {
+		_previouslySelected = self.clickedRow;
+	}
+}
+
+-(BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+	return YES;
+}
+
+
+#pragma mark - Conform to Beat view protocol
+
+-(void)reloadView
+{
 	NSInteger selectedRow = self.selectedRow;
 	NSArray *lines = self.editorDelegate.parser.lines.copy;
 	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
@@ -152,8 +176,11 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
 		Line *scene;
 		
+		NSDictionary* characterGenders = self.characterGenders;
+		if (characterGenders == nil) characterGenders = @{};
+		
 		for (Line* line in lines) { @autoreleasepool {
-			// WIP: We need to get the actual OutlineScene here
+			// WIP: We need to get the actual OutlineScene here (update: why though?)
 			if (line.type == heading) scene = line;
 			
 			if (line.type == character || line.type == dualDialogueCharacter) {
@@ -173,9 +200,8 @@
 					charactersAndLines[name] = character;
 				}
 				
-				NSString *gender;
-				if (self.editorDelegate.characterGenders[character.name]) gender = self.editorDelegate.characterGenders[character.name];
-				else gender = @"unspecified";
+				NSString *gender = characterGenders[character.name];
+				if (gender == nil) gender = @"unspecified";
 				
 				[genders addObject:gender];
 				character.gender = gender.copy;
@@ -202,13 +228,32 @@
 	});
 }
 
--(void)reloadInBackground {
+-(void)reloadInBackground
+{
 	if (_reloadTimer.valid) [_reloadTimer invalidate];
 	
 	_reloadTimer = [NSTimer scheduledTimerWithTimeInterval:.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
 		[self reloadView];
 	}];
 }
+
+
+#pragma mark - Data getters and setters
+
+- (NSDictionary*)characterGenders
+{
+	NSDictionary* genders = [_editorDelegate.documentSettings get:DocSettingCharacterGenders];
+	return (genders) ? genders : @{};
+}
+
+- (void)saveCharacterGenders:(NSDictionary*)genders
+{
+	if (genders == nil) genders = @{};
+	[_editorDelegate.documentSettings set:DocSettingCharacterGenders as:genders];
+}
+
+
+#pragma mark - Character data
 
 - (NSArray*)sortCharactersByLines {
 	NSArray *sortedKeys = [_characterNames keysSortedByValueUsingComparator: ^(BeatCharacter* obj1, BeatCharacter* obj2) {
@@ -217,21 +262,9 @@
 	return sortedKeys;
 }
 
--(void)didClick:(id)sender {
-	if (self.clickedRow == _previouslySelected) {
-		//[_popover close];
-		[self deselectAll:nil];
-		_previouslySelected = -1;
-	} else {
-		_previouslySelected = self.clickedRow;
-	}
-}
 
--(BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
-	return YES;
-}
-
-- (IBAction)showCharacterInfo:(id)sender {
+- (IBAction)showCharacterInfo:(id)sender
+{
 	if (self.popoverManager) {
 		[self.popoverManager.popover close];
 		self.popoverManager = nil;
@@ -246,7 +279,8 @@
 }
 
 
-- (IBAction)selectGender:(id)sender {
+- (IBAction)selectGender:(id)sender
+{
 	NSString *gender;
 	if (sender == _radioOther) gender = @"other";
 	else if (sender == _radioWoman) gender = @"woman";
@@ -257,9 +291,9 @@
 	
 	if (gender.length && character.name.length) {
 		// Set gender
-		NSMutableDictionary* genders = _editorDelegate.characterGenders.mutableCopy;
+		NSMutableDictionary* genders = self.characterGenders.mutableCopy;
 		genders[character.name] = gender;
-		_editorDelegate.characterGenders = genders;
+		[self saveCharacterGenders:genders];
 		
 		[self reloadView];
 	}
@@ -302,7 +336,8 @@
 	}
 }
 
--(void)tableViewSelectionDidChange:(NSNotification *)notification {
+-(void)tableViewSelectionDidChange:(NSNotification *)notification
+{
 	// Hide popover when deselected
 	if (self.selectedRow == -1) [self.popover close];
 	else if (self.selectedRow != NSNotFound) {
@@ -314,21 +349,20 @@
 {
 	if (gender.length && name.length) {
 		// Set gender
-		NSMutableDictionary* genders = _editorDelegate.characterGenders.mutableCopy;
+		NSMutableDictionary* genders = self.characterGenders.mutableCopy;
 		genders[name] = gender;
-		_editorDelegate.characterGenders = genders;
+		[self saveCharacterGenders:genders];
 		
 		[self reloadView];
 	}
 }
+
 -(NSString *)getGenderForName:(NSString *)name
 {
 	if (name.length == 0) return nil;
-	return _editorDelegate.characterGenders[name];
+	return self.characterGenders[name];
 }
 
-
-#pragma mark - Popover delegate
 
 
 @end

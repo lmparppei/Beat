@@ -8,6 +8,7 @@
 
 #import "BeatPaginationBlockGroup.h"
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore-Swift.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import "BeatPagination.h"
 #import "BeatPaginationBlock.h"

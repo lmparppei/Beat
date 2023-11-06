@@ -367,12 +367,9 @@
 	}
 }
 
-- (NSArray*)outline {
-	NSArray *outline;
-	if (!self.editorDelegate.parser.outline.count) outline = [self.editorDelegate getOutlineItems];
-	else outline = self.editorDelegate.parser.outline;
-	
-	return outline;
+- (NSArray*)outline
+{
+	return self.editorDelegate.parser.outline;
 }
 
 

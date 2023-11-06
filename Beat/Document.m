@@ -102,7 +102,6 @@
 #import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
 #import "BeatCharacterList.h"
-#import "BeatEditorFormatting.h"
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
@@ -479,7 +478,6 @@ static BeatAppDelegate *appDelegate;
 	[self setupResponderChain];
 	[self setupTextView];
 	[self setupTouchTimeline];
-	[self setupAnalysis];
 	[self setupColorPicker];
 	[self.outlineView setup];
 	
@@ -685,7 +683,7 @@ static BeatAppDelegate *appDelegate;
 	[defaults readUserDefaultsFor:self];
 	
 	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
-		[self formatAllLinesOfType:heading];
+		[self.formatting formatAllLinesOfType:heading];
 		[self.previewController resetPreview];
 	}
 	
@@ -1075,12 +1073,11 @@ static NSWindow __weak *currentKeyWindow;
 	self.splitHandle.topOrRightMinSize = value;
 }
 
-- (void)ensureLayout {
+- (void)ensureLayout
+{
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
-	// When ensuring layout, we'll update all scene number labels
 	if (self.showPageNumbers) [self.textView updatePageNumbers];
-	//if (self.showSceneNumberLabels) [self.textView resetSceneNumberLabels];
 	
 	self.textView.needsDisplay = true;
 	self.textView.needsLayout = true;
@@ -1753,10 +1750,6 @@ static NSWindow __weak *currentKeyWindow;
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
-		if (self.sidebarVisible || self.timeline.visible || self.runningPlugins) {
-			self.outline = [self getOutlineItems];
-		}
-		
 		[self updateUIwithCurrentScene];
 		
 		// Update tag view
@@ -1885,7 +1878,7 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (OutlineScene*)getPreviousScene {
-	NSArray *outline = [self getOutlineItems];
+	NSArray *outline = self.parser.safeOutline;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = [self getCurrentLine];
@@ -1905,7 +1898,7 @@ static NSWindow __weak *currentKeyWindow;
 	return nil;
 }
 - (OutlineScene*)getNextScene {
-	NSArray *outline = [self getOutlineItems];
+	NSArray *outline = self.parser.safeOutline;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = [self getCurrentLine];
@@ -2195,15 +2188,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.parser resetParsing];
 	[self applyFormatChanges];
 	[self formatAllLines];
-}
-
-- (void)formatAllLinesOfType:(LineType)type
-{
-	for (Line* line in self.parser.lines) {
-		if (line.type == type) [_formatting formatLine:line];
-	}
-	
-	[self ensureLayout];
 }
 
 - (void)formatAllLines
@@ -3188,11 +3172,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	else return self.parser.outline.copy;
 }
 
-- (NSArray*)getOutlineItems
-{
-	return self.outline;
-}
-
 - (NSMutableArray*)filteredOutline
 {
 	return self.outlineView.filteredOutline;
@@ -3491,10 +3470,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return self.parser.lines;
 }
 
-- (NSArray *)scenes {
-	return [self getOutlineItems];
-}
-
 - (NSArray*)linesForScene:(OutlineScene*)scene {
 	return [self.parser linesForScene:scene];
 }
@@ -3530,35 +3505,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 
-#pragma mark - JavaScript message listeners
-
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
-	if ([message.name isEqualToString:@"selectSceneFromScript"]) {
-		NSInteger sceneIndex = [message.body integerValue];
-		
-		[self preview:nil];
-		if (sceneIndex < self.getOutlineItems.count) {
-			OutlineScene *scene = [self.getOutlineItems objectAtIndex:sceneIndex];
-			if (scene) [self scrollToScene:scene];
-		}
-	}
-	
-	if ([message.name isEqualToString:@"jumpToScene"]) {
-		OutlineScene *scene = [self.getOutlineItems objectAtIndex:[message.body intValue]];
-		[self scrollToScene:scene];
-		return;
-	}
-	
-	if ([message.name isEqualToString:@"cardClick"]) {
-		[self toggleCards:nil];
-		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
-		[self scrollToScene:scene];
-		
-		return;
-	}
-}
-
-
 #pragma mark - Scene numbering
 
 - (void)setPrintSceneNumbers:(bool)value {
@@ -3567,7 +3513,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (IBAction)togglePrintSceneNumbers:(id)sender
 {
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 	for (Document* doc in openDocuments) {
 		doc.printSceneNumbers = !doc.printSceneNumbers;
 	}
@@ -3697,22 +3643,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.touchbarTimeline.visible = true;
 	[self.touchbarTimeline reloadView];
 }
-- (void) touchPopoverDidHide {
+- (void)touchPopoverDidHide {
 	self.touchbarTimeline.visible = false;
-}
-- (void)didSelectTimelineItem:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
-	[self scrollToScene:scene];
-}
-
-- (nonnull NSArray *)getOutline {
-	return [self getOutlineItems];
 }
 
 
 #pragma mark - Analysis
-
-// This is a horrible mess, but whatever
 
 - (IBAction)showAnalysis:(id)sender {
 	_analysisWindow = [[BeatStatisticsPanel alloc] initWithParser:self.parser delegate:self];
@@ -3721,17 +3657,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}];
 }
 
-- (NSDictionary<NSString*, NSString*>*)characterGenders {
+
+#pragma mark - Character gender getter
+
+/// Quick access to gender list.
+- (NSDictionary<NSString*, NSString*>*)characterGenders
+{
 	NSDictionary * genders = [self.documentSettings get:DocSettingCharacterGenders];
 	if (genders != nil) return genders;
 	return @{};
 }
--(void)setCharacterGenders:(NSDictionary<NSString *,NSString *> *)characterGenders {
-	[self.documentSettings set:DocSettingCharacterGenders as:characterGenders];
-}
 
-- (void)setupAnalysis {
-}
 
 /*
  
@@ -3834,9 +3770,15 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
+	
 	[self updateLayout];
+	
 	[self paginate];
 	[self.previewController resetPreview];
+	
+	// Ensure layout for text container
+	[self.textView setInsets];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 }
 
 - (NSInteger)numberOfPages {
@@ -4399,17 +4341,20 @@ static NSArray<Line*>* cachedTitlePage;
 
 #pragma mark - Scrolling
 
-- (void)scrollToSceneNumber:(NSString*)sceneNumber {
+- (void)scrollToSceneNumber:(NSString*)sceneNumber
+{
 	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
 	OutlineScene *scene = [self.parser sceneWithNumber:sceneNumber];
 	if (scene != nil) [self scrollToScene:scene];
 }
-- (void)scrollToScene:(OutlineScene*)scene {
+- (void)scrollToScene:(OutlineScene*)scene
+{
 	[self selectAndScrollTo:scene.line.textRange];
 	[self.documentWindow makeFirstResponder:self.textView];
 }
 /// Legacy method. Use selectAndScrollToRange
-- (void)scrollToRange:(NSRange)range {
+- (void)scrollToRange:(NSRange)range
+{
 	[self selectAndScrollTo:range];
 }
 
@@ -4434,7 +4379,7 @@ static NSArray<Line*>* cachedTitlePage;
 }
 /// Selects the scene at given index and scrolls it into view
 - (void)scrollToSceneIndex:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	OutlineScene *scene = [self.parser.outline objectAtIndex:index];
 	if (!scene) return;
 	
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);

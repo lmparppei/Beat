@@ -27,7 +27,8 @@
     #define BXBezierPath UIBezierPath
 
     // Because of different line heights on iOS, we'll need to add an offset
-    #define Y_OFFSET -3.5
+    //#define Y_OFFSET -3.5
+    #define Y_OFFSET -1.0
 
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
     #define getRectValue CGRectValue

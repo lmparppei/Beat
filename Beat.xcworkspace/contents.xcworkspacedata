@@ -11,13 +11,13 @@
       location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Beat macOS.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Beat iOS.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Frameworks/BeatPagination2/BeatPagination2.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatThemes/../BeatDynamicColor/BeatDynamicColor.xcodeproj">
