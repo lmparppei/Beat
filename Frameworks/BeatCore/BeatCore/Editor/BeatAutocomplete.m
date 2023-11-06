@@ -41,11 +41,13 @@
     NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = NSMutableDictionary.new;
     
 #if !TARGET_OS_IOS
+	/*
 	// If there was a character selected in Character Filter Box, save it
 	NSString *selectedCharacter = _characterBox.selectedItem.title;
 		
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
+	 */
 #endif
     
 	Line* currentLine = self.delegate.currentLine;
@@ -69,7 +71,7 @@
 			// Add character to list
 			if (character && ![characterList containsObject:character]) {
 #if !TARGET_OS_IOS
-				[_characterBox addItemWithTitle:character]; // Add into the dropown
+				//[_characterBox addItemWithTitle:character]; // Add into the dropown
 #endif
 				[characterList addObject:character];
 			}
@@ -97,11 +99,13 @@
 	
 	// There was a character selected in the filtering menu, so select it again (if applicable)
 #if !TARGET_OS_IOS
+	/*
 	if (selectedCharacter.length) {
 		for (NSMenuItem *item in _characterBox.itemArray) {
 			if ([item.title isEqualToString:selectedCharacter]) [_characterBox selectItem:item];
 		}
 	}
+	 */
 #endif
 }
 

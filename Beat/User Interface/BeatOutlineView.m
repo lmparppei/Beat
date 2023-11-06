@@ -22,7 +22,7 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 
-@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate>
+@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate>
 
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 
@@ -107,6 +107,8 @@
 	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
 	self.filteredOutline = [NSMutableArray array];
+	
+	self.characterBox.menu.delegate = self;
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -642,7 +644,7 @@
 	}
 	
 	// Hide / show button to reset filters
-	if ([_filters filterColor]) [_resetColorFilterButton setHidden:NO]; else [_resetColorFilterButton setHidden:YES];
+	if (_filters.colors.count > 0) [_resetColorFilterButton setHidden:NO]; else [_resetColorFilterButton setHidden:YES];
 	
 	// Reload outline and set visual masks to apply the filter
 	[self reloadOutline];
@@ -738,6 +740,42 @@
 	[self.filters byText:_outlineSearchField.stringValue];
 	[self reloadOutline];
 }
+
+
+#pragma mark - Reload characters
+
+- (void)menuWillOpen:(NSMenu *)menu
+{
+	if (menu != self.characterBox.menu) return;
+	
+	// Get previously selected character
+	NSString* selected = self.characterBox.selectedItem.title;
+	
+	[menu removeAllItems];
+	
+	// Add an empty item at the beginning
+	[self.characterBox addItemWithTitle:@" "];
+	
+	// Let's collect character names
+	[self.editorDelegate.autocompletion collectCharacterNames];
+	
+	NSArray* names = self.editorDelegate.autocompletion.characterNames;
+	for (NSString* name in names) {
+		if (name.length == 0) continue;
+		
+		[self.characterBox addItemWithTitle:name.uppercaseString];		
+	}
+	
+	if (selected.length) {
+		for (NSMenuItem* item in self.characterBox.itemArray) {
+			if ([item.title isEqualToString:selected]) {
+				[self.characterBox selectItem:item];
+				break;
+			}
+		}
+	}
+}
+
 
 @end
 /*

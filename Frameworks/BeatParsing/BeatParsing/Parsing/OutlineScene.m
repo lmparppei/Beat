@@ -189,7 +189,7 @@
 	NSMutableSet *names = NSMutableSet.set;
 	
 	for (Line* line in lines) {
-		if (line.isOutlineElement && line.type != synopse) break;
+		if (line.isOutlineElement && line.type != synopse && line != self.line) break;
 		else if (line.type == character || line.type == dualDialogueCharacter) {
 			NSString *characterName = line.characterName;
 			if (characterName.length) [names addObject:line.characterName];

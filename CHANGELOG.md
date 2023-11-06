@@ -1,5 +1,18 @@
 # Changelog
 
+## Beat 1.997.2
+
+- Preliminary markup support in notepad
+- Fixed bugs with overlapping formatting
+- Fixed drag & drop in text view
+- Fixed and optimized character filtering in outline
+- Optimization
+
+
+## Beat 1.997.1
+
+- All sorts of fixes
+
 ## Beat 1.997.0
 
 - Fixes issues with Cyrillic ѐ (ye with grave)
