@@ -1553,6 +1553,9 @@ double clamp(double d, double min, double max) {
 {
 	NSMutableArray* types = [NSMutableArray arrayWithArray:[super readablePasteboardTypes]];
 	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
+	// No idea why these are not available
+	[types insertObject:@"public.utf16-plain-text" atIndex:1];
+	[types insertObject:@"public.utf8-plain-text" atIndex:2];
 	return types;
 }
 
@@ -1589,7 +1592,7 @@ double clamp(double d, double min, double max) {
 	
 	// See if we can read anything from the pasteboard
 	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
-
+		
 	if (ok) {
 		// We know for a fact that if the data originated from beat, the FIRST item will be
 		// the custom object we created when copying. So let's just pick the first one of the

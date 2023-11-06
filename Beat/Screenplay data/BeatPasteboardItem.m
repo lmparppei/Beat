@@ -48,7 +48,7 @@
 
 +(NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard
 {
-	return @[UTI];
+	return @[UTI, @"public.utf8-plain-text", NSPasteboardTypeString];
 }
 
 - (NSArray *)writableTypesForPasteboard:(NSPasteboard *)pasteboard {
@@ -63,6 +63,7 @@
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
 	BeatPasteboardItem *item = [[self.class allocWithZone:zone] init];
 	item->_attrString = [_attrString copyWithZone:zone];
+	
 	return item;
 }
 
