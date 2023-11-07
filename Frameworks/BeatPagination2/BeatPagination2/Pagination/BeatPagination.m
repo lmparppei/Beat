@@ -104,10 +104,9 @@
 	if (self) {
 		_delegate = delegate;
 		_fonts = BeatFonts.sharedFonts;
-        		
+        
 		_lines = (lines != nil) ? lines : @[];
 		_titlePageContent = (titlePage != nil) ? titlePage : @[];
-		//_cachedPages = cachedPages;
 		
 		// Transfer ownership of cached pages
         if (cachedPages.count) {
@@ -228,6 +227,8 @@
 		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 		startIndex = 0;
 	}
+    
+    NSLog(@"PAGINATION: Number of lines %lu", self.lines.count);
     
     // Paginate and call delegate method when finished.
 	self.success = [self paginateFromIndex:startIndex];

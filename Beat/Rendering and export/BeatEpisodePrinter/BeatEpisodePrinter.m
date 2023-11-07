@@ -19,7 +19,6 @@
 @property (weak) IBOutlet NSTextField *headerText;
 
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
-@property (nonatomic) NSDocument *doc; // Faux document for paper sizing info
 @property (nonatomic) BeatNativePrinting* printView;
 
 @property (weak) IBOutlet NSProgressIndicator *progressBar;
@@ -221,7 +220,8 @@
 	}
 }
 
-- (BeatExportSettings*)settings {
+- (BeatExportSettings*)settings
+{
 	NSString *header = (self.headerText.stringValue.length) ? self.headerText.stringValue : @"";
 	
 	bool colorCodePages = NO;
@@ -231,27 +231,23 @@
 		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
 	}
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
-		
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
+	settings.paperSize = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
+
 	return settings;
 }
 
-- (void)printDocuments:(bool)toPDF {
+- (void)printDocuments:(bool)toPDF
+{
 	[self toggleProgressUI:YES];
-		
-	// Create a faux document for delegation
-	self.doc = [[NSDocument alloc] init];
-	
-	BeatPaperSize size = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
-	self.doc.printInfo = [BeatPaperSizing printInfoFor:size];
-	
+				
 	BeatExportSettings *settings = [self settings];
 	
 	// The operation can be quite heavy, so do it in another thread
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 		NSError *error;
 
-		// Parse docuents
+		// Parse documents
 		NSMutableArray<BeatScreenplay*>* screenplays = NSMutableArray.new;
 		for (NSURL* url in self.urls) {
 			NSString *text = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];

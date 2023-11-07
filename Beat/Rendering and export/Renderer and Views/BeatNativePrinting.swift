@@ -49,7 +49,8 @@ class BeatNativePrinting:NSView {
 	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
-		if let screenplay = BeatScreenplay.from(delegate?.parser, settings: settings) {
+		// If we have a delegate connected, let's gather the screenplay from there, otherwise we'll use the ones provided at init
+		if delegate != nil, let screenplay = BeatScreenplay.from(delegate?.parser, settings: settings) {
 			self.screenplays = [screenplay]
 		} else {
 			self.screenplays = screenplays ?? [BeatScreenplay()]
@@ -67,7 +68,6 @@ class BeatNativePrinting:NSView {
 			paginations.append(pagination)
 		}
 		
-		//self.pagination = BeatPaginationManager(settings: settings, delegate: nil, renderer: renderer, livePagination: false)
 		self.operation = operation
 		
 		let size = BeatPaperSizing.size(for: self.settings.paperSize)
@@ -114,6 +114,7 @@ class BeatNativePrinting:NSView {
 	}
 	
 	var data:NSMutableData = NSMutableData()
+	
 	/// Paginates all the screenplays in queue and renders them onto screen
 	func paginateAndRender() {
 		DispatchQueue.global(qos: .userInteractive).async {
