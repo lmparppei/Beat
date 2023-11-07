@@ -61,15 +61,11 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @property (nonatomic, readonly) BeatStylesheet *editorStyles;
 
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-- (Line*)getCurrentLine;
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
 - (void)ensureCaret;
 - (void)showLockStatus;
-- (LineType)lineTypeAt:(NSInteger)index;
-- (Line*)lineAt:(NSInteger)index;
 - (void)handleTabPress;
 
 - (NSInteger)getPageNumberAt:(NSInteger)location;
@@ -127,9 +123,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 -(void)updateMarkupVisibility;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
-
-- (void)refreshLayoutElementsFrom:(NSInteger)location;
-- (void)refreshLayoutElements;
 
 - (void)setup;
 

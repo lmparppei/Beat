@@ -678,7 +678,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		NSInteger beginningOfWord;
 		
-		Line* currentLine = _editorDelegate.getCurrentLine;
+		Line* currentLine = _editorDelegate.currentLine;
 		if (currentLine) {
 			NSInteger locationInString = self.selectedRange.location - currentLine.position;
 			beginningOfWord = self.selectedRange.location - locationInString;
@@ -1227,17 +1227,6 @@ Line *cachedRectLine;
 	return rect;
 }
 
-
-
-
-
-#pragma mark - Update layout elements
-
-- (void)refreshLayoutElements {
-	[self refreshLayoutElementsFrom:0];
-}
-- (void)refreshLayoutElementsFrom:(NSInteger)location {
-}
 
 
 #pragma mark - Mouse events
