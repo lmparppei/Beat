@@ -9,10 +9,12 @@
 
     #define BXColor UIColor
     #define BXView UIView
+    #define BXTextView UITextView
 
 #else
 
     #define BXColor NSColor
     #define BXView NSView
+    #define BXTextView NSTextView
 
 #endif

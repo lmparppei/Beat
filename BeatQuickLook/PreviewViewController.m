@@ -127,7 +127,6 @@
 - (NSFont *)sectionFontWithSize:(CGFloat)size { return BeatFonts.sharedFonts.sectionFont; }
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {}
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene {}
-- (void)setPrintSceneNumbers:(bool)value {}
 - (void)setTypingAttributes:(NSDictionary *)attrs {}
 - (void)showLockStatus {}
 - (NSString *)text { return self.parser.rawText; }

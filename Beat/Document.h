@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Released under GPL.
-//  Copyright (c) 2016 Hendrik Noeller
+//  Copyright © 2019-2023 Lauri-Matti Parppei
 //  Based on Writer, copyright (c) 2016 Hendrik Noeller
 
 /*
@@ -45,17 +45,6 @@ THE SOFTWARE.
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
 
-/*
-typedef NS_ENUM(NSUInteger, BeatFormatting) {
-	Block = 0,
-	Bold,
-	Italic,
-	Underline,
-	Note
-};
-
-*/
-
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
@@ -63,30 +52,22 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @class BeatWidgetView;
 @class BeatTextIO;
 
-@protocol DocumentExports <JSExport>
-@property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
-@property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
-- (NSMutableArray<Line*>* _Nonnull)lines;
-- (NSString* _Nullable)displayName;
-@end
 
-@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
+@interface Document : BeatDocumentController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;
-@property (nonatomic) bool printSceneNumbers;
+
 @property (nonatomic) bool showPageNumbers;
-@property (nonatomic) bool showSceneNumberLabels;
-@property (nonatomic) bool revisionMode;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
-@property (nonatomic) BeatPaperSize pageSize;
-@property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
+
+@property (nonatomic) bool revisionMode;
+
 @property (nonatomic) bool contentLocked;
 @property (nonatomic) bool characterInput;
 
-@property (nonatomic) NSArray* _Nullable outline;
 - (void)reloadOutline;
 
 // Fonts
@@ -95,23 +76,13 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (strong, nonatomic) NSFont* _Nonnull boldItalicCourier;
 @property (strong, nonatomic) NSFont* _Nonnull italicCourier;
 
-// For delegation
-@property (nonatomic) NSUUID* _Nonnull uuid;
-@property (nonatomic, weak) OutlineScene* _Nullable currentScene; // Don't retain the Outline Scene
 @property (nonatomic) NSMutableIndexSet*  _Nullable changes;
-@property (atomic) NSString*  _Nullable textCache;
-@property (atomic) NSAttributedString*  _Nullable attrTextCache;
-- (NSAttributedString* _Nullable)getAttributedText; // ONLY IN MAIN THREAD
 
 // Character input
 @property (nonatomic) Line* _Nullable characterInputForLine;
 
 // Plugin support
-@property (nonatomic) NSMutableDictionary <NSString*, BeatPlugin*>* _Nullable runningPlugins;
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
-
-// Document settings
-@property (nonatomic) BeatDocumentSettings* _Nullable documentSettings;
 
 // Versioning
 @property (nonatomic) NSURL* _Nullable revertedTo;
@@ -122,21 +93,12 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Tab
 @property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 
-// Content
-- (NSString* _Nullable)text;
-- (NSString* _Nullable)fileNameString;
-
-- (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id _Nullable)sender;
 - (void)readUserSettings;
 - (void)applyUserSettings;
 
 // Analysis
 @property (nonatomic) NSDictionary<NSString*, NSString*>* _Nullable characterGenders;
-
-// Revision Tracking
-@property (nonatomic) IBOutlet BeatRevisions* _Nonnull revisionTracking;
-@property (nonatomic) NSString* _Nullable revisionColor;
 
 // Set document colors
 - (void)updateTheme;
@@ -146,17 +108,11 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Mode
 @property (nonatomic) BeatEditorMode mode;
 
-// Review
-@property (nonatomic) IBOutlet BeatReview* _Nullable review;
-
 @property (nonatomic, readwrite) bool outlineEdit;
 - (NSMutableArray* _Nullable)filteredOutline;
 
-// Skip selection change events when needed
-@property (nonatomic) bool skipSelectionChangeEvent;
 @property (nonatomic) bool moving;
 
-//- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
 - (void)invalidatePreview;
 
 

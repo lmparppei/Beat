@@ -1790,23 +1790,21 @@
 - (void)setColor:(NSString *)color forScene:(id)scene
 {
 	if ([scene isKindOfClass:OutlineScene.class]) {
-		[_delegate setColor:color forScene:scene];
+		[_delegate.textActions setColor:color forScene:scene];
 	} else if ([scene isKindOfClass:Line.class]) {
-		[_delegate setColor:color forLine:scene];
+		[_delegate.textActions setColor:color forLine:scene];
 	}
 }
 
-- (OutlineScene*)getCurrentScene {
+- (OutlineScene*)getCurrentScene
+{
 	return _delegate.currentScene;
 }
-- (OutlineScene*)getSceneAt:(NSInteger)position {
-	return [_delegate getCurrentSceneWithPosition:position];
+- (OutlineScene*)getSceneAt:(NSInteger)position
+{
+    return [_delegate.parser sceneAtPosition:position];
 }
 
-- (void)parse
-{
-	[self.delegate.parser createOutline];
-}
 - (void)createOutline
 {
 	[self.delegate.parser createOutline];

@@ -44,6 +44,7 @@
 @class NSTextStorage;
 @class UITextRange;
 @class BeatStylesheet;
+@class BeatTextIO;
 
 @protocol BeatEditorView
 - (void)reloadInBackground;
@@ -86,6 +87,7 @@
 - (void)showLockStatus;
 - (bool)contentLocked;
 
+
 #pragma mark - Getters for parser data
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
@@ -93,7 +95,6 @@
 #pragma mark Shorthands for parser data. These should be deprecated and only accessed via the parser
 
 - (NSAttributedString*)attributedString;
-- (NSArray*)linesForScene:(OutlineScene*)scene;
 
 - (Line*)currentLine;
 - (NSArray*)markers;
@@ -107,7 +108,6 @@
 
 @property (nonatomic) bool printSceneNumbers;
 
-- (void)setPrintSceneNumbers:(bool)value;
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value;
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
@@ -118,6 +118,8 @@
 
 #pragma mark - Editing the text content
 
+@property (nonatomic, readonly) BeatTextIO* textActions;
+
 @property (nonatomic, readonly) NSRange lastEditedRange;
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
@@ -125,7 +127,7 @@
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
-- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
+//- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 
 /// Determines if the text has changed since last query
 - (bool)hasChanged;
@@ -271,10 +273,12 @@
 - (NSLayoutManager*)layoutManager;
 
 @optional
+@property (nonatomic, readonly) NSMutableDictionary* runningPlugins;
+
 - (void)returnToEditor;
 - (void)focusEditor;
 - (IBAction)toggleCards:(id)sender;
-- (NSDictionary*)runningPlugins;
+
 - (void)runPlugin:(NSString*)pluginWithName;
 - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
 

@@ -54,6 +54,7 @@
 @class BeatPaginationManager;
 @class BeatPagination;
 @class OutlineScene;
+@class BeatTextIO;
 
 @protocol BeatPluginContainer;
 
@@ -190,7 +191,6 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 /// Creates a new `Document` object without actually opening the window
 - (id)newDocumentObject:(NSString*)string;
 
-- (void)parse;
 
 /// Current screen dimensions
 - (NSArray*)screen;
@@ -406,7 +406,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) Line* currentLine;
-@property (nonatomic, readonly) BeatTextIO* textActions;
 
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
@@ -443,7 +442,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)focusEditor;
 
 - (NSString*)text;
-- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLine:(Line*)line;

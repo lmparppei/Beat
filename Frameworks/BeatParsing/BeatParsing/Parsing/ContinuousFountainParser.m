@@ -1843,7 +1843,7 @@ static NSDictionary* patterns;
         }
     }
     
-    scene.beats = beats.allObjects;
+    scene.beats = [NSMutableArray arrayWithArray:beats.allObjects];
 }
 
 /// Inserts a new outline element with given line.

@@ -398,7 +398,7 @@
 			Line *line = [_delegate.parser.lines objectAtIndex:index];
 			OutlineScene *scene = [self.delegate.parser sceneAtIndex:line.position];
 			
-			[self.delegate setColor:color forScene:scene];
+			[self.delegate.textActions setColor:color forScene:scene];
 		}
 	}
 	

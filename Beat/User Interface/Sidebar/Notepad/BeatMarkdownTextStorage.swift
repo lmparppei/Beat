@@ -81,8 +81,6 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 		
 		var newAttrs:[NSAttributedString.Key:Any] = [:]
 		
-		let font = self.textStorage?.attribute(NSAttributedString.Key.font, at: r.location, effectiveRange: nil) as? NSFont
-		
 		if type == .heading {
 			// A heading. Calculate its level and set font.
 			var level = 1
@@ -133,7 +131,7 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 	}
 	
 	func parseInlineStyles(string:String, markdown:String) -> NSIndexSet {
-		var indices = NSMutableIndexSet()
+		let indices = NSMutableIndexSet()
 		let lim = string.count - markdown.count + 1
 		
 		var range = NSMakeRange(NSNotFound, 0)

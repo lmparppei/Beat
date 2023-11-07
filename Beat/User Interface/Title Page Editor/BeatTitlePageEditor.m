@@ -5,8 +5,14 @@
 //  Created by Lauri-Matti Parppei on 21.5.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ Update in 2023: This is very, very bad code, but it seems to kind of work, so I won't touch it.
+ 
+ */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatTextIO.h>
 #import "BeatTitlePageEditor.h"
 
 @interface BeatTitlePageEditor ()
@@ -145,8 +151,38 @@
 		}
 	}
 	
+	[self addTitlePage:titlePage];
+	
 	_result = titlePage;
 	[self.window.sheetParent endSheet:self.window returnCode:NSModalResponseOK];
+}
+
+- (void)addTitlePage:(NSString*)titlePage
+{
+	// Find the range
+	if (self.editorDelegate.text.length < 2) {
+		// If there is not much text in the script, just add the title page in the beginning of the document, followed by newlines
+		[self.editorDelegate.textActions addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+	} else if (![[self.editorDelegate.text substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
+		// There is no title page present here either. We're just careful not to cause errors with ranges
+		[self.editorDelegate.textActions addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+	} else {
+		// There IS a title page, so we need to find out its range to replace it.
+		NSInteger titlePageEnd = -1;
+		for (Line* line in self.editorDelegate.parser.lines) {
+			if (line.type == empty) {
+				titlePageEnd = line.position;
+				break;
+			}
+		}
+		
+		if (titlePageEnd < 0) titlePageEnd = self.editorDelegate.text.length;
+		
+		NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
+		NSString *oldTitlePage = [self.editorDelegate.text substringWithRange:titlePageRange];
+		
+		[self.editorDelegate.textActions replaceString:oldTitlePage withString:titlePage atIndex:0];
+	}
 }
 
 - (IBAction)fieldDidChange:(id)sender {

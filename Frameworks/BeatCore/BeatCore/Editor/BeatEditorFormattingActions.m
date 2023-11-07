@@ -79,7 +79,7 @@ static NSString *revisionAttribute = @"Revision";
 	Line* firstLine = _delegate.parser.lines.firstObject;
 	
 	if (!firstLine.isTitlePage) {
-		[_delegate addString:[self titlePage] atIndex:0];
+		[_delegate.textActions addString:[self titlePage] atIndex:0];
 
 		_delegate.selectedRange = NSMakeRange(7, 0);
 	}
@@ -113,7 +113,7 @@ static NSString *revisionAttribute = @"Revision";
         }
         
         // We'll require both left and right cues to exist.
-        if (leftCue && rightCue) [self.delegate addString:@"^" atIndex:NSMaxRange(rightCue.textRange)];
+        if (leftCue && rightCue) [self.delegate.textActions addString:@"^" atIndex:NSMaxRange(rightCue.textRange)];
     }
     else if (currentLine.isDualDialogue) {
         // Remove dual dialogue
@@ -130,7 +130,7 @@ static NSString *revisionAttribute = @"Revision";
         if (cue) {
             NSInteger i = [cue.string rangeOfString:@"^" options:NSBackwardsSearch].location;
             if (i != NSNotFound) {
-                [self.delegate replaceRange:NSMakeRange(cue.position + i, 1) withString:@""];
+                [self.delegate.textActions replaceRange:NSMakeRange(cue.position + i, 1) withString:@""];
             }
         }
     }
@@ -153,21 +153,21 @@ static NSString *revisionAttribute = @"Revision";
     // ... then in the new position, check again if we need a line break
     if (_delegate.currentLine.type != empty && _delegate.currentLine.length > 0) {
         // Add line break at the end of block
-        [_delegate addString:@"\n" atIndex: NSMaxRange(_delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
+        [_delegate.textActions addString:@"\n" atIndex: NSMaxRange(_delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
         _delegate.selectedRange = NSMakeRange(NSMaxRange(_delegate.currentLine.textRange) + 2, 0);
     }
     
     // Do we need a line break before current line, too?
     Line *prevLine = [_delegate.parser previousLine:_delegate.currentLine];
     if (prevLine != nil && prevLine.type != empty && prevLine.string.length != 0) {
-        [_delegate addString:@"\n" atIndex:NSMaxRange(prevLine.textRange) skipAutomaticLineBreaks:true];
+        [_delegate.textActions addString:@"\n" atIndex:NSMaxRange(prevLine.textRange) skipAutomaticLineBreaks:true];
     }
     
     // ... and see if we *still* need another line break at this position?
     Line *nextLine = [_delegate.parser nextLine:_delegate.currentLine];
     if (nextLine != nil && nextLine.type != empty && nextLine.string.length != 0) {
         NSInteger loc = _delegate.currentLine.position;
-        [_delegate addString:@"\n" atIndex:NSMaxRange(_delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
+        [_delegate.textActions addString:@"\n" atIndex:NSMaxRange(_delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
         _delegate.selectedRange = NSMakeRange(loc, 0);
     }
     
@@ -183,51 +183,6 @@ static NSString *revisionAttribute = @"Revision";
     _delegate.characterInput = YES;
 }
 
-
-#pragma mark Scene numbers
-
-- (IBAction)lockSceneNumbers:(id)sender
-{
-    NSInteger sceneNumber = [self.delegate.documentSettings getInt:DocSettingSceneNumberStart];
-    if (sceneNumber == 0) sceneNumber = 1;
-    
-    NSArray* lines = self.delegate.parser.lines.copy;
-    
-    for (Line* line in lines) {
-        if (line.type != heading) continue;
-        
-        if (line.sceneNumberRange.length == 0) {
-            NSString * sn = [NSString stringWithFormat:@" #%lu#", sceneNumber];
-            [self.delegate addString:sn atIndex:line.textRange.location + line.textRange.length];
-            sceneNumber++;
-        } else {
-            
-        }
-    }
-    
-#if TARGET_OS_IOS
-    [self.delegate.getTextView setNeedsDisplay];
-#else
-    self.delegate.getTextView.needsDisplay = true;
-#endif
-}
-- (IBAction)unlockSceneNumbers:(id)sender
-{
-    NSArray* outline = self.delegate.parser.outline.copy;
-    
-    for (OutlineScene* scene in outline) {
-        NSRange r = scene.line.sceneNumberRange;
-        if (r.length > 0) {
-            [self.delegate replaceRange:NSMakeRange(scene.line.position + r.location - 1, r.length + 2) withString:@""];
-        }
-    }
-    
-#if TARGET_OS_IOS
-    [self.delegate.getTextView setNeedsDisplay];
-#else
-    self.delegate.getTextView.needsDisplay = true;
-#endif
-}
 
 #pragma mark Pure formatting and blocks
 
@@ -250,7 +205,7 @@ static NSString *revisionAttribute = @"Revision";
 			location++;
 		}
 		_delegate.selectedRange = NSMakeRange(location, 0);
-		[_delegate addString:lineBreak atIndex:location];
+		[_delegate.textActions addString:lineBreak atIndex:location];
 	}
 }
 
@@ -293,8 +248,8 @@ static NSString *revisionAttribute = @"Revision";
 	OutlineScene *scene = [_delegate.parser sceneAtPosition:_delegate.selectedRange.location];
 	if (scene.omitted) return;
 	
-	[_delegate addString:@"/*\n" atIndex:scene.position];
-	[_delegate addString:@"*/\n\n" atIndex:scene.position + scene.range.length];
+	[_delegate.textActions addString:@"/*\n" atIndex:scene.position];
+	[_delegate.textActions addString:@"*/\n\n" atIndex:scene.position + scene.range.length];
 }
 
 - (IBAction)makeUppercase:(id)sender {
@@ -303,25 +258,7 @@ static NSString *revisionAttribute = @"Revision";
     NSRange range = _delegate.selectedRange;
     NSString* string = [_delegate.text substringWithRange:range];
     
-    [_delegate replaceRange:range withString:string.uppercaseString];
-}
-
-
-- (IBAction)makeSceneNonNumbered:(id)sender
-{
-	OutlineScene *scene = _delegate.currentScene;
-    if (!scene) {
-        NSLog(@"No scene");
-        return;
-    }
-	
-	if (scene.line.sceneNumberRange.length) {
-		// Remove existing scene number
-		[_delegate replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:@" "];
-	} else {
-		// Add empty scene number
-		[_delegate addString:@" # #" atIndex:NSMaxRange(scene.line.textRange)];
-	}
+    [_delegate.textActions replaceRange:range withString:string.uppercaseString];
 }
 
 - (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(BeatFormatting)style
@@ -354,7 +291,7 @@ static NSString *revisionAttribute = @"Revision";
 		NSString *replacementString = [selectedString substringWithRange:NSMakeRange(startingSymbol.length, selectedLength - startingSymbol.length - endSymbol.length)];
 		
 		//The Text is formatted, remove the formatting
-		[_delegate replaceRange:cursorLocation withString:replacementString];
+		[_delegate.textActions replaceRange:cursorLocation withString:replacementString];
 
 		addedCharactersBeforeRange = 0;
 		addedCharactersInRange = -(startingSymbol.length + endSymbol.length);
@@ -379,13 +316,13 @@ static NSString *revisionAttribute = @"Revision";
 		if (alreadyFormatted) {
 			//NSString *replacementString = [selectedString substringWithRange:NSMakeRange(startingSymbol.length, selectedLength - startingSymbol.length - endSymbol.length)];
 			
-			[_delegate replaceRange:safeRange withString:selectedString];
+			[_delegate.textActions replaceRange:safeRange withString:selectedString];
 			addedCharactersBeforeRange = - startingSymbol.length;
 			addedCharactersInRange = 0;
 		} else {
 			//The text really isn't formatted. Just add the formatting using the original data.
-			[_delegate addString:endSymbol atIndex:cursorLocation.location + cursorLocation.length];
-			[_delegate addString:startingSymbol atIndex:cursorLocation.location];
+			[_delegate.textActions addString:endSymbol atIndex:cursorLocation.location + cursorLocation.length];
+			[_delegate.textActions addString:startingSymbol atIndex:cursorLocation.location];
 			
 			addedCharactersBeforeRange = startingSymbol.length;
 			addedCharactersInRange = 0;
@@ -471,7 +408,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// If the line is already forced to the desired type, remove the force
 	if ([firstCharacter isEqualToString:symbol]) {
-		[_delegate replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
+		[_delegate.textActions replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
 	} else {
 		// If the line is not forced to the desired type, check if it is forced to be something else
 		BOOL otherForce = NO;
@@ -488,9 +425,9 @@ static NSString *revisionAttribute = @"Revision";
 		//If the line is forced to be something else, replace that force with the new force
 		//If not, insert the new character before the first one
 		if (otherForce) {
-			[_delegate replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
+			[_delegate.textActions replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
 		} else {
-			[_delegate addString:symbol atIndex:firstCharacterRange.location];
+			[_delegate.textActions addString:symbol atIndex:firstCharacterRange.location];
 		}
 	}
 }
@@ -520,8 +457,65 @@ static NSString *revisionAttribute = @"Revision";
         self.delegate.selectedRange = NSMakeRange(NSMaxRange(self.delegate.currentLine.textRange), 0);
         marker = [NSString stringWithFormat:@" %@", marker];
     }
-    [self.delegate replaceRange:self.delegate.selectedRange withString:marker];
+    [self.delegate.textActions replaceRange:self.delegate.selectedRange withString:marker];
 }
+
+
+#pragma mark - Scene number locking
+
+- (IBAction)makeSceneNonNumbered:(id)sender
+{
+    OutlineScene *scene = _delegate.currentScene;
+    if (!scene) return;
+    
+    if (scene.line.sceneNumberRange.length) {
+        // Remove existing scene number
+        [_delegate.textActions replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:@" "];
+    } else {
+        // Add empty scene number
+        [_delegate.textActions addString:@" # #" atIndex:NSMaxRange(scene.line.textRange)];
+    }
+}
+
+- (IBAction)lockSceneNumbers:(id)sender
+{
+    NSInteger sceneNumber = [self.delegate.documentSettings getInt:DocSettingSceneNumberStart];
+    if (sceneNumber == 0) sceneNumber = 1;
+    
+    NSArray* lines = self.delegate.parser.lines.copy;
+    
+    for (Line* line in lines) {
+        if (line.type != heading) continue;
+        
+        if (line.sceneNumberRange.length == 0) {
+            unichar lastChr = (line.length > 0) ? line.lastCharacter : '_';
+            
+            NSString * sn = [NSString stringWithFormat:@"%@#%lu#", ((lastChr != ' ') ? @" " : @""), sceneNumber];
+            [self.delegate.textActions addString:sn atIndex:line.textRange.location + line.textRange.length];
+            sceneNumber++;
+        } else {
+            
+        }
+    }
+    
+    [self.delegate ensureLayout];
+}
+
+- (IBAction)unlockSceneNumbers:(id)sender
+{
+    NSArray* outline = self.delegate.parser.outline.copy;
+    
+    for (OutlineScene* scene in outline) {
+        NSRange r = scene.line.sceneNumberRange;
+        if (r.length > 0) {
+            [self.delegate.textActions replaceRange:NSMakeRange(scene.line.position + r.location - 1, r.length + 2) withString:@""];
+        }
+    }
+    
+    [self.delegate ensureLayout];
+}
+
+
 
 
 #pragma mark - Helper methods

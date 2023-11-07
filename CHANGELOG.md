@@ -2,6 +2,8 @@
 
 ## Beat 1.997.2
 
+I started moving stuff into a OS-agnostic `BeatDocumentController` class to avoid overlap between macOS and iOS document code.
+
 - Preliminary markup support in notepad
 - Fixed bugs with overlapping formatting
 - Fixed drag & drop in text view

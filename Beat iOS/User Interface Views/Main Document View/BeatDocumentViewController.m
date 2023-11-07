@@ -721,7 +721,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return [self.documentSettings get:DocSettingCharacterGenders];
 }
 
-- (void)setPrintSceneNumbers:(bool)value {
+- (void)setPrintSceneNumbers:(bool)value
+{
 	[BeatUserDefaults.sharedDefaults saveBool:value forKey:BeatSettingPrintSceneNumbers];
 }
 

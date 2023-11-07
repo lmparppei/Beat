@@ -291,12 +291,7 @@ static CGFloat panelWidth;
 
 - (IBAction)selectSceneNumberPrinting:(id)sender
 {
-	if (_printSceneNumbers.state == NSOnState) {
-		[_documentDelegate setPrintSceneNumbers:YES];
-	} else {
-		[_documentDelegate setPrintSceneNumbers:NO];
-	}
-
+	_documentDelegate.printSceneNumbers = (_printSceneNumbers.state == NSOnState);
 	[self loadPreview];
 }
 

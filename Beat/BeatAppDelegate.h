@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <UserNotifications/UserNotifications.h>
-#import "BeatDocumentController.h"
 
 @interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate, NSWindowDelegate>
 

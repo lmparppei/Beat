@@ -33,7 +33,6 @@ class BeatBackup:NSObject {
 		return delegate.appDataPath("Backup")
 	}
 	class var defaultAutosaveURL:URL {
-		let delegate = NSApp.delegate as! BeatAppDelegate
 		var url = BeatBackup.defaultURL
 		url = url.appendingPathComponent("Autosave/")
 		return url

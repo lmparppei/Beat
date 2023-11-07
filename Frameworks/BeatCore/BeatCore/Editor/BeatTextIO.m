@@ -326,11 +326,15 @@
     NSUInteger currentIndex = [_delegate.parser indexOfLine:currentLine];
     
     // Handle lines with content
-#if TARGET_OS_IOS
-    if (currentLine.string.length > 0) {
-#else
-    if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
+    bool shiftPressed = false;
+
+#if TARGET_OS_OSX
+    // On macOS, pressing shift will avoid adding an extra line break
+    shiftPressed = (NSEvent.modifierFlags & NSEventModifierFlagShift);
 #endif
+
+    if (currentLine.string.length > 0 && !shiftPressed) {
+
         // Add double breaks for outline element lines
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
@@ -517,5 +521,38 @@
     
     [self addString:string atIndex:self.delegate.selectedRange.location];
 }
+
+
+#pragma mark - Set color
+
+- (void)setColor:(NSString *)color forLine:(Line *)line
+{
+    if (line == nil) return;
+    
+    // First replace the existing color range (if it exists)
+    if (line.colorRange.length > 0) {
+        NSRange localRange = line.colorRange;
+        NSRange globalRange = [line globalRangeFromLocal:localRange];
+        [self removeRange:globalRange];
+    }
+    
+    // Do nothing else if color is set to none
+    if ([color.lowercaseString isEqualToString:@"none"]) return;
+    
+    // Create color string and add a space at the end of heading if needed
+    NSString *colorStr = [NSString stringWithFormat:@"[[color %@]]", color.lowercaseString];
+    if ([line.string characterAtIndex:line.string.length - 1] != ' ') {
+        colorStr = [NSString stringWithFormat:@" %@", colorStr];
+    }
+    
+    [self addString:colorStr atIndex:NSMaxRange(line.textRange)];
+}
+
+- (void)setColor:(NSString *)color forScene:(OutlineScene *)scene
+{
+    if (scene == nil) return;
+    [self setColor:color forLine:scene.line];
+}
+
 
 @end
