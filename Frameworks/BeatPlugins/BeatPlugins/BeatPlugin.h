@@ -436,9 +436,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 
-- (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
-- (void)setColor:(NSString *)color forLine:(Line *)line;
-
 - (void)focusEditor;
 
 - (NSString*)text;
