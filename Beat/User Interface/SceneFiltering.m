@@ -10,13 +10,7 @@
 #import "SceneFiltering.h"
 
 @interface SceneFiltering()
-@property (nonatomic) NSString* text;
-@property (nonatomic) NSString* character;
-@property (nonatomic) NSString* storyline;
-@property (nonatomic) NSMutableSet* colors;
-@property (weak) NSMutableArray* lines; // This is a reference to the parser
-@property (nonatomic) NSMutableArray* scenes; // This is a real array of scenes
-@property (nonatomic) NSMutableArray* filteredScenes;
+
 @end
 
 @implementation SceneFiltering
@@ -37,7 +31,7 @@
 
 - (void)reset {
 	_text = @"";
-	_storybeat = @"";
+	_storyline = @"";
 	[_scenes removeAllObjects];
 	[_colors removeAllObjects];
 }
@@ -103,7 +97,7 @@
 	if (self.colors.count > 0 && [self.colors containsObject:scene.color.lowercaseString]) {
 		matches++;
 	}
-	if (self.storyline.count > 0 && [scene.storylines containsObject:self.storyline]) {
+	if (self.storyline.length > 0 && [scene.storylines containsObject:self.storyline]) {
 		matches++;
 	}
 	
