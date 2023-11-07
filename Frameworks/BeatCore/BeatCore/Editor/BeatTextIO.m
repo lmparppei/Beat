@@ -540,7 +540,7 @@
     if ([color.lowercaseString isEqualToString:@"none"]) return;
     
     // Create color string and add a space at the end of heading if needed
-    NSString *colorStr = [NSString stringWithFormat:@"[[color %@]]", color.lowercaseString];
+    NSString *colorStr = [NSString stringWithFormat:@"[[%@]]", color.lowercaseString];
     if ([line.string characterAtIndex:line.string.length - 1] != ' ') {
         colorStr = [NSString stringWithFormat:@" %@", colorStr];
     }
