@@ -9,6 +9,16 @@
 #import <BeatParsing/BeatParsing.h>
 #import "SceneFiltering.h"
 
+@interface SceneFiltering()
+@property (nonatomic) NSString* text;
+@property (nonatomic) NSString* character;
+@property (nonatomic) NSString* storyline;
+@property (nonatomic) NSMutableSet* colors;
+@property (weak) NSMutableArray* lines; // This is a reference to the parser
+@property (nonatomic) NSMutableArray* scenes; // This is a real array of scenes
+@property (nonatomic) NSMutableArray* filteredScenes;
+@end
+
 @implementation SceneFiltering
 
 - (SceneFiltering*)init
@@ -16,6 +26,8 @@
     self = [super init];
     if (self) {
 		_text = @"";
+		_storyline = @"";
+		
 		_colors = NSMutableSet.new;
 		_scenes = NSMutableArray.new;
 		_lines = NSMutableArray.new;
@@ -25,6 +37,7 @@
 
 - (void)reset {
 	_text = @"";
+	_storybeat = @"";
 	[_scenes removeAllObjects];
 	[_colors removeAllObjects];
 }
@@ -35,6 +48,10 @@
 
 - (void)byText:(NSString*)string {
 	_text = string;
+}
+
+- (void)byStoryline:(NSString*)storyline {
+	_storyline = storyline;
 }
 
 - (void)byColor:(NSString*)color {
@@ -66,8 +83,9 @@
 {
 	NSInteger filters = 0;
 	if (self.text.length) filters++;
-	if (self.colors.count) filters++;
+	if (self.storyline.length) filters++;
 	if (self.character.length) filters++;
+	if (self.colors.count) filters++;
 	
 	return filters;
 }
@@ -79,10 +97,13 @@
 	if (self.text.length && [scene.string containsString:self.text]) {
 		matches++;
 	}
-	else if (self.character.length && [scene.characters containsObject:self.character]) {
+	if (self.character.length && [scene.characters containsObject:self.character]) {
 		matches++;
 	}
-	else if (self.colors.count > 0 && [self.colors containsObject:scene.color.lowercaseString]) {
+	if (self.colors.count > 0 && [self.colors containsObject:scene.color.lowercaseString]) {
+		matches++;
+	}
+	if (self.storyline.count > 0 && [scene.storylines containsObject:self.storyline]) {
 		matches++;
 	}
 	

@@ -15,13 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SceneFiltering : NSObject
 
-@property (nonatomic) NSString* text;
-@property (nonatomic) NSString* character;
-@property (nonatomic) NSMutableSet* colors;
-@property (weak) NSMutableArray* lines; // This is a reference to the parser
-@property (nonatomic) NSMutableArray* scenes; // This is a real array of scenes
-@property (nonatomic) NSMutableArray* filteredScenes;
-
 @property (weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
 
 - (bool)activeFilters;
