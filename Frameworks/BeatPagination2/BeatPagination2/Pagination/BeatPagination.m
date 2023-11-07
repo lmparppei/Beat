@@ -228,8 +228,6 @@
 		startIndex = 0;
 	}
     
-    NSLog(@"PAGINATION: Number of lines %lu", self.lines.count);
-    
     // Paginate and call delegate method when finished.
 	self.success = [self paginateFromIndex:startIndex];
 	[self paginationFinished];
