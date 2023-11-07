@@ -77,8 +77,8 @@
 @property (nonatomic) NSMutableArray<BeatNoteData*>* notes;
 /// Story beats contained by this scene
 @property (nonatomic) NSMutableArray * beats;
-/// An array of storylines contained by this scene (basically a copy of `.beats` array)
-@property (nonatomic) NSArray * storylines;
+/// Returns the storyline **NAMES**  in this scene
+@property (nonatomic) NSArray<NSString*>* storylines;
 /// An array of characters with dialogue in this scene
 @property (nonatomic) NSMutableArray * characters;
 

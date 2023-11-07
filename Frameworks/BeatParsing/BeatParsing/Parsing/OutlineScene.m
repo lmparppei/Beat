@@ -242,7 +242,7 @@
 }
 
 /// Returns the storyline NAMES in this scene
-- (NSArray*)storylines
+- (NSArray<NSString*>*)storylines
 {
     NSMutableArray* beats = self.beats.copy;
     NSMutableArray* storylines = NSMutableArray.new;
