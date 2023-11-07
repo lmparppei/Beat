@@ -4,6 +4,12 @@
 //
 //  Created by Lauri-Matti Parppei on 7.11.2023.
 //
+/**
+ 
+ This class aims to be a cross-platform base class for both `Document` (macOS) and `BeatDocumentViewController` (iOS).
+ Move **any** overlapping code here when possible, and leave only UI- and OS-specific stuff in the main implementations.
+ 
+ */
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>

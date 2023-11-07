@@ -2040,7 +2040,6 @@ static NSWindow __weak *currentKeyWindow;
 	_showRevisions = !_showRevisions;
 	
 	// Refresh layout + settings
-	[self.textView refreshLayoutElements];
 	self.textView.needsLayout = true;
 	self.textView.needsDisplay = true;
 	
@@ -2340,14 +2339,11 @@ static NSWindow __weak *currentKeyWindow;
 	for (Document* doc in openDocuments) {
 		if (doc != self) [doc updateUIColors];
 	}
-	
-	[self.textView refreshLayoutElements];
 }
 
 - (void)didChangeAppearance {
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		[self updateUIColors];
-		[self.textView refreshLayoutElements];
 	});
 }
 
@@ -2361,11 +2357,11 @@ static NSWindow __weak *currentKeyWindow;
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
-		if ([self isDark]) self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+		self.documentWindow.appearance = [NSAppearance appearanceNamed:(self.isDark) ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua];
 		self.documentWindow.viewsNeedDisplay = true;
 	} else {
-		// Else, we need to force everything to redraw, in a very clunky way
+		// Else, we need to force everything to redraw, in a very clunky way.
+		// Please god, if you exist, give me the courage to drop support for macOS 10.13
 		[self.documentWindow setViewsNeedDisplay:true];
 		
 		[self.documentWindow.contentView setNeedsDisplay:true];
@@ -2407,9 +2403,8 @@ static NSWindow __weak *currentKeyWindow;
 	[_marginView updateBackground];
 }
 
-
-// Some weirdness because of the Writer legacy. Writer had real themes, and this function loaded the selected theme for every open window. We only have day/night, but the method names remain.
-- (void)updateTheme {
+- (void)updateTheme
+{
 	[self setThemeFor:self setTextColor:NO];
 }
 
@@ -2437,6 +2432,7 @@ static NSWindow __weak *currentKeyWindow;
 	[doc.documentWindow setViewsNeedDisplay:YES];
 	[doc.textView setNeedsDisplay:YES];
 }
+
 - (void)loadSelectedTheme:(bool)forAll
 {
 	NSArray* openDocuments;
@@ -2449,6 +2445,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
+
 #pragma mark - Typewriter mode
 
 // Typewriter mode
@@ -2458,6 +2455,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self updateLayout];
 }
+
 
 #pragma mark - Hiding markup
 
@@ -2473,6 +2471,7 @@ static NSWindow __weak *currentKeyWindow;
 	[self updateLayout];
 }
 
+
 #pragma mark - Return to editor from any subview
 
 - (void)returnToEditor {
@@ -2480,6 +2479,7 @@ static NSWindow __weak *currentKeyWindow;
 	[self updateLayout];
 	[self ensureCaret];
 }
+
 
 #pragma mark - Preview
 
@@ -2695,28 +2695,15 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Outline/timeline context menu, including setting colors
 
-/*
- 
- Color context menu
- 
- Note: Some weird stuff can linger around here and there from the old JavaScript-based timeline.
- The context menu checks in a clunky way if the selected item is coming from Outline view or the Timeline before making the changes.
- 
- You are still young
- and free
- (in a way, anyway)
- don't let it
- waste away.
- 
- */
-
-// Note from 2022: Why is this here and not in the associated class?
+// Note from 2022: Why is this here and not in their associated classes?
+// We could just change the target of every menu item, but maybe that would be too easy.
 
 // We are using this same menu for both outline & timeline view
 - (void)menuDidClose:(NSMenu*)menu {
 	// Reset timeline selection, to be on the safe side
 	_timeline.clickedItem = nil;
 }
+
 - (void)menuNeedsUpdate:(NSMenu *)menu {
 	if (!NSThread.isMainThread) return;
 	
@@ -2842,48 +2829,45 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	// This is unnecessarily complicated.
-	
 	NSMutableArray *storylines = scene.storylines.copy;
+	// Do nothing if the storyline is not there.
+	if (![storylines containsObject:storyline]) return;
 	
 	if (storylines.count > 0) {
-		if ([storylines containsObject:storyline]) 		// Is the storyline really there?
-		{
-			if (storylines.count - 1 <= 0) {
-				// No storylines left. Clear ALL storyline notes.
-				for (Line *line in [self.parser linesForScene:scene]) {
-					[self.textActions removeTextOnLine:line inLocalIndexSet:line.beatRanges];
+		if (storylines.count <= 1) {
+			// The last storybeat. Clear ALL storyline notes.
+			for (Line *line in [self.parser linesForScene:scene]) {
+				[self.textActions removeTextOnLine:line inLocalIndexSet:line.beatRanges];
+			}
+		} else {
+			// This is unnecessarily complicated.
+			// Find the specified beat note
+			Line *lineWithBeat;
+			for (Line *line in [self.parser linesForScene:scene]) {
+				if ([line hasBeatForStoryline:storyline]) {
+					lineWithBeat = line;
+					break;
 				}
 			}
-			else {
-				// Find the specified beat note
-				Line *lineWithBeat;
-				for (Line *line in [self.parser linesForScene:scene]) {
-					if ([line hasBeatForStoryline:storyline]) {
-						lineWithBeat = line;
-						break;
-					}
-				}
-				if (!lineWithBeat) return;
-				
-				NSMutableArray *beats = lineWithBeat.beats.mutableCopy;
-				Storybeat *beatToRemove = [lineWithBeat storyBeatWithStoryline:storyline];
-				[beats removeObject:beatToRemove];
-				
-				// Multiple beats can be tucked into a single note. Store the other beats.
-				NSMutableArray *stackedBeats = NSMutableArray.new;
-				for (Storybeat *beat in beats) {
-					if (NSEqualRanges(beat.rangeInLine, beatToRemove.rangeInLine)) [stackedBeats addObject:beat];
-				}
-				
-				// If any beats were left, recreate the beat note with the leftovers.
-				// Otherwise, just remove it.
-				NSString *beatStr = @"";
-				if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
-				
-				NSRange removalRange = beatToRemove.rangeInLine;
-				[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
+			if (!lineWithBeat) return;
+			
+			NSMutableArray *beats = lineWithBeat.beats.mutableCopy;
+			Storybeat *beatToRemove = [lineWithBeat storyBeatWithStoryline:storyline];
+			[beats removeObject:beatToRemove];
+			
+			// Multiple beats can be tucked into a single note. Store the other beats.
+			NSMutableArray *stackedBeats = NSMutableArray.new;
+			for (Storybeat *beat in beats) {
+				if (NSEqualRanges(beat.rangeInLine, beatToRemove.rangeInLine)) [stackedBeats addObject:beat];
 			}
+			
+			// If any beats were left, recreate the beat note with the leftovers.
+			// Otherwise, just remove it.
+			NSString *beatStr = @"";
+			if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
+			
+			NSRange removalRange = beatToRemove.rangeInLine;
+			[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
 		}
 	}
 }
@@ -2957,7 +2941,6 @@ static NSWindow __weak *currentKeyWindow;
 	[self.timeline reload];
 	
 	self.textView.needsDisplay = true;
-	[self.textView refreshLayoutElements];
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
@@ -2979,13 +2962,6 @@ static NSWindow __weak *currentKeyWindow;
 	[self.previewController resetPreview];
 }
 
-- (void)refreshTextViewLayoutElements {
-	[self.textView refreshLayoutElements];
-}
-
-- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {
-	[self.textView refreshLayoutElementsFrom:location];
-}
 
 
 #pragma mark - Markers
@@ -3276,7 +3252,7 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 
-#pragma mark - touchbar buttons
+#pragma mark - Moving between scenes and elements
 
 - (IBAction)nextScene:(id)sender {
 	Line* line = [self.parser nextOutlineItemOfType:heading from:self.selectedRange.location];
@@ -3386,12 +3362,9 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	return autosavePath;
 }
+
 - (NSURL*)autosavePath {
 	return [BeatAppDelegate appDataPath:@"Autosave"];
-}
-
-- (NSURL*)backupPath {
-	return [BeatAppDelegate appDataPath:@"Backup"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
