@@ -347,7 +347,7 @@
 	// Move playhead to the selected position + disable core animation
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-	if (!NSIsEmptyRect(selectionRect)) [self movePlayhead:selectionRect];
+	[self scrollToScene:_delegate.currentScene];
 	[CATransaction commit];
 }
 
@@ -366,48 +366,67 @@
 	// Let's draw labels
 	if (_visibleStorylines) [self updateStorylineLabels];
 }
-- (void)scrollToScene:(NSInteger)index {
+
+
+- (void)scrollToScene:(OutlineScene*)scene
+{
+	NSUInteger i = [self.delegate.parser.outline indexOfObject:scene];
+	[self scrollToSceneIndex:i];
+}
+
+- (void)scrollToSceneIndex:(NSInteger)index
+{
 	[self deselectAll];
 	
-	NSRect selectionRect = NSZeroRect;
+	CGRect selectionRect = CGRectMake(0, 0, 0, 0);
 	
-	if (index >= _outline.count || index == NSNotFound) {
-		// See if the caret is at the end
-		if (_delegate.caretAtEnd && _scenes.count) {
-			BeatTimelineItem *item = _scenes.lastObject;
-			[item select];
-			[_selectedItems setArray:@[item]];
-			selectionRect = item.frame;
-		} else {
-			return;
-		}
-	} else {
-		OutlineScene *selectedScene = [_outline objectAtIndex:index];
+	BeatTimelineItem* selectedItem;
+	NSInteger selectedLoc = _delegate.selectedRange.location;
 		
-		// Else go through the elements as usual
-		for (BeatTimelineItem *item in self.scenes) {
-			if (item.representedItem == selectedScene) {
-				[item select];
-				[_selectedItems setArray:@[item]];
-				selectionRect = item.frame;
-				break;
-			}
-		}
+	if ((index >= _outline.count || index == NSNotFound) && selectedLoc >= _outline.firstObject.position) {
+		// Check if the caret is at end and select the last item in that case.
+		selectedItem = _scenes.lastObject;
+	} else {
+		OutlineScene *selectedScene = self.outline[index];
+		selectedItem = [self timelineItemFor:selectedScene];
 	}
 	
-	if (!NSIsEmptyRect(selectionRect)) {
-		NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	// Select item
+	if (selectedItem) {
+		[selectedItem select];
+		[_selectedItems setArray:@[selectedItem]];
+		selectionRect = selectedItem.frame;
+	}
+	
+	// Calculate the actual playhead position inside scenes
+	if (selectedItem.representedItem.type == heading) {
+		NSInteger location = selectedItem.representedItem.position;
+		NSInteger length = selectedItem.representedItem.length;
 		
-		// If the scene is not in view, scroll it into center
-		if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
-			bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
-			
-			[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
-		}
+		CGFloat relativePos = (CGFloat)(selectedLoc - location) / (CGFloat)length;
+		
+		selectionRect.origin.x += selectedItem.frame.size.width * relativePos;
+	}
+
+	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	
+	// If the scene is not in view, scroll it into center
+	if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
+		bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
+		
+		[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
 	}
 	
 	[self movePlayhead:selectionRect];
 	[self updateLayer];
+}
+
+- (BeatTimelineItem*)timelineItemFor:(OutlineScene*)scene
+{
+	for (BeatTimelineItem *item in self.scenes) {
+		if (item.representedItem == scene) return item;
+	}
+	return nil;
 }
 
 - (void)movePlayhead:(NSRect)selectionRect {
@@ -433,8 +452,9 @@
 	[_selectedItems removeObject:item];
 }
 
-// A _single_ timeline item was clicked. It calls its delegate (this class) and we jump to the scene
-- (void)setSelected:(id)item {
+/// A _single_ timeline item was clicked. It calls its delegate (this class) and we jump to the scene
+- (void)setSelected:(id)item
+{
 	// Reset array
 	[self deselectAll];
 	[_selectedItems setArray:@[item]];
@@ -447,14 +467,18 @@
 		[self.delegate scrollToScene:scene];
 	}
 }
-// Multiple timeline items were selected using CMD. Called by the item.
-- (void)addSelected:(id)item {
+
+/// Multiple timeline items were selected using CMD. Called by the item.
+- (void)addSelected:(id)item
+{
 	// Add to array
 	[_selectedItems addObject:item];
 	[(BeatTimelineItem*)item select];
 }
-// A range of items was selected using shift key.
-- (void)selectTo:(id)item {
+
+/// A range of items was selected using shift key.
+- (void)selectTo:(id)item
+{
 	BeatTimelineItem *selectedItem = item;
 	NSInteger lastIndex = [_scenes indexOfObject:_selectedItems.firstObject];
 	NSInteger index = [_scenes indexOfObject:selectedItem];
@@ -601,6 +625,8 @@
 	[self setNeedsLayout:YES];
 	
 	self.visible = YES;
+	
+	[self scrollToScene:_delegate.currentScene];
 }
 - (void)hide {
 	self.containerView.hidden = true;
@@ -637,22 +663,22 @@
 #pragma mark - Delegate methods
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	if (_selectedItems.count <= 1) [_delegate addStoryline:storyline to:scene];
+	if (_selectedItems.count <= 1) [_delegate.textActions addStoryline:storyline to:scene];
 	else {
 		// Multiple items selected
 		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
 		for (BeatTimelineItem* item in selected) {
-			[_delegate addStoryline:storyline to:item.representedItem];
+			[_delegate.textActions addStoryline:storyline to:item.representedItem];
 		}
 	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	if (_selectedItems.count <= 1) [_delegate removeStoryline:storyline from:scene];
+	if (_selectedItems.count <= 1) [_delegate.textActions removeStoryline:storyline from:scene];
 	else {
 		// Multiple items selected
 		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
 		for (BeatTimelineItem* item in selected) {
-			[_delegate removeStoryline:storyline from:item.representedItem];
+			[_delegate.textActions removeStoryline:storyline from:item.representedItem];
 		}
 	}
 }
@@ -687,11 +713,11 @@
 		NSString *storyline = _storylineField.stringValue.uppercaseString;
 		
 		if (_clickedItem) {
-			if (_selectedItems.count <= 1) [_delegate addStoryline:storyline to:_clickedItem];
+			if (_selectedItems.count <= 1) [_delegate.textActions addStoryline:storyline to:_clickedItem];
 			else {
 				NSArray *selected = [NSArray arrayWithArray:_selectedItems];
 				for (BeatTimelineItem* item in selected) {
-					[_delegate addStoryline:storyline to:item.representedItem];
+					[_delegate.textActions addStoryline:storyline to:item.representedItem];
 				}
 			}
 		}

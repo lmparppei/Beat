@@ -13,20 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatTimelineDelegate <BeatEditorDelegate>
-
-@property (nonatomic, readonly, weak) OutlineScene *currentScene;
-
-- (NSRange)selectedRange;
-
-- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
-- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
-- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
-- (bool)caretAtEnd;
-- (void)registerEditorView:(id)view;
-
-@end
-
 @interface BeatTimeline : NSView <BeatSceneOutlineView, BeatTimelineItemDelegate, NSTextFieldDelegate>
 
 @property (nonatomic) bool visible;
@@ -35,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSMutableArray<BeatTimelineItem*> *selectedItems;
 
-@property (nonatomic) NSArray* outline;
-@property (weak) IBOutlet id<BeatTimelineDelegate> delegate;
+@property (nonatomic) NSArray<OutlineScene*>* outline;
+@property (weak) IBOutlet id<BeatEditorDelegate> delegate;
 @property (nonatomic) NSColor *backgroundColor;
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint;
 
@@ -50,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hide;
 - (void)reload;
 - (void)refreshWithDelay;
-- (void)scrollToScene:(NSInteger)index;
+- (void)scrollToSceneIndex:(NSInteger)index;
 - (CGFloat)playheadPosition;
 
 @end
