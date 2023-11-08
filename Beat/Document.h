@@ -53,7 +53,7 @@ THE SOFTWARE.
 @class BeatTextIO;
 
 
-@interface Document : BeatDocumentController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
+@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;

@@ -22,6 +22,7 @@
 #import <BeatCore/BeatFonts.h>
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatUserDefaults.h>
+#import <BeatCore/BeatTextIO.h>
 
 #import "BeatEditorFormatting.h"
 
@@ -824,6 +825,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.courier } ];
 }
+
+
 
 @end
 

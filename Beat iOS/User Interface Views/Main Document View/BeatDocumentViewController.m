@@ -19,15 +19,11 @@
 
 @interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
 
-@property (nonatomic) NSUUID* uuid;
-@property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
+@property (nonatomic) BeatUITextView* textView;
 
 @property (nonatomic) bool documentIsLoading;
-
-@property (nonatomic) BeatStylesheet* styles;
-@property (nonatomic) BeatStylesheet* editorStyles;
 
 @property (nonatomic) BeatPreview* preview;
 @property (nonatomic) BeatPreviewView* previewView;
@@ -37,13 +33,7 @@
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
-@property (nonatomic) NSMutableDictionary* runningPlugins;
-
 @property (nonatomic) BeatPaginationManager *pagination;
-
-@property (atomic) NSAttributedString *attrTextCache;
-@property (atomic) NSString *cachedText;
-@property (nonatomic) NSString* contentBuffer;
 
 /// The range which was *actually* changed
 @property (nonatomic) NSRange lastChangedRange;
@@ -63,17 +53,6 @@
 @property (strong, nonatomic) BXFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic) BXFont *synopsisFont;
-
-@property (nonatomic) IBOutlet BeatEditorFormatting* formatting;
-@property (nonatomic) IBOutlet BeatRevisions* revisionTracking;
-
-@property (nonatomic) IBOutlet BeatReview* review;
-
-@property (nonatomic) Line* previouslySelectedLine;
-@property (nonatomic) OutlineScene* currentScene;
-@property (nonatomic) NSArray *outline;
-
-@property (nonatomic) BeatTextIO* textActions;
 
 @property (nonatomic) KeyboardManager* keyboardManager;
 
@@ -96,7 +75,8 @@
 @property (nonatomic) bool closing;
 @end
 
-@implementation BeatDocumentViewController 
+@implementation BeatDocumentViewController
+@dynamic textView;
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
@@ -135,7 +115,8 @@
 	return self.textView.undoManager;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
 	/// NOTE: You need to use `loadDocument` before actually presenting the view
 	
 	[super viewDidLoad];
@@ -247,14 +228,14 @@
 	
 	if (_documentIsLoading) {
 		// Loading is complete, show page view
-		[_textView layoutIfNeeded];
+		[self.textView layoutIfNeeded];
 		
-		[_textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, _textView.text.length)];
-		[_textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, _textView.text.length) actualCharacterRange:nil];
+		[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
+		[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
 		
-		[_textView resize];
-		[_textView firstResize];
-		[_textView resize];
+		[self.textView resize];
+		[self.textView firstResize];
+		[self.textView resize];
 		
 		_documentIsLoading = false;
 	}
@@ -294,26 +275,6 @@
 }
 
 
-#pragma mark - Editor styles
-
-- (BeatStylesheet *)editorStyles {
-	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[_documentSettings getString:DocSettingStylesheet]];
-	return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
-}
-- (BeatStylesheet *)styles {
-	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[_documentSettings getString:DocSettingStylesheet]];
-	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
-}
-
-/// Reloads all styles
-- (void)reloadStyles
-{
-	[self.styles reload];
-	[self.editorStyles reload];
-	[self resetPreview];
-}
-
-
 #pragma mark - Text view
 
 - (BXTextView*)getTextView {
@@ -347,62 +308,6 @@
 - (NSString*)contentForSaving {
 	return [self createDocumentFile];
 }
-- (NSString*)createDocumentFile {
-	return [self createDocumentFileWithAdditionalSettings:nil];
-}
-- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings {
-	// This puts together string content & settings block. It is returned to dataOfType:
-	
-	// Save tagged ranges
-	// [self saveTags];
-	
-	// For async saving & thread safety, make a copy of the lines array
-	NSAttributedString *attrStr = self.getAttributedText;
-	NSString *content = self.parser.screenplayForSaving;
-	if (content == nil) {
-		NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
-		@throw NSInternalInconsistencyException;
-	}
-	
-	// Resort to content buffer if needed
-	// if (content == nil) content = self.contentCache;
-	
-	// Save added/removed ranges
-	// This saves the revised ranges into Document Settings
-	NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
-	[self.documentSettings set:DocSettingRevisions as:(revisions != nil) ? revisions : @{}];
-	
-	// Save current revision color
-	[self.documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
-	
-	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
-	[self.documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
-	
-	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
-	
-	// Save reviewed ranges
-	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
-	[self.documentSettings set:DocSettingReviews as:(reviews != nil) ? reviews : @[]];
-	
-	// Save caret position
-	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
-	
-	//[self unblockUserInteraction];
-	
-	NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
-	NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
-	
-	/*
-	 if (_runningPlugins.count) {
-	 for (NSString *pluginName in _runningPlugins.allKeys) {
-	 BeatPlugin *plugin = _runningPlugins[pluginName];
-	 [plugin documentWasSaved];
-	 }
-	 }
-	 */
-	
-	return result;
-}
 
 
 #pragma mark - Getters for parser data
@@ -411,52 +316,6 @@
  These shouldn't exist to be honest, save for maybe `currentScene`. This is mostly a backwards-compatibility thing, and any new classes should target the parser methods directly.
  
  */
-
-- (OutlineScene*)currentScene {
-	// If we are not on the main thread, return the latest known scene
-	if (!NSThread.isMainThread) return _currentScene;
-	
-	// Check if the cached scene is OK
-	NSInteger position = self.selectedRange.location;
-	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
-		return _currentScene;
-	}
-	
-	OutlineScene* scene = [self.parser sceneAtPosition:position];
-	_currentScene = scene;
-	return _currentScene;
-}
-
-- (NSMutableArray<Line*>*)lines {
-	return self.parser.lines;
-}
-
-- (NSArray*)linesForScene:(OutlineScene*)scene {
-	return [self.parser linesForScene:scene];
-}
-
-- (Line*)lineAt:(NSInteger)index {
-	return [self.parser lineAtPosition:index];
-}
-
-- (LineType)lineTypeAt:(NSInteger)index {
-	return [self.parser lineTypeAt:index];
-}
-
-- (Line*)currentLine {
-	_previouslySelectedLine = _currentLine;
-	
-	NSInteger location = self.selectedRange.location;
-	if (location >= self.text.length) return self.parser.lines.lastObject;
-	
-	// Don't fetch the line if we already know it
-	if (NSLocationInRange(location, _currentLine.range) && [self.parser.lines containsObject:_currentLine]) return _currentLine;
-	else {
-		Line *line = [_parser lineAtPosition:location];
-		_currentLine = line;
-		return _currentLine;
-	}
-}
 
 - (NSArray*)markers {
 	// This could be inquired from the text view, too.
@@ -468,78 +327,13 @@
 		
 		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
 		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
-		CGFloat relativeY = yPosition / [self.textView.layoutManager usedRectForTextContainer:_textView.textContainer].size.height;
+		CGFloat relativeY = yPosition / [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size.height;
 		
 		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
 		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
 	} }
 	
 	return markers;
-}
-
-- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
-	// If the position is inside the stored current scene, just return that.
-	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
-		return _currentScene;
-	}
-	
-	// At the end, return last scene
-	if (position >= self.text.length) return self.parser.outline.lastObject;
-	
-	OutlineScene *prevScene;
-	for (OutlineScene *scene in self.outline) {
-		if (NSLocationInRange(position, scene.range))  {
-			return scene;
-		}
-		else if (position >= NSMaxRange(prevScene.range) && position < scene.position && prevScene) {
-			return prevScene;
-		}
-		
-		prevScene = scene;
-	}
-	
-	return nil;
-}
-
-- (OutlineScene*)getPreviousScene {
-	NSArray *outline = self.parser.outline;
-	if (outline.count == 0) return nil;
-	
-	Line * currentLine = self.currentLine;
-	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
-	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-	
-	for (NSInteger i = lineIndex - 1; i >= 0; i--) {
-		Line* line = self.parser.lines[i];
-		
-		if (line.type == heading || line.type == section) {
-			for (OutlineScene *scene in outline) {
-				if (scene.line == line) return scene;
-			}
-		}
-	}
-	
-	return nil;
-}
-- (OutlineScene*)getNextScene {
-	NSArray *outline = self.parser.outline;
-	if (outline.count == 0) return nil;
-	
-	Line * currentLine = self.currentLine;
-	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
-	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-	
-	for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
-		Line* line = self.parser.lines[i];
-		
-		if (line.type == heading || line.type == section) {
-			for (OutlineScene *scene in outline) {
-				if (scene.line == line) return scene;
-			}
-		}
-	}
-	
-	return nil;
 }
 
 
@@ -659,191 +453,16 @@ static bool buildPreviewImmediately = false;
 	if (NSThread.mainThread) return self.textView.text;
 	else return self.attrTextCache.string;
 }
-- (NSAttributedString*)attributedString {
-	return [self getAttributedText];
-}
-- (NSAttributedString *)getAttributedText
-{
-	if (NSThread.isMainThread) {
-		_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.textStorage];
-		return _attrTextCache;
-	} else {
-		return _attrTextCache;
-	}
-}
 
-// TODO: (Some day) Expose text i/o class to delegate and edit the existing calls to these methods, rather than using this clunky macro.
-FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
-FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
-FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
-FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
-FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
-FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
-FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string);
-FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position);
-FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
-FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);
 
-- (void)removeAttribute:(NSString*)key range:(NSRange)range {
-	if (key == nil) return;
-	[self.textView.textStorage removeAttribute:key range:range];
-}
-- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range {
-	if (value == nil) return;
-	[self.textView.textStorage addAttribute:key value:value range:range];
-}
-- (void)setAttributes:(NSDictionary*)attributes range:(NSRange)range {
-	if (attributes == nil) return;
-	[self.textView.textStorage setAttributes:attributes range:range];
-}
+// TODO: Move this to text view somehow
 - (void)setTypingAttributes:(NSDictionary*)attrs {
 	_typingAttributes = attrs;
 	//self.textView.typingAttributes = attrs;
 }
 
-
-
-#pragma mark - Screenplay document data shorthands
-
-- (NSString*)revisionColor
-{
-	NSString* revisionColor = [self.documentSettings getString:DocSettingRevisionColor];
-	if (revisionColor == nil) revisionColor = BeatRevisions.defaultRevisionColor;
-	return revisionColor;
-}
-- (void)setRevisionColor:(NSString *)revisionColor
-{
-	if (revisionColor == nil) return;
-	[self.documentSettings setString:DocSettingRevisionColor as:revisionColor];
-}
-
-- (NSDictionary<NSString*, NSString*>*)characterGenders {
-	return [self.documentSettings get:DocSettingCharacterGenders];
-}
-
-- (void)setPrintSceneNumbers:(bool)value
-{
-	[BeatUserDefaults.sharedDefaults saveBool:value forKey:BeatSettingPrintSceneNumbers];
-}
-
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {
-	// ?
-}
-
-
-
-#pragma mark - Colors, storylines etc.
-
-- (void)setColor:(NSString *)color forLine:(Line *)line {
-	if (line == nil) return;
-	
-	// First replace the existing color range (if it exists)
-	if (line.colorRange.length > 0) {
-		NSRange localRange = line.colorRange;
-		NSRange globalRange = [line globalRangeFromLocal:localRange];
-		[self removeRange:globalRange];
-	}
-	
-	// Do nothing else if color is set to none
-	if ([color.lowercaseString isEqualToString:@"none"]) return;
-	
-	// Create color string and add a space at the end of heading if needed
-	NSString *colorStr = [NSString stringWithFormat:@"[[%@]]", color.lowercaseString];
-	if ([line.string characterAtIndex:line.string.length - 1] != ' ') {
-		colorStr = [NSString stringWithFormat:@" %@", colorStr];
-	}
-	
-	[self addString:colorStr atIndex:NSMaxRange(line.textRange)];
-}
-
-- (void)setColor:(NSString *)color forScene:(OutlineScene *) scene {
-	if (scene == nil) return;
-	[self setColor:color forLine:scene.line];
-}
-
-- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	NSMutableArray *storylines = scene.storylines.copy;
-	
-	// Do nothing if the storyline is already there
-	if ([storylines containsObject:storyline]) return;
-	
-	if (storylines.count > 0) {
-		// If the scene already has any storylines, we'll have to add the beat somewhere.
-		// Check if scene heading has note ranges, and if not, add it. Otherwise stack into that range.
-		if (!scene.line.beatRanges.count) {
-			// No beat note in heading yet
-			NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
-			beatStr = [@" " stringByAppendingString:beatStr];
-			[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
-		} else {
-			NSMutableArray <Storybeat*>*beats = scene.line.beats.mutableCopy;
-			NSRange replaceRange = beats.firstObject.rangeInLine;
-			
-			// This is fake storybeat object to handle the string creation correctly.
-			[beats addObject:[Storybeat line:scene.line scene:scene string:storyline range:replaceRange]];
-			NSString *beatStr = [Storybeat stringWithBeats:beats];
-			
-			[self replaceRange:[scene.line globalRangeFromLocal:replaceRange] withString:beatStr];
-		}
-		
-	} else {
-		// There are no storylines yet. Create a beat note and add it at the end of scene heading.
-		NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
-		beatStr = [@" " stringByAppendingString:beatStr];
-		[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
-	}
-}
-
-- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	// This is unnecessarily complicated.
-	
-	NSMutableArray *storylines = scene.storylines.copy;
-	
-	if (storylines.count > 0) {
-		if ([storylines containsObject:storyline]) 		// Is the storyline really there?
-		{
-			if (storylines.count - 1 <= 0) {
-				// No storylines left. Clear ALL storyline notes.
-				for (Line *line in [self.parser linesForScene:scene]) {
-					[self removeTextOnLine:line inLocalIndexSet:line.beatRanges];
-				}
-			}
-			else {
-				// Find the specified beat note
-				Line *lineWithBeat;
-				for (Line *line in [self.parser linesForScene:scene]) {
-					if ([line hasBeatForStoryline:storyline]) {
-						lineWithBeat = line;
-						break;
-					}
-				}
-				if (!lineWithBeat) return;
-				
-				NSMutableArray *beats = lineWithBeat.beats.mutableCopy;
-				Storybeat *beatToRemove = [lineWithBeat storyBeatWithStoryline:storyline];
-				[beats removeObject:beatToRemove];
-				
-				// Multiple beats can be tucked into a single note. Store the other beats.
-				NSMutableArray *stackedBeats = NSMutableArray.new;
-				for (Storybeat *beat in beats) {
-					if (NSEqualRanges(beat.rangeInLine, beatToRemove.rangeInLine)) [stackedBeats addObject:beat];
-				}
-				
-				// If any beats were left, recreate the beat note with the leftovers.
-				// Otherwise, just remove it.
-				NSString *beatStr = @"";
-				if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
-				
-				NSRange removalRange = beatToRemove.rangeInLine;
-				[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
-			}
-		}
-	}
-}
-
-- (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range {
-	if (attributes == nil) return;
-	[self.textView.textStorage addAttributes:attributes range:range];
+	// Does nothing on iOS for now
 }
 
 
@@ -917,7 +536,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 -(void)textViewDidChangeSelection:(UITextView *)textView {
 	if (self.characterInputForLine != nil && self.currentLine != self.characterInputForLine) {
-		NSLog(@"Current line: %@", self.currentLine);
 		self.characterInput = false;
 		self.characterInputForLine = nil;
 	}
@@ -934,10 +552,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		NSInteger pos = self.selectedRange.location;
 		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
 		if (reviewItem && !reviewItem.emptyReview) {
-			[_review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
 			//[self.textView.window makeFirstResponder:self.textView];
 		} else {
-			[_review closePopover];
+			[self.review closePopover];
 		}
 	}
 }
@@ -950,7 +568,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 -(void)textViewDidChange:(UITextView *)textView {
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
-	_attrTextCache = textView.attributedText;
+	self.attrTextCache = textView.attributedText;
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
@@ -1013,7 +631,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 			// If the cue is empty, reset it
 			if (_characterInputForLine.string.length == 0) {
 				_characterInputForLine.type = empty;
-				[_formatting formatLine:_characterInputForLine];
+				[self.formatting formatLine:self.characterInputForLine];
 			} else {
 				_characterInputForLine.forcedCharacterCue = YES;
 			}
@@ -1056,7 +674,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowRevisions:(bool)showRevisions {
 	[BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
-	[self refreshTextViewLayoutElements];
+	[self.textView setNeedsDisplay];
 }
 
 - (bool)showPageNumbers {
@@ -1064,7 +682,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowPageNumbers:(bool)showPageNumbers {
 	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
-	[self refreshTextViewLayoutElements];
+	[self.textView setNeedsDisplay];
 }
 
 - (bool)showSceneNumberLabels {
@@ -1072,7 +690,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 -(void)setShowSceneNumberLabels:(bool)showSceneNumberLabels {
 	[BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];
-	[self refreshTextViewLayoutElements];
+	[self.textView setNeedsDisplay];
 }
 
 - (NSInteger)spaceBeforeHeading {
@@ -1127,24 +745,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Editor text view values
 
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
-- (CGFloat)magnification { return _textView.enclosingScrollView.zoomScale; }
-
-- (NSRange)selectedRange { return self.textView.selectedRange; }
-- (void)setSelectedRange:(NSRange)range { [self setSelectedRange:range withoutTriggeringChangedEvent:NO]; }
-- (UITextRange*)selectedTextRange { return self.textView.selectedTextRange; }
-- (void)setSelectedTextRange:(UITextRange*)textRange { self.textView.selectedTextRange = textRange; }
-
-/// Set selected range but with the option to opt out of  the didChangeSelection: event
-- (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent {
-	_skipSelectionChangeEvent = triggerChangedEvent;
-	
-	@try {
-		[self.textView setSelectedRange:range];
-	}
-	@catch (NSException *e) {
-		NSLog(@"Selection out of range: %lu, %lu", range.location, range.length);
-	}
-}
+- (CGFloat)magnification { return self.textView.enclosingScrollView.zoomScale; }
 
 
 #pragma mark Editor text view helpers
@@ -1153,16 +754,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.document updateChangeCount:change];
 }
 
-- (bool)caretAtEnd {
-	return (self.textView.selectedRange.location == self.text.length);
-}
-
-- (void)refreshTextViewLayoutElements {
-	[self.textView setNeedsDisplay];
-}
-- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {
-	
-}
 
 
 #pragma mark - Scrolling
@@ -1289,76 +880,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Formatting
 
-- (void)formatAllLines {
-	for (Line* line in self.parser.lines) {
-		[_formatting formatLine:line];
-	}
-	[self.parser.changedIndices removeAllIndexes];
-}
-
-- (void)formatLine:(Line *)line {
-	[self.formatting formatLine:line];
-}
-
-- (void)forceFormatChangesInRange:(NSRange)range {
-	NSArray* lines = [self.parser linesInRange:range];
-	for (Line* line in lines) {
-		[_formatting formatLine:line];
-	}
-}
-
-/// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges
 {
-	//[self.textStorage beginEditing];
-	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		if (idx >= self.parser.lines.count) return;
-		[_formatting formatLine:self.parser.lines[idx]];
-	}];
-	//[self.textStorage endEditing];
+	[super applyFormatChanges];
 	
-	[self.parser.changedIndices removeAllIndexes];
 	[self.textView setTypingAttributes:self.typingAttributes];
 }
 
-- (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
-	[indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		if (idx < self.parser.lines.count) {
-			[self.formatting formatLine:self.parser.lines[idx]];
-		}
-	}];
-}
-
-
-- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-}
-
-- (void)renderBackgroundForLines {
-}
-
-- (void)renderBackgroundForRange:(NSRange)range {
-	[self.layoutManager invalidateDisplayForCharacterRange:range];
-}
-
-/// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
-- (void)setTypeAndFormat:(Line*)line type:(LineType)type {
-	line.type = type;
-	[_formatting formatLine:line];
-}
-
-
-#pragma mark - Shown revisions
-
-- (NSArray*)shownRevisions {
-	NSArray<NSString*>* hiddenRevisions = [self.documentSettings get:@"HiddenRevisions"];
-	NSMutableArray* shownRevisions = [NSMutableArray.alloc initWithArray:BeatRevisions.revisionColors];
-	if (hiddenRevisions.count > 0) {
-		[shownRevisions removeObjectsInArray:hiddenRevisions];
-	}
-	
-	return shownRevisions;
-}
 
 
 #pragma mark - Printing stuff for iOS
@@ -1418,17 +946,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	self.mode = mode;
 }
 
-// A hack to provide text storage interface to both iOS and macOS ports
-- (NSTextStorage*)textStorage {
-	return self.textView.textStorage;
-}
-- (NSLayoutManager*)layoutManager {
-	return self.textView.layoutManager;
-}
-
-// @optional - (IBAction)toggleCards:(id)sender;
-
-
 
 #pragma mark - For avoiding throttling
 
@@ -1451,13 +968,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 
 
-
 #pragma mark - Keyboard manager delegate
 
 // TODO: Move this to the text view
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + 200.0, 0);
+	CGFloat addedFactor = self.textView.enclosingScrollView.zoomScale * 50.0;
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + addedFactor, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
@@ -1520,11 +1037,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Minimal plugin support
 
-- (NSUUID *)uuid {
-	if (_uuid == nil) _uuid = NSUUID.new;
-	return _uuid;
-}
-
 - (IBAction)runPlugin:(id)sender
 {
 	// Get plugin filename from menu item
@@ -1582,17 +1094,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	self.runningPlugins[parser.pluginName] = parser;
 }
+
 - (void)deregisterPlugin:(id)plugin
 {
 	BeatPlugin *parser = (BeatPlugin*)plugin;
 	[self.runningPlugins removeObjectForKey:parser.pluginName];
 	parser = nil;
-}
-
-
-- (NSDictionary *)revisedRanges {
-	NSDictionary *revisions = [BeatRevisions rangesForSaving:self.getAttributedText];
-	return revisions;
 }
 
 - (id)getPropertyValue:(NSString *)key {

@@ -14,16 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class iOSDocument;
 
-@interface BeatDocumentViewController : UIViewController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
+@interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
 @property (nonatomic) iOSDocument* document;
 @property (weak, readonly) BXWindow* documentWindow;
 
-@property (nonatomic) BeatDocumentSettings *documentSettings;
-
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
 
-@property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
 // Editor flags
@@ -33,17 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
-@property (nonatomic) ContinuousFountainParser *parser;
-
 @property (nonatomic) BeatPaperSize pageSize;
 
-@property (nonatomic, weak) Line* currentLine; // Current line has to be weak so we don't keep anything weird in memory
+//@property (nonatomic) Line* currentLine; // Current line has to be weak so we don't keep anything weird in memory
 @property (nonatomic) bool moving;
 
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
-@property (nonatomic) NSString* revisionColor;
 
 @property (nonatomic) NSDictionary<NSString*,NSString*>* characterGenders;
 
@@ -53,9 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) BXFont* _Nonnull boldCourier;
 @property (strong, nonatomic) BXFont* _Nonnull boldItalicCourier;
 @property (strong, nonatomic) BXFont* _Nonnull italicCourier;
-
-
-@property (nonatomic) bool skipSelectionChangeEvent;
 
 @property (nonatomic) NSInteger sceneNumberingStartsFrom;
 

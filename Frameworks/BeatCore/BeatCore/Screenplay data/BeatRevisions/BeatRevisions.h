@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
-#import "BeatEditorDelegate.h"
-#import "BeatRevisionItem.h"
+#import <BeatCore/BeatEditorDelegate.h>
+#import <BeatCore/BeatRevisionItem.h>
 
 
 NS_ASSUME_NONNULL_BEGIN

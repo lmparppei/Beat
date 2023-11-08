@@ -163,6 +163,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return self;
 }
 
+
 - (void)setupLayoutManager
 {
 	// Set text storage delegate
@@ -172,7 +173,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// to fit our revision markers in the margin
 	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
 	[self.textContainer replaceLayoutManager:layoutMgr];
-
+	
 	self.textContainer.lineFragmentPadding = BeatTextView.linePadding;
 }
 
@@ -197,7 +198,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// The previous position of caret
 	self.lastPos = -1;
-
+	
 	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
 	
@@ -329,7 +330,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	static CGSize prevSize;
 	static CGSize sizeBeforeThat;
-		
+	
 	if (prevSize.width > 0 && frame.size.height == prevSize.height) {
 		// Some duct-tape which might have not worked, or dunno
 		//if (frame.size.width == sizeBeforeThat.width) return;
@@ -427,7 +428,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			} else {
 				// Call delegate to handle normal tab press
 				NSUInteger flags = theEvent.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
-
+				
 				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
 					[self.editorDelegate handleTabPress];
 				}
@@ -467,7 +468,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 					_popupMode = ForceElement;
 					
 					self.automaticTextCompletionEnabled = YES;
-
+					
 					[self forceElement:self];
 					preventDefault = YES;
 					break;
@@ -521,17 +522,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Find the rect for current range
 	NSRect rect = [self rectForRange:self.selectedRange];
-
+	
 	// Calculate correct scroll position
 	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize * 3) * self.editorDelegate.magnification;
 	
 	// Take find & replace bar height into account
 	// CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
-			
+	
 	// Calculate container height with insets
 	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
 	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
-		
+	
 	NSRect bounds = NSMakeRect(clipView.bounds.origin.x, scrollY, clipView.bounds.size.width, clipView.bounds.size.height);
 	
 	[self.superview.animator setBoundsOrigin:bounds.origin];
@@ -574,13 +575,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSInteger words = 0;
 	NSArray *lines = [string componentsSeparatedByString:@"\n"];
 	NSInteger symbols = string.length;
-
+	
 	for (NSString *line in lines) {
 		for (NSString *word in [line componentsSeparatedByString:@" "]) {
 			if (word.length > 0) words += 1;
 		}
 	}
-
+	
 	// Get number of pages / page number for selection
 	NSInteger numberOfPages = 0;
 	if (wholeDocument) numberOfPages = _editorDelegate.numberOfPages;
@@ -618,7 +619,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	rect = [self.window convertRectFromScreen:rect];
 	rect = [self convertRect:rect fromView:nil];
 	rect.size.width = 5;
-
+	
 	NSPopover* popover = [self createPopoverWithText:attrString];
 	popover.behavior = NSPopoverBehaviorTransient;
 	[popover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
@@ -641,7 +642,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		_infoTextView.usesRuler = false;
 		_infoTextView.selectable = false;
 		[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
-
+		
 		_infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
 		
 		[infoContentView addSubview:_infoTextView];
@@ -663,7 +664,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	_infoPopover.contentSize = frame.size;
 	_infoTextView.frame = NSMakeRect(0, 0, frame.size.width, frame.size.height);
-
+	
 	return _infoPopover;
 }
 
@@ -854,7 +855,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Tag string in the menu is prefixed by "● " or "× " so take them it out
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
-		
+	
 	if (self.selectedRange.length > 0) {
 		NSString *tagString = [self.textStorage.string substringWithRange:self.selectedRange].lowercaseString;
 		BeatTagType type = [BeatTagging tagFor:tagStr];
@@ -881,7 +882,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Deselect
 		self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
 	}
-		
+	
 	[self.autocompletePopover close];
 	_popupMode = NoPopup;
 }
@@ -978,7 +979,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSString *firstChar = [self.substring substringToIndex:1];
 		NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
 		rect.size.width = firstCharSize.width;
-			
+		
 		_popupMode = Autocomplete;
 		[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 		[self.window makeFirstResponder:self];
@@ -1154,13 +1155,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
-
+	
 	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width - 30;
 	// Compact page numbers if needed
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
 	}
-
+	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 		NSTextField *label;
 		NSString *page = @(pageNumber).stringValue;
@@ -1170,12 +1171,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		else label = self.pageNumberLabels[pageNumber - 1];
 		
 		[label setStringValue:page];
-
+		
 		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
 		label.frame = rect;
 		
 		[label setTextColor:pageNumberColor];
-
+		
 		pageNumber++;
 	}
 	
@@ -1270,13 +1271,13 @@ Line *cachedRectLine;
 	if (self.window.isKeyWindow) {
 		if ((point.x > self.textContainerInset.width &&
 			 point.x * (1/_zoomLevel) < (self.textContainer.size.width + self.textContainerInset.width) * (1/_zoomLevel)) &&
-			 y < self.window.frame.size.height - 22 &&
-			 superviewPoint.y < self.enclosingScrollView.frame.size.height
+			y < self.window.frame.size.height - 22 &&
+			superviewPoint.y < self.enclosingScrollView.frame.size.height
 			) {
 			//[super mouseMoved:event];
 			[NSCursor.IBeamCursor set];
 		} else if (point.x > 10) {
-
+			
 			[NSCursor.arrowCursor set];
 		}
 	}
@@ -1298,7 +1299,7 @@ Line *cachedRectLine;
 }
 
 - (CGFloat)documentWidth {
-	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter; 
+	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter;
 	CGFloat padding = self.textContainer.lineFragmentPadding;
 	
 	return width + padding * 2 + 1.0;
@@ -1308,6 +1309,7 @@ Line *cachedRectLine;
 	// Top/bottom insets
 	if (_editorDelegate.typewriterMode) {
 		// What the actual fuck is this math ha ha ha
+		// 2023 update: I won't touch this ever again - it works, but I'm scared to know why.
 		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (1 + (1 - self.zoomLevel));
 		self.textInsetY = insetY;
 	} else {
@@ -1319,7 +1321,7 @@ Line *cachedRectLine;
 	
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(self.documentWidth, self.textContainer.size.height);
-
+	
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
 	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
@@ -1378,6 +1380,22 @@ Line *cachedRectLine;
 	}];
 }
 
+- (void)scrollToLine:(Line *)line {
+	if (line == nil) return;
+	
+	self.selectedRange = line.textRange;
+	[self scrollToRange:line.textRange];
+}
+
+
+- (void)scrollToScene:(OutlineScene *)scene {
+	if (scene == nil) return;
+	
+	self.selectedRange = scene.line.textRange;
+	[self scrollToRange:scene.line.textRange];
+}
+
+
 
 #pragma mark - Zooming
 
@@ -1416,7 +1434,7 @@ double clamp(double d, double min, double max) {
 - (void)adjustZoomLevel:(CGFloat)level {
 	if (_scaleFactor == 0) _scaleFactor = _zoomLevel;
 	CGFloat oldMagnification = _zoomLevel;
-		
+	
 	if (oldMagnification != level) {
 		self.zoomLevel = level;
 		
@@ -1441,7 +1459,7 @@ double clamp(double d, double min, double max) {
 		
 		[self.editorDelegate ensureLayout];
 	}
-		
+	
 	[self setInsets];
 	[_editorDelegate updateLayout];
 	[_editorDelegate ensureLayout];
@@ -1454,7 +1472,7 @@ double clamp(double d, double min, double max) {
 	CGFloat newMagnification = _zoomLevel;
 	if (zoomIn) newMagnification += 0.04;
 	else newMagnification -= 0.04;
-
+	
 	[self adjustZoomLevel:newMagnification];
 	
 	// Save adjusted zoom level
@@ -1510,7 +1528,7 @@ double clamp(double d, double min, double max) {
 	
 	// Remove the represented line, because it can't be encoded
 	if (attrString.length) [attrString removeAttribute:@"representedLine" range:NSMakeRange(0, attrString.length)];
-
+	
 	return attrString;
 }
 
@@ -1581,7 +1599,7 @@ double clamp(double d, double min, double max) {
 	
 	// See if we can read anything from the pasteboard
 	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
-		
+	
 	if (ok) {
 		// We know for a fact that if the data originated from beat, the FIRST item will be
 		// the custom object we created when copying. So let's just pick the first one of the
@@ -1596,7 +1614,7 @@ double clamp(double d, double min, double max) {
 			NSString* result = [BeatPasteboardItem sanitizeString:obj];
 			[self.editorDelegate replaceRange:self.selectedRange withString:result];
 			return;
-
+			
 		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
 			BeatPasteboardItem *pastedItem = obj;
@@ -1620,10 +1638,10 @@ double clamp(double d, double min, double max) {
 					[linesToRender addObject:l];
 				}
 				/*
-				if (attrs[BeatReview.attributeKey] != nil || attrs[BeatRevisions.attributeKey] != nil || attrs[BeatTagging.attributeKey] != nil) {
-					
-				}
-				*/
+				 if (attrs[BeatReview.attributeKey] != nil || attrs[BeatRevisions.attributeKey] != nil || attrs[BeatTagging.attributeKey] != nil) {
+				 
+				 }
+				 */
 			}];
 			[self.textStorage endEditing];
 			
@@ -1657,7 +1675,7 @@ double clamp(double d, double min, double max) {
 	
 	Line* line = self.editorDelegate.currentLine;
 	static Line* prevLine;
-		
+	
 	if (line != prevLine) {
 		// If the line changed, let's redraw the range
 		bool lineInRange = (NSMaxRange(line.textRange) <= self.string.length);
@@ -1694,7 +1712,7 @@ double clamp(double d, double min, double max) {
 	
 	LineType type = line.type;
 	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range) || NSIntersectionRange(self.selectedRange, line.range).length > 0;
-
+	
 	// Ignore story markers
 	// if (line.type == section || line.type == synopse) return 0;
 	
@@ -1747,7 +1765,7 @@ double clamp(double d, double min, double max) {
 		// Hide markdown characters for the line we're not currently editing
 		
 		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
-				
+		
 		for (NSInteger i = 0; i < glyphRange.length; i++) {
 			NSUInteger index = charIndexes[i];
 			NSGlyphProperty prop = props[i];
@@ -1783,14 +1801,14 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 {
 	// Get the string length.
 	CFIndex count = CFStringGetLength(string);
- 
+	
 	// Allocate our buffers for characters and glyphs.
 	unichar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
 	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
- 
+	
 	// Get the characters from the string.
 	CFStringGetCharacters(string, CFRangeMake(0, count), characters);
- 
+	
 	// Get the glyphs for the characters.
 	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
 	
@@ -1803,20 +1821,20 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	//if (_editorDelegate.documentIsLoading) return;
 	//[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
 	/*
-	if (_editorDelegate.documentIsLoading) return;
-	
-	NSInteger numberOfLines = [self numberOfLines];
-	
-	if (self.linesBeforeLayout != numberOfLines || self.editorDelegate.lastChangedRange.length > 2 ||
-		self.editorDelegate.currentLine.type == heading) {
-		[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
-	}
-	else if (_editorDelegate.revisionMode) {
-		// If the user is revising stuff, let's enforce refreshing the elements.
-		[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
-	}
-	
-	self.linesBeforeLayout = numberOfLines;
+	 if (_editorDelegate.documentIsLoading) return;
+	 
+	 NSInteger numberOfLines = [self numberOfLines];
+	 
+	 if (self.linesBeforeLayout != numberOfLines || self.editorDelegate.lastChangedRange.length > 2 ||
+	 self.editorDelegate.currentLine.type == heading) {
+	 [self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
+	 }
+	 else if (_editorDelegate.revisionMode) {
+	 // If the user is revising stuff, let's enforce refreshing the elements.
+	 [self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
+	 }
+	 
+	 self.linesBeforeLayout = numberOfLines;
 	 */
 }
 
@@ -1827,7 +1845,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 {
 	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-
+	
 	return rect;
 }
 
@@ -1864,7 +1882,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	NSLayoutManager *layoutManager = self.layoutManager;
 	NSString *string = self.string;
 	NSUInteger numberOfLines, index, stringLength = string.length;
-		
+	
 	for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++) {
 		NSRange tmpRange;
 		
@@ -1893,7 +1911,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 		// Do nothing when autocompletion list is visible
 		return;
 	}
-		
+	
 	if (line.isAnyParenthetical) {
 		// Avoid capitalizing parentheticals
 		NSMutableArray<NSTextCheckingResult*> *newResults;
@@ -1910,10 +1928,25 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 		return;
 	}
-
+	
 	// default behaviors, including auto-correct
 	[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 }
+
+
+#pragma mark - Make compatible with iOS stuff
+
+-(NSString *)text
+{
+	return self.string;
+}
+- (void)setText:(NSString *)text
+{
+	self.string = text;
+}
+
+@synthesize typingAttributes;
+
 
 @end
 /*

@@ -22,7 +22,7 @@
     #define BeatTagView NSTextView
 #endif
 
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 @class BeatTag;
 

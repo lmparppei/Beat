@@ -85,10 +85,11 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @class BeatTagging;
 @class BeatPaginationPage;
 
-@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
+@interface BeatTextView : NSTextView <BeatTextEditor, NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
 @property (weak) IBOutlet BeatTagging *tagging;
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
+@property (nonatomic) NSString* text;
 
 @property (nonatomic) bool didType;
 

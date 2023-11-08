@@ -17,7 +17,7 @@ import BeatParsing
 	@objc var formatting:BeatEditorFormatting { get }
 }
 
-class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
+class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
 
 	//@IBInspectable var documentWidth:CGFloat = 640
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
@@ -127,8 +127,6 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		resizePaper()
 		resize()
 		
-		print("setup")
-		
 		setupInputAssistantButtons()
 	}
 		
@@ -140,7 +138,11 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 	
 	// MARK: - Scroll to range
 	
-	@objc func scrollToRange(_ range:NSRange) {
+	@objc func scroll(to line: Line!) {
+		selectAndScroll(to: line.textRange())
+	}
+	
+	func scroll(to range: NSRange) {
 		var rect = self.rectForRange(range: range)
 		rect.origin.y += self.insets.top
 		rect.size.height += self.insets.bottom
@@ -149,6 +151,20 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		self.enclosingScrollView.scrollRectToVisible(rect, animated: true)
 	}
 	
+	func scroll(to range: NSRange, callback callbackBlock: (() -> Void)!) {
+		scroll(to: range)
+		callbackBlock()
+	}
+	
+	func scroll(to scene: OutlineScene!) {
+		selectAndScroll(to: scene.line.textRange())
+	}
+	
+	func selectAndScroll(to range:NSRange) {
+		self.selectedRange = range
+		self.scroll(to: range)
+	}
+		
 	
 	// MARK: - Resize scroll view and text view
 	/**
@@ -224,11 +240,12 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 		textViewFrame.size.width = self.documentWidth + self.insets.left + self.insets.right
 		textViewFrame.size.height = self.pageView.frame.size.height
 		self.frame = textViewFrame
-		
+		/*
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
 			self.enclosingScrollView.zoomScale = zoom
 		} completion: { _ in
 		}
+		 */
 	}
 	
 	@objc func firstResize() {
@@ -420,6 +437,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 			actions.append(revisionMenu)
 		}
 		
+		let textIO = editorDelegate?.textActions
 		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
 			UIAction(title: "Omit Scene") { _ in
 				self.editorDelegate?.formattingActions.omitScene(nil)
@@ -428,28 +446,28 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate, InputAssistantV
 				self.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
 			},
 			UIAction(image: UIImage(named:"Color_Red")) { _ in
-				self.editorDelegate?.setColor("red", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("red", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Blue")) { _ in
-				self.editorDelegate?.setColor("blue", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("blue", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Green")) { _ in
-				self.editorDelegate?.setColor("green", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("green", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Pink")) { _ in
-				self.editorDelegate?.setColor("pink", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("pink", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Brown")) { _ in
-				self.editorDelegate?.setColor("brown", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("brown", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Cyan")) { _ in
-				self.editorDelegate?.setColor("cyan", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("cyan", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Orange")) { _ in
-				self.editorDelegate?.setColor("orange", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("orange", for: self.editorDelegate?.currentScene)
 			},
 			UIAction(image: UIImage(named:"Color_Magenta")) { _ in
-				self.editorDelegate?.setColor("magenta", for: self.editorDelegate?.currentScene)
+				textIO?.setColor("magenta", for: self.editorDelegate?.currentScene)
 			}
 		])
 		

@@ -516,8 +516,6 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 
-
-
 #pragma mark - Helper methods
 
 /// Returns `true` if the selected range actually is wrapped by formatting symbols
@@ -538,6 +536,7 @@ static NSString *revisionAttribute = @"Revision";
         return NO;
     }
 }
+
 
 @end
 

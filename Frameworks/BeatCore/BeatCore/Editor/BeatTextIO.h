@@ -76,6 +76,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)setColor:(NSString *)color forLine:(Line *)line;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
+
 @end
 
 

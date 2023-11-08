@@ -53,16 +53,39 @@
 @end
 
 /**
+ TODO: Make the text editor conform to this protocol to avoid tons of editor view calls in the delegate
+ */
+@protocol BeatTextEditor
+//NSLayoutManager* layoutManager;
+//NSTextStorage* textStorage;
+@property (nonatomic) NSString* text;
+@property (nonatomic) NSDictionary<NSAttributedStringKey,id>* typingAttributes;
+
+- (void)scrollToLine:(Line*)line;
+- (void)scrollToRange:(NSRange)range;
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
+- (void)scrollToScene:(OutlineScene*)scene;
+
+@end
+
+/**
  Every view which uses the outline structure to show stuff should adhere to this protocol.
  */
 @protocol BeatSceneOutlineView<BeatEditorView>
-/// Reloads the view with given changes
+/// Reloads the view with given changes. Changes can be `nil` in which case the view should do a complete reload.
 - (void)reloadWithChanges:(OutlineChanges*)changes;
 @end
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
+
+#pragma mark - Core functionality
+
 @property (nonatomic, readonly) bool documentIsLoading;
+@property (atomic, readonly) NSAttributedString *attrTextCache;
+@property (nonatomic, readonly) NSUndoManager *undoManager;
+
+/// Returns the actual text view for either macOS or iOS.
 - (BXTextView*)getTextView;
 - (CGFloat)editorLineHeight;
 
@@ -73,12 +96,6 @@
 #endif
 
 
-#pragma mark - Core functionality
-
-@property (atomic, readonly) NSAttributedString *attrTextCache;
-@property (nonatomic, readonly) NSUndoManager *undoManager;
-
- 
 #pragma mark - Application data and file access
 
 - (NSUUID*)uuid;
@@ -90,13 +107,13 @@
 
 #pragma mark - Getters for parser data
 
-@property (nonatomic, readonly, weak) OutlineScene *currentScene;
+// NO idea why currentScene is a property and currentLine a method.
+// TODO: Harmonize these
 
-#pragma mark Shorthands for parser data. These should be deprecated and only accessed via the parser
+@property (nonatomic, readonly, weak) OutlineScene *currentScene;
+- (Line*)currentLine;
 
 - (NSAttributedString*)attributedString;
-
-- (Line*)currentLine;
 - (NSArray*)markers;
 
 
@@ -110,9 +127,6 @@
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value;
 
-- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
-- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
-
 - (void)bakeRevisions;
 
 
@@ -122,25 +136,30 @@
 
 @property (nonatomic, readonly) NSRange lastEditedRange;
 
+// TODO: Remove these and access the text methods only through BeatTextIO
+
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
-//- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 
-/// Determines if the text has changed since last query
-- (bool)hasChanged;
+// TODO: Remove these and only add attributes through the text storage
 
 - (void)removeAttribute:(NSString*)key range:(NSRange)range;
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range;
+
+
+/// Determines if the text has changed since last query
+- (bool)hasChanged;
 
 /// Forces text reformat and editor view updates
 - (void)textDidChange:(NSNotification *)notification;
 
 /// Ensures layout of the text view
 - (void)ensureLayout;
+
 
 #pragma mark - Editor item visibility
 
@@ -167,8 +186,6 @@
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (void)setTypingAttributes:(NSDictionary*)attrs;
-- (void)refreshTextViewLayoutElements;
-- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location;
 
 
 #pragma mark - Fonts
@@ -271,6 +288,8 @@
 // A hack to provide text storage interface to both iOS and macOS ports
 - (NSTextStorage*)textStorage;
 - (NSLayoutManager*)layoutManager;
+
+- (void)refreshTextView;
 
 @optional
 @property (nonatomic, readonly) NSMutableDictionary* runningPlugins;

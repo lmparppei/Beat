@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BeatTagging.h"
-#import "TagDefinition.h"
+#import <BeatCore/BeatTagging.h>
+#import <BeatCore/TagDefinition.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

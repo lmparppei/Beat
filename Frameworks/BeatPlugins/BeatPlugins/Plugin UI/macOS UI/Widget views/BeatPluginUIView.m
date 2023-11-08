@@ -93,10 +93,6 @@
 	[self removeFromSuperview];
 }
 
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
-	
-}
-
 #pragma mark - Drawing
 
 - (void)onDraw:(JSValue*)value {
@@ -170,5 +166,12 @@
 }
 
 #endif
+
+#pragma mark - User content controller
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    
+}
+
 
 @end

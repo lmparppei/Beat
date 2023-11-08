@@ -679,14 +679,17 @@
 - (void)markRangeAsAddition:(NSRange)range {
 	BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor];
 	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+    [_delegate refreshTextView];
 }
 - (void)markRangeForRemoval:(NSRange)range {
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionRemovalSuggestion];
 	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+    [_delegate refreshTextView];
 }
 - (void)clearReviewMarkers:(NSRange)range {
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionNone];
 	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+    [_delegate refreshTextView];
 }
 
 #if !TARGET_OS_IOS
@@ -728,7 +731,7 @@
 	
 	// Then clear all attributes
 	[self markerAction:RevisionNone range:NSMakeRange(0, _delegate.text.length)];
-	[_delegate refreshTextViewLayoutElements];
+    [_delegate refreshTextView];
 }
 
 #else

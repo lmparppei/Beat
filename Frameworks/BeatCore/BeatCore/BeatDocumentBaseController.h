@@ -22,6 +22,7 @@
 @class BeatReview;
 @class BeatPlugin;
 @class BeatEditorFormatting;
+@class BeatTagging;
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
@@ -33,10 +34,10 @@
 
 #if TARGET_OS_OSX
 // macOS
-@interface BeatDocumentController:NSDocument <DocumentExports, BeatExportSettingDelegate>
+@interface BeatDocumentBaseController:NSDocument <DocumentExports, BeatExportSettingDelegate>
 #else
 // iOS
-@interface BeatDocumentController:UIViewController
+@interface BeatDocumentBaseController:UIViewController
 #endif
 
 // Document settings
@@ -71,7 +72,6 @@
 
 /// Returns a unique identifier for this document
 @property (nonatomic) NSUUID* _Nonnull uuid;
-- (NSString* _Nonnull)fileNameString;
 
 
 #pragma mark - Setting getters
@@ -103,6 +103,7 @@
 - (void)setSelectedRange:(NSRange)range;
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent;
 - (bool)caretAtEnd;
+- (void)refreshTextView;
 
 
 #pragma mark - Text getters and caches
@@ -173,6 +174,11 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Reviews
 
 @property (nonatomic) IBOutlet BeatReview* _Nullable review;
+
+
+#pragma mark - Tagging
+
+@property (nonatomic) IBOutlet BeatTagging* _Nullable tagging;
 
 
 #pragma mark - Plugins

@@ -1,11 +1,11 @@
 //
-//  BeatDocumentController.m
+//  BeatDocumentBaseController.m
 //  BeatCore
 //
 //  Created by Lauri-Matti Parppei on 7.11.2023.
 //
 
-#import "BeatDocumentController.h"
+#import "BeatDocumentBaseController.h"
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatCore/BeatTextIO.h>
 #import <BeatCore/BeatRevisions.h>
@@ -17,11 +17,11 @@
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
 
-@interface BeatDocumentController()
+@interface BeatDocumentBaseController()
 
 @end
 
-@implementation BeatDocumentController
+@implementation BeatDocumentBaseController
 
 
 #pragma mark - Identity
@@ -77,8 +77,13 @@
 {
     [self.styles reload];
     [self.editorStyles reload];
-    
+    [self resetPreview];
     // NOTE: This has to be called in OS-specific implementation as well.
+}
+
+- (void)resetPreview
+{
+    NSLog(@"resetPreview has to be overridden in implementation");
 }
 
 - (CGFloat)editorLineHeight
@@ -249,6 +254,7 @@
 - (void)applyFormatChanges
 {
     [self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx >= _parser.lines.count) { *stop = true; return; }
         [_formatting formatLine:self.parser.lines[idx]];
     }];
     
@@ -258,7 +264,9 @@
 /// Forces reformatting of a range
 - (void)forceFormatChangesInRange:(NSRange)range
 {
-    [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
+    #if TARGET_OS_OSX
+        [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
+    #endif
     
     NSArray *lines = [self.parser linesInRange:range];
     for (Line* line in lines) {
@@ -317,29 +325,32 @@
     else return self.parser.outline.copy;
 }
 
-#pragma mark - Misc document stuff
-
-- (NSString *)displayName
-{
-    if (!self.fileURL) return @"Untitled";
-    return [super displayName];
-}
-
-- (NSString*)fileNameString
-{
-    NSString* fileName = [self lastComponentOfFileName];
-    NSUInteger lastDotIndex = [fileName rangeOfString:@"." options:NSBackwardsSearch].location;
-    if (lastDotIndex != NSNotFound) fileName = [fileName substringToIndex:lastDotIndex];
-    
-    return fileName;
-}
-
 
 #pragma mark - Text view components
 
 - (BXTextView*)getTextView { return self.textView; }
 - (NSTextStorage*)textStorage { return self.textView.textStorage; }
 - (NSLayoutManager*)layoutManager { return self.textView.layoutManager; }
+
+- (void)refreshTextView
+{
+    // Fuck you Apple for this:
+    #if TARGET_OS_OSX
+        [self.textView setNeedsDisplay:true];
+    #else
+        [self.textView setNeedsDisplay];
+    #endif
+}
+
+
+#pragma mark - Misc stuff
+
+-(NSString *)displayName
+{
+    NSLog(@"Override displayName in OS-specific implementation");
+    return nil;
+}
+
 
 #pragma mark - Selection
 
@@ -357,13 +368,16 @@
         [self.textView setSelectedRange:range];
     }
     @catch (NSException *e) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        alert.messageText = @"Selection out of range";
+        NSLog(@"Selection out of range");
     }
 }
 
 - (bool)caretAtEnd {
+#if TARGET_OS_OSX
     return (self.textView.selectedRange.location == self.textView.string.length);
+#else
+    return (self.textView.selectedRange.location == self.textView.text.length);
+#endif
 }
 
 
@@ -487,7 +501,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     // Save caret position
     [self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
     
-    [self unblockUserInteraction];
+    #if TARGET_OS_OSX
+        [self unblockUserInteraction];
+    #endif
     
     NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
     NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];

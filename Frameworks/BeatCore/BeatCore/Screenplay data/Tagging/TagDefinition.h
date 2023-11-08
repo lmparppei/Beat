@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "BeatTagging.h"
+#import <BeatCore/BeatTagging.h>
 
 @class BeatTagging;
 

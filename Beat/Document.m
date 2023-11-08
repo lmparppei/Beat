@@ -607,6 +607,23 @@ static BeatAppDelegate *appDelegate;
 }
 
 
+#pragma mark - Misc document stuff
+
+- (NSString *)displayName
+{
+	if (!self.fileURL) return @"Untitled";
+	return [super displayName];
+}
+
+- (NSString*)fileNameString
+{
+	NSString* fileName = [self lastComponentOfFileName];
+	NSUInteger lastDotIndex = [fileName rangeOfString:@"." options:NSBackwardsSearch].location;
+	if (lastDotIndex != NSNotFound) fileName = [fileName substringToIndex:lastDotIndex];
+	
+	return fileName;
+}
+
 #pragma mark - Export settings
 
 -(BeatExportSettings*)exportSettings
@@ -629,10 +646,7 @@ static BeatAppDelegate *appDelegate;
 	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
-/// Reloads all styles
-- (void)reloadStyles
-{
-	[super reloadStyles];
+- (void)resetPreview {
 	[self.previewController resetPreview];
 }
 
@@ -1643,7 +1657,7 @@ static NSWindow __weak *currentKeyWindow;
 	OutlineScene *currentScene = self.currentScene;
 	
 	// Update Timeline & TouchBar Timeline
-	if (self.timeline.visible) [_timeline scrollToScene:sceneIndex];
+	if (self.timeline.visible) [_timeline scrollToSceneIndex:sceneIndex];
 	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[self.outline indexOfObject:currentScene]];
 	
 	// Locate current scene & reload outline without building it in parser
@@ -2483,8 +2497,6 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Preview
 
-- (void)resetPreview { [self.previewController resetPreview]; }
-
 - (void)invalidatePreview { [self.previewController resetPreview]; }
 
 - (void)createPreviewAt:(NSRange)range
@@ -2795,82 +2807,6 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-
-- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	NSMutableArray *storylines = scene.storylines.copy;
-	
-	// Do nothing if the storyline is already there
-	if ([storylines containsObject:storyline]) return;
-	
-	if (storylines.count > 0) {
-		// If the scene already has any storylines, we'll have to add the beat somewhere.
-		// Check if scene heading has note ranges, and if not, add it. Otherwise stack into that range.
-		if (!scene.line.beatRanges.count) {
-			// No beat note in heading yet
-			NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
-			beatStr = [@" " stringByAppendingString:beatStr];
-			[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
-		} else {
-			NSMutableArray <Storybeat*>*beats = scene.line.beats.mutableCopy;
-			NSRange replaceRange = beats.firstObject.rangeInLine;
-			
-			// This is fake storybeat object to handle the string creation correctly.
-			[beats addObject:[Storybeat line:scene.line scene:scene string:storyline range:replaceRange]];
-			NSString *beatStr = [Storybeat stringWithBeats:beats];
-			
-			[self replaceRange:[scene.line globalRangeFromLocal:replaceRange] withString:beatStr];
-		}
-		
-	} else {
-		// There are no storylines yet. Create a beat note and add it at the end of scene heading.
-		NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
-		beatStr = [@" " stringByAppendingString:beatStr];
-		[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
-	}
-}
-- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	NSMutableArray *storylines = scene.storylines.copy;
-	// Do nothing if the storyline is not there.
-	if (![storylines containsObject:storyline]) return;
-	
-	if (storylines.count > 0) {
-		if (storylines.count <= 1) {
-			// The last storybeat. Clear ALL storyline notes.
-			for (Line *line in [self.parser linesForScene:scene]) {
-				[self.textActions removeTextOnLine:line inLocalIndexSet:line.beatRanges];
-			}
-		} else {
-			// This is unnecessarily complicated.
-			// Find the specified beat note
-			Line *lineWithBeat;
-			for (Line *line in [self.parser linesForScene:scene]) {
-				if ([line hasBeatForStoryline:storyline]) {
-					lineWithBeat = line;
-					break;
-				}
-			}
-			if (!lineWithBeat) return;
-			
-			NSMutableArray *beats = lineWithBeat.beats.mutableCopy;
-			Storybeat *beatToRemove = [lineWithBeat storyBeatWithStoryline:storyline];
-			[beats removeObject:beatToRemove];
-			
-			// Multiple beats can be tucked into a single note. Store the other beats.
-			NSMutableArray *stackedBeats = NSMutableArray.new;
-			for (Storybeat *beat in beats) {
-				if (NSEqualRanges(beat.rangeInLine, beatToRemove.rangeInLine)) [stackedBeats addObject:beat];
-			}
-			
-			// If any beats were left, recreate the beat note with the leftovers.
-			// Otherwise, just remove it.
-			NSString *beatStr = @"";
-			if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
-			
-			NSRange removalRange = beatToRemove.rangeInLine;
-			[self replaceRange:[lineWithBeat globalRangeFromLocal:removalRange] withString:beatStr];
-		}
-	}
-}
 
 /*
  
@@ -3386,20 +3322,21 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (void)saveDocumentAs:(id)sender {
-	// Delete old drafts when saving under a new name
-	NSString *previousName = self.fileNameString;
+	//NSString *previousName = self.fileNameString;
 	
 	[super saveDocumentAs:sender];
 	
+	/*
 	NSURL *url = [BeatAppDelegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
 	
+	// Delete old drafts when saving under a new name
 	NSFileManager *fileManager = NSFileManager.defaultManager;
-	
 	if ([fileManager fileExistsAtPath:url.path]) {
 		[fileManager removeItemAtURL:url error:nil];
 	}
+	*/
 }
 
 -(void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation delegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
@@ -3751,7 +3688,6 @@ static NSArray<Line*>* cachedTitlePage;
 		return YES;
 	}
 }
-
 
 
 
