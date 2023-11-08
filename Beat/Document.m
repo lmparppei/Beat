@@ -212,7 +212,6 @@
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
 
 // Card view
-//@property (nonatomic, weak) IBOutlet SceneCards *cardView;
 @property (nonatomic) bool cardsVisible;
 
 // Mode display

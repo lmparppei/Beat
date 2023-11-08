@@ -38,7 +38,6 @@ THE SOFTWARE.
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
-#import "SceneCards.h"
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
