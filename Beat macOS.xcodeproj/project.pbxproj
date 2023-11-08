@@ -102,8 +102,6 @@
 		B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
 		B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBDD260511E10091AEAB /* ITSwitch.m */; };
 		B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
-		B649CB63286F8090001271E2 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B649CB62286F8090001271E2 /* BeatAutocomplete.m */; };
-		B649CB64286F8090001271E2 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B649CB62286F8090001271E2 /* BeatAutocomplete.m */; };
 		B64EFA8C2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */; };
 		B64EFA8D2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */; };
 		B64EFA8F2AC079A70042C9B7 /* BeatMinimapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */; };
@@ -596,8 +594,6 @@
 		B644DBE2260605D30091AEAB /* BeatEditorButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorButton.h; sourceTree = "<group>"; };
 		B644DBE3260605D30091AEAB /* BeatEditorButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEditorButton.m; sourceTree = "<group>"; };
 		B649CB60286F78B8001271E2 /* BeatEditorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatEditorMode.h; path = ../../Frameworks/BeatCore/BeatCore/BeatEditorMode.h; sourceTree = "<group>"; };
-		B649CB61286F8090001271E2 /* BeatAutocomplete.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAutocomplete.h; path = ../../Frameworks/BeatCore/BeatCore/Editor/BeatAutocomplete.h; sourceTree = "<group>"; };
-		B649CB62286F8090001271E2 /* BeatAutocomplete.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAutocomplete.m; path = ../../Frameworks/BeatCore/BeatCore/Editor/BeatAutocomplete.m; sourceTree = "<group>"; };
 		B64C3B2A26E7C9F200A5022E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = ../en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B64EFA8B2AC02F740042C9B7 /* BeatMinimapLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMinimapLayoutManager.swift; sourceTree = "<group>"; };
 		B64EFA8E2AC079A70042C9B7 /* BeatMinimapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMinimapView.swift; sourceTree = "<group>"; };
@@ -1045,8 +1041,6 @@
 				B6706DDA2804B43000978689 /* Review */,
 				B616493C26F7535600582671 /* BeatPasteboardItem.h */,
 				B616493D26F7535600582671 /* BeatPasteboardItem.m */,
-				B649CB61286F8090001271E2 /* BeatAutocomplete.h */,
-				B649CB62286F8090001271E2 /* BeatAutocomplete.m */,
 			);
 			path = "Screenplay data";
 			sourceTree = "<group>";
@@ -2201,7 +2195,6 @@
 				B60D192726B0811E005C2693 /* BeatNotifications.m in Sources */,
 				B6DC297C2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
-				B649CB63286F8090001271E2 /* BeatAutocomplete.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
 				B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */,
 				B692D0ED2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */,
@@ -2325,7 +2318,6 @@
 				B60D192826B0811E005C2693 /* BeatNotifications.m in Sources */,
 				B6DC297D2AF5223B00CF1285 /* BeatMarkdownTextStorage.swift in Sources */,
 				B68B605B260B849300463AD8 /* SceneFiltering.m in Sources */,
-				B649CB64286F8090001271E2 /* BeatAutocomplete.m in Sources */,
 				B68B605D260B849300463AD8 /* main.m in Sources */,
 				B68B605E260B849300463AD8 /* TouchTimelineView.m in Sources */,
 				B692D0EE2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */,
@@ -2774,7 +2766,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133252;
+				CURRENT_PROJECT_VERSION = 133253;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2818,7 +2810,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133252;
+				CURRENT_PROJECT_VERSION = 133253;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2863,7 +2855,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133252;
+				CURRENT_PROJECT_VERSION = 133253;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2907,7 +2899,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133252;
+				CURRENT_PROJECT_VERSION = 133253;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

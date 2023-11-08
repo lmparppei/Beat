@@ -90,7 +90,7 @@
 	_lastFoundElement = elementName;
 	
 	// Fade In (sometimes) uses lower-case attribute & element names, while
-	// OSF documentation explicitly specifies changing case, ie. "sceneNumber" vs "scenenumber".
+	// OSF documentation explicitly specifies camel case, ie. "sceneNumber" vs "scenenumber".
 	// So fuck everything, let's create a new dictionary out of the attributes
 	// with lowercase counterparts. Style names are correctly capitalized, though.
 	

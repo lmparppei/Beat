@@ -153,9 +153,6 @@
 @end
 /*
  
- för jag vill dricka, röka, glömma
- hur jag såg på dig och hur du såg på mig
- för jag vill ligga nu, hångla, glömma
- fur jag fucka dig och hur du fuckat mig
+ JAG ÄTER INTE MINA VÄNNER
  
  */

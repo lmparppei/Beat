@@ -114,8 +114,6 @@
 - (NSArray *)linesForScene:(OutlineScene *)scene { return [self.parser linesForScene:scene]; }
 - (NSArray *)markers { return @[]; }
 - (void)moveScene:(OutlineScene *)sceneToMove from:(NSInteger)from to:(NSInteger)to { }
-- (void)refreshTextViewLayoutElements {}
-- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {}
 - (void)removeAttribute:(NSString *)key range:(NSRange)range {}
 - (void)removeStoryline:(NSString *)storyline from:(OutlineScene *)scene {}
 - (void)replaceRange:(NSRange)range withString:(NSString *)newString {}

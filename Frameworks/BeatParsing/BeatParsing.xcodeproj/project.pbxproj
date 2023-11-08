@@ -72,7 +72,6 @@
 		B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinuousFountainParser.m; sourceTree = "<group>"; };
 		B6B37F0828F01A8700657F5F /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineScene.m; sourceTree = "<group>"; };
 		B6B37F0928F01A8700657F5F /* Storybeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Storybeat.h; sourceTree = "<group>"; };
-		B6B37F0A28F01A8700657F5F /* BeatParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 		B6B37F0B28F01A8700657F5F /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
 		B6B37F0C28F01A8700657F5F /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
 		B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
@@ -155,7 +154,6 @@
 			children = (
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
-				B6B37F0A28F01A8700657F5F /* BeatParser.swift */,
 				B6B37F1028F01A8700657F5F /* Line.h */,
 				B6B37F0B28F01A8700657F5F /* Line.m */,
 				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,

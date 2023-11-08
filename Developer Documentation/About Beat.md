@@ -21,31 +21,32 @@ Because of its legacy as a fork, the app is written in Objective C. Lately, I st
 
 There are some parts that have been completely commented out. Sometimes I've written something like *"For generations to come"* or *"And die Nachgeborenen"* next to them to make it clear that it's a planned, new solution rather than something that has been deprecated.
 
+*Update in 2023:* A native Cocoa rendering was implemented, just in time to be obliterated by TextKit 2, which is very sparsely documented and difficult to work if you'd like to move TextKit 1 stuff there. The HTML renderer code still exists, and is used by the iPadOS version, so it's possible we need to go back there one day. Unfortunately with HTML export on macOS, the installed printer (or the lack of one) can affect paper margins, so you won't get a reliable output. I'm not sure if this is still the case in Sonoma, but I'm afraid it is.  
+
 
 # Document Model
 
 ## Document
 
-`Document` is a massive class, and I'm sorry for that. It is that because of legacy reasons (meaning me being bad at Objective C) and I'm not proud of it.
+`Document` is a massive class, and I'm sorry for that. It is that because of legacy reasons (meaning me being bad at Objective C) and I'm not proud of it. I've started moving a lot of stuff to an OS-agnostic class called `BeatDocumentBaseController`, which is the superclass of both macOS and iOS implementations of the actual document view.
 
-Start from `windowControllerDidLoadNib` and work from there. Document loading is throttled using chained GCD dispatches, and might be a bit confusing at first.
+Start from `windowControllerDidLoadNib` and work from there. Document loading is throttled using chained GC dispatches, and might be a bit confusing at first.
 
 From there, editing a document is this constant three-way ping-pong of `BeatTextView`, `Document` and `ContinuousFountainParser`. It's often unclear what happens in `BeatTextView`, and what happens in `Document`. 
 
-Rendering and text view specific things (such as displaying autocorrect dropdowns) is done by the text view, while formatting is handled in `Document`. And in the future, hopefully in a separate class. The document also contains the majority of `IBAction` methods, mostly being just stubs forwarding them somewhere else.
+Rendering and text view specific things (such as displaying autocorrect dropdowns) are handled by the text view, while `Document` listens to changes in the text, sends them to parser and after parsing, asks another class to format the text. The document also contains a lot of `IBAction`s, though most of them are just stubs forwarding them somewhere else.
 
 `shouldChangeTextInRange` parses the possible change **before** it is actually displayed, which means the parser knows the change ahead of time. Formatting is applied (based on parser data) when the text view calls `textDidChange`.
-
-It's a complicated mess, but the actual formatting (found under `#pragma mark`) should be relatively easy to figure out, so maybe start from there, and work your way up. 
+ 
 
 
 ## Parser
 
-`ContinuousFountainParser` is based on the work of Hendrik Noeller, though I've rewritten large chunks of it. I figured out how to optimize quite a few things, and also streamlined some of the stuff. And made some of it more complicated.
+`ContinuousFountainParser` is based on the work of Hendrik Noeller, though I've rewritten ost of it since. I figured out how to optimize quite a few things, and also streamlined some of the stuff. And made some of it more complicated.
 
-Parser **does not** use regexes, but parses changes on byte level (using `unichar` arrays) and it might look a bit weird at times, but is super fast. I've tried commenting the more confusing parts, but probably haven't covered the particular thing that confuses you.
+Parser **does not** use regexes, but parses changes on char level (using `unichar` arrays) and it might look a bit weird at times, but is super fast. I've tried commenting the more confusing parts, but probably haven't covered the particular thing that confuses you.
 
-The parser is used both while editing (live/continuous parsing) and when exporting and loading documents (static parsing). It's important to ensure that everything gets parsed correctly in both situations, because, in theory, Fountain files should be parsed from bottom to top, and here we're parsing starting from the top. We also need to perform lookbacks and correct our parses based on other surrounding lines -- and in many cases, reparse all of those affected lines.
+The parser is used both while editing (live/continuous parsing) and when exporting and loading documents (static parsing). It's important to ensure that everything gets parsed correctly in both situations, because, in theory, Fountain files should be parsed from bottom to top, and here we're always parsing downwards. We also need to perform lookbacks and correct our parses based on other surrounding lines -- and in many cases, reparse all of those affected lines.
 
 As the parser is the oldest part of Beat, originating from somebody else's work, there are also unused, weird methods lingering here and there. All apologies. 
     
@@ -54,23 +55,37 @@ As the parser is the oldest part of Beat, originating from somebody else's work,
 
 `Line`s contain all the relevant parsed data. It's mostly used for storing the parsed formatting ranges, line type etc. but line object also has some methods for joining two lines and converting their contents for further formatting, such as returning an attributed string for exporting to both HTML and Final Draft XML. 
 
-`Line` contents changed by the parser, so you can't change *editor* contents by changing *line object* string content, which is at times frustrating. However, I *did* experiment with having a parser delegate for each line, and the parser knowing its host document, so it could relay the change forward. This didn't really make too much sense, though, and led to circulal logic.
+`Line` contents are changed by the parser, so you can't change *editor* contents by changing *line object* string content, which is frustrating at times. However, I *did* experiment with having a parser delegate for each line, and the parser knowing its host document, so it could relay the change forward. This didn't really make too much sense, though, and led to circulal logic.
 
 Line types are simple objc enums. 
 
 
 ## Outine
 
-Parser also creates an outline, with all the structural elements: scene headings, synopsis lines and sections. The resulting objects, clumsily named `OutlineScene`s, are just a temporary, and don't *actually* refer to anything in the document. They know the line which represents the outline element in the screenplay, position and title, and can fetch their length and other stuff, such as associated storylines and beats.
+Parser also creates an outline, with all the structural elements: scene headings, synopsis lines and sections. The resulting objects, clumsily named `OutlineScene`s don't *actually* refer to anything in the document, but rather work as intermediate data which gathers a lot of stuff into the same basket. They know the line which represents the outline element in the screenplay, position and title, and can fetch their length and other stuff, such as associated storylines and beats. 
 
-Outline has to be rebuilt each time when a change is made, and often it's safe to rebuild it by force, as you can see here and there. It's relatively fast to do, basically one iteration through all of the lines. 
-
-I recommend reading the plugin wiki (https://github.com/lmparppei/BeatPlugins/wiki) which has document model examples. Theyare in JavaScript, but basic logic still applies.
+I recommend reading the plugin wiki (https://github.com/lmparppei/BeatPlugins/wiki) which has document model examples. They are in JavaScript, but basic logic still applies.
 
 
 # Exporting
 
-This part has to be rewritten to conform to the new native export.
+## Pagination
+
+Screenplay pagination is pretty complicated and it has a ton of rules and conventions, and it's even harder when working with parsed, non-WYSIWYG content.
+
+`BeatPagination` (called using `BeatPaginationManager`) does the heavy lifting, but note that *everything* happens in a dark room without lights. The pagination receives page size and custom stylesheet info (`beatCSS`), and then tries to figure out what could fit on a page, without actually seeing anything.
+
+The advantage is that it's quite fast, even when paginating the whole document from scratch, and it allows using the same data in both iOS and macOS. On iOS, the results are rendered to HTML, which *doesn't* use the same custom stylesheets, so the CSS styles have to be made similar by hand. It's a mess, I know.
+
+Pagination class also has an API for getting page numbers in the editor. In the future, we might actually have quasi-WYSIWYG capabilities using that data.
+
+`BeatPagination` represents a single pagination pass, `BeatPaginationPage` holds elements for a single page, and `BeatPaginationBlock` are basically paragraphs/elements on a page. For example, one block of dialogue or a single paragraph are both represented by `BeatPaginationBlock`. When going through elements, we'll also use `BeatPaginationBlockGroup` which binds multiple blocks together to keep them on the same page. Blocks know their height and styles, and pages handle vertical spacing.
+ 
+ The system is quite reliable, but as it happens in the background, it can sometimes runs into weird threading issues, and there are obviously a lot of cases I haven't taken into account. Two-page parenthesis within 10-page dialogue block? No idea how it would behave, I haven't tested. I'm all for dooing crazy and innovative stuff, but Beat always isn't.
+ 
+
+## Rendering
+
 
 
 
@@ -139,3 +154,4 @@ Lauri-Matti
 Helsinki, Finland
 March/April 2022  
 
+*(updated slightly in 2023)*
