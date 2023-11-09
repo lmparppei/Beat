@@ -92,10 +92,11 @@ public protocol BeatReviewInterface {
 	
     /// Load review ranges
 	@objc public func setup() {
-		if (delegate == nil) { return }
+		guard let documentSettings = self.delegate?.documentSettings
+			else { return }
         
         BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue)
-		setupReviews(ranges: delegate!.documentSettings.get(DocSettingReviews) as? NSArray ?? [])
+		setupReviews(ranges: documentSettings.get(DocSettingReviews) as? NSArray ?? [])
 	}
 	
     /// Loads review attributes to text view

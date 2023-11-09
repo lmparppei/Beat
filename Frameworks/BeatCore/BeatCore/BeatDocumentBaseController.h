@@ -26,7 +26,7 @@
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
-@property (nonatomic) BeatDocumentSettings * _Nullable documentSettings;
+@property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSMutableArray<Line*>* _Nonnull)lines;
 - (NSArray<OutlineScene*>* _Nonnull)outline;
 - (NSString* _Nullable)displayName;
@@ -41,7 +41,7 @@
 #endif
 
 // Document settings
-@property (nonatomic) BeatDocumentSettings* _Nullable documentSettings;
+@property (nonatomic) BeatDocumentSettings* _Nonnull documentSettings;
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 
 // Parser

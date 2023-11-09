@@ -20,16 +20,16 @@
 #pragma mark - Parser
 
 /// Fountain parser associated with the document
-@property (readonly) ContinuousFountainParser *parser;
-@property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
+@property (readonly) ContinuousFountainParser* _Nonnull parser;
+@property (nonatomic, readonly) BeatDocumentSettings* _Nonnull documentSettings;
 
-- (NSString*)text;
+- (NSString* _Nonnull)text;
 
 
 #pragma mark - Export options
 
 @property (nonatomic) BeatPaperSize pageSize;
-@property (nonatomic, readonly) BeatExportSettings* exportSettings;
+@property (nonatomic, readonly) BeatExportSettings* _Nonnull exportSettings;
 
 
 #pragma mark - Style getters

@@ -70,7 +70,7 @@ import BeatCore
 @objc public protocol BeatPaginationManagerDelegate {
     func paginationDidFinish(_ operation:BeatPagination)
 	var parser:ContinuousFountainParser? { get }
-	var exportSettings:BeatExportSettings? { get }
+	var exportSettings:BeatExportSettings { get }
 }
 
 public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
@@ -101,7 +101,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     // MARK: - Initialization
     
 	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
-		self.init(settings: delegate.exportSettings!, delegate: delegate, renderer:renderer, livePagination: livePagination)
+		self.init(settings: delegate.exportSettings, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
 	
 	@objc public init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
@@ -196,11 +196,11 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     
     /// Use this when paginating with an editor delegate
     @objc public func newPagination() {
-        self.settings = self.delegate!.exportSettings!
-        
-        if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
-            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
-            runPagination(pagination: operation)
+        if let settings = self.delegate?.exportSettings {
+            if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
+                let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
+                runPagination(pagination: operation)
+            }
         }
     }
     

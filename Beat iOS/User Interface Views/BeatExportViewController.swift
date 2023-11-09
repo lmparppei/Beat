@@ -32,6 +32,7 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 	
 	@IBAction override func export(_ sender: Any?) {
 		guard let editorDelegate = self.editorDelegate else { return }
+		
 		let lines = editorDelegate.parser.lines as NSArray
 		let settings = settingController!.exportSettings()
 		
@@ -159,8 +160,10 @@ final class BeatExportSettingController:UITableViewController {
 	// MARK: Export settings
 	
 	func exportSettings() -> BeatExportSettings {
-		// First, get settings from the editor
-		let settings = editorDelegate!.exportSettings!
+		guard let settings = editorDelegate?.exportSettings else {
+			print("ERROR: No export settings found")
+			return BeatExportSettings()
+		}
 		
 		// Then, let's adjust them according to export panel
 		settings.paperSize = BeatPaperSize(rawValue: self.paperSize?.selectedSegmentIndex ?? 0) ?? .A4

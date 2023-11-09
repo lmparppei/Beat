@@ -390,13 +390,11 @@
 	self.contentBuffer = nil;
 	self.analysisWindow = nil;
 	self.currentScene = nil;
-	//self.cardView = nil;
 	self.outlineView.filters = nil;
 	
 	self.outlineView.filteredOutline = nil;
 	self.tagging = nil;
 	self.itemsToValidate = nil;
-	self.documentSettings = nil;
 	self.review = nil;
 	
 	self.previewController = nil;
@@ -499,16 +497,24 @@ static BeatAppDelegate *appDelegate;
 -(void)renderDocument {
 	// Initialize edit tracking
 	[self.revisionTracking setup];
+/*
+	NSMutableAttributedString* string = self.textView.attributedString.mutableCopy;
+	BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:string];
+	formatting.delegate = self;
+	for (Line* line in self.parser.lines) [formatting formatLine:line];
+	
+	[self.textView.textStorage setAttributedString:string];
+	[self loadingComplete];
+*/
 
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		// Show a progress bar for longer documents
 		if (self.parser.lines.count > 1000) {
+			// Show a progress bar for longer documents
 			self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
 			
 			// Dark mode
 			if (@available(macOS 10.14, *)) {
-				NSAppearance *appr = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-				[self.progressPanel setAppearance:appr];
+				[self.progressPanel setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
 			}
 			
 			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
@@ -1874,13 +1880,16 @@ static NSWindow __weak *currentKeyWindow;
 /// Applies the initial formatting while document is loading
 -(void)applyInitialFormatting
 {
-	if (self.parser.lines.count == 0) { // addition
+	if (self.parser.lines.count == 0) {
+		// Empty document
 		[self loadingComplete];
 		return;
 	}
 	
+	// Start rendering
 	self.progressIndicator.maxValue =  1.0;
 	[self formatAllWithDelayFrom:0];
+
 }
 
 /// Formats all lines while loading the document
@@ -1892,8 +1901,8 @@ static NSWindow __weak *currentKeyWindow;
 		NSInteger lastIndex = idx;
 		
 		[self.textStorage beginEditing];
-		for (NSInteger i = 0; i < 400; i++) {
-			// After 400 lines, hand off the process
+		for (NSInteger i = 0; i < 1000; i++) {
+			// After 1000 lines, hand off the process
 			if (i + idx >= self.parser.lines.count) break;
 			
 			line = self.parser.lines[i + idx];
@@ -1902,7 +1911,7 @@ static NSWindow __weak *currentKeyWindow;
 		}
 		[self.textStorage endEditing];
 		
-		[self.progressIndicator incrementBy:400.0 / self.parser.lines.count];
+		[self.progressIndicator incrementBy:1000.0 / (CGFloat)self.parser.lines.count];
 		
 		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) {
 			// If the document is done formatting, complete the loading process.

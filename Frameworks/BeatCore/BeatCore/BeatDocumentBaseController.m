@@ -57,7 +57,11 @@
     [BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
 }
 
-
+- (BeatDocumentSettings *)documentSettings
+{
+    if (_documentSettings == nil) return BeatDocumentSettings.new;
+    return _documentSettings;
+}
 
 #pragma mark - Editor styles
 
@@ -550,6 +554,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     
     return shownRevisions;
 }
+
+- (nonnull NSString *)fileNameString {
+    NSLog(@"fileNameString: Override in OS-specific implementation");
+    return @"";
+}
+
 
 
 #pragma mark - Plugin support

@@ -25,6 +25,21 @@
 
 #import "BeatConsole.h"
 
+#if TARGET_OS_OSX
+#import "BeatPluginUIView.h"
+#import "BeatPluginUIButton.h"
+#import "BeatPluginUIDropdown.h"
+#import "BeatPluginUIView.h"
+#import "BeatPluginUICheckbox.h"
+#import "BeatPluginUILabel.h"
+#import "BeatSpeak.h"
+#import "BeatHTMLPrinter.h"
+
+#import "BeatModalAccessoryView.h"
+
+#endif
+
+
 #import <objc/runtime.h>
 
 #if TARGET_OS_IOS

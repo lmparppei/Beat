@@ -44,8 +44,8 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		return settings
 	}
 	
-	var exportSettings:BeatExportSettings? {
-		return self.delegate?.exportSettings
+	var exportSettings:BeatExportSettings {
+		return self.delegate?.exportSettings ?? BeatExportSettings()
 	}
 	
 	// MARK: - Initialization

@@ -86,9 +86,6 @@ THE SOFTWARE.
 // Versioning
 @property (nonatomic) NSURL* _Nullable revertedTo;
 
-// Tagging
-@property (nonatomic) IBOutlet BeatTagging* _Nullable tagging;
-
 // Tab
 @property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 

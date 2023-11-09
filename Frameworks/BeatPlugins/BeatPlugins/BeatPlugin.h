@@ -19,24 +19,11 @@
 #import <BeatPlugins/BeatPluginTimer.h>
 
 
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 
 // macOS-only
 #import <Cocoa/Cocoa.h>
 #import "BeatPluginHTMLWindow.h"
-
-#import "BeatPluginUIView.h"
-#import "BeatPluginUIButton.h"
-#import "BeatPluginUIDropdown.h"
-#import "BeatPluginUIView.h"
-#import "BeatPluginUICheckbox.h"
-#import "BeatPluginUILabel.h"
-
-#import "BeatModalAccessoryView.h"
-
-#import "BeatSpeak.h"
-
-#import "BeatHTMLPrinter.h"
 
 #else
 
@@ -55,6 +42,13 @@
 @class BeatPagination;
 @class OutlineScene;
 @class BeatTextIO;
+@class BeatSpeak;
+
+@class BeatPluginUIView;
+@class BeatPluginUIButton;
+@class BeatPluginUIDropdown;
+@class BeatPluginUICheckbox;
+@class BeatPluginUILabel;
 
 @protocol BeatPluginContainer;
 
