@@ -248,6 +248,12 @@
 /// Draws the scene number for given line in a pre-defined rect
 - (void)drawSceneNumberForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset
 {
+    CGFloat yOffset = 0.0;
+    #if TARGET_OS_IOS
+        yOffset = 1.0;
+    #endif
+    
+    
     // Scene number drawing is off, return
     if (!self.editorDelegate.showSceneNumberLabels) return;
     
@@ -261,7 +267,7 @@
     rect.size.width = 7.5 * line.sceneNumber.length;
     rect.size.height = rect.size.height + 1.0;
     
-    CGFloat y = rect.origin.y - Y_OFFSET;
+    CGFloat y = rect.origin.y - Y_OFFSET - yOffset;
     
     rect = CGRectMake(inset.width,
                       y,
@@ -292,7 +298,7 @@
     // iOS and macOS have different types of edge insets
 #if TARGET_OS_IOS
     CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
-    inset.height += 3.0; // This is here to make up for weird iOS line sizing
+    inset.height += 0.0; // This is here to make up for weird iOS line sizing
 #else
     CGSize inset = textView.textContainerInset;
 #endif
