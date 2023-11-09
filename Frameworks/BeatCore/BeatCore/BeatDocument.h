@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatDocument : NSObject
 
 @property (nonatomic) NSURL* _Nullable url;
-@property (nonatomic) BeatDocumentSettings* settings;
+@property (nonatomic) BeatDocumentSettings* _Nullable settings;
 @property (nonatomic) ContinuousFountainParser* parser;
 
 - (instancetype)initWithURL:(NSURL*)url;
