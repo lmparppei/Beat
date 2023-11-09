@@ -153,6 +153,10 @@
 @end
 /*
  
- JAG ÄTER INTE MINA VÄNNER
+ Hur kan vi vara fridfulla nar vi skapar sån misär
+ Hur kan vi vara kärleksfulla när vi kärleken förtär
+ 
+ jag äter inte mina vänner för dom är en del av mig
+ som jag kan leva med och växa med i all evighet
  
  */

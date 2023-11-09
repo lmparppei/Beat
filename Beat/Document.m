@@ -611,7 +611,7 @@ static BeatAppDelegate *appDelegate;
 - (NSString *)displayName
 {
 	if (!self.fileURL) return @"Untitled";
-	return [super displayName];
+	return self.fileURL.URLByDeletingPathExtension.lastPathComponent;
 }
 
 - (NSString*)fileNameString
