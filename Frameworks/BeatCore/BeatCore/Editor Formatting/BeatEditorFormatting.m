@@ -23,6 +23,7 @@
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatTextIO.h>
+#import <BeatCore/BeatMeasure.h>
 
 #import "BeatEditorFormatting.h"
 
@@ -232,7 +233,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
-	
+    
 	NSRange selectedRange = _delegate.selectedRange;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -246,7 +247,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
 
 	bool forceFont = false;
-	if (line.formattedAs != line.type) forceFont = true;
+    if (line.formattedAs != line.type) forceFont = true;
 			
 	// Current attribute dictionary
 	NSMutableDictionary* attributes;
@@ -264,7 +265,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (range.length > 0) {
 		Line* representedLine = [textStorage attribute:BeatRepresentedLineKey atIndex:line.position longestEffectiveRange:&representedRange inRange:range];
 		if (representedLine != line || representedRange.length != range.length) {
-			forceFont = true;
+			//forceFont = true;
 			[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
 		}
 	} else {
@@ -272,19 +273,21 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		newAttributes[BeatRepresentedLineKey] = line;
 	}
 		
+    // Create paragraph style
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
-
+    
+    // Add to attributes if needed
 	if (![attributes[NSParagraphStyleAttributeName] _equalTo:paragraphStyle]) {
 		newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
-		
 		// Also update the paragraph style to current attributes
 		// attributes[NSParagraphStyleAttributeName] = paragraphStyle;
 	}
-
+    
+    // Foreground color
 	if (attributes[NSForegroundColorAttributeName] == nil) {
 		newAttributes[NSForegroundColorAttributeName] = themeManager.textColor;
 	}
-	
+    
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		[_delegate setTypingAttributes:attributes];
@@ -319,13 +322,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
             line.string = line.string.uppercaseString;
             
-#if TARGET_OS_IOS
-            // On iOS we need to reset the caret position
-            [_delegate setSelectedRange:selectedRange];
-#else
-            // And on macOS we need to set the color (no idea why)
-            [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
-#endif
+            #if TARGET_OS_IOS
+                // On iOS we need to reset the caret position
+                [_delegate setSelectedRange:selectedRange];
+            #else
+                // And on macOS we need to set the color (no idea why)
+                [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
+            #endif
 
 			_delegate.selectedRange = selectedRange;
 		}
@@ -337,7 +340,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			if (line == _delegate.parser.lines.lastObject) range = line.textRange; // Don't go out of range
 		}
 	}
-
+    
 	// Begin editing attributes
 	if (!alreadyEditing) [textStorage beginEditing];
 	
@@ -375,25 +378,27 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	} else {
 		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
-	
+	    
 	// Set typing attributes
 	attributes[NSFontAttributeName] = _delegate.courier;
 	
 	[_delegate setTypingAttributes:attributes];
 
-	[self applyInlineFormatting:line reset:forceFont];
+	[self applyInlineFormatting:line reset:forceFont textStorage:textStorage];
 	[self revisedTextStyleForRange:range];
-	if (!alreadyEditing) [textStorage endEditing];
 	
 	[self setTextColorFor:line];
 	[self revisedTextColorFor:line];
+
+    if (!alreadyEditing) [textStorage endEditing];
+    
 } }
 
-- (void)applyInlineFormatting:(Line*)line reset:(bool)reset {
-    NSMutableAttributedString *textStorage = self.textStorage;
+- (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage
+{
 	NSRange range = NSMakeRange(0, line.length);
-
 	NSAttributedString* astr = line.attributedStringForFDX;
+    
 	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString];
 	if (!reset &&
 		formattingUnchanged &&
@@ -403,7 +408,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// We've already formatted the string, no need to reformat inline content
 		return;
 	}
-	
+    
 	bool force = (!reset && line.noFormatting && formattingUnchanged) ? false : true;
 	[self setFontForLine:line force:force];
 	line.formattedString = astr;

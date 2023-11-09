@@ -1002,7 +1002,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLD_STYLE toString:string range:range];
 		}
 	}];
-	
+    
 	[self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLDITALIC_STYLE toString:string range:range];
@@ -1034,15 +1034,17 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	[self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addStyleAttr:@"RemovalSuggestion" toString:string range:range];
 	}];
-    
-    // Add macro attributes
-    for (NSValue* r in self.macros.allKeys) {
-        NSString* resolvedMacro = self.resolvedMacros[r];
         
-        NSRange range = r.rangeValue;
-        [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+    // Add macro attributes
+    if (self.macroRanges.count > 0) {
+        for (NSValue* r in self.macros.allKeys) {
+            NSString* resolvedMacro = self.resolvedMacros[r];
+            
+            NSRange range = r.rangeValue;
+            [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+        }
     }
-	
+    
 	if (self.revisedRanges.count) {
 		for (NSString *key in _revisedRanges.allKeys) {
 			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1052,7 +1054,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			}];
 		}
 	}
-	
+    
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
 		NSString* tagValue = tag[@"tag"];

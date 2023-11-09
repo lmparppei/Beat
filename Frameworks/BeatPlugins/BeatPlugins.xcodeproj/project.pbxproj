@@ -310,10 +310,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */,
-				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
-				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
 				B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */,
+				B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */,
+				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
+				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
+				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
 				B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */,
 				B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */,
 				B680B7852A6EBC1C00FCD805 /* BeatWidgetView.h in Headers */,
@@ -325,7 +326,6 @@
 				B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */,
 				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
 				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
-				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
 			);
