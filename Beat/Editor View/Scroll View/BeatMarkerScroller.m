@@ -62,7 +62,7 @@
 - (NSBezierPath*)triangle:(CGFloat)y {
 	CGFloat width = self.frame.size.width;
 	
-	NSBezierPath *path = [NSBezierPath bezierPath];
+	NSBezierPath *path = NSBezierPath.bezierPath;
 	[path moveToPoint:NSMakePoint(width, y)];
 	[path lineToPoint:NSMakePoint(width / 2, y + 5)];
 	[path lineToPoint:NSMakePoint(width, y + 10)];

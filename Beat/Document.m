@@ -1260,7 +1260,8 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-- (void)loadCaret {
+- (void)loadCaret
+{
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
 	
 	if (position < self.textView.string.length && position >= 0) {
@@ -1559,7 +1560,7 @@ static NSWindow __weak *currentKeyWindow;
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
 		
 		for (id<BeatSceneOutlineView> view in _registeredOutlineViews) {
-			[view reloadWithChanges:changesInOutline];
+			if (view.visible) [view reloadWithChanges:changesInOutline];
 		}
 	}
 	
@@ -2915,12 +2916,20 @@ static NSWindow __weak *currentKeyWindow;
 	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
 	NSMutableArray * markers = NSMutableArray.new;
 	
+
+	CGSize containerSize = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size;
+	if (containerSize.height == 0.0) return @[];
+	
 	for (Line* line in self.parser.lines) { @autoreleasepool {
 		if (line.marker.length == 0 && line.color.length == 0) continue;
 		
 		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
+		
 		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
-		CGFloat relativeY = yPosition / [self.layoutManager usedRectForTextContainer:self.textView.textContainer].size.height;
+		CGFloat relativeY = yPosition / containerSize.height;
+		
+		// Ignore faulty values
+		if (relativeY > 1.0) continue;
 		
 		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
 		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];

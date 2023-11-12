@@ -382,11 +382,11 @@
 	
 	BeatTimelineItem* selectedItem;
 	NSInteger selectedLoc = _delegate.selectedRange.location;
-		
+	
 	if ((index >= _outline.count || index == NSNotFound) && selectedLoc >= _outline.firstObject.position) {
 		// Check if the caret is at end and select the last item in that case.
 		selectedItem = _scenes.lastObject;
-	} else {
+	} else if (index != NSNotFound) {
 		OutlineScene *selectedScene = self.outline[index];
 		selectedItem = [self timelineItemFor:selectedScene];
 	}
