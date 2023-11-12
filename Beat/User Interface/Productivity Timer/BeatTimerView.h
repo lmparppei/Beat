@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatTimerViewDelegate <NSObject>
-- (IBAction) pause:(id)sender;
+- (void)pause;
 - (void)showTimer;
 @end
 

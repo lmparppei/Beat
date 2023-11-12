@@ -13,17 +13,16 @@
 - (NSString*)text;
 @end
 
-@interface BeatTimer : NSObject <BeatTimerViewDelegate>
+@interface BeatTimer : NSResponder <BeatTimerViewDelegate>
 @property (weak) id<BeatTimerDelegate> delegate;
 @property (weak) IBOutlet BeatTimerView *timerView;
-@property (weak) IBOutlet NSPanel *inputPanel;
-@property (weak) IBOutlet NSTextField *minutes;
-@property (weak) IBOutlet NSTextField *label;
 @property (weak) IBOutlet NSWindow *window;
 
-@property (weak) IBOutlet NSButton *startButton;
-@property (weak) IBOutlet NSButton *resetButton;
-@property (weak) IBOutlet NSButton *pauseButton;
+@property (nonatomic) __block NSInteger timeLeft;
+@property (nonatomic) __block NSInteger timeTotal;
+@property (nonatomic) __block NSInteger timeOriginal;
+@property (nonatomic) __block bool paused;
+@property (nonatomic) __block bool done;
 
 @property (nonatomic) NSTimer *timer;
 
@@ -31,7 +30,7 @@
 
 - (bool)running;
 - (void)showTimer;
-- (IBAction)pause:(id)sender;
+- (void)pause;
 
 @end
 
