@@ -57,11 +57,6 @@
     [BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
 }
 
-- (BeatDocumentSettings *)documentSettings
-{
-    if (_documentSettings == nil) return BeatDocumentSettings.new;
-    return _documentSettings;
-}
 
 #pragma mark - Editor styles
 
@@ -494,7 +489,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     
     // Store currently running plugins (which should be saved)
     [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
-    
+        
     // Save reviewed ranges
     NSArray *reviews = [_review rangesForSavingWithString:attrStr];
     [self.documentSettings set:DocSettingReviews as:reviews];

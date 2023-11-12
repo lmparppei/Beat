@@ -790,13 +790,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		BXColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
-		
-		[self addAttribute:NSForegroundColorAttributeName value:color range:range];
+
+        [self addAttribute:NSForegroundColorAttributeName value:color range:range];
 	}];
 }
 
 - (void)refreshRevisionTextColors {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
+    NSMutableSet* linesToRefresh = NSMutableSet.new;
+    
 	[self.textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, _delegate.text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem* revision = value;
 		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
@@ -804,9 +806,18 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		BXColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
 		
-		if (_delegate.showRevisedTextColor) [_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
-		else [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:range];
+        if (_delegate.showRevisedTextColor) [self addAttribute:NSForegroundColorAttributeName value:color range:range];
+        else {
+            NSArray* lines = [_delegate.parser linesInRange:range];
+            [linesToRefresh addObjectsFromArray:lines];
+        }
 	}];
+    
+    if (linesToRefresh.count) {
+        for (Line* line in linesToRefresh.allObjects) {
+            [self formatLine:line];
+        }
+    }
 #endif
 }
 

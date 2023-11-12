@@ -1659,8 +1659,7 @@
 	@try {
 		// Set arguments
 		for (NSInteger i=0; i < arguments.count; i++) {
-			id argument = arguments[i];
-			[invocation setArgument:&argument atIndex:i + 2]; // Offset by 2, because 0 = target, 1 = method
+			[invocation setArgument:&arguments atIndex:i+2]; // Offset by 2, because 0 = target, 1 = method
 		}
 
 		[invocation invoke];
@@ -2010,6 +2009,10 @@
 }
 - (NSDictionary*)revisedRanges {
 	return self.delegate.revisedRanges;
+}
+- (BeatRevisions*)revisionTracking
+{
+    return self.delegate.revisionTracking;
 }
 
 

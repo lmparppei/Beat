@@ -313,6 +313,7 @@ JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValu
 
 
 #pragma mark Revisions
+@property (nonatomic) BeatRevisions* revisionTracking;
 /// Returns all the revised ranges in attributed text
 - (NSDictionary*)revisedRanges;
 /// Bakes current revisions into lines
@@ -404,6 +405,8 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
 @property (nonatomic, readonly) bool closing;
+
+@property (nonatomic) BeatRevisions* revisionTracking;
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
 - (BeatPaginationManager*)pagination;

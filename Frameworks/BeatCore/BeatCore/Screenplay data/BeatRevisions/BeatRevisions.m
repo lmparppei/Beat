@@ -692,6 +692,18 @@
     [_delegate refreshTextView];
 }
 
+- (void)addRevision:(NSRange)range color:(NSString *)color
+{
+    if (NSMaxRange(range) > self.delegate.text.length) return;
+    
+    BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition color:color];
+    if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+}
+- (void)removeRevision:(NSRange)range
+{
+    [_delegate.textStorage removeAttribute:REVISION_ATTR range:range];
+}
+
 #if !TARGET_OS_IOS
 
 /// An experimental method which removes any text suggested to be removed and clears all revisions.

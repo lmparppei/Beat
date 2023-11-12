@@ -11,6 +11,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatEditorDelegate.h>
 #import <BeatCore/BeatRevisionItem.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,15 +20,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
 @end
 
+@protocol BeatRevisionExports <JSExport>
+- (void)addRevision:(NSRange)range color:(NSString*)color;
+- (void)removeRevision:(NSRange)range;
+- (void)setup;
+@end
+
 @interface BeatRevisionGeneration: NSObject
 @property (nonatomic) NSString* color;
 @property (nonatomic) NSString* marker;
 @end
 
 #if TARGET_OS_IOS
-@interface BeatRevisions: NSObject
+@interface BeatRevisions: NSObject <BeatRevisionExports>
 #else
-@interface BeatRevisions: NSResponder
+@interface BeatRevisions: NSResponder <BeatRevisionExports>
 #endif
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(NSArray*)includedRevisions;
@@ -60,6 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)previousRevision;
 
 - (void)commitRevisions;
+
+- (void)addRevision:(NSRange)range color:(NSString*)color;
+- (void)removeRevision:(NSRange)range;
 
 @end
 

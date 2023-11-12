@@ -72,7 +72,7 @@ NSString * const DocSettingStylesheet    = @"Stylesheet";
 }
 - (void)setInt:(NSString*)key as:(NSInteger)value
 {
-	[_settings setValue:[NSNumber numberWithInteger:value] forKey:key];
+	[_settings setValue:@(value) forKey:key];
 }
 - (void)setFloat:(NSString*)key as:(NSInteger)value
 {
