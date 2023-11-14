@@ -202,8 +202,8 @@
 			}
 		}
 		
-		if (attrs[@"Revision"]) {
-			NSString* color = attrs[@"Revision"];
+		if (attrs[BeatRevisions.attributeKey]) {
+			NSString* color = attrs[BeatRevisions.attributeKey];
 			if (color != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
 		}
 		
@@ -485,7 +485,7 @@
 		
 		// We'll create additional, special attributes for some rules.
 		// Let's add 100 to the type to create separate keys for split-paragraph rules.
-		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered)) {
+		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered || line.isTitlePage)) {
 			typeKey = @(type + 100);
 		}
 		
@@ -553,8 +553,11 @@
 			else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
 			
 			// Special rules for some blocks
-			if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
+			if ((type == lyrics || type == centered || type == action || line.isTitlePage) && !line.beginsNewParagraph) {
 				pStyle.paragraphSpacingBefore = 0;
+			}
+			if (line.titlePageLeader) {
+				pStyle.paragraphSpacing = 0.0;
 			}
 			
 			styles[NSParagraphStyleAttributeName] = pStyle;

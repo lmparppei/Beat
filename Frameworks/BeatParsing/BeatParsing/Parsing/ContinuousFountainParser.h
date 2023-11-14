@@ -129,6 +129,7 @@
 -(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs;
 
 /// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.
+/// - note: Once you get the changes, they will be cleared. You need to hand over the data yourself after getting it.
 - (id)changesInOutline;
 
 

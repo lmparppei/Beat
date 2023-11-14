@@ -186,6 +186,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 
 	/// Creates title page content and places the text snippets into correct spots
 	func createTitlePage() {
+
 		guard let leftColumn = self.leftColumn,
 			  let rightColumn = self.rightColumn,
 			  let textView = self.textView
@@ -201,11 +202,13 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let renderer = BeatRenderer(settings: self.settings)
 		
 		var top:[Line] = []
-				
-		if let title = titlePageElement("title") { top.append(title) }
-		if let credit = titlePageElement("credit") { top.append(credit) }
-		if let authors = titlePageElement("authors") { top.append(authors) }
-		if let source = titlePageElement("source") { top.append(source) }
+		
+		
+		
+		if let title = titlePageElement("title") { top.append(contentsOf: title) }
+		if let credit = titlePageElement("credit") { top.append(contentsOf: credit) }
+		if let authors = titlePageElement("authors") { top.append(contentsOf: authors) }
+		if let source = titlePageElement("source") { top.append(contentsOf: source) }
 		
 		// Title, credit, author, source on top
 		let topContent = NSMutableAttributedString(string: "")
@@ -218,12 +221,14 @@ class BeatTitlePageView:BeatPaginationPageView {
 		
 		// Draft date on right side
 		if let draftDate = titlePageElement("draft date") {
-			let attrStr = renderer.renderLine(draftDate)
+			let attrStr = NSMutableAttributedString()
+			_ = draftDate.map { attrStr.append(renderer.renderLine($0)) }
 			rightColumn.textStorage?.append(attrStr)
 		}
 		
 		if let contact = titlePageElement("contact") {
-			let attrStr = renderer.renderLine(contact)
+			let attrStr = NSMutableAttributedString()
+			_ = contact.map { attrStr.append(renderer.renderLine($0)) }
 			leftColumn.textStorage?.append(attrStr)
 		}
 				
@@ -232,7 +237,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 			let dict = d
 			
 			if let element = titlePageElement(dict.keys.first ?? "") {
-				let attrStr = renderer.renderLine(element)
+				let attrStr = NSMutableAttributedString()
+				_ = element.map { attrStr.append(renderer.renderLine($0)) }
 				leftColumn.textStorage?.append(attrStr)
 			}
 		}
@@ -264,7 +270,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 	}
 	
 	/// Gets **and removes** a title page element from title page array. The array looks like `[ [key: value], [key: value], ...]` to keep the title page elements organized.
-	func titlePageElement(_ key:String) -> Line? {
+	func titlePageElement(_ key:String) -> [Line]? {
 		var lines:[Line] = []
 
 		for i in 0..<titlePageLines.count {
@@ -298,21 +304,27 @@ class BeatTitlePageView:BeatPaginationPageView {
 				type = .titlePageUnknown
 		}
 		
+		var elementLines:[Line] = []
+		
 		// Split first line to remove the key ('Title: My Film' -> 'My Film')
 		var firstLine = lines.first!
+		let leader = firstLine.titlePageLeader
 		
 		firstLine = firstLine.splitAndFormatToFountain(at: firstLine.titlePageKey().count + 1)[1]
 		firstLine.type = type
-		
-		for i in 1..<lines.count {
-			firstLine.join(with: lines[i])
+		firstLine.titlePageLeader = leader
+				
+		if (firstLine.string.trimmingCharacters(in: .whitespacesAndNewlines).count > 0) {
+			elementLines.append(firstLine)
 		}
 		
-		// Trim unnecessary line breaks
-		firstLine.string = firstLine.string.trimmingCharacters(in: .newlines)
-		firstLine.resetFormatting()
-		
-		return firstLine
+		for i in 1..<lines.count {
+			let l = lines[i]
+			l.type = type
+			elementLines.append(l)
+		}
+				
+		return elementLines
 	}
 	
 	/// Updates title page content 

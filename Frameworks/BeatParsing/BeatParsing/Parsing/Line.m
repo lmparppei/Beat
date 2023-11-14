@@ -307,6 +307,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     newLine.changed = self.changed;
     
     newLine.isSplitParagraph = self.isSplitParagraph;
+    newLine.titlePageLeader = self.titlePageLeader;
+    
     newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
     newLine.unsafeForPageBreak = self.unsafeForPageBreak;
     newLine.sceneIndex = self.sceneIndex;
@@ -1178,6 +1180,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     while (second.string.length > 0) {
         if ([second.string characterAtIndex:0] == ' ') {
             second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
+            // The index also shifts
+            index += 1;
         } else {
             break;
         }
@@ -1190,10 +1194,12 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		retain.changed = YES;
 		split.changed = YES;
 	}
-    
+        
     retain.beginsNewParagraph = self.beginsNewParagraph;
     split.beginsNewParagraph = true;
-	
+    	
+    if (split.titlePageLeader) NSLog(@"Title page leader!");
+    
 	retain.uuid = self.uuid;
 	retain.position = self.position;
 	
@@ -1227,6 +1233,26 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			}];
 		}
 	}
+    
+    // Let's also split our resolved macros
+    if (self.resolvedMacros.count) {
+        retain.resolvedMacros = NSMutableDictionary.new;
+        split.resolvedMacros = NSMutableDictionary.new;
+        
+        for (NSValue* r in self.resolvedMacros.allKeys) {
+            NSRange range = r.rangeValue;
+            if (range.length == 0) continue;
+            
+            if (NSMaxRange(range) < index) {
+                NSValue* rKey = [NSValue valueWithRange:range];
+                retain.resolvedMacros[rKey] = self.resolvedMacros[r];
+            } else {
+                NSRange newRange = NSMakeRange(range.location - index, range.length);
+                NSValue* rKey = [NSValue valueWithRange:newRange];
+                split.resolvedMacros[rKey] = self.resolvedMacros[r];
+            }
+        }
+    }
 	
 	return @[ retain, split ];
 }
@@ -1560,7 +1586,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
-	
 	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.italicRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
@@ -1576,6 +1601,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
+    [line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.macroRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
 	
 	// Offset and copy revised ranges
 	for (NSString* key in line.revisedRanges.allKeys) {
@@ -1586,6 +1614,18 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			[self.revisedRanges[key] addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 		}];
 	}
+    
+    // Offset and copy resolved macros
+    if (line.macroRanges.count > 0) {
+        if (self.resolvedMacros == nil) self.resolvedMacros = NSMutableDictionary.new;
+        
+        for (NSValue* r in line.resolvedMacros) {
+            NSRange range = r.rangeValue;
+            NSRange newRange = NSMakeRange(range.location + offset, range.length);
+            NSValue* rKey = [NSValue valueWithRange:newRange];
+            self.resolvedMacros[rKey] = line.resolvedMacros[r];
+        }
+    }
 }
 
 - (NSString*)characterName

@@ -427,6 +427,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) bool nextElementIsDualDialogue;
 /// This line begins a new paragraph and is not joined with another one. **Note:** Used for non-continuous parsing ONLY
 @property (nonatomic) bool beginsNewParagraph;
+@property (nonatomic) bool titlePageLeader;
 /// This line is unsafe as a starting point for live pagination operations.
 @property (nonatomic) bool unsafeForPageBreak;
 

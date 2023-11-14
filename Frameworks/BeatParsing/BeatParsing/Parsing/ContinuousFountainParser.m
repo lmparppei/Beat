@@ -106,6 +106,7 @@ static NSDictionary* patterns;
     [text appendString:@"\n"];
     
     ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:text];
+    [parser updateMacros]; // Resolve macros
     return parser.titlePage;
 }
 
@@ -1533,10 +1534,13 @@ static NSDictionary* patterns;
     
     // Store the latest key
     NSString *key = @"";
+    BeatMacroParser* titlePageMacros = BeatMacroParser.new;
     
     // Iterate through lines and break when we encounter a non- title page line
     for (Line* line in self.safeLines) {
         if (!line.isTitlePage) break;
+        
+        [self resolveMacrosOn:line parser:titlePageMacros];
         
         // See if there is a key present on the line ("Title: ..." -> "Title")
         if (line.titlePageKey.length > 0) {
@@ -1554,6 +1558,14 @@ static NSDictionary* patterns;
         
         // Add the line into the items of the current line
         [items addObject:line];
+        
+        // First element begins a new paragraph
+        line.beginsNewParagraph = (line == items.firstObject);
+        
+        if (items.count > 1) {
+            Line* firstLine = items.firstObject;
+            firstLine.titlePageLeader = true;
+        }
     }
     
     return self.titlePage;
@@ -2610,11 +2622,12 @@ NSInteger previousIndex = NSNotFound;
     Line *precedingLine;
     BeatMacroParser* macros = BeatMacroParser.new;
     
+    
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
                 
         Line *l = linesForPrinting.lastObject;
-
+        
         // Preprocess macros
         if (l.macroRanges.count > 0) {
             
