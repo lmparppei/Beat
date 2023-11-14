@@ -687,7 +687,7 @@ static NSDictionary *fdxIds;
 		NSString* additionalStyles = @"";
 		
 		// Add revisions
-		NSString* revision = attrs[@"Revision"];
+		NSString* revision = attrs[BeatRevisions.attributeKey];
 		if (revision.length > 0) {
 			// Get color for revision.
 			NSString *highlightColor = [BeatColors colorWith16bitHex:revision];

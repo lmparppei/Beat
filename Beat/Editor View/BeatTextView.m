@@ -1637,11 +1637,6 @@ double clamp(double d, double min, double max) {
 					Line *l = [self.editorDelegate.parser lineAtPosition:pos + range.location];
 					[linesToRender addObject:l];
 				}
-				/*
-				 if (attrs[BeatReview.attributeKey] != nil || attrs[BeatRevisions.attributeKey] != nil || attrs[BeatTagging.attributeKey] != nil) {
-				 
-				 }
-				 */
 			}];
 			[self.textStorage endEditing];
 			

@@ -282,7 +282,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B633C1D1298C602C0011449D /* BeatRevisions */ = {
+		B633C1D1298C602C0011449D /* Revisions */ = {
 			isa = PBXGroup;
 			children = (
 				B633C1CD298C602C0011449D /* BeatRevisionItem.h */,
@@ -290,7 +290,7 @@
 				B633C1CF298C602C0011449D /* BeatRevisions.h */,
 				B633C1D0298C602C0011449D /* BeatRevisions.m */,
 			);
-			path = BeatRevisions;
+			path = Revisions;
 			sourceTree = "<group>";
 		};
 		B633C1EB298C631E0011449D /* Localization */ = {
@@ -311,7 +311,7 @@
 				B679B6F429DFEB28005FFC40 /* Translations */,
 				B68C0F5B299D82130031AE6B /* Review */,
 				B6D32020298EBE2B003DA45D /* Tagging */,
-				B633C1D1298C602C0011449D /* BeatRevisions */,
+				B633C1D1298C602C0011449D /* Revisions */,
 				B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */,
 			);
 			path = "Screenplay data";

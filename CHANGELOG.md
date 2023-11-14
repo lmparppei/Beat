@@ -1,5 +1,17 @@
 # Changelog
 
+
+## Beat 1.997.5
+
+- Further bug fixes to show revisions as text color
+- Fixes to bugs caused by previous version..... including when refreshing some registered views
+
+
+## Beat 1.997.3-4
+
+Lots of bug fixes
+
+
 ## Beat 1.997.2
 
 I started moving stuff into a OS-agnostic `BeatDocumentBaseController` class to avoid overlap between macOS and iOS document code.
@@ -14,6 +26,7 @@ I started moving stuff into a OS-agnostic `BeatDocumentBaseController` class to 
 ## Beat 1.997.1
 
 - All sorts of fixes
+
 
 ## Beat 1.997.0
 

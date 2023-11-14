@@ -487,7 +487,7 @@
 		}
 		
 		// Iterate through possible revisions baked into the line
-		NSString* revision = attrs[@"Revision"];
+		NSString* revision = attrs[BeatRevisions.attributeKey];
 		if (revision.length > 0) {
 			[open appendFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revision];
 			[close appendString:@"</span>"];

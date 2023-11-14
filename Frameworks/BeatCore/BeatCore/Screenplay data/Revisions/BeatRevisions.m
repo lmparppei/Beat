@@ -12,6 +12,8 @@
  Note that there are only FOUR generations (for now), and they are distinguished by their COLOR and not GENERATION NUMBER.
  The number is basically their index in the array.
  
+ __Update 2023/11:__ I've started a very slow conversion to use generation numbers rather than colors, but it requires a very deep rewrite.
+ 
  */
 
 #import <BeatParsing/BeatParsing.h>
@@ -56,28 +58,18 @@
 @implementation BeatRevisions
 
 + (void)initialize {
-	[super initialize];
-	[BeatAttributes registerAttribute:BeatRevisions.attributeKey];
+    [super initialize];
+    [BeatAttributes registerAttribute:BeatRevisions.attributeKey];
 }
 
-- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate {
-    self = [super init];
-    if (self) {
-        self.delegate = delegate;
-        [self setup];
-    }
-    return self;
-}
+
+#pragma mark - Class convenenience methods
 
 /// Returns the default color, which is FIRST generation
-+ (NSString*)defaultRevisionColor {
-	return DEFAULT_COLOR;
-}
++ (NSString*)defaultRevisionColor { return DEFAULT_COLOR; }
 
 /// Returns all the colors, in generation order
-+ (NSArray<NSString*>*)revisionColors {
-	return REVISION_ORDER;
-}
++ (NSArray<NSString*>*)revisionColors { return REVISION_ORDER; }
 
 /// Returns the modern revisions.
 + (NSArray<BeatRevisionGeneration*>*)revisionGenerations
@@ -95,10 +87,21 @@
     
     return generations;
 }
+
+/// Convenience method for getting the relevant generation
++ (BeatRevisionGeneration*)generationForColor:(NSString*)color
+{
+    for (BeatRevisionGeneration* gen in BeatRevisions.revisionGenerations) {
+        if ([gen.color isEqualToString:color]) return gen;
+    }
+    return nil;
+}
+
 /// Returns the generation symbols for screenplay rendering
 + (NSDictionary<NSString*, NSString*>*)revisionMarkers {
 	return REVISION_MARKERS;
 }
+
 /// Rertusn the attribute key used in `NSAttributedString` created by `Line` class
 + (NSString*)attributeKey {
 	return REVISION_ATTR;
@@ -122,9 +125,11 @@
 	else if (oldIdx == NSNotFound) return YES;
 	else return NO;
 }
+
 + (void)bakeRevisionsIntoLines:(NSArray *)lines text:(NSAttributedString *)string range:(NSRange)range {
 	//
 }
+
 /// Bakes the revised ranges from editor into corresponding lines in the parser.
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string
 {
@@ -200,6 +205,113 @@
 	[self bakeRevisionsIntoLines:lines text:attrStr];
 }
 
+
+#pragma mark Attributed string
+
+/// Writes the given revisions into a plain text string, and returns an attributed string
++ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
+    NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(string) ? string : @""];
+    
+    for (NSString *key in revisions.allKeys) {
+        NSArray *items = revisions[key];
+        
+        for (NSArray *item in items) {
+            NSString *color;
+            NSInteger loc = [(NSNumber*)item[0] integerValue];
+            NSInteger len = [(NSNumber*)item[1] integerValue];
+            
+            // Load color if available
+            if (item.count > 2) color = item[2];
+            
+            // Ensure the revision is in range, find lines in range and bake revisions
+            if (len > 0 && loc + len <= string.length) {
+                RevisionType type;
+                NSRange range = (NSRange){loc, len};
+                
+                if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
+                else if ([key isEqualToString:@"Removal"] || [key isEqualToString:@"RemovalSuggestion"]) type = RevisionRemovalSuggestion;
+                else type = RevisionNone;
+                
+                BeatRevisionItem *revision = [BeatRevisionItem type:type color:color];
+                
+                if (revision.type != RevisionNone) {
+                    [attrStr addAttribute:REVISION_ATTR value:revision range:range];
+                }
+            }
+        }
+    }
+    
+    return attrStr;
+}
+
+
+#pragma mark JSON data for saved files
+
+/// Returns lines that have been changed, but not added to
++ (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines {
+    NSMutableDictionary *changedLines = NSMutableDictionary.new;
+        
+    for (NSInteger i=0; i < lines.count; i++) {
+        Line *line = lines[i];
+        
+        if (line.changed) {
+            NSString *revisionColor = line.revisionColor;
+            if (revisionColor.length == 0) revisionColor = BeatRevisions.defaultRevisionColor;
+            [changedLines setValue:revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+        }
+    }
+    
+    return changedLines;
+}
+
+/// Returns the revised ranges to be saved into data block of the Fountain file
++ (NSDictionary*)rangesForSaving:(NSAttributedString*)string {
+    NSMutableAttributedString *str = string.mutableCopy;
+    
+    NSDictionary *ranges = @{
+        @"Addition": NSMutableArray.new,
+        @"Removed": NSMutableArray.new,
+        @"RemovalSuggestion": NSMutableArray.new
+    };
+    
+    // Enumerate through revisions and save them.
+    [str enumerateAttribute:BeatRevisions.attributeKey inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatRevisionItem *item = value;
+        
+        if (item.type != RevisionNone) {
+            NSMutableArray *values = ranges[item.key];
+            
+            NSArray *lastItem = values.lastObject;
+            NSInteger lastLoc = [(NSNumber*)lastItem[0] integerValue];
+            NSInteger lastLen = [(NSNumber*)lastItem[1] integerValue];
+            NSString *lastColor = lastItem[2];
+            
+            if (lastLoc + lastLen == range.location && [lastColor isEqualToString:item.colorName]) {
+                // This is a continuation of the last range
+                values[values.count-1] = @[@(lastLoc), @(lastLen + range.length), item.colorName];
+            } else {
+                // This is a new range
+                [values addObject:@[@(range.location), @(range.length), item.colorName]];
+            }
+        }
+    }];
+    
+    return ranges;
+}
+
+
+#pragma mark - Instance methods
+
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate {
+    self = [super init];
+    if (self) {
+        self.delegate = delegate;
+        [self setup];
+    }
+    return self;
+}
+
+
 /// Adds  revision attributes from the delegate
 - (void)loadRevisions {
     NSDictionary* revisions = [_delegate.documentSettings get:DocSettingRevisions];
@@ -245,112 +357,6 @@
     
 }
 
-/// Writes the given revisions into a plain text string, and returns an attributed string
-+ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
-	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(string) ? string : @""];
-	
-	for (NSString *key in revisions.allKeys) {
-		NSArray *items = revisions[key];
-		
-		for (NSArray *item in items) {
-			NSString *color;
-			NSInteger loc = [(NSNumber*)item[0] integerValue];
-			NSInteger len = [(NSNumber*)item[1] integerValue];
-			
-			// Load color if available
-			if (item.count > 2) color = item[2];
-			
-			// Ensure the revision is in range, find lines in range and bake revisions
-			if (len > 0 && loc + len <= string.length) {
-				RevisionType type;
-				NSRange range = (NSRange){loc, len};
-				
-				if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
-				else if ([key isEqualToString:@"Removal"] || [key isEqualToString:@"RemovalSuggestion"]) type = RevisionRemovalSuggestion;
-				else type = RevisionNone;
-				
-				BeatRevisionItem *revision = [BeatRevisionItem type:type color:color];
-				
-				if (revision.type != RevisionNone) {
-					[attrStr addAttribute:REVISION_ATTR value:revision range:range];
-				}
-			}
-		}
-	}
-	
-	return attrStr;
-}
-
-/// Returns lines that have been changed, but not added to
-+ (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines {
-	NSMutableDictionary *changedLines = NSMutableDictionary.new;
-		
-	for (NSInteger i=0; i < lines.count; i++) {
-		Line *line = lines[i];
-		
-		if (line.changed) {
-			NSString *revisionColor = line.revisionColor;
-			if (revisionColor.length == 0) revisionColor = BeatRevisions.defaultRevisionColor;
-			[changedLines setValue:revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
-		}
-	}
-	
-	return changedLines;
-}
-
-/// Returns the revised ranges to be saved into data block of the Fountain file
-+ (NSDictionary*)rangesForSaving:(NSAttributedString*)string {
-	NSMutableAttributedString *str = string.mutableCopy;
-	
-	NSDictionary *ranges = @{
-		@"Addition": NSMutableArray.new,
-		@"Removed": NSMutableArray.new,
-		@"RemovalSuggestion": NSMutableArray.new
-	};
-
-    /*
-	// Find all line breaks and remove the revision attributes
-	NSRange searchRange = NSMakeRange(0,1);
-	NSRange foundRange;
-	
-	while (searchRange.location < string.length) {
-		searchRange.length = string.length-searchRange.location;
-		foundRange = [string.string rangeOfString:@"\n" options:0 range:searchRange];
-		
-		if (foundRange.location != NSNotFound) {
-			[str setAttributes:nil range:foundRange]; // Remove attributes from line break
-			searchRange.location = foundRange.location+foundRange.length; // Continue the search
-		} else {
-			// Done
-			break;
-		}
-	}
-    */
-	
-	// Enumerate through revisions and save them.
-	[str enumerateAttribute:BeatRevisions.attributeKey inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatRevisionItem *item = value;
-		
-		if (item.type != RevisionNone) {
-			NSMutableArray *values = ranges[item.key];
-			
-			NSArray *lastItem = values.lastObject;
-			NSInteger lastLoc = [(NSNumber*)lastItem[0] integerValue];
-			NSInteger lastLen = [(NSNumber*)lastItem[1] integerValue];
-			NSString *lastColor = lastItem[2];
-			
-			if (lastLoc + lastLen == range.location && [lastColor isEqualToString:item.colorName]) {
-				// This is a continuation of the last range
-				values[values.count-1] = @[@(lastLoc), @(lastLen + range.length), item.colorName];
-			} else {
-				// This is a new range
-				[values addObject:@[@(range.location), @(range.length), item.colorName]];
-			}
-		}
-	}];
-	
-	return ranges;
-}
 
 #pragma mark - Editor methods
 
@@ -504,6 +510,33 @@
 }
 
 
+#pragma mark Conversions
+
+- (void)removeRevisionGenerations:(NSArray<BeatRevisionGeneration*>*)generations
+{
+    //
+}
+
+/// Converts a revision generation to another.
+/// @param original The generation to convert
+/// @param new Target generation. Passing a `nil` parameter will remove the original generation.
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration*)new
+{
+    NSAttributedString* text = self.delegate.getAttributedText;
+    [text enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatRevisionItem* revision = (BeatRevisionItem*)value;
+        if (revision == nil || revision.type == RevisionNone) return;
+        
+        if (new != nil) {
+            // convert to another generation
+            BeatRevisionItem* newRevision = [BeatRevisionItem type:revision.type color:revision.colorName];
+            if (revision) [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:newRevision range:range];
+        } else {
+            [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
+        }
+    }];
+}
+
 
 #pragma mark Convenience methods
 
@@ -631,22 +664,21 @@
 
 
 /// Generic method for adding a revisino marker, no matter the type
-- (void)markerAction:(RevisionType)type {
+- (void)markerAction:(RevisionType)type
+{
 	[self markerAction:type range:_delegate.selectedRange];
 	[_delegate attributedString]; // Save attributed text to cache
 }
-- (void)markerAction:(RevisionType)type range:(NSRange)range {
-	// Content can't be marked as revised when locked, and only allow this for editor view
-	if (_delegate.contentLocked) return;
-	if (range.location == NSNotFound) return;
-	
-	if (type == RevisionRemovalSuggestion && range.length == 0) return;
 
-	// Save old attributes in selected range
-	// CONSIDER MOVING THIS+UNDO STEP TO THE ACTUAL METHODS
-	__block NSAttributedString *attrStr = [_delegate.textStorage attributedSubstringFromRange:range];
-	__block NSRange originalRange = range;
-	
+- (void)markerAction:(RevisionType)type range:(NSRange)range
+{
+	// Content can't be marked as revised when locked, and only allow this for editor view
+    if (_delegate.contentLocked || range.location == NSNotFound) return;
+	else if (type == RevisionRemovalSuggestion && range.length == 0) return;
+
+    // Store the original attributes
+    NSAttributedString* originalAttrs = [self.delegate.attributedString attributedSubstringFromRange:range];
+    
 	// Run the actual action
 	if (type == RevisionRemovalSuggestion) [self markRangeForRemoval:range];
 	else if (type == RevisionAddition) [self markRangeAsAddition:range];
@@ -656,29 +688,42 @@
 	[_delegate updateChangeCount:BXChangeDone];
     [_delegate invalidatePreviewAt:range.location];
 	
-	// Create an undo step
-
+    /*
 	[_delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-		[attrStr enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, attrStr.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			if (range.length == 0) return;
-			BeatRevisionItem *revision = value;
-			
-			if (revision) {
-				NSRange attrRange = NSMakeRange(originalRange.location + range.location, range.length);
-				[self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:attrRange];
-			}
-		}];
-
-		[self.delegate renderBackgroundForRange:originalRange];
+        [self.delegate renderBackgroundForRange:originalRange];
 	}];
-		
+	*/
+    
+    // Create an undo step
+#if TARGET_OS_OSX
+    // I don't know why, but we shouldn't invoke undo manager on iOS
+    [[_delegate.undoManager prepareWithInvocationTarget:self] restoreRevisionsInRange:range from:originalAttrs];
+#endif
+    
 	// Refresh backgrounds
 	[_delegate renderBackgroundForRange:range];
+}
+
+- (void)restoreRevisionsInRange:(NSRange)range from:(NSAttributedString*)string
+{
+    [string enumerateAttribute:BeatRevisions.attributeKey inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange localRange, BOOL * _Nonnull stop) {
+        NSRange globalRange = NSMakeRange(range.location + localRange.location, localRange.length);
+        
+        BeatRevisionItem* revision = (BeatRevisionItem*)value;
+        if (revision == nil) {
+            [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:globalRange];
+        } else {
+            [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:globalRange];
+        }
+    }];
+    
+    [_delegate renderBackgroundForRange:range];
 }
 
 - (void)markRangeAsAddition:(NSRange)range {
 	BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor];
 	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+        
     [_delegate refreshTextView];
 }
 - (void)markRangeForRemoval:(NSRange)range {

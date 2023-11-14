@@ -34,6 +34,21 @@
 	return self;
 }
 
+/// An experimental way to do this for now
+-(instancetype)initWithType:(RevisionType)type generation:(BeatRevisionGeneration*)generation
+{
+    self = [super init];
+    if (self) {
+        _type = type;
+        
+        if (generation.color.length) _colorName = generation.color;
+        else _colorName = BeatRevisions.defaultRevisionColor;
+        
+        _generation = generation;
+    }
+    return self;
+}
+
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color
 {
 	return [[BeatRevisionItem alloc] initWithType:type color:color];
