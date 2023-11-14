@@ -1443,13 +1443,13 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Don't repeat ) or ]
-	if ([self.textActions shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
+	else if ([self.textActions shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
 		!self.undoManager.redoing && !self.undoManager.undoing) {
 		return NO;
 	}
 	
 	// Handle new line breaks (when actually typed)
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
+	else if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
 		
 		// Line break after character cue
 		if (currentLine.isAnyCharacter && self.automaticContd) {
@@ -1532,17 +1532,17 @@ static NSWindow __weak *currentKeyWindow;
 #pragma mark Text did change
 - (void)textDidChange:(NSNotification *)notification
 {
+	// If we are just opening the document, do nothing
+	if (_documentIsLoading) return;
+
 	// Begin from top if no last changed range was set
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
+
+	// Update formatting
+	[self applyFormatChanges];
 	
 	// Save attributed text to cache
 	self.attrTextCache = [self getAttributedText];
-	
-	// If we are just opening the document, do nothing
-	if (_documentIsLoading) return;
-	
-	// Update formatting
-	[self applyFormatChanges];
 	
 	// Check changes to outline
 	// NOTE: calling this method removes the outline changes from parser
@@ -1567,14 +1567,13 @@ static NSWindow __weak *currentKeyWindow;
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
 	for (id<BeatEditorView> view in _registeredViews) {
-		if (view.visible) [view reloadInBackground];
+		[view reloadInBackground];
 	}
-		 
+
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
 	
-	// Update scene number labels
-	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
+	// A larger chunk of text was pasted. Ensure layout.
 	if (_lastChangedRange.length > 5) [self ensureLayout];
 	
 	// Update any running plugins
@@ -1941,6 +1940,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)renderBackgroundForLines {
 	for (Line* line in self.lines) {
 		// Invalidate layout
+		[self.formatting refreshRevisionTextColorsInRange:line.textRange];
 		[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 	}
 }
@@ -2075,7 +2075,7 @@ static NSWindow __weak *currentKeyWindow;
 	bool revisedText = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
 	[BeatUserDefaults.sharedDefaults saveBool:!revisedText forKey:BeatSettingShowRevisedTextColor];
 	
-	[self.formatting refreshRevisionTextColors];
+	[self.formatting refreshRevisionTextColorsInRange:NSMakeRange(0, self.text.length)];
 }
 
 - (bool)showRevisedTextColor
@@ -3569,10 +3569,11 @@ static NSArray<Line*>* cachedTitlePage;
 	// Run resident plugins
 	if (!self.runningPlugins || _documentIsLoading) return;
 	
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin update:range];
-	}
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		for (BeatPlugin* plugin in self.runningPlugins.allValues) {
+			[plugin update:range];
+		}
+	});
 }
 
 - (void)updatePluginsWithSelection:(NSRange)range {

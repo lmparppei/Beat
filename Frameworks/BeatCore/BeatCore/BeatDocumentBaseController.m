@@ -292,6 +292,7 @@
     NSArray *lines = [self.parser linesInRange:range];
     for (Line* line in lines) {
         // Invalidate layout
+        [self.formatting refreshRevisionTextColorsInRange:line.textRange];
         [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
     }
 }

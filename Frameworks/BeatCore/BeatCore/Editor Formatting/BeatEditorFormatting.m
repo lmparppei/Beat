@@ -388,7 +388,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self revisedTextStyleForRange:range];
 	
 	[self setTextColorFor:line];
-	[self revisedTextColorFor:line];
 
     if (!alreadyEditing) [textStorage endEditing];
     
@@ -698,7 +697,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		if (color) [self setForegroundColor:color line:line range:markerRange];
 	}
-	
+    
+    [self revisedTextColorFor:line];
 }
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
@@ -790,35 +790,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		BXColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
-
-        [self addAttribute:NSForegroundColorAttributeName value:color range:range];
+		
+		[self addAttribute:NSForegroundColorAttributeName value:color range:range];
 	}];
 }
 
 - (void)refreshRevisionTextColors {
-#if TARGET_OS_OSX
-    NSMutableSet* linesToRefresh = NSMutableSet.new;
-    
-	[self.textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, _delegate.text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatRevisionItem* revision = value;
-		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
-		
-		BXColor* color = BeatColors.colors[revision.colorName];
-		if (color == nil) return;
-		
-        if (_delegate.showRevisedTextColor) [self addAttribute:NSForegroundColorAttributeName value:color range:range];
-        else {
-            NSArray* lines = [_delegate.parser linesInRange:range];
-            [linesToRefresh addObjectsFromArray:lines];
-        }
-	}];
-    
-    if (linesToRefresh.count) {
-        for (Line* line in linesToRefresh.allObjects) {
-            [self formatLine:line];
-        }
-    }
-#endif
+    [self refreshRevisionTextColorsInRange:NSMakeRange(0, self.delegate.text.length)];
 }
 
 - (void)refreshRevisionTextColorsInRange:(NSRange)range {
@@ -826,7 +804,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	NSArray* lines = [_delegate.parser linesInRange:range];
 	for (Line* line in lines) {
-		[self revisedTextColorFor:line];
+        [self setTextColorFor:line];
 	}
 }
 

@@ -519,3 +519,30 @@
 }
 
 @end
+/*
+ 
+ searching for sunlight, there in your room
+ trolling for one light, there in your gloom
+ 
+ you dream of a better day
+ alone with the moon
+ 
+ all things are nothing, there in your tomb
+ all things are nothing, assured is your doom
+ 
+ you dream of a better day
+ alone with the moon
+ 
+ laughing and joking, they all end too soon
+ forgotten memories, forgotten tunes
+ 
+ you dream of a better day
+ alone with the moon
+ 
+        that day
+           it's coming soon
+
+              alone with
+                 the moon
+ 
+ */
