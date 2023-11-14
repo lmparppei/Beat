@@ -506,6 +506,9 @@
 - (BOOL)isFlipped { return YES; }
 
 - (void)reload {
+	// Don't load in background
+	if (!self.visible) return;
+	
 	_outline = _delegate.parser.outline.copy;
 	
 	[self updateScenesAndRebuild:YES];
