@@ -623,12 +623,12 @@
 {
 	self.containerView.hidden = false;
 	[self desiredHeight];
-	[self reload];
+
 	self.enclosingScrollView.hasHorizontalScroller = YES;
 	[self setNeedsLayout:YES];
-	
 	self.visible = YES;
 	
+	[self reload];
 	[self scrollToScene:_delegate.currentScene];
 }
 - (void)hide {

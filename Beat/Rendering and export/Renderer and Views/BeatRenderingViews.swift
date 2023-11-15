@@ -305,20 +305,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		}
 		
 		var elementLines:[Line] = []
-		
-		// Split first line to remove the key ('Title: My Film' -> 'My Film')
-		var firstLine = lines.first!
-		let leader = firstLine.titlePageLeader
-		
-		firstLine = firstLine.splitAndFormatToFountain(at: firstLine.titlePageKey().count + 1)[1]
-		firstLine.type = type
-		firstLine.titlePageLeader = leader
 				
-		if (firstLine.string.trimmingCharacters(in: .whitespacesAndNewlines).count > 0) {
-			elementLines.append(firstLine)
-		}
-		
-		for i in 1..<lines.count {
+		for i in 0..<lines.count {
 			let l = lines[i]
 			l.type = type
 			elementLines.append(l)

@@ -307,7 +307,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     newLine.changed = self.changed;
     
     newLine.isSplitParagraph = self.isSplitParagraph;
-    newLine.titlePageLeader = self.titlePageLeader;
+    
+    newLine.beginsTitlePageBlock = self.beginsTitlePageBlock;
+    newLine.endsTitlePageBlock = self.endsTitlePageBlock;
     
     newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
     newLine.unsafeForPageBreak = self.unsafeForPageBreak;
@@ -1198,8 +1200,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     retain.beginsNewParagraph = self.beginsNewParagraph;
     split.beginsNewParagraph = true;
     	
-    if (split.titlePageLeader) NSLog(@"Title page leader!");
-    
 	retain.uuid = self.uuid;
 	retain.position = self.position;
 	
@@ -1490,6 +1490,22 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 			[indices addIndex:self.string.length - 1+offset];
 		}
 	}
+    
+    // Title page keys will be included in formatting ranges
+    if (self.isTitlePage && self.beginsTitlePageBlock && self.titlePageKey.length) {
+        NSInteger i = self.titlePageKey.length+1;
+        [indices addIndexesInRange:NSMakeRange(0, i)];
+        
+        // Also add following spaces to formatting ranges
+        while (i < self.length) {
+            unichar c = [self.string characterAtIndex:i];
+            
+            if (c == ' ') [indices addIndex:i];
+            else break;
+            
+            i++;
+        }
+    }
 	
 	// Escape ranges
 	[indices addIndexes:[[NSIndexSet alloc] initWithIndexSet:self.escapeRanges]];

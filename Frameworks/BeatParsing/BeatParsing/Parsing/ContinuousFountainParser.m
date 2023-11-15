@@ -1542,13 +1542,26 @@ static NSDictionary* patterns;
         
         [self resolveMacrosOn:line parser:titlePageMacros];
         
+        // Reset flags
+        line.beginsTitlePageBlock = false;
+        line.endsTitlePageBlock = false;
+        
+        // Determine if the line is empty
+        bool empty = false;
+        
         // See if there is a key present on the line ("Title: ..." -> "Title")
         if (line.titlePageKey.length > 0) {
             key = line.titlePageKey.lowercaseString;
             if ([key isEqualToString:@"author"]) key = @"authors";
             
+            line.beginsTitlePageBlock = true;
+            
             NSMutableDictionary* titlePageValue = [NSMutableDictionary dictionaryWithDictionary:@{ key: NSMutableArray.new }];
             [self.titlePage addObject:titlePageValue];
+            
+            // Add the line into the items of the current line, IF IT'S NOT EMPTY
+            NSString* trimmed = [line.string substringFromIndex:line.titlePageKey.length+1].trim;
+            if (trimmed.length == 0) empty = true;
         }
         
         // Find the correct item in an array of dictionaries
@@ -1556,16 +1569,15 @@ static NSDictionary* patterns;
         NSMutableArray *items = [self titlePageArrayForKey:key];
         if (items == nil) continue;
         
-        // Add the line into the items of the current line
-        [items addObject:line];
-        
-        // First element begins a new paragraph
-        line.beginsNewParagraph = (line == items.firstObject);
-        
-        if (items.count > 1) {
-            Line* firstLine = items.firstObject;
-            firstLine.titlePageLeader = true;
-        }
+        // Add the line if it's not empty
+        if (!empty) [items addObject:line];
+    }
+    
+    // After we've gathered all the elements, lets iterate them once more to determine where blocks end.
+    for (NSDictionary<NSString*,NSArray<Line*>*>* element in self.titlePage) {
+        NSArray<Line*>* lines = element.allValues.firstObject;
+        lines.firstObject.beginsTitlePageBlock = true;
+        lines.lastObject.endsTitlePageBlock = true;
     }
     
     return self.titlePage;

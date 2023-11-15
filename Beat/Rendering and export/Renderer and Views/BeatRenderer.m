@@ -485,8 +485,18 @@
 		
 		// We'll create additional, special attributes for some rules.
 		// Let's add 100 to the type to create separate keys for split-paragraph rules.
-		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered || line.isTitlePage)) {
+		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered) && !line.isTitlePage) {
 			typeKey = @(type + 100);
+		}
+		if (line.isTitlePage) {
+			// Some extra weirdness for title pages
+			bool defaultParagraphType = (line.beginsTitlePageBlock + line.endsTitlePageBlock == 2);
+			
+			// If it's not a normal, one-line title page element, we'll need to define an additional type
+			if (!defaultParagraphType) {
+				NSInteger titlePageType = type + 2 * line.beginsTitlePageBlock + line.endsTitlePageBlock + 101;
+				typeKey = @(titlePageType);
+			}
 		}
 		
 		if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
@@ -553,13 +563,18 @@
 			else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
 			
 			// Special rules for some blocks
-			if ((type == lyrics || type == centered || type == action || line.isTitlePage) && !line.beginsNewParagraph) {
+			if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
 				pStyle.paragraphSpacingBefore = 0;
 			}
-			if (line.titlePageLeader) {
-				pStyle.paragraphSpacing = 0.0;
-			}
 			
+			// Title page rules
+			if (line.isTitlePage) {
+				if (line.beginsTitlePageBlock && !line.endsTitlePageBlock) pStyle.paragraphSpacing = 0.0;
+				if (!line.beginsTitlePageBlock) pStyle.paragraphSpacingBefore = 0.0;
+				if (!line.endsTitlePageBlock) pStyle.paragraphSpacing = 0.0;
+			}
+
+		
 			styles[NSParagraphStyleAttributeName] = pStyle;
 			
 			// Apply to existing styles

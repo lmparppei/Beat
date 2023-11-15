@@ -34,7 +34,7 @@
 @property (readonly) NSMutableArray<Line*>* lines;
 @property (nonatomic, readonly) NSMutableArray <OutlineScene*>* outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
-@property (nonatomic, readonly) NSMutableArray <NSDictionary<NSString*, NSArray<NSString*>*>*> *titlePage;
+@property (nonatomic, readonly) NSMutableArray<NSDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
 @property (nonatomic, readonly) NSMutableSet *storylines;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
@@ -73,7 +73,7 @@
 @property (atomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray <OutlineScene*>* outline;
-@property (nonatomic) NSMutableArray *titlePage;
+@property (nonatomic) NSMutableArray<NSDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
 @property (nonatomic) NSMutableSet *storylines;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;
 @property (nonatomic) bool hasTitlePage;
