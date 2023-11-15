@@ -1,5 +1,5 @@
 = **Comic Book/Graphic Novel Template**
-= This template uses a new feature called preprocesing macros to automatically adjust page number for sections. Once you've defined "serial page" you can just use "page" macro after that. Serial means the number will automatically increment by one.
+= This template uses a new feature called preprocessing macros to automatically adjust page number for sections. Once you've defined "serial page" you can just use "page" macro after that. Serial means the number will automatically increment by one.
 
 #Script page {{serial page = 1}}
 
