@@ -1599,7 +1599,7 @@ static NSWindow __weak *currentKeyWindow;
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes
-		if (_revisionMode && _lastChangedRange.location != NSNotFound) {
+		if (_revisionMode && _lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
 			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
 		}
 	}

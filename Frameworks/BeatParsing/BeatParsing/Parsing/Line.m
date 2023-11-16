@@ -1111,16 +1111,17 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Returns an attributed string without formatting markup
 - (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings
 {
-    // We can skip stylized attributed string if needed. In that case we'll only include macros.
-    NSAttributedString* attrStr = self.attributedString;
+    // First create a standard attributed string with the style attributes in place
+    NSMutableAttributedString* attrStr = self.attributedString.mutableCopy;
     
-    // We might include notes, sections and synopsis lines
+    // Set up an index set for each index we want to include.
     NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
+    // If we're printing notes, let's include those in the ranges
     if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
     
     // Create actual content ranges
     NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
-
+    
     // Enumerate visible ranges and build up the resulting string
     NSMutableAttributedString* result = NSMutableAttributedString.new;
     [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1128,6 +1129,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         
         NSAttributedString* content = [attrStr attributedSubstringFromRange:range];
         [result appendAttributedString:content];
+        
+        // To ensure we can map the resulting attributed string *back* to the editor ranges, we'll mark the ranges they represent. This is an experimental part of the possible upcoming more WYSIWYG-like experience.
+        NSRange editorRange = NSMakeRange(range.location, range.length);
+        [result addAttribute:@"BeatEditorRange" value:[NSValue valueWithRange:editorRange] range:NSMakeRange(result.length-range.length, range.length)];
     }];
     
     // Replace macro ranges. All macros should be resolved by now.

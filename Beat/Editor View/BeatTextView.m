@@ -1701,7 +1701,6 @@ double clamp(double d, double min, double max) {
 /// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
-	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
 	if (line == nil) return 0;
 	

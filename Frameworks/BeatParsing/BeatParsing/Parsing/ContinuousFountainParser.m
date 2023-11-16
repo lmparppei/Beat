@@ -43,10 +43,7 @@
 
 #pragma mark - Parser
 
-@interface ContinuousFountainParser () {
-	// Line cache. I don't know why this is an iVar.
-	__weak Line * _prevLineAtLocation;
-}
+@interface ContinuousFountainParser()
 
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) OutlineChanges* outlineChanges;
@@ -80,6 +77,9 @@
 @property bool parsing;
 
 @property (nonatomic) BeatMacroParser* macros;
+
+//
+@property (nonatomic, weak) Line* prevLineAtLocation;
 
 @end
 
@@ -504,7 +504,7 @@ static NSDictionary* patterns;
     if ((omitIn || originalLineWasEmpty) && firstIndex > 0) [changedIndices addIndex:firstIndex-1];
     
     _editedIndex = firstIndex;
-    
+        
     return changedIndices;
 }
 
@@ -2463,10 +2463,10 @@ NSInteger previousIndex = NSNotFound;
 - (Line*)lineAtPosition:(NSInteger)position
 {
 	// Let's check the cached line first
-	if (NSLocationInRange(position, _prevLineAtLocation.range) && _prevLineAtLocation != nil) {
-		return _prevLineAtLocation;
-	}
-		
+    if (NSLocationInRange(position, _prevLineAtLocation.range) && [_lines containsObject:_prevLineAtLocation]) {
+       return _prevLineAtLocation;
+    }
+    
 	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
 	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
 	
