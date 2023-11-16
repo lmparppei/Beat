@@ -140,13 +140,16 @@ static NSString *revisionAttribute = @"Revision";
 /// Adds a character cue in the current position. **Note** that you might need to set the typing attributes for text view separately for the cue to take action.
 - (void)addCue
 {
+    if (_delegate.currentLine == nil) return;
+    
     // Move at the beginning of the line to avoid issues with .currentLine
     _delegate.selectedRange = NSMakeRange(_delegate.currentLine.position, 0);
-        
+    
     // If current line is not empty, find the end of block.
     if (_delegate.currentLine.type != empty) {
         NSArray *block = [_delegate.parser blockFor:_delegate.currentLine];
         Line *lastLine = block.lastObject;
+        if (lastLine == nil) lastLine = _delegate.currentLine;
         _delegate.selectedRange = NSMakeRange(lastLine.position, 0);
     }
     

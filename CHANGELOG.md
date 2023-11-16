@@ -1,10 +1,16 @@
 # Changelog
 
+## Beat 1.997.6
+
+- Lot of minor fixes to attributes and undoing
+- Compressed images to make the app a bit smaller
+
 
 ## Beat 1.997.5
 
 - Further bug fixes to show revisions as text color
 - Fixes to bugs caused by previous version..... including when refreshing some registered views
+- A lot of fixes for bugs caused by my OS-agnostic overhaul :-(
 
 
 ## Beat 1.997.3-4

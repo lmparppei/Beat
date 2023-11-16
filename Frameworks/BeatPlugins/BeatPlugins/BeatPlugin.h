@@ -480,6 +480,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic) JSValue* importCallback;
 @property (nonatomic) JSValue* exportCallback;
 
+/// Getter for revision tracking in delegate
+@property (nonatomic) BeatRevisions* revisionTracking;
+
 - (void)loadPluginWithName:(NSString*)name;
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
