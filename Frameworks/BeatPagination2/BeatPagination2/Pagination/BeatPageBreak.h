@@ -16,8 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat lineHeight;
 @property (nonatomic) Line* element;
 @property (nonatomic) NSString* reason;
+
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight reason:(NSString*)reason;
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight;
+
+// For the WYSIWYG-variant
+@property (nonatomic) NSInteger index;
+
 @end
 
 NS_ASSUME_NONNULL_END

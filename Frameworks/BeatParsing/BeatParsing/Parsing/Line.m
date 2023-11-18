@@ -489,91 +489,88 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - Element booleans
 
-- (bool)canBeSplitParagraph {
-    if (self.type == action || self.type == lyrics || self.type == centered) return true;
-    return false;
+- (bool)canBeSplitParagraph
+{
+    return (self.type == action || self.type == lyrics || self.type == centered);
 }
 
 /// Returns TRUE for scene, section and synopsis elements
-- (bool)isOutlineElement {
-    if (self.type == heading
-        || self.type == section
-        // || self.type == synopse
-        ) return YES;
-    else return NO;
+- (bool)isOutlineElement
+{
+    return (self.type == heading || self.type == section);
 }
 
 /// Returns TRUE for any title page element
-- (bool)isTitlePage {
-    if (self.type == titlePageTitle ||
-        self.type == titlePageCredit ||
-        self.type == titlePageAuthor ||
-        self.type == titlePageDraftDate ||
-        self.type == titlePageContact ||
-        self.type == titlePageSource ||
-        self.type == titlePageUnknown) return YES;
-    else return NO;
+- (bool)isTitlePage
+{
+    return (self.type == titlePageTitle ||
+            self.type == titlePageCredit ||
+            self.type == titlePageAuthor ||
+            self.type == titlePageDraftDate ||
+            self.type == titlePageContact ||
+            self.type == titlePageSource ||
+            self.type == titlePageUnknown);
 }
 
-/// Checks if the line is completely non-printing
-- (bool)isInvisible {
-    if (self.omitted ||
-        self.type == section ||
-        self.type == synopse ||
-        self.isTitlePage) return YES;
-    else return NO;
+/// Checks if the line is completely non-printing __in the eyes of parsing__.
+- (bool)isInvisible
+{
+    return (self.omitted || self.type == section || self.type == synopse || self.isTitlePage);
 }
 
 /// Returns TRUE if the line type is forced
 - (bool)forced {
-    if (self.numberOfPrecedingFormattingCharacters > 0) return YES;
-    else return NO;
+    return (self.numberOfPrecedingFormattingCharacters > 0);
 }
+
 
 #pragma mark Dialogue
 
+/// Returns `true` for ANY SORT OF dialogue element, including dual dialogue
+- (bool)isAnySortOfDialogue
+{
+    return (self.isDialogue || self.isDualDialogue);
+}
+
 /// Returns `true` for any dialogue element, including character cue
-- (bool)isDialogue {
-    if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
-    else return NO;
+- (bool)isDialogue
+{
+    return (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more);
 }
 
 /// Returns `true` for dialogue block elements, excluding character cues
-- (bool)isDialogueElement {
+- (bool)isDialogueElement
+{
     // Is SUB-DIALOGUE element
-    if (self.type == parenthetical || self.type == dialogue) return YES;
-    else return NO;
+    return (self.type == parenthetical || self.type == dialogue);
 }
 
 /// Returns `true` for any dual dialogue element, including character cue
 - (bool)isDualDialogue {
-    if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
-    else return NO;
+    return (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore);
 }
 
 /// Returns `true` for dual dialogue block elements, excluding character cues
 - (bool)isDualDialogueElement {
-    if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
-    else return NO;
+    return (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore);
 }
 
 /// Returns `true` for ANY character cue (single or dual)
 - (bool)isAnyCharacter {
-    if (self.type == character || self.type == dualDialogueCharacter) return YES;
-    else return NO;
+    return (self.type == character || self.type == dualDialogueCharacter);
 }
 
 /// Returns `true` for ANY parenthetical line (single or dual)
 - (bool)isAnyParenthetical {
-    if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
-    return NO;
+    return (self.type == parenthetical || self.type == dualDialogueParenthetical);
 }
 
 /// Returns `true` for ANY dialogue line (single or dual)
-- (bool)isAnyDialogue {
-    if (self.type == dialogue || self.type == dualDialogue) return YES;
-    else return NO;
+- (bool)isAnyDialogue
+{
+    return (self.type == dialogue || self.type == dualDialogue);
 }
+
 
 #pragma mark Omissions & notes
 
@@ -585,7 +582,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns TRUE if the block is omitted
 /// @warning This also includes lines that have 0 length, meaning the method will return YES for empty lines too.
-- (bool)omitted {
+- (bool)omitted
+{
 	__block NSInteger invisibleLength = 0;
 	
 	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

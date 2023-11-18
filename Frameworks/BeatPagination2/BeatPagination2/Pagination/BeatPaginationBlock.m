@@ -285,24 +285,32 @@
 	if (self.dualDialogueContainer) {
 		return [self splitDualDialogueWithRemainingSpace:remainingSpace];
 	}
-		
+    
+
 	NSInteger pageBreakIndex = [self pageBreakIndexWithRemainingSpace:remainingSpace];
-	if (pageBreakIndex == NSNotFound) {
+    if (pageBreakIndex == NSNotFound) {
+        // First catch weird edge cases
 		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
-	}
-	
-	Line* spiller = [self findSpillerAt:remainingSpace];
-	
-	if (spiller.type == action) {
-		// Break paragraphs into two if possible
-		return [self splitParagraphWithRemainingSpace:remainingSpace];
-	}
-	else if (spiller.isDialogueElement || spiller.isDualDialogueElement) {
-		return [self splitDialogueAt:spiller remainingSpace:remainingSpace];
-	}
-	else {
-		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
-	}
+    }
+    
+    // Then, let's handle the real stuff. The sub-methods return the same array as documented above: lines remaining, lines broken to next page, page break data.
+    NSArray* pageBreakData;
+    
+    // First find a spiller
+    Line* spiller = [self findSpillerAt:remainingSpace];
+    
+    if (spiller.type == action) {
+        // Break action paragraphs into two if possible and feasible
+        pageBreakData = [self splitParagraphWithRemainingSpace:remainingSpace];
+    } else if (spiller.isDialogueElement || spiller.isDualDialogueElement) {
+        // Break apart page dialogue blocks
+        pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
+    } else {
+        // This is something else (like lyrics, transition, whatever, let's just split it at beginning)
+        pageBreakData = @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
+    }
+    
+    return pageBreakData;
 }
 
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
