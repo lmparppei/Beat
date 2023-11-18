@@ -76,6 +76,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	}
 	
 	func reload() {
+		print("Reloaded")
 		string = (self.editorDelegate?.attributedString().copy() as! NSAttributedString)
 		let bounds = self.enclosingScrollView?.contentView.bounds
 		

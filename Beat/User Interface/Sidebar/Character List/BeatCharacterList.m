@@ -16,6 +16,7 @@
 @interface BeatLinesBarRowView : NSTableCellView
 @property (nonatomic) CGFloat barWidth;
 @property (nonatomic, weak) BeatCharacter *character;
+@property (nonatomic, weak) IBOutlet NSTextField* numberOfLines;
 @end
 
 @implementation BeatLinesBarRowView
@@ -25,8 +26,8 @@
 -(void)drawRect:(NSRect)dirtyRect {
 	[super drawRect:dirtyRect];
 
-	
-	NSDictionary *colorForGender = @{
+	static NSDictionary *colorForGender;
+	if (colorForGender == nil) colorForGender = @{
 		@"woman": ThemeManager.sharedManager.genderWomanColor,
 		@"man": ThemeManager.sharedManager.genderManColor,
 		@"other": ThemeManager.sharedManager.genderOtherColor,
@@ -36,13 +37,12 @@
 	NSColor *color = colorForGender[_character.gender];
 	CGFloat alpha = _barWidth * 1.0;
 
-	
 	if (alpha > 1.0) alpha = 1.0;
 	if (alpha < 0.2) alpha = .2;
 	color = [color colorWithAlphaComponent:alpha];
 	[color setFill];
-	
-	CGFloat width = (self.frame.size.width - self.textField.frame.size.width * 1.2)  * _barWidth;
+		
+	CGFloat width = (self.frame.size.width - self.numberOfLines.frame.size.width - 5.0) * _barWidth;
 	CGFloat height = self.frame.size.height * .6;
 	if (width < 2.0) width = 2.0;
 	
@@ -134,8 +134,8 @@
 	if (tableColumn == tableView.tableColumns[1]) {
 		BeatLinesBarRowView *linesRow = [tableView makeViewWithIdentifier:@"LinesBarView" owner:nil];
 		linesRow.character = character;
+		linesRow.numberOfLines.stringValue = [NSString stringWithFormat:@"%lu", character.lines];
 		linesRow.barWidth = (CGFloat)character.lines / (CGFloat)_mostLines;
-		linesRow.textField.stringValue = [NSString stringWithFormat:@"%lu", character.lines];
 		return linesRow;
 	} else {
 		NSTableCellView *row = [tableView makeViewWithIdentifier:@"CharacterName" owner:nil];

@@ -35,8 +35,10 @@
 
 -(void)awakeFromNib {
 	// Collapse by default
-	_fullHeight = _heightConstraint.constant;
-	[_heightConstraint setConstant:0.0];
+	_expanded = true;
+	//_fullHeight = _heightConstraint.constant;
+	//[_heightConstraint setConstant:0.0];
+	self.wantsLayer = true;
 }
 
 - (void)setup {
@@ -52,6 +54,7 @@
 }
 
 - (IBAction)show:(id)sender {
+	/*
 	_expanded = !_expanded;
 	
 	if (_expanded) {
@@ -59,6 +62,7 @@
 	} else {
 		[_heightConstraint.animator setConstant:0.0];
 	}
+	 */
 }
 
 - (void)clearChart {
@@ -67,6 +71,8 @@
 	}
 	[_graphLayers removeAllObjects];
 }
+
+static CAShapeLayer* testLayer;
 
 - (void)pieChartForData:(NSArray*)items {
 	NSMutableDictionary *data = NSMutableDictionary.new;
@@ -82,6 +88,10 @@
 		}
 	}
 	
+	if (![self.layer.sublayers containsObject:testLayer]) [self.layer addSublayer:testLayer];
+	testLayer.backgroundColor = NSColor.greenColor.CGColor;
+	testLayer.bounds = self.frame;
+	
 	if (!data.count) {
 		_textField.stringValue = @"No characters";
 		[self clearChart];
@@ -94,7 +104,11 @@
 	
 	NSInteger i = 0;
 	CGFloat offset = 0;
-	CGFloat height = _fullHeight * .7;
+	
+	CGFloat fullHeight = self.frame.size.height;
+	CGFloat height = fullHeight * .7;
+	
+	
 	
 	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
@@ -103,9 +117,11 @@
 		CAShapeLayer *graphLayer;
 		
 		if (i == _graphLayers.count) {
-			graphLayer = [CAShapeLayer layer];
-			CGRect rect = CGRectMake((_fullHeight - height) / 2 + 8, (_fullHeight - height) / 2, height, height);
+			graphLayer = CAShapeLayer.layer;
+			
+			CGRect rect = CGRectMake((fullHeight - height) / 2 + 8, (fullHeight - height) / 2, height, height);
 			CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
+			
 			graphLayer.lineWidth = 12.0;
 			graphLayer.fillColor = nil;
 			graphLayer.path = path;
