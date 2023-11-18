@@ -3,30 +3,34 @@
 //  Beat
 //
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019-2020 Lauri-Matti Parppei. All rights reserved.
+//  Parts copyright © 2019-2023 Lauri-Matti Parppei. All rights reserved.
 
 //  Relased under GPL
 
 /*
  
- This code is still mostly based on Hendrik Noeller's work.
- It is heavily modified for Beat, and is more and more reliable.
+ This code was originally based on Hendrik Noeller's work.
+ It is heavily modified for Beat, and not a lot of Hendrik's original code remains.
  
- Main differences include:
- - double-checking for all-caps actions mistaken for character cues
- - delegation with the editor
- - title page parsing (mostly for preview & export purposes)
- - new data structure called OutlineScene, which contains scene name and length, as well as a reference to the original line
- - overall tweaks to parsing here and there
- - parsing large chunks of text is optimized 	
+ Parsing happens SEPARATELY from the text view. Once something is changed in the text view,
+ we send the changed range here. On iOS, you have to use text storage delegate, and on macOS,
+ you can do that in shouldChangeText: - note that those happen at a different stage of editing.
+ 
+ This means that the text view and parser CAN GO OUT OF SYNC. Be EXTREMELY careful with this.
+ I've messed it up now and then. My dream would be creating a Beat text container protocol which
+ could then be used on NSTextContainer, or just on normal NSAttributedString. The text container
+ would register its own changes and provide lines to the parser, eliminating the chance of ever
+ going out of sync with the editor.
+ 
+ For now, the current system isn't broken so why fix it.
+ 
+ This is a sprawling, 3800-line class, but I've tried explaining and dividing it with markers.
+ A lot of stuff could/should be moved to the line class, I guess, but that's starting to look
+ just as bad, he he.
+ 
+ Dread lightly, dear friend.
+ 
   
- 
- Update 2021-something: COVID is still on, and this class has been improved a lot.
- 
- Future considerations:
- - Make it possible to change editor text via text elements. This means making lines aware of their parser, and
-   even tighter integration with the editor delegate.
- 
  */
 
 #import "ContinuousFountainParser.h"
@@ -45,36 +49,27 @@
 
 @interface ContinuousFountainParser()
 
+// Tracking changes to outline
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) OutlineChanges* outlineChanges;
 @property (nonatomic) NSMutableSet *changedOutlineElements;
-@property (nonatomic) Line *editedLine;
+
+/// The line which was last edited. We're storing this when asking for a line at caret position.
 @property (nonatomic, weak) Line *lastEditedLine;
+/// An index for the last fetched line result when asking for lines in range
 @property (nonatomic) NSUInteger lastLineIndex;
-@property (nonatomic) NSUInteger editedIndex;
+/// The range which was edited most recently.
 @property (nonatomic) NSRange editedRange;
 
 // Title page parsing
 @property (nonatomic) NSString *openTitlePageKey;
 @property (nonatomic) NSString *previousTitlePageKey;
 
-// For initial loading
-@property (nonatomic) NSInteger indicesToLoad;
-@property (nonatomic) bool firstTime;
-
-// For testing
-@property (nonatomic) NSDate *executionTime;
-
 // Static parser flag
 @property (nonatomic) bool nonContinuous;
 
 // Cached line set for UUID creation
 @property (nonatomic) NSArray* cachedLines;
-
-@property (atomic) bool preprocessing;
-
-@property NSObject* parseLock;
-@property bool parsing;
 
 @property (nonatomic) BeatMacroParser* macros;
 
@@ -90,7 +85,8 @@ static NSDictionary* patterns;
 #pragma mark - Initializers
 
 /// Extracts the title page from given string
-+ (NSArray*)titlePageForString:(NSString*)string {
++ (NSArray*)titlePageForString:(NSString*)string
+{
     NSArray <NSString*>*rawLines = [string componentsSeparatedByString:@"\n"];
     
     if (rawLines.count == 0) return @[];
@@ -110,19 +106,24 @@ static NSDictionary* patterns;
     return parser.titlePage;
 }
 
-- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
+- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings
+{
     return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous
+{
     return [self initWithString:string delegate:delegate settings:nil nonContinuous:nonContinuous];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate
+{
     return [self initWithString:string delegate:delegate settings:nil];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings
+{
     return [self initWithString:string delegate:delegate settings:settings nonContinuous:NO];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous  {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous
+{
     self = [super init];
     
     if (self) {
@@ -131,6 +132,7 @@ static NSDictionary* patterns;
         _changedIndices = NSMutableIndexSet.indexSet;
         _titlePage = NSMutableArray.array;
         _storylines = NSMutableSet.set;
+        
         _delegate = delegate;
         _nonContinuous = nonContinuous;
         _staticDocumentSettings = settings;
@@ -154,6 +156,7 @@ static NSDictionary* patterns;
 #pragma mark - Document setting getter
 
 /// Returns either document settings OR static document settings. Note that if static document settings are provided, they are preferred.
+/// TODO: Perhaps the parser should hold the document settings and read them when originally parsing the document?
 - (BeatDocumentSettings*)documentSettings
 {
     if (self.staticDocumentSettings != nil) return self.staticDocumentSettings;
@@ -163,27 +166,31 @@ static NSDictionary* patterns;
 
 #pragma mark - Saved file processing
 
-- (NSString*)screenplayForSaving {
+/// Returns the RAW text  when saving a screenplay. Automatically fixes some stylistical issues.
+- (NSString*)screenplayForSaving
+{
     NSArray *lines = [NSArray arrayWithArray:self.lines];
-    NSMutableString *content = [NSMutableString string];
+    NSMutableString *content = NSMutableString.string;
     
     Line *previousLine;
     for (Line* line in lines) {
         if (!line) continue;
         
-        NSString *string = line.string;
+        NSString* string = line.string;
         LineType type = line.type;
+    
+        // Make some lines uppercase
+        if ((type == heading || type == transitionLine) &&
+            line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
         
         // Ensure correct whitespace before elements
-        if ((line.type == character || line.type == heading) &&
-            previousLine.string.length > 0) {
-            [content appendString:@"\n"];
-        }
-        
-        // Make some lines uppercase
-        if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
-        
+        if ((line.isAnyCharacter || line.type == heading) &&
+            previousLine.string.length > 0) [content appendString:@"\n"];
+            
+        // Append to full content
         [content appendString:string];
+        
+        // Add a line break until we reach the end
         if (line != self.lines.lastObject) [content appendString:@"\n"];
         
         previousLine = line;
@@ -193,7 +200,8 @@ static NSDictionary* patterns;
 }
 
 /// Returns the whole document as single string
-- (NSString*)rawText {
+- (NSString*)rawText
+{
     NSMutableString *string = [NSMutableString string];
     for (Line* line in self.lines) {
         if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
@@ -209,18 +217,15 @@ static NSDictionary* patterns;
 
 - (void)parseText:(NSString*)text
 {
-    _firstTime = YES;
     _lines = NSMutableArray.new;
     
-    // Replace MS Word line breaks with macOS ones
     if (text == nil) text = @"";
-    text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]; // Replace MS Word/Windows line breaks with macOS ones
     
+    // Split the text by line breaks
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
-    _indicesToLoad = lines.count;
     
-    NSUInteger position = 0; //To track at which position every line begins
-    NSUInteger sceneIndex = -1;
+    NSUInteger position = 0; // To track at which position every line begins
     
     Line *previousLine;
     
@@ -231,42 +236,26 @@ static NSDictionary* patterns;
         
         [self parseTypeAndFormattingForLine:line atIndex:index];
         
-        // Quick fix for mistaking an ALL CAPS action to character cue
+        // Quick fix for mistaking an ALL CAPS action for a character cue
         if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
             previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
             if (previousLine.type == character) previousLine.type = action;
         }
-        
-        if (line.isOutlineElement) {
-            // A cloned version of the screenplay is used for preview & printing.
-            // sceneIndex ensures we know which scene heading is which, even when there are hidden outline items.
-            // This is used to jump into corresponding scenes from preview mode. There are smarter ways
-            // to do this, but this is how it was done back in the day and still remains so.
-            // Update 2022-11: I think this is not used anymore?
-            sceneIndex++;
-            line.sceneIndex = sceneIndex;
-        }
-        
-        //Mark change in buffered changes
-        [self.changedIndices addIndex:index];
-        
-        position += [rawLine length] + 1; // +1 for newline character
+                
+        position += rawLine.length + 1; // +1 for newline character
         previousLine = line;
-        _indicesToLoad--;
     }
-    
-    // Initial parse complete
-    _indicesToLoad = -1;
     
     // Reset outline
     _changeInOutline = YES;
-    [self createOutline];
+    [self updateOutline];
     self.outlineChanges = OutlineChanges.new;
+    
+    // Reset changes (to force the editor to reformat each line)
+    [self.changedIndices addIndexesInRange:NSMakeRange(0,self.lines.count)];
     
     // Set identifiers (if applicable)
     [self setIdentifiersForOutlineElements:[self.documentSettings get:DocSettingHeadingUUIDs]];
-    
-    _firstTime = NO;
 }
 
 // This sets EVERY INDICE as changed.
@@ -306,7 +295,6 @@ static NSDictionary* patterns;
     if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
     
     _lastEditedLine = nil;
-    _editedIndex = -1;
     _editedRange = range;
     
     @synchronized (self.lines) {
@@ -503,15 +491,15 @@ static NSDictionary* patterns;
     if ((omitOut || lastLineWasEmpty) && firstIndex < self.lines.count+1) [changedIndices addIndex:firstIndex+1];
     if ((omitIn || originalLineWasEmpty) && firstIndex > 0) [changedIndices addIndex:firstIndex-1];
     
-    _editedIndex = firstIndex;
-        
     return changedIndices;
 }
 
 
 #pragma mark Add / remove lines
 
-- (void)removeLineAtIndex:(NSInteger)index {
+/// Removes a line from the parsed content and decrements positions of other lines
+- (void)removeLineAtIndex:(NSInteger)index
+{
     if (index < 0 || index >= self.lines.count) return;
     
     Line* line = self.lines[index];
@@ -522,14 +510,21 @@ static NSDictionary* patterns;
     
     [self.lines removeObjectAtIndex:index];
     [self decrementLinePositionsFromIndex:index amount:line.range.length];
+    
+    // Reset cached line
+    _lastEditedLine = nil;
 }
 
-- (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
-    // Add a new line into place and increment positions
+/// Adds a new line into the parsed content and increments positions of other lines
+- (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index
+{
     Line *newLine = [Line.alloc initWithString:string position:position parser:self];
     
     [self.lines insertObject:newLine atIndex:index];
     [self incrementLinePositionsFromIndex:index+1 amount:1];
+    
+    // Reset cached line
+    _lastEditedLine = nil;
 }
 
 
@@ -1073,7 +1068,7 @@ static NSDictionary* patterns;
         if (value == nil) value = @"";
         
         // Store title page data
-        NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
+        NSMutableDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] }.mutableCopy;
         [_titlePage addObject:titlePageData];
         
         // Set this key as open (in case there are additional title page lines)
@@ -1736,14 +1731,9 @@ static NSDictionary* patterns;
 
 
 #pragma mark - Handling changes to outline
+// TODO: Maybe make this a separate class, or are we stepping into the dangerous parts of OOP?
 
-/// Updates the current outline from scratch (alias of `updateOutline`, here for legacy reasons)
-- (void)createOutline
-{
-    [self updateOutlineWithLines:self.safeLines];
-}
-
-/// Updates the current outline from scratch.
+/// Updates the current outline from scratch. Use sparingly.
 - (void)updateOutline
 {
     [self updateOutlineWithLines:self.safeLines];
@@ -2305,41 +2295,6 @@ static NSDictionary* patterns;
 	return block;
 }
 
-#pragma mark - Utility
-
-- (NSString *)description
-{
-    NSString *result = @"";
-    NSInteger index = 0;
-	
-    for (Line *l in self.lines) {
-        //For whatever reason, %lu doesn't work with a zero
-        result = [result stringByAppendingFormat:@"%lu ", index];
-		
-        result = [[result stringByAppendingString:[NSString stringWithFormat:@"%@", l]] stringByAppendingString:@"\n"];
-        index++;
-    }
-	
-    //Cut off the last newline
-    result = [result substringToIndex:result.length - 1];
-    return result;
-}
-
-// This returns a pure string with no comments or invisible elements
-- (NSString *)cleanedString
-{
-	NSString * result = @"";
-	
-	for (Line* line in self.lines) {
-		// Skip invisible elements
-		if (line.type == section || line.type == synopse || line.omitted || line.isTitlePage) continue;
-		
-		result = [result stringByAppendingFormat:@"%@\n", line.stripFormatting];
-	}
-	
-	return result;
-}
-
 
 #pragma mark - Line position lookup
 
@@ -2460,12 +2415,11 @@ NSInteger previousIndex = NSNotFound;
 }
 
 /// Rerturns the line object at given position
+/// (btw, why aren't we using the other method?)
 - (Line*)lineAtPosition:(NSInteger)position
 {
 	// Let's check the cached line first
-    if (NSLocationInRange(position, _prevLineAtLocation.range) && [_lines containsObject:_prevLineAtLocation]) {
-       return _prevLineAtLocation;
-    }
+    if (NSLocationInRange(position, _prevLineAtLocation.range)) return _prevLineAtLocation;
     
 	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
 	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
@@ -2519,12 +2473,10 @@ NSInteger previousIndex = NSNotFound;
 	return linesInRange;
 }
 
-/// Returns the scenes  in given range (even overlapping)
+/// Returns the scenes which intersect with given range.
 - (NSArray*)scenesInRange:(NSRange)range
 {
 	NSMutableArray *scenes = NSMutableArray.new;
-	
-	[self createOutline];
 	NSArray *outline = self.safeOutline; // Thread-safe outline
 	
 	// When length is zero, return just the scene at the beginning of range
@@ -2541,13 +2493,12 @@ NSInteger previousIndex = NSNotFound;
 	return scenes;
 }
 
-/// Returns a scene which contains the given character index (position)
-- (OutlineScene*)sceneAtIndex:(NSInteger)index {
-	return [self sceneAtPosition:index];
-}
+/// Returns a scene which contains the given character index (position). An alias for `sceneAtPosition` for legacy compatibility.
+- (OutlineScene*)sceneAtIndex:(NSInteger)index { return [self sceneAtPosition:index]; }
 
 /// Returns a scene which contains the given position
-- (OutlineScene*)sceneAtPosition:(NSInteger)index {
+- (OutlineScene*)sceneAtPosition:(NSInteger)index
+{
 	for (OutlineScene *scene in self.safeOutline) {
 		if (NSLocationInRange(index, scene.range) && scene.line != nil) return scene;
 	}
@@ -2555,24 +2506,11 @@ NSInteger previousIndex = NSNotFound;
 }
 
 /// Returns all scenes contained by this section. You should probably use `OutlineScene.children` though.
+/// - note: Legacy compatibility. Remove when possible.
 - (NSArray*)scenesInSection:(OutlineScene*)topSection
 {
 	if (topSection.type != section) return @[];
-	
-	NSArray *outline = self.safeOutline;
-	NSMutableArray *scenes = NSMutableArray.new;
-	NSInteger idx = [outline indexOfObject:topSection];
-	
-	[scenes addObject:topSection];
-	
-	for (NSInteger i=idx+1; i<outline.count; i++) {
-		OutlineScene* scene = outline[i];
-		if (scene.type == section && scene.sectionDepth <= topSection.sectionDepth) break;
-		
-		[scenes addObject:scene];
-	}
-	
-	return scenes;
+    return topSection.children;
 }
 
 /// Returns the scene with given number (string)
@@ -2586,7 +2524,9 @@ NSInteger previousIndex = NSNotFound;
 	return nil;
 }
 
+
 #pragma mark - Preprocessing for printing
+// Move away from this class.
 
 - (NSArray*)preprocessForPrinting
 {
@@ -2597,22 +2537,6 @@ NSInteger previousIndex = NSNotFound;
 {
     return [self preprocessForPrintingWithLines:self.safeLines exportSettings:exportSettings screenplayData:nil];
 }
-
-
-/*
-- (NSArray*)preprocessWithBlock:(NSArray* (^)(NSArray* lines))preprocessBlock {
-	// This could one day be used to create custom preprocessing through a plugin.
-	
-	NSArray *lines = self.safeLines;
-	NSMutableArray *preprocessed = NSMutableArray.new;
-	for (Line* line in lines) {
-		if (line.type == empty) continue;
-		[preprocessed addObject:line.clone];
-	}
-	
-	return preprocessBlock(lines);
-}
- */
 
 - (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay
 {
@@ -2761,6 +2685,7 @@ NSInteger previousIndex = NSNotFound;
 	return elements;
 }
 
+
 #pragma mark - Line identifiers (UUIDs)
 
 /// Returns every line UUID as an arrayg
@@ -2775,20 +2700,15 @@ NSInteger previousIndex = NSNotFound;
 	return uuids;
 }
 
-/// Sets the given UUIDs to each line at the same index
+/// Sets the given UUIDs to each line at the same index. Note that you can provide either an array of `NSString`s or __REAL__ `NSUUID`s.
 - (void)setIdentifiers:(NSArray*)uuids
 {
 	for (NSInteger i = 0; i < uuids.count; i++) {
 		id item = uuids[i];
-		NSUUID *uuid;
-		
-		if ([item isKindOfClass:NSString.class]) {
-			uuid = [NSUUID.alloc initWithUUIDString:item];
-		} else {
-			uuid = item;
-		}
-		
-		if (i < self.lines.count) {
+        // We can have either strings or real UUIDs in the array. Make sure we're using the correct type.
+        NSUUID *uuid = ([item isKindOfClass:NSString.class]) ? [NSUUID.alloc initWithUUIDString:item] : item;
+				
+		if (i < self.lines.count && uuid != nil) {
 			Line *line = self.lines[i];
 			line.uuid = uuid;
 		}
@@ -2843,6 +2763,8 @@ NSInteger previousIndex = NSNotFound;
  */
 - (void)parseNotesFor:(Line*)line at:(NSInteger)lineIndex oldType:(LineType)oldType
 {
+    // TODO: Make some fucking sense to this
+    
     // This was probably a part of a note block. Let's parse the whole block instead of this single line.
     if (line.noteIn && line.noteOut && line.noteRanges.count == line.length) {
         NSInteger positionInLine;

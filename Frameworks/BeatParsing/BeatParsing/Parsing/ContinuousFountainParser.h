@@ -101,7 +101,7 @@
 /// Reparses the whole document.
 - (void)resetParsing;
 /// Creates a full new outline.
-- (void)createOutline;
+- (void)updateOutline;
 /// Returns a tree structure of the outline. You can find children of sections using `section.children`.
 - (NSArray*)outlineTree;
 /// Returns parsed scenes, excluding structure elements
@@ -188,5 +188,4 @@
 /// Checks if the given line is visible in print, and if not. returns its closest printed sibling.
 - (Line*)closestPrintableLineFor:(Line*)line;
 
-- (NSString*)description;
 @end
