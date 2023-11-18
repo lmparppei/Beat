@@ -1927,7 +1927,6 @@ static NSWindow __weak *currentKeyWindow;
 	if (self.textView.selectedRange.length > 0) {
 		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
 		if (lines) [self.parser correctParsesForLines:lines];
-		[self.parser createOutline];
 		[self ensureLayout];
 	}
 }
@@ -2881,7 +2880,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Rebuild outline everywhere
-	[self.parser createOutline];
+	[self.parser updateOutline];
 	[self.outlineView reloadOutline];
 	[self.timeline reload];
 	
