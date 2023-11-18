@@ -112,6 +112,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (NSString*)linesAsJSON;
 /// Returns the line at given position in document
 - (Line*)lineAtPosition:(NSInteger)index;
+/// Returns the scene at given position in document
+- (Line*)sceneAtPosition:(NSInteger)index;
 /// Returns lines in given scene.
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 /// Creates the outline from scratch

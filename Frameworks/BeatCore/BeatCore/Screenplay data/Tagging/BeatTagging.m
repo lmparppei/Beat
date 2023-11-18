@@ -311,7 +311,7 @@
 }
 
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene {
-	[self.delegate.parser createOutline];
+	[self.delegate.parser updateOutline];
 	
 	NSDictionary *tags = [self sortedTagsInRange:scene.range];
 	NSArray *lines = [self.delegate.parser linesForScene:scene];

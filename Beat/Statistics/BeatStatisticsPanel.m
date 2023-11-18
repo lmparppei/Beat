@@ -23,8 +23,6 @@
 	self = [super initWithWindowNibName:@"BeatStatisticsPanel" owner:self];
 	
 	self.delegate = delegate;
-	
-	[parser createOutline];
 	self.analysis = [[FountainAnalysis alloc] initWithDelegate:self.delegate];
 	
 	return self;

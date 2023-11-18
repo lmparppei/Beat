@@ -1727,9 +1727,10 @@
 {
 	return [_delegate.parser lineAtPosition:index];
 }
-- (OutlineScene*)sceneAtIndex:(NSInteger)index
+
+- (OutlineScene*)sceneAtPosition:(NSInteger)index
 {
-	return [_delegate.parser sceneAtIndex:index];
+    return [_delegate.parser sceneAtPosition:index];
 }
 
 - (NSDictionary*)type
@@ -1821,7 +1822,7 @@
 
 - (void)createOutline
 {
-	[self.delegate.parser createOutline];
+	[self.delegate.parser updateOutline];
 }
 
 - (void)newDocument:(NSString*)string

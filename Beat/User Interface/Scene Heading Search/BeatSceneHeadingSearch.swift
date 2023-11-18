@@ -39,7 +39,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		self.window?.isReleasedWhenClosed = true
 		
 		textField?.delegate = self
-		delegate?.parser.createOutline()
+		delegate?.parser.updateOutline() // create a new outline from scratch, just in case
 		results = delegate?.parser.outline as! [OutlineScene]
 	}
 	

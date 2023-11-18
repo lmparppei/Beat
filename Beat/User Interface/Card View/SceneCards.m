@@ -396,7 +396,7 @@
 			NSString *color = [indexAndColor objectAtIndex:1];
 			
 			Line *line = [_delegate.parser.lines objectAtIndex:index];
-			OutlineScene *scene = [self.delegate.parser sceneAtIndex:line.position];
+			OutlineScene *scene = [self.delegate.parser sceneAtPosition:line.position];
 			
 			[self.delegate.textActions setColor:color forScene:scene];
 		}
