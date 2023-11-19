@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight reason:(NSString*)reason;
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight;
 
+
+-(instancetype)initWithVisibleIndex:(NSInteger)index element:(Line*)line attributedString:(NSAttributedString* _Nullable)attrStr reason:(NSString*)reason;
+
 // For the WYSIWYG-variant
 @property (nonatomic) NSInteger index;
 

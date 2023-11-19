@@ -35,7 +35,7 @@
 }
 
 /// For the speculative WYSIWYG mode, we need to map *visible* index of an attributed string to the *actual* index in parsed content. To achieve this, `Line` class bakes the actual represented range to each chunk of its attributed string. This initializer handles the conversion. The layout manager delegate should take care of finding out where the line actually resides, add exclusion areas and return correct values for `shouldBreakLineByWordBeforeCharacterAtIndex:` based on the provided line break objects.
--(instancetype)initWithVisibleIndex:(NSInteger)index element:(Line*)line attributedString:(NSAttributedString*)attrStr reason:(NSString*)reason
+-(instancetype)initWithVisibleIndex:(NSInteger)index element:(Line*)line attributedString:(NSAttributedString* _Nullable)attrStr reason:(NSString*)reason
 {
     self = [super init];
     if (self) {

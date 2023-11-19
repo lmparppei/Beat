@@ -24,7 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatLayoutManager : NSLayoutManager
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)editorDelegate;
+
 @property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
+@property (nonatomic) NSIndexSet* pageBreaks;
 
 #if TARGET_OS_IOS
 @property (weak, nonatomic) id<BeatLayoutManagerDelegate> delegate;

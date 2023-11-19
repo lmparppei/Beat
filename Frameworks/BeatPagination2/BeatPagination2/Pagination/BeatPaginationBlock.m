@@ -286,11 +286,12 @@
 		return [self splitDualDialogueWithRemainingSpace:remainingSpace];
 	}
     
-
 	NSInteger pageBreakIndex = [self pageBreakIndexWithRemainingSpace:remainingSpace];
     if (pageBreakIndex == NSNotFound) {
         // First catch weird edge cases
-		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
+        //BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"];
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"No page break index found"];
+		return @[@[], self.lines, pageBreak];
     }
     
     // Then, let's handle the real stuff. The sub-methods return the same array as documented above: lines remaining, lines broken to next page, page break data.
@@ -303,11 +304,13 @@
         // Break action paragraphs into two if possible and feasible
         pageBreakData = [self splitParagraphWithRemainingSpace:remainingSpace];
     } else if (spiller.isDialogueElement || spiller.isDualDialogueElement) {
-        // Break apart page dialogue blocks
+        // Break apart dialogue blocks
         pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
     } else {
         // This is something else (like lyrics, transition, whatever, let's just split it at beginning)
-        pageBreakData = @[@[], self.lines, [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"]];
+        //BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"];
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"No page break index found"];
+        pageBreakData = @[@[], self.lines, pageBreak];
     }
     
     return pageBreakData;
@@ -355,7 +358,8 @@
 	
     NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
     
-	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Paragraph split"];
+	//BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Paragraph split"];
+    BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
 	return @[@[prePageBreak], onNextPage, pageBreak];
 }
 
@@ -389,7 +393,8 @@
 		return @[onThisPage, onNextPage, rightResult[2]];
 	}
 	
-	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"Nothing was left on page with dual dialogue container"];
+	//BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"Nothing was left on page with dual dialogue container"];
+    BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"Nothing was left on page with dual dialogue container"];
 	return @[@[], self.lines, pageBreak];
 }
 
@@ -405,23 +410,25 @@
     NSMutableArray<Line*>* tmpNextPage = NSMutableArray.new;
     
     BeatPageBreak *pageBreak;
-    Line* pageBreakItem;
+    Line* pageBreakItem;        // The element where we'll cut
+    NSInteger cutoff = 0;       // Index at which we'll cut the dialogue in two
     
+    // Find out where we can split the block
     NSIndexSet* splittableIndices = [self possiblePageBreakIndices];
-    
-    NSInteger cutoff = 0;
         
     NSMutableArray* safeLines = NSMutableArray.new;
     
+    // Iterate through elements in dialogue block and see where we no longer can fit anything on page
     for (NSInteger i=1; i<dialogueBlock.count; i++) {
         Line* line = dialogueBlock[i];
         
         CGFloat heightBefore = [self heightUntil:line];
         CGFloat h = heightBefore + [self heightForLine:line];
         
+        // This line fits, handle it
         if (h <= remainingSpace) {
-            // This line fits
             if ((line.isAnyDialogue && i > 0) || line == dialogueBlock.lastObject) {
+                // We got to the end of block safely
                 [onThisPage addObjectsFromArray:safeLines];
                 [onThisPage addObject:line];
                 
@@ -433,11 +440,10 @@
             continue;
         }
         
-        
-        // This line doesn't.
+        // This line doesn't. Let's find out how to split the block.
         if (line.isAnyParenthetical) {
             if ([splittableIndices containsIndex:i]) {
-                // After a parenthetical deeper in the block that doesn't fit we'll just hop on to next page
+                // After a parenthetical which is NOT the second line, we'll just hop onto next page
                 cutoff = i;
                 pageBreakItem = line;
             } else {
@@ -448,7 +454,7 @@
             
             break;
         } else if (line.isAnyDialogue) {
-            // We'll have to try and split the dialogue line if needed
+            // We'll try and split the dialogue line in two, if it's possible.
             NSArray* splitLine = [self splitDialogueLine:line remainingSpace:remainingSpace - heightBefore];
             Line* retain = splitLine[0];
             Line* split = splitLine[1];
@@ -508,7 +514,8 @@
         NSInteger pageBreakIndex = [self.lines indexOfObject:pageBreakItem];
         if ((pageBreakIndex == NSNotFound || pageBreakIndex <= 1) && onThisPage.count == 0) pageBreakItem = self.lines.firstObject;
     
-        pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:pageBreakItem lineHeight:self.delegate.styles.page.lineHeight];
+        //pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:pageBreakItem lineHeight:self.delegate.styles.page.lineHeight];
+        pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:pageBreakItem attributedString:nil reason:@"Dialogue cut"];
     }
     
     return @[ onThisPage, onNextPage, pageBreak ];
@@ -517,14 +524,17 @@
 
 /// Splits a line of dialogue, retaining as much as possible in given remaining space.
 - (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace {
-	NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
+	// Regex for splitting into sentences
+    NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
+    
+    // Create temporary string and atch sentences
     NSString* string = [line stripFormattingWithSettings:self.delegate.settings];
 	NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, string.length)];
 	
 	NSMutableArray<NSString*>* sentences = NSMutableArray.new;
 	NSInteger length = 0;
 	
-    // Break into sentences
+    // Break into sentences.
     for (NSTextCheckingResult *match in matches) {
         NSString *str = [string substringWithRange:match.range];
         length += str.length;
@@ -532,7 +542,7 @@
         [sentences addObject:str];
     }
     	
-	// Make sure we're not missing anything
+	// Make sure we're not missing anything, and if we are, bring it with us.
 	if (length < string.length) {
 		NSString *str = [string substringWithRange:NSMakeRange(length, string.length - length)];
 		[sentences addObject:str];
@@ -549,6 +559,7 @@
 	NSInteger breakLength = 0;
 	CGFloat breakPosition = 0.0;
 
+    // Next, let's find out how much we can fit on this page
 	for (NSString *sentence in sentences) { @autoreleasepool {
 		[text appendString:sentence];
 		CGFloat h = [self heightForString:text lineType:line.type];
@@ -560,9 +571,10 @@
 			break;
 		}
 	} }
-        
+    
 	NSArray *p = [line splitAndFormatToFountainAt:breakLength];
-	BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:breakPosition element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Break paragraph"];
+	//BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:breakPosition element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Break paragraph"];
+    BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:breakLength element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Break paragraph"];
 	return @[p[0], p[1], pageBreak];
 }
 

@@ -1099,33 +1099,32 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages {
 	NSMutableArray* breakPositions = NSMutableArray.new;
-	
-	CGFloat UIlineHeight = self.editorDelegate.editorStyles.page.lineHeight; // Line height in UI
+	NSMutableIndexSet* pageBreaks = NSMutableIndexSet.new;
 	
 	for (BeatPaginationPage* page in pages) {
 		BeatPageBreak* pageBreak = page.pageBreak;
 		
-		Line* line = pageBreak.element;
-		CGFloat lineHeight = (pageBreak.lineHeight > 0) ? pageBreak.lineHeight : BeatPagination.lineHeight; // Line height from pagination or get the default from pagination
-		CGFloat position = pageBreak.y;
-		
-		CGFloat linePosition = 0.0;
-		
-		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-		
-		if (position >= 0) {
-			// Round the value to make it position evenly on lines
-			linePosition =  rect.origin.y + (round(pageBreak.y / lineHeight) * UIlineHeight);
-		} else {
-			// Position -1 from pagination means that we'll position the line break after this element
-			linePosition = rect.origin.y;
+		NSInteger position = pageBreak.element.position + pageBreak.index;
+		// If the page break happens at *end* of the block, we'll display the marker after the line break
+		if (pageBreak.index == -1 || pageBreak.index == pageBreak.element.length) {
+			position = pageBreak.element.position + pageBreak.element.length + 1;
 		}
+		if (position >= self.text.length) position = self.text.length;
 		
-		[breakPositions addObject:@(linePosition)];
+		NSInteger gPos = [self.layoutManager glyphIndexForCharacterAtIndex:position];
+		if (gPos != NSNotFound) {
+			CGRect rect = [self.layoutManager lineFragmentRectForGlyphAtIndex:gPos effectiveRange:nil];
+			
+			CGFloat linePosition = rect.origin.y;
+			[breakPositions addObject:@(linePosition)];
+			
+			[pageBreaks addIndex:gPos];
+		}
 	}
 	
+	((BeatLayoutManager*)self.layoutManager).pageBreaks = pageBreaks;
 	[self updatePageNumbers:breakPositions];
+	self.needsDisplay = true;
 }
 
 - (void)resetPageNumberLabels {
@@ -1811,26 +1810,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	return glyphs;
 }
 
-- (void)layoutManagerDidInvalidateLayout:(NSLayoutManager *)sender {
-	//if (_editorDelegate.documentIsLoading) return;
-	//[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
-	/*
-	 if (_editorDelegate.documentIsLoading) return;
-	 
-	 NSInteger numberOfLines = [self numberOfLines];
-	 
-	 if (self.linesBeforeLayout != numberOfLines || self.editorDelegate.lastChangedRange.length > 2 ||
-	 self.editorDelegate.currentLine.type == heading) {
-	 [self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
-	 }
-	 else if (_editorDelegate.revisionMode) {
-	 // If the user is revising stuff, let's enforce refreshing the elements.
-	 [self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
-	 }
-	 
-	 self.linesBeforeLayout = numberOfLines;
-	 */
-}
 
 
 #pragma mark - Layout manager convenience methods

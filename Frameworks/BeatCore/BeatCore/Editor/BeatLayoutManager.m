@@ -102,11 +102,32 @@
     }];
 }
 
+- (void)drawPageSeparators:(const NSRange*)glyphsToShow
+{
+    if (!self.editorDelegate.showPageNumbers) return;
+    
+    static BXColor* pageBreakColor;
+    if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
+    
+    CGSize inset = [self offsetSize];
+    
+    [self.pageBreaks enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        if (NSLocationInRange(idx, *glyphsToShow)) {
+            NSRect r = [self lineFragmentRectForGlyphAtIndex:idx effectiveRange:nil];
+            r.size.height = 1;
+            r.origin = CGPointMake(inset.width + r.origin.x, inset.height + r.origin.y);
+            [pageBreakColor setFill];
+            NSRectFill(r);
+        }
+    }];
+}
+
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
 {
     // Store revision names and create an array for background colors
     static NSDictionary<NSString*, NSNumber*>* revisionLevels;
     static NSMutableDictionary* bgColors;
+    
 
     if (_textView == nil) _textView = _editorDelegate.getTextView;
     
@@ -120,6 +141,9 @@
     
     bool showTags = _editorDelegate.showTags;
     bool showRevisions = _editorDelegate.showRevisions;
+    
+    // Draw page separators
+    [self drawPageSeparators:&glyphsToShow];
     
     // We'll enumerate line fragments to then be able to draw range-based backgrounds on each line.
     // This is somewhat unefficient if there's a lot of attributes, so you should keep track of those.
@@ -241,6 +265,10 @@
     
     return rects;
 }
+
+#pragma mark - Draw page separators
+
+
 
 
 #pragma mark - Draw scene numbers

@@ -86,7 +86,9 @@
         
         // We'll require at least 2 lines to lay on this page. If it's less, we'll just roll the scene on next page. (3 = 2 + top margin)
         if (brokenBlock.count && retainedBlock.height < _delegate.styles.page.lineHeight * 3) {
-            return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:lineHeight reason:@"2nd element in block group didn't fit on this page"]];
+            //BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:lineHeight reason:@"2nd element in block group didn't fit on this page"];
+            BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"2nd element in block group didn't fit on this page"];
+            return @[@[], [self lines], pageBreak];
         }
 	}
 	
@@ -98,7 +100,9 @@
 	if (offendingBlock == nil) {
 		// There was no offending block for some reason?
 		// To be on the safe side, push everything on next page.
-		return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"Something went wrong when breaking a block"]];
+        // BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:[self lines].firstObject lineHeight:styles.page.lineHeight reason:@"Something went wrong when breaking a block"];
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"Something went wrong when breaking a block"];
+		return @[@[], self.lines, pageBreak];
 	}
 		
 	NSArray* pageBreak = [offendingBlock breakBlockWithRemainingSpace:space];

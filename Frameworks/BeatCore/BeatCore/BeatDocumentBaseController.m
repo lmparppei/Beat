@@ -85,6 +85,7 @@
     NSLog(@"resetPreview has to be overridden in implementation");
 }
 
+/// Returns __actual__ line height for editor view
 - (CGFloat)editorLineHeight
 {
     return self.editorStyles.page.lineHeight;
