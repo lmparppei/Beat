@@ -25,6 +25,7 @@
 #import "BeatBrowserView.h"
 
 #import "BeatRenderer.h"
+#import "BeatModalInput.h"
 
 #import "ITSwitch.h"
 

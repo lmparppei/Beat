@@ -825,13 +825,26 @@ DQ
                                     <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Commit Revisions" id="H1U-Aa-dJH">
+                            <menuItem isSeparatorItem="YES" id="tV9-Zg-qgr"/>
+                            <menuItem title="Manage Revisions" id="alM-1M-jHF">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="commitRevisions:" target="-1" id="hjL-Vl-WCD"/>
-                                </connections>
+                                <menu key="submenu" id="CGQ-NF-VGD">
+                                    <items>
+                                        <menuItem title="Downgrade Revisions..." id="xQU-Mc-KQo">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="downgradeRevisions:" target="-1" id="Bzm-nB-sIS"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Commit Revisions" id="H1U-Aa-dJH">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="commitRevisions:" target="-1" id="hjL-Vl-WCD"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="oQ7-Kk-dvf"/>
                             <menuItem title="Go To Revision" id="rTO-cq-yuC">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Go To Revision" id="ZbY-dg-pdP">

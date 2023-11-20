@@ -4,6 +4,7 @@
 
 - Lot of minor fixes to attributes and undoing
 - Compressed images to make the app a bit smaller
+- Added page separators, even for inline page breaks
 
 
 ## Beat 1.997.5

@@ -95,6 +95,7 @@
 "color.cyan" = "Syaani";
 "color.orange" = "Oranssi";
 "color.magenta" = "Magenta";
+"color.purple" = "Violetti";
 
 "contextMenu.omitScene" = "Piilota kohtaus";
 
@@ -157,3 +158,8 @@
 "templates.threeActOutline.description" = "Klassinen elokuvan rakenteen mallipohja";
 
 "templates.showTutorialsAndTemplates" = "Näytä tutoriaalit ja mallit...";
+
+"revisions.downgrade.title" = "Alenna korjausten tasoa";
+"revisions.downgrade.info" = "Tämä muuttaa valituntasoiset korjaukset ensimmäisen kierroksen korjauksiksi, ja samalla siirtää myös myöhemmät korjausmerkinnät saman verran alaspäin. Toiminto on hyödyllinen esimerkiksi silloin, kun korjauskierroksissa on tultu jo korkeimmalle tasolle.";
+
+"revisions.downgrade.from" = "Uusi alin korjaustaso:";

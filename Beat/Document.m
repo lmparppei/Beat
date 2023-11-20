@@ -730,6 +730,8 @@ static BeatAppDelegate *appDelegate;
 		// Update the print preview accordingly
 		[self.previewController resetPreview];
 	}
+	
+	self.textView.needsDisplay = true;
 }
 
 

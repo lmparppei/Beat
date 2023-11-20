@@ -100,6 +100,7 @@
 "color.cyan" = "Cyan";
 "color.orange" = "Orange";
 "color.magenta" = "Magenta";
+"color.purple" = "Purple";
 
 "revisionMode.reviseLine" = "Mark Current Line as Revised";
 "revisionMode.reviseSelection" = "Mark Current Selection as Revised";
@@ -174,3 +175,7 @@
 
 "templates.showTutorialsAndTemplates" = "Show Tutorials and Templates...";
 
+"revisions.downgrade.title" = "Downgrade Revisions";
+"revisions.downgrade.info" = "This operation downgrades the selected revision generation to become the first generation, and higher generations follow suit. This is useful when you've reached the highest generation level, and want to remove lower-level markings.";
+
+"revisions.downgrade.from" = "Lowest revision after downgrade:";
