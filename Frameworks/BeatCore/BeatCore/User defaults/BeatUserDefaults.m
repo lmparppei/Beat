@@ -35,9 +35,12 @@
 #define AUTOCOMPLETE_KEY @"Autocomplete"
 
 NSString* const BeatSettingMatchParentheses				= @"matchParentheses";
+
 NSString* const BeatSettingShowPageNumbers 				= @"showPageNumbers";
+NSString* const BeatSettingShowPageSeparators           = @"showPageSeparators";
 NSString* const BeatSettingShowSceneNumbers 			= @"showSceneNumberLabels";
 NSString* const BeatSettingPrintSceneNumbers 			= @"printSceneNumbers";
+
 NSString* const BeatSettingAutosave 					= @"autosave";
 NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
 NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
@@ -75,7 +78,6 @@ NSString* const BeatSettingOutlineSceneFontSize         = @"outlineSceneFontSize
 NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontSize";
 
 NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
-
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
@@ -139,7 +141,9 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
         
 		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
         
-        BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0]
+        BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0],
+        
+        BeatSettingShowPageSeparators: @[BeatSettingShowPageSeparators, @NO]
         
 	};
 }

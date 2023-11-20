@@ -21,6 +21,8 @@
 @property (nonatomic, weak) BXTextView* textView;
 @end
 
+#define X_OFFSET 50.0
+
 #if TARGET_OS_IOS
     #define BXPoint CGPoint
     #define BXRectFill UIRectFill
@@ -104,22 +106,71 @@
 
 - (void)drawPageSeparators:(const NSRange*)glyphsToShow
 {
-    if (!self.editorDelegate.showPageNumbers) return;
+    if (!self.editorDelegate.showPageNumbers || ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
     
     static BXColor* pageBreakColor;
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     
     CGSize inset = [self offsetSize];
+    __block NSInteger pageNumber = 0;
     
     [self.pageBreaks enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        if (NSLocationInRange(idx, *glyphsToShow)) {
-            NSRect r = [self lineFragmentRectForGlyphAtIndex:idx effectiveRange:nil];
+        pageNumber++;
+        if (!NSLocationInRange(idx, *glyphsToShow)) return;
+        
+        NSRange lRange;
+        NSRect r = [self lineFragmentRectForGlyphAtIndex:idx effectiveRange:&lRange];
+
+        
+        
+        if (idx != lRange.location && idx != NSMaxRange(lRange) && idx != lRange.location + 1) {
+            // Page break happens mid-element. Let's draw a bezier curve here.
+            CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(idx,1) inTextContainer:self.textContainers.firstObject];
+            
+            NSBezierPath* lbPath = NSBezierPath.new;
+            
+            CGFloat baseline = r.origin.y + inset.height + actualRect.size.height;
+            
+            [lbPath moveToPoint:CGPointMake(0, baseline)];
+            [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
+            [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, r.origin.y + inset.height)];
+            [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r), r.origin.y + inset.height)];
+            
+            [pageBreakColor setStroke];
+            [lbPath stroke];
+            
+        } else {
+            // Draw page separator
             r.size.height = 1;
             r.origin = CGPointMake(inset.width + r.origin.x, inset.height + r.origin.y);
+            
             [pageBreakColor setFill];
             NSRectFill(r);
         }
+            
+        /*
+        NSString* pNumber = [NSString stringWithFormat:@"%lu",pageNumber];
+        
+        [pNumber drawInRect:NSMakeRect(CGRectGetMaxX(r) - 20.0, r.origin.y, 20.0, self.editorDelegate.editorLineHeight) withAttributes:@{
+            NSFontAttributeName: self.editorDelegate.courier,
+            NSForegroundColorAttributeName: pageBreakColor,
+            NSParagraphStyleAttributeName: self.pageNumberStyle
+        }];
+        */
+        
+        *stop = true;
     }];
+}
+- (NSMutableParagraphStyle*)pageNumberStyle
+{
+    static NSMutableParagraphStyle* pageNumberStyle;
+    if (pageNumberStyle == nil) {
+        pageNumberStyle = NSMutableParagraphStyle.new;
+        pageNumberStyle.alignment = NSTextAlignmentRight;
+        pageNumberStyle.minimumLineHeight = self.editorDelegate.editorLineHeight;
+    }
+    
+    return pageNumberStyle;
 }
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
@@ -238,7 +289,7 @@
         // If we found a revision, let's draw a marker for it
         if (revisionLevel >= 0) {
             // Calculate rect for the marker position
-            CGRect rect = CGRectMake(inset.width + documentWidth - 22,
+            CGRect rect = CGRectMake(inset.width + documentWidth - 30 - X_OFFSET,
                                      inset.height + usedRect.origin.y - Y_OFFSET,
                                      22,
                                      usedRect.size.height + 1.0);
@@ -297,7 +348,7 @@
     
     CGFloat y = rect.origin.y - Y_OFFSET - yOffset;
     
-    rect = CGRectMake(inset.width,
+    rect = CGRectMake(inset.width + X_OFFSET,
                       y,
                       7.5 * line.sceneNumber.length,
                       rect.size.height + 1.0);
@@ -377,7 +428,7 @@
 
 - (void)drawMarkerForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset {
     
-    CGRect r = CGRectMake(inset.width, rect.origin.y, 12, rect.size.height);
+    CGRect r = CGRectMake(inset.width + X_OFFSET, rect.origin.y, 12, rect.size.height);
     
     BXColor* color;
     if (line.marker.length > 0) color = [BeatColors color:line.marker];

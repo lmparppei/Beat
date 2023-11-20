@@ -5,6 +5,11 @@
 //  Created by Lauri-Matti Parppei on 12.9.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ TODO: Rewrite this class. It's currently working in a very backwards logic.
+ 
+ */
 
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatFonts.h>
@@ -13,7 +18,6 @@
 #import "BeatModalInput.h"
 #import "Beat-Swift.h"
 
-//#define HEADING_SAMPLE @"INT. SCENE - DAY"
 
 @interface BeatPreferencesPanel () <NSTextFieldDelegate>
 @property (nonatomic) NSArray* validationItems;
@@ -21,6 +25,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *hideFountainMarkup;
 @property (nonatomic, weak) IBOutlet NSButton *showSceneNumberLabels;
 @property (nonatomic, weak) IBOutlet NSButton *showPageNumbers;
+@property (nonatomic, weak) IBOutlet NSButton *showPageSeparators;
 @property (nonatomic, weak) IBOutlet NSButton *matchParentheses;
 @property (nonatomic, weak) IBOutlet NSButton *automaticContd;
 @property (nonatomic, weak) IBOutlet NSButton *autoLineBreaks;

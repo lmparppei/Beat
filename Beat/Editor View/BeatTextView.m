@@ -139,7 +139,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @implementation BeatTextView
 
 + (CGFloat)linePadding {
-	return 50.0;
+	return 100.0;
 }
 
 -(instancetype)initWithCoder:(NSCoder *)coder
@@ -1150,12 +1150,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (pageBreaks) _pageBreaks = pageBreaks;
 	
 	CGFloat factor = 1 / _zoomLevel;
-	if (!_pageNumberLabels) _pageNumberLabels = [NSMutableArray array];
+	if (_pageNumberLabels == nil) _pageNumberLabels = NSMutableArray.new;
 	
 	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
 	
-	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width - 30;
+	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width - 80;
 	// Compact page numbers if needed
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;

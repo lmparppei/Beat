@@ -12,7 +12,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
 
-#define WHITESPACE 50
+#define WHITESPACE 0.0
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.0125
 
