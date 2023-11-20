@@ -71,6 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addRevision:(NSRange)range color:(NSString*)color;
 - (void)removeRevision:(NSRange)range;
 
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen;
+- (void)downgradeFromRevisionIndex:(NSInteger)genIndex;
+
 @end
 
 NS_ASSUME_NONNULL_END

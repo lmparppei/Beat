@@ -519,22 +519,47 @@
 
 /// Converts a revision generation to another.
 /// @param original The generation to convert
-/// @param new Target generation. Passing a `nil` parameter will remove the original generation.
-- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration*)new
+/// @param newGen Target generation. Passing a `nil` parameter will remove the original generation.
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen
 {
     NSAttributedString* text = self.delegate.getAttributedText;
+
+    // Store old revisions for undoing
+    NSDictionary* oldRevisions = [BeatRevisions rangesForSaving:text];
+    
     [text enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+
         BeatRevisionItem* revision = (BeatRevisionItem*)value;
-        if (revision == nil || revision.type == RevisionNone) return;
+        if (revision == nil || revision.type == RevisionNone || ![revision.colorName isEqualToString:original.color]) return;
         
-        if (new != nil) {
+        if (newGen != nil) {
             // convert to another generation
-            BeatRevisionItem* newRevision = [BeatRevisionItem type:revision.type color:revision.colorName];
-            if (revision) [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:newRevision range:range];
+            BeatRevisionItem* newRevision = [BeatRevisionItem type:revision.type color:newGen.color];
+            if (newRevision) [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:newRevision range:range];
         } else {
             [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
         }
     }];
+    
+    [self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+        [self.delegate.documentSettings set:DocSettingRevisions as:oldRevisions];
+        [self setup];
+    }];
+}
+
+- (void)downgradeFromRevisionIndex:(NSInteger)genIndex
+{
+    NSArray* generations = BeatRevisions.revisionGenerations;
+    if (genIndex >= generations.count) return;
+    
+    for (NSInteger i=0; i<generations.count; i++) {
+        BeatRevisionGeneration* gen = generations[i];
+        
+        BeatRevisionGeneration* newGen = nil;
+        if (i >= genIndex && i > 0) newGen = generations[i-genIndex];
+        
+        [self convertRevisionGeneration:gen to:newGen];
+    }
 }
 
 
