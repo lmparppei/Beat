@@ -163,3 +163,11 @@
 "revisions.downgrade.info" = "Tämä muuttaa valituntasoiset korjaukset ensimmäisen kierroksen korjauksiksi, ja samalla siirtää myös myöhemmät korjausmerkinnät saman verran alaspäin. Toiminto on hyödyllinen esimerkiksi silloin, kun korjauskierroksissa on tultu jo korkeimmalle tasolle.";
 
 "revisions.downgrade.from" = "Uusi alin korjaustaso:";
+
+"revisions.convert.title" = "Muunna tai poista korjausmerkintöjä";
+"revisions.convert.info" = "Valitun tasoiset korjausmerkinnät muunnetaan toisen tasoiseksi. Jos jätät kohdetason tyhjäksi, valitut korjausmerkinnät poistetaan";
+
+"revisions.convert.from" = "Nykyinen taso";
+"revisions.convert.to" = "Uusi taso";
+
+"revisions.convert.remove" = "(poista)";

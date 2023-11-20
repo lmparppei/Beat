@@ -836,6 +836,12 @@ DQ
                                                 <action selector="downgradeRevisions:" target="-1" id="Bzm-nB-sIS"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Convert/Remove Revisions..." id="V8k-hJ-f7a">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="convertRevisions:" target="-1" id="Vwb-wV-Xhz"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Commit Revisions" id="H1U-Aa-dJH">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>

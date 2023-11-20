@@ -179,3 +179,11 @@
 "revisions.downgrade.info" = "This operation downgrades the selected revision generation to become the first generation, and higher generations follow suit. This is useful when you've reached the highest generation level, and want to remove lower-level markings.";
 
 "revisions.downgrade.from" = "Lowest revision after downgrade:";
+
+"revisions.convert.title" = "Convert/Remove Revision Markers";
+"revisions.convert.info" = "The selected generation of revisions will be converted to another generation. If you leave the target generation empty, the selected revisions will be removed.";
+
+"revisions.convert.from" = "Current generation";
+"revisions.convert.to" = "Target generation";
+
+"revisions.convert.remove" = "(remove)";

@@ -371,3 +371,16 @@
 "templates.threeActOutline.description" = "Den klassiska berättarstrukturen i 8 sekvenser";
 
 "templates.showTutorialsAndTemplates" = "Visa handledningar och mallar...";
+
+"revisions.downgrade.title" = "Nedgradera revisioner";
+"revisions.downgrade.info" = "Nedgraderar den valda versionen till att bli den första generationen, och högre generationer följer efter. Alla tidigare versioner raderas.";
+
+"revisions.downgrade.from" = "Lägsta revision efter nedgradering:";
+
+"revisions.convert.title" = "Konvertera/ta bort revisionsmarkörer";
+"revisions.convert.info" = "Den valda generationen av revisioner kommer att konverteras till en annan generation. Om du lämnar målgenerationen tom kommer de valda versionerna att raderas.";
+
+"revisions.convert.from" = "Nuvarande generation";
+"revisions.convert.to" = "Målgeneration";
+
+"revisions.convert.remove" = "(radera)";
