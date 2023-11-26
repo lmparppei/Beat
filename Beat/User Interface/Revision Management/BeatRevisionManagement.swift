@@ -91,10 +91,13 @@ import BeatCore.BeatRevisions
 		let labelTo = NSTextField(labelWithString: BeatLocalization.localizedString(forKey: "revisions.convert.to"))
 		let dropdownTo = NSPopUpButton(frame: NSMakeRect(0.0, 0.0, 250.0, 30.0))
 		
+		let selectedTextCheckbox = NSButton(checkboxWithTitle: BeatLocalization.localizedString(forKey: "revisions.convert.onlySelectedRange"), target: nil, action: nil)
+		
 		stack.addArrangedSubview(labelFrom)
 		stack.addArrangedSubview(dropdownFrom)
 		stack.addArrangedSubview(labelTo)
 		stack.addArrangedSubview(dropdownTo)
+		stack.addArrangedSubview(selectedTextCheckbox)
 		
 		accessoryView.addSubview(stack)
 		input.accessoryView = accessoryView
@@ -125,7 +128,13 @@ import BeatCore.BeatRevisions
 				targetGen = BeatRevisions.revisionGenerations()[dropdownTo.indexOfSelectedItem - 1]
 			}
 			
-			self.convert(originalGen, to: targetGen)
+			if selectedTextCheckbox.state == .on {
+				// Convert selection only
+				self.convert(originalGen, to: targetGen, range: delegate.selectedRange)
+			} else {
+				// Convert the whole text
+				self.convert(originalGen, to: targetGen)
+			}
 		}
 
 	}
