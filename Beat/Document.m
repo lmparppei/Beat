@@ -441,6 +441,13 @@ static BeatAppDelegate *appDelegate;
 	// Hide the welcome screen
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
 	
+	
+	Document* currentDoc = NSDocumentController.sharedDocumentController.currentDocument;
+	if (currentDoc.windowControllers.firstObject.window.tabGroup.tabBarVisible) {
+		[currentDoc.documentWindow addTabbedWindow:aController.window ordered:NSWindowAbove];
+	}
+	
+	
 	[super windowControllerDidLoadNib:aController];
 	
 	_documentWindow = aController.window;
@@ -479,7 +486,7 @@ static BeatAppDelegate *appDelegate;
 	
 	// Print dialog
 	self.printDialog.document = nil;
-		
+	
 	// Put any previously loaded text into the text view when it's loaded
 	self.textView.alphaValue = 0;
 	if (self.contentBuffer) {
@@ -489,7 +496,7 @@ static BeatAppDelegate *appDelegate;
 		self.contentBuffer = @"";
 		[self setText:@""];
 	}
-		
+	
 	// Perform first-time rendering
 	[self renderDocument];
 }
@@ -1703,102 +1710,9 @@ static NSWindow __weak *currentKeyWindow;
 // there would be even more.
 
 
-#pragma mark - Block / paragraph methods
-
-// TODO: Move these..... somewhere
-
-- (IBAction)moveSelectedLinesUp:(id)sender {
-	NSArray *lines = [self.parser blockForRange:self.selectedRange];
-	[self moveBlockUp:lines];
-}
-- (IBAction)moveSelectedLinesDown:(id)sender {
-	NSArray *lines = [self.parser blockForRange:self.selectedRange];
-	[self moveBlockDown:lines];
-}
-
-- (void)moveBlockUp:(NSArray<Line*>*)lines {
-	if (lines.firstObject == self.lines.firstObject) return;
-	
-	NSUInteger prevIndex = [self.parser indexOfLine:lines.firstObject] - 1;
-	Line* prevLine = self.lines[prevIndex];
-	
-	NSArray *prevBlock = [self.parser blockFor:prevLine];
-	
-	Line *firstLine = prevBlock.firstObject;
-	NSInteger position = firstLine.position; // Save the position so we don't move the block at the wrong position
-	
-	// If the block doesn't have an empty line at the end, create one
-	if (lines.lastObject.length > 0) [self addString:@"\n" atIndex:position];
-	
-	NSRange blockRange = [self rangeForBlock:lines];
-	[self.textActions moveStringFrom:blockRange to:position];
-	if (blockRange.length > 0) [self setSelectedRange:NSMakeRange(position, blockRange.length - 1)];
-}
-
-- (void)moveBlockDown:(NSArray<Line*>*)lines {
-	// Don't move downward if we're already at the last object
-	if (lines.lastObject == self.lines.lastObject ||
-		lines.count == 0) return;
-	
-	NSUInteger nextIndex = [self.parser indexOfLine:lines.lastObject] + 1;
-	Line* nextLine = self.lines[nextIndex];
-	
-	// Get the next block (paragraph/dialogue block)
-	NSArray* nextBlock = [self.parser blockFor:nextLine];
-	Line *endLine = nextBlock.lastObject;
-	if (endLine == nil) return;
-	
-	NSRange blockRange = [self rangeForBlock:lines];
-	
-	if (endLine.string.length > 0) {
-		// Add a line break if we're moving a block at the end
-		[self addString:@"" atIndex:NSMaxRange(endLine.textRange)];
-	}
-	
-	[self.textActions moveStringFrom:blockRange to:NSMaxRange(endLine.range)];
-	
-	if (![self.parser.lines containsObject:endLine]) {
-		// The last line was deleted in the process, so let's find the one that's still there.
-		NSInteger i = lines.count;
-		while (i > 0) {
-			i--;
-			if ([self.parser.lines containsObject:lines[i]]) {
-				endLine = lines[i];
-				break;
-			}
-		}
-	}
-	
-	// Select the moved line
-	if (blockRange.length > 0) {
-		[self setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
-	}
-}
-
-- (IBAction)copyBlock:(id)sender {
-	NSArray *block = [self.parser blockForRange:self.selectedRange];
-	NSRange range = [self rangeForBlock:block];
-	
-	[self setSelectedRange:range];
-	[self.textView copy:self];
-}
-- (IBAction)cutBlock:(id)sender {
-	NSArray *block = [self.parser blockForRange:self.selectedRange];
-	NSRange range = [self rangeForBlock:block];
-	
-	[self setSelectedRange:range];
-	[self.textView cut:self];
-}
-
-- (NSRange)rangeForBlock:(NSArray<Line*>*)block {
-	NSRange range = NSMakeRange(block.firstObject.position, NSMaxRange(block.lastObject.range) - block.firstObject.position);
-	return range;
-}
-
-
 # pragma mark - Autocomplete stub
 
-/// Forwarding method for autocompletion
+/// Forwarding method for autocompletion (why don't we set the autocompletion as the deleg.... oh well, I won't ask.)
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
 	return [_autocompletion completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
@@ -1858,22 +1772,6 @@ static NSWindow __weak *currentKeyWindow;
 	self.textView.needsLayout = YES;
 	
 	[self setTypeAndFormat:_characterInputForLine type:empty];
-}
-
-- (void)addRecentCharacter:(NSString*)name {
-	// Update 2022/03: WTF is this?
-	
-	// Init array if needed
-	if (_recentCharacters == nil) _recentCharacters = NSMutableArray.new;
-	
-	// Remove any suffixes
-	name = [name replace:RX(@"\\((.*)\\)") with:@""];
-	name = [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-	
-	if ([_recentCharacters indexOfObject:name] != NSNotFound) {
-		[_recentCharacters removeObject:name];
-		[_recentCharacters insertObject:name atIndex:0];
-	}
 }
 
 
@@ -2848,7 +2746,6 @@ static NSWindow __weak *currentKeyWindow;
 		[view reloadView];
 	}
 }
-
 
 #pragma mark - Scene numbering
 

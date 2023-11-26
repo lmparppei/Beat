@@ -90,10 +90,12 @@
 	
 	[self checkDarkMode];
 	
+	NSWindow.allowsAutomaticWindowTabbing = true;
+	
 	return self;
 }
 
-- (void) awakeFromNib {
+- (void)awakeFromNib {
 	// [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
 		
 #ifdef ADHOC
@@ -454,6 +456,7 @@
 	[BeatConsole.shared openConsole];
 }
 
+
 #pragma mark - File Import
 
 - (IBAction)importFDX:(id)sender
@@ -680,7 +683,7 @@
 		_episodePrinter = BeatEpisodePrinter.new;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_episodePrinter.window];
 	}
-	//[_episodePrinter showWindow:_episodePrinter.window];
+	
 	[NSApp runModalForWindow:_episodePrinter.window];
 }
 
