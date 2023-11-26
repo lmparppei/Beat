@@ -79,6 +79,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 
+- (void)moveBlockUp:(NSArray<Line*>*)lines;
+- (void)moveBlockDown:(NSArray<Line*>*)lines;
+
 @end
 
 

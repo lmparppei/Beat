@@ -637,4 +637,70 @@
 }
 
 
+#pragma mark - Moving blocks around
+
+- (void)moveBlockUp:(NSArray<Line*>*)lines
+{
+    ContinuousFountainParser* parser = self.delegate.parser;
+    if (lines.firstObject == parser.lines.firstObject) return;
+    
+    NSUInteger prevIndex = [parser indexOfLine:lines.firstObject] - 1;
+    Line* prevLine = parser.lines[prevIndex];
+    
+    NSArray *prevBlock = [parser blockFor:prevLine];
+    
+    Line *firstLine = prevBlock.firstObject;
+    NSInteger position = firstLine.position; // Save the position so we don't move the block at the wrong position
+    
+    // If the block doesn't have an empty line at the end, create one
+    if (lines.lastObject.length > 0) [self addString:@"\n" atIndex:position];
+    
+    NSRange blockRange = [parser rangeForBlock:lines];
+    [self moveStringFrom:blockRange to:position];
+    if (blockRange.length > 0) [self.delegate setSelectedRange:NSMakeRange(position, blockRange.length - 1)];
+}
+
+- (void)moveBlockDown:(NSArray<Line*>*)lines
+{
+    ContinuousFountainParser* parser = self.delegate.parser;
+    
+    // Don't move downward if we're already at the last object
+    if (lines.lastObject == parser.lines.lastObject ||
+        lines.count == 0) return;
+    
+    NSUInteger nextIndex = [parser indexOfLine:lines.lastObject] + 1;
+    Line* nextLine = parser.lines[nextIndex];
+    
+    // Get the next block (paragraph/dialogue block)
+    NSArray* nextBlock = [parser blockFor:nextLine];
+    Line *endLine = nextBlock.lastObject;
+    if (endLine == nil) return;
+    
+    NSRange blockRange = [parser rangeForBlock:lines];
+    
+    if (endLine.string.length > 0) {
+        // Add a line break if we're moving a block at the end
+        [self addString:@"" atIndex:NSMaxRange(endLine.textRange)];
+    }
+    
+    [self moveStringFrom:blockRange to:NSMaxRange(endLine.range)];
+    
+    if (![parser.lines containsObject:endLine]) {
+        // The last line was deleted in the process, so let's find the one that's still there.
+        NSInteger i = lines.count;
+        while (i > 0) {
+            i--;
+            if ([parser.lines containsObject:lines[i]]) {
+                endLine = lines[i];
+                break;
+            }
+        }
+    }
+    
+    // Select the moved line
+    if (blockRange.length > 0) {
+        [self.delegate setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
+    }
+}
+
 @end

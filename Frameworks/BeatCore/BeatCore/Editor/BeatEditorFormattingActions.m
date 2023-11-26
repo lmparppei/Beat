@@ -541,5 +541,36 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 
+#pragma mark - Block actions
+
+- (IBAction)moveSelectedLinesUp:(id)sender
+{
+    NSArray *lines = [self.delegate.parser blockForRange:self.delegate.selectedRange];
+    [self.delegate.textActions moveBlockUp:lines];
+}
+- (IBAction)moveSelectedLinesDown:(id)sender
+{
+    NSArray *lines = [self.delegate.parser blockForRange:self.delegate.selectedRange];
+    [self.delegate.textActions moveBlockDown:lines];
+}
+
+- (IBAction)copyBlock:(id)sender
+{
+    NSArray *block = [self.delegate.parser blockForRange:self.delegate.selectedRange];
+    NSRange range = [self.delegate.parser rangeForBlock:block];
+    
+    [self.delegate setSelectedRange:range];
+    [self.delegate.getTextView copy:self];
+}
+- (IBAction)cutBlock:(id)sender
+{
+    NSArray *block = [self.delegate.parser blockForRange:self.delegate.selectedRange];
+    NSRange range = [self.delegate.parser rangeForBlock:block];
+    
+    [self.delegate setSelectedRange:range];
+    [self.delegate.getTextView cut:self];
+}
+
+
 @end
 
