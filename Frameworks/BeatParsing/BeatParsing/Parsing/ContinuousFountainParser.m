@@ -2295,6 +2295,12 @@ static NSDictionary* patterns;
 	return block;
 }
 
+- (NSRange)rangeForBlock:(NSArray<Line*>*)block
+{
+    NSRange range = NSMakeRange(block.firstObject.position, NSMaxRange(block.lastObject.range) - block.firstObject.position);
+    return range;
+}
+
 
 #pragma mark - Line position lookup
 

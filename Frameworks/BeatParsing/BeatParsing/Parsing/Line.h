@@ -170,7 +170,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @class Storybeat;
 
-@interface Line : NSObject <LineExports>
+@interface Line : NSObject <LineExports, NSCopying>
 
 #pragma mark - Class methods
 

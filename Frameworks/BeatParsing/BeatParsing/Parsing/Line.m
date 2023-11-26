@@ -1775,4 +1775,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 {
 	return [NSString stringWithFormat:@"Line: %@  (%@ at %lu) %@", self.string, self.typeAsString, self.position, (self.nextElementIsDualDialogue) ? @"Next is dual" : @"" ];
 }
+
+#pragma mark - Copy
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+    return [self clone];
+}
+
 @end

@@ -176,6 +176,8 @@
 - (NSArray<Line*>*)blockFor:(Line*)line;
 /// Returns the both dual dialogue blocks for given line. Pass a pointer to `isDualDialogue` to see if the line *actually* is part of a dual dialogue block.
 - (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue;
+/// Calculates the range for given block
+- (NSRange)rangeForBlock:(NSArray<Line*>*)block;
 
 /// Returns `NSUUID` object for each line.
 - (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines;
