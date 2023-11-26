@@ -112,29 +112,35 @@
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     
     CGSize inset = [self offsetSize];
-    __block NSInteger pageNumber = 0;
     
-    [self.pageBreaks enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        pageNumber++;
-        if (!NSLocationInRange(idx, *glyphsToShow)) return;
+    NSRange charRange = [self characterRangeForGlyphRange:*glyphsToShow actualGlyphRange:nil];
+    for (NSValue* key in self.pageBreaks.allKeys) {
+        Line* line = key.nonretainedObjectValue;
+        if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
+        // Draw page number
+        NSUInteger localIndex = self.pageBreaks[key].unsignedIntegerValue;
+        NSInteger globalIndex = line.position + localIndex;
+        NSInteger glyphIndex = [self glyphIndexForCharacterAtIndex:globalIndex];
+        
+        // Get rect and local range
         NSRange lRange;
-        NSRect r = [self lineFragmentRectForGlyphAtIndex:idx effectiveRange:&lRange];
 
+        CGRect r = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:&lRange];
+        NSRange cRange = [self characterRangeForGlyphRange:lRange actualGlyphRange:nil];
         
-        
-        if (idx != lRange.location && idx != NSMaxRange(lRange) && idx != lRange.location + 1) {
+        if (globalIndex != cRange.location && globalIndex != NSMaxRange(cRange)) {
             // Page break happens mid-element. Let's draw a bezier curve here.
-            CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(idx,1) inTextContainer:self.textContainers.firstObject];
+            CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(glyphIndex,1) inTextContainer:self.textContainers.firstObject];
             
-            NSBezierPath* lbPath = NSBezierPath.new;
+            BXBezierPath* lbPath = BXBezierPath.new;
             
             CGFloat baseline = r.origin.y + inset.height + actualRect.size.height;
             
             [lbPath moveToPoint:CGPointMake(0, baseline)];
             [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
             [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, r.origin.y + inset.height)];
-            [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r), r.origin.y + inset.height)];
+            [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r) + inset.width * 2, r.origin.y + inset.height)];
             
             [pageBreakColor setStroke];
             [lbPath stroke];
@@ -145,10 +151,11 @@
             r.origin = CGPointMake(inset.width + r.origin.x, inset.height + r.origin.y);
             
             [pageBreakColor setFill];
-            NSRectFill(r);
+            BXRectFill(r);
         }
-            
+        
         /*
+        // This is how you draw the page number. We just need the page number value from text view as well.
         NSString* pNumber = [NSString stringWithFormat:@"%lu",pageNumber];
         
         [pNumber drawInRect:NSMakeRect(CGRectGetMaxX(r) - 20.0, r.origin.y, 20.0, self.editorDelegate.editorLineHeight) withAttributes:@{
@@ -157,10 +164,12 @@
             NSParagraphStyleAttributeName: self.pageNumberStyle
         }];
         */
-        
-        *stop = true;
-    }];
+    }
+    
 }
+
+
+
 - (NSMutableParagraphStyle*)pageNumberStyle
 {
     static NSMutableParagraphStyle* pageNumberStyle;

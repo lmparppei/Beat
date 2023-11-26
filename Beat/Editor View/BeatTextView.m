@@ -746,11 +746,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)selectionEvents {
-	/*
-	 
-	 TODO: I could/should make this one a registered event, too.
-	 
-	 */
+	// TODO: I could/should make this one a registered event, too.
 	
 	// Don't go out of range. We can't check for attributes at the last index.
 	NSUInteger pos = self.selectedRange.location;
@@ -1099,17 +1095,21 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages {
 	NSMutableArray* breakPositions = NSMutableArray.new;
-	NSMutableIndexSet* pageBreaks = NSMutableIndexSet.new;
+	NSMutableDictionary<NSValue*,NSNumber*>* pageBreaks = NSMutableDictionary.new;
 	
 	for (BeatPaginationPage* page in pages) {
 		BeatPageBreak* pageBreak = page.pageBreak;
 		
 		NSInteger position = pageBreak.element.position + pageBreak.index;
-		// If the page break happens at *end* of the block, we'll display the marker after the line break
+		
+		// If the page break happens at *end* of the block, we'll display the marker after line break
 		if (pageBreak.index == -1 || pageBreak.index == pageBreak.element.length) {
 			position = pageBreak.element.position + pageBreak.element.length + 1;
 		}
-		if (position >= self.text.length) position = self.text.length;
+		// Don't go out of range
+		if (position >= self.text.length) {
+			position = self.text.length;
+		}
 		
 		NSInteger gPos = [self.layoutManager glyphIndexForCharacterAtIndex:position];
 		if (gPos != NSNotFound) {
@@ -1117,9 +1117,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			
 			CGFloat linePosition = rect.origin.y;
 			[breakPositions addObject:@(linePosition)];
-			
-			[pageBreaks addIndex:gPos];
 		}
+		
+		// Store the local position of character
+		NSUInteger localIndex = position - pageBreak.element.position;
+		NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
+		pageBreaks[key] = @(localIndex);
 	}
 	
 	((BeatLayoutManager*)self.layoutManager).pageBreaks = pageBreaks;
@@ -1809,7 +1812,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	
 	return glyphs;
 }
-
 
 
 #pragma mark - Layout manager convenience methods
