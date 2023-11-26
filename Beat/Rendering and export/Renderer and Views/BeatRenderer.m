@@ -494,7 +494,7 @@
 			
 			// If it's not a normal, one-line title page element, we'll need to define an additional type
 			if (!defaultParagraphType) {
-				NSInteger titlePageType = type + 2 * line.beginsTitlePageBlock + line.endsTitlePageBlock + 101;
+				NSInteger titlePageType = type + 2 * line.beginsTitlePageBlock + line.endsTitlePageBlock + 1000 + type * 100;
 				typeKey = @(titlePageType);
 			}
 		}
