@@ -17,11 +17,7 @@
  NOTE LATER IN 2021:
  Themes.plist file contains two keys: "Default" and "Custom". Both are dictionaries
  with theme values, and loadTheme: converts the dictionary to a Theme object.
- 
- Basic usage:
- Theme* theme = [self loadTheme:dictionary];
- [self readTheme:theme];
- 
+  
  */
 
 #import "ThemeManager.h"
@@ -180,19 +176,23 @@
 /// Reads the default theme
 -(void)readTheme
 {
-    [self readTheme:nil];
+    // Check if we have a custom theme saved
+    NSDictionary* themeDict = _themes[@"Custom"];
+    [self readTheme:themeDict];
 }
 
 /**
  Reads a single, preprocessed theme.
  - Note: Adding new, customizable values to themes could result in null value problems. We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
  */
--(void)readTheme:(BeatTheme*)theme {
+-(void)readTheme:(NSDictionary*)themeDict {
 	// First load DEFAULT theme into memory
     _theme = self.defaultTheme;
 	
-    if (theme) {
-        // Gget the property names from that and overwrite those in default theme.
+    if (themeDict) {
+        BeatTheme* theme = [self dictionaryToTheme:themeDict];
+        
+        // Get the property names from that and overwrite those in default theme.
         // This way we'll never end up with null values, as long as the default theme covers all those.
         NSDictionary* propertyToValue = BeatTheme.propertyValues;
         

@@ -42,7 +42,7 @@
 /// Loads default and saved custom themes and applies them
 - (void)revertToSaved;
 /// Read a single, preprocessed theme
-- (void)readTheme:(BeatTheme*)theme;
+// - (void)readTheme:(BeatTheme*)theme;
 /// Reloads the UI for each open document.
 - (void)loadThemeForAllDocuments;
 /// Resets themes to bundled default, removing any user customization.
