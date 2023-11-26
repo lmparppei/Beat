@@ -647,10 +647,10 @@
 	
 	if (tag == nil) {
 		// Clear tags
-		[_delegate removeAttribute:BeatTagging.attributeKey range:range];
+		[_delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
 		[self saveTags];
 	} else {
-		[_delegate addAttribute:BeatTagging.attributeKey value:tag range:range];
+		[_delegate.textStorage addAttribute:BeatTagging.attributeKey value:tag range:range];
 		[self saveTags];
 	}
 	
@@ -658,15 +658,15 @@
 	
 	
 	// If document is not loading, set undo states
-	//id tagValue = oldAttributes[BeatTagging.attributeKey];
+    // TODO: Save previous attributes (see how parts of undoing work in revision manager)
 	
 	[self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
 		NSLog(@"# NOTE: Test this before making tagging public.");
-		[self.delegate removeAttribute:BeatTagging.attributeKey range:range];
+		[self.delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
 		[oldAttributedString enumerateAttribute:BeatTagging.attributeKey inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange tRange, BOOL * _Nonnull stop) {
 			if (value == nil) return;
 			
-			[self.delegate addAttribute:BeatTagging.attributeKey value:value range:tRange];
+			[self.delegate.textStorage addAttribute:BeatTagging.attributeKey value:value range:tRange];
 		}];
 	}];
 	

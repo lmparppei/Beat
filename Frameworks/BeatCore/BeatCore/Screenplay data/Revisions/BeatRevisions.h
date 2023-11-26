@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeRevision:(NSRange)range;
 
 - (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen;
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen range:(NSRange)convertedRange;
 - (void)downgradeFromRevisionIndex:(NSInteger)genIndex;
 
 @end

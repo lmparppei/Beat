@@ -1,5 +1,10 @@
 # Changelog
 
+## Beat 1.997.7
+
+- Some minor bug fixes
+
+
 ## Beat 1.997.6
 
 - Lot of minor fixes to attributes and undoing

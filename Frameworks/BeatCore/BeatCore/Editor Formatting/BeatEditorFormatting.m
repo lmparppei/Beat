@@ -116,8 +116,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	if (line.isAnyParenthetical) style.headIndent += CHR_WIDTH;
 	
-	// TODO: Need to add calculations for tail indents. This is a mess.
-	
 	if (type == titlePageSubField) {
 		style.firstLineHeadIndent = leftMargin * 1.25;
 		style.headIndent = leftMargin * 1.25;

@@ -45,6 +45,7 @@
 @class UITextRange;
 @class BeatStylesheet;
 @class BeatTextIO;
+@class BeatEditorFormatting;
 
 @protocol BeatEditorView
 - (void)reloadInBackground;
@@ -229,6 +230,7 @@
 
 @property (nonatomic, readonly) BeatStylesheet* editorStyles;
 @property (nonatomic, readonly) BeatStylesheet* styles;
+@property (nonatomic, readonly) BeatEditorFormatting* formatting;
 - (void)reloadStyles;
 
 - (void)formatAllLines;
@@ -243,12 +245,13 @@
 
 #pragma mark - Printing stuff for macOS
 
+- (NSAttributedString*)getAttributedText;
+
 #if !TARGET_OS_IOS
 - (CGFloat)sidebarWidth;
 - (NSPrintInfo*)printInfo;
 - (id)document;
 - (void)releasePrintDialog;
-- (NSAttributedString*)getAttributedText;
 #endif
 
 

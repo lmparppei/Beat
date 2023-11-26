@@ -187,3 +187,4 @@
 "revisions.convert.to" = "Target generation";
 
 "revisions.convert.remove" = "(remove)";
+"revisions.convert.onlySelectedRange" = "Only in selected range";

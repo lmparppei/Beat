@@ -171,3 +171,4 @@
 "revisions.convert.to" = "Uusi taso";
 
 "revisions.convert.remove" = "(poista)";
+"revisions.convert.onlySelectedRange" = "Vain valitulla alueella";

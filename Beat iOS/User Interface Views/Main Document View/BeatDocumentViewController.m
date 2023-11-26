@@ -970,8 +970,6 @@ static bool buildPreviewImmediately = false;
 
 #pragma mark - Keyboard manager delegate
 
-// TODO: Move this to the text view
-
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
 	CGFloat addedFactor = self.textView.enclosingScrollView.zoomScale * 50.0;
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + addedFactor, 0);

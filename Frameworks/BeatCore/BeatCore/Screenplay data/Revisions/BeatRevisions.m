@@ -21,6 +21,7 @@
 #import "BeatRevisions.h"
 #import "BeatLocalization.h"
 #import "BeatAttributes.h"
+#import <BeatCore/BeatEditorFormatting.h>
 
 #define REVISION_ATTR @"Revision"
 #define DEFAULT_COLOR @"blue"
@@ -396,7 +397,7 @@
 				
 				// Create the revision item
 				BeatRevisionItem *revisionItem = [BeatRevisionItem type:type color:color];
-				if (revisionItem) [_delegate addAttribute:REVISION_ATTR value:revisionItem range:range];
+				if (revisionItem) [_delegate.textStorage addAttribute:REVISION_ATTR value:revisionItem range:range];
 			}
 		}
 	}
@@ -505,8 +506,8 @@
 		}
 	}
 	
-	[_delegate removeAttribute:BeatRevisions.attributeKey range:range];
-	[_delegate addAttribute:BeatRevisions.attributeKey value:[BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor] range:range];
+	[_delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
+	[_delegate.textStorage addAttribute:BeatRevisions.attributeKey value:[BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor] range:range];
 }
 
 
@@ -520,14 +521,21 @@
 /// Converts a revision generation to another.
 /// @param original The generation to convert
 /// @param newGen Target generation. Passing a `nil` parameter will remove the original generation.
-- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen {
+    [self convertRevisionGeneration:original to:newGen range:NSMakeRange(0, self.delegate.text.length)];
+}
+/// Converts a revision generation to another.
+/// @param original The generation to convert
+/// @param newGen Target generation. Passing a `nil` parameter will remove the original generation.
+/// @param convertedRange The range in which the conversion happens
+- (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen range:(NSRange)convertedRange
 {
     NSAttributedString* text = self.delegate.getAttributedText;
 
     // Store old revisions for undoing
     NSDictionary* oldRevisions = [BeatRevisions rangesForSaving:text];
     
-    [text enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+    [text enumerateAttribute:BeatRevisions.attributeKey inRange:convertedRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 
         BeatRevisionItem* revision = (BeatRevisionItem*)value;
         if (revision == nil || revision.type == RevisionNone || ![revision.colorName isEqualToString:original.color]) return;
@@ -540,6 +548,11 @@
             [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
         }
     }];
+    
+    // Update foreground colors in revised range if needed
+    if (self.delegate.showRevisedTextColor) {
+        [self.delegate.formatting refreshRevisionTextColorsInRange:convertedRange];
+    }
     
     [self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
         [self.delegate.documentSettings set:DocSettingRevisions as:oldRevisions];

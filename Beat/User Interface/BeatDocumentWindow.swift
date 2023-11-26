@@ -14,4 +14,5 @@ class BeatDocumentWindow:NSWindow {
 	override func cancelOperation(_ sender: Any?) {
 		editorDelegate?.returnToEditor?()
 	}
+
 }

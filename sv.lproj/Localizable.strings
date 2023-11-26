@@ -384,3 +384,4 @@
 "revisions.convert.to" = "Målgeneration";
 
 "revisions.convert.remove" = "(radera)";
+"revisions.convert.onlySelectedRange" = "Endast inom vald text";

@@ -7,14 +7,14 @@
 
 import Foundation
 
-@objc public extension NSBezierPath {
-    @objc func test() {
-        print("OK")
-    }
-    
 #if os(macOS)
+
+@objc public extension NSBezierPath {
+    /** iOS compatibility alias for to `lineToPoint` */
     @objc func addLineToPoint (_ point:CGPoint) {
         self.line(to: point)
     }
-#endif
 }
+
+#endif
+
