@@ -49,7 +49,6 @@
 -(NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace styles:(BeatStylesheet*)styles
 {
 	CGFloat space = remainingSpace;
-    CGFloat lineHeight = (styles.page.lineHeight >= 0) ? styles.page.lineHeight : BeatPagination.lineHeight;
 	NSMutableArray<BeatPaginationBlock*>* passedBlocks = NSMutableArray.new;
 	
 	NSMutableArray<Line*>* onThisPage = NSMutableArray.new;

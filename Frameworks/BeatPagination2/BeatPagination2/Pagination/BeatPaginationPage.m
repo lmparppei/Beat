@@ -152,9 +152,9 @@
             Line* l = lines[index];
             
             if (!l.isDualDialogue) {
-                if (!isDialogue && !l.unsafeForPageBreak) break;
-                else if (isDialogue && l.type == character) break;
+                if (isDialogue && l.type == character && !l.unsafeForPageBreak) break;
                 else if (isDialogue && !(l.isDialogue || l.isDualDialogue)) break;
+                else if (!isDialogue && !l.isDialogue && !l.unsafeForPageBreak) break;
             }
             
             index -= 1;

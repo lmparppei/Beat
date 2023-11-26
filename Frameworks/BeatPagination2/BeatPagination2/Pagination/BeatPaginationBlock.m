@@ -357,7 +357,7 @@
 	Line *postPageBreak = splitElements[1];
 	
     NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
-    
+        
 	//BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Paragraph split"];
     BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
 	return @[@[prePageBreak], onNextPage, pageBreak];

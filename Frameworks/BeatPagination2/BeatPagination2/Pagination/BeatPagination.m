@@ -343,22 +343,24 @@
 	if (pageBlocks.count == 0) return;
 	
 	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks delegate:self];
+    CGFloat lineHeight = (self.styles.page.lineHeight >= 0) ? self.styles.page.lineHeight : BeatPagination.lineHeight;
     
-	if (_currentPage.remainingSpace >= group.height) {
+    // Add a safety margin to remaining sapce so we won't cut off stuff when it's like 2 points over max height
+	if (_currentPage.remainingSpace + lineHeight * 0.2 >= group.height) {
 		// Add blocks on current page
 		for (BeatPaginationBlock *pageBlock in pageBlocks) {
 			[_currentPage addBlock:pageBlock];
 		}
 		return;
 	}
-	
+
 	// Nothing fit, let's break it apart
 	CGFloat remainingSpace = _currentPage.remainingSpace;
-    CGFloat lineHeight = (self.styles.page.lineHeight >= 0) ? self.styles.page.lineHeight : BeatPagination.lineHeight;
-	
-	// If remaining space is less than 1 line, just roll on to next page
-	if (remainingSpace < lineHeight) {
-		//BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:group.blocks.firstObject.lines.firstObject lineHeight:self.styles.page.lineHeight reason:@"Nothing fit"];
+        
+	// If remaining space is less than 1 line OR we're just leaving one line on this page, just roll on to next page
+	if (remainingSpace < lineHeight
+        //|| (overflow < lineHeight * 1.2 && remainingSpace <= lineHeight * 2)
+        ) {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:group.blocks.firstObject.lines.firstObject attributedString:nil reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}

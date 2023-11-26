@@ -100,12 +100,13 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	/// - note: This method doesn't create the actual preview yet, just paginates it and prepares the data ready for display.
 	@objc func createPreview(changedRange range:NSRange, sync:Bool) {
 		// Add index to changed indices
-		changedIndices.add(in: range)
+		let changedRange = (range.length > 0) ? range : NSMakeRange(range.location, 1);
+		changedIndices.add(in: changedRange)
 		
 		// Let's invalidate the timer (if it exists)
 		self.timer?.invalidate()
 		self.paginationUpdated = false
-		self.lastChangeAt = range
+		self.lastChangeAt = changedRange
 		
 		guard let parser = delegate?.parser else { return }
 		
@@ -115,7 +116,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			
 			// Create pagination
 			if let screenplay = BeatScreenplay.from(parser, settings: self.settings) {
-				pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changeAt: range.location)
+				pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changeAt: changedIndices.firstIndex)
 			}
 		} else {
 			// Paginate and create preview with 1 second delay
