@@ -188,3 +188,6 @@
 
 "revisions.convert.remove" = "(remove)";
 "revisions.convert.onlySelectedRange" = "Only in selected range";
+
+"license.title" = "Enter Donation Key";
+"license.info" = "A warm thank you for your donation! Copy and paste the key you received below.";

@@ -47,7 +47,13 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 		}
 	
 		//guard let url = Bundle.main.url(forResource: "Patch Notes", withExtension: "html") else { return }
-		if let url = URL(string: "https://www.beat-app.fi/patch-notes/" + version.replacingOccurrences(of: ".", with: "-") + "/?version=" + version) {
+		var suffix = "/?version=" + version
+		#if ADHOC
+			suffix += "&adhoc=1"
+		#endif
+		
+		if let url = URL(string: "https://www.beat-app.fi/patch-notes/" + version.replacingOccurrences(of: ".", with: "-") + suffix) {
+			print("Show url:", url)
 			self.browser.showBrowser(url, withTitle: NSLocalizedString("app.patchNotes", comment: ""), width: 550, height: 640, onTop: true)
 		}	
 	}
@@ -61,6 +67,7 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 		guard let url = sender?.url else { print("No URL specified in BeatURLMenuItem"); return }
 		NSWorkspace.shared.open(url)
 	}
+	
 	@IBAction func openURLwithButton(sender:BeatURLButton?) {
 		guard let url = sender?.url else { print("No URL specified in BeatURLMenuItem"); return }
 		NSWorkspace.shared.open(url)

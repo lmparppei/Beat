@@ -53,6 +53,9 @@ class BeatLaunchScreenView : NSViewController {
 		if !supportButton.website.contains("?version") {
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
 			supportButton.website += "?version=" + version
+			#if ADHOC
+				supportButton.website += "&adhoc=1"
+			#endif
 		}
 	}
 }

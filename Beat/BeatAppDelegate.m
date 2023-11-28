@@ -160,27 +160,21 @@
 	[NSUserDefaults.standardUserDefaults setInteger:timesLaunched forKey:@"LaunchCount"];
 }
 
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+#ifdef ADHOC
+	[BeatDonationPlea nag];
+#endif
+}
+
+
+#pragma mark - Updates
+
 -(void)checkForUpdates:(id)sender {
 #ifdef ADHOC
 	// Only allow this in ad hoc distribution
 	[self.updater checkForUpdates];
 #endif
-}
-
--(void)checkDarkMode {
-	_darkMode = [NSUserDefaults.standardUserDefaults boolForKey:DARKMODE_KEY];
-	
-	// If the OS is set to dark mode, we'll force it
-	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
-		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			if (_darkMode == false) _forceLightMode = YES;
-			//_darkMode = true;
-		} else {
-			if (_darkMode) _forceDarkMode = YES;
-		}
-	}
 }
 
 -(void)checkVersion {
@@ -302,6 +296,22 @@
 
 // At all times, we have to check if OS is set to dark AND if the user has forced either mode
 // This is horribly dated, but seems to work ---- for now.
+// It's here because I'm trying to keep up support for macOS 10.13.
+
+-(void)checkDarkMode {
+	_darkMode = [NSUserDefaults.standardUserDefaults boolForKey:DARKMODE_KEY];
+	
+	// If the OS is set to dark mode, we'll force it
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			if (_darkMode == false) _forceLightMode = YES;
+		} else {
+			if (_darkMode) _forceDarkMode = YES;
+		}
+	}
+}
 
 - (bool)isForcedDarkMode {
 	if (![self OSisDark]) return _forceDarkMode;
