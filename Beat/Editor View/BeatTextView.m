@@ -1093,13 +1093,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Page numbering
 
-- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages {
-	NSMutableArray* breakPositions = NSMutableArray.new;
-	NSMutableDictionary<NSValue*,NSNumber*>* pageBreaks = NSMutableDictionary.new;
+- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages
+{
+	NSMutableDictionary<NSValue*,NSArray<NSNumber*>*>* pageBreaks = NSMutableDictionary.new;
+	
+	NSInteger pageNumber = 0;
 	
 	for (BeatPaginationPage* page in pages) {
-		BeatPageBreak* pageBreak = page.pageBreak;
+		pageNumber += 1;
 		
+		BeatPageBreak* pageBreak = page.pageBreak;
 		NSInteger position = pageBreak.element.position + pageBreak.index;
 		
 		// If the page break happens at *end* of the block, we'll display the marker after line break
@@ -1107,106 +1110,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			position = pageBreak.element.position + pageBreak.element.length + 1;
 		}
 		// Don't go out of range
-		if (position >= self.text.length) {
-			position = self.text.length;
-		}
-		
-		NSInteger gPos = [self.layoutManager glyphIndexForCharacterAtIndex:position];
-		if (gPos != NSNotFound) {
-			CGRect rect = [self.layoutManager lineFragmentRectForGlyphAtIndex:gPos effectiveRange:nil];
-			
-			CGFloat linePosition = rect.origin.y;
-			[breakPositions addObject:@(linePosition)];
-		}
+		if (position > self.text.length) position = self.text.length;
 		
 		// Store the local position of character
 		NSUInteger localIndex = position - pageBreak.element.position;
 		NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
-		pageBreaks[key] = @(localIndex);
+		pageBreaks[key] = @[@(pageNumber), @(localIndex)];
 	}
 	
 	((BeatLayoutManager*)self.layoutManager).pageBreaks = pageBreaks;
-	[self updatePageNumbers:breakPositions];
+
 	self.needsDisplay = true;
-}
-
-- (void)resetPageNumberLabels {
-	for (NSInteger i = 0; i < _pageNumberLabels.count; i++) {
-		NSTextField *label = _pageNumberLabels[i];
-		[label removeFromSuperview];
-	}
-	[_pageNumberLabels removeAllObjects];
-}
-
-- (void)deletePageNumbers {
-	for (NSTextField * label in _pageNumberLabels) {
-		[label removeFromSuperview];
-	}
-	[_pageNumberLabels removeAllObjects];
-}
-
-- (void)updatePageNumbers {
-	[self updatePageNumbers:nil];
-}
-
-- (void)updatePageNumbers:(NSArray*)pageBreaks {
-	if (pageBreaks) _pageBreaks = pageBreaks;
-	
-	CGFloat factor = 1 / _zoomLevel;
-	if (_pageNumberLabels == nil) _pageNumberLabels = NSMutableArray.new;
-	
-	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
-	NSInteger pageNumber = 1;
-	
-	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width - 80;
-	// Compact page numbers if needed
-	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
-		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
-	}
-	
-	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-		NSTextField *label;
-		NSString *page = @(pageNumber).stringValue;
-		
-		// Add new label if needed
-		if (pageNumber - 1 >= self.pageNumberLabels.count) label = [self createPageLabel:page];
-		else label = self.pageNumberLabels[pageNumber - 1];
-		
-		[label setStringValue:page];
-		
-		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
-		label.frame = rect;
-		
-		[label setTextColor:pageNumberColor];
-		
-		pageNumber++;
-	}
-	
-	// Remove excess labels
-	if (_pageNumberLabels.count >= pageNumber - 1) {
-		NSInteger labels = _pageNumberLabels.count;
-		for (NSInteger i = pageNumber - 1; i < labels; i++) {
-			NSTextField *label = _pageNumberLabels[pageNumber - 1];
-			[self.pageNumberLabels removeObject:label];
-			[label removeFromSuperview];
-		}
-	}
-}
-
-- (NSTextField *)createPageLabel:(NSString*)numberStr {
-	NSTextField * label;
-	label = NSTextField.new;
-	
-	[label setStringValue:numberStr];
-	[label setBezeled:NO];
-	[label setSelectable:NO];
-	[label setDrawsBackground:NO];
-	[label setFont:self.editorDelegate.courier];
-	[label setAlignment:NSTextAlignmentRight];
-	[self addSubview:label];
-	
-	[self.pageNumberLabels addObject:label];
-	return label;
 }
 
 

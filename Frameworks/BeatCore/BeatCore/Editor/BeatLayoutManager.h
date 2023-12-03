@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
 //@property (nonatomic) NSIndexSet* pageBreaks;
-@property (nonatomic) NSDictionary<NSValue*,NSNumber*>* pageBreaks;
+@property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
 
 #if TARGET_OS_IOS
 @property (weak, nonatomic) id<BeatLayoutManagerDelegate> delegate;

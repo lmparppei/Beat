@@ -139,6 +139,49 @@
 	else return BeatStyles.shared.defaultStyles;
 }
 
+
+#pragma mark - Delivering results
+
+/// Called when this operation is finished.
+- (void)paginationFinished
+{
+    _running = false;
+    [self.delegate paginationFinished:self];
+}
+
+- (NSDictionary<NSValue*,NSArray<NSNumber*>*>*)editorPageBreaks
+{
+    // This is *not* a live pagination, so let's just return zero
+    if (self.delegate.editorDelegate == nil) { NSLog(@"nil delegate"); return @{}; }
+    NSInteger textLength = self.delegate.editorDelegate.text.length;
+    
+    NSMutableDictionary<NSValue*,NSArray<NSNumber*>*>* pageBreaks = NSMutableDictionary.new;
+    
+    NSInteger pageNumber = 0;
+    
+    for (BeatPaginationPage* page in self.pages) {
+        pageNumber += 1;
+        
+        BeatPageBreak* pageBreak = page.pageBreak;
+        NSInteger position = pageBreak.element.position + pageBreak.index;
+        
+        // If the page break happens at *end* of the block, we'll display the marker after line break
+        if (pageBreak.index == -1 || pageBreak.index == pageBreak.element.length) {
+            position = pageBreak.element.position + pageBreak.element.length + 1;
+        }
+        // Don't go out of range
+        if (position > textLength) position = textLength;
+        
+        // Store the local position of character
+        NSUInteger localIndex = position - pageBreak.element.position;
+        NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
+        pageBreaks[key] = @[@(pageNumber), @(localIndex)];
+    }
+    
+    return pageBreaks;
+}
+
+
 #pragma mark - Convenience stuff
 
 /// A method for backwards compatibility with the old pagination code. Begins pagination if it hasn't run yet.
@@ -148,12 +191,6 @@
 	return self.pages.count;
 }
 
-/// Called when this operation is finished.
-- (void)paginationFinished
-{
-    _running = false;
-	[self.delegate paginationFinished:self];
-}
 
 /// Returns max height for content in this current pagination context.
 - (CGFloat)maxPageHeight

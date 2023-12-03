@@ -86,23 +86,32 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatPagination : NSObject <BeatPaginationExports>
 /// A class which conforms to `BeatRenderDelegate` protocol and renders paginated blocks as `NSAttributedString` objects. 
 @property (weak, nonatomic) id<BeatRendererDelegate> renderer;
-
+/// Title page content for finished pagination
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
+/// If the pagination finished successfully
 @property (nonatomic) bool success;
+/// When `true`, the pagination will be canceled as soon as possible
 @property (nonatomic) bool canceled;
+/// If the pagination is running
 @property (nonatomic) bool running;
-
-@property (nonatomic) BeatExportSettings* settings;
+/// When the operation was invoked
 @property (nonatomic) NSDate* startTime;
+
+/// Export settings
+@property (nonatomic) BeatExportSettings* settings;
+
+/// Contains every page object after a finished operation
 @property (nonatomic) NSMutableArray<BeatPaginationPage*>* pages;
+/// Maximum page __content__ height in points (excluding margins etc.)
 @property (nonatomic, readonly) CGFloat maxPageHeight;
 
 + (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(__weak id<BeatPaginationDelegate>)delegate;
 + (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt;
 
-//+ (Line*)contdLineFor:(Line*)line;
-//+ (Line*)moreLineFor:(Line*)line;
 + (CGFloat)lineHeight;
+
+/// Returns a dictionary of page breaks converted to editor page breaks. Compatible with `BeatLayoutManager`.
+- (NSDictionary<NSValue*,NSArray<NSNumber*>*>*)editorPageBreaks;
 
 - (void)paginate;
 - (NSInteger)findPageIndexForLine:(Line*)line;

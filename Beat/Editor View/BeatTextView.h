@@ -114,8 +114,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 // Page numbering
 - (void)deletePageNumbers;
-- (void)updatePageNumbers;
-- (void)updatePageNumbers:(NSArray*)pageBreaks;
 // Native pagination
 - (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages;
 
