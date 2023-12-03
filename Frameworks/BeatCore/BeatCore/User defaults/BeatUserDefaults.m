@@ -332,7 +332,7 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		id value = [target valueForKey:docKey];
 		NSArray *keyValues = userDefaults[docKey];
 		
-		if (keyValues) [NSUserDefaults.standardUserDefaults setValue:value forKey:keyValues[0]];
+		if (keyValues && value != nil) [NSUserDefaults.standardUserDefaults setValue:value forKey:keyValues[0]];
 	}
 }
 

@@ -24,8 +24,8 @@ import Cocoa
 		}
 		
 		let alert = NSAlert()
-		alert.messageText = "Thank you for using Beat!"
-		alert.informativeText = "Beat is developed on spare time and using personal resources. It's free and open source — and always will be.\n\nIf you'd like to help me to keep the lights, make the app even better and ensure the ongoing development of Beat, please consider donating to the project. Any loose change will help me to buy a lunch now and then! You'll also receive a donation key to remove this message. ❤️";
+		alert.messageText = "Thank you for using Beat! ❤️"
+		alert.informativeText = "Beat is developed on spare time and using personal resources. It's free and open source — and always will be.\n\nIf you'd like to help make the app even better, please consider donating to the project. Any loose change actually makes a differene and lets me buy lunch or a coffee now and then. You'll also receive a donation key to remove this message.";
 		
 		alert.addButton(withTitle: "Donate")
 		alert.addButton(withTitle: "Buy on App Store")

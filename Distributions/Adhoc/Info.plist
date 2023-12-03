@@ -36,7 +36,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Beat</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -53,6 +53,15 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>beat-app.fi</key>
+			<dict>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>github.com</key>
 			<dict>
 				<key>NSExceptionMinimumTLSVersion</key>
@@ -65,7 +74,7 @@
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2019-2023 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
+	<string>© 2019-2023 Lauri-Matti Parppei. Released under GPL license.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
@@ -73,7 +82,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://kapitan.fi/beat/xml/appcast.xml</string>
+	<string>https://www.beat-app.fi/xml/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
 	<key>UTExportedTypeDeclarations</key>
