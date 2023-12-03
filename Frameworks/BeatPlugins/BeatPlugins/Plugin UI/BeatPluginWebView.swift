@@ -108,6 +108,8 @@ import WebKit
     
     /// Removes the web view from superview and disables all script message handlers
     @objc public func remove() {
+        self.host = nil
+        
         self.configuration.userContentController.removeScriptMessageHandler(forName: "sendData")
         self.configuration.userContentController.removeScriptMessageHandler(forName: "call")
         self.configuration.userContentController.removeScriptMessageHandler(forName: "log")

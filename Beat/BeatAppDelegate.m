@@ -38,7 +38,7 @@
 #define APPNAME @"Beat"
 
 @interface BeatAppDelegate () <BeatThemeDelegate>
-@property (nonatomic) IBOutlet NSMenuItem *checkForUpdatesItem;
+
 @property (nonatomic) IBOutlet NSMenuItem *menuManual;
 @property (nonatomic) IBOutlet BeatPluginMenuManager *pluginMenuManager; // Set main ownership to avoid leaks
 
@@ -62,10 +62,13 @@
 @property (nonatomic) IBOutlet BeatTemplateMenuProvider *templateMenuProvider;
 
 #ifdef ADHOC
-// I'm supporting ad hoc distribution for now
+// Ad hoc distribution vector uses Sparkle to deliver updates
 @property (nonatomic) IBOutlet SPUUpdater *updater;
 @property (nonatomic) IBOutlet SPUStandardUserDriver *userDriver;
 #endif
+
+@property (nonatomic) IBOutlet NSMenuItem *checkForUpdatesItem;
+@property (nonatomic) IBOutlet NSMenuItem *enterLicenseKeyItem;
 
 @end
 
@@ -96,28 +99,29 @@
 }
 
 - (void)awakeFromNib {
-	// [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
-		
 #ifdef ADHOC
 	// Ad hoc vector
-	NSLog(@"# ADHOC");
+	NSLog(@"# ADHOC RELEASE");
 
 	// Init Sparkle
 	self.userDriver = [[SPUStandardUserDriver alloc] initWithHostBundle:NSBundle.mainBundle delegate:nil];
-	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:[NSBundle mainBundle] userDriver:self.userDriver delegate:nil];
+	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:NSBundle.mainBundle userDriver:self.userDriver delegate:nil];
 	
+	// Start updater
 	NSError *error;
 	[self.updater startUpdater:&error];
-	if (error) NSLog(@"sparkle error: %@", error);
+	if (error) NSLog(@"Sparkle error: %@", error);
 	
 	// Add selector to check updates item
 	_checkForUpdatesItem.action = @selector(checkForUpdates:);
 #else
 	// App store vector
-	NSLog(@"# APPSTORE");
+	NSLog(@"# APP STORE RELEASE");
 	
-	// Remove "Check For Updates" menu item
+	// Remove update/ad hoc related menu items
 	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
+	[_enterLicenseKeyItem.menu removeItem:_enterLicenseKeyItem];
+	
 	_checkForUpdatesItem = nil;
 #endif
 		
@@ -166,6 +170,10 @@
 	[BeatDonationPlea nag];
 #endif
 }
+
+
+#pragma mark - Validate menu items
+
 
 
 #pragma mark - Updates

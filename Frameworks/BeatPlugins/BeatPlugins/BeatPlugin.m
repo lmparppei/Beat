@@ -342,6 +342,16 @@
 #endif
 	
 	self.plugin = nil;
+    self.pluginData = nil;
+    self.vm = nil;
+    self.context = nil;
+    
+    // Clear all listeners
+    self.updateMethod = nil;
+    self.updateSceneMethod = nil;
+    self.updateOutlineMethod = nil;
+    self.updatePreviewMethod = nil;
+    self.updateSelectionMethod = nil;
 	
     // Remove from the list of running plugins
 	if (_resident) [_delegate deregisterPlugin:self];

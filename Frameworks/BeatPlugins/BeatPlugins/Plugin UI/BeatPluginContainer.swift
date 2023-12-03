@@ -71,20 +71,25 @@ import UXKit
         self.webView?.runJS(js, callback)
     }
     
+    
     deinit {
         unload()
     }
-    
+
+    /// Unloads the plugin and also removes the associated web view
     public func unload() {
         // Unload the plugin
         self.webView?.remove()
         self.host?.end()
+        self.host?.container = nil
         
         // Remove
         self.onViewWillDraw = nil
         self.onViewDidHide = nil
         self.host = nil
         self.webView = nil
+        
+        print(" -> host", self.host)
     }
         
     /// Adds web view to the container

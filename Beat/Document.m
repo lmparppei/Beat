@@ -298,9 +298,6 @@
 @property (nonatomic, weak) IBOutlet NSTabViewItem *tabReviews;
 @property (nonatomic, weak) IBOutlet NSTabViewItem *tabWidgets;
 
-// Closing flag
-@property (nonatomic) bool closing;
-
 // Debug flags
 @property (nonatomic) bool debug;
 
@@ -345,8 +342,6 @@
 
 - (void)close
 {
-	self.closing = true;
-	
 	if (!self.hasUnautosavedChanges) {
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
@@ -369,9 +364,7 @@
 	[self.previewController.timer invalidate];
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
-	
-	self.formatting = nil;
-	
+		
 	for (NSView* view in _registeredViews) {
 		[view removeFromSuperview];
 	}
@@ -383,6 +376,8 @@
 	self.textScrollView.timerMouseMoveTimer = nil;
 	
 	// Null other stuff, just in case
+	self.formatting = nil;
+	self.runningPlugins = nil;
 	self.currentLine = nil;
 	self.parser = nil;
 	self.outlineView = nil;
@@ -1045,7 +1040,7 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Quick Settings Popover
 
-- (IBAction)showQuickSettings:(id)sender
+- (IBAction)showQuickSettings:(NSButton*)sender
 {
 	if (sender == nil) return;
 	
@@ -1055,7 +1050,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	popover.contentViewController = settings;
 	popover.behavior = NSPopoverBehaviorTransient;
-	[popover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSRectEdgeMaxY];
+	[popover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSRectEdgeMaxY];
 	
 	popover.delegate = self;
 	
@@ -1064,7 +1059,10 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)popoverWillClose:(NSNotification *)notification
 {
-	if (notification.object == _quickSettingsPopover) _quickSettingsButton.state = NSOffState;
+	if (notification.object == _quickSettingsPopover) {
+		_quickSettingsButton.state = NSOffState;
+		_quickSettingsPopover = nil;
+	}
 }
 
 
@@ -1105,8 +1103,6 @@ static NSWindow __weak *currentKeyWindow;
 - (void)ensureLayout
 {
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	
-	if (self.showPageNumbers) [self.textView updatePageNumbers];
 	
 	self.textView.needsDisplay = true;
 	self.textView.needsLayout = true;
@@ -1781,7 +1777,7 @@ static NSWindow __weak *currentKeyWindow;
 -(void)applyInitialFormatting
 {
 	if (self.parser.lines.count == 0) {
-		// Empty document
+		// Empty document, do nothing.
 		[self loadingComplete];
 		return;
 	}
@@ -2918,49 +2914,35 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Pagination
 
-/*
- 
- Pagination was a dream of mine which I managed to make happen.
- Live pagination should still be optimized so that we only paginate
- from a given index.
- 
- What matters most is how well you walk through the fire.
- 
- TODO: Migrate this code to use BeatPreviewController. Rather than explicitly paginating, create a preview at given range, and invalidate it when necessary.
- 
+/**
+  TODO: Please, please, please make an iOS-compatible version of the preview controller, so we can move all this to the base document controller. Better yet, make previewController a protocol, and have both OS versions conform to that.
  */
 
 /// Returns the current pagination in preview controller
 /// - note: Required to conform to plugin API.
-- (BeatPaginationManager*)pagination {
-	return self.previewController.pagination;
-}
-- (BeatPaginationManager*)paginator {
-	return self.previewController.pagination;
-}
+- (BeatPaginationManager*)pagination { return self.previewController.pagination; }
+- (BeatPaginationManager*)paginator { return self.previewController.pagination; }
 
-- (IBAction)togglePageNumbers:(id)sender {
+- (IBAction)togglePageNumbers:(id)sender
+{
 	self.showPageNumbers = !self.showPageNumbers;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
-	else {
-		self.textView.pageBreaks = nil;
-		[self.textView deletePageNumbers];
-	}
+	
+	self.textView.needsDisplay = true;
 }
 
-- (void)paginate {
+/// Paginates this document from scratch
+- (void)paginate
+{
 	[self paginateAt:(NSRange){0,0} sync:NO];
 }
 
-static NSArray<Line*>* cachedTitlePage;
-- (void)paginateAt:(NSRange)range sync:(bool)sync {
+- (void)paginateAt:(NSRange)range sync:(bool)sync
+{
 	// Don't paginate while loading
-	if (self.documentIsLoading) return;
-	
-	[self.previewController createPreviewWithChangedRange:range sync:sync];
-	return;
+	if (!self.documentIsLoading) [self.previewController createPreviewWithChangedRange:range sync:sync];
 }
 
 /// Pagination finished — called when preview controller has finished creating pagination
@@ -2970,7 +2952,10 @@ static NSArray<Line*>* cachedTitlePage;
 	// We might be in a background thread, so make sure to dispach this call to main thread
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update pagination in text view
-		if (self.showPageNumbers) [self.textView updatePagination:operation.pages];
+		BeatLayoutManager* lm = (BeatLayoutManager*)self.textView.layoutManager;
+		lm.pageBreaks = operation.editorPageBreaks;
+		
+		self.textView.needsDisplay = true;
 		
 		// Tell plugins the preview has been finished
 		for (NSString *name in self.runningPlugins.allKeys) {

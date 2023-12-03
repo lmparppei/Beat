@@ -23,7 +23,7 @@
 
 // macOS-only
 #import <Cocoa/Cocoa.h>
-#import "BeatPluginHTMLWindow.h"
+#import <BeatPlugins/BeatPluginHTMLWindow.h>
 
 #else
 

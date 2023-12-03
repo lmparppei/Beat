@@ -21,15 +21,15 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	@objc func setupPluginMenus() {
 		// Populate plugin menus at load
 		if (pluginMenu != nil) {
-			setupPluginMenu(pluginMenu!)
+			//setupPluginMenu(pluginMenu!)
 			pluginMenu?.delegate = self
 		}
 		if (exportMenu != nil) {
-			setupPluginMenu(exportMenu!)
+			//setupPluginMenu(exportMenu!)
 			exportMenu?.delegate = self
 		}
 		if (importMenu != nil) {
-			setupPluginMenu(importMenu!)
+			//setupPluginMenu(importMenu!)
 			importMenu?.delegate = self
 		}
 		
@@ -53,6 +53,10 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 		self.setupPluginMenu(menu)
 	}
 	
+	func menuDidClose(_ menu: NSMenu) {
+		self.clearMenu(menu)
+	}
+	
 	@objc func setupPluginMenu(_ menu:NSMenu) {
 		var type:BeatPluginType = .ToolPlugin
 		
@@ -68,14 +72,18 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 		self.pluginMenuItems(for: menu, runningPlugins: runningPlugins, type:type)
 	}
 	
-	func pluginMenuItems(for parentMenu:NSMenu, runningPlugins:[String:BeatPlugin], type:BeatPluginType) {
-		
-		let menuItems = Array(parentMenu.items)
+	@objc func clearMenu(_ menu:NSMenu) {
+		let menuItems = Array(menu.items)
 		for item in menuItems {
 			if item is BeatPluginMenuItem {
-				parentMenu.removeItem(item)
+				menu.removeItem(item)
 			}
 		}
+	}
+	
+	func pluginMenuItems(for parentMenu:NSMenu, runningPlugins:[String:BeatPlugin], type:BeatPluginType) {
+		
+		self.clearMenu(parentMenu)
 		
 		// Reload existing plugins when the menu opens
 		let pluginManager = BeatPluginManager.shared()
