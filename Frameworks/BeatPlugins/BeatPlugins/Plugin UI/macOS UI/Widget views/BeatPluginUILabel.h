@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatPluginUIExports.h"
+#import <BeatPlugins/BeatPluginUIExports.h>
 
 @protocol BeatPluginUILabelExports <JSExport>
 @property (nonatomic) NSString *title;

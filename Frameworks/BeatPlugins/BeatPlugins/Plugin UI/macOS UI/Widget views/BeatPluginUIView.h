@@ -12,10 +12,10 @@
     #import <UIKit/UIKit.h>
 #else
     #import <Cocoa/Cocoa.h>
-    #import "BeatPluginUIButton.h"
+    #import <BeatPlugins/BeatPluginUIButton.h>
 #endif
 
-#import "BeatPluginUIExports.h"
+#import <BeatPlugins/BeatPluginUIExports.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <Webkit/Webkit.h>
 

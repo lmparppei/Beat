@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatPluginUIExports.h"
+#import <BeatPlugins/BeatPluginUIExports.h>
 
 @protocol BeatPluginUITextFieldExports <JSExport>
 @property (nonatomic) JSValue* jsAction;

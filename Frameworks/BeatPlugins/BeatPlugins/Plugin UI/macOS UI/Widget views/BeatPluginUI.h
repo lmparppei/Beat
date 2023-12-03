@@ -9,13 +9,13 @@
 #import <Foundation/Foundation.h>
 
 #if !TARGET_OS_IOS
-#import "BeatPluginUIView.h"
-#import "BeatPluginUIButton.h"
-#import "BeatPluginUIDropdown.h"
-#import "BeatPluginUIView.h"
-#import "BeatPluginUICheckbox.h"
-#import "BeatPluginUILabel.h"
-#import "BeatPluginUITextField.h"
+#import <BeatPlugins/BeatPluginUIView.h>
+#import <BeatPlugins/BeatPluginUIButton.h>
+#import <BeatPlugins/BeatPluginUIDropdown.h>
+#import <BeatPlugins/BeatPluginUIView.h>
+#import <BeatPlugins/BeatPluginUICheckbox.h>
+#import <BeatPlugins/BeatPluginUILabel.h>
+#import <BeatPlugins/BeatPluginUITextField.h>
 #endif
 
 NS_ASSUME_NONNULL_BEGIN

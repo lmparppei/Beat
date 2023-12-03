@@ -13,7 +13,7 @@
 #else
     #import <Cocoa/Cocoa.h>
 #endif
-#import "BeatPluginUIView.h"
+#import <BeatPlugins/BeatPluginUIView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
