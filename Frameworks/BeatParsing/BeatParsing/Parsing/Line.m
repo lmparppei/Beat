@@ -12,7 +12,6 @@
 #import "FountainRegexes.h"
 #import "NSString+CharacterControl.h"
 #import "NSString+EMOEmoji.h"
-#import "BeatMeasure.h"
 #import <BeatParsing/BeatParsing-Swift.h>
 
 @interface Line()

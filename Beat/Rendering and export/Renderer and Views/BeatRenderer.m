@@ -13,10 +13,12 @@
  */
 
 #import "BeatRenderer.h"
-#import <BeatPagination2/BeatPagination2.h>
+
+#import <BeatParsing/BeatParsing.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
-#import "Beat-Swift.h"
 #import <BeatCore/BeatFonts.h>
+
+#import "Beat-Swift.h"
 
 @interface BeatRenderer()
 //@property (nonatomic) id<BeatPageDelegate> delegate;

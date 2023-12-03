@@ -8,6 +8,7 @@
 
 import AppKit
 import BeatCore
+import BeatPagination2
 
 // MARK: - Basic page view for rendering the screenplay
 
@@ -198,12 +199,10 @@ class BeatTitlePageView:BeatPaginationPageView {
 		textView.string = "\n" // Add one extra line break to make title top margin have effect
 		leftColumn.string = ""
 		rightColumn.string = ""
-		
+	
 		let renderer = BeatRenderer(settings: self.settings)
 		
 		var top:[Line] = []
-		
-		
 		
 		if let title = titlePageElement("title") { top.append(contentsOf: title) }
 		if let credit = titlePageElement("credit") { top.append(contentsOf: credit) }

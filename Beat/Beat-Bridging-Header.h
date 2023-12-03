@@ -12,9 +12,10 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatPagination2/BeatPagination2.h>
 #import <BeatPlugins/BeatPlugins.h>
-//#import <BeatCore/BeatCore-Swift.h>
+#import <BeatPagination2/BeatPagination2.h>
+
+#import "BeatRenderer.h"
 
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"

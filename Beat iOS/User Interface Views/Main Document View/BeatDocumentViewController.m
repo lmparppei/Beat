@@ -268,8 +268,6 @@
 {
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
-	//if (self.showPageNumbers) [self.textView updatePageNumbers];
-	
 	[self.textView setNeedsDisplay];
 	[self.textView setNeedsLayout];
 }

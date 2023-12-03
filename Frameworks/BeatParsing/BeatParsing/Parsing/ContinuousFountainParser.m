@@ -40,7 +40,6 @@
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
-#import "BeatMeasure.h"
 #import <BeatParsing/BeatParsing-Swift.h>
 
 #define NEW_OUTLINE YES
@@ -2019,10 +2018,10 @@ static NSDictionary* patterns;
         if ([self.cachedLines isEqualToArray:lines]) return _uuidsToLines;
         
         // Store the current state of lines
-        self.cachedLines = self.lines.copy;
+        self.cachedLines = lines;
         
         // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
-        NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:self.lines.count];
+        NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:lines.count];
         
         for (Line* line in lines) {
             if (line == nil) continue;

@@ -1,5 +1,10 @@
 # Changelog
 
+## Beat 1.997.8
+
+- Reanimating the ad hoc distribution
+
+
 ## Beat 1.997.7
 
 - Some minor bug fixes

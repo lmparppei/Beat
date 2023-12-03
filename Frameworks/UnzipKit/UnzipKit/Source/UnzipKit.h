@@ -15,6 +15,6 @@ FOUNDATION_EXPORT double UnzipKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char UnzipKitVersionString[];
 
 
-#import "UZKArchive.h"
-#import "UZKFileInfo.h"
-#import "UnzipKitMacros.h"
+#import <UnzipKit/UZKArchive.h>
+#import <UnzipKit/UZKFileInfo.h>
+#import <UnzipKit/UnzipKitMacros.h>

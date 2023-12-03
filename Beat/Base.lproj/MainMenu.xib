@@ -1160,6 +1160,16 @@ DQ
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="c0F-30-f9S"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Enter Donation Key..." id="lM5-aZ-exA" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.beat-app.fi/support-the-development/"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="rM4-BS-Ors"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ITo-5J-lDM"/>
                             <menuItem title="Discord Community" id="u5m-eu-948" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
@@ -1214,6 +1224,7 @@ DQ
         <customObject id="vEX-2F-hcj" customClass="BeatAppDelegate">
             <connections>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
+                <outlet property="enterLicenseKeyItem" destination="lM5-aZ-exA" id="orU-bX-eje"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>

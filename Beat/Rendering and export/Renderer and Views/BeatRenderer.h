@@ -7,13 +7,13 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <BeatParsing/BeatParsing.h>
 #import <BeatPagination2/BeatPagination2.h>
 
 @class BeatPaginationManager;
 @class BeatPaginationPage;
 @class BeatPaginationBlock;
-@class BeatRendererDelegate;
+@class BeatExportSettings;
+@class Line;
 
 NS_ASSUME_NONNULL_BEGIN
 
