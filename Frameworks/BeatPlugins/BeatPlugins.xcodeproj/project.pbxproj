@@ -13,6 +13,8 @@
 		B62117142A6FFBFF0053228F /* BeatPluginHTMLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62117132A6FFBFF0053228F /* BeatPluginHTMLViewController.swift */; platformFilter = ios; };
 		B67E7BAB2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BAA2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift */; };
 		B67E7BAE2AEEE1F700977F7D /* Plugin polyfill.js in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BAD2AEEE1F700977F7D /* Plugin polyfill.js */; };
+		B67F75802B1D27000028D009 /* BeatPluginAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = B67F757E2B1D27000028D009 /* BeatPluginAgent.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B67F75812B1D27000028D009 /* BeatPluginAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = B67F757F2B1D27000028D009 /* BeatPluginAgent.m */; };
 		B680B75E2A6EBBE300FCD805 /* Template.js in Resources */ = {isa = PBXBuildFile; fileRef = B680B75D2A6EBBE300FCD805 /* Template.js */; };
 		B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */; platformFilters = (macos, ); };
 		B680B77A2A6EBBFD00FCD805 /* BeatPluginUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */; };
@@ -71,6 +73,8 @@
 		B62117132A6FFBFF0053228F /* BeatPluginHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginHTMLViewController.swift; sourceTree = "<group>"; };
 		B67E7BAA2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginHTMLTemplate.swift; sourceTree = "<group>"; };
 		B67E7BAD2AEEE1F700977F7D /* Plugin polyfill.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "Plugin polyfill.js"; sourceTree = "<group>"; };
+		B67F757E2B1D27000028D009 /* BeatPluginAgent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginAgent.h; sourceTree = "<group>"; };
+		B67F757F2B1D27000028D009 /* BeatPluginAgent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginAgent.m; sourceTree = "<group>"; };
 		B680B75D2A6EBBE300FCD805 /* Template.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Template.js; sourceTree = "<group>"; };
 		B680B7602A6EBBFB00FCD805 /* BeatModalAccessoryView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatModalAccessoryView.m; sourceTree = "<group>"; };
 		B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatModalAccessoryView.h; sourceTree = "<group>"; };
@@ -293,6 +297,8 @@
 				B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */,
 				B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */,
 				B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */,
+				B67F757E2B1D27000028D009 /* BeatPluginAgent.h */,
+				B67F757F2B1D27000028D009 /* BeatPluginAgent.m */,
 				B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */,
 				B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */,
 				B62117112A6FFAD40053228F /* Plugin UI */,
@@ -328,6 +334,7 @@
 				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
+				B67F75802B1D27000028D009 /* BeatPluginAgent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +417,7 @@
 				B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */,
 				B62117142A6FFBFF0053228F /* BeatPluginHTMLViewController.swift in Sources */,
 				B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */,
+				B67F75812B1D27000028D009 /* BeatPluginAgent.m in Sources */,
 				B680B7832A6EBBFD00FCD805 /* BeatPluginControlMenuItem.swift in Sources */,
 				B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */,
 				B680B79A2A6EBEBD00FCD805 /* BeatPluginTimer.m in Sources */,

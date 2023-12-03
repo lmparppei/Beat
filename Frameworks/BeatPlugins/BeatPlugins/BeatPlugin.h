@@ -44,6 +44,8 @@
 @class BeatTextIO;
 @class BeatSpeak;
 
+@class BeatPluginAgent;
+
 @class BeatPluginUIView;
 @class BeatPluginUIButton;
 @class BeatPluginUIDropdown;
@@ -406,8 +408,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
-@property (nonatomic, readonly) bool closing;
-
 @property (nonatomic) BeatRevisions* revisionTracking;
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
@@ -416,12 +416,16 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
 - (void)resetPreview;
 
+@property (nonatomic) BeatPluginAgent* pluginAgent;
+
+/*
 /// Runs a plugin with given name
 - (void)runPluginWithName:(NSString*)pluginName;
 /// Registers the plugin to stay running in background
 - (void)registerPlugin:(id)parser;
 /// Removes the plugin from memory
 - (void)deregisterPlugin:(id)parser;
+ */
 
 /// Sets the given property value in host document. Use only if you *REALLY*, **REALLY** know what the fuck you are doing.
 - (void)setPropertyValue:(NSString*)key value:(id)value;
@@ -459,7 +463,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @end
 
-@interface BeatPlugin : NSObject <BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
+@interface BeatPlugin : NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate;
 + (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate;
 

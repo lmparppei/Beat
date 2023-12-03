@@ -179,7 +179,7 @@
         // This is how you draw the page number. We just need the page number value from text view as well.
         NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
     
-        [pNumber drawInRect:NSMakeRect(CGRectGetMaxX(r) + inset.width - 30.0, inset.height + r.origin.y, 30.0, self.editorDelegate.editorLineHeight) withAttributes:@{
+        [pNumber drawInRect:NSMakeRect(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, self.editorDelegate.editorLineHeight) withAttributes:@{
             NSFontAttributeName: self.editorDelegate.courier,
             NSForegroundColorAttributeName: pageNumberColor,
             NSParagraphStyleAttributeName: self.pageNumberStyle

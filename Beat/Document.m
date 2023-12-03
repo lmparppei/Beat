@@ -436,17 +436,20 @@ static BeatAppDelegate *appDelegate;
 	// Hide the welcome screen
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
 	
-	
+	// If there's a tab group, add this window to the tabbed window
 	Document* currentDoc = NSDocumentController.sharedDocumentController.currentDocument;
 	if (currentDoc.windowControllers.firstObject.window.tabGroup.tabBarVisible) {
 		[currentDoc.documentWindow addTabbedWindow:aController.window ordered:NSWindowAbove];
 	}
 	
-	
 	[super windowControllerDidLoadNib:aController];
 	
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self;
+	
+	// Setup plugins
+	self.runningPlugins = NSMutableDictionary.new;
+	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
 	
 	// Setup formatting
 	self.formatting = BeatEditorFormatting.new;
@@ -471,7 +474,7 @@ static BeatAppDelegate *appDelegate;
 	
 	// Setup views
 	[self setupResponderChain];
-	[self setupTextView];
+	[self.textView setup];
 	[self setupTouchTimeline];
 	[self setupColorPicker];
 	[self.outlineView setup];
@@ -591,7 +594,7 @@ static BeatAppDelegate *appDelegate;
 		NSDictionary* plugins = [self.documentSettings get:DocSettingActivePlugins];
 		for (NSString* pluginName in plugins) {
 			@try {
-				[self runPluginWithName:pluginName];
+				[self.pluginAgent runPluginWithName:pluginName];
 			} @catch (NSException *exception) {
 				NSLog(@"Plugin error: %@", exception);
 			}
@@ -629,16 +632,6 @@ static BeatAppDelegate *appDelegate;
 	if (lastDotIndex != NSNotFound) fileName = [fileName substringToIndex:lastDotIndex];
 	
 	return fileName;
-}
-
-#pragma mark - Export settings
-
--(BeatExportSettings*)exportSettings
-{
-	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
-	settings.revisions = BeatRevisions.revisionColors;
-	
-	return settings;
 }
 
 
@@ -804,23 +797,20 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow setFrame:newFrame display:YES];
 }
 
--(void)setupLayoutWithPagination:(bool)paginate {
+-(void)setupLayoutWithPagination:(bool)paginate
+{
 	// Apply layout
-	
 	[self updateLayout];
-	[self ensureLayout];
+	[self.textView loadCaret];
 	
-	[self loadCaret];
-	[self ensureCaret];
-	//[self.preview updatePreviewInSync:NO];
-	
-	[self paginateAt:(NSRange){0,0} sync:YES];
+	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
 }
 
 // Can I come over, I need to rest
 // lay down for a while, disconnect
 // the night was so long, the day even longer
 // lay down for a while, recollect
+
 
 # pragma mark - Window interactions
 
@@ -878,11 +868,10 @@ static BeatAppDelegate *appDelegate;
 	[self.marginView setNeedsDisplay:YES];
 	
 	[self ensureLayout];
-	[self ensureCaret];
 }
 
 - (void)setMinimumWindowSize {
-	CGFloat width = (self.textView.documentWidth - (2 * BeatTextView.linePadding)) * self.magnification + 30;
+	CGFloat width = (self.textView.textContainer.size.width - (2 * BeatTextView.linePadding)) * self.magnification + 30;
 	if (_sidebarVisible) width += _outlineView.frame.size.width;
 
 	// Clamp the value. I can't use max methods.
@@ -1020,7 +1009,7 @@ static NSWindow __weak *currentKeyWindow;
 	[self.documentWindow orderFront:nil];
 	
 	// Notify running plugins that the window became main after the document *actually* is main window
-	[self notifyPluginsThatWindowBecameMain];
+	[self.pluginAgent notifyPluginsThatWindowBecameMain];
 }
 
 - (void)hideAllPluginWindows
@@ -1069,26 +1058,27 @@ static NSWindow __weak *currentKeyWindow;
 #pragma mark - Zooming & layout
 
 - (IBAction)zoomIn:(id)sender {
-	if (self.currentTab == _editorTab) [self.textView zoom:YES];
-	
-	// Web preview zoom
-	
-	if (self.currentTab == _nativePreviewTab) {
+	if (self.currentTab == _editorTab) {
+		[self.textView zoom:YES];
+	} else if (self.currentTab == _nativePreviewTab) {
 		self.previewController.scrollView.magnification += .05;
 	}
 }
 - (IBAction)zoomOut:(id)sender {
-	if (self.currentTab == _editorTab) [self.textView zoom:NO];
-	
-	if (self.currentTab == _nativePreviewTab) {
+	if (self.currentTab == _editorTab) {
+		[self.textView zoom:NO];
+	} else if (self.currentTab == _nativePreviewTab) {
 		self.previewController.scrollView.magnification -= .05;
 	}
 }
 
 - (IBAction)resetZoom:(id)sender
 {
-	if (self.currentTab != _editorTab) return;
-	[self.textView resetZoom];
+	if (self.currentTab == _editorTab) {
+		[self.textView resetZoom];
+	} else if (self.currentTab == _nativePreviewTab) {
+		self.previewController.scrollView.magnification = 1.0;
+	}
 }
 
 - (CGFloat)magnification
@@ -1108,11 +1098,11 @@ static NSWindow __weak *currentKeyWindow;
 	self.textView.needsLayout = true;
 	
 	[self.marginView updateBackground];
+	
+	[self.textView ensureCaret];
 }
 
-- (void)ensureCaret {
-	[self.textView updateInsertionPointStateAndRestartTimer:YES];
-}
+
 
 
 /*
@@ -1253,28 +1243,6 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-#pragma mark - TextView interface
-
-- (void)setupTextView {
-	// Set insets on load
-	[self.textView setup];
-	[self.textView setInsets];
-	
-	// Make the text view first responder
-	[_documentWindow makeFirstResponder:self.textView];
-}
-
-
-- (void)loadCaret
-{
-	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
-	
-	if (position < self.textView.string.length && position >= 0) {
-		[self.textView setSelectedRange:NSMakeRange(position, 0)];
-		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
-	}
-}
-
 
 #pragma mark - Reverting to versions
 
@@ -1379,18 +1347,11 @@ static NSWindow __weak *currentKeyWindow;
 # pragma mark - Undo
 
 - (IBAction)undoEdit:(id)sender {
-	
 	[self.undoManager undo];
-	//if (_cardsVisible) [self.cardView refreshCards:YES];
-	
-	// To avoid some graphical glitches
 	[self ensureLayout];
 }
 - (IBAction)redoEdit:(id)sender {
 	[self.undoManager redo];
-	// if (_cardsVisible) [self.cardView refreshCards:YES];
-	
-	// To avoid some graphical glitches
 	[self ensureLayout];
 }
 
@@ -1403,6 +1364,7 @@ static NSWindow __weak *currentKeyWindow;
  and I just couldn't ask
  
  */
+
 
 #pragma mark - Text input settings
 
@@ -1562,7 +1524,7 @@ static NSWindow __weak *currentKeyWindow;
 		// TODO: Conform side bar with BeatSceneOutlineView protocol
 		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changesInOutline];
 		
-		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
+		[self.pluginAgent updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
 		
 		for (id<BeatSceneOutlineView> view in _registeredOutlineViews) {
 			if (view.visible) [view reloadWithChanges:changesInOutline];
@@ -1582,7 +1544,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_lastChangedRange.length > 5) [self ensureLayout];
 	
 	// Update any running plugins
-	if (self.runningPlugins.count) [self updatePlugins:_lastChangedRange];
+	[self.pluginAgent updatePlugins:_lastChangedRange];
 	
 	// Cache current text state
 	self.contentCache = self.textView.string.copy;
@@ -1651,7 +1613,7 @@ static NSWindow __weak *currentKeyWindow;
 		if (self.mode == TaggingMode) [self.tagging updateTaggingData];
 		
 		// Update running plugins
-		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
+		[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
 	});
 }
 
@@ -1686,7 +1648,7 @@ static NSWindow __weak *currentKeyWindow;
 		if (color != nil) [_colorPicker setColor:[BeatColors color:currentScene.color]];
 	}
 		
-	if (self.runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
+	[self.pluginAgent updatePluginsWithSceneIndex:sceneIndex];
 }
 
 
@@ -2395,7 +2357,6 @@ static NSWindow __weak *currentKeyWindow;
 - (void)returnToEditor {
 	[self showTab:_editorTab];
 	[self updateLayout];
-	[self ensureCaret];
 }
 
 
@@ -3353,149 +3314,14 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Plugin support
 
-/*
- 
- Some explanation:
- 
- Plugins are run inside document scope, unless they are standalone tools.
- If the plugins are "resident" (can be left running in the background),
- they are registered and deregistered when launching and shutting down.
- 
- Some changes made to the document are sent to all of the running plugins,
- if they have any change listeners.
- 
- This should be separated to its own class, something like PluginAgent or something.
- 
- */
-
-
-/// Returns every plugin that should be registered to be saved
-- (NSArray*)runningPluginsForSaving
-{
-	NSMutableArray* plugins = NSMutableArray.new;
-	for (NSString* pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin* plugin = self.runningPlugins[pluginName];
-		if (!plugin.restorable) continue;
-		
-		[plugins addObject:pluginName];
-	}
-	return plugins;
-}
-
 /// Called from `BeatPluginMenuItem`, which contains the plugin name to be run in this window.
-- (IBAction)runPlugin:(id)sender {
+- (IBAction)runPlugin:(id)sender
+{
 	// Get plugin filename from menu item
 	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
 	NSString *pluginName = menuItem.pluginName;
 	
-	[self runPluginWithName:pluginName];
-}
-
-/// Runs a plugin with a name in plugin manager.
-- (void)runPluginWithName:(NSString*)pluginName {
-	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
-	
-	// See if the plugin is running and disable it if needed
-	if (self.runningPlugins[pluginName]) {
-		[(BeatPlugin*)self.runningPlugins[pluginName] forceEnd];
-		[self.runningPlugins removeObjectForKey:pluginName];
-		return;
-	}
-
-	// Run a new plugin
-	BeatPlugin *plugin = [BeatPlugin withName:pluginName delegate:self];
-	
-	// Null the local variable just in case.
-	// If the plugin wishes to stay in memory, it should call registerPlugin:
-	plugin = nil;
-}
-
-/// Loads and registers a plugin with given code. This is used for injecting plugins into memory, including the console plugin.
-- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script
-{
-	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
-	
-	BeatPlugin* plugin = [BeatPlugin withName:pluginName script:script delegate:self];
-	plugin.restorable = false;
-	return plugin;
-}
-
-- (void)call:(NSString*)script context:(NSString*)pluginName {
-	BeatPlugin* plugin = [self pluginContextWithName:pluginName];
-	[plugin call:script];
-}
-
-- (BeatPlugin*)pluginContextWithName:(NSString*)pluginName {
-	return self.runningPlugins[pluginName];
-}
-
-- (void)runGenericPlugin:(NSString*)script
-{
-	
-}
-
-- (void)registerPlugin:(id)plugin
-{
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	if (!self.runningPlugins) self.runningPlugins = NSMutableDictionary.new;
-	
-	self.runningPlugins[parser.pluginName] = parser;
-}
-- (void)deregisterPlugin:(id)plugin
-{
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	[self.runningPlugins removeObjectForKey:parser.pluginName];
-	parser = nil;
-}
-
-- (void)updatePlugins:(NSRange)range {
-	// Run resident plugins
-	if (!self.runningPlugins || _documentIsLoading) return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		for (BeatPlugin* plugin in self.runningPlugins.allValues) {
-			[plugin update:range];
-		}
-	});
-}
-
-- (void)updatePluginsWithSelection:(NSRange)range {
-	// Run resident plugins which are listening for selection changes
-	if (!self.runningPlugins || _documentIsLoading) return;
-	
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin updateSelection:range];
-	}
-}
-
-- (void)updatePluginsWithSceneIndex:(NSInteger)index {
-	// Run resident plugins which are listening for selection changes
-	if (!self.runningPlugins || _documentIsLoading) return;
-	
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin updateSceneIndex:index];
-	}
-}
-
-- (void)updatePluginsWithOutline:(NSArray*)outline changes:(OutlineChanges* _Nullable)changes {
-	// Run resident plugins which are listening for selection changes
-	if (!self.runningPlugins) return;
-	
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin updateOutline:changes];
-	}
-}
-
-- (void)notifyPluginsThatWindowBecameMain {
-	if (!self.runningPlugins || _documentIsLoading) return;
-	
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin documentDidBecomeMain];
-	}
+	[self.pluginAgent runPluginWithName:pluginName];
 }
 
 - (void)addWidget:(id)widget {
@@ -3507,6 +3333,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)setPropertyValue:(NSString*)key value:(id)value {
 	[self setValue:value forKey:key];
 }
+
 - (id)getPropertyValue:(NSString*)key {
 	return [self valueForKey:key];
 }

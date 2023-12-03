@@ -23,6 +23,7 @@
 @class BeatPlugin;
 @class BeatEditorFormatting;
 @class BeatTagging;
+@class BeatPluginAgent;
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
@@ -30,6 +31,11 @@
 - (NSMutableArray<Line*>* _Nonnull)lines;
 - (NSArray<OutlineScene*>* _Nonnull)outline;
 - (NSString* _Nullable)displayName;
+@end
+
+@protocol BeatPluginInstance
+@property (nonatomic) bool restorable;
+@property (nonatomic) NSString* _Nonnull pluginName;
 @end
 
 #if TARGET_OS_OSX
@@ -183,7 +189,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Plugins
 // Most of these are just placeholders for OS-specific code.
-
+@property (nonatomic, readwrite) BeatPluginAgent* _Nullable pluginAgent;
 @property (nonatomic, readwrite) NSMutableDictionary <NSString*, BeatPlugin*>* _Nullable runningPlugins;
 - (NSArray<NSString*>* _Nullable)runningPluginsForSaving;
 - (void)documentWasSaved;

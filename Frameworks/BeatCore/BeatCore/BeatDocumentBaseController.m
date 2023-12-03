@@ -103,7 +103,9 @@
 }
 
 
-#pragma mark - Page size
+#pragma mark - Document setting shorthands
+
+#pragma mark Page size
 
 /// Returns the current page size, or default size if none is applied
 - (BeatPaperSize)pageSize
@@ -120,6 +122,25 @@
 {
     [self.documentSettings setInt:DocSettingPageSize as:pageSize];
 }
+
+#pragma mark Scene numbering
+
+- (NSInteger)sceneNumberingStartsFrom
+{
+    return [self.documentSettings getInt:DocSettingSceneNumberStart];
+}
+- (void)setSceneNumberingStartsFrom:(NSInteger)number {
+    [self.documentSettings setInt:DocSettingSceneNumberStart as:number];
+}
+
+#pragma mark Export settings
+
+-(BeatExportSettings*)exportSettings
+{
+    BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
+    return settings;
+}
+
 
 
 #pragma mark - Line lookup
@@ -561,10 +582,18 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Plugin support
 
-/// - note: Plugins are not available for this class for now. Override in OS-specific implementation.
+/// Returns every plugin that should be registered to be saved
 - (NSArray*)runningPluginsForSaving
 {
-    return @[];
+    NSMutableArray* plugins = NSMutableArray.new;
+    for (NSString* pluginName in self.runningPlugins.allKeys) {
+        id<BeatPluginInstance> plugin = (id<BeatPluginInstance>) self.runningPlugins[pluginName];
+        if (!plugin.restorable) continue;
+        
+        [plugins addObject:pluginName];
+    }
+    
+    return plugins;
 }
 
 
@@ -572,6 +601,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 {
     NSLog(@"documentWasSaved: Override in OS-specific implementation");
 }
+
 
 
 @end

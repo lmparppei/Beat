@@ -123,6 +123,10 @@
 	
 	if (!self.documentIsLoading) return;
 	
+	// Setup plugin support
+	self.runningPlugins = NSMutableDictionary.new;
+	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
+	
 	// Create text view
 	[self createTextView];
 	
@@ -544,6 +548,9 @@ static bool buildPreviewImmediately = false;
 	
 	[self.textView scrollRangeToVisible:textView.selectedRange];
 	
+	// Update plugins
+	[self.pluginAgent updatePluginsWithSelection:textView.selectedRange];
+	
 	// Show review if needed
 	// Review items
 	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
@@ -570,10 +577,7 @@ static bool buildPreviewImmediately = false;
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
-	// Register changes
-	//if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
-	
+		
 	// Save
 	[self.document updateChangeCount:UIDocumentChangeDone];
 	
@@ -597,10 +601,11 @@ static bool buildPreviewImmediately = false;
 	// Paginate
 	[self paginateWithChangeAt:_lastChangedRange sync:false];
 	
+	// Update plugins
+	[self.pluginAgent updatePlugins:_lastChangedRange];
+	
 	// If this was an undo operation, scroll to where the alteration was made
-	if (self.undoManager.isUndoing) {
-		[self.textView scrollRangeToVisible:_lastChangedRange];
-	}
+	if (self.undoManager.isUndoing) [self.textView scrollRangeToVisible:_lastChangedRange];
 	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
@@ -678,6 +683,7 @@ static bool buildPreviewImmediately = false;
 - (bool)showPageNumbers {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageNumbers];
 }
+
 - (void)setShowPageNumbers:(bool)showPageNumbers {
 	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
 	[self.textView setNeedsDisplay];
@@ -706,31 +712,9 @@ static bool buildPreviewImmediately = false;
 
 #pragma mark - Document setting shorthands
 
-- (BeatPaperSize)pageSize {
-	BeatPaperSize pageSize = [self.documentSettings getInt:DocSettingPageSize];
-	return pageSize;
-}
 - (void)setPageSize:(BeatPaperSize)pageSize {
-	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
+	[super setPageSize:pageSize];
 	[self.textView resize];
-}
-
-- (NSInteger)sceneNumberingStartsFrom {
-	return [self.documentSettings getInt:DocSettingSceneNumberStart];
-}
-
-- (void)setSceneNumberingStartsFrom:(NSInteger)number {
-	[self.documentSettings setInt:DocSettingSceneNumberStart as:number];
-}
-
-
-
-#pragma mark - Export options
-
-- (BeatExportSettings*)exportSettings
-{
-	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
-	return settings;
 }
 
 - (void)refreshLayoutByExportSettings
@@ -1040,62 +1024,6 @@ static bool buildPreviewImmediately = false;
 	//NSString *pluginName = menuItem.pluginName;
 	
 	//[self runPluginWithName:pluginName];
-}
-
-- (void)runPluginWithName:(NSString*)pluginName {
-	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
-	
-	// See if the plugin is running and disable it if needed
-	if (self.runningPlugins[pluginName]) {
-		[(BeatPlugin*)self.runningPlugins[pluginName] forceEnd];
-		[self.runningPlugins removeObjectForKey:pluginName];
-		return;
-	}
-	
-	// Run a new plugin
-	BeatPlugin *plugin = [BeatPlugin withName:pluginName delegate:self];
-	
-	// Null the local variable just in case.
-	// If the plugin wishes to stay in memory, it should call registerPlugin:
-	plugin = nil;
-}
-
-/// Loads and registers a plugin with given code. This is used for injecting plugins into memory, including the console plugin.
-- (BeatPlugin*)loadPluginWithName:(NSString*)pluginName script:(NSString*)script
-{
-	if (self.runningPlugins[pluginName] != nil) return self.runningPlugins[pluginName];
-	
-	BeatPlugin* plugin = [BeatPlugin withName:pluginName script:script delegate:self];
-	return plugin;
-}
-
-- (void)call:(NSString*)script context:(NSString*)pluginName {
-	BeatPlugin* plugin = [self pluginContextWithName:pluginName];
-	[plugin call:script];
-}
-
-- (BeatPlugin*)pluginContextWithName:(NSString*)pluginName {
-	return self.runningPlugins[pluginName];
-}
-
-- (void)runGenericPlugin:(NSString*)script
-{
-	
-}
-
-- (void)registerPlugin:(id)plugin
-{
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	if (!self.runningPlugins) self.runningPlugins = NSMutableDictionary.new;
-	
-	self.runningPlugins[parser.pluginName] = parser;
-}
-
-- (void)deregisterPlugin:(id)plugin
-{
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	[self.runningPlugins removeObjectForKey:parser.pluginName];
-	parser = nil;
 }
 
 - (id)getPropertyValue:(NSString *)key {

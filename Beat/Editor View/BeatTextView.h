@@ -64,7 +64,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
-- (void)ensureCaret;
 - (void)showLockStatus;
 - (void)handleTabPress;
 
@@ -106,6 +105,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 + (CGFloat)linePadding;
 - (CGFloat)documentWidth;
 
+- (void)setup;
+
 - (IBAction)showInfo:(id)sender;
 - (CGFloat)setInsets;
 - (void)scrollToRange:(NSRange)range;
@@ -114,16 +115,12 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 // Page numbering
 - (void)deletePageNumbers;
-// Native pagination
-- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages;
 
 -(void)redrawAllGlyphs;
 -(void)redrawUI;
 -(void)updateMarkupVisibility;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
-
-- (void)setup;
 
 // Zooming
 - (void)zoom:(bool)zoomIn;
@@ -133,5 +130,11 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 // Force element
 - (void)forceElement:(id)sender;
+
+
+#pragma mark - Caret
+
+- (void)loadCaret;
+- (void)ensureCaret;
 
 @end

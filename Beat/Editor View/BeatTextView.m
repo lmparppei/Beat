@@ -239,6 +239,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self addTrackingArea:_trackingArea];
 	
 	[self setInsets];
+	
+	// Make the text view first responder
+	[self.editorDelegate.documentWindow makeFirstResponder:self];
 }
 
 -(void)setupPopovers {
@@ -1091,39 +1094,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
-#pragma mark - Page numbering
-
-- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages
-{
-	NSMutableDictionary<NSValue*,NSArray<NSNumber*>*>* pageBreaks = NSMutableDictionary.new;
-	
-	NSInteger pageNumber = 0;
-	
-	for (BeatPaginationPage* page in pages) {
-		pageNumber += 1;
-		
-		BeatPageBreak* pageBreak = page.pageBreak;
-		NSInteger position = pageBreak.element.position + pageBreak.index;
-		
-		// If the page break happens at *end* of the block, we'll display the marker after line break
-		if (pageBreak.index == -1 || pageBreak.index == pageBreak.element.length) {
-			position = pageBreak.element.position + pageBreak.element.length + 1;
-		}
-		// Don't go out of range
-		if (position > self.text.length) position = self.text.length;
-		
-		// Store the local position of character
-		NSUInteger localIndex = position - pageBreak.element.position;
-		NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
-		pageBreaks[key] = @[@(pageNumber), @(localIndex)];
-	}
-	
-	((BeatLayoutManager*)self.layoutManager).pageBreaks = pageBreaks;
-
-	self.needsDisplay = true;
-}
-
-
 #pragma mark - Rect for line
 
 CGRect cachedRect;
@@ -1378,8 +1348,7 @@ double clamp(double d, double min, double max) {
 	
 	[self setInsets];
 	[_editorDelegate updateLayout];
-	[_editorDelegate ensureLayout];
-	[_editorDelegate ensureCaret];
+	[self ensureCaret];
 }
 
 /// `zoom:true` zooms in, `zoom:false` zooms out
@@ -1836,6 +1805,25 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 
 @synthesize typingAttributes;
 
+
+#pragma mark - Caret
+
+- (void)loadCaret
+{
+	NSInteger position = [self.editorDelegate.documentSettings getInt:DocSettingCaretPosition];
+	
+	if (position < self.text.length && position >= 0) {
+		[self setSelectedRange:NSMakeRange(position, 0)];
+		[self scrollRangeToVisible:NSMakeRange(position, 0)];
+	}
+	
+	[self ensureCaret];
+}
+
+- (void)ensureCaret
+{
+	[self updateInsertionPointStateAndRestartTimer:true];
+}
 
 @end
 /*

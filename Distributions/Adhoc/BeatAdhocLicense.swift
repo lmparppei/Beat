@@ -44,7 +44,7 @@ class BeatAdhocLicenseManager:NSObject {
 		let key = input.stringValue
 		var success = false
 		if isValidKey(key) {
-			NSUserDefaultsController.shared.setValue(key, forKey: BeatAdhocLicenseManager.keyName)
+			NSUserDefaultsController.shared.defaults.set(key, forKey: BeatAdhocLicenseManager.keyName)
 			success = true
 		}
 		
@@ -54,7 +54,7 @@ class BeatAdhocLicenseManager:NSObject {
 			msg.informativeText = "Unfortunately the key you applied was wrong. Please try again."
 		} else {
 			msg.messageText = "Thank You! ❤️"
-			msg.informativeText = "You are a true friend of Beat. The app won't nag you about donating again."
+			msg.informativeText = "You are a true friend of Beat. The app won't ask you to donate ever again."
 		}
 		
 		msg.runModal()
@@ -62,7 +62,8 @@ class BeatAdhocLicenseManager:NSObject {
 	
 	@objc public class func isValidKey(_ key:String) -> Bool {
 		// The string should be something like 0000-0000-0000-0000
-		let components = key.components(separatedBy: "-")
+		let uppercaseKey = key.uppercased()
+		let components = uppercaseKey.components(separatedBy: "-")
 		
 		var nums:[Int] = []
 		

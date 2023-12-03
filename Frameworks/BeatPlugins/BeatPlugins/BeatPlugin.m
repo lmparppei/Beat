@@ -21,6 +21,7 @@
 #import "BeatPlugin.h"
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatPlugins/BeatPlugins-Swift.h>
+#import <BeatPlugins/BeatPluginAgent.h>
 #import <PDFKit/PDFKit.h>
 
 #import "BeatConsole.h"
@@ -283,7 +284,7 @@
 	
 	self.plugin = nil;
 		
-	[_delegate deregisterPlugin:self];
+	[_delegate.pluginAgent deregisterPlugin:self];
 }
 
 /// Closes all windows (on macOS)
@@ -308,7 +309,7 @@
     [self end];
     
     if (!self.container) {
-        [_delegate runPluginWithName:self.pluginName];
+        [_delegate.pluginAgent runPluginWithName:self.pluginName];
     } else {
         // If we're running the plugin a container, we won't deallocate the whole plugin.
         // Instead, we're nulling the VM and just reloading the data here.
@@ -354,7 +355,7 @@
     self.updateSelectionMethod = nil;
 	
     // Remove from the list of running plugins
-	if (_resident) [_delegate deregisterPlugin:self];
+	if (_resident) [_delegate.pluginAgent deregisterPlugin:self];
 }
 
 /// Give focus back to the editor
@@ -382,7 +383,7 @@
 /// Make the plugin stay running in the background.
 - (void)makeResident {
 	_resident = YES;
-	[_delegate registerPlugin:self];
+	[_delegate.pluginAgent registerPlugin:self];
 }
 
 
@@ -1374,7 +1375,7 @@
 	
 	if (_pluginWindows == nil) {
 		_pluginWindows = [NSMutableArray array];
-		[_delegate registerPlugin:self];
+		[_delegate.pluginAgent registerPlugin:self];
 	}
 	[_pluginWindows addObject:panel];
 	panel.delegate = self;
@@ -1498,7 +1499,7 @@
 	if (_widgetView) return _widgetView;
 	
 	self.resident = YES;
-	[self.delegate registerPlugin:self];
+	[self.delegate.pluginAgent registerPlugin:self];
 	
 	BeatPluginUIView *view = [BeatPluginUIView.alloc initWithHeight:height];
 	_widgetView = view;

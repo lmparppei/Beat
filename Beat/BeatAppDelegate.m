@@ -172,7 +172,12 @@
 }
 
 
-#pragma mark - Validate menu items
+#pragma mark - Donations
+
+- (IBAction)enterLicenseKey:(id)sender
+{
+	[BeatAdhocLicenseManager enterLicenseKey];
+}
 
 
 

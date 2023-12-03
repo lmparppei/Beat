@@ -88,8 +88,6 @@ import UXKit
         self.onViewDidHide = nil
         self.host = nil
         self.webView = nil
-        
-        print(" -> host", self.host)
     }
         
     /// Adds web view to the container
