@@ -21,7 +21,8 @@
 #import "BeatConsole.h"
 #import <os/log.h>
 #import <BeatCore/BeatCore.h>
-#import "BeatPlugin.h"
+#import <BeatPlugins/BeatPlugin.h>
+#import <BeatPlugins/BeatPluginAgent.h>
 
 #define ConsolePluginName @"Console"
 
@@ -296,7 +297,7 @@
 }
 
 - (void)createConsolePlugin {
-	[_currentContext loadPluginWithName:ConsolePluginName script:[self consolePlugin]];
+	[_currentContext.pluginAgent loadPluginWithName:ConsolePluginName script:[self consolePlugin]];
 	
 	BeatPlugin* plugin = self.currentContext.runningPlugins[ConsolePluginName];
 	[plugin replaceErrorHandler:^(JSValue *exception) {

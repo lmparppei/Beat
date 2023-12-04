@@ -8,7 +8,7 @@
 
 #import "BeatPluginUIDropdown.h"
 
-@interface BeatPluginUIDropdown ()
+@interface BeatPluginUIDropdown () <NSMenuDelegate>
 @property (nonatomic) JSValue* jsAction;
 @end
 
@@ -25,6 +25,7 @@
 		if (items.count) [self addItemsWithTitles:items];
 		self.target = self;
 		self.action = @selector(runAction);
+        self.menu.delegate = self;
 		self.jsAction = action;
 	}
 	
@@ -37,8 +38,6 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    
-    // Drawing code here.
 }
 
 - (void)remove {
@@ -48,12 +47,16 @@
 
 #pragma mark - Interfacing
 
-- (NSArray*)items {
-	return self.itemArray;
+- (NSArray<NSString*>*)items {
+    NSMutableArray* items = NSMutableArray.new;
+    for (NSMenuItem* item in self.itemArray) {
+        [items addObject:item.title];
+    }
+    return items;
 }
-- (void)setItems:(NSArray * _Nonnull)items {
+- (void)setItems:(NSArray<NSString*>*)items {
 	[self removeAllItems];
-	[self addItemsWithTitles:items];
+    [self addItemsWithTitles:(items != nil) ? items : @[]];
 }
 - (void)addItem:(NSString*)item {
 	[self addItemWithTitle:item];
@@ -70,7 +73,14 @@
 -(void)selectItemAtIndex:(NSInteger)index {
 	if (index >= self.itemArray.count) return;
 	[super selectItemAtIndex:index];
-	
+}
+
+#pragma mark - Menu delegation
+
+- (void)menuWillOpen:(NSMenu *)menu
+{
+    if (menu != self.menu) return;
+    [self.onMenuOpen callWithArguments:nil];
 }
 
 @end

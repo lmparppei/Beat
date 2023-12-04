@@ -178,6 +178,28 @@
 			path = "HTML assets";
 			sourceTree = "<group>";
 		};
+		B67F75822B1E0B020028D009 /* Basic UI components */ = {
+			isa = PBXGroup;
+			children = (
+				B680B76E2A6EBBFC00FCD805 /* BeatPluginUIView.h */,
+				B680B7712A6EBBFC00FCD805 /* BeatPluginUIView.m */,
+				B680B76F2A6EBBFC00FCD805 /* BeatPluginUIButton.h */,
+				B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */,
+				B680B76A2A6EBBFC00FCD805 /* BeatPluginUILabel.h */,
+				B680B7682A6EBBFC00FCD805 /* BeatPluginUILabel.m */,
+				B680B76D2A6EBBFC00FCD805 /* BeatPluginUIDropdown.h */,
+				B680B76B2A6EBBFC00FCD805 /* BeatPluginUIDropdown.m */,
+				B680B7692A6EBBFC00FCD805 /* BeatPluginUICheckbox.h */,
+				B680B76C2A6EBBFC00FCD805 /* BeatPluginUICheckbox.m */,
+				B680B7702A6EBBFC00FCD805 /* BeatPluginUITextField.h */,
+				B680B7752A6EBBFD00FCD805 /* BeatPluginUITextField.m */,
+				B680B7782A6EBBFD00FCD805 /* BeatPluginUIExports.h */,
+				B680B7772A6EBBFD00FCD805 /* BeatPluginUI.h */,
+				B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */,
+			);
+			path = "Basic UI components";
+			sourceTree = "<group>";
+		};
 		B680B75C2A6EBBE300FCD805 /* JS Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,6 +212,7 @@
 		B680B75F2A6EBBFB00FCD805 /* macOS UI */ = {
 			isa = PBXGroup;
 			children = (
+				B67F75822B1E0B020028D009 /* Basic UI components */,
 				B680B7672A6EBBFC00FCD805 /* Widget views */,
 				B680B7632A6EBBFB00FCD805 /* HTML window */,
 				B680B7612A6EBBFB00FCD805 /* BeatModalAccessoryView.h */,
@@ -214,21 +237,6 @@
 			children = (
 				B680B7742A6EBBFD00FCD805 /* BeatWidgetView.h */,
 				B680B7722A6EBBFC00FCD805 /* BeatWidgetView.m */,
-				B680B76E2A6EBBFC00FCD805 /* BeatPluginUIView.h */,
-				B680B7712A6EBBFC00FCD805 /* BeatPluginUIView.m */,
-				B680B76F2A6EBBFC00FCD805 /* BeatPluginUIButton.h */,
-				B680B7732A6EBBFC00FCD805 /* BeatPluginUIButton.m */,
-				B680B76A2A6EBBFC00FCD805 /* BeatPluginUILabel.h */,
-				B680B7682A6EBBFC00FCD805 /* BeatPluginUILabel.m */,
-				B680B76D2A6EBBFC00FCD805 /* BeatPluginUIDropdown.h */,
-				B680B76B2A6EBBFC00FCD805 /* BeatPluginUIDropdown.m */,
-				B680B7692A6EBBFC00FCD805 /* BeatPluginUICheckbox.h */,
-				B680B76C2A6EBBFC00FCD805 /* BeatPluginUICheckbox.m */,
-				B680B7702A6EBBFC00FCD805 /* BeatPluginUITextField.h */,
-				B680B7752A6EBBFD00FCD805 /* BeatPluginUITextField.m */,
-				B680B7782A6EBBFD00FCD805 /* BeatPluginUIExports.h */,
-				B680B7772A6EBBFD00FCD805 /* BeatPluginUI.h */,
-				B680B7762A6EBBFD00FCD805 /* BeatPluginUI.m */,
 			);
 			path = "Widget views";
 			sourceTree = "<group>";

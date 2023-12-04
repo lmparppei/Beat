@@ -46,6 +46,7 @@
 @class BeatStylesheet;
 @class BeatTextIO;
 @class BeatEditorFormatting;
+@class BeatPluginAgent;
 
 @protocol BeatEditorView
 - (void)reloadInBackground;
@@ -189,6 +190,11 @@
 - (void)setTypingAttributes:(NSDictionary*)attrs;
 
 
+#pragma mark - Plugin access
+
+@property (nonatomic, readonly) NSMutableDictionary* runningPlugins;
+@property (nonatomic) BeatPluginAgent* pluginAgent;
+
 #pragma mark - Fonts
 
 @property (readonly, nonatomic) BXFont *courier;
@@ -295,14 +301,13 @@
 - (void)refreshTextView;
 
 @optional
-@property (nonatomic, readonly) NSMutableDictionary* runningPlugins;
 
 - (void)returnToEditor;
 - (void)focusEditor;
 - (IBAction)toggleCards:(id)sender;
 
-- (void)runPlugin:(NSString*)pluginWithName;
-- (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
+// - (void)runPlugin:(NSString*)pluginWithName;
+// - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
 
 - (IBAction)nextScene:(id)sender;
 - (IBAction)previousScene:(id)sender;
