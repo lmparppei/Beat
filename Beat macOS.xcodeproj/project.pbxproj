@@ -187,6 +187,8 @@
 		B67F75792B1739350028D009 /* BeatDynamicColor.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B621D1C02A803EC700D072E6 /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B67F757A2B173A950028D009 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117072A6EC9220053228F /* UnzipKit.framework */; };
 		B67F757B2B173A950028D009 /* UnzipKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B62117072A6EC9220053228F /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B67F75932B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */; };
+		B67F75942B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */; };
 		B6829BFB25AB727600C0595B /* BeatEpisodePrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */; };
 		B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
 		B68691A227845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
@@ -307,8 +309,6 @@
 		B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */; };
 		B6AA48052B01421A0047EB65 /* BeatTimerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */; };
 		B6AA48062B01421A0047EB65 /* BeatTimerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */; };
-		B6AA48082B014A110047EB65 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48072B014A110047EB65 /* BeatTimerWindow.xib */; };
-		B6AA48092B014A110047EB65 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48072B014A110047EB65 /* BeatTimerWindow.xib */; };
 		B6AA48482B0657DF0047EB65 /* cards.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48472B0657DF0047EB65 /* cards.jpg */; };
 		B6AA48492B0657DF0047EB65 /* cards.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48472B0657DF0047EB65 /* cards.jpg */; };
 		B6B51B1D295B562D002182D2 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
@@ -701,6 +701,9 @@
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
+		B67F75952B1F1E5C0028D009 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BeatTimerWindow.xib; sourceTree = "<group>"; };
+		B67F75982B1F1E660028D009 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
+		B67F759A2B1F1EBA0028D009 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
 		B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6829BF825AB727600C0595B /* BeatEpisodePrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEpisodePrinter.h; sourceTree = "<group>"; };
 		B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEpisodePrinter.m; sourceTree = "<group>"; };
@@ -759,7 +762,6 @@
 		B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAntilateralThoughts.h; path = Beat/Extras/BeatAntilateralThoughts.h; sourceTree = SOURCE_ROOT; };
 		B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAntilateralThoughts.m; path = Beat/Extras/BeatAntilateralThoughts.m; sourceTree = SOURCE_ROOT; };
 		B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTimerWindow.swift; sourceTree = "<group>"; };
-		B6AA48072B014A110047EB65 /* BeatTimerWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatTimerWindow.xib; sourceTree = "<group>"; };
 		B6AA48472B0657DF0047EB65 /* cards.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cards.jpg; sourceTree = "<group>"; };
 		B6B37F6628F0585C00657F5F /* BeatFontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontManager.swift; sourceTree = "<group>"; };
 		B6B462E82708A4860056EEF1 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
@@ -1760,10 +1762,10 @@
 		B6E1E7B82700AF5E00442CA7 /* Productivity Timer */ = {
 			isa = PBXGroup;
 			children = (
+				B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */,
 				B6D26BDF24B9E7350041402B /* BeatTimerView.h */,
 				B6D26BE024B9E7350041402B /* BeatTimerView.m */,
 				B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */,
-				B6AA48072B014A110047EB65 /* BeatTimerWindow.xib */,
 				B6D26BE324B9ED830041402B /* BeatTimer.h */,
 				B6D26BE424B9ED830041402B /* BeatTimer.m */,
 			);
@@ -1991,7 +1993,7 @@
 				B6E0E1012AC5BCBC00948752 /* BeatPreviewSettings.xib in Resources */,
 				B67C2CFF2A2D29BB00B88B0F /* Templates And Tutorials.plist in Resources */,
 				B6763E8B2782317600284907 /* BeatEpisodePrinter.xib in Resources */,
-				B6AA48082B014A110047EB65 /* BeatTimerWindow.xib in Resources */,
+				B67F75932B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */,
@@ -2064,7 +2066,6 @@
 				B60A9F442977EEE500916FAA /* ThemeEditor.xib in Resources */,
 				B6E0E1022AC5BCBC00948752 /* BeatPreviewSettings.xib in Resources */,
 				B696BC392A73BCDC0078BA79 /* BeatCardsPrint.css in Resources */,
-				B6AA48092B014A110047EB65 /* BeatTimerWindow.xib in Resources */,
 				B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
 				B607519228CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,
@@ -2072,6 +2073,7 @@
 				B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */,
 				B65BB7432B0B5E0200145FCE /* DowngradeRevisions.xib in Resources */,
 				B6C7024E295DFF5C00920D82 /* Courier Prime Bold.ttf in Resources */,
+				B67F75942B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */,
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
 				B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */,
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
@@ -2529,6 +2531,16 @@
 				B65E03DB29AE18D600927056 /* sv */,
 			);
 			name = BeatPreferencesPanel.xib;
+			sourceTree = "<group>";
+		};
+		B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B67F75952B1F1E5C0028D009 /* en */,
+				B67F75982B1F1E660028D009 /* fi */,
+				B67F759A2B1F1EBA0028D009 /* sv */,
+			);
+			name = BeatTimerWindow.xib;
 			sourceTree = "<group>";
 		};
 		B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */ = {

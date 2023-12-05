@@ -1,0 +1,21 @@
+
+/* Class = "NSWindow"; title = "Timer"; ObjectID = "2Sz-kU-3Fg"; */
+"2Sz-kU-3Fg.title" = "Ajastin";
+
+/* Class = "NSButtonCell"; title = "Start"; ObjectID = "Op2-6C-nCb"; */
+"Op2-6C-nCb.title" = "Aloita";
+
+/* Class = "NSTextFieldCell"; title = "Set Timer"; ObjectID = "eOg-AA-ogk"; */
+"eOg-AA-ogk.title" = "Aseta ajastin";
+
+/* Class = "NSTextFieldCell"; title = "min"; ObjectID = "j9e-mU-UpE"; */
+"j9e-mU-UpE.title" = "min";
+
+/* Class = "NSButtonCell"; title = "Close"; ObjectID = "rPP-iq-YMW"; */
+"rPP-iq-YMW.title" = "Sulje";
+
+/* Class = "NSTextFieldCell"; placeholderString = "mm"; ObjectID = "szd-iJ-ViV"; */
+"szd-iJ-ViV.placeholderString" = "min";
+
+/* Class = "NSTextFieldCell"; title = "25"; ObjectID = "szd-iJ-ViV"; */
+"szd-iJ-ViV.title" = "25";
