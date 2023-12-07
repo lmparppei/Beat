@@ -187,8 +187,8 @@
 		B67F75792B1739350028D009 /* BeatDynamicColor.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B621D1C02A803EC700D072E6 /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B67F757A2B173A950028D009 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117072A6EC9220053228F /* UnzipKit.framework */; };
 		B67F757B2B173A950028D009 /* UnzipKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B62117072A6EC9220053228F /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B67F75932B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */; };
-		B67F75942B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */; };
+		B67F759E2B1F310D0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75A12B1F310D0028D009 /* BeatTimerWindow.xib */; };
+		B67F759F2B1F310D0028D009 /* BeatTimerWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67F75A12B1F310D0028D009 /* BeatTimerWindow.xib */; };
 		B6829BFB25AB727600C0595B /* BeatEpisodePrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */; };
 		B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
 		B68691A227845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
@@ -701,9 +701,9 @@
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
-		B67F75952B1F1E5C0028D009 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BeatTimerWindow.xib; sourceTree = "<group>"; };
-		B67F75982B1F1E660028D009 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
-		B67F759A2B1F1EBA0028D009 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
+		B67F75A02B1F310D0028D009 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatTimerWindow.xib; sourceTree = "<group>"; };
+		B67F75A22B1F31130028D009 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
+		B67F75A32B1F31170028D009 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
 		B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6829BF825AB727600C0595B /* BeatEpisodePrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEpisodePrinter.h; sourceTree = "<group>"; };
 		B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEpisodePrinter.m; sourceTree = "<group>"; };
@@ -1762,7 +1762,7 @@
 		B6E1E7B82700AF5E00442CA7 /* Productivity Timer */ = {
 			isa = PBXGroup;
 			children = (
-				B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */,
+				B67F75A12B1F310D0028D009 /* BeatTimerWindow.xib */,
 				B6D26BDF24B9E7350041402B /* BeatTimerView.h */,
 				B6D26BE024B9E7350041402B /* BeatTimerView.m */,
 				B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */,
@@ -1941,7 +1941,6 @@
 						};
 					};
 					B68B6021260B849300463AD8 = {
-						DevelopmentTeam = C3R7KAVB6V;
 						ProvisioningStyle = Automatic;
 					};
 					B6B85FB82A224E3000C7713A = {
@@ -1989,11 +1988,11 @@
 				B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
+				B67F759E2B1F310D0028D009 /* BeatTimerWindow.xib in Resources */,
 				B60A9F432977EEE400916FAA /* ThemeEditor.xib in Resources */,
 				B6E0E1012AC5BCBC00948752 /* BeatPreviewSettings.xib in Resources */,
 				B67C2CFF2A2D29BB00B88B0F /* Templates And Tutorials.plist in Resources */,
 				B6763E8B2782317600284907 /* BeatEpisodePrinter.xib in Resources */,
-				B67F75932B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */,
@@ -2066,6 +2065,7 @@
 				B60A9F442977EEE500916FAA /* ThemeEditor.xib in Resources */,
 				B6E0E1022AC5BCBC00948752 /* BeatPreviewSettings.xib in Resources */,
 				B696BC392A73BCDC0078BA79 /* BeatCardsPrint.css in Resources */,
+				B67F759F2B1F310D0028D009 /* BeatTimerWindow.xib in Resources */,
 				B696BC332A7151D50078BA79 /* Index Card View.beatPlugin in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
 				B607519228CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,
@@ -2073,7 +2073,6 @@
 				B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */,
 				B65BB7432B0B5E0200145FCE /* DowngradeRevisions.xib in Resources */,
 				B6C7024E295DFF5C00920D82 /* Courier Prime Bold.ttf in Resources */,
-				B67F75942B1F1E5C0028D009 /* BeatTimerWindow.xib in Resources */,
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
 				B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */,
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
@@ -2533,12 +2532,12 @@
 			name = BeatPreferencesPanel.xib;
 			sourceTree = "<group>";
 		};
-		B67F75962B1F1E5C0028D009 /* BeatTimerWindow.xib */ = {
+		B67F75A12B1F310D0028D009 /* BeatTimerWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B67F75952B1F1E5C0028D009 /* en */,
-				B67F75982B1F1E660028D009 /* fi */,
-				B67F759A2B1F1EBA0028D009 /* sv */,
+				B67F75A02B1F310D0028D009 /* Base */,
+				B67F75A22B1F31130028D009 /* fi */,
+				B67F75A32B1F31170028D009 /* sv */,
 			);
 			name = BeatTimerWindow.xib;
 			sourceTree = "<group>";
@@ -2824,7 +2823,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133270;
+				CURRENT_PROJECT_VERSION = 133271;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2843,7 +2842,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.997.7;
+				MARKETING_VERSION = 1.997.8;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2868,9 +2867,10 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133270;
+				CURRENT_PROJECT_VERSION = 133271;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2887,7 +2887,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.997.7;
+				MARKETING_VERSION = 1.997.8;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2913,7 +2913,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133270;
+				CURRENT_PROJECT_VERSION = 133271;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2928,7 +2928,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.997.7;
+				MARKETING_VERSION = 1.997.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
@@ -2957,7 +2957,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133270;
+				CURRENT_PROJECT_VERSION = 133271;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -2971,7 +2971,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.997.7;
+				MARKETING_VERSION = 1.997.8;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";

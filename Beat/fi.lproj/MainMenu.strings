@@ -129,7 +129,7 @@
 "DDL-Xk-f31.title" = "Etsi seuraava";
 
 /* Class = "NSMenuItem"; title = "Make Upper Case"; ObjectID = "DII-3I-Hfz"; */
-"DII-3I-Hfz.title" = "MUUTA VERSAALIKSI";
+"DII-3I-Hfz.title" = "MUUTA SUURAAKKOSIKSI";
 
 /* Class = "NSMenuItem"; title = "Close"; ObjectID = "DVo-aG-piG"; */
 "DVo-aG-piG.title" = "Sulje";
@@ -578,16 +578,19 @@
 "SxS-6o-8ac.title" = "Lisää kommentti valintaan";
 "Otr-Sx-8w0.title" = "Kommentit";
 
-"soE-DO-Gl8.title" = "Kopioi valittu kappale";
-"3wC-eS-bpF.title" = "Leikkaa valittu kappale";
-"P2e-v3-Dx2.title" = "Siirrä valittu kappale ylemmäs";
-"fVz-La-McU.title" = "Siirrä valittu kappale alemmas";
+"soE-DO-Gl8.title" = "Kopioi kappale";
+"3wC-eS-bpF.title" = "Leikkaa kappale";
+"P2e-v3-Dx2.title" = "Siirrä kappale ylemmäs";
+"fVz-La-McU.title" = "Siirrä kappale alemmas";
 
 "NBi-pE-q3K.title" = "Varmuuskopiot";
 
 "ADX-2t-uCR.title" = "Alleviivausta";
 "efm-eP-Ffo.title" = "Tekstin väriä";
-"Uuq-ET-iMU.title" = "Korosta korjaukset käyttäen...";
+"hn7-em-kBb.title" = "Korosta korjaukset käyttäen...";
+"alM-1M-jHF.title" = "Hallitse korjauksia";
+"xQU-Mc-KQo.title" = "Alenna korjausten tasoa...";
+"V8k-hJ-f7a.title" = "Muunna tai poista korjauksia...";
 
 "A0Q-na-kPj.title" = "Avaa kehittäjäkonsoli...";
 
@@ -605,4 +608,7 @@
 "xGE-gP-9DS.title" = "Magenta";
 
 "otc-RL-GwA.title" = "Uusi käyttäen mallipohjaa";
+
+"VUa-7O-npW.title" = "Siirry...";
+
 

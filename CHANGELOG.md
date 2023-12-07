@@ -3,6 +3,10 @@
 ## Beat 1.997.8
 
 - Reanimating the ad hoc distribution
+- Moved plugin methods to a separate agent
+- Added very rudimentary license management
+- Fixed translations
+
 
 
 ## Beat 1.997.7

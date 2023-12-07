@@ -531,6 +531,7 @@
 
 /* Class = "NSMenu"; title = "Highlight Revisions Using..."; ObjectID = "Uuq-ET-iMU"; */
 "Uuq-ET-iMU.title" = "Visa revisioner med...";
+"hn7-em-kBb.title" = "Visa revisioner med...";
 
 /* Class = "NSMenuItem"; title = "Show Scene Numbers"; ObjectID = "V7o-Tn-OF3"; */
 "V7o-Tn-OF3.title" = "Visa scennummer";
@@ -608,3 +609,7 @@
 "zZ3-DN-fPe.title" = "Tal";
 
 "otc-RL-GwA.title" = "Ny med mall";
+
+"alM-1M-jHF.title" = "Hantera revisioner";
+"xQU-Mc-KQo.title" = "Nedgradera revisioner...";
+"V8k-hJ-f7a.title" = "Konvertera/rensa revisioner...";

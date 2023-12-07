@@ -1225,13 +1225,12 @@ Line *cachedRectLine;
 		menu = [super menu];
 		[menu addItem:NSMenuItem.separatorItem];
 		
-		for (id item in self.contextMenu.itemArray) {
-			[menu addItem:[item copy]];
-		}
+		for (NSMenuItem* item in self.contextMenu.itemArray) [menu addItem:item.copy];
 	}
 	
 	return menu;
 }
+
 
 
 #pragma mark - Scrolling interface
@@ -1535,6 +1534,16 @@ double clamp(double d, double min, double max) {
 		}
 	}
 }
+
+
+#pragma mark - Validate menu items
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem {
+	// Remove context menu for layout orientation change
+	if (anItem.action == @selector(changeLayoutOrientation:)) return NO;
+	return [super validateUserInterfaceItem:anItem];
+}
+
 
 #pragma mark - Layout Manager delegation
 
