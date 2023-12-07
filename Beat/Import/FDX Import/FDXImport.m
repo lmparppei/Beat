@@ -234,7 +234,7 @@
 	else if ([elementName isEqualToString:@"Paragraph"] && _element.string.length > 0) {
 		[self addParagraph];
 	}
-	else if ([elementName isEqualToString:@"ScriptNote"]) {
+	else if ([elementName isEqualToString:@"ScriptNote"] && _openNote != nil) {
 		[_notes addObject:_openNote];
 	}
 
