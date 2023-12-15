@@ -12,6 +12,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatThemes/BeatThemes.h>
 
 #import "OutlineViewItem.h"
@@ -20,5 +21,7 @@
 
 #import "BeatPrintView.h"
 #import "TemplateCollectionViewController.h"
+
+#import "BeatHTMLRenderer.h"
 
 #endif /* Beat_iOS_Bridging_Header_h */

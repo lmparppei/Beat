@@ -73,7 +73,7 @@ import BeatCore
 	var exportSettings:BeatExportSettings { get }
 }
 
-public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
+@objc public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
     /// If you provide an editor delegate, pagination manager will automatically fetch screenplay and export settings from the editor.
     public weak var editorDelegate:BeatEditorDelegate?
     

@@ -587,8 +587,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Get number of pages / page number for selection
 	NSInteger numberOfPages = 0;
-	if (wholeDocument) numberOfPages = _editorDelegate.numberOfPages;
-	else numberOfPages = [_editorDelegate getPageNumberAt:self.selectedRange.location];
+	if (wholeDocument) numberOfPages = _editorDelegate.previewController.pagination.numberOfPages;
+	else numberOfPages = [_editorDelegate.previewController.pagination pageNumberAt:self.selectedRange.location];
 	
 	// Create the string
 	NSString* infoString = [NSString stringWithFormat:

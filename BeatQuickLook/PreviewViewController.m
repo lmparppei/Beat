@@ -12,7 +12,7 @@
 #import <Quartz/Quartz.h>
 #import "Beat-Swift.h"
 
-@interface PreviewViewController () <QLPreviewingController, BeatNativePreviewDelegate, BeatQuickLookDelegate, BeatExportSettingDelegate>
+@interface PreviewViewController () <QLPreviewingController, BeatPreviewManagerDelegate, BeatQuickLookDelegate, BeatExportSettingDelegate>
 @property (nonatomic) IBOutlet BeatPreviewController* previewController;
 @property (nonatomic) BeatDocumentSettings* settings;
 @end

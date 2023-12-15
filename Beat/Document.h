@@ -109,8 +109,6 @@ THE SOFTWARE.
 
 @property (nonatomic) bool moving;
 
-- (void)invalidatePreview;
-
 
 // Scrolling
 

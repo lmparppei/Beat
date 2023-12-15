@@ -116,7 +116,7 @@
 
 - (void)drawPageSeparators:(const NSRange*)glyphsToShow
 {
-    if (!self.editorDelegate.showPageNumbers || ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
+    if (!self.editorDelegate.showPageNumbers && ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
     
     static BXColor* pageBreakColor;
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];

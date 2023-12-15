@@ -25,6 +25,9 @@
 @class BeatTagging;
 @class BeatPluginAgent;
 
+@class BeatPaginationManager;
+@class BeatPagination;
+
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
 @property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
@@ -36,6 +39,16 @@
 @protocol BeatPluginInstance
 @property (nonatomic) bool restorable;
 @property (nonatomic) NSString* _Nonnull pluginName;
+- (void)previewDidFinish:(BeatPagination* _Nullable)operation indices:(NSIndexSet* _Nullable)indices;
+@end
+
+/// This is a protocol for the generic preview controller. Because of cross-framework mess, we can't use the actual controller here.
+@protocol BeatPreviewControllerInstance
+- (id _Nullable)getPagination;
+- (void)resetPreview;
+- (void)createPreviewWithChangedRange:(NSRange)range sync:(bool)sync;
+- (void)invalidatePreviewAt:(NSRange)range;
+- (void)renderOnScreen;
 @end
 
 #if TARGET_OS_OSX
@@ -46,11 +59,15 @@
 @interface BeatDocumentBaseController:UIViewController
 #endif
 
-// Document settings
+#pragma mark - Document settings
 @property (nonatomic) BeatDocumentSettings* _Nonnull documentSettings;
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 
-// Parser
+/// macOS only – `true` when loading and initial formatting is still in process
+@property (nonatomic) bool documentIsLoading;
+
+
+#pragma mark - Parser
 @property (strong, nonatomic) ContinuousFountainParser* _Nullable parser;
 /// Returns a copy of the outline
 @property (nonatomic) NSArray* _Nonnull outline;
@@ -166,6 +183,21 @@ NS_ASSUME_NONNULL_END
 - (void)setTypeAndFormat:(Line* _Nonnull)line type:(LineType)type;
 /// A convenience method which reformats lines in given indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet * _Nonnull)indices;
+
+
+#pragma mark - Preview
+
+@property (nonatomic) id<BeatPreviewControllerInstance> _Nonnull previewController;
+@property (nonatomic, readonly) BeatPaginationManager* _Nonnull paginator;
+@property (nonatomic, readonly) BeatPaginationManager* _Nonnull pagination;
+
+- (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> * _Nonnull)pageBreaks;
+
+- (void)resetPreview;
+- (void)invalidatePreview;
+- (void)invalidatePreviewAt:(NSInteger)index;
+- (void)createPreviewAt:(NSRange)range;
+- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
 
 #pragma mark - Revisions
 

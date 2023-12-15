@@ -20,6 +20,7 @@
 		B663A6D229F1C3D80036FE6B /* BeatPageBreak.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6C729F1C3D80036FE6B /* BeatPageBreak.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663A6D329F1C3D80036FE6B /* BeatPaginationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */; };
 		B663A6DE29F1C4F70036FE6B /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6DD29F1C4F70036FE6B /* BeatCore.framework */; };
+		B68E3F2B2B2BB90600C63B71 /* BeatPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatPaginationManager.swift; sourceTree = "<group>"; };
 		B663A6DD29F1C4F70036FE6B /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B663A6F429F1DD140036FE6B /* Beat Pagination Framework.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Beat Pagination Framework.md"; sourceTree = "<group>"; };
+		B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */,
+				B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */,
 				B663A6C229F1C3D80036FE6B /* BeatPagination.h */,
 				B663A6C029F1C3D80036FE6B /* BeatPagination.m */,
 				B663A6C629F1C3D80036FE6B /* BeatPaginationPage.h */,
@@ -190,6 +193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */,
+				B68E3F2B2B2BB90600C63B71 /* BeatPreviewManager.swift in Sources */,
 				B663A6D029F1C3D80036FE6B /* BeatPageBreak.m in Sources */,
 				B663A6CB29F1C3D80036FE6B /* BeatPagination.m in Sources */,
 				B663A6CC29F1C3D80036FE6B /* BeatPaginationPage.m in Sources */,

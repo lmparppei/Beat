@@ -12,6 +12,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatTextStorage.h"
+#import "Beat-Swift.h"
 
 typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	NoPopup,
@@ -61,14 +62,13 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @property (nonatomic, readonly) BeatStylesheet *editorStyles;
 
+@property (nonatomic, readonly) BeatPreviewController* previewController;
+
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
 - (void)showLockStatus;
 - (void)handleTabPress;
-
-- (NSInteger)getPageNumberAt:(NSInteger)location;
-- (NSInteger)numberOfPages;
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
@@ -112,9 +112,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 - (void)ensureRangeIsVisible:(NSRange)range;
-
-// Page numbering
-- (void)deletePageNumbers;
 
 -(void)redrawAllGlyphs;
 -(void)redrawUI;

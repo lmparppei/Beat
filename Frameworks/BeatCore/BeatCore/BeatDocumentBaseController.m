@@ -13,6 +13,7 @@
 #import <BeatCore/NSTextView+UX.h>
 #import <BeatCore/BeatEditorFormatting.h>
 #import <BeatCore/BeatUserDefaults.h>
+#import <BeatCore/BeatLayoutManager.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
@@ -78,11 +79,6 @@
     [self.editorStyles reload];
     [self resetPreview];
     // NOTE: This has to be called in OS-specific implementation as well.
-}
-
-- (void)resetPreview
-{
-    NSLog(@"resetPreview has to be overridden in implementation");
 }
 
 /// Returns __actual__ line height for editor view
@@ -346,6 +342,76 @@
     if (self.parser.outline == nil) return @[];
     else return self.parser.outline.copy;
 }
+
+
+#pragma mark - Preview creation
+/// - note: The base class has no knowledge of OS-specific implementation of the preview controller.
+
+- (void)createPreviewAt:(NSRange)range
+{
+    [self.previewController createPreviewWithChangedRange:range sync:false];
+}
+
+- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync
+{
+    [self.previewController createPreviewWithChangedRange:range sync:sync];
+}
+
+- (void)invalidatePreview
+{
+    [self.previewController resetPreview];
+}
+
+- (void)invalidatePreviewAt:(NSInteger)index
+{
+    [self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
+}
+
+- (void)resetPreview
+{
+    [self.previewController resetPreview];
+}
+
+
+#pragma mark - Pagination
+
+/// Returns the current pagination in preview controller
+/// - note: Required to conform to plugin API.
+- (BeatPaginationManager*)pagination { return self.previewController.getPagination; }
+- (BeatPaginationManager*)paginator { return self.previewController.getPagination; }
+
+/// Paginates this document from scratch
+- (void)paginate
+{
+    [self paginateAt:(NSRange){0,0} sync:NO];
+}
+
+- (void)paginateAt:(NSRange)range sync:(bool)sync
+{
+    // Don't paginate while loading
+    if (!self.documentIsLoading) [self.previewController createPreviewWithChangedRange:range sync:sync];
+}
+
+/// Pagination finished — called when preview controller has finished creating pagination
+- (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> * _Nonnull)pageBreaks
+{
+    __block NSIndexSet* changedIndices = indices.copy;
+    
+    // We might be in a background thread, so make sure to dispach this call to main thread
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        // Update pagination in text view
+        BeatLayoutManager* lm = (BeatLayoutManager*)self.layoutManager;
+        lm.pageBreaks = pageBreaks;
+        
+        self.textView.needsDisplay = true;
+        
+        // Tell plugins the preview has been finished
+        for (id<BeatPluginInstance> plugin in self.runningPlugins.allValues) {
+            [plugin previewDidFinish:operation indices:changedIndices];
+        }
+    });
+}
+
 
 
 #pragma mark - Text view components

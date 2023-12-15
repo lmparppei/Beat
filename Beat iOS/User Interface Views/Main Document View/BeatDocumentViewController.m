@@ -23,17 +23,12 @@
 @property (nonatomic) NSString* bufferedText;
 @property (nonatomic) BeatUITextView* textView;
 
-@property (nonatomic) bool documentIsLoading;
-
-@property (nonatomic) BeatPreview* preview;
 @property (nonatomic) BeatPreviewView* previewView;
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
-
-@property (nonatomic) BeatPaginationManager *pagination;
 
 /// The range which was *actually* changed
 @property (nonatomic) NSRange lastChangedRange;
@@ -81,7 +76,7 @@
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
 	if (self) {
-		_documentIsLoading = true;
+		self.documentIsLoading = true;
 	}
 	
 	return self;
@@ -195,13 +190,12 @@
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
-	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
-	
 	// Init preview
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
-	self.preview = [BeatPreview.alloc initWithDelegate:self];
 	
+	self.previewController = BeatPreviewController.new;
+		
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
 	
@@ -230,7 +224,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if (_documentIsLoading) {
+	if (self.documentIsLoading) {
 		// Loading is complete, show page view
 		[self.textView layoutIfNeeded];
 		
@@ -241,7 +235,7 @@
 		[self.textView firstResize];
 		[self.textView resize];
 		
-		_documentIsLoading = false;
+		self.documentIsLoading = false;
 	}
 }
 
@@ -355,94 +349,17 @@
 	}];
 }
 
+
 #pragma mark - Preview / Pagination
 
-/**
- __N.B.__ / note to self:
- This doesn't really make any sense. This should follow the design pattern of macOS, though written better:
- There, pagination is just a byproduct of previews. This way, once any changes were made (including just attribute changes etc.),
- we can just invalidate the previes at given range and get both for free. Now we're telling this controller to invalidate
- preview, but we're *actually* invalidating pagination.
- 
- Correct pattern should be:
- - change made
- - invalidate preview in preview controller
- ... build new pagination
- ... build new preview
- ... BOTH of them are now up to date
- 
- We should also allow the pagination to receive a CHANGED RANGE instead of just an index.
- It would allow larger changes to be made, while still supporting caching previous results etc.
- 
- */
-
-static bool buildPreviewImmediately = false;
 - (IBAction)togglePreview:(id)sender
 {
-	if (!_previewUpdated) {
-		buildPreviewImmediately = true;
-		[self paginate];
-	} else {
-		[self.preview displayPreview];
-	}
-	
 	[self presentViewController:self.previewView animated:true completion:nil];
 }
 
 - (void)previewDidFinish
 {
 	//
-}
-
-- (void)paginate
-{
-	[self paginateWithChangeAt:NSMakeRange(0, 0) sync:true];
-}
-
-- (void)paginateWithChangeAt:(NSRange)range sync:(bool)sync
-{
-	[self.previewTimer invalidate];
-	self.preview.previewUpdated = false;
-	
-	if (sync) {
-		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-		BeatScreenplay* screenplay = [BeatScreenplay from:self.parser settings:self.exportSettings];
-		[self.pagination newPaginationWithScreenplay:screenplay settings:self.exportSettings forEditor:true changeAt:range.location];
-	} else {
-		self.previewTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:false block:^(NSTimer * _Nonnull timer) {
-			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
-				[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-				BeatScreenplay* screenplay = [BeatScreenplay from:self.parser settings:self.exportSettings];
-				[self.pagination newPaginationWithScreenplay:screenplay settings:self.exportSettings forEditor:true changeAt:range.location];
-			});
-		}];
-	}
-}
-
-- (void)invalidatePreview
-{
-	// Mark the current preview as invalid
-	[self paginateWithChangeAt:NSMakeRange(0, 0) sync:false];
-	self.preview.previewUpdated = NO;
-}
-
-- (void)invalidatePreviewAt:(NSInteger)index
-{
-	[self paginateWithChangeAt:NSMakeRange(index, 0) sync:false];
-	self.preview.previewUpdated = NO;
-}
-
-/// Backwards compatibility
-- (void)resetPreview {
-	[self invalidatePreviewAt:0];
-}
-
-- (void)createPreviewAt:(NSRange)range {
-	[self paginateWithChangeAt:range sync:true];
-}
-
-- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync {
-	[self paginateWithChangeAt:range sync:sync];
 }
 
 
@@ -470,7 +387,8 @@ static bool buildPreviewImmediately = false;
 
 #pragma mark - Text view delegation
 
-/// The main method where changes are parsed
+/// The main method where changes are parsed.
+/// - note: This is different from macOS, where changes are parsed in text view delegate method `shouldChangeText`, meaning they get parsed before anything is actually added to the text view. Changes on iOS are parsed **after** text has hit the text storage, which can cause some headache.
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
 {
 	if (self.documentIsLoading) return;
@@ -576,7 +494,7 @@ static bool buildPreviewImmediately = false;
 	self.attrTextCache = textView.attributedText;
 	
 	// If we are just opening the document, do nothing
-	if (_documentIsLoading) return;
+	if (self.documentIsLoading) return;
 		
 	// Save
 	[self.document updateChangeCount:UIDocumentChangeDone];
@@ -599,7 +517,7 @@ static bool buildPreviewImmediately = false;
 	}
 	
 	// Paginate
-	[self paginateWithChangeAt:_lastChangedRange sync:false];
+	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
 	
 	// Update plugins
 	[self.pluginAgent updatePlugins:_lastChangedRange];
@@ -723,6 +641,7 @@ static bool buildPreviewImmediately = false;
 	[self.formatting formatAllLinesOfType:heading];
 	[self resetPreview];
 }
+
 
 #pragma mark - Editor text view values
 
@@ -870,7 +789,6 @@ static bool buildPreviewImmediately = false;
 }
 
 
-
 #pragma mark - Printing stuff for iOS
 
 - (IBAction)openExportPanel:(id)sender {
@@ -893,6 +811,7 @@ static bool buildPreviewImmediately = false;
 - (UIPrintInfo*)printInfo {
 	return UIPrintInfo.new;
 }
+
 
 #pragma mark - General editor stuff
 
@@ -993,26 +912,6 @@ static bool buildPreviewImmediately = false;
 	}];
 }
 
-
-#pragma mark - Title menu provider
-
-
-
-#pragma mark - Pagination
-
-- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
-	// Update preview in main thread
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		self.preview.previewUpdated = false;
-		
-		if (buildPreviewImmediately) {
-			[self.preview displayPreview];
-		} else {
-			// Send back to background thread
-			[self.preview updatePreviewAsync];
-		}
-	});
-}
 
 
 #pragma mark - Minimal plugin support

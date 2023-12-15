@@ -107,7 +107,7 @@
 #import "BeatEditorButton.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -144,7 +144,6 @@
 @property (weak, nonatomic) IBOutlet MarginView *marginView;
 @property (weak, nonatomic) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSLayoutManager *layoutManager;
-@property (nonatomic) bool documentIsLoading;
 
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;
@@ -325,6 +324,7 @@
 @implementation Document
 
 @dynamic textView;
+@dynamic previewController;
 
 #pragma mark - Document Initialization
 
@@ -646,10 +646,6 @@ static BeatAppDelegate *appDelegate;
 	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
-- (void)resetPreview {
-	[self.previewController resetPreview];
-}
-
 	
 #pragma mark - Misc document stuff
 
@@ -711,11 +707,7 @@ static BeatAppDelegate *appDelegate;
 	}
 	
 	if (oldShowPageNumbers != self.showPageNumbers) {
-		if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
-		else {
-			self.textView.pageBreaks = nil;
-			[self.textView deletePageNumbers];
-		}
+		[self.textView setNeedsDisplay:true];
 	}
 	
 	if (oldShowSceneNumbers != self.showSceneNumberLabels) {
@@ -803,7 +795,7 @@ static BeatAppDelegate *appDelegate;
 	[self updateLayout];
 	[self.textView loadCaret];
 	
-	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
+	if (paginate) [self.previewController resetPreview];
 }
 
 // Can I come over, I need to rest
@@ -1272,12 +1264,11 @@ static NSWindow __weak *currentKeyWindow;
 	
 	NSData *data = [NSData dataWithContentsOfURL:url];
 	_revertedTo = url;
-	_documentIsLoading = YES;
+	self.documentIsLoading = YES;
 	
 	[self readFromData:data ofType:typeName error:nil reverting:YES];
 	
-	//[self.textView deleteSceneNumberLabels];
-	[self.textView deletePageNumbers];
+	[self.textView setNeedsDisplay:true];
 	
 	self.textView.alphaValue = 0.0;
 	[self setText:self.contentBuffer];
@@ -1500,7 +1491,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)textDidChange:(NSNotification *)notification
 {
 	// If we are just opening the document, do nothing
-	if (_documentIsLoading) return;
+	if (self.documentIsLoading) return;
 
 	// Begin from top if no last changed range was set
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
@@ -1538,7 +1529,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 
 	// Paginate
-	[self paginateAt:_lastChangedRange sync:NO];
+	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
 	
 	// A larger chunk of text was pasted. Ensure layout.
 	if (_lastChangedRange.length > 5) [self ensureLayout];
@@ -1560,7 +1551,7 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
-	if (_documentIsLoading) return;
+	if (self.documentIsLoading) return;
 	
 	if (editedMask & NSTextStorageEditedCharacters) {
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
@@ -1574,7 +1565,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
-	if (_documentIsLoading) return;
+	if (self.documentIsLoading) return;
 	
 	// Reset forced character input
 	if (self.characterInputForLine != self.currentLine && self.characterInput) {
@@ -2362,20 +2353,6 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Preview
 
-- (void)invalidatePreview { [self.previewController resetPreview]; }
-
-- (void)createPreviewAt:(NSRange)range
-{
-	[self.previewController createPreviewWithChangedRange:range sync:false];
-}
-- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync
-{
-	[self.previewController createPreviewWithChangedRange:range sync:sync];
-}
-
-- (void)invalidatePreviewAt:(NSInteger)index {
-	[self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
-}
 
 - (IBAction)preview:(id)sender
 {
@@ -2390,6 +2367,7 @@ static NSWindow __weak *currentKeyWindow;
 - (BOOL)previewVisible {
 	return (self.currentTab == _nativePreviewTab);
 }
+
 
 - (void)cancelOperation:(id) sender
 {
@@ -2875,65 +2853,12 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Pagination
 
-/**
-  TODO: Please, please, please make an iOS-compatible version of the preview controller, so we can move all this to the base document controller. Better yet, make previewController a protocol, and have both OS versions conform to that.
- */
-
-/// Returns the current pagination in preview controller
-/// - note: Required to conform to plugin API.
-- (BeatPaginationManager*)pagination { return self.previewController.pagination; }
-- (BeatPaginationManager*)paginator { return self.previewController.pagination; }
-
 - (IBAction)togglePageNumbers:(id)sender
 {
 	self.showPageNumbers = !self.showPageNumbers;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
-	if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
-	
 	self.textView.needsDisplay = true;
-}
-
-/// Paginates this document from scratch
-- (void)paginate
-{
-	[self paginateAt:(NSRange){0,0} sync:NO];
-}
-
-- (void)paginateAt:(NSRange)range sync:(bool)sync
-{
-	// Don't paginate while loading
-	if (!self.documentIsLoading) [self.previewController createPreviewWithChangedRange:range sync:sync];
-}
-
-/// Pagination finished — called when preview controller has finished creating pagination
--(void)paginationFinished:(BeatPagination *)operation indices:(NSIndexSet *)indices {
-	__block NSIndexSet* changedIndices = indices.copy;
-	
-	// We might be in a background thread, so make sure to dispach this call to main thread
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		// Update pagination in text view
-		BeatLayoutManager* lm = (BeatLayoutManager*)self.textView.layoutManager;
-		lm.pageBreaks = operation.editorPageBreaks;
-		
-		self.textView.needsDisplay = true;
-		
-		// Tell plugins the preview has been finished
-		for (NSString *name in self.runningPlugins.allKeys) {
-			BeatPlugin *plugin = self.runningPlugins[name];
-			[plugin previewDidFinish:operation indices:changedIndices];
-		}
-	});
-}
-
-- (NSInteger)numberOfPages
-{
-	return self.previewController.pagination.numberOfPages;
-}
-
-- (NSInteger)getPageNumberAt:(NSInteger)location
-{
-	return [self.previewController.pagination pageNumberAt:location];
 }
 
 
@@ -2966,7 +2891,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self updateLayout];
 	
-	[self paginate];
 	[self.previewController resetPreview];
 	
 	// Ensure layout for text container
