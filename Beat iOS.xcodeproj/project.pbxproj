@@ -33,6 +33,11 @@
 		B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */; };
 		B63AB3C62A58376B00B28BC0 /* BeatTemplateDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */; };
 		B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */; };
+		B64AD6272B2F900600EBD63A /* QuickLookThumbnailing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD5F42B2F698D00EBD63A /* QuickLookThumbnailing.framework */; };
+		B64AD62A2B2F900600EBD63A /* ThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64AD6292B2F900600EBD63A /* ThumbnailProvider.swift */; };
+		B64AD62E2B2F900600EBD63A /* BeatThumbnailProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B64AD6352B2F915900EBD63A /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6342B2F915900EBD63A /* BeatParsing.framework */; };
+		B64AD6392B2F916100EBD63A /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6382B2F916100EBD63A /* BeatCore.framework */; };
 		B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -78,6 +83,16 @@
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B64AD62C2B2F900600EBD63A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B64AD6252B2F900600EBD63A;
+			remoteInfo = BeatThumbnailProvider;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		B64AD6032B2F69A000EBD63A /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -85,6 +100,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				B64AD62E2B2F900600EBD63A /* BeatThumbnailProvider.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +156,11 @@
 		B64AD6042B2F69AB00EBD63A /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B64AD6082B2F69B400EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B64AD61E2B2F72CC00EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeatThumbnailProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64AD6292B2F900600EBD63A /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
+		B64AD62B2B2F900600EBD63A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B64AD6342B2F915900EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64AD6382B2F916100EBD63A /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
@@ -193,6 +214,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B64AD6232B2F900600EBD63A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B64AD6392B2F916100EBD63A /* BeatCore.framework in Frameworks */,
+				B64AD6272B2F900600EBD63A /* QuickLookThumbnailing.framework in Frameworks */,
+				B64AD6352B2F915900EBD63A /* BeatParsing.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CB96ED282FEB6500C7AFC7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -219,6 +250,7 @@
 			isa = PBXGroup;
 			children = (
 				B6CB96F1282FEB6500C7AFC7 /* Beat iOS */,
+				B64AD6282B2F900600EBD63A /* BeatThumbnailProvider */,
 				B138B57419E1C973000489C4 /* Products */,
 				B69311B6296EDFF300CF4869 /* Frameworks */,
 			);
@@ -229,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				B6CB96F0282FEB6500C7AFC7 /* Beat.app */,
+				B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -335,6 +368,15 @@
 			path = Editor;
 			sourceTree = "<group>";
 		};
+		B64AD6282B2F900600EBD63A /* BeatThumbnailProvider */ = {
+			isa = PBXGroup;
+			children = (
+				B64AD6292B2F900600EBD63A /* ThumbnailProvider.swift */,
+				B64AD62B2B2F900600EBD63A /* Info.plist */,
+			);
+			path = BeatThumbnailProvider;
+			sourceTree = "<group>";
+		};
 		B686FF892971BC6500789C8D /* Exporting and rendering */ = {
 			isa = PBXGroup;
 			children = (
@@ -372,6 +414,8 @@
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B64AD6382B2F916100EBD63A /* BeatCore.framework */,
+				B64AD6342B2F915900EBD63A /* BeatParsing.framework */,
 				B64AD61E2B2F72CC00EBD63A /* BeatParsing.framework */,
 				B64AD6082B2F69B400EBD63A /* BeatParsing.framework */,
 				B64AD6042B2F69AB00EBD63A /* BeatCore.framework */,
@@ -458,6 +502,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B64AD6252B2F900600EBD63A /* BeatThumbnailProvider */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B64AD62F2B2F900800EBD63A /* Build configuration list for PBXNativeTarget "BeatThumbnailProvider" */;
+			buildPhases = (
+				B64AD6222B2F900600EBD63A /* Sources */,
+				B64AD6232B2F900600EBD63A /* Frameworks */,
+				B64AD6242B2F900600EBD63A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeatThumbnailProvider;
+			productName = BeatThumbnailProvider;
+			productReference = B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B6CB96EF282FEB6500C7AFC7 /* Beat iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B6CB9703282FEB6700C7AFC7 /* Build configuration list for PBXNativeTarget "Beat iOS" */;
@@ -471,6 +532,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B64AD62D2B2F900600EBD63A /* PBXTargetDependency */,
 			);
 			name = "Beat iOS";
 			productName = "Beat iOS";
@@ -488,6 +550,11 @@
 				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Lauri-Matti Parppei";
 				TargetAttributes = {
+					B64AD6252B2F900600EBD63A = {
+						CreatedOnToolsVersion = 14.2;
+						DevelopmentTeam = C3R7KAVB6V;
+						ProvisioningStyle = Automatic;
+					};
 					B6CB96EF282FEB6500C7AFC7 = {
 						CreatedOnToolsVersion = 13.3.1;
 						DevelopmentTeam = C3R7KAVB6V;
@@ -511,11 +578,19 @@
 			projectRoot = "";
 			targets = (
 				B6CB96EF282FEB6500C7AFC7 /* Beat iOS */,
+				B64AD6252B2F900600EBD63A /* BeatThumbnailProvider */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B64AD6242B2F900600EBD63A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CB96EE282FEB6500C7AFC7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -549,6 +624,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B64AD6222B2F900600EBD63A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B64AD62A2B2F900600EBD63A /* ThumbnailProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6CB96EC282FEB6500C7AFC7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -583,6 +666,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B64AD62D2B2F900600EBD63A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B64AD6252B2F900600EBD63A /* BeatThumbnailProvider */;
+			targetProxy = B64AD62C2B2F900600EBD63A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */ = {
@@ -708,9 +799,78 @@
 			};
 			name = Release;
 		};
+		B64AD6302B2F900800EBD63A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeatThumbnailProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatThumbnailProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B64AD6312B2F900800EBD63A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeatThumbnailProvider/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatThumbnailProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		B6CB9704282FEB6700C7AFC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -767,6 +927,7 @@
 		B6CB9705282FEB6700C7AFC7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -822,6 +983,15 @@
 			buildConfigurations = (
 				B138B59119E1C974000489C4 /* Debug */,
 				B138B59219E1C974000489C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B64AD62F2B2F900800EBD63A /* Build configuration list for PBXNativeTarget "BeatThumbnailProvider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B64AD6302B2F900800EBD63A /* Debug */,
+				B64AD6312B2F900800EBD63A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

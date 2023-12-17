@@ -31,7 +31,7 @@ import BeatParsing
         }
         
         // No title page element was found, return nil
-        if lines.count == 0 { return nil }
+        if lines.count == 0 { return [] }
     
         var type:LineType = .empty
         switch key {
