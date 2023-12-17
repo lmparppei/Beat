@@ -26,12 +26,12 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	
 	@objc public var assistantView:InputAssistantView?
 	
-	var insets = UIEdgeInsets(top: 50, left: 30, bottom: 50, right: 30)
+	var insets = UIEdgeInsets(top: 50, left: 0, bottom: 50, right: 0)
 	var pinchRecognizer = UIGestureRecognizer()
 	var customLayoutManager:BeatLayoutManager
 	
 	class func linePadding() -> CGFloat {
-		return 40.0
+		return 70.0
 	}
 	
 	// MARK: - Initializers
@@ -145,8 +145,9 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	func scroll(to range: NSRange) {
 		var rect = self.rectForRange(range: range)
 		rect.origin.y += self.insets.top
-		rect.size.height += self.insets.bottom
 		rect.origin.y = self.enclosingScrollView.zoomScale * rect.origin.y
+		
+		rect.size.height += self.insets.bottom
 		
 		self.enclosingScrollView.scrollRectToVisible(rect, animated: true)
 	}

@@ -37,7 +37,7 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
-#import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatAttributes.h>
 #import "BeatTagging.h"
 #import "BeatTagItem.h"
 #import "BeatTag.h"

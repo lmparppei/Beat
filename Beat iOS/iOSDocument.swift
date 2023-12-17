@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import BeatParsing
+import BeatCore
+import QuickLook
 
 @objc protocol iOSDocumentDelegate {
 	var parser:ContinuousFountainParser? { get }
@@ -32,7 +35,7 @@ class iOSDocument: UIDocument {
 		let text = delegate?.createDocumentFile() ?? self.rawText ?? ""
 		return text.data(using: .utf8) as Any
     }
-    
+	    
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
 		rawText = String(data: contents as! Data, encoding: .utf8)
@@ -132,3 +135,55 @@ class iOSDocument: UIDocument {
 	}
 }
 
+// MARK: - Thumbnail generation
+
+extension iOSDocument {
+		
+	@objc public func generateThumbnail(size: CGSize, scale: CGFloat, completion: @escaping (UIImage) -> Void) {
+		guard let titlePageLines = self.parser.titlePage as? [[String:[Line]]] else {
+			if let image = UIImage(systemName: "doc") {
+				completion(image)
+			}
+			return
+		}
+		
+		let titlePage = BeatTitlePage(titlePageLines)
+		let image = BeatThumbnail.createThumbnail(title: titlePage.stringFor("title"))
+		
+		completion(image)
+	}
+		
+}
+
+@objc public class BeatThumbnail:NSObject {
+	class func createThumbnail(title:String = "Untitled") -> UIImage {
+		
+		let width = 300.0
+		let aspect = 1.414
+
+		let view = UIView(frame: CGRectMake(0.0, 0.0, width, width * aspect))
+		
+		let label = UILabel(frame: CGRectMake((width - width * 0.4) / 2, (width * aspect) * 0.3, width * 0.4, 30.0))
+		label.text = title
+		label.font = UIFont.boldSystemFont(ofSize: 12.0)
+		label.textAlignment = .center
+		label.textColor = .black
+		
+		view.backgroundColor = UIColor.white
+		view.layer.backgroundColor = UIColor.white.cgColor
+
+		let image = view.asImage()
+		return image
+	}
+}
+
+extension UIView {
+	// Using a function since `var image` might conflict with an existing variable
+	// (like on `UIImageView`)
+	func asImage() -> UIImage {
+		let renderer = UIGraphicsImageRenderer(bounds: bounds)
+		return renderer.image { rendererContext in
+			layer.render(in: rendererContext.cgContext)
+		}
+	}
+}

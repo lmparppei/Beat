@@ -12,12 +12,10 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPlugins/BeatPlugins.h>
 
-#import "BeatPreview.h"
-
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -32,6 +30,9 @@
 
 /// The range which was *actually* changed
 @property (nonatomic) NSRange lastChangedRange;
+
+/// Preview controller override
+@property (nonatomic) BeatPreviewController* previewController;
 
 /// The range where the *edit* happened
 @property (nonatomic) NSRange lastEditedRange;
@@ -72,6 +73,7 @@
 
 @implementation BeatDocumentViewController
 @dynamic textView;
+@dynamic previewController;
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
@@ -124,7 +126,7 @@
 	
 	// Create text view
 	[self createTextView];
-	
+		
 	// Setup document title menu
 	[self setupTitleMenu];
 	[self setupScreenplayMenuWithButton:self.screenplayButton];
@@ -160,10 +162,12 @@
 		
 		self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
 		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.document.rawText];
+		self.attrTextCache = self.formattedTextBuffer;
 		
 		// Load fonts
 		[self loadSerifFonts];
 		
+		// Format the document. We'll create a static formatting instance for this operation.
 		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
 		formatting.delegate = self;
 		
@@ -178,23 +182,24 @@
 
 - (void)setupDocument
 {
+	self.titleBar.title = self.fileNameString;
+	self.document.delegate = self;
+	
 	// Setup revision tracking and reviews
 	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
 	self.review = [BeatReview.alloc initWithDelegate:self];
 	
-	self.titleBar.title = self.fileNameString;
-	
-	self.document.delegate = self;
-	//self.contentBuffer = self.document.rawText;
-	
+	// Initialize real-time formatting
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
-	// Init preview
+	// Init preview view
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
 	
-	self.previewController = BeatPreviewController.new;
+	// Init preview controller and pagination
+	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
 		
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
@@ -362,6 +367,10 @@
 	//
 }
 
+- (bool)previewVisible
+{
+	return self.presentedViewController == self.previewView;
+}
 
 
 #pragma mark - Text I/O
@@ -369,7 +378,7 @@
 - (NSString *)text {
 	if (self.textView == nil) return self.formattedTextBuffer.string;
 	
-	if (NSThread.mainThread) return self.textView.text;
+	if (NSThread.isMainThread) return self.textView.text;
 	else return self.attrTextCache.string;
 }
 

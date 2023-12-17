@@ -21,7 +21,11 @@
 @property (nonatomic, weak) BXTextView* textView;
 @end
 
-#define X_OFFSET 50.0
+#if TARGET_OS_OSX
+    #define X_OFFSET 50.0
+#else
+    #define X_OFFSET 25.0
+#endif
 
 #if TARGET_OS_IOS
     #define BXPoint CGPoint
@@ -179,7 +183,7 @@
         // This is how you draw the page number. We just need the page number value from text view as well.
         NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
     
-        [pNumber drawInRect:NSMakeRect(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, self.editorDelegate.editorLineHeight) withAttributes:@{
+        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
             NSFontAttributeName: self.editorDelegate.courier,
             NSForegroundColorAttributeName: pageNumberColor,
             NSParagraphStyleAttributeName: self.pageNumberStyle

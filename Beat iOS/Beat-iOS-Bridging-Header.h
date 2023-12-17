@@ -12,11 +12,9 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2.h>
-#import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatThemes/BeatThemes.h>
 
 #import "OutlineViewItem.h"
-#import "BeatPreview.h"
 #import "BeatDocumentViewController.h"
 
 #import "BeatPrintView.h"

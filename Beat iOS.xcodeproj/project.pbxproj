@@ -25,7 +25,6 @@
 		B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; };
 		B621D1C52A803EE700D072E6 /* UnzipKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
-		B633C152298C58130011449D /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C150298C58130011449D /* BeatPreview.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
 		B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F76E29B7C9B80024D73A /* InputAssistantView.swift */; };
@@ -80,6 +79,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		B64AD6032B2F69A000EBD63A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B69311C4296EE00500CF4869 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -119,8 +128,6 @@
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B633C14D298C566E0011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
 		B633C14E298C566E0011449D /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Beat/User Interface/OutlineViewItem.m"; sourceTree = SOURCE_ROOT; };
-		B633C150298C58130011449D /* BeatPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = "Beat iOS/Exporting and rendering/BeatPreview.m"; sourceTree = SOURCE_ROOT; };
-		B633C151298C58130011449D /* BeatPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = "Beat iOS/Exporting and rendering/BeatPreview.h"; sourceTree = SOURCE_ROOT; };
 		B633C1E3298C622F0011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B636F76E29B7C9B80024D73A /* InputAssistantView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantView.swift; sourceTree = "<group>"; };
 		B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantCollectionView.swift; sourceTree = "<group>"; };
@@ -128,6 +135,11 @@
 		B63AB3C32A57153B00B28BC0 /* BeatTemplateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateCell.swift; sourceTree = "<group>"; };
 		B63AB3C52A58376B00B28BC0 /* BeatTemplateDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateDataSource.swift; sourceTree = "<group>"; };
 		B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController Extensions.swift"; sourceTree = "<group>"; };
+		B64AD5F42B2F698D00EBD63A /* QuickLookThumbnailing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookThumbnailing.framework; path = System/Library/Frameworks/QuickLookThumbnailing.framework; sourceTree = SDKROOT; };
+		B64AD5F62B2F698D00EBD63A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = Library/Frameworks/Quartz.framework; sourceTree = DEVELOPER_DIR; };
+		B64AD6042B2F69AB00EBD63A /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64AD6082B2F69B400EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64AD61E2B2F72CC00EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
@@ -135,7 +147,6 @@
 		B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
 		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
-		B686FF832971B65800789C8D /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B686FF962971BC7D00789C8D /* FooterTemplate.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = FooterTemplate.html; sourceTree = "<group>"; };
 		B686FF992971BC7E00789C8D /* HeaderTemplate.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = HeaderTemplate.html; sourceTree = "<group>"; };
 		B686FF9B2971BC7E00789C8D /* PreviewStyles.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PreviewStyles.css; sourceTree = "<group>"; };
@@ -327,14 +338,12 @@
 		B686FF892971BC6500789C8D /* Exporting and rendering */ = {
 			isa = PBXGroup;
 			children = (
-				B633C151298C58130011449D /* BeatPreview.h */,
-				B633C150298C58130011449D /* BeatPreview.m */,
 				B68321B529F6BD7D00A2553E /* BeatPrintView.h */,
 				B68321B629F6BD7E00A2553E /* BeatPrintView.m */,
 				B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */,
 				B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */,
-				B686FF8A2971BC7D00789C8D /* Render to HTML */,
 				B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */,
+				B686FF8A2971BC7D00789C8D /* Render to HTML */,
 			);
 			path = "Exporting and rendering";
 			sourceTree = "<group>";
@@ -363,6 +372,9 @@
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B64AD61E2B2F72CC00EBD63A /* BeatParsing.framework */,
+				B64AD6082B2F69B400EBD63A /* BeatParsing.framework */,
+				B64AD6042B2F69AB00EBD63A /* BeatCore.framework */,
 				B621D1C32A803EE700D072E6 /* UnzipKit.framework */,
 				B62117152A7062F90053228F /* BeatPlugins.framework */,
 				B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */,
@@ -372,10 +384,11 @@
 				B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */,
 				B60A9F3929774F7A00916FAA /* BeatThemes.framework */,
 				B60A9F3629774F6C00916FAA /* BeatParsing.framework */,
-				B686FF832971B65800789C8D /* BeatPaginationCore.framework */,
 				B69311C1296EE00500CF4869 /* BeatParsing.framework */,
 				B69311BF296EDFFD00CF4869 /* UIKit.framework */,
 				B69311BD296EDFF400CF4869 /* WebKit.framework */,
+				B64AD5F42B2F698D00EBD63A /* QuickLookThumbnailing.framework */,
+				B64AD5F62B2F698D00EBD63A /* Quartz.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -453,6 +466,7 @@
 				B6CB96ED282FEB6500C7AFC7 /* Frameworks */,
 				B6CB96EE282FEB6500C7AFC7 /* Resources */,
 				B69311C4296EE00500CF4869 /* Embed Frameworks */,
+				B64AD6032B2F69A000EBD63A /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -470,7 +484,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Beat;
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Lauri-Matti Parppei";
 				TargetAttributes = {
@@ -557,7 +571,6 @@
 				B696BC4B2A7938860078BA79 /* CustoTextView.swift in Sources */,
 				B619DE5E29F80DB3007D1838 /* TemplateCollectionViewController.m in Sources */,
 				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
-				B633C152298C58130011449D /* BeatPreview.m in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
