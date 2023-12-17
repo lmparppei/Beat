@@ -105,9 +105,9 @@
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
+#import "BeatTextView.h"
 
-
-@interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;

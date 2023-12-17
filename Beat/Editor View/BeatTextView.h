@@ -12,7 +12,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatTextStorage.h"
-#import "Beat-Swift.h"
+//#import "Beat-Swift.h"
 
 typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	NoPopup,
@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	SelectTag
 };
 
+@class BeatPreviewController;
 @class BeatReview;
 @class BeatStylesheet;
 

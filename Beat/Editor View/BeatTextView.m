@@ -31,7 +31,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatCore/BeatCore-Swift.h>
+//#import <BeatCore/BeatCore-Swift.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatTextView.h"

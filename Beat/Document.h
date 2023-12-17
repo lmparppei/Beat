@@ -35,7 +35,6 @@ THE SOFTWARE.
 #import <BeatCore/BeatCore.h>
 #import <BeatPlugins/BeatPlugins.h>
 
-#import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
 #import "BeatTimeline.h"
@@ -45,14 +44,12 @@ THE SOFTWARE.
 #import "BeatStatisticsPanel.h"
 
 
-// Forward declaration to make parser available for text view
-@class BeatTextView;
 @class BeatReview;
 @class BeatWidgetView;
 @class BeatTextIO;
 
 
-@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
+@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
