@@ -6,50 +6,18 @@
 //
 /**
  
- This protocol defines a compatibility layer between macOS and iOS preview management.
+ This class handles most of the preview management for both macOS and iOS.
+ You need to override `renderOnScreen()` (and possibly some other methods as well) in OS-specific implementations to support the actual preview drawing and rendering.
  
  */
 
 import Foundation
-import BeatCore
+import BeatCore.BeatEditorDelegate
 
 @objc public protocol BeatPreviewManagerDelegate:BeatEditorDelegate {
     @objc func paginationFinished(_ operation:BeatPagination, indices:NSIndexSet, pageBreaks:[NSValue : [NSNumber]])
     @objc func previewVisible() -> Bool
 }
-
-/*
-@objc public protocol BeatPreviewManager {
-    weak var delegate:BeatPreviewManagerDelegate? { get set }
-    weak var pagination:BeatPaginationManager? { get }
-
-    var paginationUpdated:Bool { get }
-    var lastChangeAt:NSRange { get }
-    var changedIndices:NSMutableIndexSet { get }
-    
-    /// Returns export settings from the editor
-    var settings:BeatExportSettings { get }
-    var exportSettings:BeatExportSettings { get }
-    
-    /// Returns the parser from current docuent
-    var parser:ContinuousFountainParser? { get }
-    
-    /// Called when a pagination operation was finished.
-    func paginationDidFinish(_ operation:BeatPagination)
-    
-    /// Creates a preview with a change in given range. When `sync` is true, the preview is created immediately in main thread.
-    func createPreview(changedRange range:NSRange, sync:Bool)
-    /// Invalidates the preview from given range.
-    func invalidatePreview(at range:NSRange)
-    /// Invalidates the preview completely
-    func resetPreview()
-    /// Renders the current preview on screen
-    func renderOnScreen()
-    
-    /// The timer associated with firing up the preview creation
-    var timer:Timer? { get set }
-}
- */
 
 @objc open class BeatPreviewManager:NSObject, BeatPreviewControllerInstance, BeatPaginationManagerDelegate  {
     
@@ -76,7 +44,7 @@ import BeatCore
     }
     
     /// This is a duct-tape fix for weird scoping issue in @objc protocols
-    public func getPagination() -> Any? {
+    @objc open func getPagination() -> Any? {
         return self.pagination
     }
     
@@ -135,6 +103,7 @@ import BeatCore
         } else {
             // Paginate and create preview with 1 second delay
             self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
+                print(" ... creating preview")
                 // Store revisions into lines in sync
                 self.delegate?.bakeRevisions()
 
@@ -165,6 +134,7 @@ import BeatCore
         self.pagination?.finishedPagination = nil
         self.paginationUpdated = false
         self.changedIndices = NSMutableIndexSet(indexesIn: NSMakeRange(0, self.delegate?.parser.lines.count ?? 0))
+        self.createPreview(withChangedRange: NSMakeRange(0, self.delegate?.text().count ?? 1), sync: false)
         
     }
     

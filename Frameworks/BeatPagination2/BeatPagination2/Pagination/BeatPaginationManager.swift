@@ -100,7 +100,7 @@ import BeatCore
     
     // MARK: - Initialization
     
-	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
+	@objc public convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.init(settings: delegate.exportSettings, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
 	

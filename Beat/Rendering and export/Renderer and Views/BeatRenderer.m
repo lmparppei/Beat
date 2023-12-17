@@ -15,6 +15,7 @@
 #import "BeatRenderer.h"
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatCore.h>
 

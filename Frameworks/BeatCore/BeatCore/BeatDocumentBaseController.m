@@ -133,7 +133,7 @@
 
 -(BeatExportSettings*)exportSettings
 {
-    BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
+    BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:(id<BeatExportSettingDelegate>)self];
     return settings;
 }
 
@@ -400,11 +400,15 @@
     // We might be in a background thread, so make sure to dispach this call to main thread
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         // Update pagination in text view
-        BeatLayoutManager* lm = (BeatLayoutManager*)self.layoutManager;
+        BeatLayoutManager* lm = (BeatLayoutManager*)self.getTextView.layoutManager;
         lm.pageBreaks = pageBreaks;
-        
-        self.textView.needsDisplay = true;
-        
+
+        #if TARGET_OS_OSX
+            self.textView.needsDisplay = true;
+        #else
+            [self.textView setNeedsDisplay];
+        #endif
+
         // Tell plugins the preview has been finished
         for (id<BeatPluginInstance> plugin in self.runningPlugins.allValues) {
             [plugin previewDidFinish:operation indices:changedIndices];
@@ -412,7 +416,56 @@
     });
 }
 
+/*
+Cycle inside Beat AppStore; building could produce unreliable results.
+Cycle details:
+→ Target 'Beat AppStore' has copy command from '/Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Products/Debug/BeatCore.framework' to '/Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Products/Debug/Beat.app/Contents/Frameworks/BeatCore.framework'
+○ Target 'Beat AppStore' has compile command with input '/Users/lmp/Koodaus/Beat/Beat/User Interface/About Screen/BeatAboutScreen.m'
+○ Target 'Beat AppStore' has Swift tasks blocking downstream compilation
+○ Target 'Beat AppStore': SwiftMergeGeneratedHeaders /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/DerivedSources/Beat-Swift.h /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/Beat-Swift.h
+○ Target 'Beat AppStore' has Swift tasks blocking downstream compilation
 
+
+Raw dependency cycle trace:
+
+target:  ->
+
+node: <all> ->
+
+command: <all> ->
+
+node: /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Products/Debug/Beat.app/Contents/Frameworks/BeatCore.framework/Versions/A ->
+
+command: P0:target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea-:Debug:Copy /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Products/Debug/Beat.app/Contents/Frameworks/BeatCore.framework /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Products/Debug/BeatCore.framework ->
+
+node: <target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea--fused-phase0-compile-sources&link-binary&copy-bundle-resources> ->
+
+command: P2:::Gate target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea--fused-phase0-compile-sources&link-binary&copy-bundle-resources ->
+
+node: /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/BeatAboutScreen.o ->
+
+command: P0:target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea-:Debug:CompileC /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/BeatAboutScreen.o /Users/lmp/Koodaus/Beat/Beat/User Interface/About Screen/BeatAboutScreen.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler ->
+
+node: <target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea--swift-generated-headers> ->
+
+command: P2:::Gate target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea--swift-generated-headers ->
+
+node: /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/Beat AppStore Swift Compilation Requirements Finished ->
+
+CYCLE POINT ->
+
+command: P1:target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea-:Debug:SwiftDriver Compilation Requirements Beat AppStore normal x86_64 com.apple.xcode.tools.swift.compiler ->
+
+node: /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/DerivedSources/Beat-Swift.h ->
+
+command: P1:target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea-:Debug:SwiftMergeGeneratedHeaders /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/DerivedSources/Beat-Swift.h /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/Beat-Swift.h ->
+
+node: /Users/lmp/Library/Developer/Xcode/DerivedData/Beat-buyqzklaxxwnikcorbfamrjcqqyx/Build/Intermediates.noindex/Beat macOS.build/Debug/Beat AppStore.build/Objects-normal/x86_64/Beat-Swift.h ->
+
+command: P1:target-Beat AppStore-a2a2f4cc340fe59da29ee8f8f2a683fc5b6859b7e8bf4ca37f8a06ffbd7760ea-:Debug:SwiftDriver Compilation Requirements Beat AppStore normal x86_64 com.apple.xcode.tools.swift.compiler
+
+
+ */
 
 #pragma mark - Text view components
 

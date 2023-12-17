@@ -17,7 +17,7 @@ import BeatCore.BeatEditorDelegate
 import BeatPagination2
 
 class BeatPreviewController:BeatPreviewManager {
-		
+
 	var renderer:BeatRenderer?
 	
 	@IBOutlet weak var previewView:BeatPreviewView?

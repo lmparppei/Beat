@@ -8,6 +8,8 @@
 
 import Foundation
 import BeatPagination2
+import BeatCore.BeatEditorDelegate
+import WebKit
 
 class BeatPreviewController:BeatPreviewManager, WKScriptMessageHandler {
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -21,10 +23,18 @@ class BeatPreviewController:BeatPreviewManager, WKScriptMessageHandler {
 		}
 	}
 	
-	
 	var renderer:BeatHTMLRenderer?
 	var htmlString = ""
-	@objc weak var previewView:BeatPreviewView?
+	@objc public weak var previewView:BeatPreviewView?
+	
+	@objc init(delegate:BeatPreviewManagerDelegate, previewView:BeatPreviewView) {
+		super.init()
+		
+		self.delegate = delegate
+		self.previewView = previewView
+		self.pagination = BeatPaginationManager(delegate: self, renderer: nil, livePagination: true)
+		self.pagination?.editorDelegate = self.delegate
+	}
 	
 	func setup() {
 		previewView?.webview?.configuration.userContentController.add(self, name: "selectSceneFromScript")
@@ -42,6 +52,7 @@ class BeatPreviewController:BeatPreviewManager, WKScriptMessageHandler {
 	}
 	
 	override func resetPreview() {
+		print("reseting preview...")
 		super.resetPreview()
 	}
 	
@@ -69,15 +80,15 @@ class BeatPreviewController:BeatPreviewManager, WKScriptMessageHandler {
 			loadPlaceHolder()
 			return
 		}
-		
-		// Code injection to scroll to current line
-		let line = self.delegate?.parser.closestPrintableLine(for: self.delegate?.currentLine())
-		let uuid = line?.uuidString().lowercased() ?? ""
-		
-		let scrollScriptTemplate = "<script name='scrolling'></script>"
-		let scrollToScript = "<script>scrollToIdentifier('" + uuid + "');</script>"
-		
+				
 		DispatchQueue.main.async {
+			// Code injection to scroll to current line
+			let line = self.delegate?.parser.closestPrintableLine(for: self.delegate?.currentLine())
+			let uuid = line?.uuidString().lowercased() ?? ""
+			
+			let scrollScriptTemplate = "<script name='scrolling'></script>"
+			let scrollToScript = "<script>scrollToIdentifier('" + uuid + "');</script>"
+
 			self.htmlString = html.replacingOccurrences(of: scrollScriptTemplate, with: scrollToScript)
 			
 			self.previewView?.webview?.loadHTMLString(self.htmlString, baseURL: Bundle.main.resourceURL)

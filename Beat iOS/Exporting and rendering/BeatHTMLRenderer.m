@@ -10,6 +10,7 @@
 
 #import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 
 #define PRINT_CSS @"ScreenplayStyles"
@@ -35,9 +36,6 @@
 @end
 
 @implementation BeatHTMLRenderer
-
-//static bool boldedHeading;
-//static bool underlinedHeading;
 
 /// Returns a renderer with pre-paginated content
 - (instancetype)initWithPagination:(BeatPagination*)pagination settings:(BeatExportSettings*)settings
@@ -81,6 +79,7 @@
 	[(BeatStylesheet*)self.settings.styles reload];
 }
 
+/// Creates and returns the full HTML for display and rendering.
 - (NSString *)html
 {
 	NSMutableString *html = NSMutableString.new;
@@ -91,28 +90,33 @@
 	return html;
 }
 
-#pragma mark - Heading settings
+#pragma mark - Heading setting shorthands
 
-- (BOOL)boldedHeading {
+- (BOOL)boldedHeading
+{
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
 }
-- (BOOL)underlinedHeading {
+
+- (BOOL)underlinedHeading
+{
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 }
 
+
 #pragma mark - HTML sections
 
-- (NSString*)htmlBody {
-	if (self.pagination != nil) {
-		self.renderedPages = [self createHTMLWithPagination:self.pagination];
-	}
-	else {
-		self.renderedPages = [self paginateAndCreateHTML];
-	}
+/// Returns the actual HTML content (rendered pages) without header and footer. If not existing pagination is provided, we'll paginate the given lines.
+- (NSString*)htmlBody
+{
+	if (self.pagination != nil) self.renderedPages = [self createHTMLWithPagination:self.pagination];
+	else self.renderedPages = [self paginateAndCreateHTML];
+	
 	return [self.renderedPages componentsJoinedByString:@"\n"];
 }
 
-- (NSString*)htmlHeader {
+/// Returns the HTML page header
+- (NSString*)htmlHeader
+{
 	NSURL* templateUrl = [NSBundle.mainBundle URLForResource:@"HeaderTemplate" withExtension:@"html"];
 	NSString* template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
 	
@@ -131,14 +135,18 @@
 	return template;
 }
 
-- (NSString*)htmlFooter {
+/// Returns the HTML page footer
+- (NSString*)htmlFooter
+{
 	NSURL *templateUrl = [NSBundle.mainBundle URLForResource:@"FooterTemplate" withExtension:@"html"];
 	NSString *template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
 	
 	return template;
 }
 
-- (NSArray*)singlePages {
+/// Returns an array of full HTML files, one for each screenplay page
+- (NSArray*)singlePages
+{
 	if (self.renderedPages == nil) self.renderedPages = [self paginateAndCreateHTML];
 	
 	NSMutableArray *everyPageAsDocument = NSMutableArray.new;
@@ -156,7 +164,7 @@
 	return everyPageAsDocument;
 }
 
-/// Returns pure content, wrapped in `<article>` tags.
+/// Returns pure paginated content, wrapped in `<article>` tags.
 - (NSString *)content
 {
 	if (!self.bodyText) {
@@ -171,9 +179,9 @@
 	return html;
 }
 
+/// Paginates the screenplay and creates a HTML file
 - (NSArray*)paginateAndCreateHTML
 {
-	// Pagination
 	BeatPaginationManager* pm = [BeatPaginationManager.alloc initWithSettings:self.settings delegate:nil renderer:nil livePagination:false];
 	[pm newPaginationWithScreenplay:self.screenplay settings:self.settings forEditor:false changeAt:0];
 	self.pagination = pm.finishedPagination;
@@ -181,6 +189,7 @@
 	return [self createHTMLWithPagination:self.pagination];
 }
 
+/// Creates a HTML file with given pagination results.
 - (NSArray*)createHTMLWithPagination:(BeatPagination*)pagination
 {
 	NSMutableArray *pages = NSMutableArray.new;
@@ -205,14 +214,18 @@
 
 #pragma mark - Title page
 
-- (NSMutableArray*)titlePage {
+/// Returns title page content
+- (NSMutableArray*)titlePage
+{
 	if (_titlePage == nil) {
 		_titlePage = self.pagination.titlePage.mutableCopy;
 	}
 	return _titlePage;
 }
 
-- (NSString*)createTitlePage {
+/// Renders the title page
+- (NSString*)createTitlePage
+{
 	NSMutableString *body = [NSMutableString stringWithString:@""];
 	
 	if (self.titlePage.count > 0) {
@@ -220,37 +233,35 @@
 		[body appendFormat:@"<div class='mainTitle'>"];
 		
 		// Title
-		Line* title = [self titlePageElementForKey:@"title"];
-		if (title.string.length == 0) title.string = @"Untitled";
-		[body appendString:[self htmlStringFor:title]];
+		NSString* title = [self htmlStringForBlock:[self titlePageElementForKey:@"title"]];
+		if (title.length == 0) title = @"Untitled";
+		[body appendString:title];
 			
 		// Add Credit, Authors, Source (in this order)
 		NSArray * credits = @[@"credit", @"authors", @"source"];
 		for (NSString *credit in credits) {
-			Line* line = [self titlePageElementForKey:credit];
-			[body appendString:[self htmlStringFor:line]];
+			NSString* string = [self htmlStringForBlock:[self titlePageElementForKey:credit]];
+			[body appendString:string];
 		}
 				
 		[body appendFormat:@"</div>"];
 				
 		// Draft date
-		Line* draftDate = [self titlePageElementForKey:@"draft date"];
-		[body appendFormat:@"<div class='versionInfo'><p>"];
-		[body appendString:[self htmlStringFor:draftDate]];
-		[body appendFormat:@"</p></div>"];
+		NSString* draftDate = [self htmlStringForBlock:[self titlePageElementForKey:@"draft date"]];
+		[body appendFormat:@"<div class='versionInfo'><p>%@</p></div>", draftDate];
 		
 		// Left side block
 		[body appendFormat:@"<div class='info'>"];
-		Line* contact = [self titlePageElementForKey:@"contact"];
-		Line* notes = [self titlePageElementForKey:@"notes"];
-		[body appendString:[self htmlStringFor:contact]];
-		[body appendString:[self htmlStringFor:notes]];
+		NSString* contact = [self htmlStringForBlock:[self titlePageElementForKey:@"contact"]];
+		NSString* notes = [self htmlStringForBlock:[self titlePageElementForKey:@"notes"]];
+		[body appendString:contact];
+		[body appendString:notes];
 		
 		// Append rest of the stuff
 		while (self.titlePage.count > 0) {
 			NSString * key = ((NSDictionary*)self.titlePage.firstObject).allKeys.firstObject;
-			Line* line = [self titlePageElementForKey:key];
-			[body appendString:[self htmlStringFor:line]];
+			NSString* string = [self htmlStringForBlock:[self titlePageElementForKey:key]];
+			if (string.length > 0) [body appendString:string];
 		}
 		
 		[body appendFormat:@"</div>"];
@@ -261,22 +272,10 @@
 	return body;
 }
 
-
-- (Line*)titlePageElementForKey:(NSString*)key {
+/// Gets **and removes** a title page element from title page array. The array looks like `[ [key: value], [key: value], ...]` to keep the title page elements organized.
+- (NSArray<Line*>*)titlePageElementForKey:(NSString*)key
+{
 	NSMutableArray<Line*>* lines = NSMutableArray.new;
-	
-	NSDictionary<NSString*, NSNumber*>* types = @{
-		@"title": @(titlePageTitle),
-		@"authors": @(titlePageAuthor),
-		@"credit": @(titlePageCredit),
-		@"source": @(titlePageSource),
-		@"draft date": @(titlePageDraftDate),
-		@"contact": @(titlePageContact)
-	};
-	
-	LineType type = empty;
-	if (types[key] != nil) type = (LineType)types[key].integerValue;
-	else type = titlePageUnknown;
 	
 	for (NSInteger i=0; i<self.titlePage.count; i++) {
 		NSDictionary* dict = self.titlePage[i];
@@ -288,22 +287,27 @@
 		}
 	}
 	
-	if (lines.count == 0) {
-		return [Line withString:@"" type:type];
+	// Not title page element found, return nil.
+	if (lines.count == 0) return nil;
+	
+	LineType type = empty;
+	if ([key isEqualToString:@"title"]) type = titlePageTitle;
+	else if ([key isEqualToString:@"authors"]) type = titlePageAuthor;
+	else if ([key isEqualToString:@"credit"]) type = titlePageCredit;
+	else if ([key isEqualToString:@"source"]) type = titlePageSource;
+	else if ([key isEqualToString:@"draft date"]) type = titlePageDraftDate;
+	else if ([key isEqualToString:@"contact"]) type = titlePageContact;
+	else type = titlePageUnknown;
+	
+	NSMutableArray<Line*>* elementLines = NSMutableArray.new;
+	
+	for (NSInteger i=0; i<lines.count; i++) {
+		Line* l = lines[i];
+		l.type = type;
+		[elementLines addObject:l];
 	}
 	
-	
-	// Split first line
-	Line* firstLine = lines.firstObject;
-	firstLine = [firstLine splitAndFormatToFountainAt:firstLine.titlePageKey.length + 1][1];
-	
-	firstLine.type = type;
-	
-	for (NSInteger i=1; i<lines.count; i++) {
-		[firstLine joinWithLine:lines[i]];
-	}
-	
-	return firstLine;
+	return elementLines;
 }
 
 
@@ -436,7 +440,22 @@
 
 	return string;
 }
-- (NSString*)htmlStringFor:(Line*)line {
+
+- (NSString*)htmlStringForBlock:(NSArray<Line*>*)lines
+{
+	NSMutableString* string = NSMutableString.new;
+	
+	for (Line* line in lines) {
+		// Consecutive lines won't begin a new paragraph
+		if (line != lines.firstObject) line.beginsNewParagraph = false;
+		[string appendString:[self htmlStringFor:line]];
+	}
+	
+	return string;
+}
+
+- (NSString*)htmlStringFor:(Line*)line
+{
 	// We use the FDX attributed string to create a HTML representation of Line objects
 	NSAttributedString *string = [line attributedStringForOutputWith:self.settings];
 	
