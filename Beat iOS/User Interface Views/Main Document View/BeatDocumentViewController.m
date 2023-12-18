@@ -72,6 +72,7 @@
 
 /// Split view. Defined in storyboard segue.
 @property (nonatomic, weak) BeatEditorSplitViewController* editorSplitView;
+@property (nonatomic, weak) IBOutlet UIView* splitViewContainer;
 
 @end
 
@@ -104,12 +105,14 @@
 		self.scrollView.minimumZoomScale = 1.0;
 	}
 	
+	NSLog(@"!! SETTING UP TEXT VIEW");
+	
 	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
 	
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 	
-	[self.textView removeFromSuperview];
+	//[self.textView removeFromSuperview];
 	self.textView = textView;
 	[self.pageView addSubview:self.textView];
 	
@@ -139,6 +142,20 @@
 	self.runningPlugins = NSMutableDictionary.new;
 	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
 	
+	// Embed the editor split view
+	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
+	splitView.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+	
+	[self embed:splitView inView:self.splitViewContainer];
+	[splitView loadView];
+	
+	self.editorSplitView = splitView;
+	self.editorSplitView.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+
+	// Setup the split view
+	[self setupEditorViews];
+	
 	// Create text view
 	[self createTextView];
 	
@@ -148,10 +165,7 @@
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
-	
-	// Hide text from view until loaded
-	// self.textView.pageView.layer.opacity = 0.0;
-	
+		
 	// Hide sidebar
 	self.sidebarConstraint.constant = 0.0;
 	
@@ -230,6 +244,11 @@
 	self.textView.textStorage.delegate = self;
 	[self.textView setFindInteractionEnabled:true];
 	
+	// Don't ask
+	[self.textView resize];
+	[self.textView firstResize];
+	[self.textView resize];
+	
 	// Data source
 	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
 	
@@ -258,6 +277,7 @@
 		[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
 		[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
 		
+		// This is not a place of honor. No highly esteemed deed is commemorated here.
 		[self.textView resize];
 		[self.textView firstResize];
 		[self.textView resize];
@@ -381,9 +401,11 @@
 	} else {
 		[self.editorSplitView hideColumn:UISplitViewControllerColumnPrimary];
 	}
-	
-	
-	//[self.editorSplitView
+}
+
+- (bool)sidebarVisible
+{
+	return self.editorSplitView.displayMode != UISplitViewControllerDisplayModeSecondaryOnly;
 }
 
 
@@ -916,9 +938,14 @@
 
 #pragma mark - Keyboard manager delegate
 
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
+	/// WELLL.... because of some weird first responder issues, we'll never end editing, he he.
+	return false;
+}
+
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	CGFloat addedFactor = self.textView.enclosingScrollView.zoomScale * 50.0;
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + addedFactor, 0);
+	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 15.0);
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, height, 0);
 	
 	[UIView animateWithDuration:animationTime animations:^{
 		self.scrollView.contentInset = insets;
@@ -936,6 +963,10 @@
 		
 		[self.scrollView safelyScrollRectToVisible:visible animated:true];
 	}];
+}
+
+- (BOOL)disablesAutomaticKeyboardDismissal {
+	return false;
 }
 
 -(void)keyboardWillHide {
@@ -990,12 +1021,20 @@
 		vc.pluginName = @"Index Card View";
 	}
 	else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
-		NSLog(@"!!! SPLIT VIEW SEGUE");
 		self.editorSplitView = segue.destinationViewController;
-		self.editorSplitView.editorDelegate = self;
-		
-		[self.editorSplitView setupWithEditorDelegate:self];
 	}
+}
+
+/// @warning This method expects the split view controller to be in place (done in storyboard segue)
+- (void)setupEditorViews
+{
+	self.editorSplitView.editorDelegate = self;
+	[self.editorSplitView setupWithEditorDelegate:self];
+	
+	self.pageView = self.editorSplitView.editorView.pageView;
+	self.scrollView = self.editorSplitView.editorView.scrollView;
+	
+	self.outlineView = self.editorSplitView.outlineView;
 }
 
 

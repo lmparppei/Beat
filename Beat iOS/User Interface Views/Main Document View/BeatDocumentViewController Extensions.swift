@@ -49,3 +49,15 @@ extension BeatDocumentViewController {
 		button.primaryAction = nil
 	}
 }
+
+@objc public extension UIViewController {
+	@objc func embed(_ viewController:UIViewController, inView view:UIView){
+		viewController.willMove(toParent: self)
+		viewController.view.frame = view.bounds
+
+		view.addSubview(viewController.view)
+		self.addChild(viewController)
+
+		viewController.didMove(toParent: self)
+	}
+}

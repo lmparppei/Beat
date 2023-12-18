@@ -13,6 +13,7 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 
 	@objc public weak var editorDelegate:BeatEditorDelegate?
 	@objc public weak var textView:BeatUITextView?
+	@objc public weak var container:UIView?
 	
 	@objc public weak var editorView:BeatEditorViewController? {
 		let nav = self.viewControllers[1] as? UINavigationController
@@ -35,20 +36,51 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		self.showsSecondaryOnlyButton = false
 		
 		self.preferredDisplayMode = .secondaryOnly
+		self.delegate = self
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		editorView?.loadView()
+		sidebar?.loadView()
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		if let frame = container?.frame {
+			print("ok!")
+			self.view.frame.size = frame.size
+		}
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
 	}
 	
 	@objc public func setup(editorDelegate:BeatEditorDelegate) {
 		self.editorDelegate = editorDelegate
 		self.outlineView?.setup(editorDelegate: editorDelegate)
 	}
+	
+	func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
+		//
+	}
 }
 
 class BeatEditorViewController:UIViewController {
 	@objc public weak var editorDelegate:BeatEditorDelegate?
-	@IBOutlet @objc public weak var scrollView:BeatScrollView?
-	@IBOutlet @objc public weak var pageView:BeatPageView?
+	@IBOutlet @objc public var scrollView:BeatScrollView?
+	@IBOutlet @objc public var pageView:BeatPageView?
+
 }
 
 class BeatSidebarViewController:UITableViewController {
 	@objc public weak var editorDelegate:BeatEditorDelegate?
+		
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		self.tableView.keyboardDismissMode = .none
+	}
 }

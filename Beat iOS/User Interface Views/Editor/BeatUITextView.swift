@@ -742,7 +742,7 @@ extension BeatUITextView {
 	@objc func redo() {
 		self.editorDelegate?.undoManager.redo()
 	}
-	
+		
 	
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
 		guard let editorDelegate = self.editorDelegate else { return }
@@ -783,6 +783,8 @@ class BeatScrollView: UIScrollView {
 	@objc public var manualScroll = false
 	
 	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
+		super.scrollRectToVisible(rect, animated: animated)
+		return
 		if (self.manualScroll) {
 			super.scrollRectToVisible(rect, animated: animated)
 		}

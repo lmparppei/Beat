@@ -366,102 +366,13 @@ Lauri-Matti</string>
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="thv-1O-oKd">
-                                <rect key="frame" x="230" y="74" width="604" height="1120"/>
-                                <subviews>
-                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999999999999" id="a5I-w2-fVd" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="604" height="1120"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
-                                        <subviews>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esq-Xm-Lfw" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="-1" width="796" height="1123"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="THIS IS HERE JUST AS A PLACEHOLDER. Actual text view is created in code." textAlignment="natural" layoutManager="textKit1" id="3C3-uS-JZp" customClass="BeatUITextView" customModule="Beat" customModuleProvider="target">
-                                                        <rect key="frame" x="1" y="0.0" width="796" height="1123"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <color key="textColor" systemColor="labelColor"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardAppearance="alert" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
-                                                        <connections>
-                                                            <outlet property="delegate" destination="M2k-L8-Olo" id="QLO-Ta-VZU"/>
-                                                            <outlet property="editorDelegate" destination="M2k-L8-Olo" id="VWm-LZ-U2Q"/>
-                                                            <outlet property="enclosingScrollView" destination="a5I-w2-fVd" id="oMs-xI-9LL"/>
-                                                            <outlet property="pageView" destination="esq-Xm-Lfw" id="Jnq-h7-PZa"/>
-                                                        </connections>
-                                                    </textView>
-                                                </subviews>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                            </view>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
-                                        <viewLayoutGuide key="contentLayoutGuide" id="kLd-rT-Bgu"/>
-                                        <viewLayoutGuide key="frameLayoutGuide" id="e3T-0U-vD1"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="3C3-uS-JZp" id="9o3-kt-kDQ"/>
-                                        </connections>
-                                    </scrollView>
-                                </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L6d-7A-aQd">
-                                <rect key="frame" x="0.0" y="74" width="230" height="1120"/>
-                                <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="9d5-dC-tki" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="230" height="1120"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="hf6-e0-5ah" rowHeight="20" style="IBUITableViewCellStyleDefault" id="XUA-IV-pnT" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="50" width="230" height="20"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XUA-IV-pnT" id="x9e-ag-m6i" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="230" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hf6-e0-5ah">
-                                                            <rect key="frame" x="16" y="0.0" width="198" height="20"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                    </subviews>
-                                                    <connections>
-                                                        <outlet property="textField" destination="hf6-e0-5ah" id="t8j-MN-weN"/>
-                                                    </connections>
-                                                </tableViewCellContentView>
-                                            </tableViewCell>
-                                        </prototypes>
-                                        <connections>
-                                            <outlet property="editorDelegate" destination="M2k-L8-Olo" id="vCe-NS-myO"/>
-                                        </connections>
-                                    </tableView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="230" id="6By-uQ-Ux5"/>
-                                </constraints>
-                            </view>
                             <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
                                 <rect key="frame" x="0.0" y="74" width="834" height="1133"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <connections>
-                                    <segue destination="huI-7K-Jqd" kind="embed" identifier="ToEditorSplitView" id="izI-nM-aPn"/>
-                                </connections>
                             </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstAttribute="bottomMargin" secondItem="thv-1O-oKd" secondAttribute="bottom" constant="-20" id="6LU-8u-3rZ"/>
-                            <constraint firstItem="L6d-7A-aQd" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="JwR-f7-Pbc"/>
-                            <constraint firstItem="thv-1O-oKd" firstAttribute="leading" secondItem="L6d-7A-aQd" secondAttribute="trailing" id="SpP-jc-OD7"/>
-                            <constraint firstAttribute="bottom" secondItem="L6d-7A-aQd" secondAttribute="bottom" id="ZNj-hY-4KA"/>
-                            <constraint firstItem="L6d-7A-aQd" firstAttribute="leading" secondItem="BoZ-jc-2Y8" secondAttribute="leading" id="Zph-hV-STJ"/>
-                            <constraint firstItem="thv-1O-oKd" firstAttribute="trailing" secondItem="BoZ-jc-2Y8" secondAttribute="trailing" id="eOI-8l-hwJ"/>
-                            <constraint firstItem="thv-1O-oKd" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="wcE-gt-oJ0"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Screenplay" style="editor" id="G7J-RW-q00">
                         <leftBarButtonItems>
@@ -501,13 +412,8 @@ Lauri-Matti</string>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="outlineView" destination="9d5-dC-tki" id="vVF-aa-NqO"/>
-                        <outlet property="pageView" destination="esq-Xm-Lfw" id="lTR-gU-EW1"/>
                         <outlet property="screenplayButton" destination="b7L-my-Myg" id="QO6-NY-3nm"/>
-                        <outlet property="scrollView" destination="a5I-w2-fVd" id="F4J-6d-Zfz"/>
-                        <outlet property="sidebar" destination="L6d-7A-aQd" id="Jui-ta-HXU"/>
-                        <outlet property="sidebarConstraint" destination="6By-uQ-Ux5" id="iAK-k4-XG7"/>
-                        <outlet property="textView" destination="3C3-uS-JZp" id="DFm-Wa-gFj"/>
+                        <outlet property="splitViewContainer" destination="p8x-tU-OOV" id="Qaf-fN-91e"/>
                         <outlet property="titleBar" destination="G7J-RW-q00" id="muY-Lo-xAP"/>
                     </connections>
                 </viewController>
@@ -556,22 +462,22 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3165.4676258992808" y="653.7688442211055"/>
+            <point key="canvasLocation" x="3137" y="368"/>
         </scene>
         <!--Beat Editor View Controller-->
         <scene sceneID="uc1-BM-eyz">
             <objects>
-                <viewController id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController autoresizesArchivedViewToFullSize="NO" automaticallyAdjustsScrollViewInsets="NO" id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Hy9-v8-qGf">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1133"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1373"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="21" y="-24" width="792" height="1137"/>
+                                    <view contentMode="scaleToFill" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="0.0" width="793" height="1194"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -584,7 +490,10 @@ Lauri-Matti</string>
                         <viewLayoutGuide key="safeArea" id="ekZ-mD-PCq"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <navigationItem key="navigationItem" id="6Ln-I5-Eq2"/>
                     <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="pageView" destination="Vhw-po-PCx" id="MbL-75-X0g"/>
                         <outlet property="scrollView" destination="ETx-UJ-JkA" id="X93-hT-RHe"/>
@@ -592,15 +501,17 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eTe-Gf-Vv9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3457.5539568345325" y="1845.7286432160804"/>
+            <point key="canvasLocation" x="4207.9136690647483" y="1909.5477386934674"/>
         </scene>
         <!--Beat Editor Split View Controller-->
         <scene sceneID="Obe-C1-u81">
             <objects>
-                <splitViewController modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="EditorSplitView" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="detailViewController" id="Tvb-rF-uEG"/>
                         <segue destination="oKi-z9-sBS" kind="relationship" relationship="masterViewController" id="GOe-pF-LL9"/>
+                        <segue destination="mW7-Bd-vZL" kind="relationship" relationship="detailViewController" id="IaK-da-DPO"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rBZ-hV-1nr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -610,9 +521,9 @@ Lauri-Matti</string>
         <!--Beat Sidebar View Controller-->
         <scene sceneID="9rO-4Y-XEo">
             <objects>
-                <tableViewController automaticallyAdjustsScrollViewInsets="NO" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="350" height="1133"/>
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
@@ -644,7 +555,7 @@ Lauri-Matti</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bo0-Gi-KDE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4211" y="1301"/>
+            <point key="canvasLocation" x="4208" y="1247"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="pkw-U7-AzC">
@@ -663,7 +574,7 @@ Lauri-Matti</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K8k-iF-fgx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3458" y="1334"/>
+            <point key="canvasLocation" x="3458" y="1247"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
@@ -959,10 +870,10 @@ Lauri-Matti</string>
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="-5" y="-4" width="834" height="1192"/>
+                            <view contentMode="scaleToFill" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
+                                <rect key="frame" x="-5" y="-4" width="839" height="1198"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
                                 </connections>
@@ -980,7 +891,7 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iR4-kY-YYF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3166" y="-35"/>
+            <point key="canvasLocation" x="2483" y="368"/>
         </scene>
         <!--Beat Quick Settings-->
         <scene sceneID="Ez1-VE-dLe">
@@ -1471,20 +1382,23 @@ Lauri-Matti</string>
             </objects>
             <point key="canvasLocation" x="-416" y="-657"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="mPN-mc-Kik">
+        <!--Navigation Controller-->
+        <scene sceneID="eA9-vR-ovT">
             <objects>
-                <viewController id="bfB-H6-gWp" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="qDy-6T-n2S">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="e44-2g-SEY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="AF6-8m-Ivd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="mW7-Bd-vZL" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="biR-Nf-7sv">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="rootViewController" id="JMA-IZ-ra3"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1pi-MT-sLa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2306" y="-15"/>
+            <point key="canvasLocation" x="3458" y="1910"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
@@ -1504,9 +1418,6 @@ Lauri-Matti</string>
         <image name="sidebar.left" catalog="system" width="128" height="93"/>
         <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
         <image name="xmark.circle.fill" width="40" height="40"/>
-        <systemColor name="labelColor">
-            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

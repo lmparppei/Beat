@@ -35,8 +35,10 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 					
 		self.dataProvider = BeatOutlineDataProvider(delegate: editorDelegate, tableView: self)
 		self.dataProvider?.update()
+		
+		self.keyboardDismissMode = .onDrag
 	}
-	
+		
 	func reload(with changes: OutlineChanges!) {
 		self.reload()
 	}
@@ -48,7 +50,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	func reload() {
 		self.dataProvider?.update()
 	}
-	
+		
 	func visible() -> Bool {
 		if self.frame.width > 1 {
 			return true
@@ -60,17 +62,18 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	@objc func swipeToClose() {
 		self.editorDelegate?.toggleSidebar(self)
 	}
-	
+		
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		guard let editorDelegate = self.editorDelegate else { return }
 		
 		let i = indexPath.row
+		if i > editorDelegate.parser.outline.count { return }
 		guard let scene = editorDelegate.parser.outline[i] as? OutlineScene else { return }
 		
 		editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
 		editorDelegate.scroll(to: scene.line)
 	}
-	
+		
 	/// Updates current scene
 	var previousLine:Line?
 	var selectedItem:OutlineDataItem?
@@ -113,7 +116,13 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		}
 
 		// Scroll to the selected item's row.
-		scrollToRow(at: indexPath, at: .middle, animated: true)
+		if self.numberOfRows(inSection: indexPath.section) > 0 {
+			do {
+				try scrollToRow(at: indexPath, at: .middle, animated: true)
+			} catch {
+				print("Error scrolling to row", error)
+			}
+		}
 	}
 }
 
