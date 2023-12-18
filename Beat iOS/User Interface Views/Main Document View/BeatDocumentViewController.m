@@ -15,7 +15,7 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -89,15 +89,26 @@
 }
 
 /// Creates the text view and replaces placeholder text view
-- (void)createTextView {
-	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
+- (void)createTextView
+{
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		// For iPhone, we'll compact the scroll view
+		CGRect f = self.pageView.frame;
+		f.size.width = 200.0;
+		self.pageView.frame = f;
+		self.scrollView.maximumZoomScale = 1.0;
+		self.scrollView.minimumZoomScale = 1.0;
+	}
+	
+	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
+	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
 	
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 	
 	[self.textView removeFromSuperview];
 	self.textView = textView;
 	[self.pageView addSubview:self.textView];
-		
+	
 	self.textView.delegate = self;
 	self.textView.editorDelegate = self;
 	self.textView.enclosingScrollView = self.scrollView;
@@ -126,8 +137,8 @@
 	
 	// Create text view
 	[self createTextView];
-		
-	// Setup document title menu
+	
+	// Setup document title menu (from Swift extension)
 	[self setupTitleMenu];
 	[self setupScreenplayMenuWithButton:self.screenplayButton];
 	
@@ -175,7 +186,7 @@
 			[formatting formatLine:line firstTime:true];
 		} }
 		[self.parser.changedIndices removeAllIndexes];
-				
+		
 		callback();
 	}];
 }
@@ -200,7 +211,7 @@
 	// Init preview controller and pagination
 	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
 	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
-		
+	
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
 	
@@ -217,7 +228,7 @@
 	
 	// Data source
 	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
-
+	
 	// Restore caret position
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
 	if (position < self.text.length) {
@@ -504,7 +515,7 @@
 	
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
-		
+	
 	// Save
 	[self.document updateChangeCount:UIDocumentChangeDone];
 	
@@ -722,17 +733,24 @@
 
 - (void)loadSerifFonts {
 	_courier = BeatFonts.sharedFonts.courier;
-	[self loadFont];
-}
-- (void)loadSansSerifFonts {
-	_courier = BeatFonts.sharedSansSerifFonts.courier;
-	[self loadFont];
-}
-- (void)loadFont {
 	_boldCourier = BeatFonts.sharedFonts.boldCourier;
 	_italicCourier = BeatFonts.sharedFonts.italicCourier;
 	_boldItalicCourier = BeatFonts.sharedFonts.boldItalicCourier;
-	self.textView.font = _courier;
+	
+	// a hack for the iPhone
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		_courier = [BeatFonts.sharedFonts.courier fontWithSize:self.mobileFontSize];
+		_boldCourier = [BeatFonts.sharedFonts.boldCourier fontWithSize:self.mobileFontSize];
+		_italicCourier = [BeatFonts.sharedFonts.italicCourier fontWithSize:self.mobileFontSize];
+		_boldItalicCourier = [BeatFonts.sharedFonts.boldItalicCourier fontWithSize:self.mobileFontSize];
+	}
+}
+
+- (void)loadSansSerifFonts {
+	_courier = BeatFonts.sharedSansSerifFonts.courier;
+	_boldCourier = BeatFonts.sharedSansSerifFonts.boldCourier;
+	_italicCourier = BeatFonts.sharedSansSerifFonts.italicCourier;
+	_boldItalicCourier = BeatFonts.sharedSansSerifFonts.boldItalicCourier;
 }
 
 - (BXFont*)sectionFont
@@ -767,6 +785,11 @@
 		//_synopsisFont = [fontManager convertFont:_synopsisFont toHaveTrait:NSFontItalicTrait];
 	}
 	return _synopsisFont;
+}
+
+- (CGFloat)mobileFontSize
+{
+	return 14.0;
 }
 
 
@@ -868,15 +891,6 @@
 	}
 }
 
-- (CGFloat)fontSize {
-	return 12.0;
-}
-
-- (void)bakeRevisions {
-	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.attributedString];
-}
-
-
 
 #pragma mark - Keyboard manager delegate
 
@@ -884,7 +898,7 @@
 	CGFloat addedFactor = self.textView.enclosingScrollView.zoomScale * 50.0;
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height + addedFactor, 0);
 	
-	[UIView animateWithDuration:0.0 animations:^{
+	[UIView animateWithDuration:animationTime animations:^{
 		self.scrollView.contentInset = insets;
 		self.outlineView.contentInset = insets;
 	} completion:^(BOOL finished) {
@@ -897,7 +911,8 @@
 		rect.origin.y += 100.0;
 		rect.size.height += 24.0;
 		CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
-		[self.scrollView scrollRectToVisible:visible animated:true];
+		
+		[self.scrollView safelyScrollRectToVisible:visible animated:true];
 	}];
 }
 
@@ -955,4 +970,50 @@
 }
 
 
+/*
+- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
+	<#code#>
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+	<#code#>
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
+	<#code#>
+}
+
+- (CGSize)sizeForChildContentContainer:(nonnull id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
+	<#code#>
+}
+
+- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
+	<#code#>
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
+	<#code#>
+}
+
+- (void)willTransitionToTraitCollection:(nonnull UITraitCollection *)newCollection withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
+	<#code#>
+}
+
+- (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
+	<#code#>
+}
+
+- (void)setNeedsFocusUpdate {
+	<#code#>
+}
+
+- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
+	<#code#>
+}
+
+- (void)updateFocusIfNeeded {
+	<#code#>
+}
+*/
+ 
 @end

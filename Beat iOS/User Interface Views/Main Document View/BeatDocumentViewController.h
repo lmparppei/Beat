@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger sceneNumberingStartsFrom;
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
+- (IBAction)openExportPanel:(id)sender;
 
 @end
 

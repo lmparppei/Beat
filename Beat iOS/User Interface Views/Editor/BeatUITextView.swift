@@ -21,7 +21,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 
 	//@IBInspectable var documentWidth:CGFloat = 640
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
-	@IBOutlet weak var enclosingScrollView:UIScrollView!
+	@IBOutlet weak var enclosingScrollView:BeatScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
 	@objc public var assistantView:InputAssistantView?
@@ -31,7 +31,12 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	var customLayoutManager:BeatLayoutManager
 	
 	class func linePadding() -> CGFloat {
-		return 70.0
+		// We'll use very tight padding for iPhone
+		if UIDevice.current.userInterfaceIdiom == .phone {
+			return 20.0
+		} else {
+			return 70.0
+		}
 	}
 	
 	// MARK: - Initializers
@@ -67,7 +72,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 		layoutManager.editorDelegate = editorDelegate
 		textView.setup()
-		
+				
 		return textView
 	}
 	
@@ -145,11 +150,17 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	func scroll(to range: NSRange) {
 		var rect = self.rectForRange(range: range)
 		rect.origin.y += self.insets.top
-		rect.origin.y = self.enclosingScrollView.zoomScale * rect.origin.y
+		//rect.origin.y = self.enclosingScrollView.zoomScale * rect.origin.y
 		
 		rect.size.height += self.insets.bottom
+		rect.origin = self.convert(rect.origin, to: self.enclosingScrollView)
 		
-		self.enclosingScrollView.scrollRectToVisible(rect, animated: true)
+		self.enclosingScrollView.safelyScrollRectToVisible(rect, animated: true)
+	}
+	
+	override func scrollRangeToVisible(_ range: NSRange) {
+		self.scroll(to:range)
+		//super.scrollRangeToVisible(range)
 	}
 	
 	func scroll(to range: NSRange, callback callbackBlock: (() -> Void)!) {
@@ -179,7 +190,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	
 	@objc var documentWidth:CGFloat {
 		var width = 0.0
-		let padding = self.textContainer.lineFragmentPadding
+		let padding = BeatUITextView.linePadding()
 		
 		guard let delegate = self.editorDelegate else { return 0.0 }
 		
@@ -187,6 +198,11 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			width = BeatFonts.characterWidth() * 60
 		} else {
 			width = BeatFonts.characterWidth() * 62
+		}
+		
+		// For iPhone, we'll use a narrow viewport
+		if UIDevice.current.userInterfaceIdiom == .phone {
+			width = self.enclosingScrollView.frame.size.width - padding * 2
 		}
 		
 		return width + padding * 2
@@ -740,8 +756,15 @@ extension BeatUITextView {
 			editorDelegate.replace(r, with: suggestion)
 		}
 	}
+	/*
+	@objc internal func _scrollSelectionToVisibleInContainingScrollView() {
+		print("wat")
+	}
+	@objc internal func _scrollRect(_ arg1:CGRect, toVisibleInContainingScrollView arg2:Bool) {
+		print("wat 2")
+	}
+	 */
 }
-
 
 // MARK: - Assisting views
 
@@ -757,5 +780,15 @@ class BeatPageView:UIView {
 }
 
 class BeatScrollView: UIScrollView {
+	@objc public var manualScroll = false
 	
+	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
+		if (self.manualScroll) {
+			super.scrollRectToVisible(rect, animated: animated)
+		}
+	}
+	
+	@objc public func safelyScrollRectToVisible(_ rect: CGRect, animated: Bool) {
+		super.scrollRectToVisible(rect, animated: animated)
+	}
 }
