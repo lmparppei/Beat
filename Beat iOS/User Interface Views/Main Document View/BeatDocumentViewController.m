@@ -69,6 +69,10 @@
 
 //@objc var hideFountainMarkup: Bool = false
 @property (nonatomic) bool closing;
+
+/// Split view. Defined in storyboard segue.
+@property (nonatomic, weak) BeatEditorSplitViewController* editorSplitView;
+
 @end
 
 @implementation BeatDocumentViewController
@@ -229,6 +233,13 @@
 	// Data source
 	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
 	
+	// Setup outline view
+	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
+	self.outlineView.editorDelegate = self;
+	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
+	
+	
+	
 	// Restore caret position
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
 	if (position < self.text.length) {
@@ -363,6 +374,16 @@
 	} completion:^(BOOL finished) {
 		[self.textView resize];
 	}];
+	
+	
+	if (self.editorSplitView.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
+		[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
+	} else {
+		[self.editorSplitView hideColumn:UISplitViewControllerColumnPrimary];
+	}
+	
+	
+	//[self.editorSplitView
 }
 
 
@@ -480,10 +501,11 @@
 		self.characterInputForLine = nil;
 	}
 	
-	[self.textView updateAssistingViews];
-	
+	// Update outline view
 	if (self.outlineView.visible) [self.outlineView update];
 	
+	// Update text view input view and scroll range to visible
+	[self.textView updateAssistingViews];
 	[self.textView scrollRangeToVisible:textView.selectedRange];
 	
 	// Update plugins
@@ -967,7 +989,16 @@
 		vc.delegate = self;
 		vc.pluginName = @"Index Card View";
 	}
+	else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
+		NSLog(@"!!! SPLIT VIEW SEGUE");
+		self.editorSplitView = segue.destinationViewController;
+		self.editorSplitView.editorDelegate = self;
+		
+		[self.editorSplitView setupWithEditorDelegate:self];
+	}
 }
+
+
 
 
 /*

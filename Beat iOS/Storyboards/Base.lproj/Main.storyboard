@@ -35,14 +35,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Beat iOS beta build 6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uJE-9r-peg">
-                                <rect key="frame" x="73" y="264" width="472" height="37"/>
+                                <rect key="frame" x="72" y="264" width="472" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="35"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Eg-eS-aRM">
-                                <rect key="frame" x="72" y="329" width="473" height="475"/>
+                                <rect key="frame" x="70" y="329" width="474" height="475"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <attributedString key="attributedText">
@@ -345,7 +345,7 @@ Lauri-Matti</string>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon-MacOS-512x512" translatesAutoresizingMaskIntoConstraints="NO" id="Qf1-4h-fbC">
-                                <rect key="frame" x="203" y="24" width="211" height="195"/>
+                                <rect key="frame" x="202" y="24" width="211" height="195"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -443,6 +443,13 @@ Lauri-Matti</string>
                                     <constraint firstAttribute="width" constant="230" id="6By-uQ-Ux5"/>
                                 </constraints>
                             </view>
+                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
+                                <rect key="frame" x="0.0" y="74" width="834" height="1133"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <connections>
+                                    <segue destination="huI-7K-Jqd" kind="embed" identifier="ToEditorSplitView" id="izI-nM-aPn"/>
+                                </connections>
+                            </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -517,7 +524,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" id="hUb-18-I71">
-                                <rect key="frame" x="-5" y="20" width="838" height="1174"/>
+                                <rect key="frame" x="-7" y="20" width="840" height="1174"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -526,7 +533,7 @@ Lauri-Matti</string>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="770" y="50" width="28" height="30"/>
+                                <rect key="frame" x="768" y="50" width="28" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -549,65 +556,114 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3166" y="654"/>
+            <point key="canvasLocation" x="3165.4676258992808" y="653.7688442211055"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="9wM-H5-bof">
+        <!--Beat Editor View Controller-->
+        <scene sceneID="uc1-BM-eyz">
             <objects>
-                <viewController id="A0q-5S-xCe" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="sJH-Mx-thE">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                <viewController id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Hy9-v8-qGf">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1133"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="6ik-lm-agd"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1373"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="21" y="-24" width="792" height="1137"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
+                                <viewLayoutGuide key="contentLayoutGuide" id="rfN-X6-xBn"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="Nsp-L4-g4d"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ekZ-mD-PCq"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="pageView" destination="Vhw-po-PCx" id="MbL-75-X0g"/>
+                        <outlet property="scrollView" destination="ETx-UJ-JkA" id="X93-hT-RHe"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cJN-0H-EVW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eTe-Gf-Vv9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3577" y="2192"/>
+            <point key="canvasLocation" x="3457.5539568345325" y="1845.7286432160804"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Beat Editor Split View Controller-->
+        <scene sceneID="Obe-C1-u81">
+            <objects>
+                <splitViewController modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="detailViewController" id="Tvb-rF-uEG"/>
+                        <segue destination="oKi-z9-sBS" kind="relationship" relationship="masterViewController" id="GOe-pF-LL9"/>
+                    </connections>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rBZ-hV-1nr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2738" y="1582"/>
+        </scene>
+        <!--Beat Sidebar View Controller-->
         <scene sceneID="9rO-4Y-XEo">
             <objects>
-                <tableViewController clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB">
-                        <rect key="frame" x="0.0" y="0.0" width="420" height="1194"/>
+                <tableViewController automaticallyAdjustsScrollViewInsets="NO" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="1133"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="icK-bh-3EV">
-                                <rect key="frame" x="0.0" y="50" width="420" height="43.5"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="fJ4-Xi-prg" rowHeight="20" style="IBUITableViewCellStyleDefault" id="fUD-Q2-mxf" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="50" width="350" height="20"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="icK-bh-3EV" id="B7F-Wi-VSw">
-                                    <rect key="frame" x="100" y="0.0" width="320" height="43.5"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fUD-Q2-mxf" id="7l8-8n-f4d" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
+                                    <rect key="frame" x="100" y="0.0" width="250" height="20"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fJ4-Xi-prg">
+                                            <rect key="frame" x="16" y="0.0" width="218" height="20"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <connections>
+                                        <outlet property="textField" destination="fJ4-Xi-prg" id="3bj-Z1-gvN"/>
+                                    </connections>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="da5-TV-bCJ" id="6fW-FR-Ad6"/>
-                            <outlet property="delegate" destination="da5-TV-bCJ" id="G0Z-HV-kfb"/>
-                        </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="I7h-LD-beH"/>
                     <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bo0-Gi-KDE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3577" y="1564"/>
+            <point key="canvasLocation" x="4211" y="1301"/>
         </scene>
-        <!--Beat Editor Split View Controller-->
-        <scene sceneID="Iw7-fH-eZk">
+        <!--Navigation Controller-->
+        <scene sceneID="pkw-U7-AzC">
             <objects>
-                <splitViewController allowDoubleColumnStyle="YES" primaryBackgroundStyle="sidebar" id="Znh-BF-S2i" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="oKi-z9-sBS" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="nAh-EZ-1Yr">
+                        <rect key="frame" x="100" y="0.0" width="0.0" height="0.0"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
                     <connections>
-                        <segue destination="A0q-5S-xCe" kind="relationship" relationship="detailViewController" id="yyj-YN-oMN"/>
-                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="masterViewController" id="896-10-4ff"/>
+                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="rootViewController" id="gFt-vh-1Yc"/>
                     </connections>
-                </splitViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="56k-Cn-toq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="K8k-iF-fgx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2835" y="1688"/>
+            <point key="canvasLocation" x="3458" y="1334"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
@@ -647,7 +703,7 @@ Lauri-Matti</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="nAO-Zc-bHl">
-                                <rect key="frame" x="496" y="19" width="74" height="34"/>
+                                <rect key="frame" x="495" y="19" width="74" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Save"/>
@@ -656,7 +712,7 @@ Lauri-Matti</string>
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" id="7HU-hv-Dfh">
-                                <rect key="frame" x="-2" y="66" width="595" height="713"/>
+                                <rect key="frame" x="-4" y="65" width="596" height="713"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="b5K-8U-mwc"/>
@@ -682,7 +738,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" id="V3j-D3-v3i">
-                                <rect key="frame" x="-2" y="-2" width="491" height="786"/>
+                                <rect key="frame" x="-4" y="-3" width="492" height="786"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="OPO-NW-28M"/>
@@ -904,7 +960,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="-3" y="-4" width="834" height="1193"/>
+                                <rect key="frame" x="-5" y="-4" width="834" height="1192"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
@@ -935,7 +991,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" id="NEB-De-fMw">
-                                <rect key="frame" x="-3" y="-2" width="350" height="384"/>
+                                <rect key="frame" x="-4" y="-4" width="349" height="384"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <segue destination="HAz-LJ-FEM" kind="embed" identifier="ToSettingsTable" id="CKM-B1-jv7"/>
@@ -957,17 +1013,17 @@ Lauri-Matti</string>
             <objects>
                 <tableViewController storyboardIdentifier="ExportSettingsTable" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb">
-                        <rect key="frame" x="0.0" y="0.0" width="595" height="713"/>
+                        <rect key="frame" x="0.0" y="0.0" width="596" height="713"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <sections>
                             <tableViewSection headerTitle="Basic Settings" id="rN0-KM-z31">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="6Mt-Kf-Tyf">
-                                        <rect key="frame" x="0.0" y="55.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6Mt-Kf-Tyf" id="tny-UM-U9c">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="XLb-yV-UnT" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -991,10 +1047,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NpY-wm-OZj">
-                                        <rect key="frame" x="0.0" y="99" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="99" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NpY-wm-OZj" id="lLU-rr-q28">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="gh2-pi-ILw">
@@ -1020,10 +1076,10 @@ Lauri-Matti</string>
                             <tableViewSection headerTitle="Scene Headings" id="Fib-N7-hu1">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="xAX-4R-fPE">
-                                        <rect key="frame" x="0.0" y="198.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="198.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xAX-4R-fPE" id="nG1-dD-84e">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="Z3a-gl-jqf" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1047,10 +1103,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="DNv-SW-2Lx">
-                                        <rect key="frame" x="0.0" y="242" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="242" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DNv-SW-2Lx" id="WNq-K1-3nY">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="BLS-CE-7qL" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1074,10 +1130,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="slY-Sd-n4S">
-                                        <rect key="frame" x="0.0" y="285.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="285.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="slY-Sd-n4S" id="DcY-e9-cfb">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading Spacing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2bc-pY-Rnx">
@@ -1107,10 +1163,10 @@ Lauri-Matti</string>
                                 <string key="footerTitle">Select revision generations you want to have highlighted with markers. If you haven't used revisions, you can leave this untouched.</string>
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="ULA-kx-bx8">
-                                        <rect key="frame" x="0.0" y="392.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="392.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ULA-kx-bx8" id="NV9-Iz-A20">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="wAD-UQ-H34">
@@ -1135,10 +1191,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="B4D-fq-NIz">
-                                        <rect key="frame" x="0.0" y="436" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="436" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="B4D-fq-NIz" id="txa-Em-pSW">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="4y9-mv-NAU">
@@ -1163,10 +1219,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4yk-Ho-OCt">
-                                        <rect key="frame" x="0.0" y="479.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="479.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4yk-Ho-OCt" id="W48-jZ-oE1">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="PGs-Py-6eF">
@@ -1191,10 +1247,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="hxI-VH-DbY">
-                                        <rect key="frame" x="0.0" y="523" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="523" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hxI-VH-DbY" id="FIA-dm-ghJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="yHw-4s-Sle">
@@ -1223,10 +1279,10 @@ Lauri-Matti</string>
                             <tableViewSection headerTitle="Advanced — Invisible elements" footerTitle="Includes selected invisible elements in your printout." id="TaO-aF-sl5">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="uK9-uA-bSU">
-                                        <rect key="frame" x="0.0" y="658" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="658" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uK9-uA-bSU" id="nJz-Is-x6g">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1251,10 +1307,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="T98-YH-OcS">
-                                        <rect key="frame" x="0.0" y="701.5" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="701.5" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="T98-YH-OcS" id="tY2-xQ-a5K">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1279,10 +1335,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="lou-S8-ZDK">
-                                        <rect key="frame" x="0.0" y="745" width="595" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="745" width="596" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lou-S8-ZDK" id="GVy-EO-j8Y">
-                                            <rect key="frame" x="0.0" y="0.0" width="595" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1342,7 +1398,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KJ2-fc-psw">
-                                <rect key="frame" x="9" y="78" width="732" height="911"/>
+                                <rect key="frame" x="7" y="77" width="732" height="911"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TOx-BZ-voc">
@@ -1422,6 +1478,7 @@ Lauri-Matti</string>
                     <view key="view" contentMode="scaleToFill" id="qDy-6T-n2S">
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="e44-2g-SEY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                 </viewController>

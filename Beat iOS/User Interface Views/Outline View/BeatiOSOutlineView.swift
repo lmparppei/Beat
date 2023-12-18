@@ -10,26 +10,31 @@ import Foundation
 
 class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
 	
-	@IBOutlet weak var editorDelegate:BeatEditorDelegate!
+	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	var dataProvider:BeatOutlineDataProvider?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		// Register outline view
-		self.editorDelegate.register(self)
-		
 		self.delegate = self
-		
 		self.backgroundColor = UIColor.black;
 		self.backgroundView?.backgroundColor = UIColor.black;
 		
-		self.dataProvider = BeatOutlineDataProvider(delegate: self.editorDelegate, tableView: self)
-		self.dataProvider?.update()
+		if let editorDelegate = self.editorDelegate {
+			setup(editorDelegate: editorDelegate)
+		}
 		
 		let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeToClose))
 		swipe.direction = .left
 		self.addGestureRecognizer(swipe)
+	}
+	
+	func setup(editorDelegate:BeatEditorDelegate) {
+		// Register outline view
+		editorDelegate.register(self)
+					
+		self.dataProvider = BeatOutlineDataProvider(delegate: editorDelegate, tableView: self)
+		self.dataProvider?.update()
 	}
 	
 	func reload(with changes: OutlineChanges!) {
@@ -53,15 +58,17 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	}
 	
 	@objc func swipeToClose() {
-		self.editorDelegate.toggleSidebar(self)
+		self.editorDelegate?.toggleSidebar(self)
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let i = indexPath.row
-		guard let scene = self.editorDelegate.parser.outline[i] as? OutlineScene else { return }
+		guard let editorDelegate = self.editorDelegate else { return }
 		
-		self.editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
-		self.editorDelegate.scroll(to: scene.line)
+		let i = indexPath.row
+		guard let scene = editorDelegate.parser.outline[i] as? OutlineScene else { return }
+		
+		editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
+		editorDelegate.scroll(to: scene.line)
 	}
 	
 	/// Updates current scene
@@ -69,6 +76,8 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	var selectedItem:OutlineDataItem?
 	
 	@objc func update() {
+		guard let editorDelegate = self.editorDelegate else { return }
+		
 		// Do nothing if the line hasn't changed
 		if editorDelegate.currentLine() == previousLine { return }
 		
@@ -81,7 +90,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		for i in 0..<snapshot.numberOfItems {
 			// Because items are only created for visible items, we need to scroll to selected item using the snapshot data source
 			let item = snapshot.itemIdentifiers(inSection: 0)[i]
-			if NSLocationInRange(self.editorDelegate.selectedRange.location, item.range) {
+			if NSLocationInRange(editorDelegate.selectedRange.location, item.range) {
 				selectedItem = item
 				if (oldSelectedItem != item) {
 					scrollToSelectedItem()

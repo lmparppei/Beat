@@ -888,6 +888,7 @@ static BeatAppDelegate *appDelegate;
 /// Focuses the editor window
 - (void)focusEditor {
 	[self.documentWindow makeKeyWindow];
+	[self.textView becomeFirstResponder];
 }
 
 
@@ -1785,15 +1786,6 @@ static NSWindow __weak *currentKeyWindow;
 	[self formatAllLines];
 }
 
-- (void)renderBackgroundForLines {
-	for (Line* line in self.lines) {
-		// Invalidate layout
-		[self.formatting refreshRevisionTextColorsInRange:line.textRange];
-		[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-	}
-}
-
-
 
 /*
  
@@ -1882,11 +1874,6 @@ static NSWindow __weak *currentKeyWindow;
 	return _synopsisFont;
 }
 
-// This is here for legacy reasons
-- (NSUInteger)fontSize
-{
-	return BeatFonts.sharedFonts.courier.pointSize;
-}
 
 
 #pragma mark - Formatting Buttons
