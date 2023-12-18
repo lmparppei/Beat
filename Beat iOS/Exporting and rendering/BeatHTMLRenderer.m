@@ -446,8 +446,6 @@
 	NSMutableString* string = NSMutableString.new;
 	
 	for (Line* line in lines) {
-		// Consecutive lines won't begin a new paragraph
-		if (line != lines.firstObject) line.beginsNewParagraph = false;
 		[string appendString:[self htmlStringFor:line]];
 	}
 	
@@ -547,7 +545,7 @@
 	}
 	
 	// Handlde split paragraphs
-	if (line.canBeSplitParagraph && !line.beginsNewParagraph) {
+	if ((line.canBeSplitParagraph && !line.beginsNewParagraph) || (line.isTitlePage && !line.beginsTitlePageBlock)) {
 		[additionalClasses appendString:@" splitParagraph"];
 	}
 	

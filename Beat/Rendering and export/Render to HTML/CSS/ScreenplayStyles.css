@@ -252,7 +252,7 @@ body > p:first-child {
 }
 
 .character,
-.dd-character,
+.dualDialogueCharacter,
 .more {
 	position: relative;
 	left: 0px;
@@ -287,7 +287,7 @@ body > p:first-child {
 	padding-right: calc(var(--action-width) - (var(--dialogue-indent) + var(--dialogue-width)));
 }
 
-.parenthetical, .dd-parenthetical {
+.parenthetical, .dualDialogueParenthetical {
 	position: relative;
 
 	margin: 0px;
@@ -418,7 +418,7 @@ body > p:first-child {
 	transform: translateX(calc(var(--action-width) - var(--character-indent) + 18px)) !important;
 }
 
-.parenthetical .revisionMarker::after, .dd-parenthetical .revisionMarker::after {
+.parenthetical .revisionMarker::after, .dualDialogueParenthetical .revisionMarker::after {
 	transform: translateX(calc(var(--action-width) - var(--parenthetical-indent) + 18px)) !important;
 }
 
@@ -430,11 +430,11 @@ body > p:first-child {
 	transform: translateX(calc(var(--action-width)/2 + 9px)) !important;
 }
 
-.dual-dialogue-right .dd-character .revisionMarker::after {
+.dual-dialogue-right .dualDialogueCharacter .revisionMarker::after {
 	transform: translateX(calc(var(--action-width)/2 - 68px)) !important;
 }
 
-.dual-dialogue-right .dd-parenthetical .revisionMarker::after,
+.dual-dialogue-right .dualDialogueParenthetical .revisionMarker::after,
 .dual-dialogue-right .parenthetical .revisionMarker::after{
 	transform: translateX(calc(var(--action-width)/2 - 20px)) !important;
 }
@@ -590,7 +590,7 @@ hr {
 	padding: 0px;
 }
 
-.dual-dialogue .character, .dual-dialogue .dd-character {
+.dual-dialogue .character, .dual-dialogue .dualDialogueCharacter {
 	margin-top: 0;
 	padding: 0;
 	margin-left: 4ch;
@@ -598,7 +598,7 @@ hr {
 	text-align: center;
 }
 
-.dual-dialogue .dd-parenthetical,
+.dual-dialogue .dualDialogueParenthetical,
 .dual-dialogue .parenthetical {
 	margin: 0 0 0 3ch;
 	padding-right: 0ch;

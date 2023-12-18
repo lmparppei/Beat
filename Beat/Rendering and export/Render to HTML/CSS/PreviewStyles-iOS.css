@@ -1,7 +1,11 @@
 
-body {
-	-webkit-transform: scale(0.8);
-	-webkit-transform-origin: top center;
+@media screen and (min-width: 650px) {
 	
-	zoom: 100%;
+	body {
+		-webkit-transform: scale(0.9);
+		-webkit-transform-origin: top center;
+		
+		zoom: 100%;
+	}
+	
 }
