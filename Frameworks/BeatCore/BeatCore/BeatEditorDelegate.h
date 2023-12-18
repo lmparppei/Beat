@@ -270,8 +270,10 @@
 #endif
 
 #if TARGET_OS_IOS
+/*
 - (UITextRange*)selectedTextRange;
 - (void)setSelectedTextRange:(UITextRange*)textRange;
+ */
 #endif
 
 

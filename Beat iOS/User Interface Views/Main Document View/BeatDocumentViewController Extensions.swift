@@ -12,6 +12,7 @@ import BeatCore
 extension BeatDocumentViewController {
 	@objc func setupTitleMenu() {
 		let documentProperties = UIDocumentProperties(url: document.fileURL)
+		
 		if let itemProvider = NSItemProvider(contentsOf: document.fileURL) {
 			documentProperties.dragItemsProvider = { _ in
 				[UIDragItem(itemProvider: itemProvider)]
@@ -22,6 +23,13 @@ extension BeatDocumentViewController {
 		}
 		
 		navigationItem.documentProperties = documentProperties
+		
+		navigationItem.titleMenuProvider = { suggestions in
+			var items = suggestions
+			items.append(UICommand(title: "Create PDF", action: #selector(self.openExportPanel)))
+			return UIMenu(children: items)
+		}
+		
 	}
 		
 	@objc func setupScreenplayMenu(button:UIBarButtonItem) {

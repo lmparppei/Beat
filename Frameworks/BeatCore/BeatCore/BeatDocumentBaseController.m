@@ -14,6 +14,7 @@
 #import <BeatCore/BeatEditorFormatting.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatLayoutManager.h>
+#import <BeatCore/BeatFonts.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
@@ -326,6 +327,15 @@
 {
     line.type = type;
     [self formatLine:line];
+}
+
+- (void)renderBackgroundForLines
+{
+    for (Line* line in self.lines) {
+        // Invalidate layout
+        [self.formatting refreshRevisionTextColorsInRange:line.textRange];
+        [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+    }
 }
 
 
@@ -697,6 +707,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     return @"";
 }
 
+
+#pragma mark - Font size
+
+/// Returns current default font point size
+- (CGFloat)fontSize
+{
+    return BeatFonts.sharedFonts.courier.pointSize;
+}
 
 
 #pragma mark - Plugin support

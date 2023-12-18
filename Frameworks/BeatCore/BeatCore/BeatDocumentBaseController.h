@@ -183,6 +183,10 @@ NS_ASSUME_NONNULL_END
 - (void)setTypeAndFormat:(Line* _Nonnull)line type:(LineType)type;
 /// A convenience method which reformats lines in given indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet * _Nonnull)indices;
+/// Refreshes the backgrounds and foreground revision colors in all lines. The method name is a bit confusing because of legacy reasons.
+- (void)renderBackgroundForLines;
+/// Returns current default font point size
+- (CGFloat)fontSize;
 
 
 #pragma mark - Preview

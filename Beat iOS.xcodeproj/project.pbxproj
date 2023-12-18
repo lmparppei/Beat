@@ -41,6 +41,7 @@
 		B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */; };
 		B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68321B629F6BD7E00A2553E /* BeatPrintView.m */; };
 		B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FF9B2971BC7E00789C8D /* PreviewStyles.css */; };
 		B686FFC52971BC7E00789C8D /* ScreenplayStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FFA72971BC7E00789C8D /* ScreenplayStyles.css */; };
@@ -165,6 +166,7 @@
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
 		B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatEditorSplitView.swift; sourceTree = "<group>"; };
 		B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
 		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
@@ -362,6 +364,7 @@
 			isa = PBXGroup;
 			children = (
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */,
 				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 			);
@@ -642,6 +645,7 @@
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
 				B68E3F2D2B2BBB1200C63B71 /* BeatiOSPreviewController.swift in Sources */,
 				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
+				B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */,
 				B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */,
 				B61FD05D2A66D49200A40883 /* BeatIndexCardView.swift in Sources */,
 				B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */,
@@ -920,7 +924,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat iOS/Beat-iOS-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -970,7 +974,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat iOS/Beat-iOS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
