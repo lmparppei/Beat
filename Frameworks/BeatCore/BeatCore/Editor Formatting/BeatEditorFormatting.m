@@ -60,7 +60,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 /// Returns paragraph style for given line
-- (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line {
+- (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line
+{
 	if (line == nil) line = [Line withString:@"" type:action];
 	
 	LineType type = line.type;
@@ -87,16 +88,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		type = (LineType)subSection;
 	}
 	
-	// This is an idea for storing paragraph styles, but it doesn't seem to work for forced character cues.
-	BeatPaperSize paperSize = self.delegate.pageSize;
+    // We'll cache the paragraph styles when possible
+    BeatPaperSize paperSize = self.delegate.pageSize;
 	NSNumber* paperSizeKey = @(paperSize);
 	NSNumber* typeKey = @(type);
 		
-	// Create dictionary for page size when needed
+	// Let's create two-dimensional dictionary for each type of element, with page size as key.
+    // Paragraph styles are then reused when possible.
 	if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
 	if (_paragraphStyles[paperSizeKey] == nil) _paragraphStyles[paperSizeKey] = NSMutableDictionary.new;
 		
-	// The style already exists, return the premade value
+	// This style already exists, return the premade value
 	if (_paragraphStyles[paperSizeKey][typeKey] != nil) {
 		return _paragraphStyles[paperSizeKey][typeKey];
 	}
@@ -109,11 +111,23 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
 	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
 	
+    // To support mobile screens, we might need to compact the margins.
+    CGFloat pageWidth = (paperSize == BeatA4) ? self.delegate.editorStyles.page.defaultWidthA4 : self.delegate.editorStyles.page.defaultWidthLetter;
+    CGFloat minWidth = [elementStyle widthWithPageSize:paperSize];
+    CGFloat remainingWidth = pageWidth - elementStyle.marginLeft - elementStyle.marginRight - minWidth;
+
+    
+    if (remainingWidth < minWidth) {
+        // We'll need to compact the margins to fit them on mobile screens
+        leftMargin *= 0.7;
+        rightMargin = -leftMargin;
+    }
+    
 	// Indents are used as left/right margins, and indents in stylesheet are appended to that
 	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;
 	style.headIndent = leftMargin + elementStyle.indent;
 	style.tailIndent = rightMargin;
-	
+    	
 	if (line.isAnyParenthetical) style.headIndent += CHR_WIDTH;
 	
 	if (type == titlePageSubField) {
@@ -134,6 +148,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	return style;
 }
 
+/// Reformats all lines in given range
 - (void)formatLinesInRange:(NSRange)range
 {
 	NSArray* lines = [_delegate.parser linesInRange:range];
@@ -142,6 +157,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 }
 
+/// Formats all lines of given type
 - (void)formatAllLinesOfType:(LineType)type
 {
 	for (Line* line in _delegate.parser.lines) {

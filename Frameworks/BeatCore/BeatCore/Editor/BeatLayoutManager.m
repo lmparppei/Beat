@@ -118,17 +118,18 @@
 
 #pragma mark - Draw page separators and numbers
 
-- (void)drawPageSeparators:(const NSRange*)glyphsToShow
+- (void)drawPageSeparators:(const NSRange*)glyphsToShow inset:(CGSize)inset
 {
+    // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers && ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
+    // Page number doesn't fit
+    else if (inset.width - 60.0 < inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
     
     static BXColor* pageBreakColor;
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     
     BXColor* pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
-    
-    CGSize inset = [self offsetSize];
-    
+        
     NSRange charRange = [self characterRangeForGlyphRange:*glyphsToShow actualGlyphRange:nil];
     for (NSValue* key in self.pageBreaks.allKeys) {
         Line* line = key.nonretainedObjectValue;
@@ -149,6 +150,16 @@
         NSRange lRange;
 
         CGRect r = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:&lRange];
+        
+        // Draw page numbers
+        NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
+    
+        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
+            NSFontAttributeName: self.editorDelegate.courier,
+            NSForegroundColorAttributeName: pageNumberColor,
+            NSParagraphStyleAttributeName: self.pageNumberStyle
+        }];
+
         
         // Draw page separators if needed
         if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
@@ -178,17 +189,6 @@
                 BXRectFill(separatorRect);
             }
         }
-        
-        
-        // This is how you draw the page number. We just need the page number value from text view as well.
-        NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
-    
-        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
-            NSFontAttributeName: self.editorDelegate.courier,
-            NSForegroundColorAttributeName: pageNumberColor,
-            NSParagraphStyleAttributeName: self.pageNumberStyle
-        }];
-
     }
     
 }
@@ -228,7 +228,7 @@
     bool showRevisions = _editorDelegate.showRevisions;
     
     // Draw page separators
-    [self drawPageSeparators:&glyphsToShow];
+    [self drawPageSeparators:&glyphsToShow inset:inset];
     
     // We'll enumerate line fragments to then be able to draw range-based backgrounds on each line.
     // This is somewhat unefficient if there's a lot of attributes, so you should keep track of those.
@@ -365,10 +365,11 @@
     #if TARGET_OS_IOS
         yOffset = 1.0;
     #endif
-    
-    
+        
     // Scene number drawing is off, return
     if (!self.editorDelegate.showSceneNumberLabels) return;
+    // Don't draw scene numbers when the container is too small. This mostly affects iPhones.
+    else if (inset.width + X_OFFSET > inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
     
     // Create the style if needed
     if (_sceneNumberStyle == nil) {
@@ -386,7 +387,7 @@
                       y,
                       7.5 * line.sceneNumber.length,
                       rect.size.height + 1.0);
-    
+        
     BXColor* color;
     if (line.color.length > 0) color = [BeatColors color:line.color];
     if (color == nil) color = ThemeManager.sharedManager.textColor.effectiveColor;
