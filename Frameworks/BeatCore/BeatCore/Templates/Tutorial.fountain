@@ -1,0 +1,128 @@
+Title: Beat Tutorial
+Credit: Written by
+Author: Lauri-Matti Parppei
+Draft date: Version 3, 6.8.2023
+Contact:
+beat@kapitan.fi
+www.beat-app.fi
+
+
+INT. SCHOOL ROOM - DAY
+
+Is this your first time using Beat? This file is a playground for you to mess around with. For more detailed instructions, consult the user manual, which is accessible through the Help menu.
+
+In Beat, you don't need to press any special keys to write dialogue or a scene header. Just type "int. school" or "ext. park" on a new line and it will become a scene header.
+
+Try it out yourself!
+
+
+EXT. PARK - DAY
+
+The same is true with dialogue. Just type in CHARACTER NAME (all caps) and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue. 
+
+Try it out!
+
+CHARACTER
+Hello. This is your first dialogue block.
+
+CHARACTER 2
+(gently nodding their head)
+Well done.
+
+You can also press Tab to force a character cue and not worry about writing in all caps.
+
+After one empty line break the format will change back to action. Beat automatically adds two line breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
+
+You can also use transitions just by typing out something in all-caps and ending it with a colon, like this:
+
+CUT TO:
+
+Well, that was easy. You should be able to write a full screenplay by using those elements. 
+
+Now, if you dare, let's get more technical!
+
+
+
+/*
+
+This is a note. It won't be printed or exported, don't worry. This way, you can add longer comments and omit scenes.
+
+Oh, and check out the print preview, either by clicking on the eye icon, File → Toggle preview, or by pressing ⌘⌥P)
+
+The title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format → Add title page or use Format → Title Page Editor
+
+*/
+
+
+# This is a new section
+
+= This is a synopsis line. Let's get a bit more technical.
+
+INT. TUNNEL - NIGHT 
+
+You can use sections and synopses (as above) to help structure your story. They won't be printed out, don't worry.
+
+Take a look at the outline view (top-left icon or ⌘D) and see how the structure is laid out! Index Card View (top-right card icon or ⌘⇧D) is a useful tool for visualizing and laying out your story beats.
+
+
+INT./EXT. BEACH HOUSE - NIGHT
+
+[[Stylizing your script. If you use a note as the first paragraph, it will show up as the description of this scene in the index card view.]]
+
+Text formatting can be done with the usual commands used in any software, (⌘B, ⌘I, etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
+
+Basically, text formatting works so that anything inside dual asterisks is **bolded** and single asterisks make it *italic*. You can also _underline_ stuff using underscores.
+
+You can also force any element when it's not recognized automatically -- take a look at the *Format* menu. Press ⌥↩ (alt-enter) to quickly force an element type. Try it now!
+
+Text can be centered by surrounding it with > and <
+
+>Centered text<
+
+Transitions can be forced using single >
+
+> Forced, surprisingly slow transition...
+
+
+EXT. STREET - NIGHT [[BLUE]]
+
+= Dual dialogue & other special elements
+
+You can set the color for your scene just by typing it out as above, or by right-clicking a scene either in any of the other views (Outline, Index Cards, Timeline).
+
+Double dialogue can be written by adding a ^ symbol after a character name.
+
+CHARACTER
+Hello, have you heard about Beat?
+
+CHARACTER 2 ^
+(interrupting)
+Leave me alone.
+
+
+INT. NIGHT CLUB - NIGHT [[RED]]
+
+Here's some lyrics:
+
+~”If you come to my house, friend
+~bring me a lamp and a window I can look through
+~at the crowd in the happy alley.”
+
+That's about it. Edit this file and try out stuff. If you ever mess something up, you can usually reformat it by just removing something and adding it back.
+
+
+EXT. UNIVERSITY CLASSROOM - MORNING
+
+There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it), and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
+
+[[marker You can also add markers to indicate parts that need work or attention.]]
+[[marker pink: This is a pink marker!]]
+
+You can find more information about the Fountain markup language at http://www.fountain.io/
+
+> FADE OUT
+
+
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":""} END_BEAT */

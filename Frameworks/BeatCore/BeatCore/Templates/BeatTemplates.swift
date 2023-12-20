@@ -9,11 +9,21 @@
 import Foundation
 
 public struct BeatTemplateFile {
-	var filename:String
-	var title:String
-	var description:String
-	var icon:String?
-	var url:URL?
+    public var filename:String
+    public var title:String
+    public var description:String
+    public var icon:String?
+    public var url:URL?
+    public var product:String? /// The filename this template produces (ie. Tutorial iOS.fountain -> Tutorial.fountain)
+    
+    public init(filename: String, title: String, description: String, icon: String? = nil, url: URL? = nil, product: String?) {
+        self.filename = filename
+        self.title = title
+        self.description = description
+        self.icon = icon
+        self.url = url
+        self.product = product
+    }
 }
 
 /// Singleton class which provides templates
@@ -33,7 +43,9 @@ public struct BeatTemplateFile {
 		if _allTemplates != nil { return _allTemplates! }
 		
 		// get the plist file
-		guard let url = Bundle.main.url(forResource: "Templates And Tutorials", withExtension: "plist") else { return [:] }
+		let bundle = Bundle(for: type(of: self))
+		
+		guard let url = bundle.url(forResource: "Templates And Tutorials", withExtension: "plist") else { return [:] }
 		do {
 			// Get the template plist file
 			let data = try Data(contentsOf: url)
@@ -48,13 +60,21 @@ public struct BeatTemplateFile {
 				if templateData[key] == nil { templateData[key] = [] }
 				
 				for template in templates {
-					// First check if the file actually exists.
-					let url = Bundle.main.url(forResource: template["filename"], withExtension: nil)
-					if (url != nil) {
+                    // Skip OS-specific templates.
+                    if template["target"] != nil {
+                        #if os(macOS)
+                            if template["target"] != "macOS" { continue }
+                        #else
+                            if template["target"] != "iOS" { continue }
+                        #endif
+                    }
+                    
+                    // Check if the file actually exist before adding it
+					if let url = bundle.url(forResource: template["filename"], withExtension: nil) {
 						// Add the localized template to array
-						let t = BeatTemplateFile(filename: template["filename"] ?? "", title: BeatLocalization.localizedString(forKey: template["title"] ?? ""), description: BeatLocalization.localizedString(forKey: template["description"] ?? ""), icon: template["icon"] ?? "", url: url)
+						let t = BeatTemplateFile(filename: template["filename"] ?? "", title: BeatLocalization.localizedString(forKey: template["title"] ?? ""), description: BeatLocalization.localizedString(forKey: template["description"] ?? ""), icon: template["icon"] ?? "", url: url, product: template["product"])
 						templateData[key]?.append(t)
-					}
+                    }
 				}
 			}
 		

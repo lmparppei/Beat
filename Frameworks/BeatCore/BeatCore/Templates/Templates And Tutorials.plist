@@ -13,6 +13,22 @@
 			<string>templates.tutorial.description</string>
 			<key>icon</key>
 			<string>map</string>
+			<key>target</key>
+			<string>macOS</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Tutorial iOS.fountain</string>
+			<key>product</key>
+			<string>Tutorial.fountain</string>
+			<key>title</key>
+			<string>templates.tutorial.title</string>
+			<key>description</key>
+			<string>templates.tutorial.description</string>
+			<key>icon</key>
+			<string>map</string>
+			<key>target</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>filename</key>

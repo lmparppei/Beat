@@ -56,11 +56,6 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: UIDocumentBrowserViewControllerDelegate
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
-        //let newDocumentURL: URL? = nil
-        
-        // Set the URL for the new document here. Optionally, you can present a template chooser before calling the importHandler.
-        // Make sure the importHandler is always called, even if the user cancels the creation request.
-		
 		let storyboard = UIStoryboard(name: "Main", bundle: nil)
 		let templateVC = storyboard.instantiateViewController(identifier: "TemplateCollectionViewController") as TemplateCollectionViewController
 		templateVC.importHandler = importHandler
@@ -82,8 +77,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
-		print("FAIL?")
-        // Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
+		let alert = UIAlertController(title: "Error Opening Document", message: "Something went wrong when opening the file. Send a screenshot of this message to the developer:\n\(error.debugDescription)" , preferredStyle: .alert)
+		self.present(alert, animated: true)
     }
     	
     // MARK: - Document Presentation

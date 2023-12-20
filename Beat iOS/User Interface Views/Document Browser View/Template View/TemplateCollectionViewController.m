@@ -36,6 +36,7 @@
 	NSURL* template = cell.url;
     self.importHandler(template, UIDocumentBrowserImportModeCopy);
 
+
     _didPickTemplate = YES;
 	
     [self dismissViewControllerAnimated:YES completion:^ {

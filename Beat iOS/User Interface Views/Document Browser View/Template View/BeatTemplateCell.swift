@@ -11,6 +11,8 @@ import UIKit
 class BeatTemplateCell:UICollectionViewCell {
 	@objc @IBOutlet var icon:UIImageView?
 	@objc @IBOutlet var title:UILabel?
+	@objc @IBOutlet var labelView:UIView?
 	@objc @IBOutlet var templateDescription:UILabel?
 	@objc var url:URL?
+	@objc var product:String?
 }
