@@ -103,7 +103,6 @@ import BeatCore.BeatEditorDelegate
         } else {
             // Paginate and create preview with 1 second delay
             self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
-                print(" ... creating preview")
                 // Store revisions into lines in sync
                 self.delegate?.bakeRevisions()
 

@@ -66,6 +66,8 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
 
 - (void)addNewParagraph:(NSString*)string;
+- (void)addNewParagraph:(NSString*)string caretPosition:(NSInteger)newPosition;
+
 - (void)addCueExtension:(NSString*)extension onLine:(Line*)line;
 
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange;

@@ -63,10 +63,12 @@
 //	  FUCK YOU. Bring down capitalism, please.
 //
 //	  2023 edit: I removed the weird SceneTree structure and the class again uses
-//    plain OutlineScene object. One thing still stands: Apple CAN GO FUCK THEMSELVES.
+//    plain OutlineScene objects. One thing still stands: Apple CAN GO FUCK THEMSELVES.
 //    They stil don't give a fuck for the lives of their workers.
 //	  BURN DOWN THEIR FACTORIES.
 //    STEAL YOUR MAC.
+
+//    2023 pre-new-year edit: FUCK YOU APPLE.
 
 //    So, back to the code:
 

@@ -55,7 +55,7 @@
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
  @warning __Don't use__ this for adding text. Go through the intermediate methods instead, `addString`, `removeString` etc.
-*/
+ */
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
     BXTextView* textView = self.delegate.getTextView;
@@ -65,15 +65,15 @@
         NSInteger length = _delegate.text.length - range.location;
         range = NSMakeRange(range.location, length);
     }
-
+    
     // Text view fires up shouldChangeTextInRange only when the text is changed by the user.
     // When replacing stuff directly in the view, we need to call it manually.
-
+    
 #if TARGET_OS_IOS
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementText:string]) {
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
-
+        
         UITextRange *textRange = textView.selectedTextRange;
         [self.delegate.getTextView setSelectedTextRange:oldRange];
         
@@ -87,7 +87,7 @@
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif
-
+    
 }
 
 /// Adds a string at the given index.
@@ -103,7 +103,7 @@
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
-
+    
 #if !TARGET_OS_IOS
     // I don't know why, but we shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
@@ -327,14 +327,14 @@
     
     // Handle lines with content
     bool shiftPressed = false;
-
+    
 #if TARGET_OS_OSX
     // On macOS, pressing shift will avoid adding an extra line break
     shiftPressed = (NSEvent.modifierFlags & NSEventModifierFlagShift);
 #endif
-
+    
     if (currentLine.string.length > 0 && !shiftPressed) {
-
+        
         // Add double breaks for outline element lines
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
@@ -465,9 +465,9 @@
     
     // Don't add CONT'D when not editing this line
     if (!NSLocationInRange(lineIndex, NSMakeRange(0, _delegate.parser.lines.count))) return NO;
-        
+    
     NSString *charName = currentLine.characterName;
-        
+    
     while (lineIndex > 0) {
         Line * prevLine = _delegate.parser.lines[lineIndex];
         
@@ -490,12 +490,16 @@
         
         lineIndex--;
     }
-
+    
     return NO;
 }
 
-/// Adds a new, clean paragraph
 - (void)addNewParagraph:(NSString*)string {
+    [self addNewParagraph:string caretPosition:NSNotFound];
+}
+
+/// Adds a new, clean paragraph
+- (void)addNewParagraph:(NSString*)string caretPosition:(NSInteger)newPosition {
     NSInteger position = self.delegate.currentLine.position;
     self.delegate.selectedRange = NSMakeRange(position, 0);
     
@@ -520,6 +524,10 @@
     }
     
     [self addString:string atIndex:self.delegate.selectedRange.location];
+    
+    if (newPosition != NSNotFound) {
+        self.delegate.selectedRange = NSMakeRange(self.delegate.selectedRange.location + newPosition, 0);
+    }
 }
 
 

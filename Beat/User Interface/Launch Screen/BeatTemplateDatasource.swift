@@ -7,25 +7,26 @@
 //
 
 import AppKit
+import BeatCore
 
-class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
-	var templates = BeatTemplates.shared()
+public class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
+	public var templates = BeatTemplates.shared()
 
 	// Set this in IB to adjust which family of templates we are showing
 	@IBInspectable var family:String = "Templates"
 		
-	func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
+	public func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
 		if item != nil { return 0 }
 		return templates.forFamily(self.family).count
 	}
 	
-	func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
+	public func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
 		return templates.forFamily(self.family)[index] as Any
 	}
 	
-	func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { return false }
+	public func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { return false }
 	
-	func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+	public func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
 		let view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TemplateView"), owner: self) as! BeatTemplateCell
 		guard let template = item as? BeatTemplateFile else {
 			return nil
@@ -35,10 +36,10 @@ class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDel
 		return view
 	}
 	
-	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+	public func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
 		// Load the selected template
 		guard let template = item as? BeatTemplateFile,
-			  let url = Bundle.main.url(forResource: template.filename, withExtension: nil)
+			  let url = template.url
 		else { return false }
 
 		do {
@@ -53,12 +54,12 @@ class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutlineViewDel
 	}
 }
 
-class BeatTemplateCell:NSTableCellView {
-	var template:BeatTemplateFile?
+public class BeatTemplateCell:NSTableCellView {
+	public var template:BeatTemplateFile?
 	@IBOutlet var subtitle:NSTextField?
 	@IBOutlet var image:NSImageView?
 	
-	override func awakeFromNib() {
+	override public func awakeFromNib() {
 		self.window?.acceptsMouseMovedEvents = true
 
 		let trackingArea:NSTrackingArea = NSTrackingArea(rect: self.bounds, options: [.mouseEnteredAndExited, .activeAlways], owner: self, userInfo: nil)
@@ -68,7 +69,7 @@ class BeatTemplateCell:NSTableCellView {
 		self.layer?.cornerRadius = 5.0
 	}
 	
-	func load(template:BeatTemplateFile) {
+	public func load(template:BeatTemplateFile) {
 		self.textField?.stringValue = template.title
 		self.subtitle?.stringValue = template.description
 		
@@ -85,13 +86,13 @@ class BeatTemplateCell:NSTableCellView {
 		}
 	}
 	
-	override func mouseEntered(with event: NSEvent) {
+	override public func mouseEntered(with event: NSEvent) {
 		if #available(macOS 10.14, *) {
 			self.layer?.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.8).cgColor
 		}
 		super.mouseEntered(with: event)
 	}
-	override func mouseExited(with event: NSEvent) {
+	override public func mouseExited(with event: NSEvent) {
 		self.layer?.backgroundColor = NSColor.clear.cgColor
 		super.mouseExited(with: event)
 	}

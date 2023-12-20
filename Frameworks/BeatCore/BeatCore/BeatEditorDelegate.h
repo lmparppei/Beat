@@ -308,9 +308,6 @@
 - (void)focusEditor;
 - (IBAction)toggleCards:(id)sender;
 
-// - (void)runPlugin:(NSString*)pluginWithName;
-// - (id)loadPluginWithName:(NSString*)pluginName script:(NSString*)script;
-
 - (IBAction)nextScene:(id)sender;
 - (IBAction)previousScene:(id)sender;
 

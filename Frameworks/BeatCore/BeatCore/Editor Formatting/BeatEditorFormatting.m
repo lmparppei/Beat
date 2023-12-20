@@ -119,8 +119,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     
     if (remainingWidth < minWidth) {
         // We'll need to compact the margins to fit them on mobile screens
-        leftMargin *= 0.7;
         rightMargin = -leftMargin;
+        if (rightMargin < 0) rightMargin = 0.0;
+        
+        leftMargin *= 0.7;
     }
     
 	// Indents are used as left/right margins, and indents in stylesheet are appended to that
