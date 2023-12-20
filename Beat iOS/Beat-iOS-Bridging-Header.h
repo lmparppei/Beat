@@ -18,7 +18,7 @@
 #import "BeatDocumentViewController.h"
 
 #import "BeatPrintView.h"
-#import "TemplateCollectionViewController.h"
+// #import "TemplateCollectionViewController.h"
 
 #import "BeatHTMLRenderer.h"
 

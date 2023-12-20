@@ -41,9 +41,10 @@
 				<string>io.fountain</string>
 				<string>public.data</string>
 				<string>public.content</string>
+				<string>public.plain-text</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Fountain Screenplay</string>
+			<string>Fountain script</string>
 			<key>UTTypeIconFiles</key>
 			<array/>
 			<key>UTTypeIdentifier</key>

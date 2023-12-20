@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  Beat iOS
+
+  Created by Lauri-Matti Parppei on 19.12.2023.
+  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
+ 
+*/
+
+"templates.tutorials" = "Tutorials";
+"templates.templates" = "Templates";
+
+"templates.tutorial.title" = "Tutorial";
+"templates.tutorial.description" = "Get started quickly with Beat!";
+
+"templates.outliningTutorial.title" = "Outlining Tutorial";
+"templates.outliningTutorial.description" = "Learn more advanced outlining tricks";
+
+"templates.comicBook.title" = "Comic Book";
+"templates.comicBook.description" = "A simple comic book template";
+
+"templates.onePageSynopsis.title" = "One-Page Synopsis";
+"templates.onePageSynopsis.description" = "Draft a condensed version of your story";
+
+"templates.threeActOutline.title" = "Three-Act Outline";
+"templates.threeActOutline.description" = "The classical story structure in 8 sequences";
+
+"templates.newDocument.title" = "New Screenplay";
+"templates.newDocument.description" = "Create a new, blank document";
