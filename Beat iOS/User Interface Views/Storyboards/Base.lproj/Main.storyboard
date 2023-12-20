@@ -35,317 +35,63 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Beat iOS beta build 6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uJE-9r-peg">
-                                <rect key="frame" x="72" y="264" width="472" height="37"/>
+                                <rect key="frame" x="76" y="260" width="476" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="35"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="20"/>
+                                </variation>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Eg-eS-aRM">
-                                <rect key="frame" x="70" y="329" width="474" height="475"/>
+                                <rect key="frame" x="75" y="319" width="476" height="380"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <attributedString key="attributedText">
                                     <fragment>
                                         <string key="content">This is the closed beta build of Beat for iOS.
 
-</string>
-                                        <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-Light"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
-                                        </attributes>
-                                    </fragment>
-                                    <fragment content="DO NOT USE THIS VERSION FOR ANY IMPORTANT WORK.">
-                                        <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-Bold"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
-                                        </attributes>
-                                    </fragment>
-                                    <fragment>
-                                        <string key="content"> Always keep a backup of your file at hand. This build is the first real iteration of the iOS port, and you will probably have a bad time using it.
+Always keep a backup of your file at hand. This build is the first real iteration of the iOS port, and you will probably have a bad time using it.
 
-Whenever you encounter something weird, please report it. Send a DM on Discord, Patreon or e-mail me: </string>
-                                        <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-Light"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
-                                        </attributes>
-                                    </fragment>
-                                    <fragment content="beat@kapitan.fi">
-                                        <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-Bold"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
-                                        </attributes>
-                                    </fragment>
-                                    <fragment>
-                                        <string key="content">
+Whenever you encounter something weird, please report it. Send a DM on Discord, Patreon or e-mail me: beat@beat-app.fi
 
 Describe what you were doing, provide screenshots and (if possible) the file, too. The more detailed your report is, the easier it will be to fix.
 
-</string>
-                                        <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-Light"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
-                                        </attributes>
-                                    </fragment>
-                                    <fragment>
-                                        <string key="content">Thank you for your support and patience!
+Thank you for your support and patience!
 Lauri-Matti</string>
                                         <attributes>
-                                            <color key="NSBackgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="NSColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="18" name="Helvetica-LightOblique"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
-                                                <tabStops>
-                                                    <textTab alignment="left" location="28.299999237060547">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="56.650001525878906">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="85">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="113.34999847412109">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="141.69999694824219">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="170.05000305175781">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="198.39999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="226.75">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="255.10000610351562">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="283.45001220703125">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="311.79998779296875">
-                                                        <options/>
-                                                    </textTab>
-                                                    <textTab alignment="left" location="340.14999389648438">
-                                                        <options/>
-                                                    </textTab>
-                                                </tabStops>
-                                            </paragraphStyle>
+                                            <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="18" name="Helvetica-Light"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                         </attributes>
                                     </fragment>
                                 </attributedString>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <attributedString key="attributedText">
+                                        <fragment>
+                                            <mutableString key="content">This is the closed beta build of Beat for iOS.
+
+Always keep a backup of your file at hand. This build is the first real iteration of the iOS port, and you will probably have a bad time using it.
+
+Whenever you encounter something weird, please report it. Send a DM on Discord, Patreon or e-mail me: beat@beat-app.fi
+
+Describe what you were doing, provide screenshots and (if possible) the file, too. The more detailed your report is, the easier it will be to fix.
+
+Thank you for your support and patience!
+Lauri-Matti20</mutableString>
+                                            <attributes>
+                                                <color key="NSColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <font key="NSFont" size="13" name="Helvetica-Light"/>
+                                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                            </attributes>
+                                        </fragment>
+                                    </attributedString>
+                                </variation>
                             </textView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon-MacOS-512x512" translatesAutoresizingMaskIntoConstraints="NO" id="Qf1-4h-fbC">
-                                <rect key="frame" x="202" y="24" width="211" height="195"/>
+                                <rect key="frame" x="207" y="24" width="212" height="195"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -356,7 +102,7 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qZy-IO-GaC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-133.30893118594435" y="1256.25"/>
+            <point key="canvasLocation" x="-133.45323741007195" y="1255.7788944723618"/>
         </scene>
         <!--Screenplay-->
         <scene sceneID="dkP-xk-x6W">
@@ -366,13 +112,20 @@ Lauri-Matti</string>
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
-                                <rect key="frame" x="0.0" y="74" width="834" height="1133"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
+                                <rect key="frame" x="0.0" y="74" width="834" height="1120"/>
                             </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="J80-Q2-U3n">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-60"/>
+                            </constraint>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="leading" secondItem="SIE-Uh-Zny" secondAttribute="leading" id="QaA-3E-ufM"/>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="trailing" secondItem="BoZ-jc-2Y8" secondAttribute="trailing" id="tYN-pd-ZaO"/>
+                            <constraint firstAttribute="bottom" secondItem="p8x-tU-OOV" secondAttribute="bottom" id="vlJ-Fz-wNq"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Screenplay" style="editor" id="G7J-RW-q00">
                         <leftBarButtonItems>
@@ -430,7 +183,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" id="hUb-18-I71">
-                                <rect key="frame" x="-7" y="20" width="840" height="1174"/>
+                                <rect key="frame" x="-10" y="19" width="841" height="1175"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -439,7 +192,7 @@ Lauri-Matti</string>
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="768" y="50" width="28" height="30"/>
+                                <rect key="frame" x="766" y="50" width="28" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -473,11 +226,11 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                <rect key="frame" x="-2" y="-1" width="834" height="1193"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="20" y="0.0" width="793" height="1194"/>
+                                        <rect key="frame" x="40" y="0.0" width="794" height="1193"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -506,7 +259,7 @@ Lauri-Matti</string>
         <!--Beat Editor Split View Controller-->
         <scene sceneID="Obe-C1-u81">
             <objects>
-                <splitViewController storyboardIdentifier="EditorSplitView" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="EditorSplitView" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -560,7 +313,7 @@ Lauri-Matti</string>
         <!--Navigation Controller-->
         <scene sceneID="pkw-U7-AzC">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="oKi-z9-sBS" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="oKi-z9-sBS" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
@@ -614,7 +367,7 @@ Lauri-Matti</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="nAO-Zc-bHl">
-                                <rect key="frame" x="495" y="19" width="74" height="34"/>
+                                <rect key="frame" x="493" y="19" width="74" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Save"/>
@@ -623,7 +376,7 @@ Lauri-Matti</string>
                                 </connections>
                             </button>
                             <containerView opaque="NO" contentMode="scaleToFill" id="7HU-hv-Dfh">
-                                <rect key="frame" x="-4" y="65" width="596" height="713"/>
+                                <rect key="frame" x="-7" y="65" width="601" height="717"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="b5K-8U-mwc"/>
@@ -649,7 +402,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" id="V3j-D3-v3i">
-                                <rect key="frame" x="-4" y="-3" width="492" height="786"/>
+                                <rect key="frame" x="-1" y="0.0" width="492" height="785"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <segue destination="p0B-o5-lkK" kind="embed" identifier="ToSettingsTable" id="OPO-NW-28M"/>
@@ -871,7 +624,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="-5" y="-4" width="839" height="1198"/>
+                                <rect key="frame" x="-8" y="-6" width="839" height="1200"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
@@ -902,7 +655,7 @@ Lauri-Matti</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" id="NEB-De-fMw">
-                                <rect key="frame" x="-4" y="-4" width="349" height="384"/>
+                                <rect key="frame" x="0.0" y="0.0" width="350" height="385"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <segue destination="HAz-LJ-FEM" kind="embed" identifier="ToSettingsTable" id="CKM-B1-jv7"/>
@@ -917,24 +670,24 @@ Lauri-Matti</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="giJ-Id-e7f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="-165"/>
+            <point key="canvasLocation" x="1271.9424460431655" y="-165.0753768844221"/>
         </scene>
         <!--Beat Export Setting Controller-->
         <scene sceneID="ZxL-Wj-Jkf">
             <objects>
                 <tableViewController storyboardIdentifier="ExportSettingsTable" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb">
-                        <rect key="frame" x="0.0" y="0.0" width="596" height="713"/>
+                        <rect key="frame" x="0.0" y="0.0" width="601" height="717"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <sections>
                             <tableViewSection headerTitle="Basic Settings" id="rN0-KM-z31">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="6Mt-Kf-Tyf">
-                                        <rect key="frame" x="0.0" y="55.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6Mt-Kf-Tyf" id="tny-UM-U9c">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="XLb-yV-UnT" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -948,7 +701,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Y5c-36-KGp">
-                                                    <rect key="frame" x="85" y="12" width="480" height="21"/>
+                                                    <rect key="frame" x="85" y="12" width="482" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -958,14 +711,14 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NpY-wm-OZj">
-                                        <rect key="frame" x="0.0" y="99" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="99" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NpY-wm-OZj" id="lLU-rr-q28">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="gh2-pi-ILw">
-                                                    <rect key="frame" x="420" y="6" width="155" height="32"/>
+                                                    <rect key="frame" x="423" y="6" width="155" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                                     <segments>
                                                         <segment title="A4"/>
@@ -973,7 +726,7 @@ Lauri-Matti</string>
                                                     </segments>
                                                 </segmentedControl>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paper Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Srs-ve-AYD">
-                                                    <rect key="frame" x="16" y="11" width="357" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="358" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -987,10 +740,10 @@ Lauri-Matti</string>
                             <tableViewSection headerTitle="Scene Headings" id="Fib-N7-hu1">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="xAX-4R-fPE">
-                                        <rect key="frame" x="0.0" y="198.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="198.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xAX-4R-fPE" id="nG1-dD-84e">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="Z3a-gl-jqf" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1004,7 +757,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bolded" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9JD-eB-aMS">
-                                                    <rect key="frame" x="85" y="12" width="480" height="21"/>
+                                                    <rect key="frame" x="85" y="12" width="482" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1014,10 +767,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="DNv-SW-2Lx">
-                                        <rect key="frame" x="0.0" y="242" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="242" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DNv-SW-2Lx" id="WNq-K1-3nY">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="BLS-CE-7qL" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1031,7 +784,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Underlined" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uzg-si-Fvs">
-                                                    <rect key="frame" x="85" y="12" width="480" height="21"/>
+                                                    <rect key="frame" x="85" y="12" width="482" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1041,21 +794,21 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="slY-Sd-n4S">
-                                        <rect key="frame" x="0.0" y="285.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="285.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="slY-Sd-n4S" id="DcY-e9-cfb">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading Spacing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2bc-pY-Rnx">
-                                                    <rect key="frame" x="16" y="11" width="357" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="358" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="BSJ-yG-6AA">
-                                                    <rect key="frame" x="455" y="6" width="119" height="32"/>
+                                                    <rect key="frame" x="458" y="6" width="119" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                                     <segments>
                                                         <segment title="2 lines"/>
@@ -1074,10 +827,10 @@ Lauri-Matti</string>
                                 <string key="footerTitle">Select revision generations you want to have highlighted with markers. If you haven't used revisions, you can leave this untouched.</string>
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="ULA-kx-bx8">
-                                        <rect key="frame" x="0.0" y="392.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="392.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ULA-kx-bx8" id="NV9-Iz-A20">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="wAD-UQ-H34">
@@ -1088,7 +841,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="U20-vL-3Kp">
-                                                    <rect key="frame" x="112" y="11" width="459" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="462" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1102,10 +855,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="B4D-fq-NIz">
-                                        <rect key="frame" x="0.0" y="436" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="436" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="B4D-fq-NIz" id="txa-Em-pSW">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="4y9-mv-NAU">
@@ -1116,7 +869,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Second" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Yz4-pp-QPE">
-                                                    <rect key="frame" x="112" y="11" width="459" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="462" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1130,10 +883,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4yk-Ho-OCt">
-                                        <rect key="frame" x="0.0" y="479.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="479.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4yk-Ho-OCt" id="W48-jZ-oE1">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="PGs-Py-6eF">
@@ -1144,7 +897,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Third" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZaR-tV-m5B">
-                                                    <rect key="frame" x="112" y="10" width="459" height="21"/>
+                                                    <rect key="frame" x="112" y="10" width="462" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1158,10 +911,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="hxI-VH-DbY">
-                                        <rect key="frame" x="0.0" y="523" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="523" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hxI-VH-DbY" id="FIA-dm-ghJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="yHw-4s-Sle">
@@ -1172,7 +925,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fourth" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="54L-g1-QPA">
-                                                    <rect key="frame" x="112" y="11" width="459" height="21"/>
+                                                    <rect key="frame" x="112" y="11" width="462" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1190,10 +943,10 @@ Lauri-Matti</string>
                             <tableViewSection headerTitle="Advanced — Invisible elements" footerTitle="Includes selected invisible elements in your printout." id="TaO-aF-sl5">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="uK9-uA-bSU">
-                                        <rect key="frame" x="0.0" y="658" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="658" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uK9-uA-bSU" id="nJz-Is-x6g">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1208,7 +961,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUa-d2-ptJ">
-                                                    <rect key="frame" x="82" y="11" width="488" height="21"/>
+                                                    <rect key="frame" x="82" y="11" width="491" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1218,10 +971,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="T98-YH-OcS">
-                                        <rect key="frame" x="0.0" y="701.5" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="701.5" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="T98-YH-OcS" id="tY2-xQ-a5K">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1236,7 +989,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synopsis" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hzi-ti-rtG">
-                                                    <rect key="frame" x="82" y="11" width="488" height="21"/>
+                                                    <rect key="frame" x="82" y="11" width="491" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1246,10 +999,10 @@ Lauri-Matti</string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="lou-S8-ZDK">
-                                        <rect key="frame" x="0.0" y="745" width="596" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="745" width="601" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lou-S8-ZDK" id="GVy-EO-j8Y">
-                                            <rect key="frame" x="0.0" y="0.0" width="596" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="601" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
@@ -1264,7 +1017,7 @@ Lauri-Matti</string>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jk1-en-hR5">
-                                                    <rect key="frame" x="81" y="10" width="488" height="21"/>
+                                                    <rect key="frame" x="81" y="10" width="491" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
@@ -1303,54 +1056,68 @@ Lauri-Matti</string>
         <!--Template Collection View Controller-->
         <scene sceneID="mMs-uE-X02">
             <objects>
-                <viewController storyboardIdentifier="TemplateCollectionViewController" id="ZgO-UZ-fY2" customClass="TemplateCollectionViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TemplateCollectionViewController" id="ZgO-UZ-fY2" customClass="TemplateCollectionViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1Cw-Iv-Zgz">
                         <rect key="frame" x="0.0" y="0.0" width="771" height="1014"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="KJ2-fc-psw">
-                                <rect key="frame" x="7" y="77" width="732" height="911"/>
+                                <rect key="frame" x="20" y="75" width="771" height="913"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="TOx-BZ-voc">
-                                    <size key="itemSize" width="666" height="128"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="TOx-BZ-voc">
+                                    <size key="itemSize" width="658" height="100"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" reuseIdentifier="Cell" id="6JP-MJ-Et5" customClass="BeatTemplateCell" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="33" y="0.0" width="666" height="128"/>
+                                        <rect key="frame" x="56.5" y="0.0" width="658" height="100"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="GUE-A0-eih">
-                                            <rect key="frame" x="0.0" y="0.0" width="666" height="128"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="658" height="100"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="doc" catalog="system" id="lsd-c6-kcg">
-                                                    <rect key="frame" x="8" y="1" width="85" height="113"/>
-                                                    <autoresizingMask key="autoresizingMask" heightSizable="YES" flexibleMaxY="YES"/>
+                                                    <rect key="frame" x="16" y="0.0" width="85" height="100"/>
+                                                    <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                                                     <color key="tintColor" systemColor="secondaryLabelColor"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YGK-aa-cEU">
-                                                    <rect key="frame" x="111" y="36" width="514" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Mad-84-vX1">
-                                                    <rect key="frame" x="111" y="63" width="514" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <view contentMode="scaleToFill" id="3HY-ux-bJC">
+                                                    <rect key="frame" x="119" y="25" width="532" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="YGK-aa-cEU">
+                                                            <rect key="frame" x="-1" y="1" width="531" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                            <variation key="heightClass=regular-widthClass=compact">
+                                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                            </variation>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="Mad-84-vX1">
+                                                            <rect key="frame" x="0.0" y="29" width="530" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                            <variation key="heightClass=regular-widthClass=compact">
+                                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            </variation>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                </view>
                                             </subviews>
                                         </collectionViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <size key="customSize" width="666" height="128"/>
+                                        <size key="customSize" width="658" height="100"/>
                                         <connections>
                                             <outlet property="icon" destination="lsd-c6-kcg" id="gar-cC-H7L"/>
+                                            <outlet property="labelView" destination="3HY-ux-bJC" id="EZS-bO-G8H"/>
                                             <outlet property="templateDescription" destination="Mad-84-vX1" id="9HT-HU-uxU"/>
                                             <outlet property="title" destination="YGK-aa-cEU" id="yQx-m1-FVc"/>
                                         </connections>
@@ -1362,7 +1129,7 @@ Lauri-Matti</string>
                                 </connections>
                             </collectionView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Template" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zgd-EM-uG0">
-                                <rect key="frame" x="20" y="20" width="261" height="46"/>
+                                <rect key="frame" x="20" y="24" width="261" height="46"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                 <nil key="textColor"/>
@@ -1380,12 +1147,12 @@ Lauri-Matti</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JGZ-op-YYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="p9m-T7-vBu" customClass="BeatTemplateDataSource" customModule="Beat" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="-416" y="-657"/>
+            <point key="canvasLocation" x="-416.18705035971226" y="-657.286432160804"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eA9-vR-ovT">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="mW7-Bd-vZL" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="mW7-Bd-vZL" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>

@@ -72,6 +72,11 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		
 		editorDelegate.selectedRange = NSMakeRange(NSMaxRange(scene.line.textRange()), 0)
 		editorDelegate.scroll(to: scene.line)
+		
+		// on iPhone we'll dismiss this view right after selecting a scene
+		if UIDevice.current.userInterfaceIdiom == .phone {
+			editorDelegate.toggleSidebar(self)
+		}
 	}
 		
 	/// Updates current scene

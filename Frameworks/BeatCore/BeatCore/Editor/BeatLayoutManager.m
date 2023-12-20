@@ -122,8 +122,13 @@
 {
     // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers && ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
-    // Page number doesn't fit
-    else if (inset.width - 60.0 < inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
+    
+#if TARGET_OS_IOS
+    // Page number doesn't fit on phones
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        return;
+    }
+#endif
     
     static BXColor* pageBreakColor;
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
@@ -322,8 +327,13 @@
         
         // If we found a revision, let's draw a marker for it
         if (revisionLevel >= 0) {
+            CGFloat deviceOffset = 0.0;
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+                deviceOffset = 35.0;
+            }
+            
             // Calculate rect for the marker position
-            CGRect rect = CGRectMake(inset.width + documentWidth - 30 - X_OFFSET,
+            CGRect rect = CGRectMake(inset.width + documentWidth - 30 - X_OFFSET + deviceOffset,
                                      inset.height + usedRect.origin.y - Y_OFFSET,
                                      22,
                                      usedRect.size.height + 1.0);
@@ -369,7 +379,7 @@
     // Scene number drawing is off, return
     if (!self.editorDelegate.showSceneNumberLabels) return;
     // Don't draw scene numbers when the container is too small. This mostly affects iPhones.
-    else if (inset.width + X_OFFSET > inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
+    else if (inset.width + X_OFFSET + line.sceneNumber.length * 7.5 > inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
     
     // Create the style if needed
     if (_sceneNumberStyle == nil) {
@@ -470,11 +480,11 @@
     if (color == nil) color = BeatColors.colors[@"orange"];
     [color setFill];
     
-    BXBezierPath* path = [self markerPath:r];
-    [path fill];
+    BXBezierPath* path = [self markerPath:r inset:inset];
+    if (path != nil) [path fill];
 }
 
-- (BXBezierPath*)markerPath:(CGRect)rect {
+- (BXBezierPath*)markerPath:(CGRect)rect inset:(CGSize)inset {
     CGFloat left = rect.origin.x;
     CGFloat right = 40.0 + rect.origin.x;
     CGFloat y = rect.origin.y + 2.0;
@@ -494,6 +504,12 @@
     [path lineToPoint:NSMakePoint(left, y + h)];
     [path lineToPoint:NSMakePoint(right, y + h)];
 #endif
+    
+    CGFloat width = path.bounds.size.width;
+    if (width > self.textContainers.firstObject.lineFragmentPadding + inset.width) {
+        // Marker is too wide
+        return nil;
+    }
     
     [path closePath];
     return path;

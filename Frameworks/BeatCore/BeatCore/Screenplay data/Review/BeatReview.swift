@@ -69,6 +69,8 @@ public protocol BeatReviewInterface {
 	var currentRange:NSRange = NSMakeRange(0, 0)
 	var currentItem:BeatReviewItem?
 	
+	var previouslyShownReview:BeatReviewItem?
+	
     let editorContentSize = CGSizeMake(200, 160)
     var reviewEditor:BeatReviewEditor?
 	
@@ -235,9 +237,17 @@ extension BeatReview {
 		// If the cursor landed on a review, display the review at that location
 		if range.length == 0 {
 			if let item = self.reviewItem(at: range.location) {
+				// on iPhone, we won't show it if it's the same we just showed
+				if UIDevice.current.userInterfaceIdiom == .phone && self.previouslyShownReview == item {
+					closePopover()
+					return
+				}
+				// Set new review and store it
 				reviewItem = item
+				self.previouslyShownReview = reviewItem
 			} else {
 				// Zero length and no review available, just return
+				self.previouslyShownReview = nil
 				closePopover()
 				return
 			}

@@ -15,7 +15,7 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -89,6 +89,7 @@
 	return self;
 }
 
+
 - (BXWindow*)documentWindow {
 	return self.view.window;
 }
@@ -105,8 +106,6 @@
 		self.scrollView.minimumZoomScale = 1.0;
 	}
 	
-	NSLog(@"!! SETTING UP TEXT VIEW");
-	
 	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
 	
@@ -120,6 +119,7 @@
 	self.textView.editorDelegate = self;
 	self.textView.enclosingScrollView = self.scrollView;
 	self.textView.scrollEnabled = false;
+	self.textView.inputDelegate = self;
 	
 	self.textView.font = self.courier;
 	
@@ -145,14 +145,11 @@
 	// Embed the editor split view
 	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
-	splitView.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
-	
 	[self embed:splitView inView:self.splitViewContainer];
 	[splitView loadView];
 	
 	self.editorSplitView = splitView;
-	self.editorSplitView.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
-
+	
 	// Setup the split view
 	[self setupEditorViews];
 	
@@ -165,7 +162,7 @@
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
-		
+	
 	// Hide sidebar
 	self.sidebarConstraint.constant = 0.0;
 	
@@ -175,6 +172,10 @@
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
 	[self setupDocument];
+	
+	// Become first responder and scroll to top
+	[self.textView becomeFirstResponder];
+	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
 }
 
 -(IBAction)dismissViewController:(id)sender {
@@ -383,19 +384,18 @@
 #pragma mark - Sidebar
 
 - (IBAction)toggleSidebar:(id)sender {
-	self.sidebarVisible = !self.sidebarVisible;
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		if (self.editorSplitView.sidebar.viewIfLoaded.window) {
+			[self.editorSplitView showColumn:UISplitViewControllerColumnSecondary];
+		} else {
+			[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
+		}
+		NSLog(@"Editor editable %@", (self.textView.editable) ? @"true" : @"false");
+		
+		return;
+	}
 	
-	if (self.sidebarVisible) [self.outlineProvider update];
-	
-	CGFloat sidebarWidth = (_sidebarVisible) ? 230.0 : 0.0;
-	
-	[UIView animateWithDuration:0.25 animations:^{
-		self.sidebarConstraint.constant = sidebarWidth;
-	} completion:^(BOOL finished) {
-		[self.textView resize];
-	}];
-	
-	
+	// iPad
 	if (self.editorSplitView.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
 		[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
 	} else {
@@ -405,6 +405,14 @@
 
 - (bool)sidebarVisible
 {
+	if (self.editorSplitView.isCollapsed) {
+		if (self.editorSplitView.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	return self.editorSplitView.displayMode != UISplitViewControllerDisplayModeSecondaryOnly;
 }
 
@@ -533,18 +541,6 @@
 	// Update plugins
 	[self.pluginAgent updatePluginsWithSelection:textView.selectedRange];
 	
-	// Show review if needed
-	// Review items
-	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
-		NSInteger pos = self.selectedRange.location;
-		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
-		if (reviewItem && !reviewItem.emptyReview) {
-			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
-			//[self.textView.window makeFirstResponder:self.textView];
-		} else {
-			[self.review closePopover];
-		}
-	}
 }
 
 /// Forces text reformat and editor view updates
@@ -643,6 +639,35 @@
 	
 	return true;
 }
+
+#pragma mark - Text input delegate
+
+- (void)selectionDidChange:(id<UITextInput>)textInput
+{
+	NSLog(@"Selection did change...");
+	// Show review if needed after the text input selection has actually changed
+	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
+		NSInteger pos = self.selectedRange.location;
+		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
+		if (reviewItem && !reviewItem.emptyReview) {
+			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			//[self.textView.window makeFirstResponder:self.textView];
+		} else {
+			[self.review closePopover];
+		}
+	}
+}
+
+- (void)selectionWillChange:(id<UITextInput>)textInput
+{
+	//
+}
+
+- (void)textWillChange:(nullable id<UITextInput>)textInput
+{
+	//
+}
+
 
 
 #pragma mark - User default shorthands
@@ -939,15 +964,24 @@
 #pragma mark - Keyboard manager delegate
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-	/// WELLL.... because of some weird first responder issues, we'll never end editing, he he.
+	// On iPhone we'll do what the text view wants us to
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		return true;
+	}
+	
+	// Aaaand.... because of some weird first responder issues on iPad, we'll almost never end editing, he he.
+	BOOL isScrolling = [self.scrollView.layer animationForKey:@"bounds"] != nil;
+	if (isScrolling) return true;
+	
 	return false;
 }
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 15.0);
+	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 100.0);
+	NSLog(@"Keyboard height: %f", size.height);
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, height, 0);
 	
-	[UIView animateWithDuration:animationTime animations:^{
+	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
 		self.outlineView.contentInset = insets;
 	} completion:^(BOOL finished) {
@@ -963,10 +997,6 @@
 		
 		[self.scrollView safelyScrollRectToVisible:visible animated:true];
 	}];
-}
-
-- (BOOL)disablesAutomaticKeyboardDismissal {
-	return false;
 }
 
 -(void)keyboardWillHide {
@@ -1041,49 +1071,51 @@
 
 
 /*
-- (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
-	<#code#>
-}
-
-- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
-	<#code#>
-}
-
-- (void)preferredContentSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
-	<#code#>
-}
-
-- (CGSize)sizeForChildContentContainer:(nonnull id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
-	<#code#>
-}
-
-- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
-	<#code#>
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
-	<#code#>
-}
-
-- (void)willTransitionToTraitCollection:(nonnull UITraitCollection *)newCollection withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
-	<#code#>
-}
-
-- (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
-	<#code#>
-}
-
-- (void)setNeedsFocusUpdate {
-	<#code#>
-}
-
-- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
-	<#code#>
-}
-
-- (void)updateFocusIfNeeded {
-	<#code#>
-}
-*/
+ - (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
+ <#code#>
+ }
  
+ - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+ <#code#>
+ }
+ 
+ - (void)preferredContentSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
+ <#code#>
+ }
+ 
+ - (CGSize)sizeForChildContentContainer:(nonnull id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
+ <#code#>
+ }
+ 
+ - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
+ <#code#>
+ }
+ 
+ - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
+ <#code#>
+ }
+ 
+ - (void)willTransitionToTraitCollection:(nonnull UITraitCollection *)newCollection withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
+ <#code#>
+ }
+ 
+ - (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
+ <#code#>
+ }
+ 
+ - (void)setNeedsFocusUpdate {
+ <#code#>
+ }
+ 
+ - (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
+ <#code#>
+ }
+ 
+ - (void)updateFocusIfNeeded {
+ <#code#>
+ }
+ */
+
+
+
 @end

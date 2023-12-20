@@ -33,7 +33,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	class func linePadding() -> CGFloat {
 		// We'll use very tight padding for iPhone
 		if UIDevice.current.userInterfaceIdiom == .phone {
-			return 20.0
+			return 30.0
 		} else {
 			return 70.0
 		}
@@ -120,6 +120,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		enclosingScrollView?.delegate = self
 		layoutManager.delegate = self
 		
+		self.enclosingScrollView.keyboardDismissMode = .onDrag
+		
 		// View setup
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.heightTracksTextView = false
@@ -203,6 +205,9 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		// For iPhone, we'll use a narrow viewport
 		if UIDevice.current.userInterfaceIdiom == .phone {
 			width = self.enclosingScrollView.frame.size.width - padding * 2
+			let pagesize = delegate.editorStyles.page().defaultWidth(pageSize: delegate.pageSize)
+			
+			if width > pagesize { width = pagesize - 10.0 }
 		}
 		
 		return width + padding * 2
@@ -673,6 +678,41 @@ extension BeatUITextView {
 		]
 		self.assistantView?.trailingActions = [
 			InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
+				
+				UIMenu(title:"", options: [.displayInline], children: [
+					UIMenu(title: "Marker With Color...", children: [
+
+						UIAction(title: "Pink", image: UIImage(named: "Color_Pink"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
+						}),
+						UIAction(title: "Orange", image: UIImage(named: "Color_Orange"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker orange:New marker]]", caretPosition: -2)
+						}),
+						UIAction(title: "Purple", image: UIImage(named: "Color_Purple"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker purple:New marker]]", caretPosition: -2)
+						}),
+						UIAction(title: "Blue", image: UIImage(named: "Color_Blue"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker blue:New marker]]", caretPosition: -2)
+						}),
+						UIAction(title: "Green", image: UIImage(named: "Color_Green"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker green:New marker]]", caretPosition: -2)
+						}),
+						UIAction(title: "Red", image: UIImage(named: "Color_Red"),  handler: { (_) in
+							self.editorDelegate?.textActions.addNewParagraph("[[marker red:New marker]]", caretPosition: -2)
+						}),
+					]),
+					UIAction(title: "Add Marker", handler: { (_) in
+						self.editorDelegate?.textActions.addNewParagraph("[[marker New marker]]", caretPosition: -2)
+					}),
+				]),
+				
+				UIAction(title: "Omit", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeOmitted(self)
+				}),
+				UIAction(title: "Note", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeNote(self)
+				}),
+				
 				UIMenu(title:"Force element...", children: [
 					UIAction(title: "Scene heading", handler: { (_) in
 						self.editorDelegate?.formattingActions.forceHeading(self)
@@ -702,12 +742,6 @@ extension BeatUITextView {
 						self.editorDelegate?.formattingActions.makeUnderlined(nil)
 					})
 				]),
-				UIAction(title: "Omit", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeOmitted(self)
-				}),
-				UIAction(title: "Note", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeNote(self)
-				}),
 
 			])),
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo)),
@@ -784,10 +818,6 @@ class BeatScrollView: UIScrollView {
 	
 	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
 		super.scrollRectToVisible(rect, animated: animated)
-		return
-		if (self.manualScroll) {
-			super.scrollRectToVisible(rect, animated: animated)
-		}
 	}
 	
 	@objc public func safelyScrollRectToVisible(_ rect: CGRect, animated: Bool) {

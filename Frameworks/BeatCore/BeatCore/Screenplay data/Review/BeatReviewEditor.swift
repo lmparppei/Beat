@@ -65,22 +65,29 @@ protocol BeatReviewEditorDelegate:AnyObject {
             popover?.show(relativeTo: rect, of:sender!, preferredEdge: NSRectEdge.maxY)
             
         #elseif os(iOS)
-            self.editor?.modalPresentationStyle = .popover
         
-            guard let popoverController = self.editor?.popoverPresentationController,
-                let editor = self.editor
-            else { return }
+            guard let editor = self.editor else { return }
+
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                editor.modalPresentationStyle = .popover
+                
+                let popoverController = editor.popoverPresentationController
+                
+                var sourceRect = rect
+                sourceRect.origin.y += 5.0
+                sourceRect.origin.x += rect.size.width / 2
+                sourceRect.size.width = rect.size.width / 2
             
-            var sourceRect = rect
-            sourceRect.origin.y += 5.0
-            sourceRect.origin.x += rect.size.width / 2
-            sourceRect.size.width = rect.size.width / 2
-        
-            popoverController.sourceView = sender
-            popoverController.sourceRect = sourceRect
-            
-            popoverController.permittedArrowDirections = [.up]
-            
+                popoverController?.sourceView = sender
+                popoverController?.sourceRect = sourceRect
+                
+                popoverController?.permittedArrowDirections = [.up]
+            } else {
+                self.editor?.modalPresentationStyle = .pageSheet
+                self.editor?.sheetPresentationController?.detents = [.medium()]
+            }
+                
+
             if let vc = self.delegate.delegate as? UIViewController {
                 vc.present(editor, animated: true)
             } 
@@ -171,7 +178,9 @@ public protocol BeatReviewDelegate: AnyObject {
     }
 
 }
+
 #elseif os(iOS)
+
 typealias BeatReviewEditorView = BeatReviewEditorViewiOS
 @objc public class BeatReviewEditorViewiOS: UIViewController, BeatReviewDelegate, UXTextViewDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
@@ -198,13 +207,17 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         let bundle = Bundle(for: type(of: self))
         super.init(nibName: "BeatReviewEditor iOS", bundle: bundle)
         
+        let view = self.view as? BeatReviewEditorActualView
+        view?.viewController = self
+        
         self.view.insetsLayoutMarginsFromSafeArea = true
     }
+    
     required init?(coder: NSCoder) {
-        print("VIA CODER")
         self.item = BeatReviewItem(reviewString: "")
         super.init(coder: coder)
     }
+    
     deinit {
         self.textView = nil
         self.editButton = nil
@@ -217,6 +230,14 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         if (direction != .up) {
             self.additionalSafeAreaInsets = UIEdgeInsets(top: -20.0, left: 0.0, bottom: 0.0, right: 0.0)
         }
+    }
+}
+
+class BeatReviewEditorActualView:UIView {
+    weak var viewController:UIViewController?
+    
+    @IBAction func dismiss() {
+        self.viewController?.dismiss(animated: true)
     }
 }
 
