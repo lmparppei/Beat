@@ -217,7 +217,6 @@
     // Store revision names and create an array for background colors
     static NSDictionary<NSString*, NSNumber*>* revisionLevels;
     static NSMutableDictionary* bgColors;
-    
 
     if (_textView == nil) _textView = _editorDelegate.getTextView;
     
@@ -328,9 +327,10 @@
         // If we found a revision, let's draw a marker for it
         if (revisionLevel >= 0) {
             CGFloat deviceOffset = 0.0;
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-                deviceOffset = 35.0;
-            }
+            
+#if TARGET_OS_IOS
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) deviceOffset = 35.0;
+#endif
             
             // Calculate rect for the marker position
             CGRect rect = CGRectMake(inset.width + documentWidth - 30 - X_OFFSET + deviceOffset,
@@ -360,10 +360,6 @@
     
     return rects;
 }
-
-#pragma mark - Draw page separators
-
-
 
 
 #pragma mark - Draw scene numbers

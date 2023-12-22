@@ -390,7 +390,8 @@
 
 - (void)showTemplate:(NSString*)name {
 	name = [name stringByReplacingOccurrencesOfString:@".fountain" withString:@""];
-	NSURL *url = [NSBundle.mainBundle URLForResource:name withExtension:@"fountain"];
+	
+	NSURL* url = [BeatTemplates.shared getTemplateURLWithFilename:name];
 	
 	if (url) [[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:url copying:YES displayName:name error:nil];
 	else NSLog(@"ERROR: Can't find template");

@@ -202,7 +202,6 @@ static NSURL *pdfURL;
 	
 	@try {
 		NSString* fileName = self.delegate.editorDelegate.fileNameString;
-		NSLog(@"File name: %@", fileName);
 		
 		NSURL* url = [NSFileManager.defaultManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject;
 		NSURL* fileURL = [[url URLByAppendingPathComponent:fileName] URLByAppendingPathExtension:@"pdf"];

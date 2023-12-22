@@ -237,11 +237,13 @@ extension BeatReview {
 		// If the cursor landed on a review, display the review at that location
 		if range.length == 0 {
 			if let item = self.reviewItem(at: range.location) {
-				// on iPhone, we won't show it if it's the same we just showed
+                #if os(iOS)
+                // on iPhone, we won't show it if it's the same we just showed
 				if UIDevice.current.userInterfaceIdiom == .phone && self.previouslyShownReview == item {
 					closePopover()
 					return
 				}
+                #endif
 				// Set new review and store it
 				reviewItem = item
 				self.previouslyShownReview = reviewItem

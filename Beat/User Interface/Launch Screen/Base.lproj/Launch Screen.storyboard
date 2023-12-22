@@ -42,11 +42,11 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="RecentFile" id="VOO-Ph-UXi" customClass="BeatRecentFileCell" customModule="Beat" customModuleProvider="target">
-                                                            <rect key="frame" x="18" y="0.0" width="301" height="49"/>
+                                                            <rect key="frame" x="18" y="0.0" width="300" height="49"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Hdk-28-NJb">
-                                                                    <rect key="frame" x="36" y="25" width="263" height="16"/>
+                                                                    <rect key="frame" x="36" y="25" width="262" height="16"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" title="Filename" id="EY0-Ql-hX0">
                                                                         <font key="font" usesAppearanceFont="YES"/>
@@ -55,7 +55,7 @@
                                                                     </textFieldCell>
                                                                 </textField>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Hsd-DQ-5X7">
-                                                                    <rect key="frame" x="36" y="11" width="263" height="11"/>
+                                                                    <rect key="frame" x="36" y="11" width="262" height="11"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Date" id="d9P-af-E8t">
                                                                         <font key="font" metaFont="miniSystem"/>
@@ -218,7 +218,7 @@
                                 <color key="fillColor" red="0.086274509799999996" green="0.090196078430000007" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
                             </box>
                             <button verticalHuggingPriority="750" id="L6O-en-nfU">
-                                <rect key="frame" x="625" y="1" width="73" height="27"/>
+                                <rect key="frame" x="623" y="1" width="75" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="push" title="Browse..." bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w3a-gm-hjm">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -279,7 +279,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="fj0-pi-Ae8">
-                                            <rect key="frame" x="347" y="240" width="313" height="19"/>
+                                            <rect key="frame" x="347" y="240" width="311" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Templates" id="XSB-VA-eAB">
                                                 <font key="font" metaFont="systemLight" size="16"/>

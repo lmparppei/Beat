@@ -1,0 +1,121 @@
+/*
+
+ Editor Stylesheet for Beat.
+ This is not actual CSS, just uses similar markup.
+
+ Changing values without knowing what you are doing can very
+ well cause a crash. Dread lightly.
+ 
+ "Class" names are internal type names as strings, not .typeAsString names.
+ 
+ Avoid using margin-top values in editor.
+ 
+ © Lauri-Matti Parppei 2021-2022
+
+*/
+
+page {
+    margin-left: 30;
+    margin-right: 25;
+    padding-left: 60;
+    margin-top: 40;
+    margin-bottom: 60;
+    
+    default-width-a4: 60ch;
+    default-width-us: 63ch;
+    
+    line-height: 15;
+    
+    content-padding: 7ch;
+}
+
+heading {
+    width-a4: 60ch - 2ch;
+    width-us: 62ch - 2ch;
+    
+    bold: userSetting(headingStyleBold);
+    underline: userSetting(headingStyleUnderline);
+    
+    uppercase: true;
+}
+
+centered {
+    text-align: center;
+}
+
+character {
+    width-a4: 38ch;
+    width-us: 40ch;
+    
+    margin-left: 15ch;
+}
+
+parenthetical {
+    width-a4: 28ch;
+    width-us: 28ch;
+    
+    margin-left: 11ch;
+}
+
+dialogue {
+    width-a4: 35ch;
+    width-us: 35ch;
+    
+    margin-left: 7ch;
+}
+
+section {
+    margin-top: 1l;
+}
+
+more {
+    width-a4: 38ch;
+    width-us: 38ch;
+    
+    margin-left: 130px;
+}
+
+dualDialogueCharacter {
+    width-a4: 38ch;
+    width-us: 40ch;
+
+    margin-left: 22ch;
+}
+
+dualDialogueParenthetical {
+    width-a4: 28ch;
+    width-us: 28ch;
+
+    margin-left: 18ch;
+}
+dualDialogue {
+    width-a4: 35ch;
+    width-us: 35ch;
+
+    margin-left: 15ch;
+    margin-right: 0;
+}
+
+transition {
+    text-align: right;
+    uppercase: true;
+}
+
+lyrics {
+    text-align: center;
+    italic: true;
+}
+
+shot {
+    uppercase: true;
+    
+    bold: userSetting(headingStyleBold);
+}
+
+titlePageUnknown {
+    margin-left: 5ch;
+}
+
+pageBreak {
+    text-align: center;
+}

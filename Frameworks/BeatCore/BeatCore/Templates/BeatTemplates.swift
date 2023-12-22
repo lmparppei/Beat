@@ -34,9 +34,16 @@ public struct BeatTemplateFile {
 		return BeatTemplates()
 	}()
 	
-	class public func shared() -> BeatTemplates {
+    @objc class public func shared() -> BeatTemplates {
 		return sharedTemplates
 	}
+    
+    @objc public func getTemplateURL(filename:String) -> URL? {
+        let bundle = Bundle(for: type(of: self))
+        let url = bundle.url(forResource: filename, withExtension: "fountain")
+        print(" ... ", url, filename)
+        return url
+    }
 	
 	/// Returns the full template data
 	public func getTemplates() -> [String:[BeatTemplateFile]] {

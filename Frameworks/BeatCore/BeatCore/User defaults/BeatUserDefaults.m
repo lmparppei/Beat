@@ -104,7 +104,7 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		// Structure: Document class property name, key, default
 		BeatSettingMatchParentheses: @[MATCH_PARENTHESES_KEY, @YES],
 		BeatSettingShowPageNumbers: @[SHOW_PAGE_NUMBERS_KEY, @YES],
-		BeatSettingAutomaticLineBreaks: @[AUTOMATIC_LINEBREAKS_KEY, @YES],
+		BeatSettingAutomaticLineBreaks: @[BeatSettingAutomaticLineBreaks, @YES],
 		BeatSettingShowSceneNumbers: @[SHOW_SCENE_LABELS_KEY, @YES],
 		BeatSettingHideFountainMarkup: @[HIDE_FOUNTAIN_MARKUP_KEY, @NO],
 		BeatSettingTypewriterMode: @[TYPEWRITER_KEY, @NO],

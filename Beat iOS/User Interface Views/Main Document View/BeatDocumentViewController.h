@@ -51,6 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
 - (IBAction)openExportPanel:(id)sender;
 
+@property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
+
+- (IBAction)togglePreview:(id)sender;
+- (IBAction)toggleCards:(id)sender;
+
 @end
 
 NS_ASSUME_NONNULL_END

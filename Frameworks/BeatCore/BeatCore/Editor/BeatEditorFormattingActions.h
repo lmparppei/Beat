@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 	Bold,
 	Italic,
 	Underline,
-	Note
+	Note,
+    Centered
 };
 
 @interface BeatEditorFormattingActions : BXResponder
@@ -44,6 +45,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (IBAction)makeOmitted:(id)sender;
 - (IBAction)omitScene:(id)sender;
 - (IBAction)makeSceneNonNumbered:(id)sender;
+- (IBAction)makeCentered:(id)sender;
 
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceAction:(id)sender;

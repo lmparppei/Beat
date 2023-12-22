@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BeatCore
 
 @objc class BeatOutlineDataProvider:NSObject {
 	var dataSource:UITableViewDiffableDataSource<Int,OutlineDataItem>
@@ -18,7 +19,13 @@ import Foundation
 			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 			
 			let scene = delegate.parser.outline[indexPath.row] as! OutlineScene
-			let string = OutlineViewItem.withScene(scene, currentScene: OutlineScene(), sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: true)
+			let string = OutlineViewItem.withScene(scene,
+												   currentScene: OutlineScene(),
+												   sceneNumber: BeatUserDefaults().getBool(BeatSettingShowSceneNumbersInOutline),
+												   synopsis: BeatUserDefaults().getBool(BeatSettingShowSynopsisInOutline),
+												   notes: BeatUserDefaults().getBool(BeatSettingShowNotesInOutline),
+												   markers: BeatUserDefaults().getBool(BeatSettingShowMarkersInOutline),
+												   isDark: true)
 			
 			cell.representedScene = scene
 			cell.textLabel?.attributedText = string
@@ -42,7 +49,7 @@ import Foundation
 		snapshot.appendSections([0])
 		snapshot.appendItems(items)
 		
-		self.dataSource.apply(snapshot,animatingDifferences: false)
+		self.dataSource.apply(snapshot, animatingDifferences: false)
 	}
 }
 
@@ -56,7 +63,7 @@ class OutlineDataItem:Hashable {
 	var uuid:UUID
 	var range:NSRange
 	var selected:Bool
-	
+	weak var scene:OutlineScene?
 	
 	init(with scene:OutlineScene) {
 		self.string = scene.string
@@ -75,6 +82,7 @@ class OutlineDataItem:Hashable {
 		hasher.combine(color)
 		hasher.combine(synopsis)
 		hasher.combine(markers)
+		hasher.combine(range)
 	}
 
 	static func == (lhs: OutlineDataItem, rhs: OutlineDataItem) -> Bool {

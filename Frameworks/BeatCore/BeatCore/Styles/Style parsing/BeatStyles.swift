@@ -69,15 +69,22 @@ public class BeatStyles:NSObject {
     }
     
     @objc public func editorStyles(for styleName:String = "") -> BeatStylesheet {
+        var defaultStyle = (BeatStyles.defaultStyleName + "-editor")
+#if os(iOS)
+        // Default styles for iOS
+        if UIDevice.current.userInterfaceIdiom == .phone { defaultStyle += "-iOS" }
+#endif
+        
         // Make sure the name isn't just an empty string
-        let name = (styleName.count > 0) ? (styleName + "-editor") : (BeatStyles.defaultStyleName + "-editor")
+        var name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
+        
         
         if _loadedStyles[name] != nil {
             return _loadedStyles[name]!
         }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
-        let url = stylesheets[name] ?? stylesheets[BeatStyles.defaultStyleName + "-editor"]!
+        let url = stylesheets[name] ?? stylesheets[defaultStyle]!
         let stylesheet = BeatStylesheet(url: url)
         _loadedStyles[name] = stylesheet
         

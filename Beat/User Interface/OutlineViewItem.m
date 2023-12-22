@@ -224,7 +224,7 @@
 				[AttributedBlock.alloc initWithType:AttributedBlockTypeText value:description],
 			];
 			
-			NSAttributedString* aStr = [NSAttributedString createWithBlocks:blocks font:[BXFont systemFontOfSize:fontSize] textColor:color symbolColor:BXColor.labelColor paragraphStyle:markerStyle];
+			NSAttributedString* aStr = [NSAttributedString createWithBlocks:blocks font:[BXFont systemFontOfSize:fontSize] textColor:color symbolColor:color paragraphStyle:markerStyle];
 			
 			[resultString appendAttributedString:aStr];
 		}

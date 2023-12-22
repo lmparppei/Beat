@@ -56,6 +56,7 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	
 	var currentResults:[String] = []
 	var prevLine:Line?
+	var prevLineType:LineType = .empty
 	
 	public init(editorDelegate:BeatEditorDelegate) {
 		self.autocompletion = BeatAutocomplete()
@@ -68,11 +69,12 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	public func textForEmptySuggestionsInInputAssistantView() -> String? {
 		return nil
 	}
+	
 	public func numberOfSuggestionsInInputAssistantView() -> Int {
 		guard let line = delegate?.currentLine(), let delegate = self.delegate else { return 0 }
 		
 		// If the currently edited line has changed, we'll refresh the results
-		if line != prevLine {
+		if line != prevLine || prevLineType != line.type {
 			currentResults.removeAll()
 			
 			if line.isAnyCharacter() {
@@ -106,6 +108,7 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 		}
 		
 		prevLine = line
+		prevLineType = line.type
 		return currentResults.count
 		
 	}

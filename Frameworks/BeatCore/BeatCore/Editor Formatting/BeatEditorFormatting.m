@@ -110,21 +110,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
 	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
-	
-    // To support mobile screens, we might need to compact the margins.
-    CGFloat pageWidth = (paperSize == BeatA4) ? self.delegate.editorStyles.page.defaultWidthA4 : self.delegate.editorStyles.page.defaultWidthLetter;
-    CGFloat minWidth = [elementStyle widthWithPageSize:paperSize];
-    CGFloat remainingWidth = pageWidth - elementStyle.marginLeft - elementStyle.marginRight - minWidth;
 
-    
-    if (remainingWidth < minWidth) {
-        // We'll need to compact the margins to fit them on mobile screens
-        rightMargin = -leftMargin;
-        if (rightMargin < 0) rightMargin = 0.0;
-        
-        leftMargin *= 0.7;
-    }
-    
 	// Indents are used as left/right margins, and indents in stylesheet are appended to that
 	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;
 	style.headIndent = leftMargin + elementStyle.indent;
@@ -271,7 +257,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (firstTime || line.position == _delegate.text.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 	
-	// Remove some attributes
+	// Remove some attributes so they won't get overwritten
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
 	[attributes removeObjectForKey:BeatReview.attributeKey];
 	[attributes removeObjectForKey:BeatRepresentedLineKey];
@@ -469,7 +455,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Stylize headings according to settings
 	if (line.type == heading) {
-		if (_delegate.headingStyleBold) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
+		// Bolded or not?
+        if (_delegate.headingStyleBold) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
+        else [self applyTrait:0 range:line.textRange textStorage:textStorage];
+        
 		if (_delegate.headingStyleUnderline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
 	}
 	else if (line.type == lyrics) {
@@ -504,7 +493,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         [textStorage addAttribute:NSFontAttributeName value:_delegate.italicCourier range:range];
 	} else if (trait == BXBoldFontMask) {
         [textStorage addAttribute:NSFontAttributeName value:_delegate.boldCourier range:range];
-	}
+    } else {
+        [textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
+    }
 #else
 	[textStorage applyFontTraits:trait range:range];
 #endif

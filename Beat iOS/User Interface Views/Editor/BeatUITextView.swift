@@ -706,6 +706,25 @@ extension BeatUITextView {
 					}),
 				]),
 				
+				UIMenu(title: "Transition...", children: [
+					UIAction(title: "FADE IN", handler: { (_) in
+						self.editorDelegate?.textActions.addNewParagraph("> FADE IN")
+					}),
+					UIAction(title: "CUT TO:", handler: { (_) in
+						self.editorDelegate?.textActions.addNewParagraph("CUT TO:")
+					}),
+					UIAction(title: "DISSOLVE TO:", handler: { (_) in
+						self.editorDelegate?.textActions.addNewParagraph("DISSOLVE TO:")
+					}),
+					UIAction(title: "FADE OUT", handler: { (_) in
+						self.editorDelegate?.textActions.addNewParagraph("> FADE OUT")
+					}),
+					
+				]),
+				
+				UIAction(title: "Make Centered", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeCentered(self)
+				}),
 				UIAction(title: "Omit", handler: { (_) in
 					self.editorDelegate?.formattingActions.makeOmitted(self)
 				}),
@@ -750,7 +769,7 @@ extension BeatUITextView {
 	}
 	
 	@objc func addINT() {
-		self.editorDelegate?.textActions.addNewParagraph("INT.")
+		self.editorDelegate?.textActions.addNewParagraph("INT. ")
 	}
 	
 	@objc func addSection() {
@@ -762,12 +781,13 @@ extension BeatUITextView {
 	}
 	
 	@objc func addEXT() {
-		self.editorDelegate?.textActions.addNewParagraph("EXT.")
+		self.editorDelegate?.textActions.addNewParagraph("EXT. ")
 	}
 	
 	@objc func addCue() {
 		self.editorDelegate?.formattingActions.addCue()
 		self.editorDelegate?.formatting.forceEmptyCharacterCue()
+		self.updateAssistingViews()
 	}
 	
 	@objc func undo() {

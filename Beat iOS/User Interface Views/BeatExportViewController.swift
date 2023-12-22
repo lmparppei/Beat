@@ -180,10 +180,5 @@ final class BeatExportSettingController:UITableViewController {
 	}
 }
 
-class BeatUserSettingSwitch:UISwitch {
-	@IBInspectable var setting:String?
-	// If the given setting is a document settings and not a user default
-	@IBInspectable var documentSetting:Bool = false
-}
 
 

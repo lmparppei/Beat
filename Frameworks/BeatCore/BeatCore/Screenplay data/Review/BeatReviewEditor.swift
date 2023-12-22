@@ -185,6 +185,7 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
 @objc public class BeatReviewEditorViewiOS: UIViewController, BeatReviewDelegate, UXTextViewDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
     @IBOutlet weak var editButton:UXButton?
+    @IBOutlet weak var closeButton:UXButton?
     
     weak var delegate:BeatReviewEditorDelegate?
     var item:BeatReviewItem
@@ -211,6 +212,11 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         view?.viewController = self
         
         self.view.insetsLayoutMarginsFromSafeArea = true
+        
+        if UIDevice.current.userInterfaceIdiom != .phone {
+            closeButton?.isHidden = true
+        }
+        
     }
     
     required init?(coder: NSCoder) {

@@ -33,6 +33,9 @@ static NSString *forcetransitionLineSymbol = @">";
 static NSString *forceLyricsSymbol = @"~";
 static NSString *forceDualDialogueSymbol = @"^";
 
+static NSString *centeredStart = @"> ";
+static NSString *centeredEnd = @" <";
+
 static NSString *highlightSymbolOpen = @"<<";
 static NSString *highlightSymbolClose = @">>";
 static NSString *strikeoutSymbolOpen = @"{{";
@@ -220,18 +223,21 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)makeItalic:(id)sender
 {
-	//Retreiving the cursor location
 	NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
 	[self format:range startingSymbol:italicSymbol endSymbol:italicSymbol style:Italic];
 }
 
 - (IBAction)makeUnderlined:(id)sender
 {
-	//Retreiving the cursor location
 	NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
 	[self format:range startingSymbol:underlinedSymbol endSymbol:underlinedSymbol style:Underline];
 }
 
+- (IBAction)makeCentered:(id)sender
+{
+    NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
+    [self format:range startingSymbol:centeredStart endSymbol:centeredEnd style:Centered];
+}
 
 - (IBAction)makeNote:(id)sender
 {
@@ -242,7 +248,6 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)makeOmitted:(id)sender
 {
-	//Retreiving the cursor location
 	NSRange cursorLocation = _delegate.selectedRange;
 	[self format:cursorLocation startingSymbol:omitOpen endSymbol:omitClose style:Block];
 
@@ -278,6 +283,27 @@ static NSString *revisionAttribute = @"Revision";
 	
 	NSInteger addedCharactersBeforeRange;
 	NSInteger addedCharactersInRange;
+    
+    // Special rules for centered..... added in 2023 feeling agony. This whole method has to be fixed one day.
+    if (style == Centered) {
+        NSArray* lines = (cursorLocation.length > 0) ? [self.delegate.parser linesInRange:cursorLocation] : @[[self.delegate.parser lineAtPosition:cursorLocation.location]];
+        
+        for (Line* line in lines) {
+            if (line.string == 0) {
+                [self.delegate.textActions addString:startingSymbol atIndex:line.position];
+                [self.delegate.textActions addString:endSymbol atIndex:line.position + line.length];
+                continue;
+            }
+            
+            if ([line.string characterAtIndex:0] != '>') {
+                [self.delegate.textActions addString:startingSymbol atIndex:line.position];
+            }
+            if (line.lastCharacter != '<') {
+                [self.delegate.textActions addString:endSymbol atIndex:line.position + line.length];
+            }
+        }
+        return;
+    }
 	
 	// See if the selected range already has formatting INSIDE the selected area
 	bool alreadyFormatted = NO;

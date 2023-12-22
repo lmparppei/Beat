@@ -55,15 +55,12 @@
 @property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 @property (nonatomic, weak) IBOutlet UIView* sidebar;
-@property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
 
 @property (nonatomic) BeatOutlineDataProvider* outlineProvider;
 
 @property (nonatomic) bool hideFountainMarkup;
 
 @property (nonatomic) NSMutableAttributedString* formattedTextBuffer;
-
-@property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
 
 @property (nonatomic, weak) NSDictionary* typingAttributes;
 
@@ -157,8 +154,9 @@
 	[self createTextView];
 	
 	// Setup document title menu (from Swift extension)
-	[self setupTitleMenu];
-	[self setupScreenplayMenuWithButton:self.screenplayButton];
+	[self setupTitleBar];
+	//[self setupTitleMenu];
+	//[self setupScreenplayMenuWithButton:self.screenplayButton];
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
@@ -212,7 +210,6 @@
 
 - (void)setupDocument
 {
-	self.titleBar.title = self.fileNameString;
 	self.document.delegate = self;
 	
 	// Setup revision tracking and reviews
@@ -266,6 +263,13 @@
 		[self.textView setSelectedRange:NSMakeRange(position, 0)];
 		[self.textView scrollToRange:self.textView.selectedRange];
 	}
+}
+
+- (void)setupTitleBar
+{
+	// Show document name
+	self.titleBar.title = self.fileNameString;
+	
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -386,17 +390,18 @@
 - (IBAction)toggleSidebar:(id)sender {
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
 		if (self.editorSplitView.sidebar.viewIfLoaded.window) {
+			[self.outlineProvider update];
 			[self.editorSplitView showColumn:UISplitViewControllerColumnSecondary];
 		} else {
 			[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
 		}
-		NSLog(@"Editor editable %@", (self.textView.editable) ? @"true" : @"false");
 		
 		return;
 	}
 	
 	// iPad
 	if (self.editorSplitView.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
+		[self.outlineProvider update];
 		[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
 	} else {
 		[self.editorSplitView hideColumn:UISplitViewControllerColumnPrimary];
@@ -405,6 +410,7 @@
 
 - (bool)sidebarVisible
 {
+	// iPhone
 	if (self.editorSplitView.isCollapsed) {
 		if (self.editorSplitView.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
 			return false;
@@ -413,6 +419,7 @@
 		}
 	}
 	
+	// iPad
 	return self.editorSplitView.displayMode != UISplitViewControllerDisplayModeSecondaryOnly;
 }
 
@@ -474,7 +481,7 @@
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes
-		if (_revisionMode && _lastChangedRange.location != NSNotFound) {
+		if (self.revisionMode && _lastChangedRange.location != NSNotFound) {
 			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
 		}
 	}
@@ -622,8 +629,15 @@
 	if (!self.undoManager.isUndoing && !self.undoManager.isRedoing && self.selectedRange.length == 0 && currentLine != nil) {
 		// Test if we'll add extra line breaks and exit the method
 		if (range.length == 0 && [text isEqualToString:@"\n"]) {
-			bool shouldAddLineBreak = [self.textActions shouldAddLineBreaks:currentLine range:range];
-			if (shouldAddLineBreak) return false;
+			// Line break after character cue
+			if (currentLine.isAnyCharacter && self.automaticContd) {
+				// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
+				if ([self.textActions shouldAddContdIn:range string:text]) {
+					return NO;
+				}
+			} else if ([self.textActions shouldAddLineBreaks:currentLine range:range]) {
+				return NO;
+			}
 		}
 	}
 	else if (self.matchParentheses) {
@@ -644,7 +658,6 @@
 
 - (void)selectionDidChange:(id<UITextInput>)textInput
 {
-	NSLog(@"Selection did change...");
 	// Show review if needed after the text input selection has actually changed
 	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
 		NSInteger pos = self.selectedRange.location;
@@ -671,6 +684,7 @@
 
 
 #pragma mark - User default shorthands
+// TODO: Adapt the same pattern for macOS (and move this to base class)
 
 - (bool)matchParentheses {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingMatchParentheses];
@@ -685,6 +699,17 @@
 - (void)setShowRevisions:(bool)showRevisions {
 	[BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
 	[self.textView setNeedsDisplay];
+}
+
+- (bool)automaticContd {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutomaticContd];
+}
+
+- (bool)revisionMode {
+	return [self.documentSettings getBool:DocSettingRevisionMode];
+}
+-(void)setRevisionMode:(bool)revisionMode {
+	[self.documentSettings setBool:DocSettingRevisionMode as:revisionMode];
 }
 
 - (bool)showPageNumbers {
@@ -925,6 +950,7 @@
 	
 	[self.formattingActions addCue];
 	[self.formatting forceEmptyCharacterCue];
+	[self.textView updateAssistingViews];
 }
 
 -(void)focusEditor {
@@ -964,21 +990,11 @@
 #pragma mark - Keyboard manager delegate
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-	// On iPhone we'll do what the text view wants us to
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-		return true;
-	}
-	
-	// Aaaand.... because of some weird first responder issues on iPad, we'll almost never end editing, he he.
-	BOOL isScrolling = [self.scrollView.layer animationForKey:@"bounds"] != nil;
-	if (isScrolling) return true;
-	
-	return false;
+	return true;
 }
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
 	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 100.0);
-	NSLog(@"Keyboard height: %f", size.height);
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, height, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
@@ -1053,6 +1069,11 @@
 	else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
 		self.editorSplitView = segue.destinationViewController;
 	}
+}
+
+- (IBAction)toggleCards:(id)sender
+{
+	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
 
 /// @warning This method expects the split view controller to be in place (done in storyboard segue)
