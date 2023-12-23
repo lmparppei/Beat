@@ -44,7 +44,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
 @property (readonly) NSUInteger fontSize;
-@property (readonly) bool typewriterMode;
 @property (readonly) bool hideFountainMarkup;
 @property (readonly) bool documentIsLoading;
 @property (nonatomic) bool skipSelectionChangeEvent;
@@ -102,6 +101,9 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property NSInteger autocompleteIndex;
 
 @property (nonatomic) CGFloat scaleFactor;
+
+/// Typewriter mode
+@property (nonatomic) bool typewriterMode;
 
 + (CGFloat)linePadding;
 - (CGFloat)documentWidth;

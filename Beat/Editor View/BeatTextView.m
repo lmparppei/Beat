@@ -40,6 +40,7 @@
 #import "Beat-Swift.h"
 #import "BeatClipView.h"
 
+#import "BeatFocusMode.h"
 
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
@@ -134,6 +135,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) BeatMinimapView *minimap;
 
+/// Focus mode controller
+@property (nonatomic) BeatFocusMode* focusMode;
+
+// Validated menu items
+@property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
+
 @end
 
 @implementation BeatTextView
@@ -151,7 +158,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Setup magnification
 	[self setupZoom];
-
+	
 	// Restore spell checking setting. A hack to see if the system returns a different value.
 	if (self.continuousSpellCheckingEnabled) {
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
@@ -162,7 +169,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	return self;
 }
-
 
 - (void)setupLayoutManager
 {
@@ -187,6 +193,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[_minimap resizeMinimap];
 }
 
+- (void)setupFocusMode
+{
+	self.focusMode = [BeatFocusMode.alloc initWithDelegate:self.editorDelegate];
+}
+
 - (void)awakeFromNib
 {
 	// We are connecting the editor delegate via IBOutlet, so we need to forward it to layout manager here.
@@ -198,13 +209,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// The previous position of caret
 	self.lastPos = -1;
-	
-	// Setup popovers for autocomplete, tagging, etc.
-	[self setupPopovers];
-	
+		
 	// Register dragged types
 	[self registerForDraggedTypes:@[BeatPasteboardItem.pasteboardType]];
-	
+		
 	// Observer for selection change. It's posted to text view delegate as well, but we'll handle
 	// popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
@@ -240,8 +248,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[self setInsets];
 	
+	// Setup popovers for autocomplete, tagging, etc.
+	[self setupPopovers];
+	
 	// Make the text view first responder
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
+	
+	// Setup focus mode
+	[self setupFocusMode];
+	
+	// Setup validated items
+	[self setupValidationItems];
 }
 
 -(void)setupPopovers {
@@ -304,6 +321,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_popupMode = NoPopup;
 }
 
+
+#pragma mark - Focus mode
+
+- (IBAction)toggleFocusMode:(id)sender
+{
+	[self.focusMode toggle];
+}
+
+
 #pragma mark - Window interactions
 
 - (NSTouchBar*)makeTouchBar {
@@ -351,9 +377,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Key events
 
 -(void)keyUp:(NSEvent *)event {
-	if (self.editorDelegate.typewriterMode) {
-		[self typewriterScroll];
-	}
+	if (self.typewriterMode) [self typewriterScroll];
 }
 - (void)keyDown:(NSEvent *)theEvent {
 	if (self.editorDelegate.contentLocked) {
@@ -505,6 +529,21 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Typewriter scroll
 
+- (bool)typewriterMode
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingTypewriterMode];
+}
+- (void)setTypewriterMode:(bool)typewriterMode
+{
+	[BeatUserDefaults.sharedDefaults saveBool:typewriterMode forKey:BeatSettingTypewriterMode];
+}
+
+// Typewriter mode
+- (IBAction)toggleTypewriterMode:(id)sender {
+	self.typewriterMode = !self.typewriterMode;
+	[self.editorDelegate updateLayout];
+}
+
 - (void)updateTypewriterView {
 	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
@@ -552,7 +591,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 -(NSRect)adjustScroll:(NSRect)newVisible {
-	if (self.editorDelegate.typewriterMode && !_scrolling && _selectionAtEnd) {
+	if (self.typewriterMode && !_scrolling && _selectionAtEnd) {
 		if (self.selectedRange.location == self.string.length) {
 			return self.enclosingScrollView.documentVisibleRect;
 		}
@@ -718,10 +757,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		_editorDelegate.skipSelectionChangeEvent = NO;
 		return;
 	}
-	
-	// Update view position if needed
-	//if (self.editorDelegate.typewriterMode) [self updateTypewriterView];
-	
+		
 	// If selection moves by more than just one character, hide autocomplete
 	if ((self.selectedRange.location - self.lastPos) > 1) {
 		if (self.autocompletePopover.shown) [self setAutomaticTextCompletionEnabled:NO];
@@ -1193,7 +1229,7 @@ Line *cachedRectLine;
 
 - (CGFloat)setInsets {
 	// Top/bottom insets
-	if (_editorDelegate.typewriterMode) {
+	if (self.typewriterMode) {
 		// What the actual fuck is this math ha ha ha
 		// 2023 update: I won't touch this ever again - it works, but I'm scared to know why.
 		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (1 + (1 - self.zoomLevel));
@@ -1537,6 +1573,28 @@ double clamp(double d, double min, double max) {
 
 
 #pragma mark - Validate menu items
+
+- (void)setupValidationItems
+{
+	self.validatedMenuItems = @[
+		[BeatValidationItem.alloc initWithAction:@selector(toggleFocusMode:) setting:BeatSettingFocusMode target:BeatUserDefaults.sharedDefaults],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:BeatUserDefaults.sharedDefaults],
+	];
+
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+	for (BeatValidationItem *item in self.validatedMenuItems) {
+		if (menuItem.action == item.selector) {
+			bool on = [item validate];
+			if (on) [menuItem setState:NSOnState];
+			else [menuItem setState:NSOffState];
+		}
+	}
+	
+	return [super validateMenuItem:menuItem];
+}
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem {
 	// Remove context menu for layout orientation change
