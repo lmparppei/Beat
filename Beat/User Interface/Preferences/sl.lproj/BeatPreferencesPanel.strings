@@ -1,0 +1,153 @@
+
+/* Class = "NSToolbarItem"; label = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.label" = "Sistem";
+
+/* Class = "NSToolbarItem"; paletteLabel = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.paletteLabel" = "Sistem";
+
+/* Class = "NSTextFieldCell"; title = "Split dialogue indicator"; ObjectID = "0oB-rC-ac3"; */
+"0oB-rC-ac3.title" = "Pokazatelj deljenega dialoga";
+
+/* Class = "NSButtonCell"; title = "Automatically update plugins"; ObjectID = "1mF-I3-loO"; */
+"1mF-I3-loO.title" = "Samodejno posodobi vstavke";
+
+/* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.label" = "Splošno";
+
+/* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.paletteLabel" = "Splošno";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
+"3O7-zn-jUw.title" = "Letter";
+
+/* Class = "NSButtonCell"; title = "Automatic CONT'D extensions"; ObjectID = "5Bc-al-gWv"; */
+"5Bc-al-gWv.title" = "Samodejni dodatki CONT'D";
+
+/* Class = "NSTextFieldCell"; title = "Language"; ObjectID = "5o4-U4-n7H"; */
+"5o4-U4-n7H.title" = "Jezik";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
+"7Xj-J1-Y92.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "Br1-nj-6zn"; */
+"Br1-nj-6zn.title" = "Samodejni prelomi odstavkov";
+
+/* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
+"EHa-PH-tc4.title" = "Razmik naslovov";
+
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Nastavitve";
+
+/* Class = "NSButtonCell"; title = "Match parentheses"; ObjectID = "Gir-t4-vbC"; */
+"Gir-t4-vbC.title" = "Ujemajoči narekovaji";
+
+/* Class = "NSButtonCell"; title = "Automatically hide Fountain markup"; ObjectID = "KAa-hh-Rua"; */
+"KAa-hh-Rua.title" = "Samodejno skrij kodo Fountain";
+
+/* Class = "NSMenuItem"; title = "Big"; ObjectID = "MNC-PG-DYp"; */
+"MNC-PG-DYp.title" = "Velika";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "MPF-7c-b3u"; */
+"MPF-7c-b3u.title" = "Krepka";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
+"Mb6-nH-PQK.label" = "Pogled";
+
+/* Class = "NSTextFieldCell"; title = "Editor View"; ObjectID = "O3D-76-kt4"; */
+"O3D-76-kt4.title" = "Pogled urejevalnika";
+
+/* Class = "NSButtonCell"; title = "Select..."; ObjectID = "OWc-Ih-dLg"; */
+"OWc-Ih-dLg.title" = "Izberi ...";
+
+/* Class = "NSTextFieldCell"; title = "Backup vault location"; ObjectID = "ROG-62-Evk"; */
+"ROG-62-Evk.title" = "Mesto sefa varnostnih kopij";
+
+/* Class = "NSTextFieldCell"; title = "Continued character cue extension"; ObjectID = "Ump-3W-bbM"; */
+"Ump-3W-bbM.title" = "Dodatek nadaljevanja replike lika";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "V8X-hl-rUl"; */
+"V8X-hl-rUl.title" = "Polje";
+
+/* Class = "NSMenuItem"; title = "Small"; ObjectID = "VQS-1g-QZ6"; */
+"VQS-1g-QZ6.title" = "Majhna";
+
+/* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
+"VTU-wq-qyb.title" = "Courier Prime";
+
+/* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
+"WAb-8C-Sjl.title" = "Srednja";
+
+/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Pisava urejevalnika";
+
+/* Class = "NSMenuItem"; title = "Very big"; ObjectID = "YEd-uH-lo0"; */
+"YEd-uH-lo0.title" = "Ogromna";
+
+/* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
+"Yuw-0s-K2b.title" = "1 vrstica";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
+"Zfa-HM-161.title" = "Podčrtano";
+
+/* Class = "NSButtonCell"; title = "Show scene numbers"; ObjectID = "a44-hn-h2m"; */
+"a44-hn-h2m.title" = "Pokaži številke prizorov";
+
+/* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
+"d0m-zv-bHH.title" = "Samodejno zaključi naslove prizorov in like";
+
+/* Class = "NSTextFieldCell"; title = "Outline Font Size"; ObjectID = "dtT-V5-EVi"; */
+"dtT-V5-EVi.title" = "Velikost pisave scenosleda";
+
+/* Class = "NSButtonCell"; title = "Show Page Separators (experimental)"; ObjectID = "e3i-cN-mWC"; */
+"e3i-cN-mWC.title" = "Pokaži ločila strani (poskusno)";
+
+/* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
+"fan-Jn-FOW.title" = "2 vrstici";
+
+/* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
+"fxb-nx-hJp.title" = "Samodejno zapre elemente, kot sta () in [[]]";
+
+/* Class = "NSTextFieldCell"; title = "Plugins"; ObjectID = "gW4-1f-ZbP"; */
+"gW4-1f-ZbP.title" = "Vstavki";
+
+/* Class = "NSToolbarItem"; label = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.label" = "Postavitev";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.paletteLabel" = "Postavitev";
+
+/* Class = "NSButtonCell"; title = "Use default"; ObjectID = "kU3-zB-g60"; */
+"kU3-zB-g60.title" = "Uporabi privzeto";
+
+/* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
+"lzW-qc-hjs.title" = "Vedenje urejevalnika";
+
+/* Class = "NSTextFieldCell"; title = "INT. SCENE - DAY"; ObjectID = "m9T-8O-t6l"; */
+"m9T-8O-t6l.title" = "INT. PRIZORIŠČE - DAN";
+
+/* Class = "NSButtonCell"; title = "Custom"; ObjectID = "moV-CN-wy9"; */
+"moV-CN-wy9.title" = "Po meri";
+
+/* Class = "NSTextFieldCell"; title = "Default Paper Size"; ObjectID = "nUl-8Q-mMa"; */
+"nUl-8Q-mMa.title" = "Privzeta velikost papirja";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "ok7-BF-Eme"; */
+"ok7-BF-Eme.label" = "Tabulator";
+
+/* Class = "NSTextFieldCell"; title = "as she walks to pick up the noodles."; ObjectID = "pUG-6V-246"; */
+"pUG-6V-246.title" = "ko hodi, da pobere rezance.";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "vls-Bk-euL"; */
+"vls-Bk-euL.label" = "Pogled";
+
+/* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
+"w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
+"xYL-rJ-JMw.title" = "Pokaži barve prizora na drsnem traku";
+
+/* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
+"yHb-oc-ujO.title" = "Slog naslova";
+
+/* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
+"yde-p1-D3O.title" = "Pokaži številke strani";

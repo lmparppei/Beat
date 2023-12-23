@@ -58,6 +58,8 @@
 /* Class = "NSMenuItem"; title = "Paste"; ObjectID = "7un-dE-J4V"; */
 "7un-dE-J4V.title" = "Klistra in";
 
+"IBj-Is-T2j.title" = "Fokuserat läge";
+
 /* Class = "NSMenuItem"; title = "Dark Mode"; ObjectID = "8a1-24-Jc9"; */
 "8a1-24-Jc9.title" = "Mörkt läge";
 

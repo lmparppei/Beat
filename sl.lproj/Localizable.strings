@@ -1,0 +1,195 @@
+/*
+  Localizable.strings
+  Beat
+
+  Created by Lauri-Matti Parppei on 2.1.2022.
+  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
+*/
+
+
+"general.yes" = "Da";
+"general.no" = "Ne";
+"general.OK" = "V redu";
+"general.ok" = "V redu";
+"general.cancel" = "Prekliči";
+"general.undo" = "Razveljavi";
+"general.redo" = "Ponovi";
+"general.close" = "Zapri";
+"general.untitled" = "Neimenovano";
+"app.manual" = "Priročnik";
+"app.patchNotes" = "Opombe o popravkih";
+"general.revert" = "Povrni";
+
+"plugins.errorRunningScript" = "Napaka pri izvedbi skripta";
+"plugins.input.select" = "Izberi ...";
+
+"launch.newDocument.subtitle" = "Zaženite nov, prazen projekt";
+"launch.tutorial.subtitle" = "Začnite tu, če ste prvič odprli Beat";
+"launch.templates.subtitle" = "Spoznajte Beat in hitro pričnite z delom!";
+
+"unlock_document.title" = "Odkleni dokument";
+"unlock_document.confirm" = "Ali ste prepričani, da želite odkleniti dokument in omogočiti spremembe?";
+
+"language.alert" = "Potreben je ponoven zagon";
+"language.informative" = "Ponovno morate zagnati Beat, da bo sprememba jezika obveljala.";
+
+"plugins.library" = "Knjižnica vstavkov";
+"plugins.installed" = "Nameščeno";
+"plugins.download" = "Prenesi";
+"plugins.update" = "Posodobi";
+"plugins.version" = "Različica";
+"plugins.updateAvailable" = "Na voljo je posodobitev";
+"plugins.currentVersion" = "Trenutno nameščeno";
+"plugins.compatibilityWarning" = "<b>Opozorilo</b>: Ta vstavek morda ni združljiv z vašo različico programa Beat. Da bi zagotovili, da deluje, prenesite najnovejšo izdajo iz trgovine App Store, preden nadaljujete.";
+
+"plugins.libraryWelcome" = "<p>Izbor uradnih vstavkov za Beat. Omogočeni (okljukani) vstavki bodo prkazani pod menijem <b>Orodja</b>. Osiveli vstavki še niso nameščeni. Kliknite njihovo oznako, da jih namestite in izveste več o njih.</p>\
+   <p class='small gray'>Kliknite ikono mape, da ročno upravljate svoje vstavke. Napišete lahko svoje vstavke z uporabo JavaScripta &mdash; izvejte več na spletišču Beat.</p>";
+
+"storyline.placeholder" = "Ime nove pripovedi";
+"storyline.add" = "Dodaj pripoved ...";
+
+"gender.other" = "Drugo";
+"gender.woman" = "Ženska";
+"gender.man" = "Moški";
+"gender.unspecified" = "Nedoločeno";
+
+"gender.other.plural" = "Drugo";
+"gender.woman.plural" = "Ženske";
+"gender.man.plural" = "Moški";
+"gender.unspecified.plural" = "Nedoločeno";
+
+"statistics.lines" = "Vrstice";
+"statistics.scenes" = "Prizori";
+
+"lock.clickToUnlock" = "Kliknite za odklenitev";
+"lock.documentLocked" = "Dokument je zaklenjen";
+
+"statisticsPanel.title" = "Statistika scenarija";
+"statisticsPanel.averageSceneLength" = "Povprečna dolžina prizora";
+"statisticsPanel.shortForPages" = "str.";
+"statisticsPanel.longestScene" = "Najdaljši prizor";
+"statisticsPanel.stats.words" = "besed";
+"statisticsPanel.stats.scenes" = "prizorov";
+"statisticsPanel.stats.characters" = "znakov";
+"statisticsPanel.linesByGender" = "Vrstic po spolu";
+"statisticsPanel.setGenderInfo" = "Določite spol za like na levi strani";
+"statisticsPanel.linesPerCharacter" = "Vrstic na lik";
+"statisticsPanel.locations" = "Lokacije";
+"statisticsPanel.locations.interior" = "Interier";
+"statisticsPanel.locations.exterior" = "Eksterier";
+"statisticsPanel.locations.other" = "Drugo";
+"statisticsPanel.noDialogue" = "Ni dialoga";
+
+"print.print" = "Natisni";
+"print.createPDF" = "Ustvari PDF";
+"print.pdfButton" = "Ustvari PDF";
+"print.printButton" = "Natisni";
+"print.pdfButton" = "PDF";
+
+"cardView.noScenes" = "Ni prizorov";
+"cardView.noScenesInformation" = "Ko napišete nekaj prizorov, bodo ti vidni kot kartončki v tem pogledu";
+"cardView.print" = "Natisni";
+
+"color.none" = "Brez";
+"color.red" = "Rdeča";
+"color.green" = "Zelena";
+"color.blue" = "Modra";
+"color.pink" = "Roza";
+"color.yellow" = "Rumena";
+"color.brown" = "Rjava";
+"color.cyan" = "Cijan";
+"color.orange" = "Oranžna";
+"color.magenta" = "Magenta";
+"color.purple" = "Vijolična";
+
+"revisionMode.reviseLine" = "Označi trenutno vrstico kot revidirano";
+"revisionMode.reviseSelection" = "Označi trenutni izbor kot revidiran";
+"revisionMode.clearSelection" = "Počisti oznake revizije v izboru";
+"revisionMode.clearLine" = "Počisti oznake revizije v vrstici";
+
+"revisions.commitPrompt.title" = "Uveljavi vse revizije";
+"revisions.commitPrompt.text" = "S tem boste počistili vse označevalnike revizij in odstranili vse obsege, označene za odstranitev. Ali ste prepričani, da želite nadaljevati?";
+
+"mode.taggingMode" = "Označevalni način";
+"mode.reviewMode" = "Pregledni način";
+
+"backup.revertToSaved" = "Povrni v shranjeno";
+"backup.backupVault" = "Odpri sef varnostnih kopij ...";
+
+"backup.reverting.title" = "Povrni datoteko";
+"backup.reverting.message" = "Vse neshranjene spremembe bodo izgubljene, ko boste stanje povrnili v prejšnjo verzijo.";
+
+"editor.setSceneNumber" = "Določi številko prizora";
+"editor.setSceneNumber.info" = "Številka prizora po meri (lahko vključuje črke ali pa pritisnite preslednico za prizor brez številke prizora)";
+
+"force.character" = "Lik";
+"force.heading" = "Naslov prizora";
+"force.action" = "Dogajanje";
+"force.lyrics" = "Besedilo pesmi";
+
+"editor.goToSceneNumber.message" = "Pojdi na prizor št. ...";
+"editor.goToSceneNumber.placeholder" = "npr. 123";
+
+"export.prefix" = "Izvozi";
+"import.prefix" = "Uvozi";
+
+"timer.reset" = "Ponastavi";
+"timer.start" = "Začni";
+"timer.charactersRemoved" = "znakov odstranjenih";
+"timer.charactersTyped" = "vnesenih\nznakov";
+
+
+/* Tutorials */
+
+"templates.tutorials" = "Vadnice";
+"templates.templates" = "Predloge";
+
+"templates.tutorial.title" = "Vadnica";
+"templates.tutorial.description" = "Hitri zmenek s programom Beat!";
+
+"templates.outliningTutorial.title" = "Vadnica za scenosled";
+"templates.outliningTutorial.description" = "Izvejte več naprednih trikov za oblikovanje scenosledov";
+
+"templates.comicBook.title" = "Strip";
+"templates.comicBook.description" = "Enostavna predloga za strip";
+
+"templates.onePageSynopsis.title" = "Sinopsis na eni strani";
+"templates.onePageSynopsis.description" = "Spišite strnjeno različico svoje zgodbe";
+
+"templates.threeActOutline.title" = "Filmska zgodba v treh dejanjih";
+"templates.threeActOutline.description" = "Klasična struktura zgodbe v 8 sekvencah";
+
+/* Selection / information */
+
+"textView.information.selection" = "Izbor";
+"textView.information.document" = "Dokument";
+"textView.information.pages" = "Strani";
+"textView.information.page" = "Stran";
+"textView.information.characters" = "Znakov";
+"textView.information.words" = "Besed";
+
+"export.includeInvisibleElements" = "Vključi nevidne elemente";
+"export.printSections" = "Odseki";
+"export.printSynopsis" = "Sinopsis";
+"export.printNotes" = "Opombe";
+
+"templates.showTutorialsAndTemplates" = "Pokaži vadnice in predloge ...";
+
+"revisions.downgrade.title" = "Ponižaj revizije";
+"revisions.downgrade.info" = "Ta operacija poniža izbrano generacijo revizije, da postane prva generacija, višje generacije pa temu sledijo. To je uporabno, ko ste dosegli najvišjo raven generacij in želite odstraniti označbe nižjih ravni.";
+
+"revisions.downgrade.from" = "Najnižja revizija po ponižanju:";
+
+"revisions.convert.title" = "Pretvori/odstrani označevalnike revizij";
+"revisions.convert.info" = "Izbrana generacija revizij bo pretvorjena v eno generacijo. Če pustite ciljno generacijo prazno, bodo izbrane revizije odstranjene.";
+
+"revisions.convert.from" = "Trenutna generacija";
+"revisions.convert.to" = "Ciljna generacija";
+
+"revisions.convert.remove" = "(odstrani)";
+"revisions.convert.onlySelectedRange" = "Samo v izbranem obsegu";
+
+"license.title" = "Vnesi ključ donacije";
+"license.info" = "Srčna zahvala vsem za donacije! Kopirajte in spodaj prilepite ključ, ki ste ga prejeli.";
+
+"General - Show Substitutions" = "Pokaži zamenjave";

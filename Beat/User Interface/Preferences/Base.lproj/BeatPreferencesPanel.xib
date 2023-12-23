@@ -259,7 +259,7 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" fixedFrame="YES" id="Zaq-R3-ErH">
+                                        <button verticalHuggingPriority="750" id="Zaq-R3-ErH">
                                             <rect key="frame" x="219" y="342" width="320" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Show Page Separators (experimental)" bezelStyle="regularSquare" imagePosition="left" controlSize="mini" inset="2" id="e3i-cN-mWC">

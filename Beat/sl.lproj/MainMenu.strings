@@ -1,0 +1,638 @@
+
+/* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "0KX-h8-z4v"; */
+"0KX-h8-z4v.title" = "Pametno kopiranje/lepljenje";
+
+/* Class = "NSMenuItem"; title = "Add Marker"; ObjectID = "0iR-5D-OWq"; */
+"0iR-5D-OWq.title" = "Dodaj označevalnik";
+
+/* Class = "NSMenuItem"; title = "Start Scene Numbering From..."; ObjectID = "12m-8C-qlE"; */
+"12m-8C-qlE.title" = "Prizore začni številčiti z ...";
+
+/* Class = "NSMenuItem"; title = "Beat"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "Beat";
+
+/* Class = "NSMenu"; title = "New Using Template"; ObjectID = "1eK-9B-xOY"; */
+"1eK-9B-xOY.title" = "Novo iz predloge";
+
+/* Class = "NSMenuItem"; title = "Find and Replace…"; ObjectID = "2DA-pz-zR5"; */
+"2DA-pz-zR5.title" = "Najdi in zamenjaj …";
+
+/* Class = "NSMenuItem"; title = "Find Scene..."; ObjectID = "2Rt-P2-vV4"; */
+"2Rt-P2-vV4.title" = "Najdi prizor ...";
+
+/* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "2bU-pu-Jv0"; */
+"2bU-pu-Jv0.title" = "Povečava";
+
+/* Class = "NSMenuItem"; title = "Underlined"; ObjectID = "2nS-I6-My1"; */
+"2nS-I6-My1.title" = "Podrčtano";
+
+/* Class = "NSMenuItem"; title = "Print..."; ObjectID = "30L-NJ-b29"; */
+"30L-NJ-b29.title" = "Natisni ...";
+
+/* Class = "NSMenuItem"; title = "Check for Updates"; ObjectID = "34f-vH-vWb"; */
+"34f-vH-vWb.title" = "Preveri obstoj posodobitev";
+
+/* Class = "NSMenuItem"; title = "Cut Current Block"; ObjectID = "3wC-eS-bpF"; */
+"3wC-eS-bpF.title" = "Izreži trenutni blok";
+
+/* Class = "NSMenuItem"; title = "Set Number For Current Scene..."; ObjectID = "3x7-V3-rMc"; */
+"3x7-V3-rMc.title" = "Določi številko trenutnega prizora ...";
+
+/* Class = "NSMenuItem"; title = "Notepad"; ObjectID = "4fZ-b1-hYG"; */
+"4fZ-b1-hYG.title" = "Beležka";
+
+/* Class = "NSMenuItem"; title = "Quit Beat"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "Zapri Beat";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "4uc-VD-Viy"; */
+"4uc-VD-Viy.title" = "Modra";
+
+/* Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T"; */
+"5QF-Oa-p0T.title" = "Uredi";
+
+/* Class = "NSMenuItem"; title = "Omit"; ObjectID = "5Y3-LZ-qMb"; */
+"5Y3-LZ-qMb.title" = "Izpusti";
+
+/* Class = "NSMenuItem"; title = "About Beat"; ObjectID = "5kV-Vb-QxS"; */
+"5kV-Vb-QxS.title" = "O programu Beat";
+
+/* Class = "NSMenuItem"; title = "Select All"; ObjectID = "5tL-Bq-kho"; */
+"5tL-Bq-kho.title" = "Izberi vse";
+
+/* Class = "NSMenuItem"; title = "Automatic Paragraph Breaks"; ObjectID = "6Wc-Ky-Bx7"; */
+"6Wc-Ky-Bx7.title" = "Samodejni prelomi odstavka";
+
+/* Class = "NSMenuItem"; title = "Clear Locked Scene Numbers"; ObjectID = "6uV-eM-FCI"; */
+"6uV-eM-FCI.title" = "Počisti številke zaklenjenih prizorov";
+
+/* Class = "NSMenuItem"; title = "Import Celtx..."; ObjectID = "7pb-G3-Rqt"; */
+"7pb-G3-Rqt.title" = "Uvozi Celtx ...";
+
+/* Class = "NSMenuItem"; title = "Paste"; ObjectID = "7un-dE-J4V"; */
+"7un-dE-J4V.title" = "Prilepi";
+
+/* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "80c-ME-9pZ"; */
+"80c-ME-9pZ.title" = "Zamenjave";
+
+/* Class = "NSMenuItem"; title = "Undo"; ObjectID = "8MR-vZ-fmM"; */
+"8MR-vZ-fmM.title" = "Razveljavi";
+
+/* Class = "NSMenuItem"; title = "Dark Mode"; ObjectID = "8a1-24-Jc9"; */
+"8a1-24-Jc9.title" = "Temni način";
+
+/* Class = "NSMenuItem"; title = "Next Revision"; ObjectID = "8bv-zg-FyC"; */
+"8bv-zg-FyC.title" = "Naslednja revizija";
+
+/* Class = "NSMenuItem"; title = "Print Episodes..."; ObjectID = "8yV-oo-VX1"; */
+"8yV-oo-VX1.title" = "Natisni epizode ...";
+
+/* Class = "NSMenuItem"; title = "Open Plugin Developer Console..."; ObjectID = "A0Q-na-kPj"; */
+"A0Q-na-kPj.title" = "Odpri konzolo razvijalcev vstavkov ...";
+
+/* Class = "NSMenuItem"; title = "Underlining"; ObjectID = "ADX-2t-uCR"; */
+"ADX-2t-uCR.title" = "Podčrtovanje";
+
+/* Class = "NSMenuItem"; title = "Find"; ObjectID = "AVO-sB-rdP"; */
+"AVO-sB-rdP.title" = "Najdi";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Glavni meni";
+
+/* Class = "NSMenuItem"; title = "Mark Selection as Revised"; ObjectID = "Ah1-Kr-xrQ"; */
+"Ah1-Kr-xrQ.title" = "Označi izbor kot revidiranega";
+
+/* Class = "NSMenuItem"; title = "Show Sidebar"; ObjectID = "AiU-nN-4mA"; */
+"AiU-nN-4mA.title" = "Pokaži stransko vrstico";
+
+/* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "B4z-XP-1B0"; */
+"B4z-XP-1B0.title" = "Nastavitve";
+
+/* Class = "NSMenuItem"; title = "Save As…"; ObjectID = "Bw7-FT-i3A"; */
+"Bw7-FT-i3A.title" = "Shrani kot ...";
+
+/* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
+"C9z-84-Cmq.title" = "Izvozi datoteko Final Draft (FDX) ...";
+
+/* Class = "NSMenuItem"; title = "Beat Source Code (Online)"; ObjectID = "CUo-uf-t1s"; */
+"CUo-uf-t1s.title" = "Izvorna koda Beat (splet)";
+
+/* Class = "NSMenuItem"; title = "Find Next"; ObjectID = "DDL-Xk-f31"; */
+"DDL-Xk-f31.title" = "Najdi naslednje";
+
+/* Class = "NSMenuItem"; title = "Make Upper Case"; ObjectID = "DII-3I-Hfz"; */
+"DII-3I-Hfz.title" = "Velike črke";
+
+/* Class = "NSMenuItem"; title = "Close"; ObjectID = "DVo-aG-piG"; */
+"DVo-aG-piG.title" = "Zapri";
+
+/* Class = "NSMenuItem"; title = "Smart Quotes"; ObjectID = "DYb-Gf-Awk"; */
+"DYb-Gf-Awk.title" = "Pametni narekovaji";
+
+/* Class = "NSMenuItem"; title = "Force Character"; ObjectID = "EyT-o0-jab"; */
+"EyT-o0-jab.title" = "Vsili lik";
+
+/* Class = "NSMenuItem"; title = "Show Page Numbers"; ObjectID = "FCU-0n-nVu"; */
+"FCU-0n-nVu.title" = "Pokaži številke strani";
+
+/* Class = "NSMenuItem"; title = "Tagging Mode"; ObjectID = "Fdy-fO-lco"; */
+"Fdy-fO-lco.title" = "Označevalni način";
+
+/* Class = "NSMenuItem"; title = "Import"; ObjectID = "G4e-G3-Hfz"; */
+"G4e-G3-Hfz.title" = "Uvozi";
+
+/* Class = "NSMenuItem"; title = "Add Page Break"; ObjectID = "GOV-Kw-xCI"; */
+"GOV-Kw-xCI.title" = "Dodaj prelom strani";
+
+/* Class = "NSMenuItem"; title = "Commit Revisions"; ObjectID = "H1U-Aa-dJH"; */
+"H1U-Aa-dJH.title" = "Uveljavi revizije";
+
+/* Class = "NSMenuItem"; title = "Copy"; ObjectID = "HTa-3i-PGo"; */
+"HTa-3i-PGo.title" = "Kopiraj";
+
+/* Class = "NSMenuItem"; title = "Open…"; ObjectID = "IAo-SY-fd9"; */
+"IAo-SY-fd9.title" = "Odpri ...";
+
+/* Class = "NSMenuItem"; title = "Redo"; ObjectID = "IVb-dF-Odn"; */
+"IVb-dF-Odn.title" = "Ponovi";
+
+/* Class = "NSMenuItem"; title = "Import Fade In..."; ObjectID = "InR-hQ-LKX"; */
+"InR-hQ-LKX.title" = "Uvozi Fade In ...";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "JCS-BM-6XQ"; */
+"JCS-BM-6XQ.title" = "Roza";
+
+/* Class = "NSMenuItem"; title = "Text Replacement"; ObjectID = "JDR-5g-yEn"; */
+"JDR-5g-yEn.title" = "Zamenjava besedila";
+
+/* Class = "NSMenuItem"; title = "Next Section"; ObjectID = "JQL-DI-csB"; */
+"JQL-DI-csB.title" = "Naslednji odsek";
+
+/* Class = "NSMenuItem"; title = "Show All"; ObjectID = "Kd2-mp-pUS"; */
+"Kd2-mp-pUS.title" = "Pokaži vse";
+
+/* Class = "NSMenuItem"; title = "Zoom Out"; ObjectID = "LBq-PQ-NGT"; */
+"LBq-PQ-NGT.title" = "Pomanjšaj";
+
+/* Class = "NSMenuItem"; title = "Bring all to front"; ObjectID = "LE2-aR-0XJ"; */
+"LE2-aR-0XJ.title" = "Postavi vse v ospredje";
+
+/* Class = "NSMenuItem"; title = "Typewriter Mode"; ObjectID = "Lej-vD-RFS"; */
+"Lej-vD-RFS.title" = "Način pisalnega stroja";
+
+/* Class = "NSMenuItem"; title = "Cut"; ObjectID = "Mrv-cs-HZz"; */
+"Mrv-cs-HZz.title" = "Izreži";
+
+/* Class = "NSMenuItem"; title = "Backups"; ObjectID = "NBi-pE-q3K"; */
+"NBi-pE-q3K.title" = "Varnostne kopije";
+
+/* Class = "NSMenuItem"; title = "Enter full screen"; ObjectID = "NJj-Ow-1UU"; */
+"NJj-Ow-1UU.title" = "V celozaslonski način";
+
+/* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "NLE-HM-5a7"; */
+"NLE-HM-5a7.title" = "Prilepi in poenoti slog";
+
+/* Class = "NSMenuItem"; title = "Show Spelling and Grammar"; ObjectID = "NLP-m6-wMr"; */
+"NLP-m6-wMr.title" = "Pokaži črkovanje in slovnico";
+
+/* Class = "NSMenuItem"; title = "Services"; ObjectID = "NMo-om-nkz"; */
+"NMo-om-nkz.title" = "Storitve";
+
+/* Class = "NSMenu"; title = "Format"; ObjectID = "O6A-iY-8hf"; */
+"O6A-iY-8hf.title" = "Oblika";
+
+/* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
+"OY7-WF-poV.title" = "Minimiziraj";
+
+/* Class = "NSMenuItem"; title = "Reformat Selected"; ObjectID = "OYT-mJ-6Jc"; */
+"OYT-mJ-6Jc.title" = "Preoblikuj izbrano";
+
+/* Class = "NSMenuItem"; title = "Hide Beat"; ObjectID = "Olw-nP-bQN"; */
+"Olw-nP-bQN.title" = "Skrij Beat";
+
+/* Class = "NSMenuItem"; title = "Force Action"; ObjectID = "Oob-ml-0qq"; */
+"Oob-ml-0qq.title" = "Vsili dogajanje";
+
+/* Class = "NSMenu"; title = "Screenplay"; ObjectID = "Oru-rb-IOS"; */
+"Oru-rb-IOS.title" = "Scenarij";
+
+/* Class = "NSMenuItem"; title = "Review Notes"; ObjectID = "Otr-Sx-8w0"; */
+"Otr-Sx-8w0.title" = "Preglej opombe";
+
+/* Class = "NSMenuItem"; title = "Move Block Up"; ObjectID = "P2e-v3-Dx2"; */
+"P2e-v3-Dx2.title" = "Premakni blok navzgor";
+
+/* Class = "NSMenuItem"; title = "Force Transition"; ObjectID = "QOz-eE-b10"; */
+"QOz-eE-b10.title" = "Vsili prehod";
+
+/* Class = "NSMenuItem"; title = "Make Lower Case"; ObjectID = "QvQ-v2-0Mq"; */
+"QvQ-v2-0Mq.title" = "Male črke";
+
+/* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
+"R8Y-SU-vpO.title" = "Revizijski način";
+
+/* Class = "NSMenuItem"; title = "Export"; ObjectID = "RGT-hK-aoo"; */
+"RGT-hK-aoo.title" = "Izvozi";
+
+/* Class = "NSMenu"; title = "View"; ObjectID = "Rpw-TR-9FQ"; */
+"Rpw-TR-9FQ.title" = "Pogled";
+
+/* Class = "NSMenuItem"; title = "Find Previous"; ObjectID = "S6f-Ft-GW9"; */
+"S6f-Ft-GW9.title" = "Najdi prejšnje";
+
+/* Class = "NSMenuItem"; title = "Plugin Library..."; ObjectID = "SYS-Os-Ktb"; */
+"SYS-Os-Ktb.title" = "Knjižnica vstavkov ...";
+
+/* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "SeA-3M-ykm"; */
+"SeA-3M-ykm.title" = "Pokaži zamenjave";
+
+/* Class = "NSMenuItem"; title = "Bold"; ObjectID = "SoY-Ie-ajo"; */
+"SoY-Ie-ajo.title" = "Krepko";
+
+/* Class = "NSMenuItem"; title = "Review Selection"; ObjectID = "SxS-6o-8ac"; */
+"SxS-6o-8ac.title" = "Preglej izbor";
+
+/* Class = "NSMenu"; title = "Tools"; ObjectID = "T42-tx-tAb"; */
+"T42-tx-tAb.title" = "Orodja";
+
+/* Class = "NSMenuItem"; title = "Screenplay Statistics"; ObjectID = "TCn-De-Kk7"; */
+"TCn-De-Kk7.title" = "Statistika scenarija";
+
+/* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
+"Td7-aD-5lo.title" = "Okno";
+
+/* Class = "NSMenu"; title = "Highlight Revisions Using..."; ObjectID = "Uuq-ET-iMU"; */
+"Uuq-ET-iMU.title" = "Poudari revizije z ...";
+
+/* Class = "NSMenuItem"; title = "Show Scene Numbers"; ObjectID = "V7o-Tn-OF3"; */
+"V7o-Tn-OF3.title" = "Pokaži številke prizorov";
+
+/* Class = "NSMenuItem"; title = "Convert/Remove Revisions..."; ObjectID = "V8k-hJ-f7a"; */
+"V8k-hJ-f7a.title" = "Pretvori/odstrani revizije ...";
+
+/* Class = "NSMenuItem"; title = "Go to..."; ObjectID = "VUa-7O-npW"; */
+"VUa-7O-npW.title" = "Pojdi na ...";
+
+/* Class = "NSMenu"; title = "Speech"; ObjectID = "VWX-PD-9Xv"; */
+"VWX-PD-9Xv.title" = "Govor";
+
+/* Class = "NSMenu"; title = "Sidebar"; ObjectID = "VbC-YB-YfH"; */
+"VbC-YB-YfH.title" = "Stranska vrstica";
+
+/* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
+"Vdr-fp-XzO.title" = "Skrij druge";
+
+/* Class = "NSMenuItem"; title = "Zoom In"; ObjectID = "Vt3-Oc-Iy3"; */
+"Vt3-Oc-Iy3.title" = "Približaj";
+
+/* Class = "NSMenuItem"; title = "Add a Marker"; ObjectID = "WCJ-7Z-poa"; */
+"WCJ-7Z-poa.title" = "Dodaj označevalnik";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "WEe-Ln-H4v"; */
+"WEe-Ln-H4v.title" = "Cijan";
+
+/* Class = "NSMenuItem"; title = "Force Scene Heading"; ObjectID = "WPf-Ao-Wcs"; */
+"WPf-Ao-Wcs.title" = "Vsili naslov prizora";
+
+/* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
+"Was-JA-tGl.title" = "Novo";
+
+/* Class = "NSMenuItem"; title = "Dialogue"; ObjectID = "Yd0-6c-3eE"; */
+"Yd0-6c-3eE.title" = "Dialog";
+
+/* Class = "NSMenuItem"; title = "Beat Manual"; ObjectID = "Yiy-8c-i5h"; */
+"Yiy-8c-i5h.title" = "Priročnik za Beat";
+
+/* Class = "NSMenu"; title = "Go To Revision"; ObjectID = "ZbY-dg-pdP"; */
+"ZbY-dg-pdP.title" = "Pojdi na revizijo";
+
+/* Class = "NSMenuItem"; title = "Customize Colours..."; ObjectID = "Zms-ef-jSw"; */
+"Zms-ef-jSw.title" = "Prilagodi barve ...";
+
+/* Class = "NSMenuItem"; title = "Beat Tutorial"; ObjectID = "ZsI-w6-Fec"; */
+"ZsI-w6-Fec.title" = "Vadnica Beat";
+
+/* Class = "NSMenuItem"; title = "Marker With Text"; ObjectID = "a8t-0N-sFT"; */
+"a8t-0N-sFT.title" = "Označevalnik z besedilom";
+
+/* Class = "NSMenuItem"; title = "Window"; ObjectID = "aUF-d1-5bR"; */
+"aUF-d1-5bR.title" = "Okno";
+
+/* Class = "NSMenuItem"; title = "Import Highland..."; ObjectID = "aWg-Y0-xdB"; */
+"aWg-Y0-xdB.title" = "Uvozi Highland ...";
+
+/* Class = "NSMenuItem"; title = "Show Cards"; ObjectID = "ab0-W3-2f9"; */
+"ab0-W3-2f9.title" = "Pokaži kartončke";
+
+/* Class = "NSMenuItem"; title = "Manage Revisions"; ObjectID = "alM-1M-jHF"; */
+"alM-1M-jHF.title" = "Upravljaj revizije";
+
+/* Class = "NSMenuItem"; title = "Hide Fountain Markup"; ObjectID = "ayj-TQ-Go1"; */
+"ayj-TQ-Go1.title" = "Skrij kodo Fountain";
+
+/* Class = "NSMenuItem"; title = "Import Final Draft..."; ObjectID = "bYQ-u3-P9F"; */
+"bYQ-u3-P9F.title" = "Uvozi Final Draft ...";
+
+/* Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu"; */
+"bib-Uj-vzu.title" = "Datoteka";
+
+/* Class = "NSMenuItem"; title = "Sans Serif"; ObjectID = "bip-ME-GPp"; */
+"bip-ME-GPp.title" = "Sans Serif";
+
+/* Class = "NSMenuItem"; title = "Sidebar"; ObjectID = "bng-yV-h71"; */
+"bng-yV-h71.title" = "Stranska vrstica";
+
+/* Class = "NSMenuItem"; title = "Title Page Editor"; ObjectID = "ce9-gT-GJX"; */
+"ce9-gT-GJX.title" = "Urejevalnik naslovnic";
+
+/* Class = "NSMenuItem"; title = "Next Scene"; ObjectID = "d5r-XM-q5U"; */
+"d5r-XM-q5U.title" = "Naslednji prizor";
+
+/* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
+"dMs-cI-mzQ.title" = "Datoteka";
+
+/* Class = "NSMenuItem"; title = "Lock Document"; ObjectID = "dTg-uk-VoW"; */
+"dTg-uk-VoW.title" = "Zakleni dokument";
+
+/* Class = "NSMenuItem"; title = "Check Spelling While Typing"; ObjectID = "daM-sR-Ab6"; */
+"daM-sR-Ab6.title" = "Preverjaj črkovanje med vnosom";
+
+/* Class = "NSMenuItem"; title = "Stop Speaking"; ObjectID = "det-Zn-CBw"; */
+"det-Zn-CBw.title" = "Nehajte govoriti";
+
+/* Class = "NSMenuItem"; title = "Review Mode"; ObjectID = "dmq-UY-1zc"; */
+"dmq-UY-1zc.title" = "Revizijski način";
+
+/* Class = "NSMenuItem"; title = "Autosave"; ObjectID = "eZ7-I2-Df6"; */
+"eZ7-I2-Df6.title" = "Samodejno shrani";
+
+/* Class = "NSMenuItem"; title = "Text Color"; ObjectID = "efm-eP-Ffo"; */
+"efm-eP-Ffo.title" = "Barva besedila";
+
+/* Class = "NSMenuItem"; title = "Format"; ObjectID = "ewI-gv-uGC"; */
+"ewI-gv-uGC.title" = "Oblika";
+
+/* Class = "NSMenuItem"; title = "Check Grammar With Spelling"; ObjectID = "f1v-Oj-qcf"; */
+"f1v-Oj-qcf.title" = "Preveri slovnico s črkovanjem";
+
+/* Class = "NSMenuItem"; title = "Font Style"; ObjectID = "f5C-Dm-IC8"; */
+"f5C-Dm-IC8.title" = "Slog pisave";
+
+/* Class = "NSMenuItem"; title = "Note"; ObjectID = "fKt-Xk-jG8"; */
+"fKt-Xk-jG8.title" = "Opomba";
+
+/* Class = "NSMenuItem"; title = "Move Block Down"; ObjectID = "fVz-La-McU"; */
+"fVz-La-McU.title" = "Premakni blok navzdol";
+
+/* Class = "NSMenuItem"; title = "Correct Spelling Automatically"; ObjectID = "g86-P3-GpL"; */
+"g86-P3-GpL.title" = "Samodejno popravi napake črkovanja";
+
+/* Class = "NSMenuItem"; title = "HTML…"; ObjectID = "gFk-1w-5jg"; */
+"gFk-1w-5jg.title" = "HTML ...";
+
+/* Class = "NSMenuItem"; title = "Reformat Everything"; ObjectID = "giJ-d7-DJr"; */
+"giJ-d7-DJr.title" = "Preoblikuj vse";
+
+/* Class = "NSMenuItem"; title = "Beat Home Page (Online)"; ObjectID = "guF-zs-YEi"; */
+"guF-zs-YEi.title" = "Domača stran Beat (splet)";
+
+/* Class = "NSMenuItem"; title = "Tools"; ObjectID = "h9m-JI-q3y"; */
+"h9m-JI-q3y.title" = "Orodja";
+
+/* Class = "NSMenuItem"; title = "Disable Formatting"; ObjectID = "hAp-vJ-Myg"; */
+"hAp-vJ-Myg.title" = "Onemogoči oblikovanje";
+
+/* Class = "NSMenuItem"; title = "Highlight Revisions Using..."; ObjectID = "hn7-em-kBb"; */
+"hn7-em-kBb.title" = "Poudari revizije z ...";
+
+/* Class = "NSMenuItem"; title = "Clear Selected Markers"; ObjectID = "hrl-ti-1fN"; */
+"hrl-ti-1fN.title" = "Počisti izbrane označevalnike";
+
+/* Class = "NSMenu"; title = "Services"; ObjectID = "hz9-B4-Xy5"; */
+"hz9-B4-Xy5.title" = "Storitve";
+
+/* Class = "NSMenuItem"; title = "Force Lyrics"; ObjectID = "iAy-tL-tFv"; */
+"iAy-tL-tFv.title" = "Vsili besedilo pesmi";
+
+/* Class = "NSMenu"; title = "Substitutions"; ObjectID = "iKJ-5K-P9I"; */
+"iKJ-5K-P9I.title" = "Zamenjave";
+
+/* Class = "NSMenuItem"; title = "Reset Zoom"; ObjectID = "iVC-v6-5CT"; */
+"iVC-v6-5CT.title" = "Ponastavi povečavo";
+
+/* Class = "NSMenuItem"; title = "Outline"; ObjectID = "imw-Bx-OVw"; */
+"imw-Bx-OVw.title" = "Scenosled";
+
+/* Class = "NSMenuItem"; title = "Set Timer..."; ObjectID = "ite-qD-YVS"; */
+"ite-qD-YVS.title" = "Nastavi časovnik ...";
+
+/* Class = "NSMenu"; title = "Help"; ObjectID = "jA1-Lj-Irm"; */
+"jA1-Lj-Irm.title" = "Pomoč";
+
+/* Class = "NSMenuItem"; title = "Patch Notes"; ObjectID = "jMf-Y4-igF"; */
+"jMf-Y4-igF.title" = "Opombe o popravkih";
+
+/* Class = "NSMenuItem"; title = "Previous Scene"; ObjectID = "jdx-FP-GzA"; */
+"jdx-FP-GzA.title" = "Prejšnji prizor";
+
+/* Class = "NSMenu"; title = "Find"; ObjectID = "jxo-3x-AhN"; */
+"jxo-3x-AhN.title" = "Najdi";
+
+/* Class = "NSMenuItem"; title = "Add Title Page"; ObjectID = "kNr-WO-rzd"; */
+"kNr-WO-rzd.title" = "Dodaj naslovnico";
+
+/* Class = "NSMenuItem"; title = "Automatic"; ObjectID = "kZW-1X-LFR"; */
+"kZW-1X-LFR.title" = "Samodejno";
+
+/* Class = "NSMenuItem"; title = "Use Selection for Find"; ObjectID = "kjc-fS-FOY"; */
+"kjc-fS-FOY.title" = "Uporabi izbor za iskanje";
+
+/* Class = "NSMenuItem"; title = "Item"; ObjectID = "l2Z-ad-YVx"; */
+"l2Z-ad-YVx.title" = "Element";
+
+/* Class = "NSMenuItem"; title = "Export Outline..."; ObjectID = "lAo-B9-uaU"; */
+"lAo-B9-uaU.title" = "Izvozi scenosled ...";
+
+/* Class = "NSMenuItem"; title = "Enter Donation Key..."; ObjectID = "lM5-aZ-exA"; */
+"lM5-aZ-exA.title" = "Vnesi ključ donacije ...";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "lPg-kw-X04"; */
+"lPg-kw-X04.title" = "Oranžna";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "lVX-ro-v5U"; */
+"lVX-ro-v5U.title" = "Zelena";
+
+/* Class = "NSMenuItem"; title = "Find…"; ObjectID = "ltr-sy-WI6"; */
+"ltr-sy-WI6.title" = "Najdi ...";
+
+/* Class = "NSMenuItem"; title = "Jump to Selection"; ObjectID = "mQ6-YH-j6X"; */
+"mQ6-YH-j6X.title" = "Skoči na izbor";
+
+/* Class = "NSMenuItem"; title = "Mark Selection for Removal"; ObjectID = "nM4-un-Ivn"; */
+"nM4-un-Ivn.title" = "Označi izbor za odstranitev";
+
+/* Class = "NSMenuItem"; title = "Make Scene Non-Numbered"; ObjectID = "nRS-St-fYj"; */
+"nRS-St-fYj.title" = "Naj bo prizor neoštevilčen";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "nRa-kY-4lQ"; */
+"nRa-kY-4lQ.title" = "Rjava";
+
+/* Class = "NSMenuItem"; title = "Lock All Scene Numbers"; ObjectID = "neY-LE-02O"; */
+"neY-LE-02O.title" = "Zakleni vse številke prizorov";
+
+/* Class = "NSMenu"; title = "Transformations"; ObjectID = "ngy-iE-uPP"; */
+"ngy-iE-uPP.title" = "Preoblikovanja";
+
+/* Class = "NSMenuItem"; title = "Delete"; ObjectID = "niE-Hd-2rL"; */
+"niE-Hd-2rL.title" = "Izbriši";
+
+/* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "noH-xX-7MC"; */
+"noH-xX-7MC.title" = "Preoblikovanja";
+
+/* Class = "NSMenuItem"; title = "Screenplay"; ObjectID = "nrq-Qs-Sou"; */
+"nrq-Qs-Sou.title" = "Scenarij";
+
+/* Class = "NSMenuItem"; title = "Previous Section of Current Depth"; ObjectID = "o3i-w3-weT"; */
+"o3i-w3-weT.title" = "Prejšnji odsek trenutne globine";
+
+/* Class = "NSMenu"; title = "Go to..."; ObjectID = "o6p-p9-AIx"; */
+"o6p-p9-AIx.title" = "Pojdi na ...";
+
+/* Class = "NSMenu"; title = "Export"; ObjectID = "o7H-J0-CK2"; */
+"o7H-J0-CK2.title" = "Izvozi";
+
+/* Class = "NSMenuItem"; title = "Help"; ObjectID = "oC7-oi-xzg"; */
+"oC7-oi-xzg.title" = "Pomoč";
+
+/* Class = "NSMenuItem"; title = "Support Beat"; ObjectID = "oNz-fC-tr3"; */
+"oNz-fC-tr3.title" = "Podprite Beat";
+
+/* Class = "NSMenuItem"; title = "Fountain Website (Online)"; ObjectID = "oSB-uU-Wcb"; */
+"oSB-uU-Wcb.title" = "Domača stran Fountain (splet)";
+
+/* Class = "NSMenu"; title = "Open Recent"; ObjectID = "oas-Oc-fiZ"; */
+"oas-Oc-fiZ.title" = "Odpri nedavne";
+
+/* Class = "NSMenuItem"; title = "New Using Template"; ObjectID = "otc-RL-GwA"; */
+"otc-RL-GwA.title" = "Novo iz predloge";
+
+/* Class = "NSMenuItem"; title = "Save"; ObjectID = "pxx-59-PXV"; */
+"pxx-59-PXV.title" = "Shrani";
+
+/* Class = "NSMenuItem"; title = "Next Section of Current Depth"; ObjectID = "qDd-yI-vJh"; */
+"qDd-yI-vJh.title" = "Naslednji odsek trenutne globine";
+
+/* Class = "NSMenuItem"; title = "Page Setup…"; ObjectID = "qIS-W8-SiK"; */
+"qIS-W8-SiK.title" = "Nastavitev strani ...";
+
+/* Class = "NSMenuItem"; title = "Create PDF..."; ObjectID = "qUE-cb-x1G"; */
+"qUE-cb-x1G.title" = "Ustvari PDF ...";
+
+/* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "qZv-6v-l78"; */
+"qZv-6v-l78.title" = "Začnite govoriti";
+
+/* Class = "NSMenuItem"; title = "Language"; ObjectID = "r1G-J4-Ri5"; */
+"r1G-J4-Ri5.title" = "Jezik";
+
+/* Class = "NSMenuItem"; title = "Show Selection Info"; ObjectID = "r8I-XP-gc2"; */
+"r8I-XP-gc2.title" = "Pokaži podatke o izboru";
+
+/* Class = "NSMenuItem"; title = "Go To Revision"; ObjectID = "rTO-cq-yuC"; */
+"rTO-cq-yuC.title" = "Pojdi na revizijo";
+
+/* Class = "NSMenu"; title = "Edit"; ObjectID = "rly-4q-iux"; */
+"rly-4q-iux.title" = "Uredi";
+
+/* Class = "NSMenuItem"; title = "Serif"; ObjectID = "s0K-P8-fQr"; */
+"s0K-P8-fQr.title" = "Serif";
+
+/* Class = "NSMenuItem"; title = "Match Parentheses"; ObjectID = "s7C-kV-oq3"; */
+"s7C-kV-oq3.title" = "Zaključi narekovaje";
+
+/* Class = "NSMenuItem"; title = "Spelling and Grammar"; ObjectID = "sS0-sX-bUZ"; */
+"sS0-sX-bUZ.title" = "Črkovanje in slovnica";
+
+/* Class = "NSMenuItem"; title = "Show Preview"; ObjectID = "sme-b1-Ytt"; */
+"sme-b1-Ytt.title" = "Pokaži predogled";
+
+/* Class = "NSMenuItem"; title = "Copy Current Block"; ObjectID = "soE-DO-Gl8"; */
+"soE-DO-Gl8.title" = "Kopiraj trenutni blok";
+
+/* Class = "NSMenuItem"; title = "Show Timeline"; ObjectID = "tMJ-KE-ZTw"; */
+"tMJ-KE-ZTw.title" = "Pokaži časovnico";
+
+/* Class = "NSMenuItem"; title = "Open Recent"; ObjectID = "tXI-mr-wws"; */
+"tXI-mr-wws.title" = "Odpri nedavne";
+
+/* Class = "NSMenuItem"; title = "Dual Dialogue"; ObjectID = "tXd-FU-iE5"; */
+"tXd-FU-iE5.title" = "Dvojni dialog";
+
+/* Class = "NSMenuItem"; title = "View"; ObjectID = "tYD-GA-KC2"; */
+"tYD-GA-KC2.title" = "Pogled";
+
+/* Class = "NSMenuItem"; title = "Share"; ObjectID = "tZ7-Ir-m78"; */
+"tZ7-Ir-m78.title" = "Skupna raba";
+
+/* Class = "NSMenu"; title = "Share"; ObjectID = "u2H-KZ-IwH"; */
+"u2H-KZ-IwH.title" = "Skupna raba";
+
+/* Class = "NSMenuItem"; title = "Discord Community"; ObjectID = "u5m-eu-948"; */
+"u5m-eu-948.title" = "Skupnost Discord";
+
+/* Class = "NSMenu"; title = "Spelling"; ObjectID = "uCf-KN-clX"; */
+"uCf-KN-clX.title" = "Črkovanje";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "uNu-t5-6hH"; */
+"uNu-t5-6hH.title" = "Rdeča";
+
+/* Class = "NSMenu"; title = "Beat"; ObjectID = "uQy-DD-JDr"; */
+"uQy-DD-JDr.title" = "Beat";
+
+/* Class = "NSMenuItem"; title = "Previous Revision"; ObjectID = "ucQ-IG-VAd"; */
+"ucQ-IG-VAd.title" = "Prejšnja revizija";
+
+/* Class = "NSMenuItem"; title = "Widgets"; ObjectID = "upd-G6-QM0"; */
+"upd-G6-QM0.title" = "Gradniki";
+
+/* Class = "NSMenuItem"; title = "Clear Menu"; ObjectID = "vNY-rz-j42"; */
+"vNY-rz-j42.title" = "Počisti meni";
+
+/* Class = "NSMenuItem"; title = "Capitalize"; ObjectID = "vgX-u1-hVY"; */
+"vgX-u1-hVY.title" = "Velike začetnice";
+
+/* Class = "NSMenuItem"; title = "Next Revision of Current Generation"; ObjectID = "wPU-0q-4I9"; */
+"wPU-0q-4I9.title" = "Naslednja revizija trenutne generacije";
+
+/* Class = "NSMenuItem"; title = "Italic"; ObjectID = "x90-pI-9f6"; */
+"x90-pI-9f6.title" = "Ležeče";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xGE-gP-9DS"; */
+"xGE-gP-9DS.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "Downgrade Revisions..."; ObjectID = "xQU-Mc-KQo"; */
+"xQU-Mc-KQo.title" = "Ponižaj revizije ...";
+
+/* Class = "NSMenu"; title = "Import"; ObjectID = "xR8-x2-hNB"; */
+"xR8-x2-hNB.title" = "Uvozi";
+
+/* Class = "NSMenu"; title = "Zoom"; ObjectID = "xgR-jy-OLL"; */
+"xgR-jy-OLL.title" = "Povečava";
+
+/* Class = "NSMenuItem"; title = "Check Document Now"; ObjectID = "xxp-CU-vBk"; */
+"xxp-CU-vBk.title" = "Preveri dokument zdaj";
+
+/* Class = "NSMenu"; title = "Font Style"; ObjectID = "zJ5-vm-Omp"; */
+"zJ5-vm-Omp.title" = "Slog pisave";
+
+/* Class = "NSMenuItem"; title = "Previous Revision of Current Generation"; ObjectID = "zP7-Lz-ODv"; */
+"zP7-Lz-ODv.title" = "Prejšnja revizija trenutne generacije";
+
+/* Class = "NSMenuItem"; title = "Force Element..."; ObjectID = "zQH-Oq-iw8"; */
+"zQH-Oq-iw8.title" = "Vsili element ...";
+
+/* Class = "NSMenuItem"; title = "Previous Section"; ObjectID = "zTa-Mk-4pe"; */
+"zTa-Mk-4pe.title" = "Prejšnji odsek";
+
+/* Class = "NSMenuItem"; title = "Speech"; ObjectID = "zZ3-DN-fPe"; */
+"zZ3-DN-fPe.title" = "Govor";
+
+"IBj-Is-T2j.title" = "Ostrenja način";

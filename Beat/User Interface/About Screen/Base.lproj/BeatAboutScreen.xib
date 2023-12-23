@@ -17,7 +17,7 @@
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="2ip-76-u7o">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="484" height="272"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="hqH-LR-UWK">
                 <rect key="frame" x="0.0" y="0.0" width="484" height="272"/>
                 <autoresizingMask key="autoresizingMask"/>

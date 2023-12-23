@@ -1008,6 +1008,12 @@ DQ
                                     <action selector="toggleTypewriterMode:" target="-1" id="huT-2l-VQV"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Focus Mode" id="IBj-Is-T2j">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleFocusMode:" target="-1" id="dzj-rh-rfL"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="tVJ-xa-3TK"/>
                             <menuItem title="Dark Mode" id="8a1-24-Jc9">
                                 <modifierMask key="keyEquivalentModifierMask"/>
