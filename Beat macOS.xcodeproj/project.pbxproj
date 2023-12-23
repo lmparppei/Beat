@@ -170,6 +170,8 @@
 		B67C2CE92A2D152D00B88B0F /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */; };
 		B67C2CEA2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */; };
 		B67C2CEB2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */; };
+		B67C73B12B3708F9002BD12F /* BeatFocusMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C73B02B3708F9002BD12F /* BeatFocusMode.m */; };
+		B67C73B22B3708F9002BD12F /* BeatFocusMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C73B02B3708F9002BD12F /* BeatFocusMode.m */; };
 		B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA82AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
@@ -684,6 +686,22 @@
 		B67BD6DF23B4BBE400A99C9C /* ColorCheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorCheckbox.h; sourceTree = "<group>"; };
 		B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorCheckbox.m; sourceTree = "<group>"; };
 		B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
+		B67C73AF2B3708F9002BD12F /* BeatFocusMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFocusMode.h; sourceTree = "<group>"; };
+		B67C73B02B3708F9002BD12F /* BeatFocusMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFocusMode.m; sourceTree = "<group>"; };
+		B67C73B32B37215B002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B67C73B52B37219C002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatAboutScreen.strings; sourceTree = "<group>"; };
+		B67C73B72B3721AC002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatEpisodePrinter.strings; sourceTree = "<group>"; };
+		B67C73B92B3721C5002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatPreferencesPanel.strings; sourceTree = "<group>"; };
+		B67C73BB2B3721D5002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatPrintDialog.strings; sourceTree = "<group>"; };
+		B67C73BD2B3721E5002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
+		B67C73BF2B3721FF002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatSceneHeadingSearch.strings; sourceTree = "<group>"; };
+		B67C73C12B372211002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatStatisticsPanel.strings; sourceTree = "<group>"; };
+		B67C73C32B372222002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
+		B67C73C52B372230002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/BeatTitlePageEditor.strings; sourceTree = "<group>"; };
+		B67C73C72B372247002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Document.strings; sourceTree = "<group>"; };
+		B67C73C92B37225A002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = "sl.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
+		B67C73CB2B37226D002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		B67C73CD2B37227C002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
@@ -1585,6 +1603,8 @@
 				B6A79C9227B64A64008D3AFC /* Scroll View */,
 				B616518629FC490000D20882 /* BeatTextView.h */,
 				B616518529FC490000D20882 /* BeatTextView.m */,
+				B67C73AF2B3708F9002BD12F /* BeatFocusMode.h */,
+				B67C73B02B3708F9002BD12F /* BeatFocusMode.m */,
 				B64170EA270B6C0D0002FFA1 /* BeatTextStorage.h */,
 				B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */,
 				B644DBE2260605D30091AEAB /* BeatEditorButton.h */,
@@ -1926,6 +1946,7 @@
 				Base,
 				fi,
 				sv,
+				sl,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			packageReferences = (
@@ -2152,6 +2173,7 @@
 				B6F3117A274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */,
 				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
+				B67C73B12B3708F9002BD12F /* BeatFocusMode.m in Sources */,
 				B65BB73F2B0B58F800145FCE /* BeatRevisionManagement.swift in Sources */,
 				B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */,
 				B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
@@ -2279,6 +2301,7 @@
 				B6F3117B274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */,
 				B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */,
+				B67C73B22B3708F9002BD12F /* BeatFocusMode.m in Sources */,
 				B65BB7402B0B58F800145FCE /* BeatRevisionManagement.swift in Sources */,
 				B655B1072714607700BA52ED /* BeatMarkerScroller.m in Sources */,
 				B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
@@ -2406,6 +2429,7 @@
 				B606FDC42817F09C00D89CD6 /* Base */,
 				B606FDC72817F09E00D89CD6 /* fi */,
 				B65E03D729AE18D600927056 /* sv */,
+				B67C73BB2B3721D5002BD12F /* sl */,
 			);
 			name = BeatPrintDialog.xib;
 			sourceTree = "<group>";
@@ -2416,6 +2440,7 @@
 				B607519328CB27A700F4E68F /* Base */,
 				B607519628CB27AB00F4E68F /* fi */,
 				B65E03DC29AE18D600927056 /* sv */,
+				B67C73BF2B3721FF002BD12F /* sl */,
 			);
 			name = BeatSceneHeadingSearch.xib;
 			sourceTree = "<group>";
@@ -2426,6 +2451,7 @@
 				B65BBF7A280C3FD500FCA23E /* Base */,
 				B65BBF7D280C3FD800FCA23E /* fi */,
 				B65E03D929AE18D600927056 /* sv */,
+				B67C73B52B37219C002BD12F /* sl */,
 			);
 			name = BeatAboutScreen.xib;
 			sourceTree = "<group>";
@@ -2436,6 +2462,7 @@
 				B66716C82971D1B5005B8C55 /* Base */,
 				B66716C92971D1B5005B8C55 /* fi */,
 				B65E03DD29AE18D600927056 /* sv */,
+				B67C73CD2B37227C002BD12F /* sl */,
 			);
 			name = ThemeEditor.xib;
 			sourceTree = "<group>";
@@ -2454,6 +2481,7 @@
 				B6763E4D27820CCF00284907 /* fi */,
 				B6763E50278221F300284907 /* en */,
 				B65E03DF29AE18D600927056 /* sv */,
+				B67C73B32B37215B002BD12F /* sl */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2464,6 +2492,7 @@
 				B6763E8127822DE500284907 /* Base */,
 				B6763E8427822DE900284907 /* fi */,
 				B65E03DE29AE18D600927056 /* sv */,
+				B67C73C52B372230002BD12F /* sl */,
 			);
 			name = BeatTitlePageEditor.xib;
 			sourceTree = "<group>";
@@ -2474,6 +2503,7 @@
 				B6763E8D2782317600284907 /* Base */,
 				B6763E902782317A00284907 /* fi */,
 				B65E03D629AE18D600927056 /* sv */,
+				B67C73B72B3721AC002BD12F /* sl */,
 			);
 			name = BeatEpisodePrinter.xib;
 			sourceTree = "<group>";
@@ -2484,6 +2514,7 @@
 				B6763E932782482400284907 /* Base */,
 				B6763EA82782545400284907 /* fi */,
 				B65E03DB29AE18D600927056 /* sv */,
+				B67C73B92B3721C5002BD12F /* sl */,
 			);
 			name = BeatPreferencesPanel.xib;
 			sourceTree = "<group>";
@@ -2494,6 +2525,7 @@
 				B67F75A02B1F310D0028D009 /* Base */,
 				B67F75A22B1F31130028D009 /* fi */,
 				B67F75A32B1F31170028D009 /* sv */,
+				B67C73C32B372222002BD12F /* sl */,
 			);
 			name = BeatTimerWindow.xib;
 			sourceTree = "<group>";
@@ -2504,6 +2536,7 @@
 				B68691A327845A8C00C8D5A2 /* Base */,
 				B68691A627845A8F00C8D5A2 /* fi */,
 				B65E03D829AE18D600927056 /* sv */,
+				B67C73C12B372211002BD12F /* sl */,
 			);
 			name = BeatStatisticsPanel.xib;
 			sourceTree = "<group>";
@@ -2514,6 +2547,7 @@
 				B698DCE22A4B969E00D8C5C4 /* Base */,
 				B698DCE52A4B96A100D8C5C4 /* fi */,
 				B698DCE72A4B96A300D8C5C4 /* sv */,
+				B67C73BD2B3721E5002BD12F /* sl */,
 			);
 			name = BeatQuickSettings.xib;
 			sourceTree = "<group>";
@@ -2532,6 +2566,7 @@
 				B6D2B72E2218B589005B8447 /* Base */,
 				B6D4BB142788B09100915682 /* fi */,
 				B65E03D429AE18D600927056 /* sv */,
+				B67C73C72B372247002BD12F /* sl */,
 			);
 			name = Document.xib;
 			sourceTree = "<group>";
@@ -2542,6 +2577,7 @@
 				B6D2B7302218B589005B8447 /* Base */,
 				B6763E4627820BF600284907 /* fi */,
 				B65E03D529AE18D600927056 /* sv */,
+				B67C73CB2B37226D002BD12F /* sl */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -2552,6 +2588,7 @@
 				B6D37F852A2A254B0069C515 /* Base */,
 				B6D37F882A2A25560069C515 /* fi */,
 				B6D37F8A2A2A25A90069C515 /* sv */,
+				B67C73C92B37225A002BD12F /* sl */,
 			);
 			name = "Launch Screen.storyboard";
 			sourceTree = "<group>";
@@ -2779,7 +2816,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133273;
+				CURRENT_PROJECT_VERSION = 133274;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2823,7 +2860,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133273;
+				CURRENT_PROJECT_VERSION = 133274;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -2869,7 +2906,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133273;
+				CURRENT_PROJECT_VERSION = 133274;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2913,7 +2950,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133273;
+				CURRENT_PROJECT_VERSION = 133274;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

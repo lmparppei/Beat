@@ -34,7 +34,8 @@
 
 
 - (NSRect)constrainBoundsRect:(NSRect)proposedBounds {
-	if (!_editorDelegate.typewriterMode) return [super constrainBoundsRect:proposedBounds];
+	BeatTextView* textView = (BeatTextView*)_editorDelegate.getTextView;
+	if (!textView.typewriterMode) return [super constrainBoundsRect:proposedBounds];
 	return proposedBounds;
 }
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## Beat 1.998.0
+
+- Lot of minor bug fixes
+- Moved templates to BeatCore framework
+- Moved this and that to base class, including registering views
+- Focus mode
+- Added selection observer protocol
+
+
 ## Beat 1.997.8
 
 - Reanimating the ad hoc distribution
