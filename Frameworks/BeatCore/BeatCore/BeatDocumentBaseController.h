@@ -15,6 +15,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatCore/BeatCompatibility.h>
+#import "BeatEditorDelegate.h"
 
 @class BeatStylesheet;
 @class BeatTextIO;
@@ -59,6 +60,7 @@
 @interface BeatDocumentBaseController:UIViewController
 #endif
 
+
 #pragma mark - Document settings
 @property (nonatomic) BeatDocumentSettings* _Nonnull documentSettings;
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
@@ -100,6 +102,19 @@
 #pragma mark - Setting getters
 
 - (bool)showRevisedTextColor;
+
+
+#pragma mark - Registering views
+
+@property (nonatomic) NSMutableSet<id<BeatEditorView>>*  _Nullable registeredViews;
+@property (nonatomic) NSMutableSet<id<BeatSceneOutlineView>>*  _Nullable registeredOutlineViews;
+@property (nonatomic) NSMutableSet<id<BeatSelectionObserver>>*  _Nullable registeredSelectionObservers;
+- (void)registerEditorView:(id<BeatEditorView> _Nonnull)view;
+- (void)registerSceneOutlineView:(id<BeatSceneOutlineView> _Nonnull)view;
+
+- (void)updateEditorViewsInBackground;
+- (void)updateSelectionObservers;
+- (void)updateOutlineViewsWithChanges:(OutlineChanges* _Nullable)changes;
 
 
 #pragma mark - Line lookup

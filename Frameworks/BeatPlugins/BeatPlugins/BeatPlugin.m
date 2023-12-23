@@ -1946,9 +1946,9 @@
 
 - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 	NSColor *color = [BeatColors color:hexColor];
-	[_delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+	[self.delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 #endif
 }
 

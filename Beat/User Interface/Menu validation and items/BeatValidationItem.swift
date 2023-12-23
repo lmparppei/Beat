@@ -37,11 +37,17 @@ class BeatValidationItem: NSObject {
 		
 		if (self.target.className == "BeatDocumentSettings") {
 			// Document settings
-			let settings = self.target as! BeatDocumentSettings
-			value = settings.getBool(self.setting)
+			if let settings = self.target as? BeatDocumentSettings {
+				value = settings.getBool(self.setting)
+			}
+		} else if (self.target.className == "BeatUserDefaults") {
+			// User defaults
+			value = BeatUserDefaults.shared().getBool(self.setting)
 		} else {
-			let num = self.target.value(forKey: setting) as! NSNumber
-			value = num.boolValue
+			// Get via selector from document
+			if let num = self.target.value(forKey: setting) as? NSNumber {
+				value = num.boolValue
+			}
 		}
 		
 		return value

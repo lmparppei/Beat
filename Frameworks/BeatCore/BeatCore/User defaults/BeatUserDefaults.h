@@ -53,6 +53,8 @@ extern NSString * const BeatSettingOutlineFontSizeModifier;
 
 extern NSString* const BeatSettingShowPageSeparators;
 
+extern NSString* const BeatSettingFocusMode;
+
 + (BeatUserDefaults*)sharedDefaults;
 
 + (NSDictionary*)userDefaults;

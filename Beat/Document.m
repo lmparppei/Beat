@@ -106,6 +106,7 @@
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
+#import "BeatFocusMode.h"
 
 @interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
@@ -143,13 +144,11 @@
 @property (weak, nonatomic) IBOutlet ScrollView *textScrollView;
 @property (weak, nonatomic) IBOutlet MarginView *marginView;
 @property (weak, nonatomic) IBOutlet NSClipView *textClipView;
-@property (nonatomic) NSLayoutManager *layoutManager;
 
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
 @property (nonatomic) NSDictionary *postEditAction;
-@property (nonatomic) bool typewriterMode;
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSMutableArray *recentCharacters;
 
@@ -166,8 +165,6 @@
 @property (nonatomic) bool headingStyleUnderline;
 
 // Views
-@property (nonatomic) NSMutableSet *registeredViews;
-@property (nonatomic) NSMutableSet *registeredOutlineViews;
 @property (nonatomic) NSMutableSet<BeatPluginContainerView*>* registeredPluginContainers;
 
 // Sidebar & Outline view
@@ -346,6 +343,8 @@
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
+	((BeatLayoutManager*)self.layoutManager).pageBreaks = nil;
+	
 	// Remove plugin containers (namely the index card view)
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container unload];
@@ -358,17 +357,19 @@
 		[plugin end];
 	}
 	[self.runningPlugins removeAllObjects];
-	
+		
 	// This stuff is here to fix some strange memory issues.
-	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
+	// Most of these might be unnecessary, but I'm unfamiliar with both ARC & manual memory management. Better safe than sorry.
 	[self.previewController.timer invalidate];
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
 		
-	for (NSView* view in _registeredViews) {
+	for (NSView* view in self.registeredViews) {
 		[view removeFromSuperview];
 	}
-	[_registeredViews removeAllObjects];
+	[self.registeredViews removeAllObjects];
+	
+	[self.registeredSelectionObservers removeAllObjects];
 	
 	[self.textScrollView.mouseMoveTimer invalidate];
 	[self.textScrollView.timerMouseMoveTimer invalidate];
@@ -443,7 +444,7 @@ static BeatAppDelegate *appDelegate;
 	}
 	
 	[super windowControllerDidLoadNib:aController];
-	
+		
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self;
 	
@@ -478,10 +479,7 @@ static BeatAppDelegate *appDelegate;
 	[self setupTouchTimeline];
 	[self setupColorPicker];
 	[self.outlineView setup];
-	
-	// Setup layout here first, but don't paginate
-	[self setupLayoutWithPagination:NO];
-	
+		
 	// Print dialog
 	self.printDialog.document = nil;
 	
@@ -495,8 +493,17 @@ static BeatAppDelegate *appDelegate;
 		[self setText:@""];
 	}
 	
+	// Setup layout
+	[self setupLayout];
+	
+	// Paginate the whole document at load
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
+		
 	// Perform first-time rendering
 	[self renderDocument];
+	
+	// Update selection to any views or objects that might require it.
+	[self updateSelectionObservers];
 }
 
 -(void)renderDocument {
@@ -549,10 +556,7 @@ static BeatAppDelegate *appDelegate;
 	
 	// Document loading has ended
 	self.documentIsLoading = NO;
-		
-	// Ensure layout with pagination
-	[self setupLayoutWithPagination:YES];
-	
+			
 	// Init autosave
 	[self initAutosave];
 	
@@ -686,7 +690,7 @@ static BeatAppDelegate *appDelegate;
 	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
 	[defaults readUserDefaultsFor:self];
 	
-	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
+	if ((oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) && !self.documentIsLoading) {
 		[self.formatting formatAllLinesOfType:heading];
 		[self.previewController resetPreview];
 	}
@@ -789,13 +793,11 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow setFrame:newFrame display:YES];
 }
 
--(void)setupLayoutWithPagination:(bool)paginate
+-(void)setupLayout
 {
 	// Apply layout
 	[self updateLayout];
 	[self.textView loadCaret];
-	
-	if (paginate) [self.previewController resetPreview];
 }
 
 // Can I come over, I need to rest
@@ -1214,20 +1216,6 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Editor view registration
 
-/// Registers a normal editor view. They know if they are visible and can be reloaded both in sync and async.
-- (void)registerEditorView:(id<BeatEditorView>)view
-{
-	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
-	[_registeredViews addObject:view];
-}
-
-/// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
-- (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view
-{
-	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableSet.set;
-	if (![_registeredOutlineViews containsObject:view]) [_registeredOutlineViews addObject:view];
-}
-
 /// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view
 {
@@ -1518,16 +1506,12 @@ static NSWindow __weak *currentKeyWindow;
 		
 		[self.pluginAgent updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
 		
-		for (id<BeatSceneOutlineView> view in _registeredOutlineViews) {
-			if (view.visible) [view reloadWithChanges:changesInOutline];
-		}
+		[self updateOutlineViewsWithChanges:changesInOutline];
 	}
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
-	for (id<BeatEditorView> view in _registeredViews) {
-		[view reloadInBackground];
-	}
+	[self updateEditorViewsInBackground];
 
 	// Paginate
 	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
@@ -1596,6 +1580,9 @@ static NSWindow __weak *currentKeyWindow;
 		[self.textView scrollRangeToVisible:self.selectedRange];
 	}
 	
+	// Notify observers
+	[self updateSelectionObservers];
+	
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
@@ -1607,6 +1594,8 @@ static NSWindow __weak *currentKeyWindow;
 		// Update running plugins
 		[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
 	});
+	
+	
 }
 
 
@@ -2007,7 +1996,6 @@ static NSWindow __weak *currentKeyWindow;
 		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:BeatSettingAutomaticLineBreaks target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:BeatSettingShowSceneNumbers target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:BeatSettingShowPageNumbers target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(togglePrintSceneNumbers:) setting:BeatSettingPrintSceneNumbers target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:BeatSettingAutosave target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:BeatSettingHideFountainMarkup target:self],
@@ -2303,16 +2291,6 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-
-#pragma mark - Typewriter mode
-
-// Typewriter mode
-- (IBAction)toggleTypewriterMode:(id)sender {
-	self.typewriterMode = !self.typewriterMode;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
-	[self updateLayout];
-}
 
 
 #pragma mark - Hiding markup

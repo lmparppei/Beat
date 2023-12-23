@@ -25,7 +25,6 @@
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
-@property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
 /// The range which was *actually* changed
@@ -579,9 +578,7 @@
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
-	for (id<BeatEditorView> view in _registeredViews.allObjects) {
-		if (view.visible) [view reloadInBackground];
-	}
+	[self updateEditorViewsInBackground];
 	
 	// Paginate
 	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
@@ -957,14 +954,6 @@
 	[self.textView becomeFirstResponder];
 }
 
-- (void)registerEditorView:(id)view {
-	if (_registeredViews == nil) _registeredViews = NSMutableSet.new;
-	[_registeredViews addObject:view];
-}
--(void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view {
-	if (_registeredOutlineViews == nil) _registeredOutlineViews = NSMutableSet.new;
-	[_registeredViews addObject:view];
-}
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view {
 	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableSet.new;
 }

@@ -48,10 +48,16 @@
 @class BeatEditorFormatting;
 @class BeatPluginAgent;
 
+/// Protocol for editor views which need to be updated in some cases
 @protocol BeatEditorView
 - (void)reloadInBackground;
 - (void)reloadView;
 - (bool)visible;
+@end
+
+/// Protocol for any views/objects that need to be updated when selection changes
+@protocol BeatSelectionObserver
+- (void)selectionDidChange:(NSRange)selectedRange;
 @end
 
 /**
@@ -93,7 +99,6 @@
 
 #if !TARGET_OS_IOS
 @property (weak, readonly) BXWindow* documentWindow;
-@property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 #endif
 
@@ -292,6 +297,9 @@
 - (void)handleTabPress;
 - (void)registerEditorView:(id<BeatEditorView>)view;
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
+
+- (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer;
+- (void)unregisterSelectionObserver:(id<BeatSelectionObserver>)observer;
 
 - (void)toggleMode:(BeatEditorMode)mode;
 - (IBAction)toggleSidebar:(id)sender;
