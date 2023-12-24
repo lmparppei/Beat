@@ -175,7 +175,7 @@
                                                                                                     </textFieldCell>
                                                                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                                                     <prototypeCellViews>
-                                                                                                        <tableCellView identifier="SceneView" autoresizesSubviews="NO" id="mpy-KU-4Le">
+                                                                                                        <tableCellView identifier="SceneView" autoresizesSubviews="NO" id="mpy-KU-4Le" customClass="BeatSceneSnapshotCell" customModule="Beat" customModuleProvider="target">
                                                                                                             <rect key="frame" x="0.0" y="4" width="300" height="14"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
@@ -492,7 +492,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>

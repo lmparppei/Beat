@@ -172,6 +172,8 @@
 		B67C2CEB2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CE82A2D152D00B88B0F /* NotoEmoji.ttf */; };
 		B67C73B12B3708F9002BD12F /* BeatFocusMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C73B02B3708F9002BD12F /* BeatFocusMode.m */; };
 		B67C73B22B3708F9002BD12F /* BeatFocusMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C73B02B3708F9002BD12F /* BeatFocusMode.m */; };
+		B67C73CF2B3774FB002BD12F /* BeatSceneSnapshotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C73CE2B3774FB002BD12F /* BeatSceneSnapshotCell.swift */; };
+		B67C73D02B3774FB002BD12F /* BeatSceneSnapshotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C73CE2B3774FB002BD12F /* BeatSceneSnapshotCell.swift */; };
 		B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA82AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
@@ -702,6 +704,7 @@
 		B67C73C92B37225A002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = "sl.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
 		B67C73CB2B37226D002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		B67C73CD2B37227C002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
+		B67C73CE2B3774FB002BD12F /* BeatSceneSnapshotCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSceneSnapshotCell.swift; sourceTree = "<group>"; };
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
@@ -1112,6 +1115,7 @@
 				B61FD0582A66C45400A40883 /* OutlineViewItem.m */,
 				B63525142A48C53700510B95 /* BeatOutlineSettings.xib */,
 				B63525172A48C61000510B95 /* BeatOutlineSettings.swift */,
+				B67C73CE2B3774FB002BD12F /* BeatSceneSnapshotCell.swift */,
 			);
 			name = "Outline View";
 			path = ..;
@@ -2220,6 +2224,7 @@
 				B6DCA86427219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B62A616D284C16790068F139 /* BeatBackup.swift in Sources */,
+				B67C73CF2B3774FB002BD12F /* BeatSceneSnapshotCell.swift in Sources */,
 				B60FF86826582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B6BE2B232B0E40BD002E8391 /* BeatDocumentController.swift in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
@@ -2348,6 +2353,7 @@
 				B6E0E1052AC5D48200948752 /* BeatTemplateMenuProvider.swift in Sources */,
 				B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B68B6064260B849300463AD8 /* ColorView.m in Sources */,
+				B67C73D02B3774FB002BD12F /* BeatSceneSnapshotCell.swift in Sources */,
 				B62A616E284C16790068F139 /* BeatBackup.swift in Sources */,
 				B60FF86926582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B6BE2B242B0E40BD002E8391 /* BeatDocumentController.swift in Sources */,

@@ -322,8 +322,11 @@
 {
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	
-	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
+	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
 	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
+	
+	view.editorDelegate = self.editorDelegate;
+	view.scene = item;
 	
 	return view;
 }
