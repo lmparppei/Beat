@@ -56,6 +56,8 @@ NSString * const DocSettingPrintNotes    = @"Print Notes";
 
 NSString * const DocSettingStylesheet    = @"Stylesheet";
 
+NSString * const DocSettingCharacterData = @"CharacterData";
+
 
 -(id)init
 {

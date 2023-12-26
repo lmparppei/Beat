@@ -39,6 +39,8 @@ import AppKit
 			DocSettingPrintSections: printSections!
 		]
 		
+		// These checkboxes won't load their state automatically, because printing
+		// invisible elements is a document setting, so we need to set it manually.
 		for key in settings.keys {
 			let button = settings[key]
 			if documentSettings.getBool(key) {
@@ -50,9 +52,10 @@ import AppKit
 	@IBAction func toggle(sender:NSButton?) {
 		guard let state = sender?.state,
 			  let documentSettings = editorDelegate?.documentSettings,
-			  let button = sender?.cell as? BeatUserDefaultCheckboxCell
+			  let button = sender as? BeatUserDefaultCheckbox
 		else { return }
 		
+		// Set document setting
 		documentSettings.setBool(button.userDefaultKey, as: (state == .on) ? true : false)
 		
 		// Reset preview

@@ -32,52 +32,46 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.includeInvisibleElements"/>
                     </userDefinedRuntimeAttributes>
                 </textField>
-                <button verticalHuggingPriority="750" id="vhz-37-zZu">
+                <button verticalHuggingPriority="750" id="vhz-37-zZu" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                     <rect key="frame" x="18" y="63" width="190" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="export.printSections" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Vl1-o8-7oY" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
-                        <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Sections"/>
-                        </userDefinedRuntimeAttributes>
                     </buttonCell>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSections"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Sections"/>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="toggleWithSender:" target="-2" id="LUs-TA-4rO"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" id="0a1-wB-cAT">
+                <button verticalHuggingPriority="750" id="0a1-wB-cAT" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                     <rect key="frame" x="18" y="41" width="188" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="export.printSynopsis" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7P2-W2-0vQ" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
-                        <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Synopsis"/>
-                        </userDefinedRuntimeAttributes>
                     </buttonCell>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSynopsis"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Synopsis"/>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="toggleWithSender:" target="-2" id="IdX-hl-Ft8"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" id="4ZE-cK-s5H">
+                <button verticalHuggingPriority="750" id="4ZE-cK-s5H" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                     <rect key="frame" x="18" y="19" width="188" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="export.printNotes" bezelStyle="regularSquare" imagePosition="left" inset="2" id="B9l-dL-JRA" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
-                        <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Notes"/>
-                        </userDefinedRuntimeAttributes>
                     </buttonCell>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printNotes"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Notes"/>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="toggleWithSender:" target="-2" id="L4I-mF-PXc"/>

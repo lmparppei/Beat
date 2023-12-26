@@ -336,11 +336,10 @@ static CGFloat panelWidth;
 
 - (IBAction)toggleInvisibleElement:(id)sender
 {
-	NSButton* checkbox = sender;
-	BeatUserDefaultCheckboxCell* cell = checkbox.cell;
+	BeatUserDefaultCheckbox* checkbox = sender;
 
-	if (cell.userDefaultKey) {
-		[self.documentDelegate.documentSettings setBool:cell.userDefaultKey as:(cell.state == NSOnState)];
+	if (checkbox.userDefaultKey.length > 0) {
+		[self.documentDelegate.documentSettings setBool:checkbox.userDefaultKey as:(checkbox.state == NSOnState)];
 	}
 	[self loadPreview];
 }

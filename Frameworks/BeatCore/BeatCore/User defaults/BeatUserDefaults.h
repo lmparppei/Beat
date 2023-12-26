@@ -46,6 +46,7 @@ extern NSString * const BeatSettingShowSynopsisInOutline;
 extern NSString * const BeatSettingShowSceneNumbersInOutline;
 extern NSString * const BeatSettingShowNotesInOutline;
 extern NSString * const BeatSettingShowMarkersInOutline;
+extern NSString * const BeatSettingShowSnapshotsInOutline;
 
 extern NSString * const BeatSettingSuppressedAlert;
 

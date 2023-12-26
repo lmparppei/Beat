@@ -173,3 +173,9 @@
 "revisions.convert.remove" = "(poista)";
 "revisions.convert.onlySelectedRange" = "Vain valitulla alueella";
 
+"outline.settings" = "Näkymän asetukset";
+"outline.settings.synopses" = "Synopsikset";
+"outline.settings.sceneNumbers" = "Kohtausnumerot";
+"outline.settings.notes" = "Muistiinpanot";
+"outline.settings.markers" = "Merkit";
+"outline.settings.snapshots" = "Vilkaisukuvat";

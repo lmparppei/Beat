@@ -34,6 +34,7 @@ extern NSString * const DocSettingSidebarVisible;
 extern NSString * const DocSettingSidebarWidth;
 extern NSString * const DocSettingLocked;
 extern NSString * const DocSettingCharacterGenders;
+extern NSString * const DocSettingCharacterData;
 
 extern NSString * const DocSettingPrintSynopsis;
 extern NSString * const DocSettingPrintSections;

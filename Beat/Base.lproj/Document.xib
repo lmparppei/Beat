@@ -492,7 +492,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
@@ -1474,7 +1474,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>

@@ -45,6 +45,7 @@
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
 		B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFont.m */; };
+		B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C73D12B383831002BD12F /* BeatCharacterData.swift */; };
 		B67E7BCA2AEF0FCE00977F7D /* BeatPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BC92AEF0FCE00977F7D /* BeatPaths.swift */; };
 		B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */; };
 		B680B7C62A6EC32C00FCD805 /* NSTextView+UX.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -150,6 +151,7 @@
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B67C2CF12A2D1AD000B88B0F /* BeatFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFont.h; sourceTree = "<group>"; };
 		B67C2CF22A2D1AD000B88B0F /* BeatFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFont.m; sourceTree = "<group>"; };
+		B67C73D12B383831002BD12F /* BeatCharacterData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCharacterData.swift; sourceTree = "<group>"; };
 		B67E7BC92AEF0FCE00977F7D /* BeatPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPaths.swift; sourceTree = "<group>"; };
 		B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextView+UX.m"; sourceTree = "<group>"; };
 		B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTextView+UX.h"; sourceTree = "<group>"; };
@@ -335,6 +337,7 @@
 				B633C1D1298C602C0011449D /* Revisions */,
 				B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */,
 				B64AD5EC2B2F65EB00EBD63A /* BeatTitlePage.swift */,
+				B67C73D12B383831002BD12F /* BeatCharacterData.swift */,
 			);
 			path = "Screenplay data";
 			sourceTree = "<group>";
@@ -644,6 +647,7 @@
 				B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */,
 				B6D15A6F2AF9793500DAB66D /* BeatCSSParser.swift in Sources */,
 				B6B85FAF2A223EAE00C7713A /* BeatDocument.m in Sources */,
+				B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */,

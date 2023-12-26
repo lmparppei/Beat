@@ -191,3 +191,12 @@
 
 "license.title" = "Enter Donation Key";
 "license.info" = "A warm thank you for your donation! Copy and paste the key you received below.";
+
+/* Outline setings */
+
+"outline.settings" = "Outline Settings";
+"outline.settings.synopses" = "Synopses";
+"outline.settings.sceneNumbers" = "Scene Numbers";
+"outline.settings.notes" = "Notes";
+"outline.settings.markers" = "Markers";
+"outline.settings.snapshots" = "Show Snapshots";
