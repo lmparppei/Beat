@@ -17,6 +17,8 @@ class BeatOutlineSettings: NSViewController {
 	@IBOutlet weak var showNotes:NSButton?
 	@IBOutlet weak var showSceneNumbers:NSButton?
 	@IBOutlet weak var showMarkers:NSButton?
+	@IBOutlet weak var showSnapshots:NSButton?
+	
 	var settings:[String:NSButton] = [:]
 	
 	@objc weak var outlineDelegate:BeatOutlineSettingDelegate?
@@ -28,43 +30,15 @@ class BeatOutlineSettings: NSViewController {
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
-	
-	override func viewDidLoad() {
-		self.settings = [
-			BeatSettingShowNotesInOutline: showNotes!,
-			BeatSettingShowSceneNumbersInOutline: showSceneNumbers!,
-			BeatSettingShowSynopsisInOutline: showSynopsis!,
-			BeatSettingShowMarkersInOutline: showMarkers!,
-		]
 		
-		let userDefaults = BeatUserDefaults.shared()
-		for key in settings.keys {
-			let button = settings[key]
-			if userDefaults.getBool(key) {
-				button?.state = .on
-			}
-		}
-	}
-	
-	@IBAction func toggle(sender:NSButton?) {
-		guard let state = sender?.state else { return }
+	@IBAction func toggle(sender:BeatUserDefaultCheckbox?) {
+		guard let state = sender?.state, let key = sender?.userDefaultKey
+		else { return }
+		
 		let value = (state == .on) ? true : false
-		
-		var key = ""
-		
-		// Find the correct control
-		for name in settings.keys {
-			if settings[name] == sender {
-				key = name
-				break
-			}
-		}
-		print("Setting:", key, value)
-		
-		if (key.count > 0) {
-			BeatUserDefaults.shared().save(value, forKey: key)
-			outlineDelegate?.reloadOutline()
-		}
+
+		BeatUserDefaults.shared().save(value, forKey: key)
+		outlineDelegate?.reloadOutline()
 	}
 }
 

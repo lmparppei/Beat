@@ -17,6 +17,7 @@ import AppKit
 	
 	@IBInspectable var snapshotWidth = 320.0
 	@IBInspectable var padding = 10.0
+	@IBInspectable var delay = 1.2
 	
 	override public func awakeFromNib() {
 		super.awakeFromNib()
@@ -39,14 +40,26 @@ import AppKit
 		
 		super.mouseEntered(with: event)
 		
-		timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false, block: { [weak self] timer in
-			self?.showScreenshot()
-		})
+		if BeatUserDefaults.shared().getBool(BeatSettingShowSnapshotsInOutline) {
+			timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { [weak self] timer in
+				self?.showScreenshot()
+			})
+		}
+	}
+	
+	public override func touchesEnded(with event: NSEvent) {
+		let touches = event.allTouches().count
+		if touches == 3 {
+			print("3 touches!")
+			return
+		}
+		
+		super.touchesEnded(with: event)
 	}
 	
 	/// Shows a popover view of current scene
 	func showScreenshot() {
-		if let scene = self.scene, let delegate = self.editorDelegate {
+		if let scene = self.scene, let delegate = self.editorDelegate, let _ = self.window {
 			// Create an image and a popover
 			guard let image = BeatSceneSnapshot.create(scene: scene, delegate: delegate) else { return }
 			
@@ -61,8 +74,8 @@ import AppKit
 			let imageView = NSImageView(image: image)
 			imageView.frame = NSMakeRect(padding, padding, size.width, size.height)
 			imageView.imageScaling = .scaleProportionallyDown
-			self.popover?.contentViewController?.view.addSubview(imageView)
 			
+			self.popover?.contentViewController?.view.addSubview(imageView)
 			self.popover?.behavior = .transient
 			
 			self.popover?.show(relativeTo: self.frame, of: self, preferredEdge: .minX)
@@ -71,30 +84,41 @@ import AppKit
 	
 	override public func mouseExited(with event: NSEvent) {
 		// Invalidate timer and close popover if needed
+		closePopover()
+	}
+	
+	/// Closes popover and invalidates hover timer
+	@objc public func closePopover() {
 		timer?.invalidate()
-		popover?.close()
-		
 		timer = nil
+		
+		popover?.close()
+		popover = nil
 	}
 }
 
 class BeatSceneSnapshot:NSObject {
 	/// Creates an image of the given scene in text view
-	class func create(scene:OutlineScene, delegate:BeatEditorDelegate) -> NSImage? {
+	class func create(scene:OutlineScene, delegate:BeatEditorDelegate, maxWidth:CGFloat = 500.0) -> NSImage? {
 		guard let textView = delegate.getTextView(),
 			  let layoutManager = delegate.getTextView().layoutManager else {
 			print("No text view")
 			return nil
 		}
 		
-		var rect = layoutManager.boundingRect(forGlyphRange: scene.range(), in: textView.textContainer!)
+		var range = scene.range()
+		if NSMaxRange(range) == textView.text.count && textView.text.count > 0 {
+			// For some mysterious reason, NSLayoutManager gives us a wrong rect if the range reaches the last symbol in text view.
+			// Let's subtract a single characer from length to avoid that, even if this might cause weirdness in some cases.
+			range.length -= 1
+		}
+		
+		let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+		var rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textView.textContainer!)
 		rect.origin.x += textView.textContainerInset.width
 		rect.origin.y += textView.textContainerInset.height
 		
-		if rect.size.height > 500.0 {
-			rect.size.height = 500.0
-			
-		}
+		if rect.size.height > maxWidth { rect.size.height = maxWidth }
 		
 		if let bitmap = textView.bitmapImageRepForCachingDisplay(in: rect) {
 			bitmap.size = rect.size
