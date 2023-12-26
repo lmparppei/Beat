@@ -36,25 +36,15 @@ import AppKit
 	}
 	
 	override public func mouseEntered(with event: NSEvent) {
-		timer?.invalidate()
-		
 		super.mouseEntered(with: event)
+		
+		timer?.invalidate()
 		
 		if BeatUserDefaults.shared().getBool(BeatSettingShowSnapshotsInOutline) {
 			timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { [weak self] timer in
 				self?.showScreenshot()
 			})
 		}
-	}
-	
-	public override func touchesEnded(with event: NSEvent) {
-		let touches = event.allTouches().count
-		if touches == 3 {
-			print("3 touches!")
-			return
-		}
-		
-		super.touchesEnded(with: event)
 	}
 	
 	/// Shows a popover view of current scene
@@ -85,6 +75,8 @@ import AppKit
 	override public func mouseExited(with event: NSEvent) {
 		// Invalidate timer and close popover if needed
 		closePopover()
+		
+		super.mouseExited(with: event)
 	}
 	
 	/// Closes popover and invalidates hover timer
