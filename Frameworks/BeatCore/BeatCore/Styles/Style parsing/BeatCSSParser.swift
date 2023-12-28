@@ -21,7 +21,7 @@ public final class CssParser {
 	// Map property names to types
 	let stringTypes:Set = ["textAlign", "text-align", "color", "font", "content"]
 	let boolTypes:Set = ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements", "sceneNumber", "scene-number"]
-	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
+	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing", "shotStyleBold", "shotStyleUnderline"]
 
 	var settings:BeatExportSettings?
 	

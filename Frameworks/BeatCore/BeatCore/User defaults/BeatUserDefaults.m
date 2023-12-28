@@ -53,6 +53,8 @@ NSString* const BeatSettingBackupURL 					= @"backupURL";
 
 NSString* const BeatSettingHeadingStyleBold 			= @"headingStyleBold";
 NSString* const BeatSettingHeadingStyleUnderlined		= @"headingStyleUnderline";
+NSString* const BeatSettingShotStyleBold                = @"shotStyleBold";
+NSString* const BeatSettingShotStyleUnderlined          = @"shotStyleUnderline";
 NSString* const BeatSettingDefaultPageSize 				= @"defaultPageSize";
 NSString* const BeatSettingDisableFormatting 			= @"disableFormatting";
 NSString* const BeatSettingShowMarkersInScrollbar 		= @"showMarkersInScrollbar";
@@ -117,8 +119,11 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingPrintSceneNumbers: @[PRINT_SCENE_NUMBERS_KEY, @YES],
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
-		BeatSettingHeadingStyleBold: @[BeatSettingHeadingStyleBold, @YES],
+		
+        BeatSettingHeadingStyleBold: @[BeatSettingHeadingStyleBold, @YES],
 		BeatSettingHeadingStyleUnderlined: @[BeatSettingHeadingStyleUnderlined, @NO],
+        BeatSettingShotStyleBold: @[BeatSettingShotStyleBold, @YES],
+        BeatSettingShotStyleUnderlined: @[BeatSettingShotStyleUnderlined, @NO],
     
         
 		BeatSettingDefaultPageSize: @[BeatSettingDefaultPageSize, @(pageSize)],

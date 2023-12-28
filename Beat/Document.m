@@ -492,10 +492,7 @@ static BeatAppDelegate *appDelegate;
 		self.contentBuffer = @"";
 		[self setText:@""];
 	}
-	
-	// Setup layout
-	[self setupLayout];
-	
+		
 	// Paginate the whole document at load
 	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
 		
@@ -587,9 +584,9 @@ static BeatAppDelegate *appDelegate;
 	// Hide Fountain markup if needed
 	if (self.hideFountainMarkup) [self.textView redrawAllGlyphs];
 	
-	[_documentWindow layoutIfNeeded];
-	[self updateLayout];
-	
+	// Setup layout
+	[self setupLayout];
+		
 	// Restore all plugins
 	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
 		// Pressing shift stops plugins from loading and stores and empty array instead
@@ -689,12 +686,7 @@ static BeatAppDelegate *appDelegate;
 	
 	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
 	[defaults readUserDefaultsFor:self];
-	
-	if ((oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) && !self.documentIsLoading) {
-		[self.formatting formatAllLinesOfType:heading];
-		[self.previewController resetPreview];
-	}
-	
+		
 	if (oldSansSerif != self.useSansSerif) {
 		if (self.useSansSerif) {
 			[self loadSansSerifFonts];
@@ -796,7 +788,9 @@ static BeatAppDelegate *appDelegate;
 -(void)setupLayout
 {
 	// Apply layout
+	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
+	
 	[self.textView loadCaret];
 }
 
@@ -2818,11 +2812,18 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Pagination
 
+-(bool)showPageNumbers
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageNumbers];
+}
+- (void)setShowPageNumbers:(bool)showPageNumbers
+{
+	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
+}
+
 - (IBAction)togglePageNumbers:(id)sender
 {
 	self.showPageNumbers = !self.showPageNumbers;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
 	self.textView.needsDisplay = true;
 }
 

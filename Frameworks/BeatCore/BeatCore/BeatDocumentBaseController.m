@@ -76,10 +76,17 @@
 /// Reloads all styles
 - (void)reloadStyles
 {
+    ((BeatLayoutManager*)self.layoutManager).pageBreaks = nil;
+    
     [self.styles reload];
     [self.editorStyles reload];
     [self resetPreview];
-    // NOTE: This has to be called in OS-specific implementation as well.
+    
+    // Let's reformat certain types of elements (and hope the user doesn't have like 9999999999 of each)
+    [self.formatting formatAllLinesOfType:heading];
+    [self.formatting formatAllLinesOfType:shot];
+    
+    // NOTE: This might need to be called in OS-specific implementation as well.
 }
 
 /// Returns __actual__ line height for editor view

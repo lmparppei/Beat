@@ -148,8 +148,9 @@ lyrics {
 shot {
 	uppercase: true;
 	
-	bold: userSetting(headingStyleBold);
-	margin-top: userSetting(sceneHeadingSpacing)l;
+	bold: userSetting(shotStyleBold);
+    underline: userSetting(shotStyleUnderline);
+	margin-top: 1l;
 }
 
 titlePageTitle {

@@ -28,6 +28,8 @@ extern NSString * const BeatSettingBackupURL;
 
 extern NSString * const BeatSettingHeadingStyleBold;
 extern NSString * const BeatSettingHeadingStyleUnderlined;
+extern NSString * const BeatSettingShotStyleBold;
+extern NSString * const BeatSettingShotStyleUnderlined;
 extern NSString * const BeatSettingDefaultPageSize;
 extern NSString * const BeatSettingDisableFormatting;
 extern NSString * const BeatSettingShowMarkersInScrollbar;
