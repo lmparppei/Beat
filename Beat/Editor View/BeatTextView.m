@@ -201,8 +201,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)awakeFromNib
 {
 	// We are connecting the editor delegate via IBOutlet, so we need to forward it to layout manager here.
-	if ([self.layoutManager isKindOfClass:BeatLayoutManager.class]) ((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
-	self.layoutManager.delegate = self;
+	if ([self.layoutManager isKindOfClass:BeatLayoutManager.class]) {
+		((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
+		self.layoutManager.delegate = (id<NSLayoutManagerDelegate>)self.layoutManager;
+	}
+
 	
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
@@ -1154,16 +1157,19 @@ Line *cachedRectLine;
 
 #pragma mark - Mouse events
 
-- (void)mouseDown:(NSEvent *)event {
+- (void)mouseDown:(NSEvent *)event
+{
 	[self closePopovers];
 	[super mouseDown:event];
 }
 
-- (void)mouseUp:(NSEvent *)event {
+- (void)mouseUp:(NSEvent *)event
+{
 	[super mouseUp:event];
 	
 }
-- (void)otherMouseUp:(NSEvent *)event {
+- (void)otherMouseUp:(NSEvent *)event
+{
 	// We'll use buttons 3/4 to navigate between scenes
 	switch (event.buttonNumber) {
 		case 3:
@@ -1179,7 +1185,8 @@ Line *cachedRectLine;
 	[super otherMouseUp:event];
 }
 
-- (void)mouseMoved:(NSEvent *)event {
+- (void)mouseMoved:(NSEvent *)event
+{
 	// point in this scaled text view
 	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
 	
@@ -1191,32 +1198,35 @@ Line *cachedRectLine;
 	
 	// Super cursor when inside the text container, otherwise arrow
 	if (self.window.isKeyWindow) {
-		if ((point.x > self.textContainerInset.width &&
-			 point.x * (1/_zoomLevel) < (self.textContainer.size.width + self.textContainerInset.width) * (1/_zoomLevel)) &&
+		CGFloat leftX = self.textContainerInset.width + BeatTextView.linePadding;
+		CGFloat rightX = (self.textContainer.size.width + self.textContainerInset.width - BeatTextView.linePadding) * (1/_zoomLevel);
+		
+		if ((point.x > leftX && point.x * (1/_zoomLevel) < rightX) &&
 			y < self.window.frame.size.height - 22 &&
-			superviewPoint.y < self.enclosingScrollView.frame.size.height
-			) {
+			superviewPoint.y < self.enclosingScrollView.frame.size.height) {
 			//[super mouseMoved:event];
 			[NSCursor.IBeamCursor set];
 		} else if (point.x > 10) {
-			
 			[NSCursor.arrowCursor set];
 		}
 	}
 }
 
--(void)resetCursorRects {
+-(void)resetCursorRects
+{
 	[super resetCursorRects];
 }
 
--(void)cursorUpdate:(NSEvent *)event {
+-(void)cursorUpdate:(NSEvent *)event
+{
 	[NSCursor.IBeamCursor set];
 }
 
 
 #pragma mark - Scaling
 
-- (void)scaleUnitSquareToSize:(NSSize)newUnitSize {
+- (void)scaleUnitSquareToSize:(NSSize)newUnitSize
+{
 	[super scaleUnitSquareToSize:newUnitSize];
 }
 
@@ -1642,125 +1652,6 @@ double clamp(double d, double min, double max) {
 {
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
 	[self updateMarkupVisibility];
-}
-
-/// Temporary attributes (unused for now)
--(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange
-{
-	return attrs;
-}
-
-/// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
--(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
-{
-	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
-	if (line == nil) return 0;
-	
-	LineType type = line.type;
-	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range) || NSIntersectionRange(self.selectedRange, line.range).length > 0;
-	
-	// Ignore story markers
-	// if (line.type == section || line.type == synopse) return 0;
-	
-	// Clear formatting characters etc.
-	NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
-	[muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
-	
-	// We won't hide notes, except for colors
-	if (line.colorRange.length) [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
-	// Don't remove # and = for sections and synopsis lines
-	if (line.type == section || line.type == synopse) {
-		[muIndices removeIndexesInRange:(NSRange){ line.position, line.numberOfPrecedingFormattingCharacters }];
-	}
-	
-	// Marker indices
-	NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
-	
-	// Nothing to do
-	if (muIndices.count == 0 && markerIndices.count == 0 &&
-		!(type == heading || type == transitionLine || type == character) &&
-		!(line.string.containsOnlyWhitespace && line.string.length > 1)
-		) return 0;
-	
-	// Get string reference
-	NSUInteger location = charIndexes[0];
-	NSUInteger length = glyphRange.length;
-	CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
-	
-	// Create a mutable copy
-	CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
-	CFStringAppend(modifiedStr, str);
-	
-	// If it's a heading or transition, render it uppercase
-	if (type == heading || type == transitionLine || type == shot) {
-		CFStringUppercase(modifiedStr, NULL);
-	}
-	
-	// Modified properties
-	NSGlyphProperty *modifiedProps;
-	
-	if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
-		// Show bullets instead of spaces on lines which contain whitespace only
-		CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-		free(newGlyphs);
-	}
-	
-	else if (_editorDelegate.hideFountainMarkup && !currentlyEditing) {
-		// Hide markdown characters for the line we're not currently editing
-		
-		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
-		
-		for (NSInteger i = 0; i < glyphRange.length; i++) {
-			NSUInteger index = charIndexes[i];
-			NSGlyphProperty prop = props[i];
-			
-			if ([muIndices containsIndex:index]) {
-				prop |= NSGlyphPropertyNull;
-			}
-			
-			modifiedProps[i] = prop;
-		}
-		
-		// Create the new glyphs
-		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-		
-		[self.layoutManager setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-		
-		free(newGlyphs);
-		free(modifiedProps);
-		
-	} else {
-		// Create the new glyphs
-		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-		
-		free(newGlyphs);
-	}
-	
-	CFRelease(modifiedStr);
-	return glyphRange.length;
-}
-
-CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
-{
-	// Get the string length.
-	CFIndex count = CFStringGetLength(string);
-	
-	// Allocate our buffers for characters and glyphs.
-	unichar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
-	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
-	
-	// Get the characters from the string.
-	CFStringGetCharacters(string, CFRangeMake(0, count), characters);
-	
-	// Get the glyphs for the characters.
-	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
-	
-	free(characters);
-	
-	return glyphs;
 }
 
 

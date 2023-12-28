@@ -59,6 +59,7 @@
 	self = [super init];
 	if (self) {
 		_editorDelegate = editorDelegate;
+        self.delegate = self;
 	}
 	return self;
 }
@@ -66,17 +67,20 @@
 - (void)dealloc
 {
     self.pageBreaks = nil;
+    self.delegate = nil;
+    self.editorDelegate = nil;
 }
+
 
 #pragma mark - Draw glyphs
 
 - (void)drawGlyphsForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
 {
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
-    
+        
     CGSize inset = [self offsetSize];
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-    
+        
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
@@ -98,6 +102,10 @@
 
         // Actual rect position
         CGRect rect = CGRectMake(inset.width + boundingRect.origin.x, inset.height + boundingRect.origin.y, boundingRect.size.width, boundingRect.size.height);
+
+        // Don't go past this point if the text is folded
+        NSNumber* folded = [self.textStorage attribute:@"BeatFolded" atIndex:range.location effectiveRange:nil];
+        if (folded) return;
         
         // Draw scene numbers
         if (line.type == heading) {
@@ -121,7 +129,7 @@
 - (void)drawPageSeparators:(const NSRange*)glyphsToShow inset:(CGSize)inset
 {
     // Page number drawing is off
-    if (!self.editorDelegate.showPageNumbers && ![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) return;
+    if (!self.editorDelegate.showPageNumbers) return;
     
 #if TARGET_OS_IOS
     // Page number doesn't fit on phones
@@ -233,7 +241,7 @@
     
     // Draw page separators
     [self drawPageSeparators:&glyphsToShow inset:inset];
-    
+        
     // We'll enumerate line fragments to then be able to draw range-based backgrounds on each line.
     // This is somewhat unefficient if there's a lot of attributes, so you should keep track of those.
     [self enumerateLineFragmentsForGlyphRange:glyphsToShow
@@ -245,12 +253,13 @@
         __block NSInteger revisionLevel = -1;
         
         [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-            if (range.location < 0 || NSMaxRange(range) <= 0) return;
             
             BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
             BeatTag* tag = attrs[BeatTagging.attributeKey];
             BeatReviewItem *review = attrs[BeatReview.attributeKey];
                         
+            if (range.location < 0 || NSMaxRange(range) <= 0) return;
+            
             // Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
             NSRange rRange = range;
             for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
@@ -265,7 +274,16 @@
             CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
             aRect.origin.x += inset.width;
             aRect.origin.y += inset.height;
-            
+            /*
+            if (attrs[@"BeatFolded"]) {
+                CGRect openDisclosure = CGRectMake(aRect.origin.x - 40.0, aRect.origin.y, 30.0, aRect.size.height);
+                [BXColor.redColor setFill];
+                BXRectFill(openDisclosure);
+                
+                return;
+            }
+            */
+             
             if (review != nil && !review.emptyReview) {
                 if (bgColors[@"review"] == nil) {
                     BXColor *reviewColor = BeatReview.reviewColor;
@@ -586,53 +604,16 @@
 }
 
 
-#pragma mark - Draw disclosure triangle
-
-/// This is just a concept for now
-/*
-- (void)drawDisclosureForRange:(NSRange)glyphRange charRange:(NSRange)charRange
-{
-    BXTextView* textView = self.editorDelegate.getTextView;
-#if TARGET_OS_IOS
-    CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
-#else
-    CGSize inset = textView.textContainerInset;
-#endif
-    
-    NSInteger i = [self.editorDelegate.parser lineIndexAtPosition:charRange.location];
-    ContinuousFountainParser* parser = self.editorDelegate.parser;
-    
-    NSMutableArray<Line*>* lines = NSMutableArray.new;
-    for (; i < parser.lines.count; i++) {
-        Line* l = parser.lines[i];
-        if (!NSLocationInRange(l.position, charRange)) break;
-        
-        if (l.type == section) [lines addObject:l];
-    }
-    
-    for (Line* l in lines) {
-        NSRange sectionGlyphRange = [self glyphRangeForCharacterRange:NSMakeRange(l.position, 1) actualCharacterRange:nil];
-        CGRect r = [self boundingRectForGlyphRange:sectionGlyphRange inTextContainer:self.textContainers.firstObject];
-        
-        CGRect triangle = CGRectMake(inset.width, r.origin.y + inset.height + r.size.height - 15, 12, 12);
-        [BXColor.redColor setFill];
-        
-        BXRectFill(triangle);
-    }
-}
- */
-
-
 #pragma mark - Crossplatform helpers
 
 -(void)saveGraphicsState {
 #if !TARGET_OS_IOS
-        [NSGraphicsContext saveGraphicsState];
+    [NSGraphicsContext saveGraphicsState];
 #endif
 }
 -(void)restoreGraphicsState {
 #if !TARGET_OS_IOS
-        [NSGraphicsContext restoreGraphicsState];
+    [NSGraphicsContext restoreGraphicsState];
 #endif
 }
 -(CGSize)offsetSize {
@@ -643,6 +624,165 @@
 #endif
     return offset;
 }
+
+
+#pragma mark - Layout manager delegate
+
+/// Temporary attributes. We'll use every single one of them.
+-(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange
+{
+    return attrs;
+}
+
+/// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
+-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
+{
+    Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
+    if (line == nil) return 0;
+    
+    NSDictionary* attrs = [self.textStorage attributesAtIndex:charIndexes[0] effectiveRange:nil];
+    if (attrs[@"BeatFolded"]) {
+        NSUInteger location = charIndexes[0];
+        NSUInteger length = glyphRange.length;
+
+        NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+        CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+        
+        // Folded text
+        for (NSInteger i = 0; i < glyphRange.length; i++) {
+            NSGlyphProperty prop = props[i];
+            prop |= NSGlyphPropertyControlCharacter;
+            modifiedProps[i] = prop;
+        }
+        
+        // Create the new glyphs
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), str);
+        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        
+        free(newGlyphs);
+        free(modifiedProps);
+        //CFRelease(str);
+        
+        return glyphRange.length;
+    }
+    
+    LineType type = line.type;
+    bool currentlyEditing = NSLocationInRange(_editorDelegate.selectedRange.location, line.range) || NSIntersectionRange(_editorDelegate.selectedRange, line.range).length > 0;
+    
+    // Ignore story markers
+    // if (line.type == section || line.type == synopse) return 0;
+    
+    // Clear formatting characters etc.
+    NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
+    [muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
+    
+    // We won't hide notes, except for colors
+    if (line.colorRange.length) [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+    // Don't remove # and = for sections and synopsis lines
+    if (line.type == section || line.type == synopse) {
+        [muIndices removeIndexesInRange:(NSRange){ line.position, line.numberOfPrecedingFormattingCharacters }];
+    }
+    
+    // Marker indices
+    NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
+    
+    // Nothing to do
+    if (muIndices.count == 0 && markerIndices.count == 0 &&
+        !(type == heading || type == transitionLine || type == character) &&
+        !(line.string.containsOnlyWhitespace && line.string.length > 1)
+        ) return 0;
+    
+    // Get string reference
+    NSUInteger location = charIndexes[0];
+    NSUInteger length = glyphRange.length;
+    CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    
+    // Create a mutable copy
+    CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+    CFStringAppend(modifiedStr, str);
+    
+    // If it's a heading or transition, render it uppercase
+    if (type == heading || type == transitionLine || type == shot) {
+        CFStringUppercase(modifiedStr, NULL);
+    }
+    
+    // Modified properties
+    NSGlyphProperty *modifiedProps;
+    
+    if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
+        // Show bullets instead of spaces on lines which contain whitespace only
+        CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        free(newGlyphs);
+        
+    } else if (_editorDelegate.hideFountainMarkup && !currentlyEditing) {
+        // Hide markdown characters for the line we're not currently editing
+        modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+        
+        for (NSInteger i = 0; i < glyphRange.length; i++) {
+            NSUInteger index = charIndexes[i];
+            NSGlyphProperty prop = props[i];
+            
+            if ([muIndices containsIndex:index]) {
+                prop |= NSGlyphPropertyNull;
+            }
+            
+            modifiedProps[i] = prop;
+        }
+        
+        // Create the new glyphs
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        
+        free(newGlyphs);
+        free(modifiedProps);
+    } else {
+        // Create the new glyphs
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        
+        free(newGlyphs);
+    }
+    
+    CFRelease(modifiedStr);
+    return glyphRange.length;
+}
+
+/// Returns glyphs in given font
+CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
+{
+    // Get the string length.
+    CFIndex count = CFStringGetLength(string);
+    
+    // Allocate our buffers for characters and glyphs.
+    unichar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
+    CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
+    
+    // Get the characters from the string.
+    CFStringGetCharacters(string, CFRangeMake(0, count), characters);
+    
+    // Get the glyphs for the characters.
+    CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
+    
+    free(characters);
+    
+    return glyphs;
+}
+
+- (BOOL)layoutManager:(NSLayoutManager *)layoutManager shouldSetLineFragmentRect:(inout NSRect *)lineFragmentRect lineFragmentUsedRect:(inout NSRect *)lineFragmentUsedRect baselineOffset:(inout CGFloat *)baselineOffset inTextContainer:(NSTextContainer *)textContainer forGlyphRange:(NSRange)glyphRange
+{
+    NSRange actualRange;
+    NSRange range = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+    NSDictionary* attrs = [self.textStorage attributesAtIndex:glyphRange.location effectiveRange:&actualRange];
+    
+    if (attrs[@"BeatFolded"]) {
+        lineFragmentRect->size.height = 0.0;
+    }
+    
+    return true;
+}
+
 
 @end
 /*

@@ -18,23 +18,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatLayoutManagerDelegate<NSLayoutManagerDelegate>
-@property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
-@end
-
-@interface BeatLayoutManager : NSLayoutManager
+@interface BeatLayoutManager: NSLayoutManager <NSLayoutManagerDelegate>
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)editorDelegate;
 
 @property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
-//@property (nonatomic) NSIndexSet* pageBreaks;
 @property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
 
-#if TARGET_OS_IOS
-@property (weak, nonatomic) id<BeatLayoutManagerDelegate> delegate;
-#else
-@property (weak, atomic) id<BeatLayoutManagerDelegate> delegate;
-#endif
-
+ 
 @end
 
 NS_ASSUME_NONNULL_END
