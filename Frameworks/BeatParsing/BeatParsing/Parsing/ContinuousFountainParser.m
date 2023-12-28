@@ -681,11 +681,6 @@ static NSDictionary* patterns;
                 
                 // Look for unterminated omits & notes
                 nextLine.omitIn != currentLine.omitOut ||
-                //nextLine.noteIn != currentLine.noteOut ||
-                //				currentLine.noteOut != oldNoteOut ||
-                //				currentLine.cancelsNoteBlock != oldNoteTermination ||
-                //				notesNeedParsing ||
-                //				currentLine.endsNoteBlock != oldEndsNoteBlock ||
                 ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
                 ) {
                 [self correctParseInLine:index+1 indicesToDo:indices];
@@ -893,10 +888,10 @@ static NSDictionary* patterns;
     // Check for everything that is considered as empty
     if (previousLine.effectivelyEmpty || index == 0) previousIsEmpty = true;
     
-    // Check if this line was forced to become a character cue in editor (by pressing tab)
+    // Check if this line was forced to become a character cue in editor (by pressing tab)    
     if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
         line.forcedCharacterCue = NO;
-        // 94 = ^ (this is here to avoid issues with Turkish alphabet
+        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
         if (line.lastCharacter == 94) return dualDialogueCharacter;
         else return character;
     }
@@ -1840,7 +1835,7 @@ static NSDictionary* patterns;
             [scene.synopsis addObject:line];
         }
         
-        if (line.noteRanges || line.noteOutIndices.count || line.noteInIndices.count) {
+        if (line.noteRanges.count > 0) {
             [scene.notes addObjectsFromArray:line.noteData];
         }
         
@@ -2411,7 +2406,7 @@ NSInteger previousIndex = NSNotFound;
 			}
 		}
 		else {
-			if (!l.isInvisible && !l.isSplitParagraph) return l;
+			if (!l.isInvisible) return l;
 		}
 		i--;
 	}
@@ -2605,8 +2600,6 @@ NSInteger previousIndex = NSNotFound;
             // BUT in some cases, they don't.
             if (!precedingLine.effectivelyEmpty && precedingLine.type == l.type) {
                 l.beginsNewParagraph = false;
-                // This is here for backwards compatibility
-                // if (precedingLine.type == action) l.isSplitParagraph = true;
             }
         } else {
             l.beginsNewParagraph = true;

@@ -11,6 +11,8 @@
 #import "Storybeat.h"
 #import "BeatNoteData.h"
 
+/// Line type enum
+/// @note Some types are only used in static parsing and/or exporting, such as `more` and `dualDialogueMore`. `BeatFormatting` class also introduces supplementary types for internal use.
 typedef NS_ENUM(NSUInteger, LineType) {
     empty = 0,
     section,
@@ -35,10 +37,12 @@ typedef NS_ENUM(NSUInteger, LineType) {
     pageBreak,
     centered,
 	shot,
-	more, // fake element for exporting
-	dualDialogueMore, // fake element for exporting
-	typeCount // This is the the max number of line types, for data storing purposes
+	more, /// fake element for exporting
+	dualDialogueMore, /// fake element for exporting
+	typeCount /// This is the the max number of line types, used in `for` loops and enumerations, can be ignored
 };
+
+#pragma mark - Formatting characters
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
@@ -73,6 +77,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 #define COLOR_PATTERN "color"
 #define STORYLINE_PATTERN "storyline"
 
+#pragma mark FDX style names
+
 // For FDX compatibility & attribution
 #define BOLD_STYLE @"Bold"
 #define ITALIC_STYLE @"Italic"
@@ -85,9 +91,13 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @class OutlineScene;
 @class BeatExportSettings;
+@class Storybeat;
 
+#pragma mark - Plugin API exports
+
+/// Plugin API export protocol. See documentation for each method in public header of this class.
 @protocol LineExports <JSExport>
-@property (atomic) NSUUID *uuid; // You can actually write into the UUID
+@property (atomic) NSUUID *uuid;
 
 @property (readonly) LineType type;
 @property (readonly) NSInteger position;
@@ -116,8 +126,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
 
 @property (nonatomic) NSArray<Storybeat*>* beats;
-
-@property (nonatomic, readonly) NSInteger heightInPaginator;
 
 @property (nonatomic) bool collapsed;
 
@@ -168,11 +176,12 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSArray<Line*>*)linesForScene:(OutlineScene*)outline;
 @end
 
-@class Storybeat;
 
-@interface Line : NSObject <LineExports, NSCopying>
+#pragma mark - Line Object
 
-#pragma mark - Class methods
+@interface Line: NSObject <LineExports, NSCopying>
+
+#pragma mark Class methods
 
 /// Returns a dictionary of all available types.
 + (NSDictionary*)typeDictionary;
@@ -180,7 +189,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 + (NSString*)typeName:(LineType)type;
 
 
-#pragma mark - Initializers
+#pragma mark Initializers
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
@@ -196,23 +205,30 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 #pragma mark - Basic values
 
+/// Line type (integer enum)
 @property LineType type;
+/// String content of this line
 @property (strong, atomic) NSString* string;
+/// The string value when this line was initialized
 @property (strong, atomic) NSString* originalString;
-
+/// Position (starting index) )in document
 @property (nonatomic) NSInteger position;
+/// Getter for string length
 @property (nonatomic) NSInteger length;
 
+/// If the line is an outline element (section/heading) this value contains the section depth
 @property (nonatomic) NSUInteger sectionDepth;
+/// If the line is an outline element, this value contains the scene number, but only after the outline structure has been updated
 @property (nonatomic) NSString* sceneNumber;
-@property (nonatomic) NSInteger sceneIndex;
+/// Color for outline element (`nil` or empty if no color is set)
 @property (nonatomic) NSString* color;
-
+/// This line was forced to be a character cue in editor
 @property (nonatomic) bool forcedCharacterCue;
 
-/// Range of the whole line, including line break
+/// Range of the whole line, __including__ line break.
+/// @warning This can go out of bounds on last line (which doesn't have a line break), so be careful.
 - (NSRange)range;
-/// Range of the string only, excluding line break
+/// Range of the string only, __excluding__ line break
 - (NSRange)textRange;
 /// Converts a global range to the local range insde this string.
 - (NSRange)globalRangeToLocal:(NSRange)range;
@@ -255,37 +271,49 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 #pragma mark - Identity
 
+/// Unique identifier for this line (temporary clones of this line in paginated content will hold the same ID)
 @property (atomic) NSUUID *uuid;
-@property (nonatomic, weak) Line *representedLine; /// The line in editor/parser from which this one was copied from, can be nil
+/// The line in editor/parser from which this one was copied from, can be nil
+@property (nonatomic, weak) Line *representedLine;
+/// String representation of the UUID
+- (NSString*)uuidString;
 
 - (BOOL)matchesUUID:(NSUUID*)uuid;
 - (BOOL)matchesUUIDString:(NSString*)uuid;
-- (NSString*)uuidString;
 
 
 #pragma mark - Outside entities
 
-@property (nonatomic, weak) id<LineDelegate> parser; // For future generations
-@property (nonatomic, weak) id paginator; // For future generations
+/// Parser associated with this line. For future generations.
+@property (nonatomic, weak) id<LineDelegate> parser;
+/// Pagination associated with this line. For future generations.
+@property (nonatomic, weak) id paginator;
 
 
 #pragma mark - Metadata
 
-@property (nonatomic) NSArray* storylines;
+/// All storyline NAMES (string) in this line
+@property (nonatomic) NSArray<NSString*>* storylines;
+/// All story beats in this line
 @property (nonatomic) NSArray<Storybeat*>* beats;
+/// Tags in this line (once they are baked into lines before export to FDX)
 @property (nonatomic) NSMutableArray *tags;
-@property (nonatomic) NSMutableDictionary<NSIndexSet*, NSArray*>* attachments;
-
+/// Lines can hold any sort of custom data when needed. Used by plugins.
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
+
+/// No idea
+// @property (nonatomic) NSMutableDictionary<NSIndexSet*, NSArray*>* attachments;
 
 
 #pragma mark Generated metadata
 
-@property (nonatomic, readonly) NSUInteger index; /// Index of line in parser, experimental
+/// Index of line in parser, experimental
+@property (nonatomic, readonly) NSUInteger index;
 
 
 #pragma mark - Editor booleans
 
+/// Set `true` if the contents of this outline element are collapsed (only applies to sections)
 @property (nonatomic) bool collapsed;
 
 
@@ -297,8 +325,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (atomic) LineType formattedAs;
 /// The resulting formatting in custom format (not compatible with AppKit/UIKit formatting)
 @property (nonatomic) NSAttributedString* formattedString;
-
-@property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
+/// Number of preceding formatting characters for a forced line type. Usually `1`.
+@property (nonatomic, readonly) NSUInteger numberOfPrecedingFormattingCharacters;
 
 @property (nonatomic) NSMutableIndexSet* boldRanges;
 @property (nonatomic) NSMutableIndexSet* italicRanges;
@@ -311,21 +339,22 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
 @property (nonatomic) NSMutableIndexSet* macroRanges;
 
-- (bool)isBoldedAt:(NSInteger)index;
-- (bool)isItalicAt:(NSInteger)index;
-- (bool)isUnderlinedAt:(NSInteger)index;
-
 /// Returns `true` if the line doesn't have any formatting characters.
 -(bool)noFormatting;
 
 
 #pragma mark Other data ranges
 
+/// Range of opening title key (title page elements)
 @property (nonatomic) NSRange titleRange;
+/// Range of forced scene number (including formatting, ie. `#123#`)
 @property (nonatomic) NSRange sceneNumberRange;
+/// Range of scene color tag (including note brackets)
 @property (nonatomic) NSRange colorRange;
 
+/// Ranges of story beats
 @property (nonatomic) NSMutableIndexSet *beatRanges;
+/// Ranges of removal suggestions (opposite of revisions)
 @property (nonatomic) NSMutableIndexSet* removalSuggestionRanges;
 
 
@@ -378,24 +407,19 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) bool noteIn;
 /// Whether the line starts a note and doesn't finish it
 @property (nonatomic) bool noteOut;
-
-@property (nonatomic) bool cancelsNoteBlock;
-@property (nonatomic) bool beginsNoteBlock;
-@property (nonatomic) bool endsNoteBlock;
-
-@property (nonatomic) NSMutableIndexSet *noteOutIndices;
-@property (nonatomic) NSMutableIndexSet *noteInIndices;
-
+/// Returns all note data in this line (this is a mess, read more inside the method)
 @property (nonatomic) NSMutableArray<BeatNoteData*>* noteData;
 
 /// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`)
 - (bool)canTerminateNoteBlock;
+/// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`), and can also return the index of closing element
 - (bool)canTerminateNoteBlockWithActualIndex:(NSInteger*)position;
-/// /// Returns `true` if the line can begin a note block
+/// Returns `true` if the line can begin a note block, and can also return the index of the possible opening element
 - (bool)canBeginNoteBlockWithActualIndex:(NSInteger*)index;
+/// Returns `true` if the line can begin a note block
 - (bool)canBeginNoteBlock;
 
-/// The line is filled by a note
+/// The line is filled by a note and has no other content
 - (bool)note;
 
 /// Returns a dictionary with the *actual range* (including brackets) as the key
@@ -420,16 +444,15 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 #pragma mark - Pagination information
 
-@property (nonatomic) NSInteger heightInPaginator;
-/// This element contains line breaks
-@property (nonatomic) bool isSplitParagraph;
 /// Notes that the next dialogue element is a pair to this one. **Note**: used for non-continuous parsing ONLY
 @property (nonatomic) bool nextElementIsDualDialogue;
-/// This line begins a new paragraph and is not joined with another one. **Note:** Used for non-continuous parsing ONLY
+/// This line begins a new paragraph and is not joined with another one. **Note:** Used for non-continuous parsing ONLY, has to be explicitly set `true` by parser.
 @property (nonatomic) bool beginsNewParagraph;
+/// This line begins a title page block. **Note:** Used for non-continuous parsing ONLY, has to be explicitly set `true` by parser.
 @property (nonatomic) bool beginsTitlePageBlock;
+/// This line closes a title page block. **Note:** Used for non-continuous parsing ONLY, has to be explicitly set `true` by parser.
 @property (nonatomic) bool endsTitlePageBlock;
-/// This line is unsafe as a starting point for live pagination operations.
+/// This line is unsafe as a starting point for live pagination operations. **Note:** Used for non-continuous parsing ONLY, has to be explicitly set `true` by parser.
 @property (nonatomic) bool unsafeForPageBreak;
 
 
@@ -479,7 +502,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)effectivelyEmpty;
 
 /// Returns the last character in string
-/// @warning Be careful not to go out of range!
+/// @warning Be careful not to go out of range, always check the length before using this!
 - (unichar)lastCharacter;
 
 /// returns `true` for anything that can be part of a split paragraph block

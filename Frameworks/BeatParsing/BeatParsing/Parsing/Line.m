@@ -6,6 +6,14 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //  (most) parts copyright © 2019-2021 Lauri-Matti Parppei / Lauri-Matti Parppei. All Rights reserved.
 
+/**
+ 
+# Line Object
+ 
+ Each parsed line is represented by a `Line` object, which holds the string, formatting ranges and other metadata. 
+ 
+ */
+
 #import "Line.h"
 #import "BeatExportSettings.h"
 #import "RegExCategories.h"
@@ -52,6 +60,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
         _uuid = NSUUID.UUID;
+        
+        _originalString = string;
     }
     return self;
 }
@@ -265,6 +275,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 -(NSRange)range
 {
     @synchronized (self) {
+        if (self.parser && self == self.parser.lines.lastObject) {
+            // Don't go out of bounds - if this is the last line in parser, there is no line break.
+            return NSMakeRange(self.position, self.length);
+        }
+        
         return NSMakeRange(self.position, self.length + 1);
     }
 }
@@ -272,7 +287,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Range for text content only (excl. line break)
 -(NSRange)textRange
 {
-    return NSMakeRange(self.position, self.length);
+    @synchronized (self) {
+        return NSMakeRange(self.position, self.length);
+    }
 }
 
 /// Returns the line position in document
@@ -305,14 +322,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     newLine.changed = self.changed;
     
-    newLine.isSplitParagraph = self.isSplitParagraph;
-    
     newLine.beginsTitlePageBlock = self.beginsTitlePageBlock;
     newLine.endsTitlePageBlock = self.endsTitlePageBlock;
     
-    newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
+    //newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
     newLine.unsafeForPageBreak = self.unsafeForPageBreak;
-    newLine.sceneIndex = self.sceneIndex;
     
     newLine.resolvedMacros = self.resolvedMacros.mutableCopy;
     
@@ -572,6 +586,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 
 #pragma mark Omissions & notes
+// What a silly mess. TODO: Please fix this.
 
 /// Returns `true` for ACTUALLY omitted lines, so not only for effectively omitted. This is a silly thing for legacy compatibility.
 - (bool)isOmitted
@@ -579,22 +594,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return (self.omittedRanges.count >= self.string.length);
 }
 
-/// Returns TRUE if the block is omitted
-/// @warning This also includes lines that have 0 length, meaning the method will return YES for empty lines too.
+/// Returns `true` if the line is omitted, kind of. This is a silly mess because of historical reasons.
+/// @warning This also includes lines that have 0 length or are completely a note, meaning the method will return YES for empty and/or note lines too.
 - (bool)omitted
 {
-	__block NSInteger invisibleLength = 0;
-	
-	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		invisibleLength += range.length;
-	}];
-
-	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		invisibleLength += range.length;
-	}];
-		
-	if (invisibleLength >= self.string.length)  return true;
-	else return false;
+    return (self.omittedRanges.count + self.noteRanges.count >= self.string.length);
 }
 
 /**
@@ -738,55 +742,19 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 
-
-
 #pragma mark Centered
 
 /// Returns TRUE if the line is *actually* centered.
 - (bool)centered {
 	if (self.string.length < 2) return NO;
-
-	if ([self.string characterAtIndex:0] == '>' &&
-		[self.string characterAtIndex:self.string.length - 1] == '<') return YES;
-	else return NO;
+    return ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<');
 }
 
-
-#pragma mark Formatting range booleans
-
-/// Returns TRUE if the line is bolded at the given local index
--(bool)isBoldedAt:(NSInteger)index {
-	__block bool inRange = NO;
-	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (NSLocationInRange(index, range)) inRange = YES;
-	}];
-	
-	return inRange;
-}
-
-/// Returns TRUE if the line is italic at the given local index
--(bool)isItalicAt:(NSInteger)index {
-	__block bool inRange = NO;
-	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (NSLocationInRange(index, range)) inRange = YES;
-	}];
-	
-	return inRange;
-}
-
-/// Returns TRUE if the line is underlined at the given local index
--(bool)isUnderlinedAt:(NSInteger)index {
-	__block bool inRange = NO;
-	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (NSLocationInRange(index, range)) inRange = YES;
-	}];
-	
-	return inRange;
-}
 
 #pragma mark - Section depth
 
-- (NSUInteger)sectionDepth {
+- (NSUInteger)sectionDepth
+{
     NSInteger depth = 0;
 
     for (int c = 0; c < self.string.length; c++) {
@@ -794,8 +762,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         else break;
     }
     
-    _sectionDepth = depth;
-    return _sectionDepth;
+    return depth;
 }
 
 #pragma mark - Story beats
@@ -844,14 +811,18 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	}
 	return NO;
 }
-- (NSArray*)storylines {
+
+- (NSArray<NSString*>*)storylines
+{
 	NSMutableArray *storylines = NSMutableArray.array;
 	for (Storybeat *beat in self.beats) {
 		[storylines addObject:beat.storyline];
 	}
 	return storylines;
 }
-- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline {
+
+- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline
+{
 	for (Storybeat *beat in self.beats) {
 		if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return beat;
 	}
@@ -878,7 +849,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Parse and apply Fountain stylization inside the string contained by this line.
 - (void)resetFormatting {
 	NSUInteger length = self.string.length;
-    if (length > 300000) return; // Let's not do this for extremely long lines.
+    // Let's not do this for extremely long lines. I don't know how many symbols a unichar array can hold.
+    // I guess there should be a fallback for insanely long strings, but this is a free and open source app, so if your
+    // unique artwork requires 300 000 unicode symbols on a single lines, please use some other software.
+    if (length > 300000) return;
     
     @try {
         // Store the line as a char array to avoid calling characterAtIndex: at each iteration.
@@ -921,12 +895,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	
 }
 
-- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr {
-	return [self attributedStringToFountain:attrStr saveRanges:NO];
-}
-- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr saveRanges:(bool)saveRanges {
-	// NOTE! This only works with the FDX atributed string
-	NSMutableString *result = [NSMutableString string];
+/// Converts an FDX-style attributed string back to Fountain
+- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr
+{
+	// NOTE! This only works with the FDX attributed string
+	NSMutableString *result = NSMutableString.string;
 	
 	__block NSInteger pos = 0;
 	
@@ -959,7 +932,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-- (NSAttributedString*)attrString {
+/// Creates and stores a string with style attributes. Please don't use in editor, only for static parsing.
+/// - note N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
+- (NSAttributedString*)attrString
+{
 	if (_attrString == nil) {
 		NSAttributedString *string = [self attributedStringForFDX];
 		NSMutableAttributedString *result = NSMutableAttributedString.new;
@@ -980,7 +956,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 /// Returns a string with style attributes.
-/// - note N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML/PDF.
+/// - note N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
 - (NSAttributedString*)attributedString
 {
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
@@ -1144,6 +1120,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 
+#pragma mark - Splitting
+
 /**
 
  Splits a line at a given PRINTING index, meaning that the index was calculated from
@@ -1160,6 +1138,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
  a problem for present me.
  
  See you in the future.
+ 
+ __Update in 2023-12-28__: The pagination _sort of_ works like this nowadays, but because we are
+ still rendering Fountain to something else, we still need to split and format the lines.
+ This should still be fixed at some point. Maybe create line element which already has a preprocessed
+ attributed string for output.
  
  */
 - (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index {
@@ -1262,22 +1245,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - Formatting helpers
 
-/*
-// Idea
-- (void)enumerateFormattingRanges:(void (^)(bool result))block {
-}
-*/
-
-- (NSAttributedString*)formattingAttributes {
+/// What is this? Seems like a more sensible attributed string idea.
+- (NSAttributedString*)formattingAttributes
+{
     NSMutableAttributedString* attrStr = [NSMutableAttributedString.alloc initWithString:self.string];
-    
-    /*
-    NSMutableIndexSet* noFormatting = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.string.length)];
-    [noFormatting removeIndexes:self.italicRanges];
-    [noFormatting removeIndexes:self.boldRanges];
-    [noFormatting removeIndexes:self.boldItalicRanges];
-    [noFormatting removeIndexes:self.underlinedRanges];
-    */
     
     [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [attrStr addAttribute:BeatFormattingKeyItalic value:@YES range:range];
@@ -1294,8 +1265,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark Formatting range lookup
 
-
-/// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too.
+/// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too. Why, I don't know.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
 	NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
@@ -1356,6 +1326,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	else return YES;
 }
 
+
 #pragma mark - Identity
 
 - (BOOL)matchesUUID:(NSUUID*)uuid
@@ -1378,14 +1349,16 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Ranges
 
 /// Converts a global (document-wide) range into local range inside the line
--(NSRange)globalRangeToLocal:(NSRange)range {
+-(NSRange)globalRangeToLocal:(NSRange)range
+{
     // Insert a range and get a LOCAL range in the line
     NSRange lineRange = (NSRange){ self.position, self.string.length };
     NSRange intersection = NSIntersectionRange(range, lineRange);
     
     return (NSRange){ intersection.location - self.position, intersection.length };
 }
-/// Converts a global (document-wide) range into local range inside the line
+
+/// Converts a global (document-wide) range into local range inside this line
 -(NSRange)globalRangeFromLocal:(NSRange)range
 {
     return NSMakeRange(range.location + self.position, range.length);
@@ -1401,6 +1374,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 {
     return [self contentRangesIncluding:nil];
 }
+/// Returns ranges with content ONLY (useful for reconstructing the string with no Fountain stylization), with given extra ranges included.
 - (NSIndexSet*)contentRangesIncluding:(NSIndexSet*)includedRanges
 {
     NSMutableIndexSet *contentRanges = NSMutableIndexSet.indexSet;
@@ -1429,7 +1403,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	return contentRanges;
 }
 
-- (NSUInteger)numberOfPrecedingFormattingCharacters {
+- (NSUInteger)numberOfPrecedingFormattingCharacters
+{
     if (self.string.length < 1) return 0;
     
     LineType type = self.type;
