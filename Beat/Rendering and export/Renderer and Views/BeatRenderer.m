@@ -236,6 +236,7 @@
 - (NSMutableAttributedString*)renderHeading:(Line*)line content:(NSMutableAttributedString*)content firstElementOnPage:(bool)firstElementOnPage {
 	// Get render settings
 	bool printSceneNumbers = self.settings.printSceneNumbers;
+	
 	CGFloat contentPadding = self.styles.page.contentPadding;
 	CGFloat width = [self widthFor:line];
 	

@@ -98,7 +98,6 @@ class BeatPaginationPageView:NSView {
 		self.textView?.textContainer?.replaceLayoutManager(layoutManager)
 		self.textView?.textContainer?.lineFragmentPadding = linePadding
 		
-		
 		textView?.backgroundColor = .white
 		textView?.drawsBackground = true
 		

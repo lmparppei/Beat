@@ -519,7 +519,7 @@
 	
 	// Preview shortcuts
 	if (line.type == heading && _settings.operation == ForPreview) {
-		[htmlString setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, htmlString]];
+		[htmlString setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneId='%@'>%@</a>", line.uuidString, htmlString]];
 	}
 
 	NSMutableString *additionalClasses = NSMutableString.string;
@@ -562,7 +562,7 @@
 	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>" options:0 range:(NSRange){0,htmlString.length}];
 	
 	if (htmlString.length > 0) {
-		return [NSString stringWithFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self classNameForLine:line], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, htmlString];
+		return [NSString stringWithFormat:@"<p class='%@%@' uuid='%@'>%@</p>\n", [self classNameForLine:line], additionalClasses,line.uuid.UUIDString.lowercaseString, htmlString];
 	} else {
 		return @"";
 	}

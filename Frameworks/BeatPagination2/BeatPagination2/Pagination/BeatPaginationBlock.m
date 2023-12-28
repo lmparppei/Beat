@@ -573,8 +573,8 @@
 	} }
     
 	NSArray *p = [line splitAndFormatToFountainAt:breakLength];
-	//BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:breakPosition element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Break paragraph"];
     BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:breakLength element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Break paragraph"];
+    
 	return @[p[0], p[1], pageBreak];
 }
 

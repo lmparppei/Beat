@@ -45,11 +45,13 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	@objc class func createTextView(editorDelegate:BeatEditorDelegate, frame:CGRect, pageView:BeatPageView, scrollView:BeatScrollView) -> BeatUITextView {
 		// First create core text system
 		let textContainer = NSTextContainer()
-		let layoutManager = BeatLayoutManager()
+		let layoutManager = BeatLayoutManager(delegate: editorDelegate)
 		let textStorage = NSTextStorage(string: "")
 		
+		// Set up layout manager & text storage
 		layoutManager.addTextContainer(textContainer)
 		textStorage.addLayoutManager(layoutManager)
+		layoutManager.delegate = layoutManager
 		
 		// Create the text view and connect the container + layout manager
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
@@ -70,7 +72,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: textView)
 		textView.assistantView?.attach(to: textView)
 		
-		layoutManager.editorDelegate = editorDelegate
 		textView.setup()
 				
 		return textView
@@ -118,7 +119,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 		// Delegates
 		enclosingScrollView?.delegate = self
-		layoutManager.delegate = self
 		
 		self.enclosingScrollView.keyboardDismissMode = .onDrag
 		
