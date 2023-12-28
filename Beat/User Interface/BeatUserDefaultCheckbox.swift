@@ -9,7 +9,7 @@
 import Foundation
 
 @objc public class BeatUserDefaultCheckbox:NSButton {
-	@objc @IBInspectable var requiresRefresh = false
+	@IBInspectable public var resetPreview:Bool = false
 	
 	override public func awakeFromNib() {
 		super.awakeFromNib()

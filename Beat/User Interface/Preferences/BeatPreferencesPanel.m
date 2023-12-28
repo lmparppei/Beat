@@ -11,12 +11,11 @@
  
  */
 
-#import <BeatCore/BeatUserDefaults.h>
-#import <BeatCore/BeatFonts.h>
 #import "BeatPreferencesPanel.h"
 #import "Document.h"
 #import "BeatModalInput.h"
 #import "Beat-Swift.h"
+#import <BeatCore/BeatCore.h>
 
 
 @interface BeatPreferencesPanel () <NSTextFieldDelegate>
@@ -37,13 +36,10 @@
 @property (nonatomic, weak) IBOutlet NSPopUpButton *language;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *outlineFontSizeModifier;
 
-@property (nonatomic, weak) IBOutlet NSButton *headingStyleBold;
-@property (nonatomic, weak) IBOutlet NSButton *headingStyleUnderline;
-
 @property (nonatomic, weak) IBOutlet NSButton *headingSpacing1;
 @property (nonatomic, weak) IBOutlet NSButton *headingSpacing2;
 
-@property (nonatomic, weak) IBOutlet NSTextField *sampleHeading;
+@property (nonatomic, weak) IBOutlet NSTextView *sampleScene;
 
 @property (nonatomic, weak) IBOutlet NSTextField *screenplayItemContd;
 @property (nonatomic, weak) IBOutlet NSTextField *screenplayItemMore;
@@ -171,41 +167,36 @@
 - (void)updateHeadingSample {
 	[self updateHeadingSample:NO];
 }
-- (void)updateHeadingSample:(bool)windowDidLoad {
-	// Save the original heading
-	if (!_headingSample) _headingSample = self.sampleHeading.stringValue.copy;
-	
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:_headingSample attributes:@{
-		NSFontAttributeName: BeatFonts.sharedFonts.courier
-	}];
-	
-	// Add line break for spacing 2
-	if (_headingSpacing2.state == NSOnState) {
-		attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", _headingSample]];
-	}
 
-	// Heading weight
-	if (_headingStyleBold.state == NSOnState) {
-		[attrStr addAttribute:NSFontAttributeName value:[BeatFonts.sharedFonts boldWithSize:15.0] range:(NSRange){0,attrStr.length}];
-	} else {
-		[attrStr addAttribute:NSFontAttributeName value:[BeatFonts.sharedFonts withSize:15.0] range:(NSRange){0,attrStr.length}];
+- (void)updateHeadingSample:(bool)windowDidLoad
+{
+	// Parse some sample text (this could be localized as well!)
+	NSString* sample = @"as she walks to pick up the noodles.\n\nEXT. STREET - NIGHT #2#\n\nIiris leaves home for work. She's in a hurry and crosses the street without checking for any traffic. She nearly hits one car but doesn't as much as flinch.\n\n!!SHOT:\nThe driver is visibly shaken.";
+	ContinuousFountainParser* parser = [ContinuousFountainParser.alloc initWithString:sample];
+	[parser updateOutline];
+	
+	// Force reloading of current default stylesheet
+	[BeatStyles.shared.defaultStyles reload];
+	BeatExportSettings* settings = BeatExportSettings.new;
+	settings.printSceneNumbers = true;
+	
+	// Create a renderer
+	BeatRenderer* renderer = [BeatRenderer.alloc initWithSettings:settings];
+	NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
+	
+	// Render the given lines (I mean how amazing is it that my APIs and objects actually are this flexible? Who would have thought.)
+	for (Line* line in parser.preprocessForPrinting) {
+		if (line.type == empty) continue;
+		NSAttributedString* str = [renderer renderLine:line];
+		[attrStr appendAttributedString:str];
 	}
 	
-	// Heading underline
-	if (_headingStyleUnderline.state == NSOnState) {
-		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@1 range:(NSRange){0,attrStr.length}];
-	} else {
-		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@0 range:(NSRange){0,attrStr.length}];
-	}
-	[attrStr addAttribute:NSForegroundColorAttributeName value:NSColor.blackColor range:(NSRange){0,attrStr.length}];
-
-	// Set sample value
-	[self.sampleHeading setAttributedStringValue:attrStr];
-	
-	// Invalidate previews for all documents when layout settings are changed after loading
-	if (!windowDidLoad) {
-		[self reloadStyles];
-	}
+	// Set sample value (and adjust some text view settings as well)
+	self.sampleScene.linkTextAttributes = @{};
+	self.sampleScene.displaysLinkToolTips = false;
+	self.sampleScene.textContainer.lineFragmentPadding = 0.0;
+	self.sampleScene.textContainerInset = NSMakeSize(0, 0);
+	[self.sampleScene.textStorage setAttributedString:attrStr];
 }
 
 - (void)reloadStyles
@@ -243,6 +234,24 @@
 			[self selectBackupLocation:nil];
 		}
 	}
+}
+
+/// The modern way of setting values. Migrate all checkboxes to use this.
+- (IBAction)toggleUserSetting:(BeatUserDefaultCheckbox*)sender
+{
+	if (sender.userDefaultKey.length == 0) {
+		NSLog(@"WARNING: No user default key set for %@", sender);
+		return;
+	}
+	
+	[BeatUserDefaults.sharedDefaults saveBool:(sender.state == NSOnState) forKey:sender.userDefaultKey];
+	
+	if (sender.resetPreview) {
+		[self reloadStyles];
+		[self updateHeadingSample];
+	}
+	
+	[self apply];
 }
 
 - (IBAction)selectOutlineFontSize:(id)sender {
@@ -317,12 +326,14 @@
 		}
 	}
 	
-	if (sender == _headingStyleBold || sender == _headingStyleUnderline) [self updateHeadingSample];
 	if (sender == _screenplayItemMore || sender == _screenplayItemContd) [self reloadStyles];
 	
-	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc applyUserSettings];
-	}
+	[self apply];
+}
+
+- (void)apply
+{
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) [doc applyUserSettings];
 }
 
 - (IBAction)toggleLanguage:(id)sender {
