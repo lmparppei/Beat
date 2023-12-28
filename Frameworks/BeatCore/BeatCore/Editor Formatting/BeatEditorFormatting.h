@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ContinuousFountainParser;
+
 typedef enum {
 	titlePageSubField = typeCount + 1,
 	subSection
@@ -26,6 +28,9 @@ typedef enum {
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 @property (nonatomic) bool didProcessForcedCharacterCue;
+
+/// Set this to use a static parser instead of delegate's parser
+@property (nonatomic) ContinuousFountainParser* staticParser;
 
 - (instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
 

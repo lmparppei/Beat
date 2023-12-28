@@ -44,7 +44,7 @@
 static NSString *underlinedSymbol = @"_";
 static NSString* const BeatRepresentedLineKey = @"representedLine";
 
-/// This initializer can be used for formatting the text beforehand.
+/// This initializer can be used for formatting the text beforehand. If you are NOT using an editor delegate, remember to set `.staticParser` as well.
 -(instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage
 {
 	self = [super init];
@@ -52,6 +52,37 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	return self;
 }
+
+
+#pragma mark - Setters and getters
+
+- (void)setParser:(ContinuousFountainParser *)parser { _staticParser = parser; }
+- (ContinuousFountainParser*)parser
+{
+    if (_delegate != nil) return _delegate.parser;
+    else return _staticParser;
+}
+
+- (BeatStylesheet*)editorStyles
+{
+    if (_delegate != nil) return _delegate.editorStyles;
+    return BeatStyles.shared.defaultEditorStyles;
+}
+
+- (BeatPaperSize)pageSize
+{
+    if (_delegate != nil) return _delegate.pageSize;
+    return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingDefaultPageSize];
+}
+
+- (BXFont*)courier { return (_delegate != nil) ? _delegate.courier : BeatFonts.sharedFonts.courier; }
+- (BXFont*)boldCourier { return (_delegate != nil) ? _delegate.boldCourier : BeatFonts.sharedFonts.boldCourier; }
+- (BXFont*)italicCourier { return (_delegate != nil) ? _delegate.italicCourier : BeatFonts.sharedFonts.italicCourier; }
+- (BXFont*)boldItalicCourier { return (_delegate != nil) ? _delegate.boldItalicCourier : BeatFonts.sharedFonts.boldItalicCourier; }
+- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.synopsisFont : BeatFonts.sharedFonts.synopsisFont; }
+
+
+#pragma mark - Paragraph styles
 
 /// Returns paragraph style for given line type
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
@@ -65,17 +96,19 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line == nil) line = [Line withString:@"" type:action];
 	
 	LineType type = line.type;
-	
+    BeatPaperSize paperSize = self.pageSize;
+    BeatStylesheet* styles = self.editorStyles;
+    
 	// Catch forced character cue
 	if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
 	
 	// We need to get left margin here to avoid issues with extended line types
 	if (line.isTitlePage) type = titlePageUnknown;
-	RenderStyle* elementStyle = [_delegate.editorStyles forElement:[Line typeName:type]];
+	RenderStyle* elementStyle = [styles forElement:[Line typeName:type]];
 	
 	// Paragraph sizing
 	CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];
-	if (width == 0.0) width = [_delegate.editorStyles.page defaultWidthWithPageSize:_delegate.pageSize];
+	if (width == 0.0) width = [styles.page defaultWidthWithPageSize:paperSize];
 		
 	CGFloat leftMargin = elementStyle.marginLeft;
 	CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
@@ -89,7 +122,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
     // We'll cache the paragraph styles when possible
-    BeatPaperSize paperSize = self.delegate.pageSize;
 	NSNumber* paperSizeKey = @(paperSize);
 	NSNumber* typeKey = @(type);
 		
@@ -105,7 +137,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 	// Create paragraph style
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	style.minimumLineHeight = self.delegate.editorStyles.page.lineHeight;
+	style.minimumLineHeight = styles.page.lineHeight;
 	
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
@@ -123,11 +155,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		style.headIndent = leftMargin * 1.25;
 	}
 	else if (type == subSection) {
-		style.paragraphSpacingBefore = _delegate.editorStyles.page.lineHeight;
+		style.paragraphSpacingBefore = styles.page.lineHeight;
 		style.paragraphSpacing = 0.0;
 	}
 	else if (type == section) {
-		style.paragraphSpacingBefore = _delegate.editorStyles.page.lineHeight * 1.5;
+		style.paragraphSpacingBefore = styles.page.lineHeight * 1.5;
 		style.paragraphSpacing = 0.0;
 	}
 	
@@ -139,7 +171,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// Reformats all lines in given range
 - (void)formatLinesInRange:(NSRange)range
 {
-	NSArray* lines = [_delegate.parser linesInRange:range];
+	NSArray* lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
 		[self formatLine:line];
 	}
@@ -148,8 +180,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// Formats all lines of given type
 - (void)formatAllLinesOfType:(LineType)type
 {
-	for (Line* line in _delegate.parser.lines) {
-		if (line.type == type) [self formatLine:line];
+	for (Line* line in self.parser.lines) {
+        if (line.type == type) {
+            line.formattedAs = empty; // Force font change
+            [self formatLine:line];
+        }
 	}
 	
 	[self.delegate ensureLayout];
@@ -165,10 +200,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	static NSDictionary* fonts;
 	if (fonts == nil) {
 		fonts = @{
-			@(synopse): _delegate.synopsisFont,
-			@(lyrics): _delegate.italicCourier,
-			@(pageBreak): _delegate.boldCourier,
-			@(shot): _delegate.boldCourier
+			@(synopse): self.synopsisFont,
+			@(lyrics): self.italicCourier,
+			@(pageBreak): self.boldCourier
 		};
 	}
 	
@@ -182,7 +216,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		//size = size - line.sectionDepth;
 		if (size < 13) size = 13.0;
 		
-		font = [_delegate sectionFontWithSize:size];
+        font = (_delegate != nil) ? [_delegate sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
 	}
 	else if (fonts[@(line.type)] != nil) {
 		// Check if we have stored a specific font for this line type
@@ -190,7 +224,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	else {
 		// Otherwise use plain courier
-		font = _delegate.courier;
+		font = self.courier;
 	}
 	
 	return font;
@@ -339,7 +373,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// No idea why.
 		if (_delegate.hideFountainMarkup) {
 			range = line.range;
-			if (line == _delegate.parser.lines.lastObject) range = line.textRange; // Don't go out of range
+			if (line == self.parser.lines.lastObject) range = line.textRange; // Don't go out of range
 		}
 	}
     
@@ -363,8 +397,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		Line* previousLine;
 		
-		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
-		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
+		NSInteger lineIndex = [self.parser.lines indexOfObject:line];
+		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [self.parser.lines objectAtIndex:lineIndex - 1];
 		
 		// Keep dialogue input after any dialogue elements
 		if (previousLine.isDialogue && previousLine.length > 0) {
@@ -452,15 +486,27 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Remove underline/strikeout
 	[textStorage addAttribute:NSUnderlineStyleAttributeName value:@0 range:globalRange];
 	[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
-	
+	    
 	// Stylize headings according to settings
 	if (line.type == heading) {
 		// Bolded or not?
-        if (_delegate.headingStyleBold) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
+        bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
+        bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
+
+        if (boldedHeading) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
         else [self applyTrait:0 range:line.textRange textStorage:textStorage];
         
-		if (_delegate.headingStyleUnderline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
-	}
+		if (underlinedHeading) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
+        
+	} else if (line.type == shot) {
+        bool boldedShot = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShotStyleBold];
+        bool underlinedShot = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShotStyleUnderlined];
+        
+        if (boldedShot) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
+        else [self applyTrait:0 range:line.textRange textStorage:textStorage];
+        if (underlinedShot) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
+        
+    }
 	else if (line.type == lyrics) {
 		[self applyTrait:BXItalicFontMask range:line.textRange textStorage:textStorage];
 	}
@@ -809,7 +855,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)refreshRevisionTextColorsInRange:(NSRange)range {
 	[self revisedTextStyleForRange:range];
 	
-	NSArray* lines = [_delegate.parser linesInRange:range];
+	NSArray* lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
         [self setTextColorFor:line];
 	}
