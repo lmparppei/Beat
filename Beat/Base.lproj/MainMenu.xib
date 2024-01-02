@@ -369,6 +369,12 @@
                                     <action selector="moveSelectedLinesDown:" target="-1" id="C7e-Lv-7NL"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Fold Current Section" keyEquivalent="F" id="pYf-wS-NRK">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="foldCurrentSection:" target="-1" id="26C-yE-TSX"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Khe-DG-pCL"/>
                             <menuItem title="Find" id="AVO-sB-rdP">
                                 <modifierMask key="keyEquivalentModifierMask"/>

@@ -47,6 +47,7 @@
 @class BeatTextIO;
 @class BeatEditorFormatting;
 @class BeatPluginAgent;
+@class BeatFonts;
 
 /// Protocol for editor views which need to be updated in some cases
 @protocol BeatEditorView
@@ -202,16 +203,17 @@
 
 #pragma mark - Fonts
 
+@property (nonatomic) BeatFonts* fonts;
+/*
 @property (readonly, nonatomic) BXFont *courier;
 @property (readonly, nonatomic) BXFont *boldCourier;
 @property (readonly, nonatomic) BXFont *boldItalicCourier;
 @property (readonly, nonatomic) BXFont *italicCourier;
+ @property (strong, nonatomic, readonly) BXFont *sectionFont;
+ @property (strong, nonatomic, readonly) NSMutableDictionary *sectionFonts;
+ @property (strong, nonatomic, readonly) BXFont *synopsisFont;
 
-@property (strong, nonatomic, readonly) BXFont *sectionFont;
-@property (strong, nonatomic, readonly) NSMutableDictionary *sectionFonts;
-@property (strong, nonatomic, readonly) BXFont *synopsisFont;
-
-- (BXFont*)sectionFontWithSize:(CGFloat)size;
+ */
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
 #endif
@@ -244,7 +246,6 @@
 @property (nonatomic, readonly) BeatEditorFormatting* formatting;
 - (void)reloadStyles;
 
-- (void)formatAllLines;
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;

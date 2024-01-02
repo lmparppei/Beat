@@ -1918,7 +1918,7 @@
 #pragma mark - Formatting
 
 - (void)reformat:(Line *)line {
-	if (line) [_delegate formatLine:line];
+	if (line) [_delegate.formatting formatLine:line];
 }
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
 	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];

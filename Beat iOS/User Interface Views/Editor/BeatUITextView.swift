@@ -344,7 +344,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		paragraphStyle.minimumLineHeight = self.editorDelegate?.editorStyles.page().lineHeight ?? 12.0
 		
 		let attributes:[NSAttributedString.Key:Any] = [
-			NSAttributedString.Key.font: editorDelegate.courier!,
+			NSAttributedString.Key.font: editorDelegate.fonts.regular,
 			NSAttributedString.Key.paragraphStyle: paragraphStyle
 		]
 		

@@ -122,7 +122,6 @@
 - (void)scrollToLine:(Line *)line {}
 - (void)scrollToRange:(NSRange)range {}
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {}
-- (NSFont *)sectionFontWithSize:(CGFloat)size { return BeatFonts.sharedFonts.sectionFont; }
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {}
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene {}
 - (void)setTypingAttributes:(NSDictionary *)attrs {}
@@ -133,7 +132,6 @@
 
 - (bool)editorTabVisible { return true; }
 - (void)forceFormatChangesInRange:(NSRange)range {}
-- (void)formatAllLines {}
 - (NSAttributedString *)getAttributedText { return self.attributedString; }
 - (void)handleTabPress {}
 - (void)invalidatePreview {}
@@ -168,10 +166,7 @@
 	return NSAttributedString.new;
 }
 
-- (NSFont*)courier { return  BeatFonts.sharedFonts.courier; }
-- (NSFont*)italicCourier { return  BeatFonts.sharedFonts.italicCourier; }
-- (NSFont*)boldCourier { return BeatFonts.sharedFonts.boldCourier; }
-- (NSFont*)boldItalicCourier { return BeatFonts.sharedFonts.boldItalicCourier; }
+- (BeatFonts*)fonts { return BeatFonts.sharedFonts; }
 - (NSDictionary*)characterGenders { return @{}; }
 - (bool)characterInput { return false; }
 - (Line*)characterInputForLine { return nil; }
@@ -197,14 +192,11 @@
 @synthesize printSceneNumbers;
 @synthesize revisionColor;
 @synthesize revisionMode;
-@synthesize sectionFont;
-@synthesize sectionFonts;
 @synthesize showPageNumbers;
 @synthesize showRevisedTextColor;
 @synthesize showRevisions;
 @synthesize showSceneNumberLabels;
 @synthesize showTags;
-@synthesize synopsisFont;
 @synthesize styles;
 
 @end

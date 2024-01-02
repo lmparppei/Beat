@@ -39,13 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSDictionary<NSString*,NSString*>* characterGenders;
 
-
-// Fonts
-@property (strong, nonatomic) BXFont* _Nonnull courier;
-@property (strong, nonatomic) BXFont* _Nonnull boldCourier;
-@property (strong, nonatomic) BXFont* _Nonnull boldItalicCourier;
-@property (strong, nonatomic) BXFont* _Nonnull italicCourier;
-
 @property (nonatomic) NSInteger sceneNumberingStartsFrom;
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback;

@@ -8,10 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 @class BeatDocument;
+@class BeatFonts;
 
 @interface PreviewViewController : NSViewController
 
 @property (nonatomic) BeatDocument* document;
 @property (nonatomic) NSRange selectedRange;
+@property (nonatomic) BeatFonts* fonts;
 
 @end

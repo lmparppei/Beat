@@ -117,7 +117,7 @@
 	self.textView.scrollEnabled = false;
 	self.textView.inputDelegate = self;
 	
-	self.textView.font = self.courier;
+	self.textView.font = self.fonts.regular;
 	
 	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
 }
@@ -191,8 +191,8 @@
 		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.document.rawText];
 		self.attrTextCache = self.formattedTextBuffer;
 		
-		// Load fonts
-		[self loadSerifFonts];
+		// Load fonts (iOS is limited to serif courier for now)
+		[self loadFonts];
 		
 		// Format the document. We'll create a static formatting instance for this operation.
 		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
@@ -817,70 +817,6 @@
 	
 	self.textView.selectedRange = range;
 	[self.textView scrollToRange:range];
-}
-
-
-#pragma mark - Fonts
-
-- (void)loadSerifFonts {
-	_courier = BeatFonts.sharedFonts.courier;
-	_boldCourier = BeatFonts.sharedFonts.boldCourier;
-	_italicCourier = BeatFonts.sharedFonts.italicCourier;
-	_boldItalicCourier = BeatFonts.sharedFonts.boldItalicCourier;
-	
-	// a hack for the iPhone
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-		_courier = [BeatFonts.sharedFonts.courier fontWithSize:self.mobileFontSize];
-		_boldCourier = [BeatFonts.sharedFonts.boldCourier fontWithSize:self.mobileFontSize];
-		_italicCourier = [BeatFonts.sharedFonts.italicCourier fontWithSize:self.mobileFontSize];
-		_boldItalicCourier = [BeatFonts.sharedFonts.boldItalicCourier fontWithSize:self.mobileFontSize];
-	}
-}
-
-- (void)loadSansSerifFonts {
-	_courier = BeatFonts.sharedSansSerifFonts.courier;
-	_boldCourier = BeatFonts.sharedSansSerifFonts.boldCourier;
-	_italicCourier = BeatFonts.sharedSansSerifFonts.italicCourier;
-	_boldItalicCourier = BeatFonts.sharedSansSerifFonts.boldItalicCourier;
-}
-
-- (BXFont*)sectionFont
-{
-	if (!_sectionFont) {
-		_sectionFont = [BXFont boldSystemFontOfSize:17.0];
-	}
-	return _sectionFont;
-}
-
-- (BXFont*)sectionFontWithSize:(CGFloat)size
-{
-	// Init dictionary if it's unset
-	if (!_sectionFonts) _sectionFonts = NSMutableDictionary.new;
-	
-	// We'll store fonts of varying sizes on the go, because why not?
-	// No, really, why shouldn't we?
-	NSString *sizeKey = [NSString stringWithFormat:@"%f", size];
-	if (!_sectionFonts[sizeKey]) {
-		[_sectionFonts setValue:[BXFont boldSystemFontOfSize:size] forKey:sizeKey];
-	}
-	
-	return (BXFont*)_sectionFonts[sizeKey];
-}
-
-- (BXFont*)synopsisFont
-{
-	if (!_synopsisFont) {
-		_synopsisFont = [BXFont systemFontOfSize:11.0];
-		
-		//NSFontManager *fontManager = [[NSFontManager alloc] init];
-		//_synopsisFont = [fontManager convertFont:_synopsisFont toHaveTrait:NSFontItalicTrait];
-	}
-	return _synopsisFont;
-}
-
-- (CGFloat)mobileFontSize
-{
-	return 14.0;
 }
 
 

@@ -213,11 +213,11 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="2iy-Lg-Vmw">
-                                            <rect key="frame" x="26" y="109" width="513" height="5"/>
+                                            <rect key="frame" x="26" y="110" width="513" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="eTS-rF-kC3">
-                                            <rect key="frame" x="26" y="57" width="513" height="5"/>
+                                            <rect key="frame" x="26" y="56" width="513" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <button verticalHuggingPriority="750" id="lU2-0R-Qlm">
@@ -231,7 +231,7 @@
                                                 <action selector="toggle:" target="-2" id="UGI-7K-hiH"/>
                                             </connections>
                                         </button>
-                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LS5-SQ-rLY">
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="LS5-SQ-rLY">
                                             <rect key="frame" x="196" y="71" width="205" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Small" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VQS-1g-QZ6" id="3RH-A7-bPE">
@@ -468,7 +468,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="6Ft-FT-OHl">
                                             <rect key="frame" x="373" y="241" width="166" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Shot Line Style" usesSingleLineMode="YES" id="6OX-Qw-Due">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Shot Heading Style" usesSingleLineMode="YES" id="6OX-Qw-Due">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

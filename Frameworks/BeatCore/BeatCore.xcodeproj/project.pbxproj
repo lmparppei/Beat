@@ -90,8 +90,7 @@
 		B6D15A672AF9790A00DAB66D /* Novel.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6D15A622AF9790900DAB66D /* Novel.beatCSS */; };
 		B6D15A682AF9790A00DAB66D /* Novel-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6D15A632AF9790A00DAB66D /* Novel-editor.beatCSS */; };
 		B6D15A6F2AF9793500DAB66D /* BeatCSSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6A2AF9793400DAB66D /* BeatCSSParser.swift */; };
-		B6D15A702AF9793500DAB66D /* BeatStyleRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6B2AF9793400DAB66D /* BeatStyleRules.swift */; };
-		B6D15A712AF9793500DAB66D /* BeatRenderStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6C2AF9793500DAB66D /* BeatRenderStyles.swift */; };
+		B6D15A702AF9793500DAB66D /* RenderStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6B2AF9793400DAB66D /* RenderStyle.swift */; };
 		B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6D2AF9793500DAB66D /* BeatStylesheet.swift */; };
 		B6D15A732AF9793500DAB66D /* BeatStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6E2AF9793500DAB66D /* BeatStyles.swift */; };
 		B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201B298EBE2B003DA45D /* TagDefinition.m */; };
@@ -192,8 +191,7 @@
 		B6D15A622AF9790900DAB66D /* Novel.beatCSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Novel.beatCSS; sourceTree = "<group>"; };
 		B6D15A632AF9790A00DAB66D /* Novel-editor.beatCSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Novel-editor.beatCSS"; sourceTree = "<group>"; };
 		B6D15A6A2AF9793400DAB66D /* BeatCSSParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatCSSParser.swift; sourceTree = "<group>"; };
-		B6D15A6B2AF9793400DAB66D /* BeatStyleRules.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatStyleRules.swift; sourceTree = "<group>"; };
-		B6D15A6C2AF9793500DAB66D /* BeatRenderStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatRenderStyles.swift; sourceTree = "<group>"; };
+		B6D15A6B2AF9793400DAB66D /* RenderStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderStyle.swift; sourceTree = "<group>"; };
 		B6D15A6D2AF9793500DAB66D /* BeatStylesheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatStylesheet.swift; sourceTree = "<group>"; };
 		B6D15A6E2AF9793500DAB66D /* BeatStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatStyles.swift; sourceTree = "<group>"; };
 		B6D32018298EBE2B003DA45D /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
@@ -447,9 +445,8 @@
 			children = (
 				B6D15A6E2AF9793500DAB66D /* BeatStyles.swift */,
 				B6D15A6D2AF9793500DAB66D /* BeatStylesheet.swift */,
+				B6D15A6B2AF9793400DAB66D /* RenderStyle.swift */,
 				B6D15A6A2AF9793400DAB66D /* BeatCSSParser.swift */,
-				B6D15A6C2AF9793500DAB66D /* BeatRenderStyles.swift */,
-				B6D15A6B2AF9793400DAB66D /* BeatStyleRules.swift */,
 			);
 			path = "Style parsing";
 			sourceTree = "<group>";
@@ -632,7 +629,6 @@
 				B682C2652B30FBD10027511A /* BeatTemplates.swift in Sources */,
 				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
-				B6D15A712AF9793500DAB66D /* BeatRenderStyles.swift in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
 				B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */,
 				B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */,
@@ -659,7 +655,7 @@
 				B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
 				B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */,
-				B6D15A702AF9793500DAB66D /* BeatStyleRules.swift in Sources */,
+				B6D15A702AF9793500DAB66D /* RenderStyle.swift in Sources */,
 				B663A6D629F1C47B0036FE6B /* BeatFonts.m in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
@@ -817,6 +813,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};

@@ -171,7 +171,7 @@
 - (void)updateHeadingSample:(bool)windowDidLoad
 {
 	// Parse some sample text (this could be localized as well!)
-	NSString* sample = @"as she walks to pick up the noodles.\n\nEXT. STREET - NIGHT #2#\n\nIiris leaves home for work. She's in a hurry and crosses the street without checking for any traffic. She nearly hits one car but doesn't as much as flinch.\n\n!!SHOT:\nThe driver is visibly shaken.";
+	NSString* sample = @"A moment's silence. Ansa nods, even smiles. Only a little, but even that is enough to nourish Holappa's withered soul.\n\nINT. CAFÉ - DAY #23#\n\nAn old-fashioned café. Holappa stirs his coffee. He doesn't seem like a smooth operator, because he says nothing.\n\n!!SHOT:\nOutside, leaves are falling from the trees.";
 	ContinuousFountainParser* parser = [ContinuousFountainParser.alloc initWithString:sample];
 	[parser updateOutline];
 	
@@ -196,6 +196,9 @@
 	self.sampleScene.displaysLinkToolTips = false;
 	self.sampleScene.textContainer.lineFragmentPadding = 0.0;
 	self.sampleScene.textContainerInset = NSMakeSize(0, 0);
+	self.sampleScene.enclosingScrollView.hasVerticalScroller = false;
+	self.sampleScene.enclosingScrollView.hasHorizontalScroller = false;
+		
 	[self.sampleScene.textStorage setAttributedString:attrStr];
 }
 
