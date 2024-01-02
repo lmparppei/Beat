@@ -76,7 +76,7 @@
 /// Reloads all styles
 - (void)reloadStyles
 {
-    ((BeatLayoutManager*)self.layoutManager).pageBreaks = nil;
+    ((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
     
     [self.styles reload];
     [self.editorStyles reload];
@@ -125,6 +125,7 @@
 - (void)setPageSize:(BeatPaperSize)pageSize
 {
     [self.documentSettings setInt:DocSettingPageSize as:pageSize];
+    if (!self.documentIsLoading) [self.formatting resetSizing];
 }
 
 #pragma mark Scene numbering
@@ -251,28 +252,11 @@
 
 #pragma mark - Formatting
 
-// A collection of shorthands for delegation
-
-- (void)formatLine:(Line*)line
-{
-    [_formatting formatLine:line];
-}
-
-- (void)formatAllLines
-{
-    for (Line* line in self.parser.lines) {
-        @autoreleasepool { [_formatting formatLine:line]; }
-    }
-    
-    [self.parser.changedIndices removeAllIndexes];
-    [self ensureLayout];
-}
-
 - (IBAction)reformatEverything:(id)sender
 {
     [self.parser resetParsing];
     [self applyFormatChanges];
-    [self formatAllLines];
+    [self.formatting formatAllLines];
 }
 
 /// When something was changed, this method takes care of reformatting every line
@@ -333,7 +317,7 @@
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type
 {
     line.type = type;
-    [self formatLine:line];
+    [self.formatting formatLine:line];
 }
 
 - (void)renderBackgroundForLines
@@ -418,7 +402,8 @@
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         // Update pagination in text view
         BeatLayoutManager* lm = (BeatLayoutManager*)self.getTextView.layoutManager;
-        lm.pageBreaks = pageBreaks;
+        //lm.pageBreaks = pageBreaks;
+        [lm updatePageBreaks:pageBreaks];
 
         #if TARGET_OS_OSX
             self.textView.needsDisplay = true;
@@ -667,13 +652,68 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 
-#pragma mark - Font size
+#pragma mark - Fonts
+
+- (BeatFonts*)fonts
+{
+    if (_fonts == nil) return BeatFonts.sharedFonts;
+    else return _fonts;
+}
+
+
+- (bool)useSansSerif
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
+}
+- (void)setUseSansSerif:(bool)useSansSerif
+{
+    [BeatUserDefaults.sharedDefaults saveBool:useSansSerif forKey:BeatSettingUseSansSerif];
+}
+
+- (void)fontDidLoad
+{
+    // Override in OS-specific implementation
+}
 
 /// Returns current default font point size
 - (CGFloat)fontSize
 {
-    return BeatFonts.sharedFonts.courier.pointSize;
+    return BeatFonts.sharedFonts.regular.pointSize;
 }
+
+- (void)loadFonts
+{
+    bool variableSize = self.editorStyles.variableFont;
+    bool sansSerif = self.useSansSerif;
+    
+    BeatFontType type;
+    
+    if (sansSerif) {
+        if (variableSize) type = BeatFontTypeVariableSansSerif;
+        else type = BeatFontTypeFixedSansSerif;
+    } else {
+        if (variableSize) type = BeatFontTypeVariableSerif;
+        else type = BeatFontTypeFixed;
+    }
+    
+    self.fonts = [BeatFonts forType:type mobile:false];
+    
+#if TARGET_OS_IOS
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) self.fonts = [BeatFonts forType:type mobile:true];
+#endif
+}
+
+/// Reloads fonts and reformats whole document if needed.
+/// @warning Can take a lot of time. Use with care.
+- (void)reloadFonts
+{
+    NSString* oldFontName = self.fonts.name.copy;
+    [self loadFonts];
+    
+    // If the font changed, let's reformat the whole document.
+    if (![oldFontName isEqualToString:self.fonts.name]) [self.formatting formatAllLines];
+}
+
 
 
 #pragma mark - Register views and observers
