@@ -12,6 +12,7 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatCore/BeatMeasure.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
+#import <CoreText/CoreText.h>
 
 #import "BeatRevisions.h"
 
@@ -66,7 +67,7 @@
 
 - (void)dealloc
 {
-    self.pageBreaks = nil;
+    self.pageBreaksMap = nil;
     self.delegate = nil;
     self.editorDelegate = nil;
 }
@@ -144,12 +145,14 @@
     BXColor* pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
         
     NSRange charRange = [self characterRangeForGlyphRange:*glyphsToShow actualGlyphRange:nil];
-    for (NSValue* key in self.pageBreaks.allKeys) {
-        Line* line = key.nonretainedObjectValue;
+    
+    NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
+    Line* line;
+    while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
         // The dictionary value is always a two-item array with [pageNumber, pageBreakPosition]
-        NSArray<NSNumber*>* values = self.pageBreaks[key];
+        NSArray<NSNumber*>* values = [_pageBreaksMap objectForKey:line];
         
         // Page number
         NSInteger pageNumber = values[0].integerValue;
@@ -168,7 +171,7 @@
         NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
     
         [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
-            NSFontAttributeName: self.editorDelegate.courier,
+            NSFontAttributeName: self.editorDelegate.fonts.regular,
             NSForegroundColorAttributeName: pageNumberColor,
             NSParagraphStyleAttributeName: self.pageNumberStyle
         }];
@@ -203,6 +206,69 @@
             }
         }
     }
+    
+    /*
+    for (NSValue* key in self.pageBreaks.allKeys) {
+        
+        Line* line = key.nonretainedObjectValue;
+        if (NSIntersectionRange(line.range, charRange).length == 0) continue;
+        
+        // The dictionary value is always a two-item array with [pageNumber, pageBreakPosition]
+        NSArray<NSNumber*>* values = self.pageBreaks[key];
+        
+        // Page number
+        NSInteger pageNumber = values[0].integerValue;
+        
+        // Get the glyph position
+        NSUInteger localIndex = values[1].unsignedIntegerValue;
+        NSInteger globalIndex = line.position + localIndex;
+        NSInteger glyphIndex = [self glyphIndexForCharacterAtIndex:globalIndex];
+        
+        // Get rect and local range
+        NSRange lRange;
+
+        CGRect r = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:&lRange];
+        
+        // Draw page numbers
+        NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
+    
+        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
+            NSFontAttributeName: self.editorDelegate.fonts.regular,
+            NSForegroundColorAttributeName: pageNumberColor,
+            NSParagraphStyleAttributeName: self.pageNumberStyle
+        }];
+
+        
+        // Draw page separators if needed
+        if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
+            NSRange cRange = [self characterRangeForGlyphRange:lRange actualGlyphRange:nil];
+            
+            if (globalIndex != cRange.location && globalIndex != NSMaxRange(cRange)) {
+                // Page break happens mid-element. Let's draw a bezier curve here.
+                CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(glyphIndex,1) inTextContainer:self.textContainers.firstObject];
+                
+                BXBezierPath* lbPath = BXBezierPath.new;
+                
+                CGFloat baseline = r.origin.y + inset.height + actualRect.size.height;
+                
+                [lbPath moveToPoint:CGPointMake(0, baseline)];
+                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
+                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, r.origin.y + inset.height)];
+                [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r) + inset.width * 2, r.origin.y + inset.height)];
+                
+                [pageBreakColor setStroke];
+                [lbPath stroke];
+                
+            } else {
+                // Draw page separator
+                CGRect separatorRect = CGRectMake(inset.width + r.origin.x, inset.height + r.origin.y, r.size.width, 1.0);
+                
+                [pageBreakColor setFill];
+                BXRectFill(separatorRect);
+            }
+        }
+    }
+     */
     
 }
 
@@ -419,7 +485,7 @@
     NSString *sceneNumber = line.sceneNumber;
 
     [sceneNumber drawAtPoint:rect.origin withAttributes:@{
-        NSFontAttributeName: self.editorDelegate.courier,
+        NSFontAttributeName: self.editorDelegate.fonts.regular,
         NSForegroundColorAttributeName: color,
         NSParagraphStyleAttributeName: self.sceneNumberStyle
     }];
@@ -475,7 +541,7 @@
 		
 		NSString *sceneNumber = line.sceneNumber;
 		[sceneNumber drawAtPoint:rect.origin withAttributes:@{
-			NSFontAttributeName: self.editorDelegate.courier,
+			NSFontAttributeName: self.editorDelegate.fonts.regular,
 			NSForegroundColorAttributeName: color,
 			NSParagraphStyleAttributeName: self.sceneNumberStyle
 		}];
@@ -554,7 +620,7 @@
         // Draw string
         NSString* symbol = BeatRevisions.revisionMarkers[revisionColor];
         marker = [NSAttributedString.alloc initWithString:symbol attributes:@{
-            NSFontAttributeName: self.editorDelegate.courier,
+            NSFontAttributeName: self.editorDelegate.fonts.regular,
             NSForegroundColorAttributeName: markerColor,
             NSParagraphStyleAttributeName: _markerStyle
         }];
@@ -635,7 +701,7 @@
 }
 
 /// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
--(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
+-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
     Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
     if (line == nil) return 0;
@@ -770,17 +836,63 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     return glyphs;
 }
 
-- (BOOL)layoutManager:(NSLayoutManager *)layoutManager shouldSetLineFragmentRect:(inout NSRect *)lineFragmentRect lineFragmentUsedRect:(inout NSRect *)lineFragmentUsedRect baselineOffset:(inout CGFloat *)baselineOffset inTextContainer:(NSTextContainer *)textContainer forGlyphRange:(NSRange)glyphRange
+- (BOOL)layoutManager:(NSLayoutManager *)layoutManager shouldSetLineFragmentRect:(inout CGRect *)lineFragmentRect lineFragmentUsedRect:(inout CGRect *)lineFragmentUsedRect baselineOffset:(inout CGFloat *)baselineOffset inTextContainer:(NSTextContainer *)textContainer forGlyphRange:(NSRange)glyphRange
 {
-    NSRange actualRange;
     NSRange range = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-    NSDictionary* attrs = [self.textStorage attributesAtIndex:glyphRange.location effectiveRange:&actualRange];
+    NSDictionary* attrs = [self.textStorage attributesAtIndex:range.location effectiveRange:nil];
     
     if (attrs[@"BeatFolded"]) {
         lineFragmentRect->size.height = 0.0;
     }
     
+    /*
+    // A pretty solid idea for quasi-WYSIWYG mode!
+     
+    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
+        for (NSValue* key in self.pageBreaks.allKeys) {
+            Line* line = key.nonretainedObjectValue;
+            
+            if (NSMaxRange(range) == line.position) {
+                lineFragmentRect->size.height = 100.0;
+                
+                break;
+            }
+        }
+    }
+    */
+    
     return true;
+}
+
+
+#pragma mark - Ensuring page separator layout
+
+- (void)updatePageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks
+{
+    _pageBreaksMap = NSMapTable.weakToStrongObjectsMapTable;
+    for (NSValue* key in pageBreaks.allKeys) {
+        [_pageBreaksMap setObject:pageBreaks[key] forKey:key.nonretainedObjectValue];
+    }
+    
+    /*
+    // Idea for quasi-wysiwyg mode. This code won't work as it is, but yeah.
+     
+    // When setting page breaks, we'll need to invalidate layout for each existing page break
+    // (just to be on the safe side for future changes, which might include quasi-wysiwyg capabilities)
+    for (NSValue* val in self.pageBreaks.allKeys) {
+        Line* line = val.nonretainedObjectValue;
+        if (line == nil) continue;
+        
+        NSRange range = line.textRange;
+        if (NSMaxRange(range) > self.textView.text.length) {
+            range.length -= NSMaxRange(range) - self.textView.text.length;
+        }
+        
+        if (range.length > 0) [self invalidateDisplayForCharacterRange:range];
+    }
+    
+    _pageBreaks = pageBreaks;
+     */
 }
 
 

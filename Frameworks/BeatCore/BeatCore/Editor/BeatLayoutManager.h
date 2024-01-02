@@ -22,8 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)editorDelegate;
 
 @property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
-@property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
-
+//@property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
+@property (nonatomic) NSMapTable<Line*,NSArray<NSNumber*>*>* _Nullable pageBreaksMap;
+- (void)updatePageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks;
  
 @end
 
