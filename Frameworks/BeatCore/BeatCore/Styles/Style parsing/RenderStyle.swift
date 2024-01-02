@@ -4,13 +4,48 @@
 //
 //  Created by Lauri-Matti Parppei on 29.9.2023.
 //
+/**
+ 
+ This class presents a single set of rules for an element.
+ 
+ */
 
 import Foundation
 
+
 // MARK: - Render style
+public enum RenderStyleValueType:Int {
+    case boolType
+    case stringType
+    case enumType
+    case lineType
+}
 
 @objc public class RenderStyle:NSObject {
+    // Map property names to types
+    class var stringTypes:Set<String> { return  ["textAlign", "text-align", "color", "font", "content"] }
+    class var boolTypes:Set<String> { return ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements", "sceneNumber", "scene-number", "unindent-fresh-paragraph"] }
+    class var enumTypes:Set<String> { return ["font-type"] }
+    
+    public class var types:[String:RenderStyleValueType] { return [
+        "text-align": .stringType,
+        "color": .stringType,
+        "font": .stringType,
+        "content": .stringType,
+        "bold": .boolType,
+        "italic": .boolType,
+        "underline": .boolType,
+        "uppercase": .boolType,
+        "indent-split-elements": .boolType,
+        "scene-number": .boolType,
+        "unindent-fresh-paragraph": .boolType,
+        "font-type": .enumType,
+        "visible-elements": .lineType
+    ] }
+
     @objc public var name:String = ""
+    
+    @objc public var fontType:BeatFontType = .fixed
     
     @objc public var bold:Bool = false
     @objc public var italic:Bool = false
@@ -26,9 +61,12 @@ import Foundation
     @objc public var marginLeftA4:CGFloat = 0
     @objc public var marginLeftLetter:CGFloat = 0
     
+    @objc public var firstPageWithNumber:Int = 2
+    
     @objc public var marginBottom:CGFloat = 0
     @objc public var marginBottomA4:CGFloat = 0
     @objc public var marginBottomLetter:CGFloat = 0
+    @objc public var forcedMargin = false
     
     @objc public var marginRight:CGFloat = 0
     @objc public var paddingLeft:CGFloat = 0
@@ -51,8 +89,17 @@ import Foundation
     @objc public var indent:CGFloat = 0
     @objc public var firstLineIndent:CGFloat = 0
     @objc public var indentSplitElements:Bool = true
+    @objc public var unindentFreshParagraphs:Bool = false
     
     @objc public var content:String?
+    
+    @objc public var beginsPage = false
+    
+    @objc public var visibleElements:[AnyObject] = [] {
+        /// Int arrays are not supported in ObjC, so we'll use a shadow array here to provide actual values for Swift
+        didSet { self._visibleElements = self.visibleElements as? [LineType] ?? [] }
+    }
+    public var _visibleElements:[LineType] = []
     
     @objc public var sceneNumber:Bool = true
     
@@ -61,12 +108,18 @@ import Foundation
 
         for key in rules.keys {
             // Create property name based on the rule key
-            let value = rules[key]!
+            var value = rules[key]!
             let property = styleNameToProperty(name: key)
+            
+            if property == "fontType" {
+                let fontType = value as? BeatFontType ?? .fixed
+                value = fontType.rawValue
+            }
             
             // Check that the property exists to avoid any unnecessary crashes
             if (self.responds(to: Selector(property))) {
                 self.setValue(value, forKey: property)
+                
             } else {
                 print("Warning: Unrecognized BeatCSS key: ", property)
             }
@@ -75,6 +128,8 @@ import Foundation
     
     public func styleNameToProperty (name:String) -> String {
         switch name.lowercased() {
+        case "font-type":
+            return "fontType"
         case "width-a4":
             return "widthA4"
         case "width-us":
@@ -115,6 +170,16 @@ import Foundation
             return "indentSplitElements"
         case "scene-number":
             return "sceneNumber"
+        case "unindent-fresh-paragraphs":
+            return "unindentFreshParagraphs"
+        case "visible-elements":
+            return "visibleElements"
+        case "begins-page":
+            return "beginsPage"
+        case "forced-margin":
+            return "forcedMargin"
+        case "first-page-with-number":
+            return "firstPageWithNumber"
         default:
             return name
         }
@@ -141,3 +206,4 @@ import Foundation
         }
     }
 }
+

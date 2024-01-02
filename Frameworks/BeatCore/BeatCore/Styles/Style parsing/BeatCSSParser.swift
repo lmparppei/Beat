@@ -8,21 +8,16 @@
 //
 
 import Foundation
+import BeatParsing.Line
 
 public protocol BeatCssParserDelegate {
 	func get(key:String)
 }
 
 public final class CssParser {
-	
 	var styles:[String:RenderStyle] = [:]
     var lineHeight = BeatStyles.lineHeight // default line height
-    
-	// Map property names to types
-	let stringTypes:Set = ["textAlign", "text-align", "color", "font", "content"]
-	let boolTypes:Set = ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements", "sceneNumber", "scene-number"]
-	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing", "shotStyleBold", "shotStyleUnderline"]
-
+        
 	var settings:BeatExportSettings?
 	
 	/// Parses the CSS file string into an array of CSS styles.
@@ -116,21 +111,9 @@ public final class CssParser {
 			for ruleKey in dict.keys {
 				let value = dict[ruleKey]!
 				
-				// Different outcome based on the type
-				if (stringTypes.contains(ruleKey)) {
-					rules[ruleKey] = readValue(string: value, type: String.self)
-				}
-				else if (boolTypes.contains(ruleKey)) {
-					rules[ruleKey] = readValue(string: value, type: Bool.self)
-				} else {
-                    let value = readValue(string: value, type: Double.self)
-					rules[ruleKey] = value
-                    
-                    // Line height can be set DYNAMICALLY, and will affect other value calculations
-                    if key == "page" && (ruleKey == "lineHeight" || ruleKey == "line-height") {
-                        self.lineHeight = value as? CGFloat ?? BeatStyles.lineHeight
-                    }
-				}
+                if let result = readStyleValue(value: value, key: ruleKey) {
+                    rules[ruleKey] = result
+                }
 			}
 		
             let style = RenderStyle(rules: rules)
@@ -152,55 +135,93 @@ public final class CssParser {
 		return userSettingValue
 	}
 	
-	func readValue<T: Decodable>(string:String, type: T.Type) -> Any {
-		var value = string
-
-		if value.contains("userSetting(") {
-			for userSetting in userSettings {
-				guard let val = BeatUserDefaults.shared().get(userSetting) else { continue }
-				
-				let userSettingValue = convertValueToString(val)
-				value = value.replacingOccurrences(of: "userSetting(" + userSetting + ")", with: userSettingValue)
-			}
-		}
-		if value.contains("userValue(") {
-			for userSetting in userSettings {
-				guard let val = BeatUserDefaults.shared().get(userSetting) else { continue }
-				
-				let userSettingValue = convertValueToString(val)
-				value = value.replacingOccurrences(of: "userValue(" + userSetting + ")", with: userSettingValue)
-			}
-		}
-		
-		if value.contains("setting(") && settings != nil {
-			for userSetting in userSettings {
-				guard let val = settings?.value(forKey: userSetting) else { continue }
-				
-				let userSettingValue = convertValueToString(val)
-				value = value.replacingOccurrences(of: "setting(" + userSetting + ")", with: userSettingValue)
-			}
-		}
-		
-		// Return plain string value
-		if type == String.self {
-			return value
-		}
-		
-		// Return bool
-		if type == Bool.self {
-			if (value == "true" || value == "1") { return true }
-			else { return false }
-		}
-				
-		// Calculate different units based on *fixed values*
-		value = value.replacingOccurrences(of: "ch", with: "* 7.25")
-        value = value.replacingOccurrences(of: "l", with: "* \(self.lineHeight)")
-		value = value.replacingOccurrences(of: "px", with: "")
-		value = value.replacingOccurrences(of: " ", with: "")
-		
-		// ... and to be even more *safe* and *transparent*, let's use NSExpression 🍄
-		let exp = NSExpression(format: value)
+    func readStyleValue(value:String, key:String) -> Any? {
+        if value.contains("[") {
+            // An array
+            if let elements = value.slice(from: "[", to: "]") {
+                let components = elements.commaSeparated()
+                let values = components.map { readSingleValue(string: $0, key: key) }
+                return values
+            }
+        }
+        
+        return readSingleValue(string: value, key: key)
+    }
+    
+    func readSingleValue(string:String, key:String) -> Any? {
+        var value = string
+        var type = RenderStyle.types[key]
+        
+        // We'll infer some types
+        if string == "true" || string == "false" { type = .boolType }
+        
+        // First replace any setting getters
+        if let val = replaceGetter(value: value, getter: "userSetting", { key in return BeatUserDefaults.shared().get(key) }) {
+            value = val
+        }
+        if let val = replaceGetter(value: value, getter: "setting", { key in return self.settings?.value(forKey: key) }) {
+            value = val
+        }
                 
-		return exp.expressionValue(with: nil, context: nil) ?? 0
-	}
+        // Check type
+        if type == .stringType {
+            // This is a string, no processing required
+            return value
+        } else if type == .boolType {
+            // true/false
+            return (value == "true" || value == "1")
+        } else if type == .lineType {
+            // Line type
+            return Line.type(fromName: value)
+        } else if type == .enumType {
+            // Enum value
+            return enumValue(value: value, key: key)
+        }
+        
+        // This is most likely a number value, so let's calculate
+        
+        // Calculate different units based on *fixed values*
+        value = value.replacingOccurrences(of: "ch", with: "* 7.25")
+        value = value.replacingOccurrences(of: "l", with: "* \(self.lineHeight)")
+        value = value.replacingOccurrences(of: "px", with: "")
+        value = value.replacingOccurrences(of: " ", with: "")
+        
+        // ... and to be even more *safe* and *transparent*, let's use NSExpression 🍄
+        let exp = NSExpression(format: value)
+        
+        // Line height can be set DYNAMICALLY, and will affect other value calculations
+        if key == "page" && (key == "lineHeight" || key == "line-height") {
+            let e = exp.expressionValue(with: nil, context: nil) as? CGFloat ?? BeatStyles.lineHeight
+            print("!!! SET LINE HEIGHT", e)
+            self.lineHeight = e
+        }
+        
+        return exp.expressionValue(with: nil, context: nil) ?? 0
+    }
+    
+    func replaceGetter(value:String, getter:String, _ handler:(_ key:String) -> Any?) -> String? {
+        if !value.contains(getter + "(") { return nil }
+        
+        if let key = value.slice(from: getter + "(", to: ")"), let val = handler(key) {
+            let result = convertValueToString(val)
+            return value.replacingOccurrences(of: getter + "(" + key + ")", with: result)
+        }
+        
+        return nil
+    }
+    
+    func enumValue(value:String, key: String) -> Any? {
+        var t:Any?
+        
+        if key == "font-type" {
+            t = BeatFontType.fixed
+            
+            if value == "fixed" { t = BeatFontType.fixed }
+            else if value == "variable" { t = BeatFontType.variableSerif }
+            else if value == "variable-sans-serif" { t = BeatFontType.variableSansSerif }
+            else if value == "fixed-sans-serif" { t = BeatFontType.fixedSansSerif }
+        }
+        
+        return t
+    }
 }

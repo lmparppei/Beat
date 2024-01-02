@@ -28,3 +28,9 @@ public extension NSArray {
         return self.count - 1
     }
 }
+
+public extension String {
+    func commaSeparated() -> [String] {
+        return self.components(separatedBy: ",").map  { $0.trimmingCharacters(in: .whitespaces) }
+    }
+}

@@ -4,6 +4,11 @@
 //
 //  Created by Lauri-Matti Parppei on 28.9.2023.
 //
+/**
+ 
+ This class provides the stylesheets to both renderer (macOS) and editor (macOS/iOS).
+ 
+ */
 
 import Foundation
 

@@ -28,10 +28,18 @@ page {
  
     margin-left-a4: 0;
     margin-left-us: 0;
+    
+    font-type: variable;
 }
 
 heading {
     text-align: center;
+}
+
+section {
+    text-align: center;
+    italic: true;
+    fontSize: 18;
 }
 
 action, dialogue, character, parenthetical {
@@ -41,9 +49,20 @@ action, dialogue, character, parenthetical {
     margin-top: 1l;
     
     indent-split-elements: false;
+    unindent-fresh-paragraphs: true;
 }
 
 action {
     first-line-indent: 3ch;
+}
+
+centered {
+    margin-top: 1l;
+    text-align: center;
+}
+
+lyrics {
+    margin-top: 1l;
+    text-align: center;
 }
 

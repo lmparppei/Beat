@@ -9,32 +9,56 @@
  "Class" names are internal type names as strings, not .typeAsString names.
  
  © Lauri-Matti Parppei 2021-2022
+disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
 
 */
 
+document {
+    visible-elements: [section];
+
+}
+
 page {
-    margin-left: 25;
-    margin-right: 25;
-    padding-left: 60;
+    margin-left: 30;
+    margin-right: 30;
+    padding-left: 0;
     margin-top: 40;
-    margin-bottom: 60;
+    margin-bottom: 40;
     
     default-width-a4: 60ch;
     default-width-us: 62ch;
     
-    line-height: 16;
+    line-height: 26;
     
     content-padding: 7ch;
  
     margin-left-a4: 0;
     margin-left-us: 0;
+    
+    font-type: variable;
+    
+    first-page-with-number: 1;
 }
 
 heading {
-    content: ###;
+    margin-top: 1l;
+    content: #;
     text-align: center;
     scene-number: false;
 }
+
+section {
+    margin-top: 12l;
+    forced-margin: true;
+
+    text-align: center;
+    bold: true;
+    italic: true;
+    fontSize: 18;
+    
+    begins-page: true;
+}
+
 
 action, dialogue, character, parenthetical {
     margin-left-a4: 0;
@@ -43,9 +67,20 @@ action, dialogue, character, parenthetical {
     margin-top: 1l;
     
     indent-split-elements: false;
+    unindent-fresh-paragraphs: true;
 }
 
 action {
-    first-line-indent: 3ch;
+    first-line-indent: 35;
+}
+
+centered {
+    margin-top: 1l;
+    text-align: center;
+}
+
+lyrics {
+    margin-top: 1l;
+    text-align: center;
 }
 

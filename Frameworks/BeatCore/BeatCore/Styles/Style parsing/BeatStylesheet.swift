@@ -9,7 +9,7 @@ import Foundation
 import BeatParsing
 import OSLog
 
-@objc public class BeatStylesheet:NSObject {
+@objc public class BeatStylesheet:NSObject, BeatExportStyleProvider {
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
     
@@ -58,6 +58,17 @@ import OSLog
     @objc public func forElement(_ name:String) -> RenderStyle {
         return styles[name] ?? RenderStyle(rules: ["width-a4": self.page().defaultWidthA4, "width-us": self.page().defaultWidthLetter])
     }
+    
+    /// Returns `true` if the style sheet has variable font sizes
+    @objc public func variableFont() -> Bool {
+        let page = page()
+        return (page.fontType == .variableSansSerif || page.fontType == .variableSerif)
+    }
+    
+    
+    // MARK: style provider interface
+    public func shouldPrintSections() -> Bool { return self.document._visibleElements.contains(.section) }
+    public func shouldPrintSynopses() -> Bool { return self.document._visibleElements.contains(.synopse) }
 }
 
 
@@ -89,5 +100,12 @@ import OSLog
     }
     @objc public var transition:RenderStyle {
         return self.forElement(Line.typeName(.transitionLine))
-    }    
+    }
+    @objc public var document:RenderStyle {
+        return self.forElement("document")
+    }
+    @objc public var section:RenderStyle {
+        return self.forElement(Line.typeName(.section))
+    }
+
 }
