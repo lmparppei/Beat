@@ -229,14 +229,6 @@
 @property (weak) IBOutlet NSPanel *sceneNumberingPanel;
 @property (weak) IBOutlet NSTextField *sceneNumberStartInput;
 
-
-// Fonts
-@property (nonatomic) bool useSansSerif;
-@property (nonatomic) NSUInteger fontSize;
-@property (strong, nonatomic) NSFont *sectionFont;
-@property (strong, nonatomic) NSMutableDictionary *sectionFonts;
-@property (strong, nonatomic) NSFont *synopsisFont;
-
 // Printing
 @property (nonatomic) bool printPreview;
 @property (nonatomic, readwrite) NSString *preprocessedText;
@@ -343,7 +335,7 @@
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
-	((BeatLayoutManager*)self.layoutManager).pageBreaks = nil;
+	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
 	
 	// Remove plugin containers (namely the index card view)
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
@@ -470,8 +462,7 @@ static BeatAppDelegate *appDelegate;
 	[self setupMenuItems];
 	
 	// Load font set
-	if (self.useSansSerif) [self loadSansSerifFonts];
-	else [self loadSerifFonts];
+	[self loadFonts];
 	
 	// Setup views
 	[self setupResponderChain];
@@ -676,10 +667,6 @@ static BeatAppDelegate *appDelegate;
 {
 	// Apply settings from user preferences panel, some things have to be applied in every document.
 	// This should be implemented as a singleton/protocol.
-	
-	bool oldHeadingStyleBold = self.headingStyleBold;
-	bool oldHeadingStyleUnderline = self.headingStyleUnderline;
-	bool oldSansSerif = self.useSansSerif;
 	bool oldShowSceneNumbers = self.showSceneNumberLabels;
 	bool oldHideFountainMarkup = self.hideFountainMarkup;
 	bool oldShowPageNumbers = self.showPageNumbers;
@@ -687,15 +674,8 @@ static BeatAppDelegate *appDelegate;
 	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
 	[defaults readUserDefaultsFor:self];
 		
-	if (oldSansSerif != self.useSansSerif) {
-		if (self.useSansSerif) {
-			[self loadSansSerifFonts];
-			[self formatAllLines];
-		} else {
-			[self loadSerifFonts];
-			[self formatAllLines];
-		}
-	}
+	// Reload fonts (if needed)
+	[self reloadFonts];
 	
 	if (oldHideFountainMarkup != self.hideFountainMarkup) {
 		[self.textView toggleHideFountainMarkup];
@@ -760,7 +740,7 @@ static BeatAppDelegate *appDelegate;
 	NSPoint origin =_documentWindow.frame.origin;
 	NSSize size = NSMakeSize([self.documentSettings getFloat:DocSettingWindowWidth], [self.documentSettings getFloat:DocSettingWindowHeight]);
 	
-	CGFloat preferredWidth = self.documentWindow.minSize.width + BeatTextView.linePadding * 2 + 300;
+	CGFloat preferredWidth = self.textView.documentWidth * self.textView.zoomLevel + 300;
 	
 	if (size.width < 1) {
 		// Default size for new windows
@@ -884,7 +864,11 @@ static BeatAppDelegate *appDelegate;
 /// Focuses the editor window
 - (void)focusEditor {
 	[self.documentWindow makeKeyWindow];
+#if TARGET_OS_IOS
 	[self.textView becomeFirstResponder];
+#else
+	[self.textView.window makeFirstResponder:self.textView];
+#endif
 }
 
 
@@ -1229,7 +1213,7 @@ static NSWindow __weak *currentKeyWindow;
 	[self readFromData:data ofType:NSPlainTextDocumentType error:nil reverting:YES];
 	[self.textView setString:self.contentBuffer];
 	[self.parser parseText:self.contentBuffer];
-	[self formatAllLines];
+	[self.formatting formatAllLines];
 	[self updateLayout];
 	
 	_revertedTo = self.fileURL;
@@ -1696,7 +1680,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	[attributes setValue:self.courier forKey:NSFontAttributeName];
+	[attributes setValue:self.fonts.regular forKey:NSFontAttributeName];
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	[paragraphStyle setFirstLineHeadIndent:0];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
@@ -1766,7 +1750,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)toggleDisableFormatting:(id)sender {
 	_disableFormatting = !_disableFormatting;
-	[self formatAllLines];
+	[self.formatting formatAllLines];
 }
 
 
@@ -1784,29 +1768,18 @@ static NSWindow __weak *currentKeyWindow;
 
 # pragma  mark - Fonts
 
-- (void)loadSerifFonts {
-	_courier = BeatFonts.sharedFonts.courier;
-	[self loadFont];
-}
-- (void)loadSansSerifFonts {
-	_courier = BeatFonts.sharedSansSerifFonts.courier;
-	[self loadFont];
-}
-- (void)loadFont {
-	_boldCourier = [_courier withTraits:NSFontDescriptorTraitBold];
-	_italicCourier = [_courier withTraits:NSFontDescriptorTraitItalic];
-	_boldItalicCourier = [_courier withTraits:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
-	self.textView.font = _courier;
+- (void)fontDidLoad
+{
+	// Do any OS-specific settings here
+	self.textView.font = self.fonts.regular;
 }
 
 - (IBAction)selectSerif:(id)sender {
 	NSMenuItem* item = sender;
-	if (item.state != NSOnState) self.useSansSerif = NO;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	[BeatUserDefaults.sharedDefaults saveBool:(item.state == NSOnState) forKey:BeatSettingUseSansSerif];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc loadSerifFonts];
-		[doc formatAllLines];
+		[doc reloadFonts];
 	}
 }
 - (IBAction)selectSansSerif:(id)sender {
@@ -1815,49 +1788,9 @@ static NSWindow __weak *currentKeyWindow;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc loadSansSerifFonts];
-		[doc formatAllLines];
+		[doc reloadFonts];
 	}
 }
-
-- (void)reloadFonts {
-	[self formatAllLines];
-}
-
-- (NSFont*)sectionFont
-{
-	if (!_sectionFont) {
-		_sectionFont = [NSFont boldSystemFontOfSize:17.0];
-	}
-	return _sectionFont;
-}
-
-- (NSFont*)sectionFontWithSize:(CGFloat)size
-{
-	// Init dictionary if it's unset
-	if (!_sectionFonts) _sectionFonts = [NSMutableDictionary dictionary];
-	
-	// We'll store fonts of varying sizes on the go, because why not?
-	// No, really, why shouldn't we?
-	NSString *sizeKey = [NSString stringWithFormat:@"%f", size];
-	if (!_sectionFonts[sizeKey]) {
-		[_sectionFonts setValue:[NSFont boldSystemFontOfSize:size] forKey:sizeKey];
-	}
-	
-	return (NSFont*)_sectionFonts[sizeKey];
-}
-
-- (NSFont*)synopsisFont
-{
-	if (!_synopsisFont) {
-		_synopsisFont = [NSFont systemFontOfSize:11.0];
-		NSFontManager *fontManager = [[NSFontManager alloc] init];
-		_synopsisFont = [fontManager convertFont:_synopsisFont toHaveTrait:NSFontItalicTrait];
-	}
-	return _synopsisFont;
-}
-
-
 
 #pragma mark - Formatting Buttons
 
@@ -2824,6 +2757,10 @@ static NSWindow __weak *currentKeyWindow;
 - (IBAction)togglePageNumbers:(id)sender
 {
 	self.showPageNumbers = !self.showPageNumbers;
+	
+	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
+	[self.previewController resetPreview];
+	
 	self.textView.needsDisplay = true;
 }
 

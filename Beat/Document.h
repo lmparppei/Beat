@@ -66,12 +66,6 @@ THE SOFTWARE.
 
 - (void)reloadOutline;
 
-// Fonts
-@property (strong, nonatomic) NSFont* _Nonnull courier;
-@property (strong, nonatomic) NSFont* _Nonnull boldCourier;
-@property (strong, nonatomic) NSFont* _Nonnull boldItalicCourier;
-@property (strong, nonatomic) NSFont* _Nonnull italicCourier;
-
 @property (nonatomic) NSMutableIndexSet*  _Nullable changes;
 
 // Character input
