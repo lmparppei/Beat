@@ -230,8 +230,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.textContainer.heightTracksTextView = NO;
 	
 	// Style
-	self.font = _editorDelegate.courier;
-	[self.textStorage setFont:_editorDelegate.courier];
+	self.font = _editorDelegate.fonts.regular;
+	[self.textStorage setFont:_editorDelegate.fonts.regular];
 	
 	self.automaticDataDetectionEnabled = NO;
 	self.automaticQuoteSubstitutionEnabled = NO;
@@ -1068,14 +1068,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// If the row item is an attributed string, handle the previous attributes
 	if ([label isKindOfClass:NSAttributedString.class]) {
 		as = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString*)label];
-		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.courier range:NSMakeRange(0, as.string.length)];
+		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.regular range:NSMakeRange(0, as.string.length)];
 	} else {
-		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:BeatFonts.sharedFonts.courier, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
+		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:BeatFonts.sharedFonts.regular, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
 	}
 	
 	if (self.substring) {
 		NSRange range = [as.string rangeOfString:self.substring options:NSAnchoredSearch|NSCaseInsensitiveSearch];
-		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.boldCourier range:range];
+		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.bold range:range];
 	}
 	
 	[cellView.textField setAttributedStringValue:as];
@@ -1231,7 +1231,7 @@ Line *cachedRectLine;
 }
 
 - (CGFloat)documentWidth {
-	CGFloat width =  (_editorDelegate.pageSize == BeatA4) ? _editorDelegate.editorStyles.page.defaultWidthA4 : _editorDelegate.editorStyles.page.defaultWidthLetter;
+	CGFloat width = [_editorDelegate.editorStyles.page defaultWidthWithPageSize:_editorDelegate.pageSize];
 	CGFloat padding = self.textContainer.lineFragmentPadding;
 	
 	return width + padding * 2 + 1.0;

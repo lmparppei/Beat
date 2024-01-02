@@ -52,11 +52,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @property (readonly) NSRange lastChangedRange;
 
-@property (readonly, nonatomic) NSFont *courier;
-@property (readonly, nonatomic) NSFont *boldCourier;
-@property (readonly, nonatomic) NSFont *boldItalicCourier;
-@property (readonly, nonatomic) NSFont *italicCourier;
-
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 @property (nonatomic, readonly) Line *currentLine;
 

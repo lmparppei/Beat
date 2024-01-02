@@ -38,25 +38,40 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, BeatFontType) {
+    BeatFontTypeFixed = 0,
+    BeatFontTypeFixedSansSerif,
+    BeatFontTypeVariableSerif,
+    BeatFontTypeVariableSansSerif
+};
+
 @interface BeatFonts : NSObject
-@property (nonatomic) BXFont* courier;
-@property (nonatomic) BXFont* boldCourier;
-@property (nonatomic) BXFont* italicCourier;
-@property (nonatomic) BXFont* boldItalicCourier;
+@property (nonatomic) NSString* name;
+
+@property (nonatomic) BXFont* regular;
+@property (nonatomic) BXFont* bold;
+@property (nonatomic) BXFont* italic;
+@property (nonatomic) BXFont* boldItalic;
 
 @property (nonatomic) BXFont* emojis;
 
 @property (nonatomic) BXFont* synopsisFont;
 @property (nonatomic) BXFont* sectionFont;
 
++ (BeatFonts*)forType:(BeatFontType)type;
++ (BeatFonts*)forType:(BeatFontType)type mobile:(bool)mobile;
 + (BeatFonts*)sharedFonts;
++ (BeatFonts*)sharedMobileFonts;
 + (BeatFonts*)sharedSansSerifFonts;
++ (BeatFonts*)sharedVariableFonts;
 + (CGFloat)characterWidth;
 
 - (BXFont*)withSize:(CGFloat)size;
 - (BXFont*)boldWithSize:(CGFloat)size;
 
 + (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
+
+- (BXFont*)sectionFontWithSize:(CGFloat)size;
 @end
 
 NS_ASSUME_NONNULL_END
