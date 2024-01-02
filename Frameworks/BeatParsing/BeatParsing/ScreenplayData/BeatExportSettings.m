@@ -71,10 +71,13 @@
                 
         _fileName = delegate.fileNameString;
         
+        // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings
+        id<BeatExportStyleProvider> styles = self.styles;
         NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
+        
         if ([delegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes = true;
-        if ([delegate.documentSettings getBool:DocSettingPrintSections]) [additionalTypes addIndex:section];
-        if ([delegate.documentSettings getBool:DocSettingPrintSynopsis]) [additionalTypes addIndex:synopse];
+        if ([delegate.documentSettings getBool:DocSettingPrintSections] || styles.shouldPrintSections) [additionalTypes addIndex:section];
+        if ([delegate.documentSettings getBool:DocSettingPrintSynopsis] || styles.shouldPrintSynopses) [additionalTypes addIndex:synopse];
         
         _additionalTypes = additionalTypes;
     }

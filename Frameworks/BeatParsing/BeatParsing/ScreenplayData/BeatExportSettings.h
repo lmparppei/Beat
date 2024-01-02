@@ -23,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class OutlineScene;
 @class BeatDocumentSettings;
 
+@protocol BeatExportStyleProvider
+- (bool)shouldPrintSections;
+- (bool)shouldPrintSynopses;
+@end
+
 @protocol BeatExportSettingDelegate
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool showSceneNumberLabels;

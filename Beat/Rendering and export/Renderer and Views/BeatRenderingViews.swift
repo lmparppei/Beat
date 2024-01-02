@@ -80,14 +80,14 @@ class BeatPaginationPageView:NSView {
 		self.textView?.isEditable = false
 
 		self.textView?.linkTextAttributes = [
-			NSAttributedString.Key.font: fonts.courier,
+			NSAttributedString.Key.font: fonts.regular,
 //			NSAttributedString.Key.foregroundColor: NSColor.black,
 			NSAttributedString.Key.cursor: NSCursor.pointingHand
 		]
 		self.textView?.displaysLinkToolTips = false
 		self.textView?.isAutomaticLinkDetectionEnabled = false
 		
-		self.textView?.font = fonts.courier
+		self.textView?.font = fonts.regular
 		
 		self.textView?.textContainer?.lineFragmentPadding = linePadding
 		self.textView?.textContainerInset = NSSize(width: 0, height: 0)
@@ -411,7 +411,7 @@ class BeatRenderLayoutManager:NSLayoutManager {
 			if highestRevision == "" { return }
 			
 			let marker:NSString = BeatRevisions.revisionMarkers()[highestRevision]! as NSString
-			let font = BeatFonts.shared().courier
+			let font = BeatFonts.shared().regular
 			marker.draw(at: markerRect.origin, withAttributes: [
 				NSAttributedString.Key.font: font,
 				NSAttributedString.Key.foregroundColor: NSColor.black

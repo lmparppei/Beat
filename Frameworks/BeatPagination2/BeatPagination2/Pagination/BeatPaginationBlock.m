@@ -55,7 +55,8 @@
 }
 
 /// Returns the full height of block, **including** top margin when applicable.
-- (CGFloat)height {
+- (CGFloat)height
+{
 	if (_calculatedHeight > 0.0) return _calculatedHeight;
 	
     BeatExportSettings* settings = self.delegate.settings;
@@ -82,7 +83,8 @@
 }
 
 /// Returns the height (in points) for given line in block.
-- (CGFloat)heightForLine:(Line*)line {
+- (CGFloat)heightForLine:(Line*)line
+{
 	// We'll cache the line heights in a dictionary by UUID
 	if (self.lineHeights == nil) self.lineHeights = NSMutableDictionary.new;
 
@@ -112,13 +114,14 @@
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
     CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
     
+    pStyle.minimumLineHeight    = lineHeight;
 	pStyle.maximumLineHeight    = lineHeight;
     pStyle.firstLineHeadIndent  = style.firstLineIndent;
     pStyle.headIndent           = style.indent;
 
         
     // Set font for this element
-    BXFont* font = _delegate.fonts.courier;
+    BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
 
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
@@ -135,8 +138,10 @@
     CGFloat height = 0.0;
     height = [string heightWithContainerWidth:width] + topMargin;
 		
-	// Save the calculated top margin for full block if this is the first element on page
-	if (line == self.lines.firstObject) self.topMargin = topMargin;
+	// Save the calculated top margin for full block if this is the first element on page, AND this behavior isn't overridden
+    if (line == self.lines.firstObject && ![self.delegate.styles forElement:line.typeName].forcedMargin) {
+        self.topMargin = topMargin;
+    }
 	
 	self.lineHeights[line.uuid] = [NSNumber numberWithFloat:height];
 	return height;
@@ -154,7 +159,8 @@
         CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
         font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
     }
-    if (font == nil) font = _delegate.fonts.courier;
+    
+    if (font == nil) font = _delegate.fonts.regular;
     
     return font;
 }
@@ -308,7 +314,6 @@
         pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
     } else {
         // This is something else (like lyrics, transition, whatever, let's just split it at beginning)
-        //BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"No page break index found"];
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"No page break index found"];
         pageBreakData = @[@[], self.lines, pageBreak];
     }
@@ -594,21 +599,23 @@
 		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
 	}
 	
-	BXFont* font = self.delegate.fonts.courier;
+	BXFont* font = self.delegate.fonts.regular;
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	
 #if TARGET_OS_IOS
 	// Set font size to 80% on iOS
-	font = [font fontWithSize:font.pointSize * 0.8];
+    // BTW, why are we doing this? Is this a mistake?
+	// font = [font fontWithSize:font.pointSize * 0.8];
 #endif
 	
     // Create paragraph style
     NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+    pStyle.minimumLineHeight = lineHeight;
     pStyle.maximumLineHeight = lineHeight;
     
 	// set up the layout manager
-	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{
+	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString:string attributes:@{
         NSFontAttributeName: font,
         NSParagraphStyleAttributeName: pStyle
     }];
@@ -633,7 +640,7 @@
 		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
 		index = NSMaxRange(lineRange);
 	}
-	
+    	
 	return numberOfLines * lineHeight;
 }
 
@@ -651,7 +658,7 @@
     
     RenderStyle *style = [self.delegate.styles forElement:lineType];
     
-    BXFont* font = _delegate.fonts.courier;
+    BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
     
     BeatPaperSize paperSize = self.delegate.settings.paperSize;

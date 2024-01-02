@@ -103,7 +103,6 @@
 	
 	if (self) {
 		_delegate = delegate;
-		_fonts = BeatFonts.sharedFonts;
         
 		_lines = (lines != nil) ? lines : @[];
 		_titlePageContent = (titlePage != nil) ? titlePage : @[];
@@ -123,9 +122,13 @@
 		_settings = settings;
 		_pages = NSMutableArray.new;
 		_lineTypeAttributes = NSMutableDictionary.new;
-				
+        
 		// Possible renderer module. This can be null.
 		_renderer = _delegate.renderer;
+        
+        // Set up fonts
+        BeatStylesheet* stylesheet = settings.styles;
+        _fonts = [BeatFonts forType:stylesheet.page.fontType]; // defaults to 0, which is fixed
 				
 		_startTime = NSDate.new;
 	}
@@ -330,13 +333,16 @@
 		if (line.type == pageBreak) {
 			[_lineQueue removeObjectAtIndex:0];
 			
-			//BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1.0 element:line lineHeight:self.styles.page.lineHeight reason:@"Forced page break"];
-            
             BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:-1 element:line attributedString:nil reason:@"Forced page break"];
-            
 			[self addPage:@[line] toQueue:@[] pageBreak:pageBreak];
 			continue;
 		}
+        
+        // Then catch elements which have page break style
+        if ([self.styles forElement:line.typeName].beginsPage && _currentPage.blocks.count > 0) {
+            BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:line attributedString:nil reason:@"Element begins page"];
+            [self addPage:@[] toQueue:@[] pageBreak:pageBreak];
+        }
 		
 		// Add initial page break when needed
 		if (self.pages.count == 0 && _currentPage.blocks.count == 0) {
@@ -406,6 +412,9 @@
 	}
 	else if (group.blocks.count > 0) {
         // Break the block group
+        //NSLog(@"Break: %@", group.blocks.firstObject.lines.firstObject);
+        //1NSLog(@"     remaining %f / height %f ", remainingSpace, group.blocks.firstObject.height);
+
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace styles:self.styles];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
 	}

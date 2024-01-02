@@ -35,28 +35,27 @@
 	self = [super init];
 	if (self) {
 		_settings = settings;
-		[self setup];
+		_lineTypeAttributes = NSMutableDictionary.new;
 	}
 	return self;
 }
 
-- (void)setup {
-	_fonts = BeatFonts.sharedFonts;
-	_lineTypeAttributes = NSMutableDictionary.new;
+
+- (BeatFonts*)fonts
+{
+	BeatStylesheet* stylesheet = self.settings.styles;
+	if (stylesheet) return [BeatFonts forType:stylesheet.page.fontType];
+	else return BeatFonts.sharedFonts;
 }
 
 - (BeatExportSettings*)settings {
-	if (self.pagination != nil) {
-		return self.pagination.settings;
-	} else {
-		return _settings;
-	}
+	if (self.pagination != nil) return self.pagination.settings;
+	else return _settings;
 }
 
 - (void)reloadStyles {
 	[self.lineTypeAttributes removeAllObjects];
 }
-
 
 - (BeatStylesheet*)styles {
 	if ([self.settings.styles isKindOfClass:BeatStylesheet.class] && self.settings.styles != nil) {
@@ -168,8 +167,8 @@
 		[attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:NSMakeRange(0, attributedString.length)];
 	}
 	
-	// Remove top margin for first elements on a page
-	if (firstElementOnPage) {
+	// Remove top margin for first elements on a page (if this behavior isn't overridden)
+	if (firstElementOnPage && !style.forcedMargin) {
 		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
 		pStyle = pStyle.mutableCopy;
 		pStyle.paragraphSpacingBefore = 0.0;
@@ -366,7 +365,8 @@
 
 #pragma mark - Page number block
 
-- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages {
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages
+{
 	NSInteger index = [pages indexOfObject:page];
 	if (index == NSNotFound) index = pages.count;
 	
@@ -374,8 +374,8 @@
 }
 
 - (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber {
-	// First page does not have a page number
-	NSString* pageNumberString = (pageNumber > 1) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
+	// We might skip first page number (in screenplay mode)
+	NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
 	
 	NSTextTable* table = NSTextTable.new;
 	CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
@@ -412,13 +412,13 @@
 	NSString* header = [NSString stringWithFormat:@"%@\n", (self.settings.header != nil) ? self.settings.header : @""];
 	NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:header attributes:@{
 		NSParagraphStyleAttributeName: headerStyle,
-		NSFontAttributeName: _fonts.courier,
+		NSFontAttributeName: self.fonts.regular,
 		NSForegroundColorAttributeName: NSColor.blackColor
 	}];
 	// Actual page number goes in right corner
 	NSMutableAttributedString* rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
 		NSParagraphStyleAttributeName: rightStyle,
-		NSFontAttributeName: _fonts.courier,
+		NSFontAttributeName: self.fonts.regular,
 		NSForegroundColorAttributeName: NSColor.blackColor
 	}];
 	
@@ -438,18 +438,18 @@
 	return [self.styles forElement:[Line typeName:type]];
 }
 
-- (NSFont*)fontWith:(RenderStyle *)style
+- (NSFont*)fontWith:(RenderStyle*)style
 {
 	NSFont* font;
 	
 	if (style.font.length == 0) {
-		// Plain courier fonts
-		if (style.italic && style.bold) font = self.fonts.boldItalicCourier;
-		else if (style.italic) 			font = self.fonts.italicCourier;
-		else if (style.bold) 			font = self.fonts.boldCourier;
-		else 							font = self.fonts.courier;
+		// Plain fonts
+		if (style.italic && style.bold) font = self.fonts.boldItalic;
+		else if (style.italic) 			font = self.fonts.italic;
+		else if (style.bold) 			font = self.fonts.bold;
+		else 							font = self.fonts.regular;
 	} else {
-		// Non-courier fonts
+		// Specific fonts for some situations
 		if ([style.font isEqualToString:@"system"]) {
 			// System font
 			BXFontDescriptorSymbolicTraits traits = 0;
@@ -460,8 +460,13 @@
 			font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
 		} else {
 			// Custom font
-			font = [NSFont fontWithName:style.font size:self.fonts.courier.pointSize];
+			font = [BXFont fontWithName:style.font size:self.fonts.regular.pointSize];
 		}
+	}
+	
+	// Non-default font size
+	if (style.fontSize > 0) {
+		font = [NSFont fontWithName:font.fontName size:style.fontSize];
 	}
 	
 	return font;
@@ -491,7 +496,10 @@
 		// Let's add 100 to the type to create separate keys for split-paragraph rules.
 		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered) && !line.isTitlePage) {
 			typeKey = @(type + 100);
+		} else if (!line.unsafeForPageBreak && line.beginsNewParagraph && [self.styles forElement:line.typeName].unindentFreshParagraphs) {
+			typeKey = @(type + 200);
 		}
+		
 		if (line.isTitlePage) {
 			// Some extra weirdness for title pages
 			bool defaultParagraphType = (line.beginsTitlePageBlock + line.endsTitlePageBlock == 2);
@@ -518,7 +526,7 @@
 			
 			NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
 				NSForegroundColorAttributeName: textColor,
-				NSFontAttributeName: (font != nil) ? font : self.fonts.courier
+				NSFontAttributeName: (font != nil) ? font : self.fonts.regular
 			}];
 			
 			// Block sizing
@@ -533,18 +541,24 @@
 			pStyle.headIndent 				= style.marginLeft + style.indent;
 			pStyle.firstLineHeadIndent 		= style.marginLeft + style.firstLineIndent;
 			
+			// Check for additional rules
+			if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.unsafeForPageBreak) {
+				pStyle.firstLineHeadIndent -= style.firstLineIndent;
+			}
+			
 			// Add additional indent for parenthetical lines
 			if (line.type == parenthetical) {
 				blockWidth += 7.25;
 				pStyle.headIndent += 7.25;
 			}
-			
+						
 			pStyle.paragraphSpacingBefore = style.marginTop;
 			
 			pStyle.paragraphSpacing = style.marginBottom;
 			pStyle.tailIndent = -1 * style.marginRight; // Negative value;
 			
 			pStyle.maximumLineHeight = self.styles.page.lineHeight;
+			pStyle.minimumLineHeight = self.styles.page.lineHeight;
 			
 			if (!isDualDialogue && !line.isTitlePage) {
 				// Add content padding where needed
