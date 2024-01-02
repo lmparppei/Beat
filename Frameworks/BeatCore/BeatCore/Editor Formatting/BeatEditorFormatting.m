@@ -37,6 +37,7 @@
 // Paragraph styles are stored as { @(paperSize): { @(type): style } }
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSMutableParagraphStyle*>*>* paragraphStyles;
 @property (nonatomic) NSMutableAttributedString* textStorage;
+@property (nonatomic) BeatFonts* fonts;
 @end
 
 @implementation BeatEditorFormatting
@@ -55,6 +56,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 
 #pragma mark - Setters and getters
+
+- (BeatFonts *)fonts
+{
+    if (_delegate != nil) return _delegate.fonts;
+    else return BeatFonts.sharedFonts;
+}
 
 - (void)setParser:(ContinuousFountainParser *)parser { _staticParser = parser; }
 - (ContinuousFountainParser*)parser
@@ -75,11 +82,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingDefaultPageSize];
 }
 
-- (BXFont*)courier { return (_delegate != nil) ? _delegate.courier : BeatFonts.sharedFonts.courier; }
-- (BXFont*)boldCourier { return (_delegate != nil) ? _delegate.boldCourier : BeatFonts.sharedFonts.boldCourier; }
-- (BXFont*)italicCourier { return (_delegate != nil) ? _delegate.italicCourier : BeatFonts.sharedFonts.italicCourier; }
-- (BXFont*)boldItalicCourier { return (_delegate != nil) ? _delegate.boldItalicCourier : BeatFonts.sharedFonts.boldItalicCourier; }
-- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.synopsisFont : BeatFonts.sharedFonts.synopsisFont; }
+- (BXFont*)regular { return (_delegate != nil) ? _delegate.fonts.regular : BeatFonts.sharedFonts.regular; }
+- (BXFont*)bold { return (_delegate != nil) ? _delegate.fonts.bold : BeatFonts.sharedFonts.bold; }
+- (BXFont*)italic { return (_delegate != nil) ? _delegate.fonts.italic : BeatFonts.sharedFonts.italic; }
+- (BXFont*)boldItalic { return (_delegate != nil) ? _delegate.fonts.boldItalic : BeatFonts.sharedFonts.boldItalic; }
+- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.fonts.synopsisFont : BeatFonts.sharedFonts.synopsisFont; }
 
 
 #pragma mark - Paragraph styles
@@ -99,6 +106,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     BeatPaperSize paperSize = self.pageSize;
     BeatStylesheet* styles = self.editorStyles;
     
+    Line* prevLine; // We'll look up previous line ONLY IF NEEDED. It will be NULL for anything else.
+    
 	// Catch forced character cue
 	if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
 	
@@ -114,17 +123,25 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
 	
 	// Extended types for title page fields and sections
-	if (line.isTitlePage && line.titlePageKey.length == 0) {
-		type = (LineType)titlePageSubField;
-	}
-	else if (line.type == section && line.sectionDepth > 1) {
-		type = (LineType)subSection;
-	}
-	
+    if (line.isTitlePage && line.titlePageKey.length == 0) {
+        type = (LineType)titlePageSubField;
+    }
+    else if (line.type == section && line.sectionDepth > 1) {
+        type = (LineType)subSection;
+    }
+    // In some cases we'll have to create different keys
+    else if (elementStyle.unindentFreshParagraphs) {
+        // Check the previous line
+        prevLine = [self.delegate.parser previousLine:line];
+        if (prevLine.type != line.type) {
+            type = type + 100;
+        }
+    }
+    
     // We'll cache the paragraph styles when possible
 	NSNumber* paperSizeKey = @(paperSize);
 	NSNumber* typeKey = @(type);
-		
+        
 	// Let's create two-dimensional dictionary for each type of element, with page size as key.
     // Paragraph styles are then reused when possible.
 	if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
@@ -138,7 +155,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Create paragraph style
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
 	style.minimumLineHeight = styles.page.lineHeight;
-	
+    	
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
 	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
@@ -148,6 +165,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	style.headIndent = leftMargin + elementStyle.indent;
 	style.tailIndent = rightMargin;
     	
+    // Unindent novel paragraphs
+    if (elementStyle.unindentFreshParagraphs && prevLine.type != line.type) {
+        style.firstLineHeadIndent -= elementStyle.firstLineIndent;
+    }
+    
 	if (line.isAnyParenthetical) style.headIndent += CHR_WIDTH;
 	
 	if (type == titlePageSubField) {
@@ -168,13 +190,30 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	return style;
 }
 
-/// Reformats all lines in given range
-- (void)formatLinesInRange:(NSRange)range
+#pragma mark - Formatting shorthands
+
+/// Forces reformatting of each line
+- (void)formatAllLines
 {
-	NSArray* lines = [self.parser linesInRange:range];
-	for (Line* line in lines) {
-		[self formatLine:line];
-	}
+    for (Line* line in self.parser.lines) {
+        line.formattedAs = -1; // Force font change
+        @autoreleasepool { [self formatLine:line]; }
+    }
+    
+    [self.parser.changedIndices removeAllIndexes];
+    [self.delegate ensureLayout];
+}
+
+/// Reapplies all paragraph styles
+- (void)resetSizing
+{
+    self.paragraphStyles = nil;
+    for (Line* line in self.parser.lines) {
+        NSMutableParagraphStyle* pStyle = [self paragraphStyleFor:line];
+        // Don't go over bounds
+        NSRange range = (NSMaxRange(line.range) <= self.delegate.text.length) ? line.range : line.textRange;
+        [self.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+    }
 }
 
 /// Formats all lines of given type
@@ -182,13 +221,24 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 {
 	for (Line* line in self.parser.lines) {
         if (line.type == type) {
-            line.formattedAs = empty; // Force font change
+            line.formattedAs = -1; // Force font change
             [self formatLine:line];
         }
 	}
 	
 	[self.delegate ensureLayout];
 }
+
+/// Reformats all lines in given range
+- (void)formatLinesInRange:(NSRange)range
+{
+    NSArray* lines = [self.parser linesInRange:range];
+    for (Line* line in lines) {
+        [self formatLine:line];
+    }
+}
+
+#pragma mark - Format a single line
 
 /// Formats a single line in editor
 - (void)formatLine:(Line*)line
@@ -197,14 +247,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line {
-	static NSDictionary* fonts;
-	if (fonts == nil) {
-		fonts = @{
-			@(synopse): self.synopsisFont,
-			@(lyrics): self.italicCourier,
-			@(pageBreak): self.boldCourier
-		};
-	}
+	NSDictionary* fonts = @{
+        @(synopse): self.synopsisFont,
+        @(lyrics): self.italic,
+        @(pageBreak): self.bold
+    };
 	
 	BXFont* font;
 	
@@ -216,7 +263,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		//size = size - line.sectionDepth;
 		if (size < 13) size = 13.0;
 		
-        font = (_delegate != nil) ? [_delegate sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
+        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
 	}
 	else if (fonts[@(line.type)] != nil) {
 		// Check if we have stored a specific font for this line type
@@ -224,9 +271,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	else {
 		// Otherwise use plain courier
-		font = self.courier;
+		font = self.regular;
 	}
-	
+    
 	return font;
 }
 
@@ -416,7 +463,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	    
 	// Set typing attributes
-	attributes[NSFontAttributeName] = _delegate.courier;
+	attributes[NSFontAttributeName] = _delegate.fonts.regular;
 	
 	[_delegate setTypingAttributes:attributes];
 
@@ -533,16 +580,18 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage
 {
 #if TARGET_OS_IOS
+    // NSLayoutManager doesn't have traits on iOS
 	if ((trait & BXBoldFontMask) == BXBoldFontMask && (trait & BXItalicFontMask) == BXBoldFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:_delegate.boldItalicCourier range:range];
+        [textStorage addAttribute:NSFontAttributeName value:self.boldItalic range:range];
 	} else if (trait == BXItalicFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:_delegate.italicCourier range:range];
+        [textStorage addAttribute:NSFontAttributeName value:self.italic range:range];
 	} else if (trait == BXBoldFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:_delegate.boldCourier range:range];
+        [textStorage addAttribute:NSFontAttributeName value:self.bold range:range];
     } else {
-        [textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
+        [textStorage addAttribute:NSFontAttributeName value:self.regular range:range];
     }
 #else
+    // NSLayoutManager DOES have traits on macOS
 	[textStorage applyFontTraits:trait range:range];
 #endif
 }
@@ -870,10 +919,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	paragraphStyle.maximumLineHeight = _delegate.editorStyles.page.lineHeight;
 	paragraphStyle.firstLineHeadIndent = _delegate.editorStyles.character.marginLeft;
 	
-	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.courier } ];
+	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.fonts.regular } ];
 }
-
-
 
 @end
 

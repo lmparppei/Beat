@@ -34,6 +34,8 @@ typedef enum {
 
 - (instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
 
+/// Forces reformatting of each line
+- (void)formatAllLines;
 /// Formats a single line
 - (void)formatLine:(Line*)line;
 /// Formats a single line (for the first time if set)
@@ -42,6 +44,8 @@ typedef enum {
 - (void)formatLinesInRange:(NSRange)range;
 /// Format all lines of given type in the whole document
 - (void)formatAllLinesOfType:(LineType)type;
+/// Reapplies all paragraph styles
+- (void)resetSizing;
 
 - (void)forceEmptyCharacterCue;
 - (void)refreshRevisionTextColors;
