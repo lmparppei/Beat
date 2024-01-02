@@ -209,6 +209,7 @@ body {
 	font-size: .9em;
 	padding-left: 0;
 }
+
 .section .footer { display: none; }
 .section .content { display: none; }
 #container .section ul { margin-bottom: .4em; padding-top: .2em; }
@@ -258,6 +259,9 @@ body {
 }
 .synopsis {
 	padding: 0;
+}
+.synopsis-item[contenteditable="true"] {
+	-webkit-user-select: text !important;
 }
 
 .footer {

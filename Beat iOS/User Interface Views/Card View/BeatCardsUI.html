@@ -78,84 +78,7 @@
 			let colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta']
 			let colorName = ['#color.none#', '#color.red#', '#color.blue#', '#color.green#', '#color.pink#', '#color.brown#', '#color.cyan#', '#color.orange#', '#color.magenta#'];
 
-			contextMenu = {};
-			contextMenu.init = function () {
-				contextMenu.menu = document.createElement('div');
-				contextMenu.menu.id = 'contextMenu';
-				
-				var content = '';
-
-				for (var i in colors) {
-					var color = colors[i];
-					if (typeof color === 'string') {
-						content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + colorName[i] + "</div>";
-					}
-				}
-				
-				contextMenu.menu.innerHTML = content;
-				document.body.appendChild(contextMenu.menu);
-			}
-
-			contextMenu.toggle = function (e) {
-				if (contextMenu.menu == null) contextMenu.init();
-				
-				if (contextMenu.open == true) {
-					contextMenu.close()
-				} else {
-					let uuid
-					let target = e.target
-
-					// Find the actual target scene
-					while (target != null) {
-						let uuid = target.getAttribute("uuid")
-						if (uuid != null) {
-							contextMenu.target = target;
-							contextMenu.uuid = uuid
-							break;
-						}
-
-						target = target.parentNode;
-					}
-
-					// Do nothign if there's no actual target
-					if (contextMenu.target == null) return;
-
-					var coordinates = getPosition(e)
-					contextMenu.menu.style.left = coordinates.x + "px"
-					contextMenu.menu.style.top = coordinates.y + "px"
-					contextMenu.open = true
-
-
-					contextMenu.target = e.target
-					
-					contextMenu.menu.className = "visible"
-
-					// Avoid overflow
-					if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
-						contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px"
-					}
-
-					if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
-						contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px"
-					}
-				}
-			}
-			contextMenu.close = function () {
-				if (contextMenu.menu == null) return;
-				
-				contextMenu.open = false;
-				contextMenu.menu.className = '';
-			}
-			contextMenu.setColor = function (color) {
-				let uuid = contextMenu.target.getA
-			
-				Beat.call((uuid, color) => {
-					Beat.custom.setColor(uuid, color)
-				}, contextMenu.uuid, color)
-
-				contextMenu.close()
-			}
-			contextMenu.open = false
+			setupContextMenu()
 
 			function getPosition(e) {
 				var posx = 0;
@@ -255,6 +178,105 @@
 				})
 			}
 
+			function setupContextMenu() {
+				contextMenu = {};
+				contextMenu.init = function () {
+					contextMenu.menu = document.createElement('div');
+					contextMenu.menu.id = 'contextMenu';
+					
+					var content = '';
+
+					for (var i in colors) {
+						var color = colors[i];
+						if (typeof color === 'string') {
+							content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + colorName[i] + "</div>";
+						}
+					}
+					
+					contextMenu.menu.innerHTML = content;
+					document.body.appendChild(contextMenu.menu);
+				}
+
+				contextMenu.toggle = function (e) {
+					if (contextMenu.menu == null) contextMenu.init();
+					
+					if (contextMenu.open == true) {
+						contextMenu.close()
+					} else {
+						let uuid
+						let target = e.target
+
+						// Find the actual target scene
+						while (target != null) {
+							let uuid = target.getAttribute("uuid")
+							if (uuid != null) {
+								contextMenu.target = target;
+								contextMenu.uuid = uuid
+								break;
+							}
+
+							target = target.parentNode;
+						}
+
+						// Do nothign if there's no actual target
+						if (contextMenu.target == null) return;
+
+						var coordinates = getPosition(e)
+						contextMenu.menu.style.left = coordinates.x + "px"
+						contextMenu.menu.style.top = coordinates.y + "px"
+						contextMenu.open = true
+
+
+						contextMenu.target = e.target
+						
+						contextMenu.menu.className = "visible"
+
+						// Avoid overflow
+						if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
+							contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px"
+						}
+
+						if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
+							contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px"
+						}
+					}
+				}
+
+				contextMenu.close = function () {
+					if (contextMenu.menu == null) return;
+					
+					contextMenu.open = false;
+					contextMenu.menu.className = '';
+				}
+
+				contextMenu.setColor = function (color) {
+					let uuid = contextMenu.target.getA
+				
+					Beat.call((uuid, color) => {
+						Beat.custom.setColor(uuid, color)
+					}, contextMenu.uuid, color)
+
+					contextMenu.close()
+				}
+
+				contextMenu.open = false
+			}
+
+			function scrollToLine(uuid) {
+				Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
+			}
+
+			function restart() {
+				Beat.call("Beat.custom.restart()")
+			}
+
+			function modifySynopsis(uuid, string) {
+				Beat.call((uuid, string) => {
+					Beat.log("modifying: " + uuid + " new string: " + string)
+					Beat.custom.modifySynopsis(uuid, string)
+				}, uuid, string)
+			}
+
 		</script>
 	</head>
 	<body class='zoomLevel-1'>
@@ -284,11 +306,11 @@
 			
 			function load(html) {
 				container.innerHTML = html.replaceAll("\\\"", "\"")
-				setupContextMenu()
+				updateContextMenus()
 				initDragDrop()
 			}
 
-			function setupContextMenu() {
+			function updateContextMenus() {
 				let cards = document.querySelectorAll(".card")
 				
 				cards.forEach((card) => {
@@ -297,15 +319,16 @@
 					card.onclick = () => {
 						if (contextMenu != null) contextMenu.close();
 						
-						if (iOS) {
-							Beat.call("Beat.custom.returnToEditor()")
-							scrollToLine(uuid);
-						}
-						else if (mode == modes.window) {
+						// In non-container mode we'll scroll to the line, and on iOS we'll close the view
+						if (iOS || mode == modes.window) {
+							if (iOS) Beat.call("Beat.custom.returnToEditor()");
 							scrollToLine(uuid);
 						}
 					}
-					card.ondblclick = () => {
+					card.ondblclick = (e) => {
+						// If we double-clicked a synopsis item, don't return to editor
+						if (e.target.classList.contains("synopsis-item")) return;
+
 						// In container mode we'll return to editor view
 						if (mode == modes.container && !iOS) {
 							Beat.call("Beat.custom.returnToEditor()")
@@ -318,6 +341,46 @@
 						contextMenu.toggle(e)
 					}
 					
+					let synopses = card.querySelectorAll("li.synopsis-item")
+					synopses.forEach((synopsis) => {
+						synopsis.ondblclick = () => {
+							// Store original
+							synopsis.original = synopsis.innerText
+							synopsis.canceled = false
+							
+							synopsis.classList.add("editing")
+							synopsis.contentEditable = true
+						}
+
+						synopsis.onblur = () => {
+							synopsis.classList.remove("editing")
+							synopsis.contentEditable = false
+
+							if (!synopsis.canceled) {
+								let uuid = synopsis.getAttribute("uuid")
+								modifySynopsis(uuid, synopsis.innerText)
+							}
+						}
+						
+						synopsis.onkeydown = (e) => {
+							if (e.keyCode == 13) {
+								// Enter pressed
+								synopsis.blur()
+							}
+							if (e.keyCode == 27) {
+								// Esc pressed
+								e.preventDefault()
+								synopsis.innerText = synopsis.original
+								synopsis.canceled = true
+								synopsis.blur()
+							}
+						}
+						
+						synopsis.onchange = () => {
+							Beat.log("CHANGED")
+						}
+
+					})
 					
 				})
 				
@@ -328,15 +391,8 @@
 				}
 			}
 
-			function scrollToLine(uuid) {
-				Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
-			}
-
-			function restart() {
-				Beat.call("Beat.custom.restart()")
-			}
-
-			setupContextMenu()
+			// Initial setup
+			updateContextMenus()
 			if (!iOS) initDragDrop();
 			
 			let currentScene = "{{current}}"

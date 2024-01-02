@@ -40,7 +40,7 @@ let templates = {
 			</div></div>"),
 
 	synopsisList: new Template("<div class='synopsis'><ul>{{ synopsisList }}</ul></div>"),
-	synopsisItem: new Template("<li class='{{ color }}'>{{ stringForDisplay }}</li>"),
+	synopsisItem: new Template("<li class='synopsis-item {{ color }}' uuid='{{uuid}}'>{{ stringForDisplay }}</li>"),
 
 	section: new Template("<div class='item section' depth='{{sectionDepth}}' uuid='{{uuid}}'><h2>{{ stringForDisplay }}</h2>{{ synopsisList }}</div>"),
 
@@ -367,11 +367,20 @@ Beat.custom = {
 		Beat.onTextChangeDisabled = false
 		refreshHTML()
 	},
+	
 	returnToEditor: () => {
 		window.closePanel()
 	},
+	
 	printCards: () => {
 		printCards()
+	},
+
+	modifySynopsis: (uuid, newString, color) => {
+		let line = Beat.currentParser.lineWithUUID(uuid)
+		if (line == null) return;
+
+		Beat.replaceRange(line.position, line.length, "= " + newString)
 	}
 }
 
