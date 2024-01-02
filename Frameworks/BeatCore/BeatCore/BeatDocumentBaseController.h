@@ -25,9 +25,12 @@
 @class BeatEditorFormatting;
 @class BeatTagging;
 @class BeatPluginAgent;
+@class BeatFonts;
 
 @class BeatPaginationManager;
 @class BeatPagination;
+
+typedef NS_ENUM(NSInteger, BeatFontType);
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
@@ -181,11 +184,14 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Formatting
 
+@property (nonatomic) BeatFonts* _Nonnull fonts;
+@property (nonatomic) bool useSansSerif;
+/// Loads the current fonts defined by stylesheet.
+- (void)loadFonts;
+/// Reloads fonts and performs reformatting if needed.
+- (void)reloadFonts;
+
 @property (nonatomic) BeatEditorFormatting* _Nullable formatting;
-/// Formats a single line (might cause a crash if it's not actually part of the screenplay)
-- (void)formatLine:(Line* _Nonnull)line;
-/// Formats all lines in screenplay
-- (void)formatAllLines;
 /// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges;
 /// Forces reformatting of a range
