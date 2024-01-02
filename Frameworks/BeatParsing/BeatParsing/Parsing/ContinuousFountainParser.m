@@ -415,7 +415,7 @@ static NSDictionary* patterns;
     
     [self adjustLinePositionsFrom:lineIndex];
     
-    //[self report];
+    // [self report];
     [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
@@ -480,7 +480,7 @@ static NSDictionary* patterns;
         [self incrementLinePositionsFromIndex:firstIndex+1 amount:diff];
     }
     
-    //[self report];
+    // [self report];
     
     // Add necessary indices
     [changedIndices addIndex:firstIndex];
@@ -489,6 +489,13 @@ static NSDictionary* patterns;
     // Also removing a line break can cause some elements change their type.
     if ((omitOut || lastLineWasEmpty) && firstIndex < self.lines.count+1) [changedIndices addIndex:firstIndex+1];
     if ((omitIn || originalLineWasEmpty) && firstIndex > 0) [changedIndices addIndex:firstIndex-1];
+    
+    // Make sure we have at least one line left after the operation
+    if (self.lines.count == 0) {
+        Line* newLine = [Line withString:@"" type:empty];
+        newLine.position = 0;
+        [self.lines addObject:newLine];
+    }
     
     return changedIndices;
 }
@@ -1476,7 +1483,7 @@ static NSDictionary* patterns;
         
         return actualIndex;
     } else {
-        return self.lines.count - 1;
+        return (self.lines.count > 0) ? self.lines.count - 1 : 0;
     }
 }
 

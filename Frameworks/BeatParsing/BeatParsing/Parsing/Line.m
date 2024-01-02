@@ -192,6 +192,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             return @"";
     }
 }
+
 - (NSString*)typeName {
     return [Line typeName:self.type];
 }
@@ -254,11 +255,70 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
 }
 
-/// Retuns line type as string
+/// Retuns current line type as string
 - (NSString*)typeAsString
 {
     return [Line typeAsString:self.type];
 }
+
+/// Returns line type for string
++ (LineType)typeFromName:(NSString *)name
+{
+    if ([name isEqualToString:@"empty"]) {
+        return empty;
+    } else if ([name isEqualToString:@"section"]) {
+        return section;
+    } else if ([name isEqualToString:@"synopsis"]) {
+        return synopse;
+    } else if ([name isEqualToString:@"titlePageTitle"]) {
+        return titlePageTitle;
+    } else if ([name isEqualToString:@"titlePageAuthor"]) {
+        return titlePageAuthor;
+    } else if ([name isEqualToString:@"titlePageCredit"]) {
+        return titlePageCredit;
+    } else if ([name isEqualToString:@"titlePageSource"]) {
+        return titlePageSource;
+    } else if ([name isEqualToString:@"titlePageContact"]) {
+        return titlePageContact;
+    } else if ([name isEqualToString:@"titlePageDraftDate"]) {
+        return titlePageDraftDate;
+    } else if ([name isEqualToString:@"titlePageUnknown"]) {
+        return titlePageUnknown;
+    } else if ([name isEqualToString:@"heading"]) {
+        return heading;
+    } else if ([name isEqualToString:@"action"]) {
+        return action;
+    } else if ([name isEqualToString:@"character"]) {
+        return character;
+    } else if ([name isEqualToString:@"parenthetical"]) {
+        return parenthetical;
+    } else if ([name isEqualToString:@"dialogue"]) {
+        return dialogue;
+    } else if ([name isEqualToString:@"dualDialogueCharacter"]) {
+        return dualDialogueCharacter;
+    } else if ([name isEqualToString:@"dualDialogueParenthetical"]) {
+        return dualDialogueParenthetical;
+    } else if ([name isEqualToString:@"dualDialogue"]) {
+        return dualDialogue;
+    } else if ([name isEqualToString:@"transition"]) {
+        return transitionLine;
+    } else if ([name isEqualToString:@"lyrics"]) {
+        return lyrics;
+    } else if ([name isEqualToString:@"pageBreak"]) {
+        return pageBreak;
+    } else if ([name isEqualToString:@"centered"]) {
+        return centered;
+    } else if ([name isEqualToString:@"shot"]) {
+        return shot;
+    } else if ([name isEqualToString:@"more"]) {
+        return more;
+    } else if ([name isEqualToString:@"dualDialogueMore"]) {
+        return dualDialogueMore;
+    } else {
+        return typeCount;
+    }
+}
+
 
 
 #pragma mark - Thread-safe getters
@@ -275,11 +335,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 -(NSRange)range
 {
     @synchronized (self) {
-        if (self.parser && self == self.parser.lines.lastObject) {
-            // Don't go out of bounds - if this is the last line in parser, there is no line break.
-            return NSMakeRange(self.position, self.length);
-        }
-        
         return NSMakeRange(self.position, self.length + 1);
     }
 }

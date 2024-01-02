@@ -490,6 +490,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 #pragma mark - Convenience methods
 
+/// Returns type based on type _name_ (not `typeAsString` value)
++ (LineType)typeFromName:(NSString *)name;
+
 /// Returns the line type in a human-readable form.
 - (NSString*)typeAsString;
 /// Returns the type name for this line. It's basically `LineType` as string, useful for variables, CSS styles etc. To get a human-readable version, use `typeAsString`.
