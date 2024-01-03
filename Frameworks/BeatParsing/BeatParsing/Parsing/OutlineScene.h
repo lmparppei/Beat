@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinuousFountainParser.h"
 #import "Line.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @class OutlineScene;
+@class BeatNoteData;
+@class Line;
 
 @protocol OutlineSceneExports <JSExport>
 @property (nonatomic, readonly) NSString * sceneNumber;

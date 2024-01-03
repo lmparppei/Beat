@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatParsing/BeatNoteData.h>
 #import "OutlineScene.h"
-#import "ContinuousFountainParser.h"
+
 
 @implementation OutlineScene
 
