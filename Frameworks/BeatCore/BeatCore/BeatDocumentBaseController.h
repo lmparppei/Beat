@@ -115,9 +115,13 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (void)registerEditorView:(id<BeatEditorView> _Nonnull)view;
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView> _Nonnull)view;
 
+- (void)registerSelectionObserver:(id<BeatSelectionObserver> _Nonnull)observer;
+- (void)unregisterSelectionObserver:(id<BeatSelectionObserver> _Nonnull)observer;
+
 - (void)updateEditorViewsInBackground;
 - (void)updateSelectionObservers;
 - (void)updateOutlineViewsWithChanges:(OutlineChanges* _Nullable)changes;
+
 
 
 #pragma mark - Line lookup
