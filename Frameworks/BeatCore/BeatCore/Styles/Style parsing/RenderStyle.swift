@@ -11,7 +11,7 @@
  */
 
 import Foundation
-
+import BeatParsing
 
 // MARK: - Render style
 public enum RenderStyleValueType:Int {
@@ -19,6 +19,33 @@ public enum RenderStyleValueType:Int {
     case stringType
     case enumType
     case lineType
+}
+
+enum ConditionalRenderStyleOperator {
+    case greater
+    case less
+    case equal
+    case greaterOrEqual
+    case lessOrEqual
+}
+
+struct ConditionalRenderStyle {
+    /// Property key in `Line` object
+    var property:String
+    /// Comparison operator, like `<` or `>=`
+    var comparison:String
+    /// The value to compare against (this is string, so basically anything goes, if you are using strings, remember to escape them)
+    var value:String
+    
+    /// Rule name, such as `margin-top`, stored by BeatCSS parser
+    var ruleName:String
+    /// The value which should be applied to this particular conditional rule
+    var ruleValue:Any?
+    
+    /// A condition key for distincting different rules
+    func condition() -> String {
+        return property + " " + comparison + " " + value
+    }
 }
 
 @objc public class RenderStyle:NSObject {
@@ -40,10 +67,14 @@ public enum RenderStyleValueType:Int {
         "scene-number": .boolType,
         "unindent-fresh-paragraph": .boolType,
         "font-type": .enumType,
-        "visible-elements": .lineType
+        "visible-elements": .lineType,
+        "disabled-types": .lineType
     ] }
 
     @objc public var name:String = ""
+    /// `true` if this style was created based on conditional styles
+    @objc public var dynamicStyle = false
+    @objc public var initialStyles:[String:Any]
     
     @objc public var fontType:BeatFontType = .fixed
     
@@ -66,13 +97,14 @@ public enum RenderStyleValueType:Int {
     @objc public var marginBottom:CGFloat = 0
     @objc public var marginBottomA4:CGFloat = 0
     @objc public var marginBottomLetter:CGFloat = 0
-    @objc public var forcedMargin = false
-    
     @objc public var marginRight:CGFloat = 0
     @objc public var paddingLeft:CGFloat = 0
-    
     @objc public var contentPadding:CGFloat = 0
 
+    /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
+    @objc public var forcedMargin = false
+
+    /// `0` means automatic line height
     @objc public var lineHeight:CGFloat = 0
     
     @objc public var width:CGFloat = 0
@@ -91,9 +123,14 @@ public enum RenderStyleValueType:Int {
     @objc public var indentSplitElements:Bool = true
     @objc public var unindentFreshParagraphs:Bool = false
     
+    /// If content is set, it should replace existing text content in this particular element
     @objc public var content:String?
     
+    /// Whether this object always begins a new page
     @objc public var beginsPage = false
+    
+    /// A dictionary of sub-rules
+    var conditionalRules:[String:[String:Any]] = [:]
     
     @objc public var visibleElements:[AnyObject] = [] {
         /// Int arrays are not supported in ObjC, so we'll use a shadow array here to provide actual values for Swift
@@ -101,25 +138,68 @@ public enum RenderStyleValueType:Int {
     }
     public var _visibleElements:[LineType] = []
     
+    /// @warning: this type can't be correctly represented in ObjC. You need to use `getDisabledTypes` to get an index set, which in turn is compatible with the parser.
+    @objc public var disabledTypes:[Any]?
+    @objc public func getDisabledTypes() -> IndexSet? {
+        guard let disabledTypes = self.disabledTypes as? [LineType] else { return nil }
+        
+        let types = NSMutableIndexSet()
+        
+        let rawValues:[Int] = disabledTypes.map { Int($0.rawValue) }
+        let indices = IndexSet(rawValues)
+        
+        return indices
+    }
+    
+    
     @objc public var sceneNumber:Bool = true
     
     public init(rules:[String:Any]) {
+        // Save initial styles and remove any conditionals from that list
+        self.initialStyles = rules
+        self.initialStyles["_conditionals"] = nil
+        
         super.init()
 
         for key in rules.keys {
             // Create property name based on the rule key
             var value = rules[key]!
-            let property = styleNameToProperty(name: key)
             
+            let property = styleNameToProperty(name: key)
             if property == "fontType" {
                 let fontType = value as? BeatFontType ?? .fixed
                 value = fontType.rawValue
             }
-            
+                        
+            // First catch conditionals
+            if key == "_conditionals" {
+                // We'll create a specific stylesheet for all conditional values
+                if let conditions = value as? [ConditionalRenderStyle] {
+                    for condition in conditions {
+                        let exp = condition.condition()
+                        // Create a new dict for this condition if needed
+                        if self.conditionalRules[exp] == nil {
+                            // Create empty set of dynamic rules
+                            var conditionalRules:[String:Any] = [:]
+                            conditionalRules["dynamicStyle"] = true
+                            
+                            self.conditionalRules[exp] = conditionalRules
+                        }
+                                                
+                        // Store new rules
+                        if var rules = self.conditionalRules[exp] {
+                            rules[condition.ruleName] = condition.ruleValue
+                            self.conditionalRules[exp] = rules
+                        }
+                    }
+                }
+                
+                continue
+            }
+                        
             // Check that the property exists to avoid any unnecessary crashes
             if (self.responds(to: Selector(property))) {
                 self.setValue(value, forKey: property)
-                
             } else {
                 print("Warning: Unrecognized BeatCSS key: ", property)
             }
@@ -180,6 +260,8 @@ public enum RenderStyleValueType:Int {
             return "forcedMargin"
         case "first-page-with-number":
             return "firstPageWithNumber"
+        case "disabled-types":
+            return "disabledTypes"
         default:
             return name
         }
@@ -203,6 +285,50 @@ public enum RenderStyleValueType:Int {
             return widthLetter
         } else {
             return width
+        }
+    }
+        
+    @objc public func hasConditionalStyles() -> Bool {
+        return (self.conditionalRules.count > 0)
+    }
+    
+    @objc public func dynamicStyles(for line:Line) -> RenderStyle? {
+        // Nothing to check
+        if self.conditionalRules.count == 0 { print("No conditional styles"); return nil }
+        
+        var dynamicRules:[String:Any] = [:]
+        
+        // Iterate through conditional rules and append any fitting dynamic rules
+        for conditionalRule in self.conditionalRules.keys {
+            // We'll split the rule key back to its components (ie. "sectionDepth > 1" -> "sectionDepth", ">", "1")
+            let components = conditionalRule.components(separatedBy: " ")
+            if components.count == 0 { continue }
+            
+            // Get the given value from line
+            if let val = line.value(forKey: components[0]) {
+                // Create an expression based on the newly received value, operator and the expected value
+                let expString = "(\(val) \(components[1]) \(components[2]))"
+                let exp = NSPredicate(format: expString)
+                
+                // Run predicate and if it applies, let's apply new rules
+                if exp.evaluate(with: nil),
+                    let rules = self.conditionalRules[conditionalRule]
+                {
+                    dynamicRules.merge(rules) { $1 }
+                }
+            }
+        }
+        
+        if dynamicRules.count > 0 {
+            // Dynamic rules exist.
+            // Merge the with initial rules, overriding any new values.
+            var fullRules = self.initialStyles
+            fullRules.merge(dynamicRules) { $1 }
+            
+            return RenderStyle(rules: fullRules)
+        } else {
+            // No dynamic rules
+            return nil
         }
     }
 }

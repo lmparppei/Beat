@@ -143,7 +143,7 @@
 	// Page breaks are just empty lines
 	if (line.type == pageBreak) return NSAttributedString.new;
 		
-	RenderStyle* style = [self styleForType:line.type];
+	RenderStyle* style = [self.styles forLine:line];
 	
 	// Create attributed string with attributes for current style
 	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
@@ -434,10 +434,6 @@
 
 #pragma mark - Attribute management
 
-- (RenderStyle*)styleForType:(LineType)type {
-	return [self.styles forElement:[Line typeName:type]];
-}
-
 - (NSFont*)fontWith:(RenderStyle*)style
 {
 	NSFont* font;
@@ -494,9 +490,14 @@
 		
 		// We'll create additional, special attributes for some rules.
 		// Let's add 100 to the type to create separate keys for split-paragraph rules.
+		if ([line.string rangeOfString:@"If I am so scared"].location != NSNotFound) {
+			NSLog(@" ");
+		}
+		
+		// TODO: We need to define *how* lines are unsafe for page break for the indents to work correctly.
 		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered) && !line.isTitlePage) {
 			typeKey = @(type + 100);
-		} else if (!line.unsafeForPageBreak && line.beginsNewParagraph && [self.styles forElement:line.typeName].unindentFreshParagraphs) {
+		} else if (!line.paragraphIn && line.beginsNewParagraph && [self.styles forLine:line].unindentFreshParagraphs) {
 			typeKey = @(type + 200);
 		}
 		
@@ -510,11 +511,10 @@
 				typeKey = @(titlePageType);
 			}
 		}
-		
+				
 		if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
-			RenderStyle *style = [self styleForType:type];
+			RenderStyle *style = [self.styles forLine:line];
 			
-			// Get font
 			NSFont* font = [self fontWith:style];
 			
 			// Get text color
@@ -535,14 +535,14 @@
 			
 			CGFloat blockWidth 	= width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
 			if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
-			
+						
 			// Paragraph style
 			NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 			pStyle.headIndent 				= style.marginLeft + style.indent;
 			pStyle.firstLineHeadIndent 		= style.marginLeft + style.firstLineIndent;
 			
 			// Check for additional rules
-			if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.unsafeForPageBreak) {
+			if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.paragraphIn) {
 				pStyle.firstLineHeadIndent -= style.firstLineIndent;
 			}
 			
@@ -591,9 +591,14 @@
 				if (!line.beginsTitlePageBlock) pStyle.paragraphSpacingBefore = 0.0;
 				if (!line.endsTitlePageBlock) pStyle.paragraphSpacing = 0.0;
 			}
-
-		
+			
+			// Apply paragraph style
 			styles[NSParagraphStyleAttributeName] = pStyle;
+			
+			// We can't store conditional styles, so let's not store this one.
+			if (style.dynamicStyle) {
+				return [NSDictionary dictionaryWithDictionary:styles];
+			}
 			
 			// Apply to existing styles
 			_lineTypeAttributes[paperSizeKey][typeKey] = [NSDictionary dictionaryWithDictionary:styles];
@@ -607,7 +612,7 @@
 #pragma mark - Convenience methods
 
 - (CGFloat)widthFor:(Line*)line {
-	RenderStyle* style = [self.styles forElement:line.typeName];
+	RenderStyle* style = [self.styles forLine:line];
 	CGFloat width = [style widthWithPageSize:self.settings.paperSize];
 	if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
 		

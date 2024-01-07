@@ -55,8 +55,21 @@ import OSLog
         return pageStyle
     }
     
+    /// Returns styles for given element type
     @objc public func forElement(_ name:String) -> RenderStyle {
         return styles[name] ?? RenderStyle(rules: ["width-a4": self.page().defaultWidthA4, "width-us": self.page().defaultWidthLetter])
+    }
+    
+    /// Returns styles for given line, can be dynamic
+    @objc public func forLine(_ line:Line) -> RenderStyle {
+        let style = forElement(line.typeName())
+        
+        if style.hasConditionalStyles(), let dynamicStyle = style.dynamicStyles(for: line) {
+            style.dynamicStyle = true
+            return dynamicStyle
+        }
+        
+        return style
     }
     
     /// Returns `true` if the style sheet has variable font sizes

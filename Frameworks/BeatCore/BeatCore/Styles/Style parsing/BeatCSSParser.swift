@@ -33,21 +33,21 @@ public final class CssParser {
 		var pendingLine = ""
 		
 		var omit = false
-		var previousOmit = ""
+        var previousOmit = ""
 				
 		for character in fileContent {
-			if character == "/" && pendingStyleName == "" {
-				if !omit {
-					previousOmit = "/"
-					continue
-				}
-				else if omit && previousOmit == "*" {
-					omit = false
-					previousOmit = ""
-					continue
-				}
-			}
-			else if character == "*" {
+            // Catch omits
+            if character == "/" && pendingStyleName == "" {
+                if !omit {
+                    previousOmit = "/"
+                    continue
+                }
+                else if omit && previousOmit == "*" {
+                    omit = false
+                    previousOmit = ""
+                    continue
+                }
+            } else if character == "*" {
 				if previousOmit == "/" {
 					omit = true
 					previousOmit = ""
@@ -58,25 +58,30 @@ public final class CssParser {
 					continue
 				}
 			}
-		
 			// We're inside an omit block
 			if omit { continue }
-			 
+            			 
 			pendingLine.append(character)
 			
 			if character == "{" {
 				pendingStyleName = pendingLine.replacingOccurrences(strings: ["\n", "{"])
 				pendingLine = ""
-			}
-			else if character == ";" {
+			} else if character == ";" {
 				let propertyLine = pendingLine.replacingOccurrences(strings: [";", "\n"])
-				let key = propertyLine.removeTrailing(startWith: ":").replacingOccurrences(strings: [" "]).trimmingCharacters(in: .whitespaces)
+				
+                // Clean up key. If it's a conditional, don't remove unnecessary spaces.
+                var key = propertyLine.removeTrailing(startWith: ":").trimmingCharacters(in: .whitespaces)
+                if !key.hasPrefix("if") {
+                    // Remove unnecessary spaces if it's not a conditional
+                    key = key.replacingOccurrences(strings: [" "])
+                }
+                
 				let value = propertyLine.removeLeading(startWith: ":").removeLeading(startWith: " ")
 				
 				pendingStyleProperties[key] = value
 				pendingLine = ""
-			}
-			else if character == "}" {
+                
+			} else if character == "}" {
 				pendingStyleName = pendingStyleName.trimmingCharacters(in: .whitespaces)
                 
                 let styleNames = pendingStyleName.components(separatedBy: ",")
@@ -103,14 +108,30 @@ public final class CssParser {
 		}
 		
 		// Map the rules into actual styles
-		// BTW, this is a silly approach -- why not check the type in RenderStyle property before using readValue()?
 		for key in styles.keys {
 			let dict:[String:String] = styles[key]!
 			var rules = [String:Any]()
 			
 			for ruleKey in dict.keys {
 				let value = dict[ruleKey]!
-				
+                				
+                // Catch conditionals first
+                if ruleKey.hasPrefix("if ") {
+                    if rules["_conditionals"] == nil {
+                        // Create the key if needed
+                        rules["_conditionals"] = [ConditionalRenderStyle]()
+                    }
+                    
+                    // Parse conditional and add it to existing rules
+                    if var conditionalRules = rules["_conditionals"] as? [ConditionalRenderStyle],
+                        let conditionalStyle = parseConditional(ruleKey, value) {
+                        conditionalRules.append(conditionalStyle)
+                        rules["_conditionals"] = conditionalRules
+                    }
+                    continue
+                }
+                
+                // Normal style rule
                 if let result = readStyleValue(value: value, key: ruleKey) {
                     rules[ruleKey] = result
                 }
@@ -135,7 +156,7 @@ public final class CssParser {
 		return userSettingValue
 	}
 	
-    func readStyleValue(value:String, key:String) -> Any? {
+    func readStyleValue(value:String, key:String) -> Any? {       
         if value.contains("[") {
             // An array
             if let elements = value.slice(from: "[", to: "]") {
@@ -192,7 +213,6 @@ public final class CssParser {
         // Line height can be set DYNAMICALLY, and will affect other value calculations
         if key == "page" && (key == "lineHeight" || key == "line-height") {
             let e = exp.expressionValue(with: nil, context: nil) as? CGFloat ?? BeatStyles.lineHeight
-            print("!!! SET LINE HEIGHT", e)
             self.lineHeight = e
         }
         
@@ -223,5 +243,26 @@ public final class CssParser {
         }
         
         return t
+    }
+    
+    func parseConditional(_ key:String, _ value:String) -> ConditionalRenderStyle? {
+        let conditional = key.slice(from: "if ", to: " then")
+        
+        guard let components = conditional?.components(separatedBy: " "),
+              components.count == 3,
+              let ruleEnd = key.range(of: " then ")?.upperBound
+        else {
+            return nil
+        }
+        
+        let ruleName = String(key.suffix(from: ruleEnd))
+        //let keyName = self.styleNameToProperty(name: ruleName)
+        
+        let p = components[0] // property
+        let o = components[1] // operator
+        let v = components[2] // value
+        
+        let actualValue = readStyleValue(value: value, key: key)
+        return ConditionalRenderStyle(property: p, comparison: o, value: v, ruleName: ruleName, ruleValue:actualValue)
     }
 }

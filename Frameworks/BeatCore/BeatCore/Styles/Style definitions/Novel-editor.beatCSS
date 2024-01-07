@@ -12,6 +12,10 @@
 
 */
 
+document {
+    disabled-types: [character];
+}
+
 page {
     margin-left: 25;
     margin-right: 25;
