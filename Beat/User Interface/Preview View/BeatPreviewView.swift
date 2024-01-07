@@ -173,8 +173,8 @@ final class CenteringClipView: NSClipView {
 	}
 }
 
-final class FlippedView:NSView {
-	override var isFlipped: Bool { return true }
+open class FlippedView:NSView {
+	override public var isFlipped: Bool { return true }
 }
 
 class CenteringScrollView: NSScrollView {

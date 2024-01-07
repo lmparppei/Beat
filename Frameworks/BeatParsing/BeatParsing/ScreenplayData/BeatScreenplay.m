@@ -7,6 +7,7 @@
 
 #import "BeatScreenplay.h"
 #import "ContinuousFountainParser.h"
+#import "ContinuousFountainParser+Preprocessing.h"
 #import "BeatExportSettings.h"
 
 #pragma mark - Screenplay meta-object

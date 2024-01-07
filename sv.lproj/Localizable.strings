@@ -385,3 +385,8 @@
 
 "revisions.convert.remove" = "(radera)";
 "revisions.convert.onlySelectedRange" = "Endast inom vald text";
+
+"character.editor.age" = "Ålder";
+"character.editor.biography" = "Biografi";
+"character.editor.lines" = "Rader";
+

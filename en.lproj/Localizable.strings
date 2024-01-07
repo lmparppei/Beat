@@ -200,3 +200,10 @@
 "outline.settings.notes" = "Notes";
 "outline.settings.markers" = "Markers";
 "outline.settings.snapshots" = "Show Snapshots";
+
+"character.editor.age" = "Age";
+"character.editor.biography" = "Biography";
+"character.editor.lines" = "Lines";
+
+
+

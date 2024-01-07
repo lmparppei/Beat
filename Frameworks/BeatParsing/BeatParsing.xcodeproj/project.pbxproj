@@ -15,6 +15,8 @@
 		B64E438C2ACAA33D003B947F /* BeatStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E438B2ACAA33D003B947F /* BeatStringExtensions.swift */; };
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
+		B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */ = {isa = PBXBuildFile; fileRef = B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B694016C2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m in Sources */ = {isa = PBXBuildFile; fileRef = B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */; };
 		B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */; };
 		B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */ = {isa = PBXBuildFile; fileRef = B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
@@ -64,6 +66,8 @@
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
 		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
 		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
+		B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Preprocessing.h"; sourceTree = "<group>"; };
+		B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Preprocessing.m"; sourceTree = "<group>"; };
 		B699E7BB2A39AF0E001476EF /* NSString+EMOEmoji.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+EMOEmoji.m"; sourceTree = "<group>"; };
 		B699E7BC2A39AF0E001476EF /* NSString+EMOEmoji.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+EMOEmoji.h"; sourceTree = "<group>"; };
 		B6B37E8328F018A100657F5F /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +152,8 @@
 			children = (
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
+				B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */,
+				B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */,
 				B6B37F1028F01A8700657F5F /* Line.h */,
 				B6B37F0B28F01A8700657F5F /* Line.m */,
 				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,
@@ -242,6 +248,7 @@
 				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
+				B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */,
 				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
 				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
@@ -327,6 +334,7 @@
 			files = (
 				B64E438C2ACAA33D003B947F /* BeatStringExtensions.swift in Sources */,
 				B6B37F1828F01A8700657F5F /* Line.m in Sources */,
+				B694016C2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m in Sources */,
 				B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6B37F4D28F0279700657F5F /* NSIndexSet+Subset.m in Sources */,
 				B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */,

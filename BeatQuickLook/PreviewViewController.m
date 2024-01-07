@@ -109,7 +109,6 @@
 - (NSTextView *)getTextView { return nil; }
 - (bool)hasChanged { return false; }
 - (bool)isDark { return false; }
-- (LineType)lineTypeAt:(NSInteger)index { return [self.parser lineTypeAt:index]; }
 - (NSMutableArray<Line *> *)lines { return self.parser.lines; }
 - (NSArray *)linesForScene:(OutlineScene *)scene { return [self.parser linesForScene:scene]; }
 - (NSArray *)markers { return @[]; }

@@ -179,3 +179,7 @@
 "outline.settings.notes" = "Muistiinpanot";
 "outline.settings.markers" = "Merkit";
 "outline.settings.snapshots" = "Vilkaisukuvat";
+
+"character.editor.age" = "Ikä";
+"character.editor.biography" = "Kuvaus";
+"character.editor.lines" = "Repliikit";
