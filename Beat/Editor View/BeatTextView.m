@@ -547,7 +547,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.editorDelegate updateLayout];
 }
 
-- (void)updateTypewriterView {
+- (void)updateTypewriterView
+{
 	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 	
@@ -559,7 +560,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 
-- (void)typewriterScroll {
+- (void)typewriterScroll
+{
 	if (self.needsLayout) [self layout];
 	[self.layoutManager ensureLayoutForCharacterRange:self.editorDelegate.currentLine.range];
 	
@@ -771,12 +773,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (_editorDelegate.mode == TaggingMode) {
 		// Show tag list
 		[self showTaggingOptions];
-	}
-	else if (_editorDelegate.mode == ReviewMode) {
+	} else if (_editorDelegate.mode == ReviewMode) {
 		// Show review editor
 		[_editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
-	}
-	else {
+	} else {
 		// We are in editor mode. Run any required events.
 		[self selectionEvents];
 	}

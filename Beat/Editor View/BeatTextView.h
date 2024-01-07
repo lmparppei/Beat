@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (nonatomic) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
-@property (readonly) NSUInteger fontSize;
+@property (readonly) CGFloat fontSize;
 @property (readonly) bool hideFountainMarkup;
 @property (readonly) bool documentIsLoading;
 @property (nonatomic) bool skipSelectionChangeEvent;
