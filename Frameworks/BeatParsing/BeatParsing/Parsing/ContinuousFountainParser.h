@@ -22,10 +22,12 @@
 @property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 @property (nonatomic, readonly) NSRange selectedRange;
+@property (nonatomic, readonly) NSIndexSet* disabledTypes;
 
 - (NSInteger)sceneNumberingStartsFrom;
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 - (void)applyFormatChanges;
+
 
 @end
 
@@ -68,23 +70,30 @@
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
-@property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate; /// Parser delegate. Basically it's the document.
-
-@property (atomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
-@property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
-@property (nonatomic) NSMutableArray <OutlineScene*>* outline;
+/// Parser delegate. Basically it's the document.
+@property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
+/// Every line as object
+@property (atomic) NSMutableArray<Line*>* lines;
+/// Contains every line that needs to be formatted once changes have been parsed.
+@property (nonatomic) NSMutableIndexSet* changedIndices;
+/// Document outline structure (scenes and sections)
+@property (nonatomic) NSMutableArray<OutlineScene*>* outline;
+/// Title page elements as a complicated array
 @property (nonatomic) NSMutableArray<NSMutableDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
 @property (nonatomic) NSMutableSet *storylines;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;
 @property (nonatomic) bool hasTitlePage;
 
-// For STATIC parsing without a document
+/// For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
+/// Set `true` when the parser is not continuous
 @property (nonatomic) bool staticParser;
+
+/// Returns the assigned document settings 
+- (BeatDocumentSettings*)documentSettings;
 
 @property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
 
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay;
 + (NSArray*)titlePageForString:(NSString*)string;
 
 // Initialization for both CONTINUOUS and STATIC parsing
@@ -106,8 +115,6 @@
 - (NSArray*)outlineTree;
 /// Returns parsed scenes, excluding structure elements
 - (NSArray*)scenes;
-/// Ensures parsing issues. Only for debugging.
-- (void)ensurePositions;
 /// Returns the lines for given scene
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 /// Returns the line preceding given line
@@ -137,24 +144,20 @@
 
 /// Returns the raw string for the screenplay. Preprocesses some lines.
 - (NSString*)screenplayForSaving;
-/// Preprocesses parsed lines, stripping away invisible lines and making sure dual dialogue blocks are held together.
-- (NSArray*)preprocessForPrinting;
-- (NSArray*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings;
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay;
 /// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
 
 
 #pragma mark - Convenience Methods
 
-/// Returns the index of given line. Uses cached results, so it's much more performant than using `[_lines indexOfObject:]`.
+/// Returns the index of given line. Uses cached results, so it's much more performant than using `indexOfObject:]`.
 - (NSUInteger)indexOfLine:(Line*)line;
+/// Returns the index of given scene. Uses cached results, so it's more performant than using `indexOfObject:]`.
+- (NSUInteger)indexOfScene:(OutlineScene*)scene;
 /// Returns the line at given position
 - (Line*)lineAtPosition:(NSInteger)position;
 /// Returns the index of line at this position
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
-/// Returns the outline index of the scene which holds the scene in this position
-- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index;
 /// Returns the scene which contains the line at given index
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 /// Returns all scenes in the given range (including intersecting scenes)
@@ -167,8 +170,6 @@
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 /// Returns the number of scenes  in the file (excluding other structure elements)
 - (NSInteger)numberOfScenes;
-/// Returns line type for given line index
-- (LineType)lineTypeAt:(NSInteger)index;
 
 /// Returns a "screenplay block" (items which beling together, such as character cues and dialogue) for the given range.
 - (NSArray<Line*>*)blockForRange:(NSRange)range;
