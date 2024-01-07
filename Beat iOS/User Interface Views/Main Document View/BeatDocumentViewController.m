@@ -36,8 +36,6 @@
 /// The range where the *edit* happened
 @property (nonatomic) NSRange lastEditedRange;
  
-@property (nonatomic) NSMutableSet<id<BeatEditorView>>* registeredViews;
-@property (nonatomic) NSMutableSet<id<BeatSceneOutlineView>>* registeredOutlineViews;
 @property (nonatomic) NSMutableSet<id<BeatPluginContainer>>* registeredPluginContainers;
 
 @property (nonatomic) bool sidebarVisible;
@@ -612,13 +610,13 @@
 	
 	if ([text isEqualToString:@"\n"]) {
 		// Process line break after a forced character input
-		if (_characterInput && _characterInputForLine) {
+		if (self.characterInput && self.characterInputForLine) {
 			// If the cue is empty, reset it
-			if (_characterInputForLine.string.length == 0) {
-				_characterInputForLine.type = empty;
+			if (self.characterInputForLine.string.length == 0) {
+				self.characterInputForLine.type = empty;
 				[self.formatting formatLine:self.characterInputForLine];
 			} else {
-				_characterInputForLine.forcedCharacterCue = YES;
+				self.characterInputForLine.forcedCharacterCue = YES;
 			}
 		}
 	}

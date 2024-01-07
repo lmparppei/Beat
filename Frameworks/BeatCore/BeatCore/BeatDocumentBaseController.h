@@ -76,6 +76,10 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (strong, nonatomic) ContinuousFountainParser* _Nullable parser;
 /// Returns a copy of the outline
 @property (nonatomic) NSArray* _Nonnull outline;
+/// Flag for if character cue input is on/off
+@property (nonatomic) bool characterInput;
+/// Line on which the input is happening. This is not the best approach, but whatever.
+@property (nonatomic) Line* _Nullable characterInputForLine;
 
 
 #pragma mark - Basic document settings

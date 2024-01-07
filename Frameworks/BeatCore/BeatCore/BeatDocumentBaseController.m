@@ -19,7 +19,7 @@
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
 
-@interface BeatDocumentBaseController()
+@interface BeatDocumentBaseController() <ContinuousFountainParserDelegate>
 
 @end
 
@@ -104,6 +104,12 @@
 - (void)ensureLayout
 {
     NSLog(@"ensureLayout should be overridden by the OS-specific class.");
+}
+
+/// Returns disabled types from styles
+- (NSIndexSet*)disabledTypes
+{
+    return self.editorStyles.document.getDisabledTypes;
 }
 
 
@@ -251,6 +257,7 @@
 
 
 #pragma mark - Formatting
+/// TODO: WHY ARE THESE HERE???? Move to `BeatFormatting`
 
 - (IBAction)reformatEverything:(id)sender
 {

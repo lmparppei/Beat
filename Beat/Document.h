@@ -62,14 +62,10 @@ THE SOFTWARE.
 @property (nonatomic) bool revisionMode;
 
 @property (nonatomic) bool contentLocked;
-@property (nonatomic) bool characterInput;
 
 - (void)reloadOutline;
 
 @property (nonatomic) NSMutableIndexSet*  _Nullable changes;
-
-// Character input
-@property (nonatomic) Line* _Nullable characterInputForLine;
 
 // Plugin support
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;

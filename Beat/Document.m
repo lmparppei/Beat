@@ -1362,7 +1362,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Check for character input trouble
-	if (_characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == _characterInputForLine.position) {
+	if (self.characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.characterInputForLine.position) {
 		[self cancelCharacterInput];
 		return NO;
 	}
@@ -1408,16 +1408,16 @@ static NSWindow __weak *currentKeyWindow;
 		}
 		
 		// Process line break after a forced character input
-		if (_characterInput && _characterInputForLine) {
+		if (self.characterInput && self.characterInputForLine) {
 			// Don't go out of range
-			if (NSMaxRange(_characterInputForLine.textRange) <= self.textView.string.length) {
+			if (NSMaxRange(self.characterInputForLine.textRange) <= self.textView.string.length) {
 				// If the cue is empty, reset it
-				if (_characterInputForLine.string.length == 0) {
-					_characterInputForLine.type = empty;
-					[self.formatting formatLine:_characterInputForLine];
+				if (self.characterInputForLine.string.length == 0) {
+					self.characterInputForLine.type = empty;
+					[self.formatting formatLine:self.characterInputForLine];
 				}
 				else {
-					_characterInputForLine.forcedCharacterCue = YES;
+					self.characterInputForLine.forcedCharacterCue = YES;
 				}
 			}
 		}
@@ -1445,7 +1445,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Make the replacement string uppercase in parser
-	if (_characterInput) replacementString = replacementString.uppercaseString;
+	if (self.characterInput) replacementString = replacementString.uppercaseString;
 	
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
@@ -1533,9 +1533,9 @@ static NSWindow __weak *currentKeyWindow;
 	// Reset forced character input
 	if (self.characterInputForLine != self.currentLine && self.characterInput) {
 		self.characterInput = NO;
-		if (_characterInputForLine.string.length == 0) {
-			[self setTypeAndFormat:_characterInputForLine type:empty];
-			_characterInputForLine = nil;
+		if (self.characterInputForLine.string.length == 0) {
+			[self setTypeAndFormat:self.characterInputForLine type:empty];
+			self.characterInputForLine = nil;
 		}
 	}
 	
@@ -1583,9 +1583,8 @@ static NSWindow __weak *currentKeyWindow;
 /// TODO: Register the views which need scene index udpate.
 - (void)updateUIwithCurrentScene
 {
-	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
-	
 	OutlineScene *currentScene = self.currentScene;
+	__block NSInteger sceneIndex = [self.parser.outline indexOfObject:currentScene];
 	
 	// Update Timeline & TouchBar Timeline
 	if (self.timeline.visible) [_timeline scrollToSceneIndex:sceneIndex];
@@ -1667,7 +1666,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)forceCharacterInput {
 	// TODO: Move this to text view
 	// Don't allow this to happen twice
-	if (_characterInput) return;
+	if (self.characterInput) return;
 	
 	[self.formattingActions addCue];
 	[self.formatting forceEmptyCharacterCue];
@@ -1675,8 +1674,8 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)cancelCharacterInput {
 	// TODO: Move this to text view
-	_characterInput = NO;
-	_characterInputForLine = nil;
+	self.characterInput = NO;
+	self.characterInputForLine = nil;
 	
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -1688,7 +1687,7 @@ static NSWindow __weak *currentKeyWindow;
 	self.textView.needsDisplay = YES;
 	self.textView.needsLayout = YES;
 	
-	[self setTypeAndFormat:_characterInputForLine type:empty];
+	[self setTypeAndFormat:self.characterInputForLine type:empty];
 }
 
 
