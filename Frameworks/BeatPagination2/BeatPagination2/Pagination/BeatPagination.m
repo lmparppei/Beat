@@ -338,8 +338,9 @@
 			continue;
 		}
         
-        // Then catch elements which have page break style
-        if ([self.styles forElement:line.typeName].beginsPage && _currentPage.blocks.count > 0) {
+        // Then catch elements which might have page break style
+        RenderStyle* style = [self.styles forLine:line];
+        if (style.beginsPage && _currentPage.blocks.count > 0) {
             BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:line attributedString:nil reason:@"Element begins page"];
             [self addPage:@[] toQueue:@[] pageBreak:pageBreak];
         }
@@ -793,12 +794,14 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 #pragma mark - Paragraph sizing
 
-- (NSParagraphStyle*)paragraphStyleFor:(NSString*)lineType
+- (NSParagraphStyle*)paragraphStyleFor:(Line*)line
 {
+    NSString* lineType = line.typeName;
+    
     // If we've already created this style, return it
     if (_paragraphStyles[lineType]) return _paragraphStyles[lineType];
     
-    RenderStyle* style = [self.styles forElement:lineType];
+    RenderStyle* style = [self.styles forLine:line];
     
     // Create a bare-bones paragraph style. We only need to know indent and line height.
     NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
@@ -807,7 +810,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     pStyle.headIndent           = style.indent;
     
     if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
-    _paragraphStyles[lineType] = pStyle;
+    
+    // Don't store the style if it's dynamic
+    if (!style.dynamicStyle) _paragraphStyles[lineType] = pStyle;
     
     return pStyle;
 }

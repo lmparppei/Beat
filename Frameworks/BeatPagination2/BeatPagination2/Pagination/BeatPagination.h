@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<Line*>* __nullable lines;
 @property (nonatomic, readonly) CGFloat maxPageHeight;
 
-- (NSParagraphStyle*)paragraphStyleFor:(NSString*)lineType;
+- (NSParagraphStyle*)paragraphStyleFor:(Line*)line;
 
 - (Line*)moreLineFor:(Line*)line;
 - (Line*)contdLineFor:(Line*)line;

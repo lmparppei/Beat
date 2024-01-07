@@ -107,7 +107,7 @@
     BeatPaperSize pageSize = self.delegate.settings.paperSize;
     
     // Get render style
-    RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
+    RenderStyle *style = [self.delegate.styles forLine:line];
     CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
     
 	// Create a bare-bones paragraph style
@@ -139,7 +139,7 @@
     height = [string heightWithContainerWidth:width] + topMargin;
 		
 	// Save the calculated top margin for full block if this is the first element on page, AND this behavior isn't overridden
-    if (line == self.lines.firstObject && ![self.delegate.styles forElement:line.typeName].forcedMargin) {
+    if (line == self.lines.firstObject && ![self.delegate.styles forLine:line].forcedMargin) {
         self.topMargin = topMargin;
     }
 	
@@ -329,12 +329,12 @@
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
     
     // Get block size
-	RenderStyle *style = [self.delegate.styles forElement:line.typeName];
+	RenderStyle *style = [self.delegate.styles forLine:line];
     CGFloat width = [style widthWithPageSize:paperSize];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
 	
 	// Create the layout manager for remaining space calculation
-	NSLayoutManager *lm = [self layoutManagerForString:str type:line.type];
+    NSLayoutManager *lm = [self layoutManagerForString:str line:line];
 	
 	// We'll get the number of lines rather than calculating exact size in NSTextField
 	__block NSInteger numberOfLines = 0;
@@ -585,6 +585,7 @@
 
 /// Returns the height of string for given line type.
 /// - note: This method doesn't take margins or any other styles into account, just the width.
+/// TODO: WHAT THE FUCK IS THIS, please conform to new stylesheet standards
 - (NSInteger)heightForString:(NSString *)string lineType:(LineType)type
 {
 	// This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
@@ -645,8 +646,10 @@
 }
 
 /// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
-- (NSLayoutManager*)layoutManagerForString:(NSString*)string type:(LineType)type
+- (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line
 {
+    LineType type = line.type;
+    
     // If this is a *dual dialogue* column, we'll need to convert the style.
     if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
         if (type == dialogue) type = dualDialogue;
@@ -654,9 +657,7 @@
         else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
     }
     
-    NSString* lineType = [Line typeName:type];
-    
-    RenderStyle *style = [self.delegate.styles forElement:lineType];
+    RenderStyle *style = [self.delegate.styles forLine:line];
     
     BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
@@ -665,7 +666,7 @@
     CGFloat width = [style widthWithPageSize:paperSize];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
     
-    NSParagraphStyle* pStyle = [self.delegate paragraphStyleFor:lineType];
+    NSParagraphStyle* pStyle = [self.delegate paragraphStyleFor:line];
     
 #if TARGET_OS_IOS
     // Set font size to 80% on iOS
