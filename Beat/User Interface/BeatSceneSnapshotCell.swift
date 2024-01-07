@@ -15,7 +15,7 @@ import AppKit
 	var timer:Timer?
 	var popover:NSPopover?
 	
-	@IBInspectable var snapshotWidth = 320.0
+	@IBInspectable var snapshotWidth = 400.0
 	@IBInspectable var padding = 10.0
 	@IBInspectable var delay = 1.2
 	
@@ -91,7 +91,7 @@ import AppKit
 
 class BeatSceneSnapshot:NSObject {
 	/// Creates an image of the given scene in text view
-	class func create(scene:OutlineScene, delegate:BeatEditorDelegate, maxWidth:CGFloat = 500.0) -> NSImage? {
+	class func create(scene:OutlineScene, delegate:BeatEditorDelegate, maxHeight:CGFloat = 400.0) -> NSImage? {
 		guard let textView = delegate.getTextView(),
 			  let layoutManager = delegate.getTextView().layoutManager else {
 			print("No text view")
@@ -110,7 +110,7 @@ class BeatSceneSnapshot:NSObject {
 		rect.origin.x += textView.textContainerInset.width
 		rect.origin.y += textView.textContainerInset.height
 		
-		if rect.size.height > maxWidth { rect.size.height = maxWidth }
+		if rect.size.height > maxHeight { rect.size.height = maxHeight }
 		
 		if let bitmap = textView.bitmapImageRepForCachingDisplay(in: rect) {
 			bitmap.size = rect.size
