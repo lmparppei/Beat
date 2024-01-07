@@ -72,8 +72,6 @@
 	[_graphLayers removeAllObjects];
 }
 
-static CAShapeLayer* testLayer;
-
 - (void)pieChartForData:(NSArray*)items {
 	NSMutableDictionary *data = NSMutableDictionary.new;
 	NSInteger total = items.count;
@@ -87,10 +85,6 @@ static CAShapeLayer* testLayer;
 			data[item] = [NSNumber numberWithInteger:1];
 		}
 	}
-	
-	if (![self.layer.sublayers containsObject:testLayer]) [self.layer addSublayer:testLayer];
-	testLayer.backgroundColor = NSColor.greenColor.CGColor;
-	testLayer.bounds = self.frame;
 	
 	if (!data.count) {
 		_textField.stringValue = @"No characters";
@@ -107,9 +101,7 @@ static CAShapeLayer* testLayer;
 	
 	CGFloat fullHeight = self.frame.size.height;
 	CGFloat height = fullHeight * .7;
-	
-	
-	
+		
 	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
 	for (NSString * key in sortedValues) {
