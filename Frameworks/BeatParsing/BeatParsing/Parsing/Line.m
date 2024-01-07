@@ -16,8 +16,6 @@
 
 #import "Line.h"
 #import "BeatExportSettings.h"
-#import "RegExCategories.h"
-#import "FountainRegexes.h"
 #import "NSString+CharacterControl.h"
 #import "NSString+EMOEmoji.h"
 #import <BeatParsing/BeatParsing-Swift.h>
@@ -93,6 +91,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         _formattedAs = -1;
         _uuid = NSUUID.UUID;
         _nextElementIsDualDialogue = false;
+        
+        _beginsNewParagraph = false;
         
         if (pageSplit) [self resetFormatting];
     }
@@ -474,7 +474,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         }
         
         NSMutableString *strippedContent = NSMutableString.new;
-        
+
         // We need to replace macros. This is a more efficient way than using attributed strings.
         for (NSValue *macroRange in macros) {
             NSRange replacementRange = macroRange.rangeValue;
@@ -493,8 +493,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
                 [strippedContent appendString:macroValue];
                 
                 // Update the range for the next iteration
+                NSInteger remainder = NSMaxRange(range) - NSMaxRange(intersectionRange);
                 range.location = NSMaxRange(intersectionRange);
-                range.length -= NSMaxRange(intersectionRange);
+                range.length = remainder;
             }
         }
         
@@ -508,21 +509,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }];
     
     return content;
-    
-/*
-    __block NSMutableString *content = NSMutableString.string;
-    [contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        // Let's make sure we don't have bad data here (can happen in some multithreaded instances)
-        if (NSMaxRange(range) > self.string.length) {
-            range.length = self.string.length - NSMaxRange(range);
-            if (range.length <= 0) return;
-        }
-        
-        [content appendString:[self.string substringWithRange:range]];
-    }];
-    
-    return content;
- */
 }
 
 /// Returns a string with notes removed
@@ -1237,9 +1223,17 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 		split.changed = YES;
 	}
         
+    // Set flags
+    
     retain.beginsNewParagraph = self.beginsNewParagraph;
+    retain.paragraphIn = self.paragraphIn;
+    retain.paragraphOut = true;
+
+    split.paragraphIn = true;
     split.beginsNewParagraph = true;
-    	
+
+    // Set identity
+    
 	retain.uuid = self.uuid;
 	retain.position = self.position;
 	

@@ -455,6 +455,11 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// This line is unsafe as a starting point for live pagination operations. **Note:** Used for non-continuous parsing ONLY, has to be explicitly set `true` by parser.
 @property (nonatomic) bool unsafeForPageBreak;
 
+/// This line was cut from top
+@property (nonatomic) bool paragraphIn;
+/// This line was cut from bottom
+@property (nonatomic) bool paragraphOut;
+
 
 #pragma mark - Markers
 
