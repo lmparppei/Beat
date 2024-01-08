@@ -492,7 +492,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
@@ -550,7 +550,7 @@
                                                                                             <userDefinedRuntimeAttribute type="color" keyPath="itemColor">
                                                                                                 <color key="value" red="0.97131480814255389" green="0.97131480814255389" blue="0.97131480814255389" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                                             </userDefinedRuntimeAttribute>
-                                                                                            <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="lightGray"/>
+                                                                                            <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="default"/>
                                                                                         </userDefinedRuntimeAttributes>
                                                                                         <connections>
                                                                                             <action selector="setInputColor:" target="717-An-Uvy" id="ms3-O4-75f"/>
@@ -721,7 +721,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="mfV-6r-KJe">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="384"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="systemDefault" viewBased="YES" id="QGY-eB-GWe" customClass="BeatCharacterList">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="384"/>

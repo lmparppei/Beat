@@ -34,6 +34,7 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonPink;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonCyan;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonMagenta;
+@property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) BeatMarkdownTextStorageDelegate* mdDelegate;
 
 @end
@@ -43,10 +44,13 @@
 	self = [super initWithCoder:coder];
 	
 	if (self) {
+		// Create a default color
+		self.defaultColor = [DynamicColor.alloc initWithLightColor:[NSColor colorWithWhite:0.1 alpha:1.0] darkColor:[NSColor colorWithWhite:0.9 alpha:1.0]];
+		
 		self.wantsLayer = YES;
 		self.layer.cornerRadius = 10.0;
 		self.layer.backgroundColor = [NSColor.darkGrayColor colorWithAlphaComponent:0.3].CGColor;
-		self.textColor = [BeatColors color:@"lightGray"];
+		self.textColor = self.defaultColor;
 		
 		[self setTextContainerInset:(NSSize){ 5, 5 }];
 	}
@@ -57,9 +61,10 @@
 	self.buttons = @[self.buttonDefault, self.buttonRed, self.buttonGreen, self.buttonBlue, self.buttonPink, self.buttonOrange, self.buttonBrown, self.buttonCyan, self.buttonMagenta];
 	
 	self.buttonDefault.state = NSOnState;
-	self.currentColorName = @"lightGray";
-	self.currentColor = [BeatColors color:_currentColorName];
+	
+	[self setColor:@"default"];
 	self.textColor = self.currentColor;
+	self.buttonDefault.itemColor = self.defaultColor;
 	
 	self.mdDelegate = BeatMarkdownTextStorageDelegate.new;
 	self.mdDelegate.textStorage = self.textStorage;
@@ -72,15 +77,24 @@
 	}];
 }
 
+- (void)setColor:(NSString*)colorName
+{
+	self.currentColorName = colorName;
+	
+	if ([colorName isEqualToString:@"default"]) {
+		self.currentColor = self.defaultColor;
+	} else {
+		self.currentColor = [BeatColors color:colorName];
+	}
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
 }
 
 -(IBAction)setInputColor:(id)sender {
 	ColorCheckbox *box = sender;
-	_currentColorName = box.colorName;
-	
-	_currentColor = [BeatColors color:_currentColorName];
+	[self setColor:box.colorName];
 	
 	for (ColorCheckbox *button in _buttons) {
 		if ([button.colorName isEqualToString:_currentColorName]) button.state = NSOnState;
@@ -175,6 +189,9 @@
 	NSMutableString *result = [NSMutableString.alloc initWithString:@""];
 	
 	[self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		// Do nothing for default color
+		if (value == self.defaultColor) return;
+		
 		NSString *colorTag;
 		for (NSString *colorName in BeatColors.colors.allKeys) {
 			if (BeatColors.colors[colorName] == value) {
@@ -183,7 +200,7 @@
 			}
 		}
 		
-		if (colorTag && ![colorTag.lowercaseString isEqualToString:@"lightgray"]) {
+		if (colorTag) {
 			[result appendFormat:@"<%@>", colorTag];
 			[result appendString:[self.string substringWithRange:range]];
 			[result appendFormat:@"</%@>", colorTag];
