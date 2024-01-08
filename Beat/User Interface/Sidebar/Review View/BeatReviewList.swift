@@ -42,8 +42,6 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		self.dataSource = self
 		
 		self.editorDelegate?.register(self)
-		
-		reload()
 	}
 	
 	func reloadInBackground() {

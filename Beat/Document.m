@@ -593,6 +593,9 @@ static BeatAppDelegate *appDelegate;
 		}
 	}
 	
+	// Reload editor views in background
+	[self updateEditorViewsInBackground];
+	
 	// Load plugin containers
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container load];
@@ -740,7 +743,7 @@ static BeatAppDelegate *appDelegate;
 	NSPoint origin =_documentWindow.frame.origin;
 	NSSize size = NSMakeSize([self.documentSettings getFloat:DocSettingWindowWidth], [self.documentSettings getFloat:DocSettingWindowHeight]);
 	
-	CGFloat preferredWidth = self.textView.documentWidth * self.textView.zoomLevel + 300;
+	CGFloat preferredWidth = self.textView.documentWidth * self.textView.zoomLevel + 200;
 	
 	if (size.width < 1) {
 		// Default size for new windows
