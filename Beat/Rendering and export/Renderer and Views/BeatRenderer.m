@@ -461,8 +461,9 @@
 	}
 	
 	// Non-default font size
-	if (style.fontSize > 0) {
-		font = [NSFont fontWithName:font.fontName size:style.fontSize];
+	if (style.fontSize > 0.0 && ![style.font isEqualToString:@"system"]) {
+		if (@available(macOS 10.15, *)) font = [font fontWithSize:style.fontSize];
+		else font = [NSFont fontWithName:font.fontName size:style.fontSize];
 	}
 	
 	return font;
@@ -490,11 +491,7 @@
 		
 		// We'll create additional, special attributes for some rules.
 		// Let's add 100 to the type to create separate keys for split-paragraph rules.
-		if ([line.string rangeOfString:@"If I am so scared"].location != NSNotFound) {
-			NSLog(@" ");
-		}
-		
-		// TODO: We need to define *how* lines are unsafe for page break for the indents to work correctly.
+
 		if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered) && !line.isTitlePage) {
 			typeKey = @(type + 100);
 		} else if (!line.paragraphIn && line.beginsNewParagraph && [self.styles forLine:line].unindentFreshParagraphs) {
