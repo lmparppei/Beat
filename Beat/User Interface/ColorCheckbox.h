@@ -20,6 +20,6 @@
 
 IB_DESIGNABLE
 @interface ColorCheckbox : NSButton
-@property (nonatomic, readonly) IBInspectable NSColor *itemColor;
+@property (nonatomic) IBInspectable NSColor *itemColor;
 @property (nonatomic, readonly) IBInspectable NSString *colorName;
 @end

@@ -40,7 +40,6 @@ static CGFloat size = 12;
 	layer.fillColor = [_itemColor colorWithAlphaComponent:0.5].CGColor;
 	self.layer = layer;
 	 */
-	
 	_itemColor = [BeatColors color:self.colorName];
 }
 
