@@ -161,10 +161,14 @@
 	__block BeatCharacterData* characterData = [BeatCharacterData.alloc initWithDelegate:self.editorDelegate];
 	
 	// Proces in a background thread
-	// (This is pretty light, but still
+	// (This is pretty light, but still)
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
-		self.characters = characterData.charactersAndLines;
+		// Safeguards for some rare thread issues
+		if (self.editorDelegate == nil) return;
+		NSArray* lines = self.editorDelegate.parser.safeLines;
+		self.characters = [characterData charactersAndLinesWithLines:(lines != nil) ? lines : @[]];
 		
+		// Get the most amount of lines and add missing genders
 		for (BeatCharacter* character in self.characters.allValues) {
 			if (character.lines > self.mostLines) self.mostLines = character.lines;
 			[genders addObject:(character.gender.length > 0) ? character.gender : @"unspecified"];
@@ -172,7 +176,6 @@
 		
 		// Reload data in main thread
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			self.popoverManager.popover.animates = false;
 			[self reloadData];
 			[self.graphView pieChartForData:genders];
 			
@@ -181,8 +184,6 @@
 				[self selectRowIndexes:indexSet byExtendingSelection:NO];
 			}
 
-			self.popoverManager.popover.animates = (selectedRow != self.selectedRow);
-			
 			// Remove reference (just in case)
 			characterData = nil;
 		});
@@ -191,8 +192,7 @@
 
 -(void)reloadInBackground
 {
-	if (_reloadTimer.valid) [_reloadTimer invalidate];
-	
+	[_reloadTimer invalidate];
 	_reloadTimer = [NSTimer scheduledTimerWithTimeInterval:.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
 		[self reloadView];
 	}];

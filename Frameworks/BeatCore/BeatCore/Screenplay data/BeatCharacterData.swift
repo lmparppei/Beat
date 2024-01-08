@@ -17,6 +17,9 @@ import Foundation
     @objc public var highlightColor:String
     @objc public var realName:String?
     
+    /// Set `true` when this name is NOT found in the actual screenplay
+    @objc public var notPresentInScreenplay = false
+    
     /// Number of lines
     @objc public var lines:Int = 0
     @objc public var scenes:NSMutableSet = NSMutableSet()
@@ -84,16 +87,20 @@ import Foundation
     }
     
     /// Gets stored character data, collects EVERY character name from screenplay, stores the number of lines and scenes for each character and returns a dictionary with names mapped to character object.
-    @objc public func charactersAndLines() -> [String:BeatCharacter] {
+    @objc public func charactersAndLines(lines providedLines:[Line] = []) -> [String:BeatCharacter] {
         guard let parser = self.delegate?.parser else { return [:] }
+        
+        let lines = (providedLines.count > 0) ? providedLines : parser.lines as? [Line] ?? []
         
         // First get any stored character data and merge
         var characters = self.characters()
+        let storedCharacters = characters
+        
         var currentScene:Line?
         
-        for item in parser.lines {
-            guard let line = item as? Line else { continue }
-            
+        var allNames:Set<String> = []
+        
+        for line in lines {
             if line.type == .heading { currentScene = line }
             if !line.isAnyCharacter() { continue }
             
@@ -109,6 +116,21 @@ import Foundation
                 if currentScene != nil {
                     character?.scenes.add(currentScene!)
                 }
+                
+                // Add to list of names
+                allNames.insert(name)
+            }
+        }
+        
+        let originalNames = Set(storedCharacters.keys)
+        let names = characters.keys
+        
+        for name in originalNames {
+            if !names.contains(name) {
+                // Lets remove this character for now
+                self.removeCharacter(name: name)
+                // One day:
+                // character.notPresentInScreenplay = true
             }
         }
         
@@ -205,6 +227,13 @@ import Foundation
     
     public func addCharacter(name:String) {
         
+    }
+    
+    public func removeCharacter(name:String) {
+        guard var characters = self.characterData else { return }
+        
+        characters.removeValue(forKey: name)
+        BeatUserDefaults.shared().save(characters, forKey: DocSettingCharacterData)
     }
 }
 
