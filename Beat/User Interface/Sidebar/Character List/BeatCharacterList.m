@@ -203,10 +203,10 @@
 
 - (NSArray*)sortCharactersByLines {
 	NSArray *sortedKeys = [_characters keysSortedByValueUsingComparator:^NSComparisonResult(BeatCharacter* _Nonnull obj1, BeatCharacter* _Nonnull obj2) {
-		// For equal number of lines, we'll compare names alphabetically
-		if (obj2.lines == obj2.lines) return [obj1.name compare:obj2.name];
+		// For equal number of lines, we'll sort character names alphabetically
+		if (obj2.lines == obj1.lines) return [obj1.name compare:obj2.name];
 		// Otherwise let's just compare amount of lines
-		return (obj2.lines <= obj1.lines);
+		return (obj2.lines > obj1.lines);
 	}];
 
 	return sortedKeys;

@@ -134,7 +134,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hV1-9C-x1b">
                                             <rect key="frame" x="208" y="28" width="148" height="10"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2023" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="b0H-0Y-Klb">
+                                            <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2024" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="b0H-0Y-Klb">
                                                 <font key="font" metaFont="system" size="8"/>
                                                 <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -499,7 +499,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="usj-3b-jHu"/>
+        <segue reference="VEG-h6-WbV"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="B_256" width="256" height="256"/>
