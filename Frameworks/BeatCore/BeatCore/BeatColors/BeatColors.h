@@ -22,4 +22,5 @@
 + (NSDictionary*)colors;
 + (NSString*)colorWith16bitHex:(NSString*)colorName;
 + (NSString*)get16bitHex:(BXColor*)color;
++ (NSString*)cssRGBFor:(BXColor*)color;
 @end

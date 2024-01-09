@@ -140,6 +140,19 @@
 	return hexString;
 }
 
++ (NSString*)cssRGBFor:(BXColor*)color
+{
+    NSString* result = @"";
+#if TARGET_OS_OSX
+    result = [NSString stringWithFormat:@"rgb(%f, %f, %f)", color.redComponent * 255, color.greenComponent * 255, color.blueComponent * 255];
+#else
+    CGFloat red; CGFloat green; CGFloat blue;
+    [color getRed:&red green:&green blue:&blue alpha:nil];
+    result = [NSString stringWithFormat:@"rgb(%f, %f, %f)", red * 255, green * 255, blue * 255];
+#endif
+    return result;
+}
+
 @end
 /*
  
