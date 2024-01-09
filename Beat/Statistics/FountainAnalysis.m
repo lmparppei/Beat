@@ -25,11 +25,16 @@
  NSMutableArray *scenes = [analysis scenesWithCharacter:@"Name" onlyDialogue:YES];
  
  
+ Update in 2024:
+ THIS IS A TERRIBLE MESS.
+ Most of these statistical values can nowadays be found using built-in APIs.
+ 
  */
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatCore/BeatCore.h>
 #import "FountainAnalysis.h"
 
 // lol
@@ -42,7 +47,8 @@
 @property NSArray * scenes;
 @property NSDictionary * genders;
 @property NSMutableDictionary * TOD;
-@property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
+
+@property NSDictionary<NSString*, BeatCharacter*>* charactersAndLines;
 
 @property NSInteger interiorScenes;
 @property NSInteger exteriorScenes;
@@ -62,21 +68,27 @@
 	if ((self = [super init]) == nil) { return nil; }
 	_delegate = delegate;
 	
-	_characterLines = [NSMutableDictionary dictionary];
 	_TOD = [NSMutableDictionary dictionary];
 		
 	_lines = self.delegate.parser.lines.copy;
 	_scenes = self.delegate.parser.scenes.copy;
-	_genders = self.delegate.characterGenders;
+	
+	BeatCharacterData* characterData = [BeatCharacterData.alloc initWithDelegate:delegate];
+	self.charactersAndLines = [characterData charactersAndLinesWithLines:delegate.parser.lines];
+	
+	NSMutableDictionary* genders = NSMutableDictionary.new;
+	for (NSString* name in self.charactersAndLines.allKeys) {
+		genders[name] = self.charactersAndLines[name].gender;
+	}
+	
+	_genders = genders;
 	
 	return self;
 }
 
 
-- (void) createReport {
+- (void)createReport {
 	// Reset everything
-	[_characterLines removeAllObjects];
-	
 	[self calculateAverageSceneLength];
 	
 	_interiorScenes = 0;
@@ -104,22 +116,6 @@
 				
 				// This is not a character cue if the next line is empty
 				if (nextLine.string.length < 1 || line.string.containsOnlyWhitespace) continue;
-				
-				// Get character name (strips V.O. etc.)
-				NSString *character = line.characterName;
-								
-				// Check if the character has been already found
-				// Thank you, Venk & Tom Jefferys at stackoverflow
-				NSNumber *value = [_characterLines objectForKey:character];
-				
-				if (!value) {
-					// Add new value
-					_characterLines[character] = [NSNumber numberWithInt:1];
-				} else {
-					// Append old value
-					NSNumber *newValue = [NSNumber numberWithInt:[value intValue] + 1];
-					_characterLines[character] = newValue;
-				}
 			}
 		}
 		
@@ -222,45 +218,43 @@
 }
 
 - (NSString*)createJSON {
-	// JSON BEGIN
-	NSMutableString * json = [NSMutableString stringWithString:@"{"];
+	NSMutableDictionary* dict = NSMutableDictionary.new;
 	
-	// JSON genders --------------------------------------------
-	
-	[json appendString:@"genders:{"];
-	for (NSString *character in _genders) {
-		[json appendFormat:@"\"%@\": '%@',", character, _genders[character]];
-	}
-	[json appendString:@"},"];
-	
-	// JSON characters --------------------------------------------------------
-	[json appendString:@"characters:{"];
-	NSInteger characterIndex = 0;
-	for (NSString *character in _characterLines) {
-		// Oh well, let's comply to JSON standards and add the comma ONLY between new objects and not at the end
-		if (characterIndex > 0) [json appendString:@","];
-		
+	NSMutableDictionary* charactersToLines = NSMutableDictionary.new;
+	for (NSString *name in _charactersAndLines.allKeys) {
 		// Get value and append character to JSON
-		NSNumber *value = _characterLines[character];
-		[json appendFormat:@"\"%@\": %lu", character, [value unsignedIntegerValue]];
-		characterIndex += 1;
+		BeatCharacter* character = _charactersAndLines[name];
+		charactersToLines[name] = @(character.lines);
 	}
-	[json appendString:@"},"];
 	
-	// JSON scenes --------------------------------------------------------
-	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu },", _interiorScenes, _exteriorScenes, _otherScenes];
-	// JSON times of day --------------------------------------------------------
-	NSData *tods = [NSJSONSerialization dataWithJSONObject:_TOD options:NSJSONWritingPrettyPrinted error:nil];
-	[json appendFormat:@"tods:%@,", [[NSString alloc] initWithData:tods encoding:NSUTF8StringEncoding]];
-	// JSON statistics --------------------------------------------------------
-	[json appendFormat:@"statistics:{ words: %lu, glyphs: %lu, scenes: %lu, avgLength: { pages: %lu, eights: %f }, longestScene: { pages: %lu, eights: %f } }",
-	 _words, _glyphs, _scenes.count,
-	 [(NSNumber*)_avgLength[0] integerValue], [(NSNumber*)_avgLength[1] floatValue],
-	 [(NSNumber*)_longestLength[0] integerValue], [(NSNumber*)_longestLength[1] floatValue]
-	];
+	dict[@"genders"] = self.genders;
 	
-	// JSON END
-	[json appendString:@"}"];
+	dict[@"characters"] = charactersToLines;
+	dict[@"scenes"] = @{
+		@"interior": @(_interiorScenes),
+		@"exterior": @(_exteriorScenes),
+		@"other": @(_otherScenes)
+	};
+	
+	dict[@"tods"] = _TOD;
+	
+	dict[@"statistics"] = @{
+		@"words": @(_words),
+		@"glyphs": @(_glyphs),
+		@"scenes": @(_scenes.count),
+		@"avgLength": @{
+			@"pages": _avgLength[0],
+			@"eights": _avgLength[1]
+		},
+		@"longestScene": @{
+			@"pages": _longestLength[0],
+			@"eights": _longestLength[1]
+		}
+	};
+	
+	
+	NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
+	NSString* json = [NSString.alloc initWithData:data encoding:NSUTF8StringEncoding];
 	
 	return json;
 }

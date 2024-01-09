@@ -7,9 +7,10 @@
 //
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 #import "BeatStatisticsPanel.h"
 #import "FountainAnalysis.h"
-#import <BeatCore/BeatLocalization.h>
+#import <BeatCore/BeatCore.h>
 
 @interface BeatStatisticsPanel ()
 @property (nonatomic) FountainAnalysis *analysis;
@@ -35,6 +36,14 @@
 	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
 	content = [BeatLocalization localizeString:content];
 	
+	NSColor* womanColor = ThemeManager.sharedManager.genderWomanColor;
+	NSColor* manColor = ThemeManager.sharedManager.genderManColor;
+	NSColor* otherColor = ThemeManager.sharedManager.genderOtherColor;
+	
+	content = [content stringByReplacingOccurrencesOfString:@"%colorWoman%" withString:[BeatColors cssRGBFor:womanColor]];
+	content = [content stringByReplacingOccurrencesOfString:@"%colorMan%" withString:[BeatColors cssRGBFor:manColor]];
+	content = [content stringByReplacingOccurrencesOfString:@"%colorOther%" withString:[BeatColors cssRGBFor:otherColor]];
+	
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
 	[self.analysisView loadHTMLString:content baseURL:nil];
 }
@@ -55,10 +64,13 @@
 		}
 	}
 }
-- (void)setGenderFor:(NSString*)name gender:(NSString*)gender {
-	NSMutableDictionary* genders = self.delegate.characterGenders.mutableCopy;
-	[genders setValue:gender forKey:name];
-	self.delegate.characterGenders = genders;
+- (void)setGenderFor:(NSString*)name gender:(NSString*)gender
+{
+	BeatCharacterData* characterData = [BeatCharacterData.alloc initWithDelegate:self.delegate];
+	BeatCharacter* character = [characterData getCharacterWith:name.uppercaseString];
+	character.gender = gender;
+	
+	if (character != nil) [characterData saveCharacter:character];
 }
 
 - (IBAction)close:(id)sender {
@@ -68,6 +80,7 @@
 	
 	self.analysis = nil;
 	self.analysisView = nil;
+	[self.delegate updateEditorViewsInBackground];
 }
 
 @end

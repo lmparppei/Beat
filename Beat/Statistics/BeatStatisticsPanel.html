@@ -14,20 +14,28 @@
 				box-sizing: border-box;
 				cursor: default;
 			}
+			
+			:root {
+			  --bg-color: #f8f8f8;
+			  --text-color: #333;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+				  --bg-color: #151515;
+				  --text-color: #eee;
+				}
+			}
+			
 			body {
 				margin: 0;
 				padding: 1rem;
-				background-color: #f8f8f8;
+				background-color: var(--bg-color);
 				font-family: "Helvetica Neue", Helvetica, sans-serif;
 
-				color: #333;
+				color: var(--text-color);
 
 				user-select: none; 
 				-webkit-user-select: none;
-			}
-			body.dark {
-				background-color: #151515;
-				color: #eee;
 			}
 
 			.columns {
@@ -76,6 +84,12 @@
 				padding: .35rem .25rem .35rem .25rem;
 				border-bottom: 1px dotted #ddd;
 			}
+			@media (prefers-color-scheme: dark) {
+				table td {
+					border-bottom-color: #333;
+				}
+			}
+			
 			td.name {
 				width: 30%;
 			}
@@ -197,9 +211,9 @@
 			
 			.textJade { color: rgb(90, 208, 133) }
 
-			.textWoman { color: #1684ec !important; }
-			.textMan { color: #1f4a73 !important; }
-			.textOther { color: rgb(236,0,140) !important; }
+			.textWoman { color: %colorWoman% !important; }
+			.textMan { color: %colorMan% !important; }
+			.textOther { color: %colorOther% !important; }
 
 			.donutChart {
 				position: relative;
@@ -215,7 +229,7 @@
 				display: flex;
 				width: 130px; height: 130px;
 				left: 25px; top: 25px;
-				background-color: #f8f8f8;
+				background-color: var(--bg-color);
 				
 				justify-content: center;
 				align-items: center;
@@ -223,6 +237,8 @@
 				font-size: .7em;
 				flex-direction: column;
 			}
+
+			
 			.donutLegend h3 {
 				font-size: inherit;
 				margin: 0 0 .25rem 0;
@@ -264,13 +280,13 @@
 				background-color: #888;
 			}
 			.other input[type="radio"]:checked:after {
-				background-color: rgb(236,0,140);
+				background-color: %colorOther%;
 			}
 			.woman input[type="radio"]:checked:after {
-				background-color: #1684ec;;
+				background-color: %colorWoman%;
 			}
 			.man input[type="radio"]:checked:after {
-				background-color: #1f4a73;
+				background-color: %colorMan%;
 			}
 
 			section#documentStats {
@@ -340,7 +356,6 @@
 
 		<script>
 			var debugData
-			//var defaultData = { "characters": { "Testi": 123 }, genders: { "Testi": "woman" }, statistics: {}  };
 			let defaultData = {}
 
 			var characterTable = document.getElementById('characters')
@@ -366,14 +381,14 @@
 
 			var chartColors = {
 				//man: "rgb(245, 163, 0)",
-				man: '#1f4a73',
+				man: '%colorMan%',
 				
 				//woman: "rgb(90, 208, 133)",
-				woman: '#1684ec',
+				woman: '%colorWoman%',
 
 				//other: "rgb(0,129,239)",
-				other: "rgb(236,0,140)",
-				unspecified: "#ccc",
+				other: "%colorOther%",
+				unspecified: "rgba(150,150,150,.5)",
 
 				interior: "rgb(236,0,140)",
 				exterior: "#1684ec",
