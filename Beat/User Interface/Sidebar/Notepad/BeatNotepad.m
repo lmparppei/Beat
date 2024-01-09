@@ -189,14 +189,16 @@
 	NSMutableString *result = [NSMutableString.alloc initWithString:@""];
 	
 	[self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		// Do nothing for default color
-		if (value == self.defaultColor) return;
 		
 		NSString *colorTag;
-		for (NSString *colorName in BeatColors.colors.allKeys) {
-			if (BeatColors.colors[colorName] == value) {
-				colorTag = colorName;
-				break;
+		
+		// Do nothing for default color
+		if (value != self.defaultColor) {
+			for (NSString *colorName in BeatColors.colors.allKeys) {
+				if (BeatColors.colors[colorName] == value) {
+					colorTag = colorName;
+					break;
+				}
 			}
 		}
 		
