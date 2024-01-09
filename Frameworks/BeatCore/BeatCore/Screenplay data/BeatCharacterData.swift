@@ -219,8 +219,10 @@ import Foundation
         return dict
     }
     
-    public func getData(for name:String) -> BeatCharacter? {
-        guard let dict = self.characterData?[name.uppercased()] else { return nil }
+    @objc public func getCharacter(with name:String) -> BeatCharacter? {
+        guard let dict = self.characterData?[name.uppercased()] else {
+            return BeatCharacter(name: name)
+        }
         
         return BeatCharacter.readData(dict)
     }
