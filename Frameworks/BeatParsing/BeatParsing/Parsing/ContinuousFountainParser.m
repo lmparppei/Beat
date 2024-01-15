@@ -941,14 +941,26 @@ static NSDictionary* patterns;
     else if (firstChar == '@' && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if (firstChar == '.' && previousIsEmpty) return heading;
     
+    
     // Title page
     if (previousLine == nil || previousLine.isTitlePage) {
         LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
         if (titlePageType != NSNotFound) return titlePageType;
     }
     
+    // A character line ending in ^ is a dual dialogue character
+    // (94 = ^, we'll compare the numerical value to avoid mistaking Tuskic alphabet character Ş as ^)
+    if (lastChar == 94 && line.noteRanges.firstIndex != 0) {
+        NSString* cue = [line.string substringToIndex:line.length - 1];
+        if (cue.length > 0 && cue.onlyUppercaseUntilParenthesis) {
+            // Note the previous character cue that it's followed by dual dialogue
+            [self makeCharacterAwareOfItsDualSiblingFrom:index];
+            return dualDialogueCharacter;
+        }
+    }
+    
     // Check for Transitions
-    if (line.length > 2 && line.lastCharacter == ':' && line.string.containsOnlyUppercase && previousIsEmpty) {
+    else if (line.length > 2 && line.lastCharacter == ':' && line.string.containsOnlyUppercase && previousIsEmpty) {
         return transitionLine;
     }
     
@@ -974,28 +986,19 @@ static NSDictionary* patterns;
         
         // Character
         if (line.string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
-            // A character line ending in ^ is a dual dialogue character
-            // (94 = ^, we'll compare the numerical value to avoid mistaking Tuskic alphabet character Ş as ^)
-            if (lastChar == 94)
-            {
-                // Note the previous character cue that it's followed by dual dialogue
-                [self makeCharacterAwareOfItsDualSiblingFrom:index];
-                return dualDialogueCharacter;
-            } else {
-                // It is possible that this IS NOT A CHARACTER but an all-caps action line
-                if (index + 2 < self.lines.count) {
-                    Line* twoLinesOver = (Line*)self.lines[index+2];
-                    
-                    // Next line is empty, line after that isn't - and we're not on that particular line
-                    if ((nextLine.string.length == 0 && twoLinesOver.string.length > 0) ||
-                        (nextLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, nextLine.range))
-                        ) {
-                        return action;
-                    }
-                }
+            // It is possible that this IS NOT A CHARACTER but an all-caps action line
+            if (index + 2 < self.lines.count) {
+                Line* twoLinesOver = (Line*)self.lines[index+2];
                 
-                return character;
+                // Next line is empty, line after that isn't - and we're not on that particular line
+                if ((nextLine.string.length == 0 && twoLinesOver.string.length > 0) ||
+                    (nextLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, nextLine.range))
+                    ) {
+                    return action;
+                }
             }
+            
+            return character;
         }
     }
     
@@ -1004,7 +1007,9 @@ static NSDictionary* patterns;
     }
     
     if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
-        if (firstChar == '(') return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        if (firstChar == '(') {
+            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        }
         return (previousLine.isDialogue) ? dialogue : dualDialogue;
     }
     
@@ -1021,7 +1026,9 @@ static NSDictionary* patterns;
         
         [_changedIndices addIndex:index-1];
         
-        if (line.length > 0 && [line.string characterAtIndex:0] == '(') return parenthetical;
+        if (line.length > 0 && [line.string characterAtIndex:0] == '(') {
+            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        }
         else return dialogue;
     }
     
@@ -1097,7 +1104,7 @@ static NSDictionary* patterns;
             prevLine.nextElementIsDualDialogue = YES;
             break;
         }
-        if (!prevLine.isDialogueElement && !prevLine.isDualDialogueElement) break;
+        if (!prevLine.isDialogueElement && !prevLine.isDualDialogueElement && prevLine.type != empty) break;
         i--;
     }
 }
@@ -2485,7 +2492,7 @@ NSInteger previousSceneIndex = NSNotFound;
 #pragma mark - Line identifiers (UUIDs)
 
 /// Returns every line UUID as an arrayg
-- (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines
+- (NSArray<NSUUID*>*)lineIdentifiers:(NSArray<Line*>*)lines
 {
 	if (lines == nil) lines = self.lines;
 	
