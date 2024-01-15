@@ -40,7 +40,7 @@ import Foundation
             if age.count > 0 { dict["age"] = age }
             if gender.count > 0 { dict["gender"] = gender }
             if highlightColor.count > 0 { dict["highlightColor"] = highlightColor }
-            if realName != nil { dict["realName"] = realName! }
+            if (realName ?? "").count > 0 { dict["realName"] = realName! }
             
             return dict
         }
@@ -84,6 +84,9 @@ import Foundation
     @objc public init(delegate: BeatEditorDelegate) {
         self.delegate = delegate
         super.init()
+        
+        // Let's convert legacy values right at init
+        convertGendersToNewModelIfNeeded()
     }
     
     /// Gets stored character data, collects EVERY character name from screenplay, stores the number of lines and scenes for each character and returns a dictionary with names mapped to character object.
@@ -185,7 +188,7 @@ import Foundation
             }
             
             // Store to dictionary if needed
-            var charData = character.dictionary
+            let charData = character.dictionary
             if charData.count > 0 {
                 dict[character.name] = charData
             }
@@ -199,6 +202,7 @@ import Foundation
             }
         }
         
+        print("DICT", dict)
         // Save data to document settings
         self.delegate?.documentSettings.set(DocSettingCharacterData, as: dict)
     }
@@ -208,15 +212,21 @@ import Foundation
     }
             
     /// Converts the old gender list to new character data model
-    @objc public func convertGendersToNewModel(genders:[String:String]) -> [String:[String:Any]] {
+    @objc public func convertGendersToNewModelIfNeeded() {
+        guard let genders = self.delegate?.documentSettings.get(DocSettingCharacterGenders) as? [String:String] else { return }
+        
         var dict:[String:[String:Any]] = [:]
         
         for name in genders.keys {
-            let character = ["gender": genders[name] ?? ""]
+            let character = [
+                "name": name.uppercased(),
+                "gender": genders[name] ?? ""
+            ]
             dict[name] = character
         }
         
-        return dict
+        self.delegate?.documentSettings.set(DocSettingCharacterData, as: dict)
+        self.delegate?.documentSettings.remove(DocSettingCharacterGenders)
     }
     
     @objc public func getCharacter(with name:String) -> BeatCharacter? {
