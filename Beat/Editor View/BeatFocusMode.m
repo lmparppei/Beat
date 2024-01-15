@@ -66,7 +66,7 @@
 	[self.delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:NSMakeRange(0, text.length)];
 	
 	if (sentenceRange.location != NSNotFound) {
-		NSColor* color = [ThemeManager.sharedManager.textColor colorWithAlphaComponent:0.3];
+		NSColor* color = [ThemeManager.sharedManager.textColor colorWithAlphaComponent:0.45];
 		NSLayoutManager* lm = self.delegate.layoutManager;
 		
 		NSRange startRange = NSMakeRange(0, sentenceRange.location);
