@@ -470,16 +470,20 @@
 }
 
 /// Returns attribute dictionary for given line. We are caching the styles.
-- (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
+- (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue
+{
 	@synchronized (self.lineTypeAttributes) {
 		BeatPaperSize paperSize = self.settings.paperSize;
 		LineType type = line.type;
+		bool forcedType = false;
 		
 		if (isDualDialogue) {
 			if (line.type == character) type = dualDialogueCharacter;
 			else if (line.type == parenthetical) type = dualDialogueParenthetical;
 			else if (line.type == dialogue) type = dualDialogue;
 			else if (line.type == more) type = dualDialogueMore;
+			
+			forcedType = true;
 		}
 		
 		// A dictionary of styles for current paper size.
@@ -510,7 +514,7 @@
 		}
 				
 		if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
-			RenderStyle *style = [self.styles forLine:line];
+			RenderStyle *style = (!forcedType) ? [self.styles forLine:line] : [self.styles forElement:[Line typeName:type]];
 			
 			NSFont* font = [self fontWith:style];
 			
