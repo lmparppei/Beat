@@ -525,7 +525,8 @@
 	
 	// If it's a section, let's move everything it contains
 	if (_draggedScene.type == section) {
-		NSArray <OutlineScene*>*scenesInSection = [self.editorDelegate.parser scenesInSection:_draggedScene];
+		NSArray <OutlineScene*>*scenesInSection = @[_draggedScene];
+		scenesInSection = [scenesInSection arrayByAddingObjectsFromArray:[self.editorDelegate.parser scenesInSection:_draggedScene]];
 		
 		NSInteger location = scenesInSection.firstObject.position;
 		NSInteger length = scenesInSection.lastObject.position + scenesInSection.lastObject.length - location;
@@ -779,6 +780,19 @@
 				break;
 			}
 		}
+	}
+}
+
+#pragma mark - Actions
+
+- (IBAction)addSection:(id)sender
+{
+	if (self.clickedRow == -1 || self.clickedRow == NSNotFound) return;
+	
+	OutlineScene *scene = [self itemAtRow:self.clickedRow];
+	if (scene != nil) {
+		NSInteger pos = scene.position + scene.length;
+		[self.editorDelegate.textActions addSection:pos];
 	}
 }
 
