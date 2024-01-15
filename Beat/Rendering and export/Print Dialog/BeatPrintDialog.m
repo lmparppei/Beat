@@ -178,7 +178,7 @@ static CGFloat panelWidth;
 - (void)exportWithType:(BeatPrintingOperation)type
 {
 	// Create a print operation and add it to the render queue.
-	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:[self exportSettings] delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:self.exportSettings delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
 		// Remove from queue
 		[self.renderQueue removeObject:operation];
 		[self printingDidFinish];
@@ -240,18 +240,15 @@ static CGFloat panelWidth;
 
 - (BeatExportSettings*)exportSettings
 {
-	// Set how we see revisions
-	bool coloredPages = NO;
-	if (_colorCodePages.state == NSOnState) coloredPages = YES;
-	
-	NSString *revisionColor = @"";
-	if (coloredPages) revisionColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
-	
+	BeatDocumentSettings* documentSettings = self.documentDelegate.documentSettings;
+	BeatExportSettings* settings = self.documentDelegate.exportSettings;
+
 	// Set header
 	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
-
+	// Set custom settings from dialog
+	settings.revisions = [self printedRevisions];
+	
 	settings.paperSize = self.documentDelegate.pageSize;
 	settings.printNotes = (_printNotes.state == NSOnState);
 	
