@@ -85,5 +85,6 @@ centered {
 lyrics {
     margin-top: 1l;
     text-align: center;
+    italic: true;
 }
 
