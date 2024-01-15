@@ -2411,23 +2411,6 @@ static NSWindow __weak *currentKeyWindow;
 	return self.outlineView.filteredOutline;
 }
 
--(IBAction)addSection:(id)sender {
-	if (self.outlineView.clickedRow > -1) {
-		id selectedScene = nil;
-		selectedScene = [self.outlineView itemAtRow:self.outlineView.clickedRow];
-		
-		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
-			OutlineScene *scene = selectedScene;
-			
-			NSInteger pos = scene.position + scene.length;
-			NSString *newSection = @"\n# Section \n\n";
-			[self addString:newSection atIndex:pos];
-		}
-		
-		_timeline.clickedItem = nil;
-	}
-}
-
 - (void)reloadOutline
 {
 	[self.outlineView reloadOutline];

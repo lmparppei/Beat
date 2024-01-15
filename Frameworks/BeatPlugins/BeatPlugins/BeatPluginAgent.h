@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <BeatPlugins/BeatPlugin.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface BeatPluginAgent : NSObject
 - (instancetype)initWithDelegate:(id<BeatPluginDelegate>)delegate;
 
@@ -44,3 +46,4 @@
 
 @end
 
+NS_ASSUME_NONNULL_END

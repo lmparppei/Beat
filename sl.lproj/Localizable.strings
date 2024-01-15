@@ -192,4 +192,7 @@
 "license.title" = "Vnesi ključ donacije";
 "license.info" = "Srčna zahvala vsem za donacije! Kopirajte in spodaj prilepite ključ, ki ste ga prejeli.";
 
-"General - Show Substitutions" = "Pokaži zamenjave";
+"character.editor.age" = "Starost";
+"character.editor.biography" = "Biografija";
+"character.editor.lines" = "Vrstice";
+

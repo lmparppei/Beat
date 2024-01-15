@@ -81,8 +81,7 @@ public class BeatStyles:NSObject {
 #endif
         
         // Make sure the name isn't just an empty string
-        var name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
-        
+        let name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
         
         if _loadedStyles[name] != nil {
             return _loadedStyles[name]!

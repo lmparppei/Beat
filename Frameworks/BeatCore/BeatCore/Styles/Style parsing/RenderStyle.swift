@@ -143,8 +143,6 @@ struct ConditionalRenderStyle {
     @objc public func getDisabledTypes() -> IndexSet? {
         guard let disabledTypes = self.disabledTypes as? [LineType] else { return nil }
         
-        let types = NSMutableIndexSet()
-        
         let rawValues:[Int] = disabledTypes.map { Int($0.rawValue) }
         let indices = IndexSet(rawValues)
         

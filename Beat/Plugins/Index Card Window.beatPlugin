@@ -39,8 +39,6 @@ let cards = []
 function init() {
 	let js = Beat.appAssetAsString("CardView.js")
 	let css = Beat.appAssetAsString("CardCSS.css")
-	//let js = Beat.assetAsString("CardView.js")
-	//let css = Beat.assetAsString("CardView.css")
 
 	let html = Beat.appAssetAsString("CardWindow.html")
 	html = html.replaceAll("#STYLE#", css)

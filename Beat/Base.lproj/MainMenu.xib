@@ -369,7 +369,7 @@
                                     <action selector="moveSelectedLinesDown:" target="-1" id="C7e-Lv-7NL"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Fold Current Section" keyEquivalent="F" id="pYf-wS-NRK">
+                            <menuItem title="Fold Current Section" hidden="YES" keyEquivalent="F" id="pYf-wS-NRK">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="foldCurrentSection:" target="-1" id="26C-yE-TSX"/>
@@ -603,6 +603,25 @@ DQ
                             <menuItem title="Force Lyrics" keyEquivalent="L" id="iAy-tL-tFv">
                                 <connections>
                                     <action selector="forceLyrics:" target="-1" id="xa3-Pw-Oav"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="OJe-Ry-gJ2"/>
+                            <menuItem title="Add Section" id="fby-dh-gUY">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addSection:" target="-1" id="vbP-0Y-a8p"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Synopsis" id="b2L-Tp-foz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addSynopsis:" target="-1" id="6sK-mL-mLP"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Shot" id="58Q-So-hJH">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addShot:" target="-1" id="XIV-u7-8b5"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Ygd-Y8-VFo"/>

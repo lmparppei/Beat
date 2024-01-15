@@ -41,7 +41,6 @@ public struct BeatTemplateFile {
     @objc public func getTemplateURL(filename:String) -> URL? {
         let bundle = Bundle(for: type(of: self))
         let url = bundle.url(forResource: filename, withExtension: "fountain")
-        print(" ... ", url, filename)
         return url
     }
 	

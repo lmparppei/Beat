@@ -1237,12 +1237,13 @@ Line *cachedRectLine;
 	return width + padding * 2 + 1.0;
 }
 
-- (CGFloat)setInsets {
+- (CGFloat)setInsets
+{
 	// Top/bottom insets
 	if (self.typewriterMode) {
 		// What the actual fuck is this math ha ha ha
 		// 2023 update: I won't touch this ever again - it works, but I'm scared to know why.
-		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (1 + (1 - self.zoomLevel));
+		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (2 - self.zoomLevel);
 		self.textInsetY = insetY;
 	} else {
 		self.textInsetY = TEXT_INSET_TOP;

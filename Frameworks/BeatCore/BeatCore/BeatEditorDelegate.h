@@ -298,6 +298,7 @@
 - (void)handleTabPress;
 - (void)registerEditorView:(id<BeatEditorView>)view;
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
+- (void)updateEditorViewsInBackground;
 
 - (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer;
 - (void)unregisterSelectionObserver:(id<BeatSelectionObserver>)observer;

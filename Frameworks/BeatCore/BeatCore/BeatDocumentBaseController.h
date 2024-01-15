@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) bool characterInput;
 /// Line on which the input is happening. This is not the best approach, but whatever.
 @property (nonatomic) Line* _Nullable characterInputForLine;
-
+@property (nonatomic) NSIndexSet* _Nullable disabledTypes;
 
 #pragma mark - Basic document settings
 
