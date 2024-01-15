@@ -19,17 +19,17 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	@IBOutlet var importMenu:NSMenu?
 	
 	@objc func setupPluginMenus() {
-		// Populate plugin menus at load
+		// Populate plugin menus at load (we have to do this so custom shortcuts work)
 		if (pluginMenu != nil) {
-			//setupPluginMenu(pluginMenu!)
+			setupPluginMenu(pluginMenu!)
 			pluginMenu?.delegate = self
 		}
 		if (exportMenu != nil) {
-			//setupPluginMenu(exportMenu!)
+			setupPluginMenu(exportMenu!)
 			exportMenu?.delegate = self
 		}
 		if (importMenu != nil) {
-			//setupPluginMenu(importMenu!)
+			setupPluginMenu(importMenu!)
 			importMenu?.delegate = self
 		}
 		
@@ -54,7 +54,7 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	}
 	
 	func menuDidClose(_ menu: NSMenu) {
-		self.clearMenu(menu)
+		//self.clearMenu(menu)
 	}
 	
 	@objc func setupPluginMenu(_ menu:NSMenu) {
@@ -82,7 +82,6 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	}
 	
 	func pluginMenuItems(for parentMenu:NSMenu, runningPlugins:[String:BeatPlugin], type:BeatPluginType) {
-		
 		self.clearMenu(parentMenu)
 		
 		// Reload existing plugins when the menu opens
