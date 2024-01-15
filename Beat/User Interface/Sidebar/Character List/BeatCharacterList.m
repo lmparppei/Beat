@@ -115,6 +115,17 @@
 	}
 }
 
+
+#pragma mark - Character editor callbacks
+
+- (void)editorDidCloseFor:(BeatCharacter*)character
+{
+	// Deselect if this view is no longer active
+	if (self.window.firstResponder != self) [self deselectAll:nil];
+}
+
+
+
 #pragma mark - Table data source
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -224,7 +235,10 @@
 	NSRect rowFrame = [self frameOfCellAtColumn:1 row:self.selectedRow];
 	
 	NSString* name = _characterNameList[self.selectedRow];
-	BeatCharacter *character = _characters[name];
+	
+	// We'll have to fetch a new value for this character, because it might be out of sync
+	BeatCharacterData* data = [BeatCharacterData.alloc initWithDelegate:self.editorDelegate];
+	BeatCharacter* character = [data getCharacterWith:name];
 	
 	// If the character exists, show popover
 	if (character != nil) {
@@ -247,23 +261,6 @@ NSInteger previouslySelected = NSNotFound;
 	
 	previouslySelected = self.selectedRow;
 }
-
-- (void)saveCharacter:(BeatCharacter *)character
-{
-	[self saveCharacter:character withoutReload:false];
-}
-
-
-- (void)saveCharacter:(BeatCharacter *)character withoutReload:(BOOL)withoutReload
-{
-	if (character.name.length == 0) return;
-	
-	BeatCharacterData* data = [BeatCharacterData.alloc initWithDelegate:self.editorDelegate];
-	[data saveCharacter:character];
-	
-	if (!withoutReload) [self reloadView];
-}
-
 
 
 @end

@@ -10,12 +10,9 @@ import AppKit
 import BeatCore
 
 @objc protocol BeatCharacterListDelegate: AnyObject {
-	func prevLine(for chr:BeatCharacter)
-	func nextLine(for chr:BeatCharacter)
-	
-	func saveCharacter(_ character:BeatCharacter, withoutReload:Bool)
-	
-	var editorDelegate:BeatEditorDelegate? { get }
+	var editorDelegate:BeatEditorDelegate? { get }	
+	func editorDidClose(for character:BeatCharacter)
+	func reloadView()
 }
 
 /// Character editor view controller
@@ -76,17 +73,17 @@ import BeatCore
 	@IBAction func setGender(_ sender:BeatGenderRadioButton?) {
 		guard let character = self.character else { return }
 		character.gender = sender?.gender ?? ""
-		manager?.listDelegate?.saveCharacter(character, withoutReload: false)
 		
+		manager?.saveCharacter(character, reloadView: true)
 		changed = true
 	}
 	
 	func textDidChange(_ notification: Notification) {
-		character?.age = age?.stringValue ?? ""
+		character?.bio = biography?.text ?? ""
 		changed = true
 	}
 	func controlTextDidChange(_ obj: Notification) {
-		character?.bio = biography?.text ?? ""
+		character?.age = age?.stringValue ?? ""
 		changed = true
 	}
 	
@@ -132,6 +129,20 @@ import BeatCore
 		self.editorView = vc
 	}
 	
+	func saveCharacter(_ character:BeatCharacter, reloadView:Bool = false) {
+		guard let delegate = self.listDelegate?.editorDelegate else {
+			print("No delegate")
+			return
+		}
+		
+		let data = BeatCharacterData(delegate: delegate)
+		data.saveCharacter(character)
+		
+		if reloadView {
+			self.listDelegate?.reloadView()
+		}
+	}
+	
 
 	@objc func prevLine() {
 		guard let lines = delegate?.parser.lines as? [Line],
@@ -173,10 +184,12 @@ import BeatCore
 			return
 		}
 
-		// Only save the character info if the
+		// Only save the character info if it was changed
 		if (editorView.changed) {
-			self.listDelegate?.saveCharacter(self.character, withoutReload: true)
+			saveCharacter(self.character)
 		}
+		
+		self.listDelegate?.editorDidClose(for: self.character)
 	}
 }
 
