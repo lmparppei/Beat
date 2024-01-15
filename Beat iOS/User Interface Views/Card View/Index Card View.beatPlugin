@@ -40,7 +40,7 @@ let templates = {
 			</div></div>"),
 
 	synopsisList: new Template("<div class='synopsis'><ul>{{ synopsisList }}</ul></div>"),
-	synopsisItem: new Template("<li class='synopsis-item {{ color }}' uuid='{{uuid}}'>{{ stringForDisplay }}</li>"),
+	synopsisItem: new Template("<li class='synopsis-item {{ color }}' uuid='{{uuid}}' sceneUuid='{{sceneUuid}}'>{{ stringForDisplay }}</li>"),
 
 	section: new Template("<div class='item section' depth='{{sectionDepth}}' uuid='{{uuid}}'><h2>{{ stringForDisplay }}</h2>{{ synopsisList }}</div>"),
 
@@ -97,6 +97,10 @@ else if (mode == modes.container) {
 }
 
 
+// ###################################
+// Listeners
+// ###################################
+
 // Register the listener
 Beat.onTextChange(function (outlineChanges) {
 	updated = false
@@ -130,6 +134,11 @@ Beat.onSelectionChange((selection) => {
 
 	window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
 })
+
+
+// ###################################
+// HTML
+// ###################################
 
 function refreshHTML() {
 	let html = createOutline(...Beat.outline()).replaceAll("\"", "\\\"")
@@ -218,15 +227,14 @@ function updateCard(scene) {
 	}
 
 	scene.synopsisList = ""
+	let synopsisList = []
 	if (scene.synopsis.length) {
-		let synopsisList = []
 		for (const synopsis of scene.synopsis) {
 			synopsisList += templates.synopsisItem.withData(synopsis)
 		}
-
-		if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
 		scene.text = ""
 	}
+	scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList });
 
 	scene.storylineList = ""
 	if (scene.storylines.length) {
@@ -247,7 +255,7 @@ function updateCard(scene) {
 	}
 
 	// Don't display the snippet if not needed
-	if (scene.noteList.length > 0 || scene.synopsisList.length > 0) scene.text = ""
+	if (scene.noteList.length > 0 || synopsisList.length > 0) scene.text = ""
 
 	scene.isOmitted = (scene.omitted) ? "omitted" : ""
 
@@ -269,6 +277,11 @@ function updateCard(scene) {
 	
 	return card
 }
+
+
+// ###################################
+// Calls from window
+// ###################################
 
 // Custom methods to be called from the plugin window
 Beat.custom = {
@@ -380,9 +393,53 @@ Beat.custom = {
 		let line = Beat.currentParser.lineWithUUID(uuid)
 		if (line == null) return;
 
-		Beat.replaceRange(line.position, line.length, "= " + newString)
+		color = (line.color.length > 0) ? line.color : ""
+		
+		let string = "= " + newString
+		if (color.length > 0) string += " [[" + color + "]]"
+		
+		Beat.replaceRange(line.position, line.length, string)
+	},
+	
+	addSynopsis: (uuid, newString) => {
+		let sceneHeading = Beat.currentParser.lineWithUUID(uuid)
+		
+		const lines = Beat.lines()
+		let index = lines.indexOf(sceneHeading)
+		if (index == -1) return;
+		
+		let suitableIndex = index
+		
+		// Find a good place to add our synopsis to
+		for (let i=index+1; i++; i<lines.length) {
+			let line = lines[i]
+			if (line.type == Beat.type.empty) continue;
+			
+			if (line.type == Beat.type.synopsis) {
+				suitableIndex = i
+			} else {
+				break
+			}
+		}
+		
+		// Add it
+		let l = lines[suitableIndex]
+		let position = l.position + l.length
+		Beat.log("LINE: " + l.string)
+		
+		let string = "= " + newString
+		
+		if (l.type == Beat.type.synopsis) string = "\n" + string;
+		else if (l.type == Beat.type.heading) string = "\n\n" + string;
+		
+		Beat.addString(string, position)
 	}
 }
+
+
+// ###################################
+// Printing
+// ###################################
 
 function printCards() {
 	let css = Beat.appAssetAsString("BeatCardsPrint.css")
@@ -446,7 +503,6 @@ function printCards() {
     Beat.printHTML(htmlContent, settings, () => {
 
     })
-
 }
 
 function windowed() {

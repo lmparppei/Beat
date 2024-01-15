@@ -193,6 +193,8 @@
 						}
 					}
 					
+					content += "<div onclick='contextMenu.addSynopsis()' class='menuItem'>+ synopsis</div>"
+					
 					contextMenu.menu.innerHTML = content;
 					document.body.appendChild(contextMenu.menu);
 				}
@@ -250,13 +252,30 @@
 				}
 
 				contextMenu.setColor = function (color) {
-					let uuid = contextMenu.target.getA
+					let uuid = contextMenu.target.getAttribute("uuid")
 				
 					Beat.call((uuid, color) => {
 						Beat.custom.setColor(uuid, color)
 					}, contextMenu.uuid, color)
 
 					contextMenu.close()
+				}
+				
+				contextMenu.addSynopsis = function () {
+					// Add an empty synopsis item inside the card
+					let card = contextMenu.target.closest(".card")
+					let synopsisList = card.querySelector(".synopsis ul")
+					
+					let item = document.createElement("li")
+					item.classList.add("synopsis-item")
+					item.contentEditable = true
+					synopsisList.appendChild(item)
+					
+					setupSynopsis(item)
+					contextMenu.close()
+					
+					item.edit()
+					item.focus()
 				}
 
 				contextMenu.open = false
@@ -270,11 +289,19 @@
 				Beat.call("Beat.custom.restart()")
 			}
 
+			/// Modifies the synopsis line with given UUID
 			function modifySynopsis(uuid, string) {
 				Beat.call((uuid, string) => {
-					Beat.log("modifying: " + uuid + " new string: " + string)
+					//Beat.log("modifying: " + uuid + " new string: " + string)
 					Beat.custom.modifySynopsis(uuid, string)
 				}, uuid, string)
+			}
+			
+			/// Adds a new synopsis to given scene
+			function addSynopsis(sceneUUID, string) {
+				Beat.call((sceneUUID, string) => {
+					Beat.custom.addSynopsis(sceneUUID, string)
+				}, sceneUUID, string)
 			}
 
 		</script>
@@ -343,43 +370,7 @@
 					
 					let synopses = card.querySelectorAll("li.synopsis-item")
 					synopses.forEach((synopsis) => {
-						synopsis.ondblclick = () => {
-							// Store original
-							synopsis.original = synopsis.innerText
-							synopsis.canceled = false
-							
-							synopsis.classList.add("editing")
-							synopsis.contentEditable = true
-						}
-
-						synopsis.onblur = () => {
-							synopsis.classList.remove("editing")
-							synopsis.contentEditable = false
-
-							if (!synopsis.canceled) {
-								let uuid = synopsis.getAttribute("uuid")
-								modifySynopsis(uuid, synopsis.innerText)
-							}
-						}
-						
-						synopsis.onkeydown = (e) => {
-							if (e.keyCode == 13) {
-								// Enter pressed
-								synopsis.blur()
-							}
-							if (e.keyCode == 27) {
-								// Esc pressed
-								e.preventDefault()
-								synopsis.innerText = synopsis.original
-								synopsis.canceled = true
-								synopsis.blur()
-							}
-						}
-						
-						synopsis.onchange = () => {
-							Beat.log("CHANGED")
-						}
-
+						setupSynopsis(synopsis)
 					})
 					
 				})
@@ -387,6 +378,58 @@
 				document.getElementById("container").onclick = () => {
 					if (contextMenu.open) {
 						contextMenu.close()
+					}
+				}
+			}
+			
+			function setupSynopsis(synopsis) {
+				synopsis.ondblclick = () => {
+					synopsis.edit()
+				}
+				
+				synopsis.edit = () => {
+					// Store original
+					synopsis.original = synopsis.innerText
+					synopsis.canceled = false
+					
+					synopsis.classList.add("editing")
+					synopsis.contentEditable = true
+				}
+
+				synopsis.onblur = () => {
+					synopsis.classList.remove("editing")
+					synopsis.contentEditable = false
+					console.log("!!! blur")
+					let uuid = synopsis.getAttribute("uuid")
+					
+					if (!synopsis.canceled) {
+						console.log("   not canceled", uuid)
+						// If input wasn't canceled, we'll either modify the existing synopsis or add a new one
+						if (uuid?.length > 0) {
+							console.log("   uuid:" + uuid)
+							modifySynopsis(uuid, synopsis.innerText)
+						} else {
+							let scene = synopsis.closest(".card").getAttribute("uuid")
+							addSynopsis(scene, synopsis.innerText)
+						}
+					} else if (uuid.length == 0) {
+						console.log("!!! canceled")
+						// This was a temporary item. Remove after cancel.
+						synopsis.remove()
+					}
+				}
+				
+				synopsis.onkeydown = (e) => {
+					if (e.keyCode == 13) {
+						// Enter pressed
+						synopsis.blur()
+					}
+					if (e.keyCode == 27) {
+						// Esc pressed
+						e.preventDefault()
+						synopsis.innerText = synopsis.original
+						synopsis.canceled = true
+						synopsis.blur()
 					}
 				}
 			}
