@@ -498,9 +498,18 @@
     [self addNewParagraph:string caretPosition:NSNotFound];
 }
 
-/// Adds a new, clean paragraph
+/// Adds a new paragraph at given position
+- (void)addNewParagraph:(NSString*)string at:(NSInteger)position {
+    [self addNewParagraph:string at:position caretPosition:NSNotFound];
+}
+
+/// Adds a new, clean paragraph at selected position and moves caret accordingly
 - (void)addNewParagraph:(NSString*)string caretPosition:(NSInteger)newPosition {
-    NSInteger position = self.delegate.currentLine.position;
+    [self addNewParagraph:string at:NSNotFound caretPosition:newPosition];
+}
+
+- (void)addNewParagraph:(NSString*)string at:(NSInteger)position caretPosition:(NSInteger)newPosition {
+    if (position == NSNotFound) position = self.delegate.currentLine.position;
     self.delegate.selectedRange = NSMakeRange(position, 0);
     
     // If current line is not empty, add a line break at current line.
@@ -528,6 +537,27 @@
     if (newPosition != NSNotFound) {
         self.delegate.selectedRange = NSMakeRange(self.delegate.selectedRange.location + newPosition, 0);
     }
+}
+
+
+#pragma mark - Quick elements
+
+- (void)addSection:(NSInteger)position
+{
+    NSString *string = @"# ";
+    [self addNewParagraph:string at:position];
+}
+
+- (void)addSynopsis:(NSInteger)position
+{
+    NSString *string = @"= ";
+    [self addNewParagraph:string at:position];
+}
+
+- (void)addShot:(NSInteger)position
+{
+    NSString *string = @"!! ";
+    [self addNewParagraph:string at:position];
 }
 
 

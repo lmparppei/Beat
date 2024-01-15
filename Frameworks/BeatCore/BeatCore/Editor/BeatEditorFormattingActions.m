@@ -567,6 +567,25 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 
+#pragma mark - Synopsis, sections etc.
+
+- (IBAction)addSection:(id)sender
+{
+    [self.delegate.textActions addSection:self.delegate.selectedRange.location];
+}
+
+- (IBAction)addSynopsis:(id)sender
+{
+    [self.delegate.textActions addSynopsis:self.delegate.selectedRange.location];
+}
+
+- (IBAction)addShot:(id)sender
+{
+    [self.delegate.textActions addShot:self.delegate.selectedRange.location];
+}
+
+
+
 #pragma mark - Block actions
 
 - (IBAction)moveSelectedLinesUp:(id)sender
@@ -597,6 +616,14 @@ static NSString *revisionAttribute = @"Revision";
     [self.delegate.getTextView cut:self];
 }
 
+
+#pragma mark - Helpers
+
+- (NSInteger)maxLinePosition
+{
+    return NSMaxRange(self.delegate.currentLine.range);
+    
+}
 
 @end
 
