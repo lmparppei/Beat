@@ -599,6 +599,7 @@
 		B63525172A48C61000510B95 /* BeatOutlineSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatOutlineSettings.swift; sourceTree = "<group>"; };
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
 		B637EE142A4AC58100F4E7AA /* BeatThemeColorWell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatThemeColorWell.swift; sourceTree = "<group>"; };
+		B63BE83D2B5AA47C003814A5 /* BeatTimelineController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTimelineController.swift; sourceTree = "<group>"; };
 		B63DC837260A1EC60092B472 /* Beat File Format Specification.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification.md"; sourceTree = "<group>"; };
 		B640765C27D784270053D63A /* BeatLaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreen.swift; sourceTree = "<group>"; };
 		B640766327D791910053D63A /* About Beat.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "About Beat.md"; sourceTree = "<group>"; };
@@ -1820,6 +1821,7 @@
 				B6CB9735254ED61900C310CC /* HorizontalPinchView.m */,
 				B6CB9739254EEB4000C310CC /* BeatTimelineItem.h */,
 				B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */,
+				B63BE83D2B5AA47C003814A5 /* BeatTimelineController.swift */,
 			);
 			name = Timeline;
 			sourceTree = "<group>";

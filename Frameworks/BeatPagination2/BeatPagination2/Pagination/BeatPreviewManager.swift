@@ -28,7 +28,8 @@ import BeatCore.BeatEditorDelegate
     @objc public var timer:Timer?
     public var paginationUpdated = false
     public var lastChangeAt = NSMakeRange(0, 0)
-            
+    public var renderImmediately = false
+    
     /// Returns export settings from editor
     public var settings:BeatExportSettings {
         guard let settings = self.delegate?.exportSettings else {
@@ -63,7 +64,7 @@ import BeatCore.BeatEditorDelegate
                 
         // Return to main thread and render stuff on screen if needed
         DispatchQueue.main.async { [weak self] in
-            if self?.delegate?.previewVisible() ?? false {
+            if (self?.delegate?.previewVisible() ?? false) || self?.renderImmediately ?? false {
                 self?.renderOnScreen()
             }
         }
@@ -81,9 +82,13 @@ import BeatCore.BeatEditorDelegate
     /// Preview data can be created either in background (async) or in main thread (sync).
     /// - note: This method doesn't create the actual preview yet, just paginates it and prepares the data ready for display.
     @objc open func createPreview(withChangedRange range:NSRange, sync:Bool) {
-        // Add index to changed indices
+        // Make sure we have at least one index in range
         let changedRange = (range.length > 0) ? range : NSMakeRange(range.location, 1);
+        // Add index to changed indices.
         changedIndices.add(in: changedRange)
+        
+        var fullChangedRange = NSMakeRange(changedIndices.firstIndex, changedIndices.lastIndex - changedIndices.firstIndex)
+        if fullChangedRange.length <= 0 { fullChangedRange.length = 1 }
         
         // Let's invalidate the timer (if it exists)
         self.timer?.invalidate()
@@ -98,7 +103,7 @@ import BeatCore.BeatEditorDelegate
             
             // Create pagination
             if let screenplay = BeatScreenplay.from(parser, settings: self.settings) {
-                pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changeAt: changedIndices.firstIndex)
+                pagination?.newPagination(screenplay: screenplay, settings: self.settings, forEditor: true, changedRange: fullChangedRange)
             }
         } else {
             // Paginate and create preview with 1 second delay
@@ -112,7 +117,7 @@ import BeatCore.BeatEditorDelegate
                         self?.pagination?.newPagination(screenplay: screenplay,
                                                         settings: self?.settings ?? BeatExportSettings(),
                                                         forEditor: true,
-                                                        changeAt: self?.changedIndices.firstIndex ?? 0)
+                                                        changedRange: fullChangedRange)
                     }
                 }
             })

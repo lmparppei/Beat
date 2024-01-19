@@ -187,26 +187,31 @@ import BeatCore
 	 let pages = pagination.pages
 	 let titlePage = pagination.titlePage
 	 */
-	@objc public func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
+	@objc public func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changedRange:NSRange) {
 		self.settings = settings
-		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: changeAt)
+		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange: changedRange)
         
 		runPagination(pagination: operation)
 	}
     
     /// Use this when paginating with an editor delegate
     @objc public func newPagination() {
-        if let settings = self.delegate?.exportSettings {
-            if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
-                let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
-                runPagination(pagination: operation)
-            }
+        guard let settings = self.delegate?.exportSettings,
+              let parser = self.delegate?.parser
+        else {
+            print("newPagination: No delegate")
+            return
+        }
+              
+        if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
+            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange:NSMakeRange(0, parser.rawText().count))
+            runPagination(pagination: operation)
         }
     }
     
     /// Paginates given screenplay object
     @objc public func newPagination(screenplay:BeatScreenplay) {
-        let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
+        let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: false, changedRange: NSMakeRange(0, 0))
         runPagination(pagination: operation)
     }
 	
@@ -223,7 +228,6 @@ import BeatCore
     public func paginateLines(_ lines:[Line]) {
 		self.paginate(lines: lines)
 	}
-	
     
     
 	// MARK: - Delegate methods

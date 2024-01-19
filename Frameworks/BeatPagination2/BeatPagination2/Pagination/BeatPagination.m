@@ -54,7 +54,7 @@
 @property (nonatomic) BeatFonts* fonts;
 
 /// The position where last change was made. Used only for live pagination.
-@property (nonatomic) NSInteger location;
+@property (nonatomic) NSRange changedRange;
 
 /// Stored paragraph attributes for different line types. Used to calculate paragraph heights.
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
@@ -89,15 +89,15 @@
 
 + (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(__weak id<BeatPaginationDelegate>)delegate
 {
-	return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
+    return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changedRange:NSMakeRange(0,0) cachedPages:nil];
 }
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changedRange:(NSRange)changedRange
 {
-	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:changeAt cachedPages:cachedPages];
+	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changedRange:changedRange cachedPages:cachedPages];
 }
 
-- (instancetype)initWithDelegate:(__weak id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
+- (instancetype)initWithDelegate:(__weak id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changedRange:(NSRange)changedRange cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
 {
 	self = [super init];
 	
@@ -118,7 +118,7 @@
         }
 		
 		_livePagination = livePagination;
-		_location = changeAt;
+        _changedRange = changedRange;
 		_settings = settings;
 		_pages = NSMutableArray.new;
 		_lineTypeAttributes = NSMutableDictionary.new;
@@ -234,7 +234,7 @@
         A safe page is one page before where the actual edit was made, because some content might have been rolled on to next page, and editing anything on current page might change this.
      */
 	if (_livePagination && self.cachedPages.count > 0) {
-		NSArray<NSNumber*>* indexPath = [self findSafePageAndLineForPosition:self.location pages:self.cachedPages];
+		NSArray<NSNumber*>* indexPath = [self findSafePageAndLineForPosition:self.changedRange.location pages:self.cachedPages];
 		
 		NSInteger pageIndex = indexPath[0].integerValue;
 		NSInteger lineIndex = indexPath[1].integerValue;
@@ -303,7 +303,7 @@
 		Line* line = _lineQueue[0];
         
 		// Let's see if we can use cached pages here
-		if (_pages.count == pageCountAtStart+2 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
+		if (_pages.count == pageCountAtStart+2 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > NSMaxRange(_changedRange)) {
 			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
 
 			if ([line.uuid uuidEqualTo:firstLineOnCachedPage.uuid]) {

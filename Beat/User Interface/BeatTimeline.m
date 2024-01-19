@@ -162,13 +162,14 @@
 
 - (void)updateScenesAndRebuild:(bool)rebuild {
 	_clickedItem = nil;
+	bool sectionsHaveContent = [[self.delegate.documentSettings getString:DocSettingStylesheet] isEqualToString:@"Novel"]; //TODO: Fix this to somethign more generic
 	
 	if (rebuild) {
 		[self deselectAll];
 		_totalLength = 0;
 		_hasSections = NO;
-		NSInteger scenes = 0;
 		
+		NSInteger scenes = 0;
 		NSInteger storylineBlocks = 0;
 		
 		// Calculate total length
@@ -176,12 +177,14 @@
 			// Skip some elements
 			if (scene.omitted) continue;
 			
-			if (scene.type == heading) _totalLength += scene.timeLength;
-			if (scene.type == section) {
+			if (scene.type == section && !sectionsHaveContent) {
 				// Having sections transforms the view, so save the depth, too
 				_hasSections = YES;
 				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
+			} else {
+				_totalLength += scene.timeLength;
 			}
+			
 			if (scene.storylines.count) {
 				NSMutableSet *storylines = [NSMutableSet setWithArray:scene.storylines];
 				[storylines intersectSet:[NSSet setWithArray:_visibleStorylines]];
@@ -276,12 +279,12 @@
 		
 		NSRect rect;
 		CGFloat width;
-		if (scene.type == heading) {
-			width = scene.timeLength * factor;
-			rect = NSMakeRect(x, yPosition, width, height);
-		} else {
+		if (scene.type == section && !sectionsHaveContent) {
 			width = 1;
 			rect = NSMakeRect(x, yPosition, 1, 1);
+		} else {
+			width = scene.timeLength * factor;
+			rect = NSMakeRect(x, yPosition, width, height);
 		}
 		
 		// Apply the scene data to the representing item
@@ -334,11 +337,11 @@
 		}
 		
 		// Only add the width to the total width if it's a scene
-		// Sections add 3 px to account for the separator, while synopses add 0
-		if (scene.type == heading) {
-			x += width + 1;
-		} else if (scene.type == section) {
+		// Sections add 2 px to account for the separator
+		if (scene.type == section && !sectionsHaveContent) {
 			x += 2;
+		} else {
+			x += width + 1;
 		}
 		
 		index++;
@@ -666,23 +669,14 @@
 #pragma mark - Delegate methods
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	if (_selectedItems.count <= 1) [_delegate.textActions addStoryline:storyline to:scene];
-	else {
-		// Multiple items selected
-		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
-		for (BeatTimelineItem* item in selected) {
-			[_delegate.textActions addStoryline:storyline to:item.representedItem];
-		}
+	NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+	for (BeatTimelineItem* item in _selectedItems) {
+		[_delegate.textActions addStoryline:storyline to:item.representedItem];
 	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	if (_selectedItems.count <= 1) [_delegate.textActions removeStoryline:storyline from:scene];
-	else {
-		// Multiple items selected
-		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
-		for (BeatTimelineItem* item in selected) {
-			[_delegate.textActions removeStoryline:storyline from:item.representedItem];
-		}
+	for (BeatTimelineItem* item in _selectedItems) {
+		[_delegate.textActions removeStoryline:storyline from:item.representedItem];
 	}
 }
 

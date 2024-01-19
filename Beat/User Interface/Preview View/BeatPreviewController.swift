@@ -18,13 +18,13 @@ import BeatPagination2
 
 class BeatPreviewController:BeatPreviewManager {
 
-	var renderer:BeatRenderer?
+	var renderer:BeatRenderer?	
 	
 	@IBOutlet weak var previewView:BeatPreviewView?
 	@IBOutlet weak var scrollView:CenteringScrollView?
 	@IBOutlet weak var spinner:NSProgressIndicator?
 	@IBOutlet weak var quickLookView:NSView?
-		
+	
 	
 	// MARK: - Initialization
 	
@@ -72,10 +72,13 @@ class BeatPreviewController:BeatPreviewManager {
 
 	/// Renders pages on screen
 	@objc override func renderOnScreen() {
+		renderImmediately = false
+		
 		// Show spinner while loading
 		self.spinner?.isHidden = false
 		self.spinner?.startAnimation(nil)
-			
+	
+		
 		guard let previewView = self.previewView,
 			  let pagination = self.pagination
 		else {
@@ -90,10 +93,8 @@ class BeatPreviewController:BeatPreviewManager {
 		
 		// Check if pagination is up to date
 		if !paginationUpdated {
-			var firstIndex = self.changedIndices.firstIndex
-			if firstIndex == NSNotFound || firstIndex < 0 { firstIndex = 0 }
-			
-			createPreview(withChangedRange: NSMakeRange(firstIndex, 0), sync: true)
+			renderImmediately = true
+			return
 		}
 		
 		// Create page strings in background
@@ -117,7 +118,9 @@ class BeatPreviewController:BeatPreviewManager {
 				// Iterate through paginated pages
 				for i in 0 ..< pages.count {
 					let page = pages[i]
-					if page.delegate == nil { page.delegate = finishedPagination as? BeatPageDelegate }
+					if page.delegate == nil {
+						page.delegate = finishedPagination as? BeatPageDelegate
+					}
 					
 					var pageView:BeatPaginationPageView
 					if i < previewView.pageViews.count {
