@@ -467,28 +467,28 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			UIAction(title: "Make Non-Numbered") { _ in
 				self.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
 			},
-			UIAction(image: UIImage(named:"Color_Red")) { _ in
+			UIAction(image: UIImage(named:"color.red")) { _ in
 				textIO?.setColor("red", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Blue")) { _ in
+			UIAction(image: UIImage(named:"color.blue")) { _ in
 				textIO?.setColor("blue", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Green")) { _ in
+			UIAction(image: UIImage(named:"color.green")) { _ in
 				textIO?.setColor("green", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Pink")) { _ in
+			UIAction(image: UIImage(named:"color.pink")) { _ in
 				textIO?.setColor("pink", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Brown")) { _ in
+			UIAction(image: UIImage(named:"color.brown")) { _ in
 				textIO?.setColor("brown", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Cyan")) { _ in
+			UIAction(image: UIImage(named:"color.cyan")) { _ in
 				textIO?.setColor("cyan", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Orange")) { _ in
+			UIAction(image: UIImage(named:"color.orange")) { _ in
 				textIO?.setColor("orange", for: self.editorDelegate?.currentScene)
 			},
-			UIAction(image: UIImage(named:"Color_Magenta")) { _ in
+			UIAction(image: UIImage(named:"color.magenta")) { _ in
 				textIO?.setColor("magenta", for: self.editorDelegate?.currentScene)
 			}
 		])
@@ -681,23 +681,22 @@ extension BeatUITextView {
 				
 				UIMenu(title:"", options: [.displayInline], children: [
 					UIMenu(title: "Marker With Color...", children: [
-
-						UIAction(title: "Pink", image: UIImage(named: "Color_Pink"),  handler: { (_) in
+						UIAction(title: "Pink", image: UIImage(named: "color.pink"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
 						}),
-						UIAction(title: "Orange", image: UIImage(named: "Color_Orange"),  handler: { (_) in
+						UIAction(title: "Orange", image: UIImage(named: "color.orange"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker orange:New marker]]", caretPosition: -2)
 						}),
-						UIAction(title: "Purple", image: UIImage(named: "Color_Purple"),  handler: { (_) in
+						UIAction(title: "Purple", image: UIImage(named: "color.purple"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker purple:New marker]]", caretPosition: -2)
 						}),
-						UIAction(title: "Blue", image: UIImage(named: "Color_Blue"),  handler: { (_) in
+						UIAction(title: "Blue", image: UIImage(named: "color.blue"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker blue:New marker]]", caretPosition: -2)
 						}),
-						UIAction(title: "Green", image: UIImage(named: "Color_Green"),  handler: { (_) in
+						UIAction(title: "Green", image: UIImage(named: "color.green"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker green:New marker]]", caretPosition: -2)
 						}),
-						UIAction(title: "Red", image: UIImage(named: "Color_Red"),  handler: { (_) in
+						UIAction(title: "Red", image: UIImage(named: "color.red"),  handler: { (_) in
 							self.editorDelegate?.textActions.addNewParagraph("[[marker red:New marker]]", caretPosition: -2)
 						}),
 					]),

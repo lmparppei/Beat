@@ -749,7 +749,7 @@ DQ
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="Vc0-2H-Sgu"/>
-                                        <menuItem title="Red" image="Color_Red" id="uNu-t5-6hH" customClass="BeatColorMenuItem">
+                                        <menuItem title="Red" image="color.red" id="uNu-t5-6hH" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="red"/>
@@ -758,7 +758,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="iQN-ZF-94Y"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Blue" image="Color_Blue" id="4uc-VD-Viy" customClass="BeatColorMenuItem">
+                                        <menuItem title="Blue" image="color.blue" id="4uc-VD-Viy" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
@@ -767,7 +767,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="pBE-3h-QwA"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Green" image="Color_Green" id="lVX-ro-v5U" customClass="BeatColorMenuItem">
+                                        <menuItem title="Green" image="color.green" id="lVX-ro-v5U" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
@@ -776,7 +776,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="5g4-Mz-5op"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Pink" image="Color_Pink" id="JCS-BM-6XQ" customClass="BeatColorMenuItem">
+                                        <menuItem title="Pink" image="color.pink" id="JCS-BM-6XQ" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="pink"/>
@@ -785,7 +785,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="KsK-Eb-tGQ"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Brown" image="Color_Brown" id="nRa-kY-4lQ" customClass="BeatColorMenuItem">
+                                        <menuItem title="Brown" image="color.brown" id="nRa-kY-4lQ" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="brown"/>
@@ -794,7 +794,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="poK-75-cNK"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Cyan" image="Color_Cyan" id="WEe-Ln-H4v" customClass="BeatColorMenuItem">
+                                        <menuItem title="Cyan" image="color.cyan" id="WEe-Ln-H4v" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="cyan"/>
@@ -803,7 +803,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="1sA-U7-LQA"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Orange" image="Color_Orange" id="lPg-kw-X04" customClass="BeatColorMenuItem">
+                                        <menuItem title="Orange" image="color.orange" id="lPg-kw-X04" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
@@ -812,7 +812,7 @@ DQ
                                                 <action selector="addMarker:" target="-1" id="II7-a7-7rV"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Magenta" image="Color_Magenta" id="xGE-gP-9DS" customClass="BeatColorMenuItem">
+                                        <menuItem title="Magenta" image="color.magenta" id="xGE-gP-9DS" customClass="BeatColorMenuItem">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="magenta"/>
@@ -1284,13 +1284,13 @@ DQ
         </customObject>
     </objects>
     <resources>
-        <image name="Color_Blue" width="15" height="15"/>
-        <image name="Color_Brown" width="15" height="15"/>
-        <image name="Color_Cyan" width="15" height="15"/>
-        <image name="Color_Green" width="15" height="15"/>
-        <image name="Color_Magenta" width="15" height="15"/>
-        <image name="Color_Orange" width="15" height="15"/>
-        <image name="Color_Pink" width="15" height="15"/>
-        <image name="Color_Red" width="15" height="15"/>
+        <image name="color.blue" width="15" height="15"/>
+        <image name="color.brown" width="15" height="15"/>
+        <image name="color.cyan" width="15" height="15"/>
+        <image name="color.green" width="15" height="15"/>
+        <image name="color.magenta" width="15" height="15"/>
+        <image name="color.orange" width="15" height="15"/>
+        <image name="color.pink" width="15" height="15"/>
+        <image name="color.red" width="15" height="15"/>
     </resources>
 </document>

@@ -7,6 +7,7 @@
 //
 
 #import "BeatColorMenuItem.h"
+#import <BeatCore/BeatLocalization.h>
 
 @implementation BeatColorMenuItem
 
@@ -20,6 +21,23 @@
 	BeatColorMenuItem *copy = [super copy];
 	copy.colorKey = self.colorKey;
 	return copy;
+}
+
+-(instancetype)initWithColor:(NSString*)colorKey
+{
+	self = [super init];
+
+	self.colorKey = colorKey;
+	
+	NSString* colorString = [NSString stringWithFormat:@"color.%@", self.colorKey];
+	self.image = [NSImage imageNamed:colorString];
+	self.title = NSLocalizedString(colorString, nil);
+	
+	return self;
+}
+
+- (void)awakeFromNib {
+	// Set text and image based on color name
 }
 
 @end

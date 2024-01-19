@@ -214,6 +214,27 @@
 	return result;
 }
 
+/// Cuts a piece of text from editor to notepad
+- (IBAction)cutToNotepad:(id)sender
+{
+	NSRange range = self.editorDelegate.selectedRange;
+	NSString* string = [self.editorDelegate.text substringWithRange:range];
+	
+	// Add line breaks if needed
+	if (self.text.length > 1 && [self.text characterAtIndex:self.text.length - 1] != '\n') {
+		string = [NSString stringWithFormat:@"\n\n%@", string];
+	}
+	
+	[self replaceCharactersInRange:NSMakeRange(self.string.length, 0) withString:string];
+	[self didChangeText];
+	
+	[self.editorDelegate replaceRange:range withString:@""];
+	
+	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+		[self replaceCharactersInRange:NSMakeRange(self.string.length - string.length, string.length) withString:@""];
+	}];
+}
+
 @end
 /*
  

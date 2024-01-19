@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatColorMenuItem : NSMenuItem
 @property (nonatomic) IBInspectable NSString* colorKey;
+@property (nonatomic) bool automatic;
+-(instancetype)initWithColor:(NSString*)colorKey;
 @end
 
 NS_ASSUME_NONNULL_END

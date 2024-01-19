@@ -48,7 +48,7 @@ import BeatCore.BeatRevisions
 			dropdown.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
 			
 			if let item = dropdown.itemArray.last {
-				item.image = NSImage(named: "Color_" + color.capitalized)
+				item.image = NSImage(named: "color." + color)
 			}
 		}
 				
@@ -109,10 +109,10 @@ import BeatCore.BeatRevisions
 			let color = gen.color
 			
 			dropdownFrom.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
-			dropdownFrom.itemArray.last?.image = NSImage(named: "Color_" + color.capitalized)
+			dropdownFrom.itemArray.last?.image = NSImage(named: "color." + color)
 			
 			dropdownTo.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
-			dropdownTo.itemArray.last?.image = NSImage(named: "Color_" + color.capitalized)
+			dropdownTo.itemArray.last?.image = NSImage(named: "color." + color)
 		}
 
 		input.beginSheetModal(for: delegate.documentWindow!) { response in

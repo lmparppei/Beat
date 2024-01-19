@@ -15,7 +15,8 @@
                 <outlet property="revisionColorPopup" destination="ueA-80-ahN" id="7zh-Lb-Kxk"/>
                 <outlet property="revisionMode" destination="svZ-tW-BAQ" id="VhV-a7-cr0"/>
                 <outlet property="sceneNumbers" destination="OaH-jv-Wib" id="Ted-m1-z50"/>
-                <outlet property="view" destination="9M4-FV-zpM" id="ErP-Hw-3G3"/>
+                <outlet property="stackView" destination="gUD-X5-BR0" id="AL1-M4-gPD"/>
+                <outlet property="view" destination="9M4-FV-zpM" id="aO6-Mq-8Ax"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -66,7 +67,7 @@
                     </connections>
                 </customView>
                 <customView id="O2M-r4-J5E" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="216" width="35" height="22"/>
+                    <rect key="frame" x="19" y="216" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
@@ -140,32 +141,32 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" id="ueA-80-ahN" userLabel="Revision Color">
-                    <rect key="frame" x="95" y="66" width="104" height="22"/>
+                    <rect key="frame" x="96" y="66" width="104" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="First" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="a5T-li-azw" id="ZRk-Z8-2fT">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                         <menu key="menu" id="69U-OR-bOE">
                             <items>
-                                <menuItem title="First" state="on" image="Color_Blue" id="a5T-li-azw" customClass="BeatColorMenuItem">
+                                <menuItem title="First" state="on" image="color.blue" id="a5T-li-azw" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Second" image="Color_Orange" id="yzY-bO-hOh" customClass="BeatColorMenuItem">
+                                <menuItem title="Second" image="color.orange" id="yzY-bO-hOh" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Third" image="Color_Purple" id="v0U-lZ-E3A" customClass="BeatColorMenuItem">
+                                <menuItem title="Third" image="color.purple" id="v0U-lZ-E3A" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="purple"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Fourth" image="Color_Green" id="Wg2-ho-wkf" customClass="BeatColorMenuItem">
+                                <menuItem title="Fourth" image="color.green" id="Wg2-ho-wkf" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
@@ -226,7 +227,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="MuK-Px-5B3">
-                    <rect key="frame" x="18" y="142" width="75" height="16"/>
+                    <rect key="frame" x="18" y="142" width="76" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="Rt1-qW-ihD">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -237,11 +238,22 @@
             </subviews>
             <point key="canvasLocation" x="566" y="-413"/>
         </customView>
+        <customView id="6Xv-bB-bV0">
+            <rect key="frame" x="0.0" y="0.0" width="224" height="318"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <customView id="gUD-X5-BR0" customClass="BeatStackView" customModule="Beat" customModuleProvider="target">
+                    <rect key="frame" x="8" y="12" width="208" height="293"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </customView>
+            </subviews>
+            <point key="canvasLocation" x="864" y="-413"/>
+        </customView>
     </objects>
     <resources>
-        <image name="Color_Blue" width="15" height="15"/>
-        <image name="Color_Green" width="15" height="15"/>
-        <image name="Color_Orange" width="15" height="15"/>
-        <image name="Color_Purple" width="15" height="15"/>
+        <image name="color.blue" width="15" height="15"/>
+        <image name="color.green" width="15" height="15"/>
+        <image name="color.orange" width="15" height="15"/>
+        <image name="color.purple" width="15" height="15"/>
     </resources>
 </document>

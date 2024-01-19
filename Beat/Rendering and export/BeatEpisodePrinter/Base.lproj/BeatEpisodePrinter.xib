@@ -213,7 +213,7 @@ Gw
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="ByQ-Yj-wUr">
                                 <items>
-                                    <menuItem title="Red" state="on" image="Color_Red" id="Q5H-ek-O4w"/>
+                                    <menuItem title="Red" state="on" image="color.red" id="Q5H-ek-O4w"/>
                                     <menuItem title="Cyan" image="Color_Cyan" id="znR-bf-oyK"/>
                                     <menuItem title="Green" image="Color_Green" id="2Bh-O5-Oxn"/>
                                     <menuItem title="Orange" image="Color_Orange" id="Uju-KM-S5e"/>
@@ -256,8 +256,8 @@ Gw
         <image name="Color_Cyan" width="15" height="15"/>
         <image name="Color_Green" width="15" height="15"/>
         <image name="Color_Orange" width="15" height="15"/>
-        <image name="Color_Red" width="15" height="15"/>
         <image name="NSAddTemplate" width="14" height="13"/>
         <image name="NSRemoveTemplate" width="14" height="4"/>
+        <image name="color.red" width="15" height="15"/>
     </resources>
 </document>
