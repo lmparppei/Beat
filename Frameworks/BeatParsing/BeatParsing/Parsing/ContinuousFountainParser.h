@@ -147,6 +147,10 @@
 /// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
 
+#pragma mark - Boneyard
+
+@property (nonatomic, weak) Line* boneyardAct;
+
 
 #pragma mark - Convenience Methods
 

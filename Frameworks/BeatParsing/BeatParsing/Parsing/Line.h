@@ -537,6 +537,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isAnyDialogue;
 /// returns `true` when the character cue has an extension (CONT'D), (V.O.) etc.
 - (BOOL)hasExtension;
+/// returns `true` if this begins a boneyard section
+- (bool)isBoneyardSection;
 
 - (bool)hasEmojis;
 - (NSArray<NSValue*>*)emojiRanges;

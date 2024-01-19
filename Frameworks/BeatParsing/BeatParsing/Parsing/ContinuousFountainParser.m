@@ -763,6 +763,9 @@ static NSDictionary* patterns;
     line.escapeRanges = NSMutableIndexSet.new;
     line.type = [self parseLineTypeFor:line atIndex:index];
     
+    // Remember where our boneyard begins
+    if (line.isBoneyardSection) self.boneyardAct = line;
+    
     // Make sure we didn't receive a disabled type
     if ([self.delegate.disabledTypes containsIndex:(NSUInteger)line.type]) {
         if (line.length > 0) line.type = action;
@@ -858,7 +861,8 @@ static NSDictionary* patterns;
 
 /// Parses the line type for given line. It *has* to know its line index.
 /// TODO: This bunch of spaghetti should be refactored and split into smaller functions.
-- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index { @synchronized (self) {
+- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index
+{ @synchronized (self) {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
     Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
     
@@ -883,14 +887,17 @@ static NSDictionary* patterns;
             // If preceding line is formatted as dialogue BUT it's empty, we'll just return empty.
             if (previousLine.string.length == 0) return empty;
             
-            // If preceeded by a character cue, always return dialogue
+            // If preceded by a character cue, always return dialogue
             if (previousLine.type == character) return dialogue;
             else if (previousLine.type == dualDialogueCharacter) return dualDialogue;
             
             NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0;
             
             // If it's any other dialogue line and we're editing it, return dialogue
-            if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical) && previousLine.length > 0 && (nextLine.length == 0 || nextLine == nil) && NSLocationInRange(selection, line.range)) {
+            if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical)
+                && previousLine.length > 0
+                && (nextLine.length == 0 || nextLine == nil)
+                && NSLocationInRange(selection, line.range)) {
                 return (previousLine.isDialogue) ? dialogue : dualDialogue;
             }
         }
@@ -910,24 +917,20 @@ static NSDictionary* patterns;
     bool twoSpaces = (firstChar == ' ' && lastChar == ' ' && line.length > 1); // Contains at least two spaces
     
     if (containsOnlyWhitespace && !twoSpaces) return empty;
-    
+        
+    // Check forced types
     if ([trimmedString isEqualToString:@"==="]) {
         return pageBreak;
-    }
-    else if (firstChar == '!') {
+    } else if (firstChar == '!') {
         // Action or shot
         if (line.length > 1) {
             unichar secondChar = [line.string characterAtIndex:1];
             if (secondChar == '!') return shot;
         }
         return action;
-    }
-    else if (firstChar == '.' && previousIsEmpty) {
-        // '.' forces a heading. Because our American friends love to shoot their guns like we Finnish people love our booze, screenwriters might start dialogue blocks with such "words" as '.44'
-        if (line.length > 1) {
-            unichar secondChar = [line.string characterAtIndex:1];
-            if (secondChar != '.') return heading;
-        } else {
+    } else if (firstChar == '.' && previousIsEmpty) {
+        // '.' forces a heading, but we'll check that it isn't followed by another dot.
+        if (line.length == 1 || (line.length > 1 && [line.string characterAtIndex:1] != '.')) {
             return heading;
         }
     }
@@ -948,9 +951,9 @@ static NSDictionary* patterns;
         if (titlePageType != NSNotFound) return titlePageType;
     }
     
-    // A character line ending in ^ is a dual dialogue character
-    // (94 = ^, we'll compare the numerical value to avoid mistaking Tuskic alphabet character Ş as ^)
-    if (lastChar == 94 && line.noteRanges.firstIndex != 0) {
+    if (lastChar == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
+        // A character line ending in ^ is a dual dialogue character
+        // (94 = ^, we'll compare the numerical value to avoid mistaking Turkish alphabet character Ş as ^)
         NSString* cue = [line.string substringToIndex:line.length - 1];
         if (cue.length > 0 && cue.onlyUppercaseUntilParenthesis) {
             // Note the previous character cue that it's followed by dual dialogue
@@ -958,29 +961,28 @@ static NSDictionary* patterns;
             return dualDialogueCharacter;
         }
     }
-    
-    // Check for Transitions
     else if (line.length > 2 && line.lastCharacter == ':' && line.string.containsOnlyUppercase && previousIsEmpty) {
+        // Check for Transitions
         return transitionLine;
     }
-    
-    // Handle items which require an empty line before them (and we're not forcing character input)
     else if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
-        // Heading
+        // Handle items which require an empty line before them (and we're not forcing character input)
+        
         NSString* firstChars = [line.string substringToIndex:3].lowercaseString;
         
+        // Heading
         if ([firstChars isEqualToString:@"int"] ||
             [firstChars isEqualToString:@"ext"] ||
             [firstChars isEqualToString:@"est"] ||
             [firstChars isEqualToString:@"i/e"]) {
             
             // If it's just under 4 characters, return heading
-            if (line.length == 3) {
-                return heading;
-            } else {
+            if (line.length > 3) {
                 // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
                 unichar nextChar = [line.string characterAtIndex:3];
                 if (nextChar == '.' || nextChar == ' ' || nextChar == '/')  return heading;
+            } else {
+                return heading;
             }
         }
         
@@ -1001,37 +1003,39 @@ static NSDictionary* patterns;
             return character;
         }
     }
-    
-    else if (_delegate.characterInputForLine == line) {
-        return character;
-    }
-    
-    if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
+    else if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
+        // Parenthetical or dialogue
         if (firstChar == '(') {
             return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
         }
         return (previousLine.isDialogue) ? dialogue : dualDialogue;
     }
     
-    // Fix some parsing mistakes
-    if (previousLine.type == action && previousLine.length > 0
+    // If the previous line is UPPERCASE, isn't a forced element, and is preceded by an empty line, and this line isn't empty, it can be a character cue.
+    // Basically we'll make any all-caps lines with < 3 characters character cues and/or make all-caps actions character cues when
+    // the text is changed to have some dialogue follow it.
+    // We're doing this only after everything else has failed.
+    if (previousLine.type == action
+        && previousLine.length > 0
         && previousLine.string.onlyUppercaseUntilParenthesis
-        && line.length > 0
         && !previousLine.forced
+        && line.length > 0
         && [self previousLine:previousLine].type == empty) {
-        // Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when the text is changed to have some dialogue follow it.
+        
         // (94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^')
         if (previousLine.lastCharacter == 94) previousLine.type = dualDialogueCharacter;
         else previousLine.type = character;
-        
+        // Note that the previous line got changed
         [_changedIndices addIndex:index-1];
         
-        if (line.length > 0 && [line.string characterAtIndex:0] == '(') {
+        if ([line.string characterAtIndex:0] == '(') {
             return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        } else {
+            return dialogue;
         }
-        else return dialogue;
     }
     
+    // Action is the default
     return action;
 } }
 

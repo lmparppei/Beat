@@ -42,16 +42,15 @@
 }
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
 {
-    // The array for printable elements
-    NSMutableArray *elements = NSMutableArray.new;
-    
     // Create a copy of parsed lines
     NSMutableArray *linesForPrinting = NSMutableArray.array;
     Line *precedingLine;
     BeatMacroParser* macros = BeatMacroParser.new;
     
-    
     for (Line* line in lines) {
+        // Stop at boneyard
+        if (line.isBoneyardSection) break;
+    
         [linesForPrinting addObject:line.clone];
                 
         Line *l = linesForPrinting.lastObject;
@@ -108,13 +107,17 @@
     }
     
     //
+    // The array for printable elements
+    NSMutableArray *preprocessedLines = NSMutableArray.new;
     Line *previousLine;
+    
     for (Line *line in linesForPrinting) {
         // Fix a weird bug for first line
         if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
         
         // Check if we should spare some non-printing objects or not.
-        if ((line.isInvisible || line.effectivelyEmpty) && !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
+        if ((line.isInvisible || line.effectivelyEmpty) &&
+            !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
             
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
@@ -151,9 +154,9 @@
         // If this is a dual dialogue character cue, we'll need to search for the previous one
         // and make it aware of being a part of a dual dialogue block.
         if (line.type == dualDialogueCharacter) {
-            NSInteger i = elements.count - 1;
+            NSInteger i = preprocessedLines.count - 1;
             while (i >= 0) {
-                Line *precedingLine = [elements objectAtIndex:i];
+                Line *precedingLine = [preprocessedLines objectAtIndex:i];
                                 
                 if (precedingLine.type == character) {
                     precedingLine.nextElementIsDualDialogue = YES;
@@ -167,12 +170,12 @@
             }
         }
         
-        [elements addObject:line];
+        [preprocessedLines addObject:line];
         
         previousLine = line;
     }
     
-    return elements;
+    return preprocessedLines;
 }
 
 

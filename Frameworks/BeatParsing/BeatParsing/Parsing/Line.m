@@ -625,6 +625,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return (self.type == dialogue || self.type == dualDialogue);
 }
 
+- (bool)isBoneyardSection
+{
+    return (self.type == section && [[self.string substringFromIndex:self.numberOfPrecedingFormattingCharacters].lowercaseString.trim isEqualToString:@"boneyard"]);
+}
+
 
 #pragma mark Omissions & notes
 // What a silly mess. TODO: Please fix this.
@@ -639,7 +644,20 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// @warning This also includes lines that have 0 length or are completely a note, meaning the method will return YES for empty and/or note lines too.
 - (bool)omitted
 {
-    return (self.omittedRanges.count + self.noteRanges.count >= self.string.length);
+    bool omitted = false;
+    if (self.omittedRanges.count + self.noteRanges.count >= self.string.length) {
+        // The line is wrapped in an omission
+        omitted = true;
+    } else if (self.omittedRanges.count > 0 && self.omittedRanges.count == self.string.length - 1) {
+        // Out of convenience, if there's a *single* space left somewhere on the line, we'll consider it omitted.
+        NSMutableIndexSet* visibleIndices = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.length)];
+        [visibleIndices removeIndexes:self.omittedRanges];
+        
+        // We should now have a single index left
+        if (visibleIndices.count == 1 && [self.string characterAtIndex:visibleIndices.firstIndex] == ' ') return true;
+    }
+    
+    return omitted;
 }
 
 /**
