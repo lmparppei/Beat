@@ -182,7 +182,9 @@
 		// Get the most amount of lines and add missing genders
 		for (BeatCharacter* character in self.characters.allValues) {
 			if (character.lines > self.mostLines) self.mostLines = character.lines;
-			[genders addObject:(character.gender.length > 0) ? character.gender : @"unspecified"];
+			
+			NSString* gender = (character.gender.length > 0) ? character.gender : @"unspecified";
+			for (NSInteger i=0; i<character.lines; i++) [genders addObject:gender];
 		}
 		
 		// Reload data in main thread
@@ -238,7 +240,7 @@
 	
 	// We'll have to fetch a new value for this character, because it might be out of sync
 	BeatCharacterData* data = [BeatCharacterData.alloc initWithDelegate:self.editorDelegate];
-	BeatCharacter* character = [data getCharacterWith:name];
+	BeatCharacter* character = [data charactersAndLinesWithLines:self.editorDelegate.parser.lines][name];
 	
 	// If the character exists, show popover
 	if (character != nil) {

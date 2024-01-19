@@ -102,7 +102,7 @@ import BeatCore
 	weak var listDelegate: BeatCharacterListDelegate?
 	weak var editorView:BeatCharacterEditorView?
 	var character:BeatCharacter
-	
+		
 	@objc init(editorDelegate:BeatEditorDelegate, listView:BeatCharacterListDelegate, character:BeatCharacter) {
 		self.character = character
 		self.popover = NSPopover()
@@ -122,7 +122,10 @@ import BeatCore
 		popover.contentViewController = vc
 		popover.behavior = .semitransient
 		popover.delegate = self
-
+		if #available(macOS 10.14, *) {
+			popover.appearance = NSAppearance(named: .darkAqua)
+		}
+		
 		vc.character = self.character
 		vc.manager = self
 		
