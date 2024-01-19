@@ -698,7 +698,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
     NSInteger pageIndex = [self findPageIndexInRange:range pages:self.pages];
     if (pageIndex == NSNotFound) {
-        NSLog(@"• PAGINATION: Page not found: range %lu, %lu", range.location, range.length);
+        NSLog(@"⚠️ heightForRange: Page not found: range %lu, %lu", range.location, range.length);
         return 0.0;
     }
 	
@@ -726,7 +726,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     
 	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
-            
+        // Make sure we have transferred the ownership correctly
+        page.delegate = self;
+        
 		for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
 			BeatPaginationBlock* block = page.blocks[j];
             

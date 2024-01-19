@@ -31,15 +31,24 @@
 	return [BeatPaginationBlock.alloc initWithLines:lines delegate:delegate isDualDialogueElement:dualDialogueElement];
 }
 
+- (BeatPaginationBlock*)copyWithDelegate:(id<BeatPageDelegate>)delegate
+{
+    BeatPaginationBlock* block = [BeatPaginationBlock withLines:self.lines.copy delegate:self.delegate isDualDialogueElement:_dualDialogueElement];
+    block.calculatedHeight = self.calculatedHeight;
+    block.UUIDs = self.UUIDs.copy;
+    block.lineHeights = self.lineHeights.mutableCopy;
+    
+    return block;
+}
+
 - (instancetype)initWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement {
 	self = [super init];
 	if (self) {
 		_delegate = delegate;
 		
-		_calculatedHeight = -1.0;
-		
 		_lines = lines;
 		_dualDialogueElement = dualDialogueElement;
+        _calculatedHeight = -1.0;
 		
 		if (!_dualDialogueElement) {
 			Line* firstLine = _lines.firstObject;
@@ -123,8 +132,14 @@
     // Set font for this element
     BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
-
+    
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
+    if (font == nil) {
+        NSLog(@"!!! STOP");
+        NSLog(@"    • fonts: %@", _delegate.fonts);
+        NSLog(@"    • delegate: %@", _delegate);
+        NSLog(@"    .... halt");
+    }
     NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:stringWithoutFormatting attributes:@{
         NSFontAttributeName: font,
         NSParagraphStyleAttributeName: pStyle

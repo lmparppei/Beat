@@ -54,7 +54,8 @@
 /**
  This method returns page content as `NSAttributedString`. To get it working, you'll need to hook up a `BeatRendererDelegate` instance to the paginator. macOS and iOS require their own respective classes which comply to the protocol.
  */
--(NSAttributedString*)attributedString {
+-(NSAttributedString*)attributedString
+{
     if (self.delegate == nil) {
         NSLog(@"WARNING: No delegate for page.");
     }
