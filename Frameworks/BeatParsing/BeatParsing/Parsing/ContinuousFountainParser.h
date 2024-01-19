@@ -67,6 +67,9 @@
 - (Line *)lineWithUUID:(NSString *)uuid;
 
 - (NSArray*)safeLines;
+
+@property (nonatomic, weak) Line* boneyardAct;
+
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
