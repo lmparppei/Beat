@@ -34,3 +34,9 @@ public extension String {
         return self.components(separatedBy: ",").map  { $0.trimmingCharacters(in: .whitespaces) }
     }
 }
+
+public extension Bool {
+    var intValue: Int {
+        return self ? 1 : 0
+    }
+}

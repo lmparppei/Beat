@@ -282,22 +282,22 @@ DQ
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="8KN-ok-TnQ">
                                             <rect key="frame" x="0.0" y="266" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Color_Blue" id="SsU-Tq-SuY"/>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="color.blue" id="SsU-Tq-SuY"/>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="qMM-1X-51d">
                                             <rect key="frame" x="0.0" y="245" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Color_Orange" id="L3L-04-kA2"/>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="color.orange" id="L3L-04-kA2"/>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Kl2-sk-j5X">
                                             <rect key="frame" x="0.0" y="201" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Color_Green" id="RFe-7s-BqO"/>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="color.green" id="RFe-7s-BqO"/>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="ns8-TX-6xO">
                                             <rect key="frame" x="0.0" y="223" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Color_Purple" id="Syw-cx-Q2W"/>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="color.purple" id="Syw-cx-Q2W"/>
                                         </imageView>
                                         <popUpButton hidden="YES" verticalHuggingPriority="750" id="GVT-Zp-Amr">
                                             <rect key="frame" x="18" y="4" width="125" height="25"/>
@@ -307,7 +307,7 @@ DQ
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <menu key="menu" id="Zeh-Dn-H6W">
                                                     <items>
-                                                        <menuItem title="Red" state="on" image="Color_Red" id="jyA-d7-eqg"/>
+                                                        <menuItem title="Red" state="on" image="color.red" id="jyA-d7-eqg"/>
                                                         <menuItem title="Cyan" image="Color_Cyan" id="LmY-As-h9q"/>
                                                         <menuItem title="Green" image="Color_Green" id="BEN-AI-rRD"/>
                                                         <menuItem title="Orange" image="Color_Orange" id="83k-sp-7QO"/>
@@ -403,11 +403,13 @@ DQ
         </window>
     </objects>
     <resources>
-        <image name="Color_Blue" width="15" height="15"/>
         <image name="Color_Cyan" width="15" height="15"/>
         <image name="Color_Green" width="15" height="15"/>
         <image name="Color_Orange" width="15" height="15"/>
-        <image name="Color_Purple" width="15" height="15"/>
-        <image name="Color_Red" width="15" height="15"/>
+        <image name="color.blue" width="15" height="15"/>
+        <image name="color.green" width="15" height="15"/>
+        <image name="color.orange" width="15" height="15"/>
+        <image name="color.purple" width="15" height="15"/>
+        <image name="color.red" width="15" height="15"/>
     </resources>
 </document>

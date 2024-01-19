@@ -42,6 +42,8 @@ extern NSString * const BeatSettingShowTags;
 extern NSString * const BeatSettingAutomaticContd;
 extern NSString * const BeatSettingZoomLevel;
 
+extern NSString * const BeatSettingNovelLineSpacing;
+
 extern NSString * const BeatSettingContinuousSpellChecking;
 
 extern NSString * const BeatSettingShowSynopsisInOutline;

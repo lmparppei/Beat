@@ -59,6 +59,7 @@ NSString* const BeatSettingDefaultPageSize 				= @"defaultPageSize";
 NSString* const BeatSettingDisableFormatting 			= @"disableFormatting";
 NSString* const BeatSettingShowMarkersInScrollbar 		= @"showMarkersInScrollbar";
 NSString* const BeatSettingSceneHeadingSpacing 			= @"sceneHeadingSpacing";
+NSString* const BeatSettingNovelLineSpacing             = @"novelLineSpacing";
 NSString* const BeatSettingScreenplayItemMore 			= @"screenplayItemMore";
 NSString* const BeatSettingScreenplayItemContd 			= @"screenplayItemContd";
 NSString* const BeatSettingShowRevisions 				= @"showRevisions";
@@ -130,6 +131,7 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingDisableFormatting: @[BeatSettingDisableFormatting, @NO],
 		BeatSettingShowMarkersInScrollbar: @[BeatSettingShowMarkersInScrollbar, @NO],
 		BeatSettingSceneHeadingSpacing: @[BeatSettingSceneHeadingSpacing, @2],
+        BeatSettingNovelLineSpacing: @[BeatSettingNovelLineSpacing, @(2.0)],
 		BeatSettingScreenplayItemMore: @[BeatSettingScreenplayItemMore, @"MORE"],
 		BeatSettingScreenplayItemContd: @[BeatSettingScreenplayItemContd, @"CONT'D"],
 		BeatSettingShowRevisions: @[BeatSettingShowRevisions, @YES],

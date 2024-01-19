@@ -11,3 +11,5 @@ extension StringProtocol {
     // Thank you, Leo Dabus @ stackoverflow
     subscript(_ offset: Int)                     -> Element     { self[index(startIndex, offsetBy: offset)] }
 }
+
+

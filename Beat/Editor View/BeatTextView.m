@@ -152,7 +152,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 -(instancetype)initWithCoder:(NSCoder *)coder
 {
 	self = [super initWithCoder:coder];
-		
+	[self layoutSetup];
+	
+	return self;
+}
+
+/// Basic text view setup
+- (void)layoutSetup
+{
 	// Setup layout manager and minimap
 	[self setupLayoutManager];
 	
@@ -163,13 +170,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.continuousSpellCheckingEnabled) {
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	}
-
-	//self.wantsLayer = true;
-	//self.canDrawSubviewsIntoLayer = true;
 	
-	return self;
+	self.editable = YES;
+	self.textContainer.widthTracksTextView = NO;
+	self.textContainer.heightTracksTextView = NO;
+	
+	self.automaticDataDetectionEnabled = NO;
+	self.automaticQuoteSubstitutionEnabled = NO;
+	self.automaticDashSubstitutionEnabled = NO;
+
 }
 
+/// Loads and sets up our custom layout manager, `BeatLayoutManager`
 - (void)setupLayoutManager
 {
 	// Set text storage delegate
@@ -224,27 +236,20 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// [self setupMinimap];
 }
 
--(void)setup {
-	self.editable = YES;
-	self.textContainer.widthTracksTextView = NO;
-	self.textContainer.heightTracksTextView = NO;
-	
+/// General setup. Call from editor instance.
+-(void)setup
+{
 	// Style
 	self.font = _editorDelegate.fonts.regular;
 	[self.textStorage setFont:_editorDelegate.fonts.regular];
-	
-	self.automaticDataDetectionEnabled = NO;
-	self.automaticQuoteSubstitutionEnabled = NO;
-	self.automaticDashSubstitutionEnabled = NO;
-	
-	
-	//if (self.editorDelegate.hideFountainMarkup) self.layoutManager.allowsNonContiguousLayout = NO;
+		
 	self.layoutManager.allowsNonContiguousLayout = YES;
 	
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	[paragraphStyle setLineHeightMultiple:self.editorDelegate.lineHeight];
 	[self setDefaultParagraphStyle:paragraphStyle];
 	
+	// Setup mouse cursor positions
 	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:_trackingArea];
@@ -254,13 +259,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
 	
-	// Make the text view first responder
+	// Make the text view first responder at start
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
 	
 	// Setup focus mode
 	[self setupFocusMode];
 	
-	// Setup validated items
+	// Setup validated menu items
 	[self setupValidationItems];
 }
 

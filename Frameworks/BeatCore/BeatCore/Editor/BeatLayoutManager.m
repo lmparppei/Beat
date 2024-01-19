@@ -88,7 +88,7 @@
         if (line == nil) return;
         
         // Do nothing if this line is not a marker or a heading
-        if (line.markerRange.length == 0 && line.type != heading && line.beats.count == 0) return;
+        if (line.markerRange.length == 0 && line.type != heading && line.beats.count == 0 && line.type != section) return;
         
         // Get range for the first character. For headings and markers we won't need anything else.
         NSRange r = NSMakeRange(line.position, 1);
@@ -112,6 +112,9 @@
         if (line.type == heading) {
             [self drawSceneNumberForLine:line rect:rect inset:inset];
         }
+        else if (line.type == section && line.isBoneyardSection) {
+            [self drawBoneyardMarkerForLine:line inset:inset];
+        }
         
         // Draw markers
         if (line.markerRange.length > 0) {
@@ -122,6 +125,26 @@
             [self drawBeat:rect inset:inset];
         }
     }];
+}
+
+#pragma mark - Boneyard act marker
+
+- (void)drawBoneyardMarkerForLine:(Line*)line inset:(NSSize)inset
+{
+    NSRect rect = [self boundingRectForGlyphRange:[self glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil] inTextContainer:self.textContainers.firstObject];
+    rect.origin.y += inset.height;
+    
+    CGFloat y = rect.origin.y + rect.size.height / 2;
+    
+    CGRect leftRect = CGRectMake(0.0, y, rect.origin.x + inset.width - 5.0, 1.0);
+    CGRect rightRect = CGRectMake(NSMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - NSMaxX(rect), 1.0);
+    
+    
+    BXColor* pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
+    [pageBreakColor setFill];
+    
+    NSRectFill(leftRect);
+    NSRectFill(rightRect);
 }
 
 
@@ -206,70 +229,6 @@
             }
         }
     }
-    
-    /*
-    for (NSValue* key in self.pageBreaks.allKeys) {
-        
-        Line* line = key.nonretainedObjectValue;
-        if (NSIntersectionRange(line.range, charRange).length == 0) continue;
-        
-        // The dictionary value is always a two-item array with [pageNumber, pageBreakPosition]
-        NSArray<NSNumber*>* values = self.pageBreaks[key];
-        
-        // Page number
-        NSInteger pageNumber = values[0].integerValue;
-        
-        // Get the glyph position
-        NSUInteger localIndex = values[1].unsignedIntegerValue;
-        NSInteger globalIndex = line.position + localIndex;
-        NSInteger glyphIndex = [self glyphIndexForCharacterAtIndex:globalIndex];
-        
-        // Get rect and local range
-        NSRange lRange;
-
-        CGRect r = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:&lRange];
-        
-        // Draw page numbers
-        NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
-    
-        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
-            NSFontAttributeName: self.editorDelegate.fonts.regular,
-            NSForegroundColorAttributeName: pageNumberColor,
-            NSParagraphStyleAttributeName: self.pageNumberStyle
-        }];
-
-        
-        // Draw page separators if needed
-        if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
-            NSRange cRange = [self characterRangeForGlyphRange:lRange actualGlyphRange:nil];
-            
-            if (globalIndex != cRange.location && globalIndex != NSMaxRange(cRange)) {
-                // Page break happens mid-element. Let's draw a bezier curve here.
-                CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(glyphIndex,1) inTextContainer:self.textContainers.firstObject];
-                
-                BXBezierPath* lbPath = BXBezierPath.new;
-                
-                CGFloat baseline = r.origin.y + inset.height + actualRect.size.height;
-                
-                [lbPath moveToPoint:CGPointMake(0, baseline)];
-                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
-                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, r.origin.y + inset.height)];
-                [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r) + inset.width * 2, r.origin.y + inset.height)];
-                
-                [pageBreakColor setStroke];
-                [lbPath stroke];
-                
-            } else {
-                // Draw page separator
-                CGRect separatorRect = CGRectMake(inset.width + r.origin.x, inset.height + r.origin.y, r.size.width, 1.0);
-                
-                [pageBreakColor setFill];
-                BXRectFill(separatorRect);
-            }
-        }
-    }
-     */
-    
 }
 
 - (NSMutableParagraphStyle*)pageNumberStyle
@@ -298,7 +257,7 @@
         bgColors = [NSMutableDictionary dictionaryWithCapacity:10];
         revisionLevels = BeatRevisions.revisionLevels;
     }
-        
+    
     CGSize inset = [self offsetSize];
     CGFloat documentWidth = _editorDelegate.documentWidth;
     

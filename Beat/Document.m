@@ -554,7 +554,7 @@ static BeatAppDelegate *appDelegate;
 	// Notepad
 	if ([self.documentSettings getString:@"Notes"].length) [self.notepad loadString:[self.documentSettings getString:@"Notes"]];
 	
-	// If this a recovered autosave, the file might changed when it opens, so let's save this info
+	// If this a recovered autosave, the file might be changed when it opens, so let's save this info
 	bool saved = YES;
 	if (self.hasUnautosavedChanges) saved = NO;
 	
@@ -1514,6 +1514,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
+	
+	[self updateChangeCount:NSChangeDone];
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -1575,8 +1577,6 @@ static NSWindow __weak *currentKeyWindow;
 		// Update running plugins
 		[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
 	});
-	
-	
 }
 
 

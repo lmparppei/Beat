@@ -9,7 +9,7 @@
 
 #import "ITSwitch.h"
 #import <QuartzCore/QuartzCore.h>
-
+#import <BeatCore/BeatCore.h>
 
 // ----------------------------------------------------
 #pragma mark - Static Constants
@@ -92,10 +92,29 @@ static CGFloat const kDisabledOpacity = 0.5f;
     return self;
 }
 
+- (id)initWithFrame:(NSRect)frame settingKey:(NSString*)key documentSetting:(bool)documentSetting {
+	self = [super initWithFrame:frame];
+	if (!self) return nil;
+	
+	_settingKey = key;
+	_documentSetting = documentSetting;
+	
+	[self setUp];
+	
+	return self;
+}
+
+
 - (void)setUp {
     // The Switch is enabled per default
     self.enabled = YES;
     
+	if (self.settingKey.length > 0) {
+		if (!self.documentSetting) {
+			self.checked = [BeatUserDefaults.sharedDefaults getBool:self.settingKey];
+		}
+	}
+	
     // Set up the layer hierarchy
     [self setUpLayers];
 }

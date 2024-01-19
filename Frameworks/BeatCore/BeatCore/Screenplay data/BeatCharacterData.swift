@@ -101,8 +101,6 @@ import Foundation
         
         var currentScene:Line?
         
-        var allNames:Set<String> = []
-        
         for line in lines {
             if line.type == .heading { currentScene = line }
             if !line.isAnyCharacter() { continue }
@@ -119,21 +117,16 @@ import Foundation
                 if currentScene != nil {
                     character?.scenes.add(currentScene!)
                 }
-                
-                // Add to list of names
-                allNames.insert(name)
             }
         }
         
-        let originalNames = Set(storedCharacters.keys)
-        let names = characters.keys
-        
-        for name in originalNames {
-            if !names.contains(name) {
-                // Lets remove this character for now
-                self.removeCharacter(name: name)
-                // One day:
-                // character.notPresentInScreenplay = true
+        var allNames = characters.keys
+        for name in allNames {
+            if let character = characters[name] {
+                if character.lines == 0 {
+                    characters.removeValue(forKey: name)
+                    removeCharacter(name: name)
+                }
             }
         }
         
