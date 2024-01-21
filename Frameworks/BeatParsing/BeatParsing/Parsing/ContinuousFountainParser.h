@@ -18,17 +18,19 @@
 @class OutlineScene;
 
 @protocol ContinuousFountainParserDelegate <NSObject>
-@property (nonatomic) bool printSceneNumbers;
+/// Document settings object
 @property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
+/// This is a confusing property name, but it defines the line on which a character cue is being entered after a tab press
 @property (nonatomic, readonly) Line* characterInputForLine;
+/// Current selected range (ask for this only in main thead)
 @property (nonatomic, readonly) NSRange selectedRange;
+/// A list of disabled line types (`LineType` is an integer enum, so an index set is the fastest way to implement this)
 @property (nonatomic, readonly) NSIndexSet* disabledTypes;
 
-- (NSInteger)sceneNumberingStartsFrom;
+/// Forces reformatting at given line indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
+/// Forces any changes in parser to be reformatted in editor
 - (void)applyFormatChanges;
-
-
 @end
 
 // Plugin compatibility
@@ -40,6 +42,10 @@
 @property (nonatomic, readonly) NSMutableSet *storylines;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
+
+@property (nonatomic, readonly) OutlineChanges* outlineChanges;
+@property (nonatomic, readonly) NSMutableSet *changedOutlineElements;
+
 - (NSString*)rawText;
 - (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
@@ -92,10 +98,14 @@
 /// Set `true` when the parser is not continuous
 @property (nonatomic) bool staticParser;
 
+@property (nonatomic) OutlineChanges* outlineChanges;
+@property (nonatomic) NSMutableSet *changedOutlineElements;
+
 /// Returns the assigned document settings 
 - (BeatDocumentSettings*)documentSettings;
 
-@property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
+//@property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
+@property (nonatomic) NSMapTable<NSUUID*, Line*>* uuidsToLines;
 
 + (NSArray*)titlePageForString:(NSString*)string;
 
@@ -112,10 +122,6 @@
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 /// Reparses the whole document.
 - (void)resetParsing;
-/// Creates a full new outline.
-- (void)updateOutline;
-/// Returns a tree structure of the outline. You can find children of sections using `section.children`.
-- (NSArray*)outlineTree;
 /// Returns parsed scenes, excluding structure elements
 - (NSArray*)scenes;
 /// Returns the lines for given scene
@@ -132,15 +138,6 @@
 /// Returns thread-safe outline
 - (NSArray*)safeOutline;
 
-
-#pragma mark - Outline data
-
-/// UUIDs mapped to heading string. Used for saving the identifiers of outline elements.
--(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs;
-
-/// Returns an `OutlineChanges` object representing changes to the (flat) outline structure.
-/// - note: Once you get the changes, they will be cleared. You need to hand over the data yourself after getting it.
-- (id)changesInOutline;
 
 
 #pragma mark - Preprocess for printing & saving
@@ -167,6 +164,8 @@
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
 /// Returns the scene which contains the line at given index
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
+/// Returns the first outline element which contains at least a part of the given range.
+- (OutlineScene*)outlineElementInRange:(NSRange)range;
 /// Returns all scenes in the given range (including intersecting scenes)
 - (NSArray*)scenesInRange:(NSRange)range;
 /// Returns all lines in the given range (including intersecting lines)

@@ -40,18 +40,14 @@
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
 #import <BeatParsing/BeatParsing-Swift.h>
-#import "ContinuousFountainParser+Preprocessing.h"
+#import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
+#import <BeatParsing/ContinuousFountainParser+Outline.h>
 
 #define NEW_OUTLINE YES
 
 #pragma mark - Parser
 
 @interface ContinuousFountainParser()
-
-// Tracking changes to outline
-@property (nonatomic) BOOL changeInOutline;
-@property (nonatomic) OutlineChanges* outlineChanges;
-@property (nonatomic) NSMutableSet *changedOutlineElements;
 
 /// The line which was last edited. We're storing this when asking for a line at caret position.
 @property (nonatomic, weak) Line *lastEditedLine;
@@ -246,8 +242,7 @@ static NSDictionary* patterns;
         previousLine = line;
     }
     
-    // Reset outline
-    _changeInOutline = YES;
+    // Reset outline changes
     [self updateOutline];
     self.outlineChanges = OutlineChanges.new;
     
@@ -1500,405 +1495,6 @@ static NSDictionary* patterns;
 }
 
 
-#pragma mark - Fetching Outline Data
-
-/// Returns a tree structure for the outline. Only top-level elements are included, get the rest using `element.chilren`.
-- (NSArray*)outlineTree
-{
-    NSMutableArray* tree = NSMutableArray.new;
-    
-    NSInteger topLevelDepth = 0;
-    
-    for (OutlineScene* scene in self.outline) {
-        if (scene.type == section) {
-            // First define top level depth
-            if (scene.sectionDepth > topLevelDepth && topLevelDepth == 0) {
-                topLevelDepth = scene.sectionDepth;
-            }
-            else if (scene.sectionDepth < topLevelDepth) {
-                topLevelDepth = scene.sectionDepth;
-            }
-            
-            // Add section to tree if applicable
-            if (scene.sectionDepth == topLevelDepth) {
-                [tree addObject:scene];
-            }
-
-        } else if (scene.sectionDepth == 0) {
-            // Add bottom-level objects (scenes) by default
-            [tree addObject:scene];
-        }
-    }
-    
-    return tree;
-}
-
-/// Returns the first outline element which contains at least a part of the given range.
-- (OutlineScene*)outlineElementInRange:(NSRange)range
-{
-    for (OutlineScene *scene in self.safeOutline) {
-        if (NSIntersectionRange(range, scene.range).length > 0 || NSLocationInRange(range.location, scene.range)) {
-            return scene;
-        }
-    }
-    return nil;
-}
-
-/// Updates scene numbers for scenes. Autonumbered will get incremented automatically.
-/// - note: the arrays can contain __both__ `OutlineScene` or `Line` items to be able to update line content individually without building an outline.
-- (void)updateSceneNumbers:(NSArray*)autoNumbered forcedNumbers:(NSSet*)forcedNumbers
-{
-    static NSArray* postfixes;
-    if (postfixes == nil) postfixes = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G"];
-
-    NSInteger sceneNumber = [self sceneNumberOrigin];
-    for (id item in autoNumbered) {
-        Line* line; OutlineScene* scene;
-        
-        if ([item isKindOfClass:OutlineScene.class]) {
-            // This was a scene
-            line = ((OutlineScene*)item).line;
-            scene = item;
-        }
-        else {
-            // This was a plain Line object
-            line = item;
-        }
-        
-        if (line.omitted) {
-            line.sceneNumber = @"";
-            continue;
-        }
-        
-        NSString* oldSceneNumber = line.sceneNumber;
-        NSString* s = [NSString stringWithFormat:@"%lu", sceneNumber];
-                
-        if ([forcedNumbers containsObject:s]) {
-            for (NSInteger i=0; i<postfixes.count; i++) {
-                s = [NSString stringWithFormat:@"%lu%@", sceneNumber, postfixes[i]];
-                if (![forcedNumbers containsObject:s]) break;
-            }
-        }
-        
-        if (![oldSceneNumber isEqualToString:s]) {
-            if (scene != nil) [self.outlineChanges.updated addObject:scene];
-        }
-
-        line.sceneNumber = s;
-        sceneNumber++;
-    }
-}
-
-/// Returns a set of all scene numbers in the outline
-- (NSSet*)sceneNumbersInOutline
-{
-    NSMutableSet<NSString*>* sceneNumbers = NSMutableSet.new;
-    for (OutlineScene* scene in self.outline) {
-        [sceneNumbers addObject:scene.sceneNumber];
-    }
-    return sceneNumbers;
-}
-
-/// Returns the number from which automatic scene numbering should start from
-- (NSInteger)sceneNumberOrigin
-{
-    NSInteger i = [self.documentSettings getInt:DocSettingSceneNumberStart];
-    if (i > 0) return i;
-    else return 1;
-}
-
-/// Gets and resets the changes to outline
-- (OutlineChanges*)changesInOutline
-{
-    // Refresh the changed outline elements
-    for (OutlineScene* scene in self.outlineChanges.updated) {
-        [self updateScene:scene at:NSNotFound lineIndex:NSNotFound];
-    }
-    for (OutlineScene* scene in self.outlineChanges.added) {
-        [self updateScene:scene at:NSNotFound lineIndex:NSNotFound];
-    }
-    
-    // If any changes were made to the outline, rebuild the hierarchy.
-    if (self.outlineChanges.hasChanges) [self updateOutlineHierarchy];
-    
-    OutlineChanges* changes = self.outlineChanges.copy;
-    self.outlineChanges = OutlineChanges.new;
-    
-    return changes;
-}
-
-/// Returns an array of dictionaries with UUID mapped to the actual string.
--(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs
-{
-    NSMutableArray* outline = NSMutableArray.new;
-    for (OutlineScene* scene in self.outline) {
-        [outline addObject:@{
-            @"uuid": scene.line.uuid.UUIDString,
-            @"string": scene.line.string
-        }];
-    }
-    
-    return outline;
-}
-
-
-#pragma mark - Handling changes to outline
-// TODO: Maybe make this a separate class, or are we stepping into the dangerous parts of OOP?
-
-/// Updates the current outline from scratch. Use sparingly.
-- (void)updateOutline
-{
-    [self updateOutlineWithLines:self.safeLines];
-}
-
-/// Updates the whole outline from scratch with given lines.
-- (void)updateOutlineWithLines:(NSArray<Line*>*)lines
-{
-    self.outline = NSMutableArray.new;
-        
-    for (NSInteger i=0; i<lines.count; i++) {
-        Line* line = self.lines[i];
-        if (!line.isOutlineElement) continue;
-        
-        [self updateSceneForLine:line at:self.outline.count lineIndex:i];
-    }
-    
-    [self updateOutlineHierarchy];
-}
-
-/// Adds an update to this line, but only if needed
-- (void)addUpdateToOutlineIfNeededAt:(NSInteger)lineIndex
-{
-    // Don't go out of range
-    if (self.lines.count == 0) return;
-    else if (lineIndex >= self.lines.count) lineIndex = self.lines.count - 1;
-    
-    Line* line = self.safeLines[lineIndex];
-
-    // Nothing to update
-    if (line.type != synopse && !line.isOutlineElement && line.noteRanges.count == 0 && line.markerRange.length == 0) return;
-
-    // Find the containing outline element and add an update to it
-    NSArray* lines = self.safeLines;
-    
-    for (NSInteger i = lineIndex; i >= 0; i--) {
-        Line* line = lines[i];
-        
-        if (line.isOutlineElement) {
-            [self addUpdateToOutlineAtLine:line didChangeType:false];
-            return;
-        }
-    }
-}
-
-
-/// Forces an update to the outline element which contains the given line. No additional checks.
-- (void)addUpdateToOutlineAtLine:(Line*)line didChangeType:(bool)didChangeType
-{
-    OutlineScene* scene = [self outlineElementInRange:line.textRange];
-    if (scene) [_outlineChanges.updated addObject:scene];
-    
-    // In some cases we also need to update the surrounding elements
-    if (didChangeType) {
-        OutlineScene* previousScene = [self outlineElementInRange:NSMakeRange(line.position - 1, 0)];
-        OutlineScene* nextScene = [self outlineElementInRange:NSMakeRange(NSMaxRange(scene.range) + 1, 0)];
-        
-        if (previousScene != nil) [_outlineChanges.updated addObject:previousScene];
-        if (nextScene != nil) [_outlineChanges.updated addObject:nextScene];
-    }
-}
-
-
-/// Updates the outline element for given line. If you don't know the index for the outline element or line, pass `NSNotFound`.
-- (void)updateSceneForLine:(Line*)line at:(NSInteger)index lineIndex:(NSInteger)lineIndex
-{
-    if (index == NSNotFound) {
-        OutlineScene* scene = [self outlineElementInRange:line.textRange];
-        index = [self.outline indexOfObject:scene];
-    }
-    if (lineIndex == NSNotFound) lineIndex = [self indexOfLine:line];
-    
-    OutlineScene* scene;
-    if (index >= self.outline.count || index == NSNotFound) {
-        scene = [OutlineScene withLine:line delegate:self];
-        [self.outline addObject:scene];
-    } else {
-        scene = self.outline[index];
-    }
-    
-    [self updateScene:scene at:index lineIndex:lineIndex];
-}
-
-/// Updates the given scene and gathers its notes and synopsis lines. If you don't know the line/scene index pass them as `NSNotFound` .
-- (void)updateScene:(OutlineScene*)scene at:(NSInteger)index lineIndex:(NSInteger)lineIndex
-{
-    // We can call this method without specifying the indices
-    if (index == NSNotFound) index = [self.outline indexOfObject:scene];
-    if (lineIndex == NSNotFound) lineIndex = [self.lines indexOfObject:scene.line];
-    
-    // Reset everything
-    scene.synopsis = NSMutableArray.new;
-    scene.beats = NSMutableArray.new;
-    scene.notes = NSMutableArray.new;
-    scene.markers = NSMutableArray.new;
-    
-    NSMutableSet* beats = NSMutableSet.new;
-    
-    for (NSInteger i=lineIndex; i<self.lines.count; i++) {
-        Line* line = self.lines[i];
-        
-        if (line != scene.line && line.isOutlineElement) break;
-        
-        if (line.type == synopse) {
-            [scene.synopsis addObject:line];
-        }
-        
-        if (line.noteRanges.count > 0) {
-            [scene.notes addObjectsFromArray:line.noteData];
-        }
-        
-        if (line.beats.count) {
-            [beats addObjectsFromArray:line.beats];
-        }
-        
-        if (line.markerRange.length > 0) {
-            [scene.markers addObject:@{
-                @"description": (line.markerDescription) ? line.markerDescription : @"",
-                @"color": (line.marker) ? line.marker : @"",
-            }];
-        }
-    }
-    
-    scene.beats = [NSMutableArray arrayWithArray:beats.allObjects];
-}
-
-/// Inserts a new outline element with given line.
-- (void)addOutlineElement:(Line*)line
-{
-    NSInteger index = NSNotFound;
-
-    for (NSInteger i=0; i<self.outline.count; i++) {
-        OutlineScene* scene = self.outline[i];
-
-        if (line.position <= scene.position) {
-            index = i;
-            break;
-        }
-    }
-
-    _changeInOutline = YES;
-
-    OutlineScene* scene = [OutlineScene withLine:line delegate:self];
-    if (index == NSNotFound) [self.outline addObject:scene];
-    else [self.outline insertObject:scene atIndex:index];
-
-    // Add the scene
-    [_outlineChanges.added addObject:scene];
-    // We also need to update the previous scene
-    if (index > 0 && index != NSNotFound) [_outlineChanges.updated addObject:self.outline[index - 1]];
-}
-
-/// Remove outline element for given line
-- (void)removeOutlineElementForLine:(Line*)line
-{
-    OutlineScene* scene;
-    NSInteger index = NSNotFound;
-    for (NSInteger i=0; i<self.outline.count; i++) {
-        scene = self.outline[i];
-        if (scene.line == line) {
-            index = i;
-            break;
-        }
-    }
-    
-    if (index == NSNotFound) return;
-        
-    _changeInOutline = YES;
-    [_outlineChanges.removed addObject:scene];
-    
-    [self.outline removeObjectAtIndex:index];
-
-    // We also need to update the previous scene
-    if (index > 0) [_outlineChanges.updated addObject:self.outline[index - 1]];
-}
-
-/// Rebuilds the outline hierarchy (section depths) and calculates scene numbers.
-- (void)updateOutlineHierarchy
-{
-    NSUInteger sectionDepth = 0;
-    NSMutableArray *sectionPath = NSMutableArray.new;
-    OutlineScene* currentSection;
-    
-    NSMutableArray* autoNumbered = NSMutableArray.new;
-    NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
-        
-    for (OutlineScene* scene in self.outline) {
-        scene.children = NSMutableArray.new;
-        scene.parent = nil;
-        
-        if (scene.type == section) {
-            if (sectionDepth < scene.line.sectionDepth) {
-                scene.parent = sectionPath.lastObject;
-                [sectionPath addObject:scene];
-            } else {
-                while (sectionPath.count > 0) {
-                    OutlineScene* prevSection = sectionPath.lastObject;
-                    [sectionPath removeLastObject];
-                    
-                    // Break at higher/equal level section
-                    if (prevSection.sectionDepth <= scene.line.sectionDepth) break;
-                }
-                
-                scene.parent = sectionPath.lastObject;
-                [sectionPath addObject:scene];
-            }
-            
-            // Any time section depth has changed, we need probably need to update the whole outline structure in UI
-            if (scene.sectionDepth != scene.line.sectionDepth) {
-                self.outlineChanges.needsFullUpdate = true;
-            }
-            
-            sectionDepth = scene.line.sectionDepth;
-            scene.sectionDepth = sectionDepth;
-            
-            currentSection = scene;
-        } else {
-            // Manage scene numbers
-            if (scene.line.sceneNumberRange.length > 0) [forcedNumbers addObject:scene.sceneNumber];
-            else [autoNumbered addObject:scene];
-            
-            // Update section depth for scene
-            scene.sectionDepth = sectionDepth;
-            if (currentSection != nil) scene.parent = currentSection;
-        }
-        
-        // Add this object to the children of its parent
-        if (scene.parent) {
-            [scene.parent.children addObject:scene];
-        }
-    }
-    
-    // Do the actual scene number update.
-    [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
-}
-
-/// NOTE: This method is used by line preprocessing to avoid recreating the outline. It has some overlapping functionality with `updateOutlineHierarchy` and `updateSceneNumbers:forcedNumbers:`.
-- (void)updateSceneNumbersInLines
-{
-    NSMutableArray* autoNumbered = NSMutableArray.new;
-    NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
-    for (Line* line in self.safeLines) {
-        if (line.type == heading && !line.omitted) {
-            if (line.sceneNumberRange.length > 0) [forcedNumbers addObject:line.sceneNumber];
-            else [autoNumbered addObject:line];
-        }
-    }
-    
-    /// `updateSceneNumbers` supports both `Line` and `OutlineScene` objects.
-    [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
-}
-
-
 #pragma mark - Thread-safety for arrays
 
 /**
@@ -1923,7 +1519,8 @@ static NSDictionary* patterns;
 }
 
 /// Returns a map with the UUID as key to identify actual line objects.
-- (NSDictionary<NSUUID*, Line*>*)uuidsToLines
+/// TODO: Maybe convert this into a map table?
+- (NSMapTable<NSUUID*, Line*>*)uuidsToLines
 {
     @synchronized (self.lines) {
         // Return the cached version when possible -- or when we are not in the main thread.
@@ -1932,17 +1529,20 @@ static NSDictionary* patterns;
         
         // Store the current state of lines
         self.cachedLines = lines;
-        
+
+        // Create UUID map with strong UUID references to weak line objects.
+        NSMapTable<NSUUID*, Line*>* uuidTable = [NSMapTable.alloc initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:lines.count];
+
         // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
-        NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:lines.count];
+        // NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:lines.count];
         
         for (Line* line in lines) {
             if (line == nil) continue;
-            uuids[line.uuid] = line;
+            // uuids[line.uuid] = line;
+            [uuidTable setObject:line forKey:line.uuid.copy];
         }
         
-        _uuidsToLines = uuids;
-        
+        _uuidsToLines = uuidTable;
         return _uuidsToLines;
     }
 }
@@ -2443,21 +2043,30 @@ NSInteger previousSceneIndex = NSNotFound;
 /// Returns the scenes which intersect with given range.
 - (NSArray*)scenesInRange:(NSRange)range
 {
-	NSMutableArray *scenes = NSMutableArray.new;
-	NSArray *outline = self.safeOutline; // Thread-safe outline
-	
-	// When length is zero, return just the scene at the beginning of range
+	// When length is zero, return just the scene at the beginning of range (and avoid iterating over the whole outline)
     if (range.length == 0) {
         OutlineScene* scene = [self sceneAtPosition:range.location];
         return (scene != nil) ? @[scene] : @[];
     }
-	
-	for (OutlineScene* scene in outline) {
+
+    NSMutableArray *scenes = NSMutableArray.new;
+	for (OutlineScene* scene in self.safeOutline) {
 		NSRange intersection = NSIntersectionRange(range, scene.range);
 		if (intersection.length > 0) [scenes addObject:scene];
 	}
 	
 	return scenes;
+}
+
+/// Returns the first outline element which contains at least a part of the given range.
+- (OutlineScene*)outlineElementInRange:(NSRange)range
+{
+    for (OutlineScene *scene in self.safeOutline) {
+        if (NSIntersectionRange(range, scene.range).length > 0 || NSLocationInRange(range.location, scene.range)) {
+            return scene;
+        }
+    }
+    return nil;
 }
 
 /// Returns a scene which contains the given character index (position). An alias for `sceneAtPosition` for legacy compatibility.
