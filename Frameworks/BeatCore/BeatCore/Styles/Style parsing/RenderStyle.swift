@@ -50,10 +50,6 @@ struct ConditionalRenderStyle {
 
 @objc public class RenderStyle:NSObject {
     // Map property names to types
-    class var stringTypes:Set<String> { return  ["textAlign", "text-align", "color", "font", "content"] }
-    class var boolTypes:Set<String> { return ["bold", "italic", "underline", "uppercase", "indentSplitElements", "indent-split-elements", "sceneNumber", "scene-number", "unindent-fresh-paragraph"] }
-    class var enumTypes:Set<String> { return ["font-type"] }
-    
     public class var types:[String:RenderStyleValueType] { return [
         "text-align": .stringType,
         "color": .stringType,
@@ -68,7 +64,8 @@ struct ConditionalRenderStyle {
         "unindent-fresh-paragraph": .boolType,
         "font-type": .enumType,
         "visible-elements": .lineType,
-        "disabled-types": .lineType
+        "disabled-types": .lineType,
+        "trim": .boolType
     ] }
 
     @objc public var name:String = ""
@@ -122,6 +119,8 @@ struct ConditionalRenderStyle {
     @objc public var firstLineIndent:CGFloat = 0
     @objc public var indentSplitElements:Bool = true
     @objc public var unindentFreshParagraphs:Bool = false
+    
+    @objc public var trim:Bool = false
     
     /// If content is set, it should replace existing text content in this particular element
     @objc public var content:String?

@@ -216,6 +216,11 @@
 		[attributedString addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, attributedString.length - 1)];
 	}
 	
+	// Trim the line if needed
+	if (style.trim) {
+		attributedString = attributedString.trimWhiteSpace.mutableCopy;
+	}
+	
 	// And after all this, if the style has a content rule, we'll replace the text while keeping the original attributes
 	if (style.content != nil) {
 		NSString* content = [NSString stringWithFormat:@"%@\n", style.content];
