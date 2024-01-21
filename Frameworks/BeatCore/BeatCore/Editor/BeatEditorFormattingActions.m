@@ -189,6 +189,24 @@ static NSString *revisionAttribute = @"Revision";
     _delegate.characterInput = YES;
 }
 
+/// Adds character extension stub on current line or moves to edit it
+- (void)addOrEditCharacterExtension
+{
+    Line * currentLine = self.delegate.currentLine;
+    if (!currentLine.isAnyCharacter) return;
+    
+    if (currentLine.hasExtension) {
+        // Move the caret to extension
+        NSInteger loc = [currentLine.string rangeOfString:@"("].location;
+        self.delegate.selectedRange = NSMakeRange(loc + currentLine.position + 1, 0);
+    } else {
+        // Add a new extension placeholder
+        NSInteger loc = currentLine.string.length;
+        [self.delegate.textActions addString:@" ()" atIndex:NSMaxRange(currentLine.textRange)];
+        self.delegate.selectedRange = NSMakeRange(currentLine.position + loc + 2, 0);
+    }
+}
+
 
 #pragma mark Pure formatting and blocks
 

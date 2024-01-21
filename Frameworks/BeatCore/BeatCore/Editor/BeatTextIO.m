@@ -310,6 +310,8 @@
     else if (line.type == dualDialogueCharacter) [self addString:str atIndex:NSMaxRange(_delegate.currentLine.textRange) - 1]; // Keep the ^ for DD cues
 }
 
+
+
 #pragma mark - Additional editor convenience stuff
 
 /// Checks if we should add additional line breaks. Returns `true` if line breaks were added.

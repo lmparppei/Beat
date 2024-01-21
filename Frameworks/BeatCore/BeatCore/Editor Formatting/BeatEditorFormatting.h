@@ -51,6 +51,8 @@ typedef enum {
 - (void)refreshRevisionTextColors;
 - (void)refreshRevisionTextColorsInRange:(NSRange)range;
 
+- (void)forceFormatChangesInRange:(NSRange)range;
+
 @end
 
 NS_ASSUME_NONNULL_END

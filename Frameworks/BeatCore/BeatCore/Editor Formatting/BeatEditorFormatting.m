@@ -238,6 +238,19 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     }
 }
 
+/// Forces reformatting of a range
+- (void)forceFormatChangesInRange:(NSRange)range
+{
+    #if TARGET_OS_OSX
+        [self.delegate.getTextView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
+    #endif
+    
+    NSArray *lines = [self.delegate.parser linesInRange:range];
+    for (Line* line in lines) {
+        [self formatLine:line];
+    }
+}
+
 #pragma mark - Format a single line
 
 /// Formats a single line in editor
@@ -257,11 +270,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Section fonts are generated on the fly
 	if (line.type == section) {
-		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 1.2;
-		
-		// Make lower sections a bit smaller
-		//size = size - line.sectionDepth;
-		if (size < 13) size = 13.0;
+        // Make lower sections a bit smaller
+		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
+		if (size < 12.0) size = 12.0;
 		
         font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
 	}
@@ -620,112 +631,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 
-#pragma mark - Render dual dialogue
-
-/// Note that this method modifies the `paragraph` pointer
-- (void)renderDualDialogueForLine:(Line*)line paragraphStyle:(NSMutableParagraphStyle*)paragraph
-{
-	return;
-/*
-	// An die Nachgeborenen.
-	// For future generations.
-	 
-	bool isDualDialogue = false;
-	NSArray* dialogueBlocks = [self.delegate.parser dualDialogueFor:line isDualDialogue:&isDualDialogue];
-	
-	if (!isDualDialogue) return;
-	
-	NSArray<Line*>* left = dialogueBlocks[0];
-	NSArray<Line*>* right = dialogueBlocks[1];
-	
-	NSDictionary* attrs = [self.delegate.textStorage attributesAtIndex:left.firstObject.position effectiveRange:nil];
-	NSMutableParagraphStyle* ddPStyle = [attrs[NSParagraphStyleAttributeName] mutableCopy];
-		
-	NSTextTable* textTable;
-	
-	if (ddPStyle == nil) ddPStyle = paragraph;
-	if (ddPStyle.textBlocks.count > 0) {
-		NSTextTableBlock* b = ddPStyle.textBlocks.firstObject;
-		if (b != nil) textTable = b.table;
-	}
-	
-	ddPStyle.tailIndent = 0.0;
-	
-	if (textTable == nil) {
-		textTable = [NSTextTable.alloc init];
-		textTable.numberOfColumns = 2;
-		[textTable setContentWidth:100.0 type:NSTextBlockPercentageValueType];
-	}
-	
-	CGFloat indent = 0.0;
-	if (line.isAnyCharacter) {
-		indent = DD_BLOCK_CHARACTER_INDENT;
-	}
-	else if (line.isAnyParenthetical) {
-		indent = DD_BLOCK_PARENTHETICAL_INDENT;
-	}
-	
-	ddPStyle.headIndent = indent;
-	ddPStyle.firstLineHeadIndent = indent;
-	ddPStyle.tailIndent = 0.0;
-	[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:ddPStyle range:line.range];
-	
-	NSTextTableBlock* leftCell = [[NSTextTableBlock alloc] initWithTable:textTable startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
-	NSTextTableBlock* rightCell = [[NSTextTableBlock alloc] initWithTable:textTable startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
-	
-	[leftCell setContentWidth:50.0 type:NSTextBlockPercentageValueType];
-	[rightCell setContentWidth:50.0 type:NSTextBlockPercentageValueType];
-		
-	NSRange leftRange = NSMakeRange(left.firstObject.position, NSMaxRange(left.lastObject.range) - left.firstObject.position);
-	NSRange rightRange = NSMakeRange(right.firstObject.position, NSMaxRange(right.lastObject.range) - right.firstObject.position);
-		
-	[self.delegate.textStorage enumerateAttribute:NSParagraphStyleAttributeName inRange:leftRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		NSMutableParagraphStyle* pStyle = value;
-		pStyle = pStyle.mutableCopy;
-		
-		pStyle.textBlocks = @[leftCell];
-		pStyle.tailIndent = 0.0;
-		
-		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
-	}];
-	[self.delegate.textStorage enumerateAttribute:NSParagraphStyleAttributeName inRange:rightRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		
-		NSMutableParagraphStyle* pStyle = value;
-		pStyle = pStyle.mutableCopy;
-		pStyle.textBlocks = @[rightCell];
-		
-		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
-	}];
-
-	*/
-	/*
-	
-	
-	for (Line* l in left) {
-		NSLog(@" --> %@", l);
-		NSDictionary* a = [self.delegate.textStorage attributesAtIndex:l.position effectiveRange:nil];
-		NSMutableParagraphStyle* pStyle = [a[NSParagraphStyleAttributeName] mutableCopy];
-		
-		if (pStyle.textBlocks.firstObject != leftCell) pStyle.textBlocks = @[leftCell];
-		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:l.range];
-	}
-	
-	
-	for (Line* l in right) {
-		NSLog(@" --> %@", l);
-		NSDictionary* a = [self.delegate.textStorage attributesAtIndex:l.position effectiveRange:nil];
-		NSMutableParagraphStyle* pStyle = [a[NSParagraphStyleAttributeName] mutableCopy];
-		
-		if (pStyle.textBlocks.firstObject != rightCell) pStyle.textBlocks = @[rightCell];
-		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:line.range];
-	}
-	*/
-}
-
-
 #pragma mark - Text color
 
-- (void)setTextColorFor:(Line*)line {
+- (void)setTextColorFor:(Line*)line
+{
 	// Foreground color attributes
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
@@ -803,7 +712,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     [self revisedTextColorFor:line];
 }
 
-- (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
+- (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym
+{
 	// Don't add a nil value
 	if (!value) return;
 	
@@ -868,7 +778,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Revision colors
 
-- (void)revisedTextStyleForRange:(NSRange)globalRange {
+- (void)revisedTextStyleForRange:(NSRange)globalRange
+{
     NSMutableAttributedString* textStorage = self.textStorage;
     
     [textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
@@ -881,7 +792,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
 	}];
 }
-- (void)revisedTextColorFor:(Line*)line {
+
+- (void)revisedTextColorFor:(Line*)line
+{
 	if (![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor]) return;
 	
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -897,11 +810,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}];
 }
 
-- (void)refreshRevisionTextColors {
+- (void)refreshRevisionTextColors
+{
     [self refreshRevisionTextColorsInRange:NSMakeRange(0, self.delegate.text.length)];
 }
 
-- (void)refreshRevisionTextColorsInRange:(NSRange)range {
+- (void)refreshRevisionTextColorsInRange:(NSRange)range
+{
 	[self revisedTextStyleForRange:range];
 	
 	NSArray* lines = [self.parser linesInRange:range];

@@ -68,7 +68,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1155" height="661"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -492,7 +492,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
@@ -2096,6 +2096,7 @@ Gw
                         <action selector="cutToNotepad:" target="717-An-Uvy" id="Zzq-HN-Rd0"/>
                     </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="fyF-6S-j0g"/>
             </items>
             <point key="canvasLocation" x="-656" y="356.5"/>
         </menu>
@@ -2104,7 +2105,7 @@ Gw
         <image name="CardsIcon" width="370" height="370"/>
         <image name="CardsIcon_white" width="512" height="512"/>
         <image name="Dialogue" width="512" height="512"/>
-        <image name="NSLockLockedTemplate" width="14" height="15"/>
+        <image name="NSLockLockedTemplate" width="15" height="15"/>
         <image name="NSRefreshTemplate" width="14" height="16"/>
         <image name="NSStatusNone" width="16" height="16"/>
         <image name="NSStopProgressFreestandingTemplate" width="15" height="15"/>

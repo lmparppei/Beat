@@ -669,14 +669,23 @@
 #pragma mark - Delegate methods
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	NSArray *selected = [NSArray arrayWithArray:_selectedItems];
-	for (BeatTimelineItem* item in _selectedItems) {
-		[_delegate.textActions addStoryline:storyline to:item.representedItem];
+	if (_selectedItems.count <= 1) [_delegate.textActions addStoryline:storyline to:scene];
+	else {
+		// Multiple items selected
+		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+		for (BeatTimelineItem* item in selected) {
+			[_delegate.textActions addStoryline:storyline to:item.representedItem];
+		}
 	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	for (BeatTimelineItem* item in _selectedItems) {
-		[_delegate.textActions removeStoryline:storyline from:item.representedItem];
+	if (_selectedItems.count <= 1) [_delegate.textActions removeStoryline:storyline from:scene];
+	else {
+		// Multiple items selected
+		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+		for (BeatTimelineItem* item in selected) {
+			[_delegate.textActions removeStoryline:storyline from:item.representedItem];
+		}
 	}
 }
 

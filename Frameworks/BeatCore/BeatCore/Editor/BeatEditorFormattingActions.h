@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (void)forceElement:(LineType)lineType;
 
 - (void)addCue;
+- (void)addOrEditCharacterExtension;
 
 - (IBAction)addTitlePage:(id)sender;
 - (IBAction)lockSceneNumbers:(id)sender;

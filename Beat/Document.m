@@ -1644,25 +1644,9 @@ static NSWindow __weak *currentKeyWindow;
 	Line *currentLine = self.currentLine;
 	
 	if (currentLine.isAnyCharacter && currentLine.string.length > 0) {
-		[self addCharacterExtension];
+		[self.formattingActions addOrEditCharacterExtension];
 	} else {
 		[self forceCharacterInput];
-	}
-}
-
-- (void)addCharacterExtension {
-	// TODO: Move this to text I/O
-	Line * currentLine = self.currentLine;
-	
-	if (currentLine.hasExtension) {
-		// Move the caret to extension
-		NSInteger loc = [currentLine.string rangeOfString:@"("].location;
-		self.textView.selectedRange = NSMakeRange(loc + currentLine.position + 1, 0);
-	} else {
-		// Add a new extension placeholder
-		NSInteger loc = currentLine.string.length;
-		[self addString:@" ()" atIndex:NSMaxRange(currentLine.textRange)];
-		self.textView.selectedRange = NSMakeRange(currentLine.position + loc + 2, 0);
 	}
 }
 
@@ -1740,14 +1724,6 @@ static NSWindow __weak *currentKeyWindow;
 			[self formatAllWithDelayFrom:lastIndex + 1];
 		}
 	});
-}
-
-- (IBAction)reformatRange:(id)sender {
-	if (self.textView.selectedRange.length > 0) {
-		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
-		if (lines) [self.parser correctParsesForLines:lines];
-		[self ensureLayout];
-	}
 }
 
 - (IBAction)toggleDisableFormatting:(id)sender {

@@ -240,11 +240,10 @@ static CGFloat panelWidth;
 
 - (BeatExportSettings*)exportSettings
 {
-	BeatDocumentSettings* documentSettings = self.documentDelegate.documentSettings;
 	BeatExportSettings* settings = self.documentDelegate.exportSettings;
 
 	// Set header
-	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
+	settings.header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
 	// Set custom settings from dialog
 	settings.revisions = [self printedRevisions];

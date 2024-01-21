@@ -138,7 +138,24 @@ extension CharacterSet {
         
         return string
     }
+    
+    /** Trim whitespace and new line from start and end of the text */
+    @objc func trimWhiteSpace() -> NSAttributedString {
+        // Thanks, Kamalraj Venkatesan on stackoverflow
+        let invertedSet = CharacterSet.whitespaces.inverted
+        let startRange = string.utf16.description.rangeOfCharacter(from: invertedSet)
+        let endRange = string.utf16.description.rangeOfCharacter(from: invertedSet, options: .backwards)
+        guard let startLocation = startRange?.upperBound, let endLocation = endRange?.lowerBound else {
+            return NSAttributedString(string: string)
+        }
+
+        let location = string.utf16.distance(from: string.startIndex, to: startLocation) - 1
+        let length = string.utf16.distance(from: startLocation, to: endLocation) + 2
+        let range = NSRange(location: location, length: length)
+        return attributedSubstring(from: range)
+    }
 }
+
 
 #if os(macOS)
 

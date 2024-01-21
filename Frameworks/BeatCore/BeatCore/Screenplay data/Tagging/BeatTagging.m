@@ -37,7 +37,7 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
-#import <BeatCore/BeatAttributes.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatTagging.h"
 #import "BeatTagItem.h"
 #import "BeatTag.h"
@@ -625,7 +625,7 @@
 	
 	if (tag) {
 		[self tagRange:range withTag:tag];
-		[self.delegate forceFormatChangesInRange:range];
+		[self.delegate.formatting forceFormatChangesInRange:range];
 	}
 }
 
@@ -634,7 +634,7 @@
 	BeatTag *tag = [BeatTag withDefinition:def];
 
 	[self tagRange:range withTag:tag];
-	[self.delegate forceFormatChangesInRange:range];
+	[self.delegate.formatting forceFormatChangesInRange:range];
 }
 
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {

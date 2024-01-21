@@ -79,16 +79,21 @@
 {
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
         
-    CGSize inset = [self offsetSize];
+    CGSize inset = self.inset;
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-        
+    
+    BeatLineTypeSet* lineTypes = [BeatLineTypeSet.alloc initWithTypes:@[@(heading), @(section), @(pageBreak)]];
+    
+    //NSMutableIndexSet* lineTypes = NSMutableIndexSet.new;
+    //[lineTypes addIndexes:<#(nonnull NSIndexSet *)#>]
+    
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
         if (line == nil) return;
         
         // Do nothing if this line is not a marker or a heading
-        if (line.markerRange.length == 0 && line.type != heading && line.beats.count == 0 && line.type != section) return;
+        if (line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) return;
         
         // Get range for the first character. For headings and markers we won't need anything else.
         NSRange r = NSMakeRange(line.position, 1);
@@ -113,7 +118,10 @@
             [self drawSceneNumberForLine:line rect:rect inset:inset];
         }
         else if (line.type == section && line.isBoneyardSection) {
-            [self drawBoneyardMarkerForLine:line inset:inset];
+            [self drawBoneyardMarkerForLine:line];
+        }
+        else if (line.type == pageBreak) {
+            [self drawForcedPageBreakForLine:line];
         }
         
         // Draw markers
@@ -127,12 +135,38 @@
     }];
 }
 
-#pragma mark - Boneyard act marker
 
-- (void)drawBoneyardMarkerForLine:(Line*)line inset:(NSSize)inset
+- (NSRect)boundingRectForLine:(Line*)line
 {
     NSRect rect = [self boundingRectForGlyphRange:[self glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil] inTextContainer:self.textContainers.firstObject];
-    rect.origin.y += inset.height;
+    rect.origin.y += self.inset.height;
+    return rect;
+}
+
+#pragma mark - Forced page break marker
+
+- (void)drawForcedPageBreakForLine:(Line*)line
+{
+    NSRect rect = [self boundingRectForLine:line];
+    CGSize inset = self.inset;
+    
+    CGFloat y = rect.origin.y + rect.size.height / 2;
+    CGRect leftRect = CGRectMake(0.0, y, rect.origin.x + inset.width - 5.0, 1.0);
+    CGRect rightRect = CGRectMake(NSMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - NSMaxX(rect), 1.0);
+    
+    BXColor* pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
+    [pageBreakColor setFill];
+    
+    NSRectFill(leftRect);
+    NSRectFill(rightRect);
+}
+
+#pragma mark - Boneyard act marker
+
+- (void)drawBoneyardMarkerForLine:(Line*)line
+{
+    NSRect rect = [self boundingRectForLine:line];
+    CGSize inset = self.inset;
     
     CGFloat y = rect.origin.y + rect.size.height / 2;
     
@@ -150,7 +184,7 @@
 
 #pragma mark - Draw page separators and numbers
 
-- (void)drawPageSeparators:(const NSRange*)glyphsToShow inset:(CGSize)inset
+- (void)drawPageSeparators:(const NSRange*)glyphsToShow
 {
     // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers) return;
@@ -166,8 +200,9 @@
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     
     BXColor* pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
-        
+    
     NSRange charRange = [self characterRangeForGlyphRange:*glyphsToShow actualGlyphRange:nil];
+    CGSize inset = self.inset;
     
     NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
     Line* line;
@@ -258,14 +293,14 @@
         revisionLevels = BeatRevisions.revisionLevels;
     }
     
-    CGSize inset = [self offsetSize];
+    CGSize inset = self.inset;
     CGFloat documentWidth = _editorDelegate.documentWidth;
     
     bool showTags = _editorDelegate.showTags;
     bool showRevisions = _editorDelegate.showRevisions;
     
     // Draw page separators
-    [self drawPageSeparators:&glyphsToShow inset:inset];
+    [self drawPageSeparators:&glyphsToShow];
         
     // We'll enumerate line fragments to then be able to draw range-based backgrounds on each line.
     // This is somewhat unefficient if there's a lot of attributes, so you should keep track of those.
@@ -631,17 +666,20 @@
 
 #pragma mark - Crossplatform helpers
 
--(void)saveGraphicsState {
+-(void)saveGraphicsState
+{
 #if !TARGET_OS_IOS
     [NSGraphicsContext saveGraphicsState];
 #endif
 }
--(void)restoreGraphicsState {
+-(void)restoreGraphicsState
+{
 #if !TARGET_OS_IOS
     [NSGraphicsContext restoreGraphicsState];
 #endif
 }
--(CGSize)offsetSize {
+-(CGSize)inset
+{
 #if TARGET_OS_IOS
     CGSize offset = CGSizeMake(_editorDelegate.getTextView.textContainerInset.left, _editorDelegate.getTextView.textContainerInset.top);
 #else
