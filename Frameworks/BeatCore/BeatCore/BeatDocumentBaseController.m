@@ -134,15 +134,6 @@
     if (!self.documentIsLoading) [self.formatting resetSizing];
 }
 
-#pragma mark Scene numbering
-
-- (NSInteger)sceneNumberingStartsFrom
-{
-    return [self.documentSettings getInt:DocSettingSceneNumberStart];
-}
-- (void)setSceneNumberingStartsFrom:(NSInteger)number {
-    [self.documentSettings setInt:DocSettingSceneNumberStart as:number];
-}
 
 #pragma mark Export settings
 

@@ -2577,10 +2577,6 @@ static NSWindow __weak *currentKeyWindow;
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 
-- (NSInteger)sceneNumberingStartsFrom {
-	return [self.documentSettings getInt:DocSettingSceneNumberStart];
-}
-
 - (IBAction)toggleSceneLabels: (id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];

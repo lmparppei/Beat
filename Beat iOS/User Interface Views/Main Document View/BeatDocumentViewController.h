@@ -37,8 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSDictionary<NSString*,NSString*>* characterGenders;
 
-@property (nonatomic) NSInteger sceneNumberingStartsFrom;
-
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
 - (IBAction)openExportPanel:(id)sender;
 

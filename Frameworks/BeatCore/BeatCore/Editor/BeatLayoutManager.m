@@ -84,9 +84,6 @@
     
     BeatLineTypeSet* lineTypes = [BeatLineTypeSet.alloc initWithTypes:@[@(heading), @(section), @(pageBreak)]];
     
-    //NSMutableIndexSet* lineTypes = NSMutableIndexSet.new;
-    //[lineTypes addIndexes:<#(nonnull NSIndexSet *)#>]
-    
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
