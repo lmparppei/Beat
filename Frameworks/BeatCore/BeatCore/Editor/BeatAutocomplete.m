@@ -133,24 +133,46 @@
 
 - (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange {
     NSMutableArray *matches = NSMutableArray.new;
-    NSMutableArray *search = NSMutableArray.new;
+    NSMutableArray *allSuggestions = NSMutableArray.new;
     
     Line *currentLine = self.delegate.currentLine;
-
-    // Choose which array to search
-    if (currentLine.type == character) search = _characterNames;
-    else if (currentLine.type == heading) search = _sceneHeadings;
-    
     NSString* stringToSearch = [_delegate.text substringWithRange:charRange].uppercaseString;
+    NSString* prefix = @"";
     
-    // Find matching lines for the partially typed line
-    for (NSString *string in search) {
-        if ([string.uppercaseString rangeOfString:stringToSearch options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
-            [matches addObject:string.uppercaseString];
-        }
+    // Scene headings will ignore the prefix
+    if (currentLine.type == heading) {
+        prefix = sceneHeadingPrefix(stringToSearch);
+        stringToSearch = [stringToSearch stringByReplacingOccurrencesOfString:prefix withString:@""].trim;
+        if (prefix.length > 0) prefix = [NSString stringWithFormat:@"%@ ", prefix];
     }
     
-    if (matches.count == 0 && currentLine.isAnyCharacter && ![currentLine.string containsString:@"("] && currentLine.length > 0 && currentLine.lastCharacter == ' ') {
+    // Choose which array to search
+    if (currentLine.type == character) allSuggestions = _characterNames;
+    else if (currentLine.type == heading) allSuggestions = _sceneHeadings;
+    
+    // Find matching lines for the partially typed line
+    for (NSString *string in allSuggestions) {
+        NSString* suggestion = string.uppercaseString;
+        
+        if (currentLine.type == heading) {
+            NSString* suggestionPrefix = sceneHeadingPrefix(suggestion);
+            suggestion = [suggestion stringByReplacingOccurrencesOfString:suggestionPrefix withString:@""].trim;
+        }
+        
+        bool found = false;
+        if (stringToSearch.length == 0) {
+            // anything goes
+            found = true;
+        } else if ([suggestion rangeOfString:stringToSearch options:NSAnchoredSearch range:NSMakeRange(0, suggestion.length)].location != NSNotFound) {
+            found = true;
+        }
+        
+        if (found) [matches addObject:[NSString stringWithFormat:@"%@%@", prefix, suggestion]];
+    }
+    
+    // If no matches were found and the line is a character cue, provide a list of extensions
+    if (matches.count == 0 && currentLine.isAnyCharacter && ![currentLine.string containsString:@"("] &&
+        currentLine.length > 0 && currentLine.lastCharacter == ' ') {
         NSString* name = [currentLine.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
         NSArray* extensions = @[[NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd]], @"(V.O.)", @"(O.S.)"];
         
@@ -172,5 +194,17 @@
 }
 
 
+NSString *sceneHeadingPrefix(NSString *originalString) {
+    // Forced scene heading
+    if (originalString.length > 0 && [originalString characterAtIndex:0] == '.') {
+        return [originalString substringFromIndex:1];
+    }
+    
+    if ([originalString containsString:@" "]) {
+        return [originalString substringToIndex:[originalString rangeOfString:@" "].location];
+    } else {
+        return originalString;
+    }
+}
 
 @end
