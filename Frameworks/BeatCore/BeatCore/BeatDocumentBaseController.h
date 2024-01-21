@@ -202,8 +202,6 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) BeatEditorFormatting* _Nullable formatting;
 /// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges;
-/// Forces reformatting of a range
-- (void)forceFormatChangesInRange:(NSRange)range;
 /// Redraws backgrounds in given range
 - (void)renderBackgroundForRange:(NSRange)range;
 /// Renders background for this line range

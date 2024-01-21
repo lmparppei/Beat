@@ -277,19 +277,6 @@
     [self.parser.changedIndices removeAllIndexes];
 }
 
-/// Forces reformatting of a range
-- (void)forceFormatChangesInRange:(NSRange)range
-{
-    #if TARGET_OS_OSX
-        [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
-    #endif
-    
-    NSArray *lines = [self.parser linesInRange:range];
-    for (Line* line in lines) {
-        [_formatting formatLine:line];
-    }
-}
-
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices
 {
     [indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
@@ -305,7 +292,8 @@
     }];
 }
 
-- (void)renderBackgroundForRange:(NSRange)range {
+- (void)renderBackgroundForRange:(NSRange)range
+{
     NSArray *lines = [self.parser linesInRange:range];
     for (Line* line in lines) {
         // Invalidate layout

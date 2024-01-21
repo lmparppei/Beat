@@ -225,6 +225,7 @@
 	self.frame = rect;
 	self.frame = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, 2);
 }
+
 - (void)updateStorylinePosition:(NSRect)rect {
 	NSRect frame = self.frame;
 	frame.origin.x = rect.origin.x;
@@ -261,6 +262,7 @@
 	
 	self.layer.opacity = 1.0;
 }
+
 -(void)deselect {
 	if (self.type != TimelineScene) return;
 	if (!_selected) return;

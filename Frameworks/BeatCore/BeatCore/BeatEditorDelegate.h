@@ -246,7 +246,6 @@
 @property (nonatomic, readonly) BeatEditorFormatting* formatting;
 - (void)reloadStyles;
 
-- (void)forceFormatChangesInRange:(NSRange)range;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;
 - (void)renderBackgroundForRange:(NSRange)range;
