@@ -83,6 +83,24 @@ body {
 	background: transparent !important;
 }
 
+.editButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	width: 2em;
+	height: 2em;
+	position: absolute;
+	bottom: 1.75em; right: .6em;
+	border-radius: 50%;
+	background-color: #111;
+	color: white;
+	visibility: hidden;
+}
+.card:hover .editButton {
+	visibility: visible;
+}
+
 @supports not (aspect-ratio: 2.5/2) {
 	
 	.card {

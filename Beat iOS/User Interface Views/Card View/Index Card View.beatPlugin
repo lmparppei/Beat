@@ -36,6 +36,7 @@ let templates = {
 					{{ noteList }}\
 					<div class='content'>{{ text }}</div>\
 				</div>\
+				<div class='editButton'>✎</div>\
 				<div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
 			</div></div>"),
 
@@ -393,6 +394,12 @@ Beat.custom = {
 		let line = Beat.currentParser.lineWithUUID(uuid)
 		if (line == null) return;
 
+		if (newString == "" || newString == null || newString == '\n') {
+			// Remove synopsis
+			Beat.replaceRange(line.position, line.length+1, "")
+			return
+		}
+		
 		color = (line.color.length > 0) ? line.color : ""
 		
 		let string = "= " + newString

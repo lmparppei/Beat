@@ -178,6 +178,7 @@
 				})
 			}
 
+			/// Setups context menu
 			function setupContextMenu() {
 				contextMenu = {};
 				contextMenu.init = function () {
@@ -264,23 +265,17 @@
 				contextMenu.addSynopsis = function () {
 					// Add an empty synopsis item inside the card
 					let card = contextMenu.target.closest(".card")
-					let synopsisList = card.querySelector(".synopsis ul")
-					
-					let item = document.createElement("li")
-					item.classList.add("synopsis-item")
-					item.contentEditable = true
-					synopsisList.appendChild(item)
-					
-					setupSynopsis(item)
 					contextMenu.close()
 					
-					item.edit()
-					item.focus()
+					addEditableSynopsis(card)
 				}
 
 				contextMenu.open = false
 			}
 
+			
+			/* HOST CALLS */
+			
 			function scrollToLine(uuid) {
 				Beat.call("Beat.custom.scrollToLine('" + uuid + "')")
 			}
@@ -289,21 +284,44 @@
 				Beat.call("Beat.custom.restart()")
 			}
 
+	
+			/* SYNOPSIS FUNCTIONS */
+	
+			/// Adds an editable synopsis item
+			function addEditableSynopsis(card) {
+				let synopsisList = card.querySelector(".synopsis ul")
+				let item = document.createElement("li")
+				item.classList.add("synopsis-item")
+				item.contentEditable = true
+				synopsisList.appendChild(item)
+				
+				setupSynopsis(item)
+				
+				item.edit()
+				item.focus()
+			}
+			
+			function editFirstSynopsis(card) {
+				let item = card.querySelector(".synopsis-item")
+				setupSynopsis(item)
+				item.edit()
+				item.focus()
+			}
+			
 			/// Modifies the synopsis line with given UUID
 			function modifySynopsis(uuid, string) {
 				Beat.call((uuid, string) => {
-					//Beat.log("modifying: " + uuid + " new string: " + string)
 					Beat.custom.modifySynopsis(uuid, string)
 				}, uuid, string)
 			}
 			
-			/// Adds a new synopsis to given scene
+			/// Adds a new synopsis to given scene in host
 			function addSynopsis(sceneUUID, string) {
 				Beat.call((sceneUUID, string) => {
 					Beat.custom.addSynopsis(sceneUUID, string)
 				}, sceneUUID, string)
 			}
-
+			
 		</script>
 	</head>
 	<body class='zoomLevel-1'>
@@ -333,16 +351,18 @@
 			
 			function load(html) {
 				container.innerHTML = html.replaceAll("\\\"", "\"")
-				updateContextMenus()
+				updateCardMenus()
 				initDragDrop()
 			}
 
-			function updateContextMenus() {
+			// Updates
+			function updateCardMenus() {
 				let cards = document.querySelectorAll(".card")
 				
 				cards.forEach((card) => {
 					let uuid = card.getAttribute("uuid")
 
+					// Update click
 					card.onclick = () => {
 						if (contextMenu != null) contextMenu.close();
 						
@@ -352,6 +372,7 @@
 							scrollToLine(uuid);
 						}
 					}
+					// Update double click (macOS)
 					card.ondblclick = (e) => {
 						// If we double-clicked a synopsis item, don't return to editor
 						if (e.target.classList.contains("synopsis-item")) return;
@@ -363,22 +384,36 @@
 
 						scrollToLine(uuid)
 					}
+					// Update context menus
 					card.oncontextmenu = (e) => {
 						e.preventDefault()
 						contextMenu.toggle(e)
 					}
 					
+					// Update synopsis buttons
 					let synopses = card.querySelectorAll("li.synopsis-item")
 					synopses.forEach((synopsis) => {
 						setupSynopsis(synopsis)
 					})
 					
+					// Update edit button
+					card.querySelector(".editButton").onclick = (e) => {
+						editCard(card)
+					}
 				})
 				
 				document.getElementById("container").onclick = () => {
-					if (contextMenu.open) {
-						contextMenu.close()
-					}
+					if (contextMenu.open) contextMenu.close();
+				}
+			}
+			
+			function editCard(card) {
+				// If no synopsis lines exist, create one
+				let items = card.querySelectorAll("li.synopsis-item");
+				if (items.length == 0) {
+					addEditableSynopsis(card)
+				} else {
+					editFirstSynopsis(card)
 				}
 			}
 			
@@ -399,21 +434,18 @@
 				synopsis.onblur = () => {
 					synopsis.classList.remove("editing")
 					synopsis.contentEditable = false
-					console.log("!!! blur")
+
 					let uuid = synopsis.getAttribute("uuid")
 					
 					if (!synopsis.canceled) {
-						console.log("   not canceled", uuid)
 						// If input wasn't canceled, we'll either modify the existing synopsis or add a new one
 						if (uuid?.length > 0) {
-							console.log("   uuid:" + uuid)
 							modifySynopsis(uuid, synopsis.innerText)
 						} else {
 							let scene = synopsis.closest(".card").getAttribute("uuid")
 							addSynopsis(scene, synopsis.innerText)
 						}
 					} else if (uuid.length == 0) {
-						console.log("!!! canceled")
 						// This was a temporary item. Remove after cancel.
 						synopsis.remove()
 					}
@@ -422,6 +454,7 @@
 				synopsis.onkeydown = (e) => {
 					if (e.keyCode == 13) {
 						// Enter pressed
+						e.preventDefault()
 						synopsis.blur()
 					}
 					if (e.keyCode == 27) {
@@ -435,7 +468,7 @@
 			}
 
 			// Initial setup
-			updateContextMenus()
+			updateCardMenus()
 			if (!iOS) initDragDrop();
 			
 			let currentScene = "{{current}}"
