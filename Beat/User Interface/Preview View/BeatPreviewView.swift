@@ -18,6 +18,7 @@ final class BeatPreviewView:NSView {
 	
 	@IBOutlet weak var previewController:BeatPreviewController?
 	
+	/// Clears the whole view
 	func clear() {
 		pageViews.removeAll()
 		
@@ -45,6 +46,7 @@ final class BeatPreviewView:NSView {
 		self.frame = NSMakeRect(0, 0, pageSize.width, height)
 	}
 	
+	/// Returns ALL page views (including title page)
 	func allPageViews() -> [BeatPaginationPageView] {
 		var views = [BeatPaginationPageView]()
 		
@@ -54,6 +56,54 @@ final class BeatPreviewView:NSView {
 		return views
 	}
 	
+	func fadeOutPages() {
+		// Dim out pages while we are refreshing the view
+		pageViews.forEach { $0.alphaValue = 0.5 }
+	}
+	
+	func updatePages(_ pagination:BeatPagination, settings:BeatExportSettings, controller:BeatPreviewController) {
+		guard let pages = pagination.pages as? [BeatPaginationPage] else {
+			print("Updating pages failed")
+			return
+		}
+		
+		for i in 0..<pages.count {
+			let page = pages[i]
+			// Ensure ownership
+			if page.delegate == nil {
+				page.delegate = pagination as? BeatPageDelegate
+			}
+			
+			var pageView:BeatPaginationPageView
+
+			if i < self.pageViews.count {
+				// If a page view already exists, reuse it
+				pageView = pageViews[i]
+				pageView.update(page: page, settings: settings)
+			} else {
+				// .. and if not, create a new page view.
+				pageView = BeatPaginationPageView(page: page, content: nil, settings: settings, previewController: controller)
+				self.addPage(page: pageView)
+			}
+			
+			pageView.animator().alphaValue = 1.0
+		}
+		
+		// Remove excess views
+		let pageCount = pages.count
+		while pageViews.count > pageCount {
+			removePage(at: pageViews.count - 1)
+		}
+		
+		// Add title page if needed
+		updateTitlePage(content: pagination.titlePage())
+
+		// Update container size
+		updateSize()
+	}
+	
+	
+	/// Moves each page to its correct position inside the view
 	func updatePagePositions() {
 		let views = self.allPageViews()
 		
@@ -82,6 +132,7 @@ final class BeatPreviewView:NSView {
 		self.pageViews.append(page)
 	}
 	
+	/// Updates title page with given array
 	func updateTitlePage(content:[[String: [Line]]]) {
 		// If no title page data is provided, let's try to remove any existing title page
 		if content.count == 0 {
@@ -106,6 +157,10 @@ final class BeatPreviewView:NSView {
 		}
 		
 		updatePagePositions()
+	}
+	
+	func removeLastPage() {
+		self.removePage(at: self.pageViews.count - 1)
 	}
 	
 	func removePage(at idx:Int) {

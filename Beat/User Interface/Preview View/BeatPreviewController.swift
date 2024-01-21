@@ -72,95 +72,44 @@ class BeatPreviewController:BeatPreviewManager {
 
 	/// Renders pages on screen
 	@objc override func renderOnScreen() {
-		renderImmediately = false
-		
-		// Show spinner while loading
-		self.spinner?.isHidden = false
-		self.spinner?.startAnimation(nil)
-	
-		
 		guard let previewView = self.previewView,
 			  let pagination = self.pagination
 		else {
-			print("Preview / pagination failed")
 			return
 		}
-		
-		// Hide pages
-		for page in self.previewView?.pageViews ?? [] {
-			page.alphaValue = 0.5
-		}
-		
-		// Check if pagination is up to date
+
+		// This flag determines if the preview should refresh after pagination has finished. Reset it.
+		renderImmediately = false
+					
+		// Some more guard clauses
 		if !paginationUpdated {
+			// If pagination is not up to date, start loading animation and wait for the operation to finish.
+			startLoadingAnimation()
 			renderImmediately = true
 			return
+		} else if !pagination.hasPages {
+			// Pagination has no results. Clear the view and remove animations.
+			endLoadingAnimation()
+			previewView.clear()
+			return
 		}
 		
-		// Create page strings in background
-		// At least some of the pages are usually cached, so this should be pretty fast.
 		DispatchQueue.global(qos: .userInitiated).async {
-			// If pagination is nil and/or the result has no page (and no title page), we'll just return without doing anything.
-			if pagination.pages.count == 0 && !pagination.hasTitlePage { return }
-			
+			// Create page strings in background
+			// At least some of the pages are usually cached, so this should be pretty fast.
 			let pages = pagination.pages
-			
-			// Add strings into an array (surprisingly slow in Swift)
-			var strings:[NSAttributedString] = []
-			for p in pages {
-				strings.append(p.attributedString())
-			}
+			_ = pages.map { $0.attributedString() }
 			
 			DispatchQueue.main.async {
-				// Back in main thread, create (or reuse) page content
-				let finishedPagination = self.pagination?.finishedPagination
-				
-				// Iterate through paginated pages
-				for i in 0 ..< pages.count {
-					let page = pages[i]
-					if page.delegate == nil {
-						page.delegate = finishedPagination as? BeatPageDelegate
-					}
-					
-					var pageView:BeatPaginationPageView
-					if i < previewView.pageViews.count {
-						// If a page view already exist in the given page number, let's reuse it.
-						pageView = previewView.pageViews[i]
-						
-						var s = pageView.textView!.string
-						if (s.count > 150) { s = s.substring(range: NSMakeRange(0, 150)) }
-						
-						pageView.update(page: page, settings: self.settings)
-					} else {
-						// .. and if not, create a new page view.
-						pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self)
-						previewView.addPage(page: pageView)
-					}
-					
-					pageView.alphaValue = 1.0
+				if let finishedPagination = pagination.finishedPagination {
+					previewView.updatePages(finishedPagination, settings: self.settings, controller: self)
 				}
-				
-				// Remove excess views
-				let pageCount = pages.count
-				while previewView.pageViews.count > pageCount {
-					previewView.removePage(at: previewView.pageViews.count - 1)
-				}
-				
-				// Add title page if needed
-				previewView.updateTitlePage(content: pagination.titlePage)
-				
-				// Update container size
-				previewView.updateSize()
 				
 				// Scroll view to the last edited position
-				if (self.settings.operation != .ForQuickLook) {
-					self.scrollToRange(self.delegate?.selectedRange ?? NSMakeRange(0, 0))
-				} else {
-					self.scrollToRange(NSMakeRange(0, 0))
-				}
+				self.scrollToRange(self.delegate?.selectedRange ?? NSMakeRange(0, 0))
 				
 				// Hide animation
-				self.spinner?.stopAnimation(nil)
+				self.endLoadingAnimation()
 			}
 		}
 	}
@@ -203,6 +152,16 @@ class BeatPreviewController:BeatPreviewManager {
 		delegate?.returnToEditor?()
 		self.delegate?.selectedRange = range
 		self.delegate?.scroll(to: range, callback: {})
+	}
+	
+	func startLoadingAnimation() {
+		self.previewView?.fadeOutPages()
+		self.spinner?.isHidden = false
+		self.spinner?.startAnimation(nil)
+	}
+	func endLoadingAnimation() {
+		self.spinner?.isHidden = true
+		self.spinner?.stopAnimation(nil)
 	}
 }
 
