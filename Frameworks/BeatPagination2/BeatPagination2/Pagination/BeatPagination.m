@@ -74,8 +74,9 @@
 /// Reusable pages from the previous pagination operation.
 @property (nonatomic) NSArray<BeatPaginationPage*>* _Nullable cachedPages;
 
-/// UUID -> line dictionary
-@property (nonatomic) NSMutableDictionary* UUIDsToLines;
+/// UUID -> line table
+//@property (nonatomic) NSMutableDictionary* UUIDsToLines;
+@property (nonatomic) NSMapTable* UUIDsToLines;
 
 /// Reusable styles for paragraph sizing
 @property (nonatomic) NSMutableDictionary<NSString*, NSParagraphStyle*>* paragraphStyles;///
@@ -631,7 +632,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return @[@0, @0];
 }
 
-- (NSDictionary<NSUUID*, Line*>*)uuids
+- (NSMapTable<NSUUID*, Line*>*)uuids
 {
     // Get actual lines for live pagination, and only the paginated ones for static pagination.
     if (self.delegate.editorDelegate != nil) {
@@ -640,9 +641,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     
     if (_UUIDsToLines != nil) return _UUIDsToLines;
     
-    _UUIDsToLines = NSMutableDictionary.new;
+    _UUIDsToLines = NSMapTable.strongToWeakObjectsMapTable;
     for (Line* line in self.lines) {
-        _UUIDsToLines[line.uuid] = line;
+        //_UUIDsToLines[line.uuid] = line;
+        [_UUIDsToLines setObject:line forKey:line.uuid.copy];
     }
     
     return _UUIDsToLines;
