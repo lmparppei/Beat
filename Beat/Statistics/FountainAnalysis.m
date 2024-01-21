@@ -6,28 +6,13 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
+/**
  
  This module creates an analysis of the Fountain script. It's a bit convoluted.
- The gender analysis relies on an external dictionary, ie. { "character": "gender" }
  
- Usage:
- FountainAnalysis *analysis = [[FountainAnalysis init] alloc];
- [analysis setupScript:lines scenes:scenes];
- [analysis setupScript:lines scenes:scenes genders:genders];
- 
- (lines: NSArray with Line objects, scenes: NSArray with OutlineScene objects, genders: NSDictionary { name: gender })
- 
- // Get JSON string for everything
- NSString *json = [analysis getJSON];
- 
- // Get scenes with lines for a certain character
- NSMutableArray *scenes = [analysis scenesWithCharacter:@"Name" onlyDialogue:YES];
- 
- 
- Update in 2024:
+ __Update in 2024:__
  THIS IS A TERRIBLE MESS.
- Most of these statistical values can nowadays be found using built-in APIs.
+ Most of these statistical values can nowadays be found using built-in APIs. Dread lightly.
  
  */
 
@@ -125,62 +110,35 @@
 			NSRange todRange = [str rangeOfString:@"- " options:NSBackwardsSearch];
 			
 			if (todRange.location + 2 < line.string.length) {
-				NSString *tod = [str substringFromIndex:todRange.location + 2];
+				NSString *tod = [str substringFromIndex:todRange.location + 2].uppercaseString;
 				
-				// Replace things like [STORY] and [[COLOR RED]], NIGHT (PRESENT DAY)
+				// Replace things like [[STORY]] and [[COLOR RED]], NIGHT (PRESENT DAY)
 				tod = [tod replace:RX(@"\\[(.*)\\]") with:@""];
 				tod = [tod replace:RX(@"\\((.*)\\)") with:@""];
-				
-				// This is PRETTY SHADY. Basically, we have an array with some quick translations of the word 'later'.
-				// Then, we'll iterate through them and remove anything that might be indicate the scene happening "later"
-				// than the previous one. If there is a god, have mercy on me.
-				for (NSString *later in LATER) {
-					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" / %@", later] withString:@""];
-					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" - %@", later] withString:@""];
-					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@", %@", later] withString:@""];
-				}
-				
 				tod = [tod stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+				
+				// Ignore any lines with "later"
+				for (NSString* later in LATER) {
+					if ([tod containsString:later]) continue;
+				}
 				
 				// See if anything is left
 				if (tod.length > 1) {
-					if (!_TOD[tod]) {
-						[_TOD setValue:[NSNumber numberWithInt:1] forKey:tod];
-					} else {
-						NSInteger i = [(NSNumber*)[_TOD valueForKey:tod] integerValue];
-						[_TOD setValue:[NSNumber numberWithInteger:i + 1] forKey:tod];
-					}
+					if (!_TOD[tod]) _TOD[tod] = @(0);
+					
+					NSInteger i = ((NSNumber*)_TOD[tod]).integerValue + 1;
+					_TOD[tod] = @(i);
 				}
 			}
 			
-			// Count int/ext. Following stuff is shady as hell. Here's a Charles Bukowski quote to ease the pain:
-			
-			// Sometimes you climb out of bed in the morning and you think,
-			// I'm not going to make it, but you laugh inside
-			// — remembering all the times you've felt that way.
-			
-			NSString *interior = @"INT.";
-			NSString *interiorShort = @"I.";
-			NSString *exterior = @"EXT.";
-			NSString *exteriorShort = @"E.";
-			
-			NSString *both = @"INT./EXT.";
-			NSString *bothShort = @"I./E.";
-			
-			NSString *string = [line.string uppercaseString];
-			
-			if ([string rangeOfString:both].location != NSNotFound || [string rangeOfString:bothShort].location != NSNotFound) {
-				_interiorScenes += 1;
-				_exteriorScenes += 1;
-				continue;
-			}
-			else if ([string rangeOfString:interior].location != NSNotFound || [string rangeOfString:interiorShort].location != NSNotFound) {
-				_interiorScenes += 1;
-			}
-			else if ([string rangeOfString:exterior].location != NSNotFound || [string rangeOfString:exteriorShort].location != NSNotFound) {
-				_exteriorScenes += 1;
-			} else {
-				_otherScenes += 1;
+			// Count locations
+			NSString *string = line.string.uppercaseString;
+			NSInteger idx = [string rangeOfString:@" "].location;
+			if (idx != NSNotFound) {
+				NSString* prefix = [string substringToIndex:idx];
+				if ([prefix containsString:@"INT"] || [prefix containsString:@"I."]) _interiorScenes += 1;
+				if ([prefix containsString:@"EXT"] || [prefix containsString:@"E."]) _exteriorScenes += 1;
+				if (![prefix containsString:@"EXT"] && ![prefix containsString:@"INT"] && ![prefix containsString:@"E."] && ![prefix containsString:@"I."]) _otherScenes += 1;
 			}
 		}
 	}
