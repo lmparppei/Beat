@@ -48,7 +48,12 @@ section {
     bold: true;
     
     font: system;
-    fontSize: 12;
+    fontSize: 18;
+    
+    if sectionDepth > 2 then fontSize: 12;
+    if sectionDepth > 1 then fontSize: 15;
+    
+    trim: true;
 }
 
 synopsis {
@@ -57,6 +62,8 @@ synopsis {
     color: darkGray;
     
     font: system;
+    
+    trim: true;
 }
 
 action {

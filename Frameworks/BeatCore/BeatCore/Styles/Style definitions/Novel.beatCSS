@@ -57,6 +57,7 @@ section {
     fontSize: 18;
     
     begins-page: true;
+    trim: true;
     
     if sectionDepth > 1 then begins-page: false;
     if sectionDepth > 1 then margin-top: 2l;
