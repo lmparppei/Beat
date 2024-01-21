@@ -1921,8 +1921,9 @@
 	if (line) [_delegate.formatting formatLine:line];
 }
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
-	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+	[_delegate.formatting forceFormatChangesInRange:(NSRange){ loc, len }];
 #if !TARGET_OS_IOS
+    // Remove temporary attributes
     [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
     [_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
 #endif

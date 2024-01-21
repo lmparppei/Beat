@@ -91,6 +91,8 @@ import BeatCore
     
     /// The latest finished pagination
     @objc public var finishedPagination:BeatPagination?
+    /// Older paginations. See `managePaginations` which is essentially sort of a custom garbage collector.
+    var obsoletePaginations:[BeatPagination] = []
 
 	var operationQueue:[BeatPagination] = [];
     public var pages:[BeatPaginationPage] {
@@ -246,9 +248,7 @@ import BeatCore
 		
         // If the pagination was successful, let's make it the latest finished pagination
 		if pagination.success {
-			self.finishedPagination = nil
 			self.finishedPagination = pagination
-
 			self.delegate?.paginationDidFinish(pagination)
 		}
 		
@@ -277,9 +277,9 @@ import BeatCore
 	}
     
     /// Returns `true` if the paginated document has a title page
-	@objc public var hasTitlePage:Bool {
-		return (self.titlePage.count > 0)
-	}
+	@objc public var hasTitlePage:Bool { return (self.titlePage.count > 0) }
+    /// Returns `true` if the finished document has *any* pagse
+    @objc public var hasPages:Bool { return (self.titlePage.count > 0 || self.pages.count > 0) }
 	
 	/// Legacy plugin compatibility
 	@objc public var numberOfPages:Int {
@@ -399,7 +399,7 @@ import BeatCore
     /// Returns the relative height `0...1` for given range in paginated screenplay.
     @objc public func heightFor(_ range:NSRange) -> CGFloat {
         guard let height = self.finishedPagination?.height(for: range) else {
-            print("No height available for range:", range)
+            print("heightForRange: No height available for range", range)
             return 0.0
         }
         
@@ -414,7 +414,7 @@ import BeatCore
     @objc public func heightForScene(_ scene:OutlineScene) -> CGFloat {
 		guard let height = self.finishedPagination?.height(for: scene)
 		else {
-			print("No height available for scene:", scene)
+			print("heightForScene: no height available -", scene)
 			return 0.0
 		}
 		
@@ -424,7 +424,7 @@ import BeatCore
     @objc public func actualHeightForScene(_ scene:OutlineScene) -> CGFloat {
         guard let height = self.finishedPagination?.height(for: scene)
         else {
-            print("No height available for scene:", scene)
+            print("actualHeightForScene: no height available -", scene)
             return 0.0
         }
         

@@ -134,6 +134,7 @@ import BeatCore.BeatEditorDelegate
         if !Thread.isMainThread {
             print("WARNING: resetPreview() should only be called from main thread.")
         }
+        print("RESET preview")
         
         self.pagination?.finishedPagination = nil
         self.paginationUpdated = false
