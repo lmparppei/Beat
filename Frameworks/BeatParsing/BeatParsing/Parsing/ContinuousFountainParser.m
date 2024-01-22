@@ -367,7 +367,8 @@ static NSDictionary* patterns;
             
             if (lineIndex < self.lines.count - 1) {
                 Line* nextLine = self.lines[lineIndex+1];
-                [self adjustLinePositionsFrom:lineIndex];
+                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
+                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
             }
             
             [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
@@ -388,7 +389,7 @@ static NSDictionary* patterns;
     
     [self adjustLinePositionsFrom:lineIndex];
     
-    [self report];
+    //[self report];
     [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
@@ -435,7 +436,7 @@ static NSDictionary* patterns;
         else {
             // This line is partly covered by the range
             line.string = [line.string stringByRemovingRange:localRange];
-            [self adjustLinePositionsFrom:i];
+            [self decrementLinePositionsFromIndex:i+1 amount:localRange.length];
             range.length -= localRange.length; // Subtract from full range
             
             // Move on to next line (even if we only wanted to remove one character)
@@ -449,11 +450,11 @@ static NSDictionary* patterns;
         firstLine.string = [firstLine.string stringByAppendingString:lastLine.string];
         [self removeLineAtIndex:firstIndex+1];
         
-        [self adjustLinePositionsFrom:firstIndex];
-
+        NSInteger diff = NSMaxRange(firstLine.range) - lastLine.position;
+        [self incrementLinePositionsFromIndex:firstIndex+1 amount:diff];
     }
     
-    [self report];
+    //[self report];
     
     // Add necessary indices
     [changedIndices addIndex:firstIndex];
@@ -488,7 +489,7 @@ static NSDictionary* patterns;
     [self addUpdateToOutlineIfNeededAt:index];
     
     [self.lines removeObjectAtIndex:index];
-    if (index > 0) [self adjustLinePositionsFrom:index - 1];
+    [self decrementLinePositionsFromIndex:index amount:line.range.length];
     
     // Reset cached line
     _lastEditedLine = nil;
@@ -501,7 +502,7 @@ static NSDictionary* patterns;
     Line *newLine = [Line.alloc initWithString:string position:position parser:self];
     
     [self.lines insertObject:newLine atIndex:index];
-    [self adjustLinePositionsFrom:index];
+    [self incrementLinePositionsFromIndex:index+1 amount:1];
     
     // Reset cached line
     _lastEditedLine = nil;
@@ -691,7 +692,21 @@ static NSDictionary* patterns;
     }
 }
 
+- (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
+{
+    for (; index < [self.lines count]; index++) {
+        Line* line = self.lines[index];
+        line.position += amount;
+    }
+}
 
+- (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
+{
+    for (; index < self.lines.count; index++) {
+        Line* line = self.lines[index];
+        line.position -= amount;
+    }
+}
 
 #pragma mark - Macros
 
