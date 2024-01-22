@@ -39,7 +39,6 @@
 @property (nonatomic, readonly) NSMutableArray <OutlineScene*>* outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray<NSMutableDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
-@property (nonatomic, readonly) NSMutableSet *storylines;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
 
@@ -89,7 +88,6 @@
 @property (nonatomic) NSMutableArray<OutlineScene*>* outline;
 /// Title page elements as a complicated array
 @property (nonatomic) NSMutableArray<NSMutableDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
-@property (nonatomic) NSMutableSet *storylines;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;
 @property (nonatomic) bool hasTitlePage;
 

@@ -127,7 +127,6 @@ static NSDictionary* patterns;
         _outline = NSMutableArray.array;
         _changedIndices = NSMutableIndexSet.indexSet;
         _titlePage = NSMutableArray.array;
-        _storylines = NSMutableSet.set;
         
         _delegate = delegate;
         _nonContinuous = nonContinuous;
@@ -368,8 +367,7 @@ static NSDictionary* patterns;
             
             if (lineIndex < self.lines.count - 1) {
                 Line* nextLine = self.lines[lineIndex+1];
-                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
-                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+                [self adjustLinePositionsFrom:lineIndex];
             }
             
             [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
@@ -390,7 +388,7 @@ static NSDictionary* patterns;
     
     [self adjustLinePositionsFrom:lineIndex];
     
-    // [self report];
+    [self report];
     [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
@@ -437,7 +435,7 @@ static NSDictionary* patterns;
         else {
             // This line is partly covered by the range
             line.string = [line.string stringByRemovingRange:localRange];
-            [self decrementLinePositionsFromIndex:i+1 amount:localRange.length];
+            [self adjustLinePositionsFrom:i];
             range.length -= localRange.length; // Subtract from full range
             
             // Move on to next line (even if we only wanted to remove one character)
@@ -451,11 +449,11 @@ static NSDictionary* patterns;
         firstLine.string = [firstLine.string stringByAppendingString:lastLine.string];
         [self removeLineAtIndex:firstIndex+1];
         
-        NSInteger diff = NSMaxRange(firstLine.range) - lastLine.position;
-        [self incrementLinePositionsFromIndex:firstIndex+1 amount:diff];
+        [self adjustLinePositionsFrom:firstIndex];
+
     }
     
-    // [self report];
+    [self report];
     
     // Add necessary indices
     [changedIndices addIndex:firstIndex];
@@ -490,7 +488,7 @@ static NSDictionary* patterns;
     [self addUpdateToOutlineIfNeededAt:index];
     
     [self.lines removeObjectAtIndex:index];
-    [self decrementLinePositionsFromIndex:index amount:line.range.length];
+    if (index > 0) [self adjustLinePositionsFrom:index - 1];
     
     // Reset cached line
     _lastEditedLine = nil;
@@ -503,7 +501,7 @@ static NSDictionary* patterns;
     Line *newLine = [Line.alloc initWithString:string position:position parser:self];
     
     [self.lines insertObject:newLine atIndex:index];
-    [self incrementLinePositionsFromIndex:index+1 amount:1];
+    [self adjustLinePositionsFrom:index];
     
     // Reset cached line
     _lastEditedLine = nil;
@@ -677,9 +675,10 @@ static NSDictionary* patterns;
 
 #pragma mark - Incrementing / decrementing line positions
 
-/// A replacement for the old, clunky `incrementLinePositions` and `decrementLinePositions`. Automatically adjusts line positions based on line content.
-/// You still have to make sure that you are parsing correct stuff, though.
-- (void)adjustLinePositionsFrom:(NSInteger)index {
+/// Automatically adjusts line positions based on line content. A replacement for the old, clunky `incrementLinePositions` and `decrementLinePositions`.  You still have to make sure that you are parsing correct stuff, though.
+/// @note: When calling, start from the line that was changed.
+- (void)adjustLinePositionsFrom:(NSInteger)index
+{
     Line* line = self.lines[index];
     NSInteger delta = NSMaxRange(line.range);
     index++;
@@ -692,22 +691,6 @@ static NSDictionary* patterns;
     }
 }
 
-- (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
-{
-    for (; index < [self.lines count]; index++) {
-        Line* line = self.lines[index];
-        
-        line.position += amount;
-    }
-}
-
-- (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
-{
-    for (; index < self.lines.count; index++) {
-        Line* line = self.lines[index];
-        line.position -= amount;
-    }
-}
 
 
 #pragma mark - Macros
@@ -1137,7 +1120,8 @@ static NSDictionary* patterns;
     return NSMakeRange(0, 0);
 }
 
-- (NSString *)markerForLine:(Line*)line {
+- (NSString *)markerForLine:(Line*)line
+{
     line.markerRange = (NSRange){0, 0};
     line.marker = @"";
     line.markerDescription = @"";
@@ -1161,7 +1145,7 @@ static NSDictionary* patterns;
         
         if (words.count > 1) {
             NSString* potentialColor = words[1].lowercaseString;
-            if ([[self colors] containsObject:potentialColor]) {
+            if ([self.colors containsObject:potentialColor]) {
                 markerColor = potentialColor;
             }
         }
@@ -1210,8 +1194,7 @@ static NSDictionary* patterns;
             // "color red"
             headingColor = [content substringFromIndex:@"color ".length];
             line.colorRange = range;
-        }
-        else if ([colors containsObject:content] ||
+        } else if ([colors containsObject:content] ||
                  (content.length == 7 && [content characterAtIndex:0] == '#')) {
             // pure "red" or "#ff0000"
             headingColor = content;
@@ -1221,65 +1204,6 @@ static NSDictionary* patterns;
     
     return headingColor;
 }
-
-
-/*
-- (NSArray *)beatsFor:(Line *)line {
-    if (line.length == 0) return @[];
-    
-	NSUInteger length = line.string.length;
-	unichar string[length];
-	[line.string.lowercaseString getCharacters:string]; // Make it lowercase for range enumeration
-	
-	NSMutableIndexSet *set = [self asymRangesInChars:string ofLength:length between:"[[beat" and:"]]" startLength:@"[[beat".length endLength:2 excludingIndices:nil line:line];
-	
-	NSMutableArray *beats = NSMutableArray.array;
-	
-	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSString *storylineStr = [line.string substringWithRange:range];
-		NSUInteger loc = @"[[beat".length;
-		NSString *rawBeats = [storylineStr substringWithRange:(NSRange){ loc, storylineStr.length - loc - 2 }];
-		
-		NSArray *components = [rawBeats componentsSeparatedByString:@","];
-		for (NSString *component in components) {
-			Storybeat *beat = [Storybeat line:line scene:nil string:component range:range];
-			[beats addObject:beat];
-		}
-		
-		[line.beatRanges addIndexesInRange:range];
-	}];
-	
-	return beats;
-}
-- (NSArray *)storylinesFor:(Line *)line {
-	// This is here for backwards-compatibility with older documents.
-	// These are nowadays called BEATS.
-	NSUInteger length = line.string.length;
-	unichar string[length];
-	[line.string.lowercaseString getCharacters:string]; // Make it lowercase for range enumeration
-		
-	NSMutableIndexSet *set = [self asymRangesInChars:string ofLength:length between:"[[storyline" and:"]]" startLength:@"[[storyline".length endLength:2 excludingIndices:nil line:line];
-	
-	NSMutableArray *beats = NSMutableArray.array;
-	
-	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSString *storylineStr = [line.string substringWithRange:range];
-		NSUInteger loc = @"[[storyline".length;
-		NSString *rawStorylines = [storylineStr substringWithRange:(NSRange){ loc, storylineStr.length - loc - 2 }];
-		
-		NSArray *components = [rawStorylines componentsSeparatedByString:@","];
-		
-		for (NSString *component in components) {
-			Storybeat *beat = [Storybeat line:line scene:nil string:component range:range];
-			[beats addObject:beat];
-		}
-		
-		[line.beatRanges addIndexesInRange:range];
-	}];
-	
-	return beats;
-}
-*/
 
 
 
@@ -1524,8 +1448,12 @@ static NSDictionary* patterns;
 {
     @synchronized (self.lines) {
         // Return the cached version when possible -- or when we are not in the main thread.
+
+        if ([self.cachedLines isEqualToArray:self.lines]) {
+            return _uuidsToLines;
+        }
+
         NSArray* lines = self.lines.copy;
-        if ([self.cachedLines isEqualToArray:lines]) return _uuidsToLines;
         
         // Store the current state of lines
         self.cachedLines = lines;

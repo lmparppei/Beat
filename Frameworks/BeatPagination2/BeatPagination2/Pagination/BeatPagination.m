@@ -562,24 +562,33 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
     return [self findPageIndexInRange:NSMakeRange(position, 0) pages:pages];
 }
+
+NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 - (NSInteger)findPageIndexInRange:(NSRange)lineRange pages:(NSArray<BeatPaginationPage*>*)pages
 {
+    NSMapTable* uuids = self.uuids;
+    
+    NSInteger idx = NSNotFound;
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
-		NSRange range = page.safeRange;
+		range = [page safeRangeWithUUIDs:uuids];
 		
         // Location is inside this page range
         if (NSLocationInRange(lineRange.location, range) || NSLocationInRange(NSMaxRange(lineRange), range) ) {
-            return i;
+            idx = i;
+            break;
         }
 		
         // We've gone past the original location, return the previous page (or the first, if something went wrong)
-		if (range.location > lineRange.location) {
-			return (i > 0) ? i - 1 : 0;
+		else if (range.location > lineRange.location) {
+			idx = (i > 0) ? i - 1 : 0;
+            break;
 		}
 	}
-	
-	return NSNotFound;
+    
+    return idx;
 }
 
 - (NSInteger)findPageIndexAt:(NSInteger)position
@@ -641,12 +650,12 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     
     if (_UUIDsToLines != nil) return _UUIDsToLines;
     
-    _UUIDsToLines = NSMapTable.strongToWeakObjectsMapTable;
+    NSMapTable* uuids = NSMapTable.strongToWeakObjectsMapTable;
     for (Line* line in self.lines) {
-        //_UUIDsToLines[line.uuid] = line;
-        [_UUIDsToLines setObject:line forKey:line.uuid.copy];
+        [uuids setObject:line forKey:line.uuid.copy];
     }
     
+    _UUIDsToLines = uuids;
     return _UUIDsToLines;
 }
 
@@ -654,20 +663,21 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 /// Find line based on UUID
 - (NSInteger)indexForEditorLine:(Line*)line {
-    NSInteger j = NSNotFound;
+    NSInteger idx = NSNotFound;
     for (NSInteger i=0; i<_lines.count; i++) {
         if ([_lines[i].uuid BequalTo:line.uuid]) {
-            j = i;
+            idx = i;
             break;
         }
     }
     
-    return j;
+    return idx;
 }
 
 - (CGFloat)heightForScene:(OutlineScene*)scene {
     // Height for omitted scenes is always 0.0
     if (scene.omitted) return 0.0;
+    
     
     // We can't use scene.range here, because it ends where an omitted scene might begin.
     // Let's find the next scene, then.
@@ -699,6 +709,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (CGFloat)heightForRange:(NSRange)range
 {
     NSInteger pageIndex = [self findPageIndexInRange:range pages:self.pages];
+ 
     if (pageIndex == NSNotFound) {
         NSLog(@"⚠️ heightForRange: Page not found: range %lu, %lu", range.location, range.length);
         return 0.0;
@@ -706,6 +717,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	
     // Find the page + block index.
     // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
+    
     BeatPaginationPage* page;
     NSInteger blockIndex = NSNotFound;
         
@@ -717,6 +729,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
             break;
         }
     }
+
     if (blockIndex == NSNotFound || page == nil) {
         return 0.0;
     }
@@ -763,38 +776,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		}
 		blockIndex = 0;
 	}
-	
-	return height;
+
+    return height;
 }
 
-/*
- func heightForScene(_ scene:OutlineScene) -> CGFloat {
-	 let pageIndex = page(forScene: scene)
-	 
-	 // No page found for this scene
-	 if (pageIndex < 0) { return 0.0 }
-	 
-	 let page = pages[pageIndex]
-	 var blockIndex = page.blockIndex(for: scene.line)
-	 var height = 0.0
-	 
-	 for i in pageIndex ..< pages.count {
-		 let page = pages[i]
-		 
-		 for j in blockIndex ..< page.blocks.count {
-			 let block = page.blocks[j] as! BeatPaginationBlock
-			 if block.type != .heading {
-				 height += block.height()
-			 } else {
-				 break
-			 }
-		 }
-		 blockIndex = 0
-	 }
-	 
-	 return height
- }
- */
 
 #pragma mark - Paragraph sizing
 

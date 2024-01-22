@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)clearUntil:(Line*)line;
 - (void)invalidateRender;
 -(NSRange)safeRange;
+-(NSRange)safeRangeWithUUIDs:(NSMapTable<NSUUID*, Line*>* _Nullable)uuids;
 -(NSRange)representedRange;
 -(NSAttributedString*)attributedString;
 -(NSArray<Line*>*)lines;

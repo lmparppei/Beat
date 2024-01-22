@@ -311,42 +311,13 @@
 	return result;
 }
 
-/*
-/// Returns the range of the screenplay which current page represents.
--(NSRange)safeRange {
-    return [self representedRange];
-}
--(NSRange)representedRange {
-    NSInteger begin = NSNotFound;
-    NSInteger end = NSNotFound;
-    NSArray<Line*>* lines = self.lines;
-    
-    for (Line* line in lines) {
-        if (!line.unsafeForPageBreak) {
-            begin = line.position;
-            break;
-        }
-    }
-    
-    NSInteger i = lines.count - 1;
-    while (i >= 0) {
-        Line *line = lines[i];
-        if (!line.unsafeForPageBreak) {
-            end = NSMaxRange(line.range);
-            break;
-        }
-        i -= 1;
-    }
-    
-    if (begin == NSNotFound || end == NSNotFound)
-        return NSMakeRange(NSNotFound, 0);
-    else
-        return NSMakeRange(begin, end - begin);
-}
-*/
 
 /// Returns the pagination-safe range of the screenplay which current page represents.
 -(NSRange)safeRange {
+    return [self safeRangeWithUUIDs:nil];
+}
+-(NSRange)safeRangeWithUUIDs:(NSMapTable<NSUUID*, Line*>* _Nullable)uuids
+{
 	Line* begin = nil;
 	Line* end = nil;
 	NSArray<Line*>* lines = self.lines;
@@ -368,21 +339,24 @@
 		i -= 1;
 	}
     
-    NSDictionary* uuids = self.delegate.uuids;
+    if (uuids == nil) uuids = self.delegate.uuids;
     
+    NSRange result;
 	if (begin == nil || end == nil)
-		return NSMakeRange(NSNotFound, 0);
+		result = NSMakeRange(NSNotFound, 0);
     else {
         // Get *actual* lines by UUID
-        Line* lBegin = uuids[begin.uuid];
-        Line* lEnd = uuids[end.uuid];
-        
-        return NSMakeRange(lBegin.position, NSMaxRange(lEnd.range) - lBegin.position);
+        Line* lBegin = [uuids objectForKey:begin.uuid];
+        Line* lEnd = [uuids objectForKey:end.uuid];
+        result =  NSMakeRange(lBegin.position, NSMaxRange(lEnd.range) - lBegin.position);
     }
+
+    return result;
 }
 
 /// Returns the **ACTUAL** range that the page probably represents
--(NSRange)representedRange {
+-(NSRange)representedRange
+{
     Line* begin = nil;
     Line* end = nil;
     NSArray<Line*>* lines = self.lines;
@@ -404,14 +378,14 @@
         i -= 1;
     }
     
-    NSDictionary* uuids = self.delegate.uuids;
+    NSMapTable* uuids = self.delegate.uuids;
     
     if (begin == nil || end == nil) {
         return NSMakeRange(NSNotFound, 0);
     } else {
         // Get *actual* lines by UUID
-        Line* lBegin = uuids[begin.uuid];
-        Line* lEnd = uuids[end.uuid];
+        Line* lBegin = [uuids objectForKey:begin.uuid];
+        Line* lEnd = [uuids objectForKey:end.uuid];
         
         NSRange beginRange = lBegin.range;
         NSRange endRange = lEnd.range;
