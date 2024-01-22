@@ -218,7 +218,7 @@
 	
 	// Trim the line if needed
 	if (style.trim) {
-		attributedString = attributedString.trimWhiteSpace.mutableCopy;
+		attributedString = [attributedString trimWhiteSpaceWithIncludeLineBreaks:false].mutableCopy;
 	}
 	
 	// And after all this, if the style has a content rule, we'll replace the text while keeping the original attributes
