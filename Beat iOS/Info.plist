@@ -30,6 +30,7 @@
 		<string>Courier Prime Bold.ttf</string>
 		<string>Courier Prime Bold Italic.ttf</string>
 		<string>Courier Prime Italic.ttf</string>
+		<string>NotoEmoji.ttf</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>

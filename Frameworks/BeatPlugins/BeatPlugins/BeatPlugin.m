@@ -1800,7 +1800,7 @@
 /// Returns all lines as JSON
 - (NSString*)linesAsJSON {
 	NSMutableArray *linesToSerialize = NSMutableArray.new;
-    NSArray* lines = self.delegate.parser.lines.copy;
+    NSArray* lines = self.delegate.parser.safeLines.copy;
     
 	for (Line* line in lines) {
         Line* l = line;

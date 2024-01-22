@@ -133,9 +133,9 @@
 }
 
 
-- (NSRect)boundingRectForLine:(Line*)line
+- (CGRect)boundingRectForLine:(Line*)line
 {
-    NSRect rect = [self boundingRectForGlyphRange:[self glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil] inTextContainer:self.textContainers.firstObject];
+    CGRect rect = [self boundingRectForGlyphRange:[self glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil] inTextContainer:self.textContainers.firstObject];
     rect.origin.y += self.inset.height;
     return rect;
 }
@@ -144,38 +144,39 @@
 
 - (void)drawForcedPageBreakForLine:(Line*)line
 {
-    NSRect rect = [self boundingRectForLine:line];
+    CGRect rect = [self boundingRectForLine:line];
     CGSize inset = self.inset;
     
     CGFloat y = rect.origin.y + rect.size.height / 2;
     CGRect leftRect = CGRectMake(0.0, y, rect.origin.x + inset.width - 5.0, 1.0);
-    CGRect rightRect = CGRectMake(NSMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - NSMaxX(rect), 1.0);
+    
+    CGRect rightRect = CGRectMake(CGRectGetMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - CGRectGetMaxX(rect), 1.0);
     
     BXColor* pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     [pageBreakColor setFill];
     
-    NSRectFill(leftRect);
-    NSRectFill(rightRect);
+    BXRectFill(leftRect);
+    BXRectFill(rightRect);
 }
 
 #pragma mark - Boneyard act marker
 
 - (void)drawBoneyardMarkerForLine:(Line*)line
 {
-    NSRect rect = [self boundingRectForLine:line];
+    CGRect rect = [self boundingRectForLine:line];
     CGSize inset = self.inset;
     
     CGFloat y = rect.origin.y + rect.size.height / 2;
     
     CGRect leftRect = CGRectMake(0.0, y, rect.origin.x + inset.width - 5.0, 1.0);
-    CGRect rightRect = CGRectMake(NSMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - NSMaxX(rect), 1.0);
+    CGRect rightRect = CGRectMake(CGRectGetMaxX(rect) + inset.width + 5.0, y , self.textContainers.firstObject.size.width - CGRectGetMaxX(rect), 1.0);
     
     
     BXColor* pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     [pageBreakColor setFill];
     
-    NSRectFill(leftRect);
-    NSRectFill(rightRect);
+    BXRectFill(leftRect);
+    BXRectFill(rightRect);
 }
 
 

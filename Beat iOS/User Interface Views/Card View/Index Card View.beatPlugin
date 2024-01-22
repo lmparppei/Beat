@@ -5,7 +5,7 @@ New Outline
 
 */
 
-// Require the Beat template engine
+// Require the Beat template engine + backwards-compatibility polyfills
 require("MojaveSupport")
 require("Template")
 
@@ -13,6 +13,9 @@ let json
 let window 
 let timer
 let updated = false
+
+// Currently selected range, because we can't ask for that in background. Remember to update this when creating HTML.
+let selectedRange = { location: 0, length: 0 }
 
 let modes = { ios: 1, window: 2, container: 3 }
 
@@ -62,7 +65,6 @@ let templates = {
 
 // When running the plugin for the first time, create the outline immediately
 let html = (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
-
 
 // Get files from inside the app bundle
 let css = Beat.appAssetAsString("BeatCardsUI.css")
@@ -142,20 +144,31 @@ Beat.onSelectionChange((selection) => {
 // ###################################
 
 function refreshHTML() {
-	let html = createOutline(...Beat.outline()).replaceAll("\"", "\\\"")
-	window.runJS('load(' + JSON.stringify(html) + ')')
-
-	updated = true
+	const outline = [...Beat.outline()]
+	// Store selected range
+	selectedRange = Beat.selectedRange()
+	
+	Beat.async(() => {
+		let html = createOutline(...outline).replaceAll("\"", "\\\"")
+		// Escape the string
+		let htmlString = JSON.stringify(html)
+		
+		Beat.sync(() => {
+			window.runJS('load(' + html + ')')
+			updated = true
+		})
+	})
 }
 
 // This method returns the HTML for index cards
 function createOutline(...outline) {
 	json = []
 
+	let pagination = Beat.currentPagination()
 	let previousScene
 
 	for (let i=0; i < outline.length; i++) {
-		let scene = updateScene(outline[i])
+		let scene = updateScene(outline[i], pagination)
 		json.push(scene)
     }
 
@@ -174,48 +187,51 @@ function createOutline(...outline) {
     }
 
     html += "</div>"
-
+	
     return html
 }
 
-// Get JSON for the scene and update it with some custom data
-function updateScene(scene) {
-	let pagination = Beat.currentPagination()
 
+// Get JSON for the scene and update it with some custom data
+function updateScene(scene, pagination = Beat.currentPagination()) {
 	let sceneJSON = scene.json()
 
 	// Get the snippet (if needed)
 	sceneJSON.text = ""
+	
+	// Get lines for this scene
 	let sceneLines = Beat.linesForScene(scene)
 	
-	for (let i=1; i<sceneLines.length; i++) {
-		let line = sceneLines[i]
-		if (line.type != Beat.type.empty && line.length > 0) {
-			if (!scene.omitted) sceneJSON.text = line.stripFormatting();
-			else sceneJSON.text = line.string;
-
-			break
+	if (sceneLines != null) {
+		for (let i=1; i<sceneLines.length; i++) {
+			let line = sceneLines[i]
+			if (line.type != Beat.type.empty && line.length > 0) {
+				if (!scene.omitted) sceneJSON.text = line.stripFormatting();
+				else sceneJSON.text = line.string;
+				
+				break
+			}
 		}
 	}
+	
 	sceneJSON.text = sceneJSON.text.replaceAll("<", "&lt;")
 
 	// Convert some values to lowercase for consistency
 	sceneJSON.color = sceneJSON.color?.toLowerCase()
 	sceneJSON.typeAsString = sceneJSON.typeAsString?.toLowerCase()
 
-	// Get lines for this scene
-	let lines = Beat.linesForScene(scene)
-
 	// Get scene height
+	const lengthStart = Date.now();
 	let pages = pagination.sceneLengthInEights(scene)
-
+	const lengthEnd = Date.now();
+	
 	// (Oh my fucking god JavaScript is silly with its non-typed variables
 	// but I don't care.)
 	if (pages[0] > 0) sceneJSON.pages = pages[0];
 	else sceneJSON.pages = "";
 	if (pages[1] > 0) sceneJSON.eights = pages[1] + "/8";
 	else sceneJSON.eights = ""
-
+		
 	// Add the JSON data to array
 	return sceneJSON
 }
@@ -259,9 +275,7 @@ function updateCard(scene) {
 	if (scene.noteList.length > 0 || synopsisList.length > 0) scene.text = ""
 
 	scene.isOmitted = (scene.omitted) ? "omitted" : ""
-
-	let selectedRange = Beat.selectedRange()
-
+	
 	if (selectedRange.location >= scene.range.location && selectedRange.location < scene.range.location + scene.range.length) {
 		scene.selected = "selected"
 	} else {
@@ -432,7 +446,6 @@ Beat.custom = {
 		// Add it
 		let l = lines[suitableIndex]
 		let position = l.position + l.length
-		Beat.log("LINE: " + l.string)
 		
 		let string = "= " + newString
 		
