@@ -3,4 +3,3 @@
 //
 
 #import <BeatPagination2/BeatPagination2.h>
-#import "BeatRenderer.h"

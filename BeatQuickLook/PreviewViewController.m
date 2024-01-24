@@ -10,7 +10,7 @@
 #import <BeatCore/BeatCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
-#import "BeatRenderer.h"
+#import <BeatPagination2/BeatPagination2.h>
 
 @interface PreviewViewController () <QLPreviewingController>
 @property (nonatomic) IBOutlet NSTextView* textView;
