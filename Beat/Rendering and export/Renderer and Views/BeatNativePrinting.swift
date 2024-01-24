@@ -14,6 +14,7 @@
 
 import Cocoa
 import BeatCore
+import BeatPagination2
 
 class BeatNativePrinting:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {

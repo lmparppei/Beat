@@ -6,37 +6,47 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-import AppKit
+#if os(macOS)
+    import AppKit
+#else
+    import UIKit
+#endif
+
 import BeatCore
-import BeatPagination2
+//import BeatPagination2
+import UXKit
 
 // MARK: - Basic page view for rendering the screenplay
 
-class BeatPagePrintView:NSView {
-	override var isFlipped: Bool { return true }
-	weak var previewController:BeatPreviewController?
+@objc public class BeatPagePrintView:UXView {
+    #if os(macOS)
+        override public var isFlipped: Bool { return true }
+    #endif
+	weak public var previewController:BeatPreviewManager?
 }
 
-class BeatPaginationPageView:NSView {
-	override var isFlipped: Bool { return true }
-	weak var previewController:BeatPreviewController?
+@objc open class BeatPaginationPageView:UXView {
+    #if os(macOS)
+        override public var isFlipped: Bool { return true }
+    #endif
+	weak public var previewController:BeatPreviewManager?
 	
-	var attributedString:NSAttributedString?
-	var pageStyle:RenderStyle
-	var settings:BeatExportSettings
-	
-	var page:BeatPaginationPage?
-	
-	var textView:BeatPageTextView?
+	public var attributedString:NSAttributedString?
+    public var page:BeatPaginationPage?
+    public var textView:BeatPageTextView?
+    
+    var pageStyle:RenderStyle
+    var settings:BeatExportSettings
+    
 	var linePadding = 0.0
-	var size:NSSize
+	var size:CGSize
 	
 	var fonts = BeatFonts.shared()
 	
 	var paperSize:BeatPaperSize
 	var isTitlePage = false
 	
-	@objc init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
+	@objc public init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewManager?, titlePage:Bool = false) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
 
 		self.attributedString = content
@@ -54,22 +64,29 @@ class BeatPaginationPageView:NSView {
 		let styles = self.settings.styles as? BeatStylesheet
 		self.pageStyle = styles?.page() ?? RenderStyle(rules: [:])
 		
-		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
+		super.init(frame: CGRectMake(0, 0, size.width, size.height))
 		
+        #if os(macOS)
 		self.canDrawConcurrently = true
 		self.wantsLayer = true
 		self.layer?.backgroundColor = .white
 		
 		// Force light appearance to get highlights show up correctly
 		self.appearance = NSAppearance(named: .aqua)
+        #else
+        self.backgroundColor = .white
+        #endif
 		
 		// Create text views and set attributed string
 		createTextView()
-		self.textView?.textStorage?.setAttributedString(self.attributedString ?? NSAttributedString(string: ""))
+        if let textStorage = self.textView?.textStorage {
+            textStorage.setAttributedString(self.attributedString ?? NSAttributedString(string: ""))
+        }
 	}
 	
 	@objc func setContent(attributedString:NSAttributedString, settings:BeatExportSettings) {
-		self.textView?.textStorage?.setAttributedString(attributedString)
+        guard let textStorage = self.textView?.textStorage else { return }
+		textStorage.setAttributedString(attributedString)
 	}
 	
 	func createTextView() {
@@ -78,37 +95,44 @@ class BeatPaginationPageView:NSView {
 		self.textView?.previewController = self.previewController
 		
 		self.textView?.isEditable = false
+        textView?.backgroundColor = .white
 
-		self.textView?.linkTextAttributes = [
-			NSAttributedString.Key.font: fonts.regular,
-//			NSAttributedString.Key.foregroundColor: NSColor.black,
-			NSAttributedString.Key.cursor: NSCursor.pointingHand
-		]
-		self.textView?.displaysLinkToolTips = false
-		self.textView?.isAutomaticLinkDetectionEnabled = false
-		
+        #if os(macOS)
+            self.textView?.linkTextAttributes = [
+                NSAttributedString.Key.font: fonts.regular,
+                NSAttributedString.Key.cursor: NSCursor.pointingHand
+            ]
+        #else
+            self.textView?.linkTextAttributes = [NSAttributedString.Key.font: fonts.regular]
+        #endif
+        
+        #if os(macOS)
+            self.textView?.displaysLinkToolTips = false
+            self.textView?.isAutomaticLinkDetectionEnabled = false
+            self.textView?.textContainer?.lineFragmentPadding = linePadding
+            self.textView?.textContainerInset = NSSize(width: 0, height: 0)
+            self.textView?.drawsBackground = true
+        #endif
+		        
 		self.textView?.font = fonts.regular
-		
-		self.textView?.textContainer?.lineFragmentPadding = linePadding
-		self.textView?.textContainerInset = NSSize(width: 0, height: 0)
-		
+				
 		let layoutManager = BeatRenderLayoutManager()
 		layoutManager.pageView = self
 		
-		self.textView?.textContainer?.replaceLayoutManager(layoutManager)
-		self.textView?.textContainer?.lineFragmentPadding = linePadding
-		
-		textView?.backgroundColor = .white
-		textView?.drawsBackground = true
-		
+        // We have to have a conditional check here because of differing optionality on macOS/iOS
+        if let textContainer = self.textView?.textContainer {
+            textContainer.replaceLayoutManager(layoutManager)
+            textContainer.lineFragmentPadding = linePadding
+        }
+				
 		self.addSubview(textView!)
 	}
 	
-	func textViewFrame() -> NSRect {
+	func textViewFrame() -> CGRect {
 		let size = BeatPaperSizing.size(for: settings.paperSize)
 		let marginOffset = (settings.paperSize == .A4) ? pageStyle.marginLeftA4 : pageStyle.marginLeftLetter
 		
-		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding + marginOffset,
+		let textFrame = CGRect(x: self.pageStyle.marginLeft - linePadding + marginOffset,
 							   y: self.pageStyle.marginTop,
 							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
 							   height: size.height - self.pageStyle.marginTop)
@@ -122,7 +146,7 @@ class BeatPaginationPageView:NSView {
 	}
 	
 	// Update content
-	func update(page:BeatPaginationPage, settings:BeatExportSettings) {
+	public func update(page:BeatPaginationPage, settings:BeatExportSettings) {
 		self.settings = settings
 		self.page = page
 		
@@ -131,24 +155,28 @@ class BeatPaginationPageView:NSView {
 			updateContainerSize()
 			page.invalidateRender()
 		}
-		
-		self.textView?.textStorage?.setAttributedString(page.attributedString())
+        if let textStorage = self.textView?.textStorage {
+            textStorage.setAttributedString(page.attributedString())
+        }
 	}
 	
-	override func cancelOperation(_ sender: Any?) {
+    #if os(macOS)
+	override public func cancelOperation(_ sender: Any?) {
 		superview?.cancelOperation(sender)
 	}
+    #endif
 	
-	required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+	required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
 // MARK: - Custom text view
 
-class BeatPageTextView:NSTextView {
-	weak var previewController:BeatPreviewController?
+@objc open class BeatPageTextView:UXTextView {
+	weak var previewController:BeatPreviewManager?
 	
+#if os(macOS)
 	/// The user clicked on a link, which direct to `Line` objects
-	override func clicked(onLink link: Any, at charIndex: Int) {
+	override public func clicked(onLink link: Any, at charIndex: Int) {
 		guard
 			let line = link as? Line,
 			let previewController = self.previewController
@@ -157,20 +185,21 @@ class BeatPageTextView:NSTextView {
 		previewController.closeAndJumpToRange(line.textRange())
 	}
 	
-	override func cancelOperation(_ sender: Any?) {
+	override public func cancelOperation(_ sender: Any?) {
 		superview?.cancelOperation(sender)
 	}
+#endif
 }
 
 
 // MARK: - Title page
 
-class BeatTitlePageView:BeatPaginationPageView {
-	var leftColumn:NSTextView?
-	var rightColumn:NSTextView?
+@objc public class BeatTitlePageView:BeatPaginationPageView {
+	var leftColumn:UXTextView?
+	var rightColumn:UXTextView?
 	var titlePageLines:[[String:[Line]]]
 	
-	init(previewController: BeatPreviewController? = nil, titlePage:[[String:[Line]]], settings:BeatExportSettings) {
+	@objc public init(previewController: BeatPreviewManager? = nil, titlePage:[[String:[Line]]], settings:BeatExportSettings) {
 		self.titlePageLines = titlePage
 		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
 			
@@ -185,11 +214,14 @@ class BeatTitlePageView:BeatPaginationPageView {
 	}
 
 	/// Creates title page content and places the text snippets into correct spots
-	func createTitlePage() {
+	public func createTitlePage() {
 
 		guard let leftColumn = self.leftColumn,
 			  let rightColumn = self.rightColumn,
-			  let textView = self.textView
+			  let textView = self.textView,
+              let textStorage = self.textView?.textStorage,
+              let leftTextStorage = self.leftColumn?.textStorage,
+              let rightTextStorage = self.rightColumn?.textStorage
 		else {
 			print("ERROR: No text views found, returning empty page")
 			return
@@ -198,8 +230,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		textView.string = "\n" // Add one extra line break to make title top margin have effect
 		leftColumn.string = ""
 		rightColumn.string = ""
-	
-		let renderer = BeatRenderer(settings: self.settings)
+        
+        let renderer = BeatRenderer(settings: self.settings)
 		
 		var top:[Line] = []
 		
@@ -215,19 +247,19 @@ class BeatTitlePageView:BeatPaginationPageView {
 			
 			topContent.append(attrStr)
 		}
-		textView.textStorage?.append(topContent)
+		textStorage.append(topContent)
 		
 		// Draft date on right side
 		if let draftDate = titlePageElement("draft date") {
 			let attrStr = NSMutableAttributedString()
 			_ = draftDate.map { attrStr.append(renderer.renderLine($0)) }
-			rightColumn.textStorage?.append(attrStr)
+			rightTextStorage.append(attrStr)
 		}
 		
 		if let contact = titlePageElement("contact") {
 			let attrStr = NSMutableAttributedString()
 			_ = contact.map { attrStr.append(renderer.renderLine($0)) }
-			leftColumn.textStorage?.append(attrStr)
+			leftTextStorage.append(attrStr)
 		}
 				
 		// Add the rest of the elements on left side
@@ -237,34 +269,53 @@ class BeatTitlePageView:BeatPaginationPageView {
 			if let element = titlePageElement(dict.keys.first ?? "") {
 				let attrStr = NSMutableAttributedString()
 				_ = element.map { attrStr.append(renderer.renderLine($0)) }
-				leftColumn.textStorage?.append(attrStr)
+				leftTextStorage.append(attrStr)
 			}
 		}
 		
 		// Remove backgrounds
+        #if os(macOS)
 		leftColumn.drawsBackground = false
 		rightColumn.drawsBackground = false
 		textView.drawsBackground = false
+        #endif
 		
 		// Layout manager doesn't handle newlines too well, so let's trim the column content
-		leftColumn.textStorage?.setAttributedString(leftColumn.attributedString().trimmedAttributedString(set: .newlines))
-		rightColumn.textStorage?.setAttributedString(rightColumn.attributedString().trimmedAttributedString(set: .newlines))
+		leftTextStorage.setAttributedString(leftTextStorage.trimmedAttributedString(set: .newlines))
+		rightTextStorage.setAttributedString(rightTextStorage.trimmedAttributedString(set: .newlines))
 
 		// Once we've set the content, let's adjust top inset to align text to bottom
-		leftColumn.textContainerInset = NSSize(width: 0, height: 0)
-		rightColumn.textContainerInset = NSSize(width: 0, height: 0)
+        #if os(macOS)
+            leftColumn.textContainerInset = CGSize(width: 0, height: 0)
+            rightColumn.textContainerInset = CGSize(width: 0, height: 0)
+        #else
+            leftColumn.textContainerInset = UIEdgeInsets.zero
+            rightColumn.textContainerInset = UIEdgeInsets.zero
+        #endif
 		
-		_ = leftColumn.layoutManager!.glyphRange(for: leftColumn.textContainer!)
-		_ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
-		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
-		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
+        #if os(macOS)
+            _ = leftColumn.layoutManager!.glyphRange(for: leftColumn.textContainer!)
+            _ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
+            let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
+            let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
+        #else
+            _ = leftColumn.layoutManager.glyphRange(for: leftColumn.textContainer)
+            _ = rightColumn.layoutManager.glyphRange(for: rightColumn.textContainer)
+            let leftRect = leftColumn.layoutManager.usedRect(for: leftColumn.textContainer)
+            let rightRect = rightColumn.layoutManager.usedRect(for: rightColumn.textContainer)
+        #endif
 				
 		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
 		let insetLeft = leftColumn.frame.height - leftRect.height
 		let insetRight = rightColumn.frame.height - rightRect.height
 		
-		leftColumn.textContainerInset = NSSize(width: 0, height: insetLeft)
-		rightColumn.textContainerInset = NSSize(width: 0, height: insetRight)
+        #if os(macOS)
+            leftColumn.textContainerInset = CGSize(width: 0, height: insetLeft)
+            rightColumn.textContainerInset = CGSize(width: 0, height: insetRight)
+        #else
+            leftColumn.textContainerInset = UIEdgeInsets(top: insetLeft, left: 0.0, bottom: 0.0, right: 0.0)
+            rightColumn.textContainerInset = UIEdgeInsets(top: insetRight, left: 0.0, bottom: 0.0, right: 0.0)
+        #endif
 	}
 	
 	/// Gets **and removes** a title page element from title page array. The array looks like `[ [key: value], [key: value], ...]` to keep the title page elements organized.
@@ -314,43 +365,51 @@ class BeatTitlePageView:BeatPaginationPageView {
 	}
 	
 	/// Updates title page content 
-	func updateTitlePage(_ titlePageContent: [[String:[Line]]]) {
+	@objc public func updateTitlePage(_ titlePageContent: [[String:[Line]]]) {
 		self.titlePageLines = titlePageContent
 		createTitlePage()
 	}
 	
 	/// Override page render method for title pages
 	func createViews() {
-		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
-		let textViewFrame = NSRect(x: pageStyle.marginLeft,
+		let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+		let textViewFrame = CGRect(x: pageStyle.marginLeft,
 								   y: pageStyle.marginTop,
 								   width: frame.size.width - pageStyle.marginLeft * 2,
 								   height: 400)
 		textView?.frame = frame
 		
-		let columnFrame = NSRect(x: pageStyle.marginLeft,
+		let columnFrame = CGRect(x: pageStyle.marginLeft,
 								 y: textViewFrame.origin.y + textViewFrame.height,
 								 width: textViewFrame.width / 2 - 10,
 								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight() * 2)
 		
 		if (leftColumn == nil) {
-			leftColumn = NSTextView(frame: columnFrame)
+			leftColumn = UXTextView(frame: columnFrame)
 			leftColumn?.isEditable = false
-			leftColumn?.drawsBackground = false
-			//leftColumn?.backgroundColor = .white
+            #if os(macOS)
+            leftColumn?.drawsBackground = false
+            #else
+            leftColumn?.backgroundColor = .clear
+            #endif
+			
 			leftColumn?.isSelectable = false
 			
 			self.addSubview(leftColumn!)
 		}
 
 		if (rightColumn == nil) {
-			let rightColumnFrame = NSRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
+			let rightColumnFrame = CGRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
 										  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
 			
-			rightColumn = NSTextView(frame: rightColumnFrame)
+			rightColumn = UXTextView(frame: rightColumnFrame)
 			rightColumn?.isEditable = false
+            #if os(macOS)
 			rightColumn?.drawsBackground = false
-			//rightColumn?.backgroundColor = .white
+            #else
+            rightColumn?.backgroundColor = .clear
+            #endif
+			
 			rightColumn?.isSelectable = false
 			
 			self.addSubview(rightColumn!)
@@ -360,10 +419,10 @@ class BeatTitlePageView:BeatPaginationPageView {
 
 // MARK: - Custom layout manager for text views in rendered page view
 
-class BeatRenderLayoutManager:NSLayoutManager {
+public class BeatRenderLayoutManager:NSLayoutManager {
 	weak var pageView:BeatPaginationPageView?
 	
-	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+	override public func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
 		
 		let container = self.textContainers.first!
@@ -373,10 +432,12 @@ class BeatRenderLayoutManager:NSLayoutManager {
 			return
 		}
 		
+        #if os(macOS)
 		NSGraphicsContext.saveGraphicsState()
+        #endif
 		
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
-			let markerRect = NSMakeRect(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
+			let markerRect = CGRectMake(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
 			
 			var highestRevision = ""
 			var range = originalRange
@@ -414,26 +475,17 @@ class BeatRenderLayoutManager:NSLayoutManager {
 			let font = BeatFonts.shared().regular
 			marker.draw(at: markerRect.origin, withAttributes: [
 				NSAttributedString.Key.font: font,
-				NSAttributedString.Key.foregroundColor: NSColor.black
+				NSAttributedString.Key.foregroundColor: UXColor.black
 			])
 		}
 		
+        #if os(macOS)
 		NSGraphicsContext.restoreGraphicsState()
+        #endif
 	}
 	
-	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+	override public func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
-		/*
-		let chrRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		
-		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
-		if (attr) {
-			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
-			NSColor.red.setFill()
-			rect.fill()
-		}
-		 */
 	}
 }
 

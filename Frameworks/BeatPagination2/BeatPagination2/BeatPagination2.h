@@ -18,3 +18,4 @@ FOUNDATION_EXPORT const unsigned char BeatPagination2VersionString[];
 #import <BeatPagination2/BeatPageBreak.h>
 #import <BeatPagination2/BeatPaginationPage.h>
 #import <BeatPagination2/BeatPaginationBlockGroup.h>
+#import <BeatPagination2/BeatRenderer.h>

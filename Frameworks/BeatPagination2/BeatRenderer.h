@@ -6,8 +6,10 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <AppKit/AppKit.h>
-#import <BeatPagination2/BeatPagination2.h>
+#import <TargetConditionals.h>
+
+#import <Foundation/Foundation.h>
+#import <BeatPagination2/BeatPagination.h>
 
 @class BeatPaginationManager;
 @class BeatPaginationPage;

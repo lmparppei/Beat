@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B61FF8762B5FAF7E008F449D /* BeatRenderingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61FF8752B5FAF7E008F449D /* BeatRenderingViews.swift */; };
+		B61FF8792B5FB05C008F449D /* BeatRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FF8772B5FB05B008F449D /* BeatRenderer.m */; };
+		B61FF87A2B5FB064008F449D /* BeatRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FF8782B5FB05C008F449D /* BeatRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61FF87C2B5FB204008F449D /* BeatiOSRendererComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61FF87B2B5FB204008F449D /* BeatiOSRendererComponents.swift */; platformFilter = ios; };
 		B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A69C29F1C3940036FE6B /* BeatPagination2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */; };
 		B663A6CA29F1C3D80036FE6B /* BeatPaginationBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -24,6 +28,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B61FF8752B5FAF7E008F449D /* BeatRenderingViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatRenderingViews.swift; sourceTree = "<group>"; };
+		B61FF8772B5FB05B008F449D /* BeatRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRenderer.m; sourceTree = "<group>"; };
+		B61FF8782B5FB05C008F449D /* BeatRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRenderer.h; sourceTree = "<group>"; };
+		B61FF87B2B5FB204008F449D /* BeatiOSRendererComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSRendererComponents.swift; sourceTree = "<group>"; };
 		B663A69929F1C3940036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B663A69C29F1C3940036FE6B /* BeatPagination2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPagination2.h; sourceTree = "<group>"; };
 		B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
@@ -54,10 +62,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B61FF8742B5FAF66008F449D /* Rendering and Export */ = {
+			isa = PBXGroup;
+			children = (
+				B61FF87B2B5FB204008F449D /* BeatiOSRendererComponents.swift */,
+				B61FF8782B5FB05C008F449D /* BeatRenderer.h */,
+				B61FF8772B5FB05B008F449D /* BeatRenderer.m */,
+				B61FF8752B5FAF7E008F449D /* BeatRenderingViews.swift */,
+			);
+			name = "Rendering and Export";
+			sourceTree = "<group>";
+		};
 		B663A68F29F1C3940036FE6B = {
 			isa = PBXGroup;
 			children = (
 				B663A6F429F1DD140036FE6B /* Beat Pagination Framework.md */,
+				B61FF8742B5FAF66008F449D /* Rendering and Export */,
 				B663A69B29F1C3940036FE6B /* BeatPagination2 */,
 				B663A69A29F1C3940036FE6B /* Products */,
 				B663A6DC29F1C4F70036FE6B /* Frameworks */,
@@ -120,6 +140,7 @@
 				B663A6CE29F1C3D80036FE6B /* BeatPaginationBlockGroup.h in Headers */,
 				B663A6D229F1C3D80036FE6B /* BeatPageBreak.h in Headers */,
 				B663A6D129F1C3D80036FE6B /* BeatPaginationPage.h in Headers */,
+				B61FF87A2B5FB064008F449D /* BeatRenderer.h in Headers */,
 				B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -192,12 +213,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B61FF8792B5FB05C008F449D /* BeatRenderer.m in Sources */,
 				B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */,
 				B68E3F2B2B2BB90600C63B71 /* BeatPreviewManager.swift in Sources */,
 				B663A6D029F1C3D80036FE6B /* BeatPageBreak.m in Sources */,
+				B61FF8762B5FAF7E008F449D /* BeatRenderingViews.swift in Sources */,
 				B663A6CB29F1C3D80036FE6B /* BeatPagination.m in Sources */,
 				B663A6CC29F1C3D80036FE6B /* BeatPaginationPage.m in Sources */,
 				B663A6CF29F1C3D80036FE6B /* BeatPaginationBlockGroup.m in Sources */,
+				B61FF87C2B5FB204008F449D /* BeatiOSRendererComponents.swift in Sources */,
 				B663A6D329F1C3D80036FE6B /* BeatPaginationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

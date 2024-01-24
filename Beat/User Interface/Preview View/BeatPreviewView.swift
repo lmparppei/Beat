@@ -8,6 +8,7 @@
 
 import AppKit
 import BeatParsing
+import BeatPagination2
 
 /// This view holds the pages
 final class BeatPreviewView:NSView {
