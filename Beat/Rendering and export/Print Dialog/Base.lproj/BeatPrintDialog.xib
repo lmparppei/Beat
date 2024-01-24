@@ -38,7 +38,7 @@
         <window title="Print" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rg7-lI-xne" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" utility="YES"/>
             <rect key="contentRect" x="382" y="331" width="850" height="434"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" id="Eh4-Tm-L4f">
                 <rect key="frame" x="0.0" y="0.0" width="850" height="434"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -114,7 +114,7 @@ Gw
                         </beginningViews>
                         <endViews>
                             <button verticalHuggingPriority="750" id="a5r-9d-7pC">
-                                <rect key="frame" x="130" y="-3" width="59" height="32"/>
+                                <rect key="frame" x="128" y="-3" width="60" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="PDF" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8t8-IM-hHv">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -125,7 +125,7 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" id="oP5-3G-eOr">
-                                <rect key="frame" x="179" y="-3" width="77" height="32"/>
+                                <rect key="frame" x="178" y="-3" width="78" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="  Print  " bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTh-vA-fQk">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -318,7 +318,7 @@ DQ
                                                 <action selector="setRevisedPageColor:" target="-2" id="HK4-sz-lGs"/>
                                             </connections>
                                         </popUpButton>
-                                        <button verticalHuggingPriority="750" id="GTV-2p-SXF">
+                                        <button verticalHuggingPriority="750" id="GTV-2p-SXF" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="130" width="196" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Sections" bezelStyle="regularSquare" imagePosition="left" inset="2" id="DrB-io-gNd" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
@@ -330,12 +330,13 @@ DQ
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSections"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Sections"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="FLj-Y6-TXp"/>
                                             </connections>
                                         </button>
-                                        <button verticalHuggingPriority="750" id="ptb-NP-jOd">
+                                        <button verticalHuggingPriority="750" id="ptb-NP-jOd" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="108" width="195" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Synopsis" bezelStyle="regularSquare" imagePosition="left" inset="2" id="p05-ak-YGH" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
@@ -347,12 +348,13 @@ DQ
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSynopsis"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Synopsis"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="4B1-Lp-wC8"/>
                                             </connections>
                                         </button>
-                                        <button verticalHuggingPriority="750" id="qVw-JB-cjH">
+                                        <button verticalHuggingPriority="750" id="qVw-JB-cjH" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="86" width="195" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Notes" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hsE-MS-Br7" customClass="BeatUserDefaultCheckboxCell" customModule="Beat" customModuleProvider="target">
@@ -364,6 +366,7 @@ DQ
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printNotes"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Notes"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="lJq-3z-5Pg"/>

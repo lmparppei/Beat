@@ -337,6 +337,7 @@ static CGFloat panelWidth;
 	if (checkbox.userDefaultKey.length > 0) {
 		[self.documentDelegate.documentSettings setBool:checkbox.userDefaultKey as:(checkbox.state == NSOnState)];
 	}
+	NSLog(@"Load preview");
 	[self loadPreview];
 }
 
