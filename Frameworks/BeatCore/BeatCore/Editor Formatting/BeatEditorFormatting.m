@@ -155,6 +155,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Create paragraph style
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
 	style.minimumLineHeight = styles.page.lineHeight;
+    style.maximumLineHeight = styles.page.lineHeight;
+    style.lineSpacing = 1.0;
     	
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;

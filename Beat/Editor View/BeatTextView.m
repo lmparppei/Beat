@@ -246,7 +246,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.layoutManager.allowsNonContiguousLayout = YES;
 	
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	[paragraphStyle setLineHeightMultiple:self.editorDelegate.lineHeight];
+	paragraphStyle.maximumLineHeight = self.editorDelegate.editorStyles.page.lineHeight;
+	paragraphStyle.minimumLineHeight = self.editorDelegate.editorStyles.page.lineHeight;
+	paragraphStyle.lineSpacing = 1.0;
 	[self setDefaultParagraphStyle:paragraphStyle];
 	
 	// Setup mouse cursor positions
