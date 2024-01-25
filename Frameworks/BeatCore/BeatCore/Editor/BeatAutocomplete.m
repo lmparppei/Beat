@@ -143,7 +143,11 @@
     if (currentLine.type == heading) {
         prefix = sceneHeadingPrefix(stringToSearch);
         stringToSearch = [stringToSearch stringByReplacingOccurrencesOfString:prefix withString:@""].trim;
-        if (prefix.length > 0) prefix = [NSString stringWithFormat:@"%@ ", prefix];
+        
+        if (prefix.length > 0) {
+            if (![prefix containsString:@"."]) prefix = [prefix stringByAppendingString:@"."];
+            prefix = [NSString stringWithFormat:@"%@ ", prefix];
+        }
     }
     
     // Choose which array to search
@@ -189,7 +193,8 @@
     return matches;
 }
 
-- (NSArray *)completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+- (NSArray *)completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
+{
     return [self completionsForPartialWordRange:charRange];
 }
 
