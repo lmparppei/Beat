@@ -2029,6 +2029,15 @@
 }
 
 
+#pragma mark - TextView access
+
+#if TARGET_OS_OSX
+- (void)setZoomLevel:(CGFloat)zoomLevel
+{
+    [self.delegate setZoom:zoomLevel];
+}
+#endif
+
 
 #pragma mark - Menu items
 

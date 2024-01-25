@@ -369,13 +369,14 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 
 #pragma mark Menu items (macOS only)
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 	- (NSMenuItem*)separatorMenuItem;
 	- (void)refreshMenus;
 	JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
 	JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
 	JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
     - (id)document;
+    - (void)setZoomLevel:(CGFloat)zoomLevel;
 #endif
 @end
 
@@ -459,7 +460,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (NSLayoutManager*)layoutManager;
 - (NSTextStorage*)textStorage;
-
+#if TARGET_OS_OSX
+- (void)setZoom:(CGFloat)zoomLevel;
+#endif
 @end
 
 @interface BeatPlugin : NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
