@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:BeatiOSRendererPrototype/BeatiOSRendererPrototype.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
    </FileRef>
    <FileRef
