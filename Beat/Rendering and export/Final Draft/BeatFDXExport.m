@@ -85,7 +85,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatFDXExport.h"
-
+#import "Beat-Swift.h"
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 #define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
@@ -115,6 +115,15 @@ static NSDictionary *fdxIds;
 @end
 
 @implementation BeatFDXExport
+
++ (void)register:(BeatFileExportManager*)manager
+{
+	// Register as export handler
+	[manager registerHandlerFor:@"FDX" fileTypes:@[@"fdx"] supportedStyles:@[@"Screenplay"] handler:^id _Nullable(id<BeatEditorDelegate> _Nonnull delegate) {
+		BeatFDXExport* export = [BeatFDXExport.alloc initWithString:delegate.text attributedString:delegate.attributedString includeTags:true includeRevisions:true paperSize:delegate.pageSize];
+		return export.fdxString;
+	}];
+}
 
 - (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions paperSize:(BeatPaperSize)paperSize
 {
@@ -190,13 +199,13 @@ static NSDictionary *fdxIds;
 	
 	self.paperSize = paperSize;
 	
-	self.tagData = [NSMutableDictionary dictionary];
+	self.tagData = NSMutableDictionary.new;
 
-	self.tagItems = [NSMutableArray array];
-	self.tagDefinitions = [NSMutableArray array];
+	self.tagItems = NSMutableArray.new;
+	self.tagDefinitions = NSMutableArray.new;
 	
-	self.tagDefinitionsStr = [NSMutableString string];
-	self.tagsStr = [NSMutableString string];
+	self.tagDefinitionsStr = NSMutableString.new;
+	self.tagsStr = NSMutableString.new;
 	
 	[self createFDX];
 	

@@ -11,7 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class BeatFileExportManager;
+
 @interface BeatFDXExport : NSObject
++ (void)register:(BeatFileExportManager*)manager;
 - (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions paperSize:(BeatPaperSize)paperSize;
 - (NSString*)fdxString;
 @end
