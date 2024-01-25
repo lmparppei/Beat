@@ -1304,6 +1304,12 @@ static NSWindow __weak *currentKeyWindow;
 	}];
 }
 
+- (IBAction)exportFile:(id)sender
+{
+	BeatFileExportMenuItem* menuItem = sender;
+	[BeatFileExportManager.shared exportWithDelegate:self format:menuItem.format];
+}
+
 
 # pragma mark - Undo
 
@@ -1622,6 +1628,10 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {
 	self.textView.automaticTextCompletionEnabled = value;
+}
+- (void)setZoom:(CGFloat)zoomLevel
+{
+	[self.textView adjustZoomLevel:zoomLevel];
 }
 
 // There is no shortage of ugliness in the world.

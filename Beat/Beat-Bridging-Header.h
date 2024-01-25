@@ -15,8 +15,6 @@
 #import <BeatPlugins/BeatPlugins.h>
 #import <BeatPagination2/BeatPagination2.h>
 
-#import "BeatRenderer.h"
-
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
 #import "Document.h"
@@ -30,5 +28,7 @@
 #import "ITSwitch.h"
 
 #import "BeatColorMenuItem.h"
+
+#import "BeatFDXExport.h"
 
 #endif /* Beat_Bridging_Header_h */

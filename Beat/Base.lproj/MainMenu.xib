@@ -202,10 +202,22 @@
                                                 <action selector="exportHTML:" target="-1" id="uwn-TO-nla"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Export Final Draft (FDX) File..." id="C9z-84-Cmq">
+                                        <menuItem title="Export Final Draft (FDX) File..." id="C9z-84-Cmq" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="FDX"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
-                                                <action selector="exportFDX:" target="-1" id="F6e-vG-CJO"/>
+                                                <action selector="exportFile:" target="-1" id="oyH-t2-FZW"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Export Rich Text Format (RTF) File..." id="5SZ-7j-p2G" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="RTF"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="exportFile:" target="-1" id="uMo-BG-fmy"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Export Outline..." id="lAo-B9-uaU">
