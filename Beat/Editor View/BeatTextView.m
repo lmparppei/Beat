@@ -1365,7 +1365,7 @@ double clamp(double d, double min, double max) {
 }
 
 - (void)setZoomLevel:(CGFloat)zoomLevel {
-	_zoomLevel = clamp(zoomLevel, 0.9, 2.1);
+	_zoomLevel = clamp(zoomLevel, 0.9, 2.2);
 }
 
 /// Set zoom level for the editor view, automatically clamped
@@ -1407,8 +1407,8 @@ double clamp(double d, double min, double max) {
 - (void)zoom:(bool)zoomIn {
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	CGFloat newMagnification = _zoomLevel;
-	if (zoomIn) newMagnification += 0.04;
-	else newMagnification -= 0.04;
+	if (zoomIn) newMagnification += 0.05;
+	else newMagnification -= 0.05;
 	
 	[self adjustZoomLevel:newMagnification];
 	

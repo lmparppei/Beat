@@ -19,7 +19,7 @@
 
 // Magnification
 #define MAGNIFICATION_KEY @"magnification"
-#define DEFAULT_MAGNIFICATION 1.47
+#define DEFAULT_MAGNIFICATION 1.5
 
 // User preference key names for backwards compatibility
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
@@ -66,7 +66,6 @@ NSString* const BeatSettingShowRevisions 				= @"showRevisions";
 NSString* const BeatSettingShowRevisedTextColor         = @"showRevisedTextColor";
 NSString* const BeatSettingShowTags	 					= @"showTags";
 NSString* const BeatSettingAutomaticContd 				= @"automaticContd";
-NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
 
 NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
 NSString* const BeatSettingShowSceneNumbersInOutline    = @"showSceneNumbersInOutline";
@@ -138,7 +137,6 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
         BeatSettingShowRevisedTextColor: @[BeatSettingShowRevisedTextColor, @NO],
 		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
 		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],
-		BeatSettingZoomLevel: @[BeatSettingZoomLevel, @0.97],
         
         BeatSettingFocusMode: @[BeatSettingFocusMode, @NO],
 		

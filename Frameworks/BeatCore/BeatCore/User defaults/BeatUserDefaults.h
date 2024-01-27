@@ -40,7 +40,6 @@ extern NSString * const BeatSettingShowRevisions;
 extern NSString * const BeatSettingShowRevisedTextColor;
 extern NSString * const BeatSettingShowTags;
 extern NSString * const BeatSettingAutomaticContd;
-extern NSString * const BeatSettingZoomLevel;
 
 extern NSString * const BeatSettingNovelLineSpacing;
 
