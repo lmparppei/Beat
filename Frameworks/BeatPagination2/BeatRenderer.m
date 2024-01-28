@@ -183,27 +183,30 @@
     
     [attributedString.copy enumerateAttributesInRange:NSMakeRange(0,attributedString.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         if (attrs[@"Style"]) {
-#if TARGET_OS_OSX
             NSSet* styleNames = attrs[@"Style"];
             if (styleNames.count == 0) return;
-            
+
+#if TARGET_OS_OSX
             NSFontTraitMask traits = 0;
             
             if ([styleNames containsObject:@"Bold"]) traits |= NSBoldFontMask;
             if ([styleNames containsObject:@"Italic"]) traits |= NSItalicFontMask;
             [attributedString applyFontTraits:traits range:range];
+#endif
+            
+            
+            
+            if ([styleNames containsObject:@"Note"]) {
+                RenderStyle* noteStyle = [self.styles forElement:@"note"];
+                BXColor* c = [BeatColors color:noteStyle.color];
+                [attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : BXColor.grayColor range:range];
+            }
             
             // Apply underline if needed
             if ([styleNames containsObject:@"Underline"]) {
                 [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
                 [attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:range];
             }
-            if ([styleNames containsObject:@"Note"]) {
-                RenderStyle* noteStyle = [self.styles forElement:@"note"];
-                NSColor* c = [BeatColors color:noteStyle.color];
-                [attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : BXColor.grayColor range:range];
-            }
-#endif
         }
         
         if (attrs[BeatRevisions.attributeKey]) {
@@ -340,14 +343,15 @@
     [content addAttribute:NSParagraphStyleAttributeName value:contentStyle range:NSMakeRange(0, content.length)];
     
     NSMutableParagraphStyle* leftStyle = contentStyle.mutableCopy;
-    leftStyle.paragraphSpacingBefore = contentStyle.paragraphSpacingBefore;
+    leftStyle.paragraphSpacingBefore = 0.0;
+    leftStyle.paragraphSpacing = 0.0;
     leftStyle.firstLineHeadIndent = 0.0;
     
     NSMutableParagraphStyle* rightStyle = leftStyle.mutableCopy;
     rightStyle.alignment = NSTextAlignmentRight;
     
     // Create scene number string
-    NSString* sceneNumber = (printSceneNumbers) ? [NSString stringWithFormat:@"%@\n", line.sceneNumber] : @" \n";
+    NSString* sceneNumber = (printSceneNumbers) ? line.sceneNumber : @"";
     
     // Create left/right scene numbers
     NSMutableAttributedString* sceneNumberLeft = [NSMutableAttributedString.alloc initWithString:sceneNumber attributes: @{
@@ -367,6 +371,7 @@
     BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:sceneNumberRight width:contentPadding];
     
     BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, center, right] spacing:0.0 margin:0.0];
+    
     NSMutableAttributedString* tableString = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
     [tableString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
     
@@ -488,6 +493,10 @@
     NSTextTable* table = NSTextTable.new;
     CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
     width += self.styles.page.contentPadding + self.styles.page.marginLeft;
+    
+    // This is duct tape fix. I don't know why page headers are a bit too wide in letter.
+    if (self.settings.paperSize == BeatUSLetter) width -= 15.0;
+    
     [table setContentWidth:width type:NSTextBlockAbsoluteValueType];
     
     NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
@@ -539,7 +548,52 @@
 }
 #else
 - (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber {
-    return [NSAttributedString.alloc initWithString:@"(page number block)"];
+    NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.", pageNumber] : @"";
+    
+    CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
+    width += self.styles.page.contentPadding + self.styles.page.marginLeft;
+    
+    CGFloat headerWidth = width * 0.7;
+    CGFloat cellWidth = width * 0.15;
+    
+    NSMutableParagraphStyle* rightStyle = NSMutableParagraphStyle.new;
+    rightStyle.alignment = NSTextAlignmentRight;
+    rightStyle.maximumLineHeight = BeatPagination.lineHeight;
+    
+    NSMutableParagraphStyle* headerStyle = NSMutableParagraphStyle.new;
+    headerStyle.alignment = NSTextAlignmentCenter;
+    headerStyle.maximumLineHeight = BeatPagination.lineHeight;
+
+    NSString* headerText = (self.settings.header != nil) ? self.settings.header : @"";
+    NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:headerText attributes:@{
+        NSParagraphStyleAttributeName: headerStyle,
+        NSFontAttributeName: self.fonts.regular,
+        NSForegroundColorAttributeName: BXColor.blackColor
+    }];
+    
+    // Actual page number goes in right corner
+    NSMutableAttributedString* rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
+        NSParagraphStyleAttributeName: rightStyle,
+        NSFontAttributeName: self.fonts.regular,
+        NSForegroundColorAttributeName: BXColor.blackColor
+    }];
+    
+    BeatTextTableCell* left = [BeatTextTableCell.alloc initWithContent:NSAttributedString.new width:cellWidth];
+    BeatTextTableCell* header = [BeatTextTableCell.alloc initWithContent:headerContent width:headerWidth];
+    BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:rightContent width:cellWidth];
+    
+    BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, header, right] spacing:0.0 margin:0.0];
+    
+    NSMutableAttributedString* tableString = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
+    [tableString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+    
+    // Restore margin
+    NSMutableParagraphStyle* blockStyle = NSMutableParagraphStyle.new;
+    blockStyle.paragraphSpacing = BeatPagination.lineHeight * 2;
+    
+    [tableString addAttribute:NSParagraphStyleAttributeName value:blockStyle range:NSMakeRange(0, tableString.length)];
+    
+    return tableString;
 }
 
 #endif
@@ -691,11 +745,9 @@
                 [textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
                 pStyle.textBlocks = @[textBlock];
 #else
-                CGFloat rightMargin = self.styles.page.contentPadding + style.marginLeft + blockWidth + style.marginRight;
+                // This is a cursed solution, but what can I say. TextKit 2 (or iOS for that matter) doesn't support text blocks.
+                CGFloat rightMargin = style.marginLeft + blockWidth - style.marginRight;
                 pStyle.tailIndent = rightMargin;
-                
-                // This has to be implemented somehow else on iOS, oh god.
-                // Maybe restrict the width in our custom TextKit 2 layout manager?
 #endif
             }
             

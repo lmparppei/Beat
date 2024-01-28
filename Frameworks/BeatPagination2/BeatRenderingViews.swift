@@ -45,8 +45,8 @@ import UXKit
 	
 	var paperSize:BeatPaperSize
 	var isTitlePage = false
-	
-	@objc public init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewManager?, titlePage:Bool = false) {
+    
+	@objc public init(page:BeatPaginationPage?, content:NSAttributedString? = nil, settings:BeatExportSettings, previewController: BeatPreviewManager?, titlePage:Bool = false) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
 
 		self.attributedString = content
@@ -55,7 +55,7 @@ import UXKit
 		self.paperSize = settings.paperSize
 				
 		self.page = page
-		if (page != nil) {
+        if (page != nil && page?.delegate?.renderer != nil) {
 			self.attributedString = page!.attributedString()
 		} else {
 			self.attributedString = content
@@ -79,20 +79,23 @@ import UXKit
 		
 		// Create text views and set attributed string
 		createTextView()
+        textView?.isEditable = true
         if let textStorage = self.textView?.textStorage {
-            textStorage.setAttributedString(self.attributedString ?? NSAttributedString(string: ""))
+            textStorage.setAttributedString(self.attributedString ?? NSAttributedString(string: "???"))
         }
 	}
 	
 	@objc func setContent(attributedString:NSAttributedString, settings:BeatExportSettings) {
+        // We have to guard this because of different nullability settings on iOS and macOS
         guard let textStorage = self.textView?.textStorage else { return }
-		textStorage.setAttributedString(attributedString)
+        textStorage.setAttributedString(attributedString)
 	}
 	
 	func createTextView() {
 		self.textView = BeatPageTextView(frame: self.textViewFrame())
-		
-		self.textView?.previewController = self.previewController
+        self.textView?.backgroundColor = .red
+
+        self.textView?.previewController = self.previewController
 		
 		self.textView?.isEditable = false
         textView?.backgroundColor = .white
@@ -115,15 +118,19 @@ import UXKit
         #endif
 		        
 		self.textView?.font = fonts.regular
-				
-		let layoutManager = BeatRenderLayoutManager()
-		layoutManager.pageView = self
 		
-        // We have to have a conditional check here because of differing optionality on macOS/iOS
-        if let textContainer = self.textView?.textContainer {
-            textContainer.replaceLayoutManager(layoutManager)
-            textContainer.lineFragmentPadding = linePadding
-        }
+        #if os(macOS)
+            let layoutManager = BeatRenderLayoutManager()
+            layoutManager.pageView = self
+            
+            // We have to have a conditional check here because of differing optionality on macOS/iOS
+            if let textContainer = self.textView?.textContainer {
+                textContainer.replaceLayoutManager(layoutManager)
+                textContainer.lineFragmentPadding = linePadding
+            }
+        #else
+            self.textView?.textLayoutManager?.delegate = self
+        #endif
 				
 		self.addSubview(textView!)
 	}

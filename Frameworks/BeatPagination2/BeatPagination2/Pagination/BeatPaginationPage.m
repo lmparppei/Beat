@@ -60,7 +60,7 @@
         NSLog(@"WARNING: No delegate for page.");
     }
     if (self.delegate.renderer == nil) {
-        NSLog(@"WARNING: No renderer set for paginator");
+        NSLog(@"WARNING: No renderer set for paginator but asking for attributed string for page.");
         return NSAttributedString.new;
     }
     
