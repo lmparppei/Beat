@@ -9,12 +9,17 @@ www.beat-app.fi
 
 INT. SCHOOL ROOM - DAY
 
-Asdf
+Is this your first time using Beat? This file is a playground for you to mess around with. For more detailed instructions, consult the user manual, which is accessible through the Help menu.
+
+In Beat, you don't need to press any special keys to write dialogue or a scene header. Just type "int. school" or "ext. park" on a new line and it will become a scene header.
 
 Try it out yourself!
 
+
 EXT. PARK - DAY
- 
+
+The same is true with dialogue. Just type in CHARACTER NAME (all caps) and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue. 
+
 Try it out!
 
 CHARACTER
@@ -23,7 +28,11 @@ Hello. This is your first dialogue block.
 CHARACTER 2
 (gently nodding their head)
 Well done.
- 
+
+You can also press Tab to force a character cue and not worry about writing in all caps.
+
+After one empty line break the format will change back to action. Beat automatically adds two line breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
+
 You can also use transitions just by typing out something in all-caps and ending it with a colon, like this:
 
 CUT TO:
@@ -116,5 +125,4 @@ You can find more information about the Fountain markup language at http://www.f
 
 
 
-
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[3201,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Window Width":1485,"Caret Position":331,"Heading UUIDs":[{"string":"INT. SCHOOL ROOM - DAY","uuid":"79D069F7-5044-4160-95FA-7DF75CFC3BAA"},{"string":"EXT. PARK - DAY","uuid":"9CB5D5D3-82B6-4AFB-9ED7-1817BA01884B"},{"string":"# This is a new section","uuid":"1D5C905E-2559-4DDE-B460-F81689142F7F"},{"string":"INT. TUNNEL - NIGHT ","uuid":"468F14F2-A492-4F43-BA72-F03A90D69C76"},{"string":"INT.\/EXT. BEACH HOUSE - NIGHT","uuid":"CC680ABB-A263-4530-A4CF-967AFE575A53"},{"string":"EXT. STREET - NIGHT [[BLUE]]","uuid":"6B7C99AF-84AE-49D7-92B4-0E0A713D05D7"},{"string":"INT. NIGHT CLUB - NIGHT [[RED]]","uuid":"A8A6E621-5A73-4A61-BBA6-2009F6DABD36"},{"string":"EXT. UNIVERSITY CLASSROOM - MORNING","uuid":"37672F5A-1C0C-4241-AA5A-45A9A19D982E"}],"Changed Indices":{"106":"blue"},"Sidebar Visible":true,"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[3261,9,"blue"]]},"Notes":"asdf\n\nasdf \n\nYou can also press Tab to force a character cue and not worry about writing in all caps.\n","Active Plugins":[],"Revision Color":"","Window Height":1095} END_BEAT */
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":""} END_BEAT */
