@@ -1108,13 +1108,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Custom drawing
 
-- (void)drawRect:(NSRect)dirtyRect {
-	NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
-	if (!ctx) return;
-	
-	[super drawRect:dirtyRect];
-}
-
+/*
 - (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag
 {
 	aRect.size.width = CARET_WIDTH;
@@ -1125,8 +1119,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	if (flag) [path fill];
 }
+*/
 
--(void)redrawUI {
+-(void)redrawUI {	
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }
@@ -1136,6 +1131,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 {
 	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
 	[super setNeedsDisplayInRect:invalidRect];
+}
+
+/// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
+-(void)redrawAllGlyphs
+{
+	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){0, self.string.length} changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
 }
 
 
@@ -1336,8 +1338,13 @@ Line *cachedRectLine;
 
 
 #pragma mark - Zooming
+/**
+ We are using `scaleUnitSquareToSize:` rather than magnifying the scroll view, because this way, we can avoid positioning weirdness when zooming very close.
+ It's a bit convoluted, but works.
+ */
 
-- (void)setupZoom {
+- (void)setupZoom
+{
 	// This resets the zoom to the saved setting
 	self.zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
 	
@@ -1346,7 +1353,8 @@ Line *cachedRectLine;
 	[self.editorDelegate updateLayout];
 }
 
-- (void)resetZoom {
+- (void)resetZoom
+{
 	[BeatUserDefaults.sharedDefaults resetToDefault:BeatSettingMagnification];
 	CGFloat zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
 	[self adjustZoomLevel:zoomLevel];
@@ -1354,22 +1362,21 @@ Line *cachedRectLine;
 
 
 /// Adjust zoom by a delta value
-- (void)adjustZoomLevelBy:(CGFloat)value {
+- (void)adjustZoomLevelBy:(CGFloat)value
+{
 	CGFloat newMagnification = _zoomLevel + value;
 	[self adjustZoomLevel:newMagnification];
 }
 
-double clamp(double d, double min, double max) {
-	const double t = d < min ? min : d;
-	return t > max ? max : t;
-}
-
-- (void)setZoomLevel:(CGFloat)zoomLevel {
+/// Sets the `zoomLevel` ivar. Does NOT enforce redrawing and layout.
+- (void)setZoomLevel:(CGFloat)zoomLevel
+{
 	_zoomLevel = clamp(zoomLevel, 0.9, 2.2);
 }
 
 /// Set zoom level for the editor view, automatically clamped
-- (void)adjustZoomLevel:(CGFloat)level {
+- (void)adjustZoomLevel:(CGFloat)level
+{
 	if (_scaleFactor == 0) _scaleFactor = _zoomLevel;
 	CGFloat oldMagnification = _zoomLevel;
 	
@@ -1404,8 +1411,8 @@ double clamp(double d, double min, double max) {
 }
 
 /// `zoom:true` zooms in, `zoom:false` zooms out
-- (void)zoom:(bool)zoomIn {
-	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
+- (void)zoom:(bool)zoomIn
+{
 	CGFloat newMagnification = _zoomLevel;
 	if (zoomIn) newMagnification += 0.05;
 	else newMagnification -= 0.05;
@@ -1416,6 +1423,7 @@ double clamp(double d, double min, double max) {
 	[BeatUserDefaults.sharedDefaults saveFloat:_zoomLevel forKey:BeatSettingMagnification];
 }
 
+/// Sets a new scale factor
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
 {
 	CGFloat oldScaleFactor = _scaleFactor;
@@ -1444,6 +1452,7 @@ double clamp(double d, double min, double max) {
 	[_editorDelegate setSplitHandleMinSize:self.documentWidth * _zoomLevel];
 }
 
+/// Actually scales the view
 - (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
 {
 	// Thank you, Mark Munz @ stackoverflow
@@ -1453,6 +1462,12 @@ double clamp(double d, double min, double max) {
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 	
 	_scaleFactor = newScale;
+}
+
+double clamp(double d, double min, double max)
+{
+	const double t = d < min ? min : d;
+	return t > max ? max : t;
 }
 
 
@@ -1597,7 +1612,6 @@ double clamp(double d, double min, double max) {
 		[BeatValidationItem.alloc initWithAction:@selector(toggleFocusMode:) setting:BeatSettingFocusMode target:BeatUserDefaults.sharedDefaults],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:BeatUserDefaults.sharedDefaults],
 	];
-
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -1620,16 +1634,7 @@ double clamp(double d, double min, double max) {
 }
 
 
-#pragma mark - Layout Manager delegation
-
-// TODO: Move this into a cross-platform Swift class -- or better yet, an extension
-
-/// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
--(void)redrawAllGlyphs
-{
-	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){0, self.string.length} changeInLength:0 actualCharacterRange:nil];
-	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
-}
+#pragma mark - Hiding markup
 
 /// Updates the markup based on caret position.
 -(void)updateMarkupVisibility
