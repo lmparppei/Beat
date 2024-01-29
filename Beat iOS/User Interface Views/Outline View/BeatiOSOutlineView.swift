@@ -126,11 +126,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 
 		// Scroll to the selected item's row.
 		if self.numberOfRows(inSection: indexPath.section) > 0 {
-			do {
-				try scrollToRow(at: indexPath, at: .middle, animated: true)
-			} catch {
-				print("Error scrolling to row", error)
-			}
+			scrollToRow(at: indexPath, at: .middle, animated: true)
 		}
 	}
 }

@@ -56,7 +56,7 @@
 	
 	if (self) {
 		BeatPaginationManager* pm = [BeatPaginationManager.alloc initWithSettings:settings delegate:nil renderer:nil livePagination:false];
-		[pm newPaginationWithScreenplay:screenplay settings:settings forEditor:false changeAt:0];
+		[pm newPaginationWithScreenplay:screenplay settings:settings forEditor:false changedRange:NSMakeRange(0, 1)];
 		
 		self.pagination = pm.finishedPagination;
 	}
@@ -183,7 +183,7 @@
 - (NSArray*)paginateAndCreateHTML
 {
 	BeatPaginationManager* pm = [BeatPaginationManager.alloc initWithSettings:self.settings delegate:nil renderer:nil livePagination:false];
-	[pm newPaginationWithScreenplay:self.screenplay settings:self.settings forEditor:false changeAt:0];
+	[pm newPaginationWithScreenplay:self.screenplay settings:self.settings forEditor:false changedRange:NSMakeRange(0, 1)];
 	self.pagination = pm.finishedPagination;
 
 	return [self createHTMLWithPagination:self.pagination];

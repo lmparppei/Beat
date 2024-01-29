@@ -444,8 +444,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (NSString*)text;
 
-- (void)forceFormatChangesInRange:(NSRange)range;
-
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines
 - (NSAttributedString*)getAttributedText;

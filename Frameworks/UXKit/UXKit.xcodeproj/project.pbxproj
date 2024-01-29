@@ -411,6 +411,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -419,6 +421,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -442,6 +446,7 @@
 			baseConfigurationReference = E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				PRODUCT_MODULE_NAME = UXKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -452,6 +457,7 @@
 			baseConfigurationReference = E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				PRODUCT_MODULE_NAME = UXKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

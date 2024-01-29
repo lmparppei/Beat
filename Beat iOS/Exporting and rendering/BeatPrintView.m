@@ -133,7 +133,7 @@ static NSURL *pdfURL;
 	if (screenplay.lines.count == 0 && screenplay.titlePage.count == 0) return @"<html></html>";
 	
 	BeatPaginationManager* pm = [BeatPaginationManager.alloc initWithSettings:settings delegate:nil renderer:nil livePagination:false];
-	[pm newPaginationWithScreenplay:screenplay settings:settings forEditor:false changeAt:0];
+	[pm newPaginationWithScreenplay:screenplay settings:settings forEditor:false changedRange:NSMakeRange(0, 1)];
 	
 	BeatHTMLRenderer* renderer = [BeatHTMLRenderer.alloc initWithPagination:pm.finishedPagination settings:settings];
 	return renderer.html;

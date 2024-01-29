@@ -25,7 +25,7 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 			return false
 		}
 		
-		var url = cell.url
+		let url = cell.url
 		var targetUrl:URL?
 		var filename = url?.lastPathComponent
 		

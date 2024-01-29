@@ -715,7 +715,7 @@
 	else if (type == RevisionRemovalSuggestion && range.length == 0) return;
 
     // Store the original attributes
-    NSAttributedString* originalAttrs = [self.delegate.attributedString attributedSubstringFromRange:range];
+    // NSAttributedString* originalAttrs = [self.delegate.attributedString attributedSubstringFromRange:range];
     
 	// Run the actual action
 	if (type == RevisionRemovalSuggestion) [self markRangeForRemoval:range];
