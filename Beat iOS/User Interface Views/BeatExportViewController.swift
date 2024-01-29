@@ -29,15 +29,35 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 	
 	@objc weak var senderButton:UIBarButtonItem?
 	@objc weak var senderVC:UIViewController?
+	@IBOutlet @objc weak var temporaryView:UIView?
 	
 	@IBAction override func export(_ sender: Any?) {
-		guard let editorDelegate = self.editorDelegate else { return }
+		guard let editorDelegate = self.editorDelegate,
+			  let lines = editorDelegate.parser.lines as? [Line],
+			  let settings = settingController?.exportSettings()
+		else { return }
 		
-		let lines = editorDelegate.parser.lines as NSArray
-		let settings = settingController!.exportSettings()
 		
-		let printView:BeatPrintView = BeatPrintView(script: lines.swiftArray(), operation: .toPDF, settings: settings, delegate: self)
-		printViews.add(printView)
+		let printer = BeatPDFPrinter(delegate: editorDelegate, temporaryView: self.temporaryView) { data in
+			if data == nil { return }
+			
+			let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+			
+			if let pdfData = data,
+			   let fileURL = url?.appendingPathComponent(editorDelegate.fileNameString(), isDirectory: false).appendingPathExtension("pdf") {
+				do {
+					try pdfData.write(to: fileURL)
+					self.didExportFile(at: fileURL)
+				} catch {
+					print("Error",error)
+				}	
+			}
+		}
+		
+		printViews.add(printer)
+		
+		//let printView:BeatPrintView = BeatPrintView(script: lines.swiftArray(), operation: .toPDF, settings: settings, delegate: self)
+		//printViews.add(printView)
 	}
 	
 	func didFinishPreview(at url: URL!) {

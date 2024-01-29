@@ -11,9 +11,18 @@ import BeatCore
 
 @objc public class BeatPageViewController:UIViewController, BeatPreviewPageView {
 	@IBOutlet weak var pageView:BeatPageScrollView?
+	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
+		didSet {
+			self.pageView?.dataSource = dataSource
+		}
+	}
 	
 	public func clear() {
 		self.pageView?.clear()
+	}
+	
+	public func scrollToPage(_ pageIndex:Int) {
+		self.pageView?.scrollToPage(pageIndex)
 	}
 	
 	public func startLoadingAnimation() {
@@ -22,12 +31,6 @@ import BeatCore
 	
 	public func endLoadingAnimation() {
 		self.pageView?.endLoadingAnimation()
-	}
-	
-	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
-		didSet {
-			self.pageView?.dataSource = dataSource
-		}
 	}
 	
 	public func reload() {
@@ -108,6 +111,13 @@ import BeatCore
     override public var contentSize: CGSize {
         didSet { updateContentPosition() }
     }
+	
+	public func scrollToPage(_ pageIndex:Int) {
+		guard pageIndex < self.pageRects.count else { return }
+		
+		let pageRect = self.pageRects[pageIndex]
+		self.scrollRectToVisible(pageRect, animated: true)
+	}
     
     public func updateScale() {
         // Fit the content to view
@@ -140,6 +150,8 @@ import BeatCore
         let pageSize = self.dataSource?.pageSize() ?? BeatPaperSizing.size(for: .A4)
         let pages = self.dataSource?.numberOfPages() ?? 0
 		
+		let originalBounds = self.bounds
+		
         container.frame.size.width = pageSize.width
         container.frame.size.height = Double(pages) * (pageSize.height + spacing)
         
@@ -150,6 +162,9 @@ import BeatCore
         
         loadPagesInBounds(self.bounds)
         updateContentPosition()
+		
+		// Restore bounds
+		self.bounds = bounds
     }
 
     /// Loads only the pages that have entered our bounds

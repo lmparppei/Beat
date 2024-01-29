@@ -82,6 +82,8 @@
 		B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
 		B6E91E362B67A25700EDB066 /* BeatPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */; };
+		B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */; };
+		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
 		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
 /* End PBXBuildFile section */
@@ -215,6 +217,7 @@
 		B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
 		B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPageViewController.swift; sourceTree = "<group>"; };
+		B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPDFPrinter.swift; sourceTree = "<group>"; };
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
 		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
 		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
@@ -406,6 +409,7 @@
 				B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */,
 				B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */,
 				B686FF8A2971BC7D00789C8D /* Render to HTML */,
+				B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */,
 			);
 			path = "Exporting and rendering";
 			sourceTree = "<group>";
@@ -626,6 +630,7 @@
 				B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */,
 				B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */,
 				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
+				B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */,
 				B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */,
 				B682C25B2B30FAB50027511A /* Localizable.strings in Resources */,
 				B686FFCC2971BC7E00789C8D /* HeaderTemplate.html in Resources */,
@@ -675,6 +680,7 @@
 				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */,
 				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
+				B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
@@ -905,7 +911,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -963,7 +969,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";

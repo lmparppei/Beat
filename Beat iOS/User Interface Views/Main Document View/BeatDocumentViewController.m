@@ -43,10 +43,6 @@
 
 @property (nonatomic) bool matchParentheses;
 
-@property (strong, nonatomic) BXFont *sectionFont;
-@property (strong, nonatomic) NSMutableDictionary *sectionFonts;
-@property (strong, nonatomic) BXFont *synopsisFont;
-
 @property (nonatomic) KeyboardManager* keyboardManager;
 
 @property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
@@ -542,7 +538,6 @@
 	
 	// Update plugins
 	[self.pluginAgent updatePluginsWithSelection:textView.selectedRange];
-	
 }
 
 /// Forces text reformat and editor view updates
@@ -918,14 +913,32 @@
 	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 100.0);
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, height, 0);
 	
+	CGRect bounds = self.scrollView.bounds;
+	bool animateBounds = false;
+	
+	if (self.selectedRange.location != NSNotFound) {
+		CGRect selectionRect = [self.textView rectForRangeWithRange:self.selectedRange];
+		CGRect visible = [self.textView convertRect:selectionRect toView:self.scrollView];
+		
+		CGRect modifiedRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - size.height);
+		
+		if (CGRectIntersection(visible, modifiedRect).size.height == 0.0) {
+			bounds.origin.y += size.height;
+			animateBounds = true;
+		}
+	}
+	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
 		self.outlineView.contentInset = insets;
+		
+		if (animateBounds) self.scrollView.bounds = bounds;
+		
 	} completion:^(BOOL finished) {
 		[self.textView resize];
 		
-		if (self.selectedRange.location == NSNotFound) return;
-		
+		/*
+		 if (self.selectedRange.location == NSNotFound) return;
 		CGRect rect = [self.textView rectForRangeWithRange:self.selectedRange];
 		// Make sure we never hide the selection
 		rect.origin.y += 100.0;
@@ -933,6 +946,7 @@
 		CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
 		
 		[self.scrollView safelyScrollRectToVisible:visible animated:true];
+		 */
 	}];
 }
 

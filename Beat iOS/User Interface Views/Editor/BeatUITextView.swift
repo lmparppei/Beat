@@ -150,14 +150,15 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	}
 	
 	func scroll(to range: NSRange) {
-		var rect = self.rectForRange(range: range)
-		rect.origin.y += self.insets.top
-		//rect.origin.y = self.enclosingScrollView.zoomScale * rect.origin.y
+		var selectionRect = self.rectForRange(range: self.selectedRange)
+		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
 		
-		rect.size.height += self.insets.bottom
-		rect.origin = self.convert(rect.origin, to: self.enclosingScrollView)
+		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
 		
-		self.enclosingScrollView.safelyScrollRectToVisible(rect, animated: true)
+		// If the rect is not visible, scroll to that range
+		if CGRectIntersection(scaledRect, self.enclosingScrollView.bounds).height - 40.0 < 12.0 {
+			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: true)
+		}
 	}
 	
 	override func scrollRangeToVisible(_ range: NSRange) {

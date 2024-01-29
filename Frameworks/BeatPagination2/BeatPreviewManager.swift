@@ -19,6 +19,7 @@ import UXKit
 @objc public protocol BeatPreviewPageView {
     //func updatePages(_ pagination:BeatPagination, settings:BeatExportSettings, controller:BeatPreviewManager)
     func clear()
+    func scrollToPage(_ pageIndex:Int)
     
     func startLoadingAnimation()
     func endLoadingAnimation()
@@ -226,7 +227,6 @@ import UXKit
     
     @objc open func renderOnScreen() {
        // print("Preview manager: Override renderOnScreen() in OS-specific implementation.")
-        
         guard let previewView = self.previewView,
               let pagination = self.pagination
         else { return }

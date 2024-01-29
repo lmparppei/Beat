@@ -36,6 +36,17 @@ import BeatParsing
         }
     }
     
+    override public func draw(_ layer: CALayer, in ctx: CGContext) {
+        // Thank you, @marcprux on stackoverflow
+        let isPDF = !UIGraphicsGetPDFContextBounds().isEmpty
+        
+        if !self.layer.shouldRasterize && isPDF {
+            self.draw(self.bounds)
+        } else {
+            super.draw(layer, in: ctx)
+        }
+    }
+    
     var height:CGFloat {
         guard var attributedText = self.attributedText  else { return 0.0 }
         

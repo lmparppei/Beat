@@ -203,8 +203,22 @@
     // We'll store fonts of varying sizes on the go, because why not?
     // No, really, why shouldn't we?
     NSString *sizeKey = [NSString stringWithFormat:@"%f", size];
+    
     if (!_sectionFonts[sizeKey]) {
-        BXFont* font = [BXFont fontWithName:_sectionFont.fontName size:size];
+        #if TARGET_OS_IOS
+            // There's a weird bug in iOS with system fonts
+            BXFont* font;
+            if ([_sectionFont.familyName isEqualToString:[BXFont systemFontOfSize:12.0].familyName]) {
+                font = [BXFont boldSystemFontOfSize:size];
+            } else {
+                font = [BXFont fontWithName:_sectionFont.fontName size:size];
+            }
+        #else
+            // On macOS we can jsut use the normal system font name
+            BXFont* font = [BXFont fontWithName:_sectionFont.fontName size:size];
+        #endif
+        
+        // Store to dict
         [_sectionFonts setValue:font forKey:sizeKey];
     }
     

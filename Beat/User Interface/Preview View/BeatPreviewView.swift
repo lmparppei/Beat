@@ -82,7 +82,7 @@ final class BeatPreviewView:NSView, BeatPreviewPageView {
 			}
 			
 			var pageView:BeatPaginationPageView
-
+			
 			if i < self.pageViews.count {
 				// If a page view already exists, reuse it
 				pageView = pageViews[i]
@@ -93,6 +93,9 @@ final class BeatPreviewView:NSView, BeatPreviewPageView {
 				self.addPage(page: pageView)
 			}
 			
+			pageView.textView?.layout()
+			pageView.textView?.needsDisplay = true
+			pageView.display()
 			pageView.animator().alphaValue = 1.0
 		}
 		
@@ -107,6 +110,9 @@ final class BeatPreviewView:NSView, BeatPreviewPageView {
 
 		// Update container size
 		updateSize()
+		
+		self.needsLayout = true
+		self.needsDisplay = true
 	}
 	
 	
@@ -188,7 +194,11 @@ final class BeatPreviewView:NSView, BeatPreviewPageView {
 			owner.cancelOperation(sender)
 		}
 	}
-	
+		
+	func scrollToPage(_ pageIndex: Int) {
+		//
+	}
+
 	func startLoadingAnimation() {
 		fadeOutPages()
 		progressIndicator?.isHidden = false

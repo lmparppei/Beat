@@ -217,6 +217,17 @@ import UXKit
 	override public func cancelOperation(_ sender: Any?) {
 		superview?.cancelOperation(sender)
 	}
+#else
+    open override func draw(_ layer: CALayer, in ctx: CGContext) {
+        let isPDF = !UIGraphicsGetPDFContextBounds().isEmpty
+
+        if !self.layer.shouldRasterize && isPDF {
+            self.draw(self.bounds)
+        } else {
+            super.draw(layer, in: ctx)
+        }
+    }
+    
 #endif
 }
 
@@ -450,7 +461,7 @@ import UXKit
 
 public class BeatRenderLayoutManager:NSLayoutManager {
 	weak var pageView:BeatPaginationPageView?
-	
+    
 	override public func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
 		

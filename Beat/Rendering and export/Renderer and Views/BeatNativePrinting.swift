@@ -220,7 +220,7 @@ class BeatNativePrinting:NSView {
 			
 			for page in pagination.pages {
 				autoreleasepool {
-					let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: nil, titlePage: false)
+					let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: nil)
 					pageViews.append(pageView)
 				}
 			}
