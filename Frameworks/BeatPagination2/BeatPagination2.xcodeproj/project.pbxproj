@@ -65,10 +65,11 @@
 		B61FF8742B5FAF66008F449D /* Rendering and Export */ = {
 			isa = PBXGroup;
 			children = (
+				B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */,
 				B61FF87B2B5FB204008F449D /* BeatiOSRendererComponents.swift */,
+				B61FF8752B5FAF7E008F449D /* BeatRenderingViews.swift */,
 				B61FF8782B5FB05C008F449D /* BeatRenderer.h */,
 				B61FF8772B5FB05B008F449D /* BeatRenderer.m */,
-				B61FF8752B5FAF7E008F449D /* BeatRenderingViews.swift */,
 			);
 			name = "Rendering and Export";
 			sourceTree = "<group>";
@@ -105,7 +106,6 @@
 			isa = PBXGroup;
 			children = (
 				B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */,
-				B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */,
 				B663A6C229F1C3D80036FE6B /* BeatPagination.h */,
 				B663A6C029F1C3D80036FE6B /* BeatPagination.m */,
 				B663A6C629F1C3D80036FE6B /* BeatPaginationPage.h */,

@@ -10,8 +10,8 @@
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "BeatPaginationPage.h"
-#import "BeatPaginationBlock.h"
+#import <BeatPagination2/BeatPaginationPage.h>
+#import <BeatPagination2/BeatPaginationBlock.h>
 
 #if TARGET_OS_IOS
     #define BXFont UIFont

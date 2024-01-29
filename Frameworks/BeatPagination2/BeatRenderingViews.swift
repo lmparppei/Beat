@@ -6,6 +6,12 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+/**
+ 
+ Views used to render screenplays both on screen and in PDF.
+ 
+ */
+
 #if os(macOS)
     import AppKit
 #else
@@ -13,11 +19,11 @@
 #endif
 
 import BeatCore
-//import BeatPagination2
 import UXKit
 
 // MARK: - Basic page view for rendering the screenplay
 
+/// Base view for both iOS and macOS
 @objc public class BeatPagePrintView:UXView {
     #if os(macOS)
         override public var isFlipped: Bool { return true }
@@ -25,42 +31,56 @@ import UXKit
 	weak public var previewController:BeatPreviewManager?
 }
 
+/// Single page view
 @objc open class BeatPaginationPageView:UXView {
     #if os(macOS)
         override public var isFlipped: Bool { return true }
     #endif
 	weak public var previewController:BeatPreviewManager?
 	
+    /// The attributed string content of this page
 	public var attributedString:NSAttributedString?
+    /// Page data from pagination
     public var page:BeatPaginationPage?
+    /// Main text view
     public var textView:BeatPageTextView?
     
+    /// Master page style
     var pageStyle:RenderStyle
+    /// Export settings
     var settings:BeatExportSettings
-    
-	var linePadding = 0.0
-	var size:CGSize
 	
+	/// Actual frame of the page
+    var size:CGSize
+    /// Paper size tag
+    var paperSize:BeatPaperSize
+    
 	var fonts = BeatFonts.shared()
+    var linePadding = 0.0
 	
-	var paperSize:BeatPaperSize
-	var isTitlePage = false
+    /// Set `true` by subclass if needed
+    var isTitlePage = false
     
-	@objc public init(page:BeatPaginationPage?, content:NSAttributedString? = nil, settings:BeatExportSettings, previewController: BeatPreviewManager?, titlePage:Bool = false) {
+    /// Page can take in either a `BeatPaginationPage` or a pure `NSAttributedString`. The page is rendered automatically if the pagination has a renderer connected to it.
+	@objc public init(page:BeatPaginationPage?, content:NSAttributedString? = nil, settings:BeatExportSettings, previewController: BeatPreviewManager?) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
 
 		self.attributedString = content
 		self.previewController = previewController
 		self.settings = settings
 		self.paperSize = settings.paperSize
-				
+        
+        // Set page content
 		self.page = page
         if (page != nil && page?.delegate?.renderer != nil) {
+            // Pagination has a renderer attached to it
 			self.attributedString = page!.attributedString()
 		} else {
-			self.attributedString = content
+            // No pagination, we'll use the default content
+			self.attributedString = content ?? NSAttributedString(string: "")
 		}
 		
+        // Load styles
 		let styles = self.settings.styles as? BeatStylesheet
 		self.pageStyle = styles?.page() ?? RenderStyle(rules: [:])
 		
@@ -79,9 +99,10 @@ import UXKit
 		
 		// Create text views and set attributed string
 		createTextView()
-        textView?.isEditable = true
+        
+        // Set initial content. We have to guard this because of differing nullability on macOS and iOS.
         if let textStorage = self.textView?.textStorage {
-            textStorage.setAttributedString(self.attributedString ?? NSAttributedString(string: "???"))
+            textStorage.setAttributedString(self.attributedString ?? NSAttributedString(string: ""))
         }
 	}
 	
@@ -152,7 +173,7 @@ import UXKit
 		self.textView?.frame = self.textViewFrame()
 	}
 	
-	// Update content
+	/// Update content to an existing page
 	public func update(page:BeatPaginationPage, settings:BeatExportSettings) {
 		self.settings = settings
 		self.page = page
@@ -169,6 +190,7 @@ import UXKit
 	
     #if os(macOS)
 	override public func cancelOperation(_ sender: Any?) {
+        // Esc was pressed, forward it to superview
 		superview?.cancelOperation(sender)
 	}
     #endif
@@ -208,7 +230,7 @@ import UXKit
 	
 	@objc public init(previewController: BeatPreviewManager? = nil, titlePage:[[String:[Line]]], settings:BeatExportSettings) {
 		self.titlePageLines = titlePage
-		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
+		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController)
 			
 		createViews()
 		createTitlePage()

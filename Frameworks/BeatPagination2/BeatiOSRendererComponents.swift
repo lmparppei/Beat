@@ -48,7 +48,7 @@ import BeatParsing
         }
         
         // Calculate frame size
-        var rect = attributedText.boundingRect(with: CGSize(width: self.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
+        let rect = attributedText.boundingRect(with: CGSize(width: self.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
 //        if let pStyle = attributedText.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as? NSParagraphStyle {
 //            rect.size.height -= pStyle.paragraphSpacingBefore;
 //            rect.size.height -= pStyle.paragraphSpacing;

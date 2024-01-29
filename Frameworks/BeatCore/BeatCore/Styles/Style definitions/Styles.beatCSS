@@ -16,7 +16,7 @@ page {
     margin-left: 30;
 	margin-right: 25;
 	padding-left: 60;
-    margin-top: 40;
+    margin-top: 30;
 	margin-bottom: 60;
 	
 	default-width-a4: 60ch;

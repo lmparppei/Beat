@@ -11,11 +11,17 @@ import BeatParsing
 import BeatPagination2
 
 /// This view holds the pages
-final class BeatPreviewView:NSView {
+final class BeatPreviewView:NSView, BeatPreviewPageView {
+	
 	override var isFlipped: Bool { return true }
 	var pageViews:[BeatPaginationPageView] = []
 	var bottomSpacing = 10.0
 	var titlePage:BeatTitlePageView?
+	
+	// This is unused for now. Look at how iOS version handles this.
+	weak var dataSource: BeatPreviewPageViewDataSource?
+	
+	@IBOutlet weak var progressIndicator:NSProgressIndicator?
 	
 	@IBOutlet weak var previewController:BeatPreviewController?
 	
@@ -62,7 +68,7 @@ final class BeatPreviewView:NSView {
 		pageViews.forEach { $0.alphaValue = 0.5 }
 	}
 	
-	func updatePages(_ pagination:BeatPagination, settings:BeatExportSettings, controller:BeatPreviewController) {
+	func updatePages(_ pagination:BeatPagination, settings:BeatExportSettings, controller:BeatPreviewManager) {
 		guard let pages = pagination.pages as? [BeatPaginationPage] else {
 			print("Updating pages failed")
 			return
@@ -182,6 +188,17 @@ final class BeatPreviewView:NSView {
 			owner.cancelOperation(sender)
 		}
 	}
+	
+	func startLoadingAnimation() {
+		fadeOutPages()
+		progressIndicator?.isHidden = false
+		progressIndicator?.startAnimation(nil)
+	}
+	func endLoadingAnimation() {
+		progressIndicator?.isHidden = true
+		progressIndicator?.stopAnimation(nil)
+	}
+	
 }
 
 // MARK: - Assisting views

@@ -21,7 +21,7 @@
 @property (nonatomic) NSString* bufferedText;
 @property (nonatomic) BeatUITextView* textView;
 
-@property (nonatomic) BeatPreviewView* previewView;
+@property (nonatomic) BeatPageViewController* previewView;
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
@@ -220,6 +220,7 @@
 	// Init preview view
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
+	NSLog(@"Preview view %@", self.previewView);
 	
 	// Init preview controller and pagination
 	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
@@ -295,10 +296,6 @@
 
 - (void)unloadViews
 {
-	[self.previewView.webview removeFromSuperview];
-	self.previewView.webview = nil;
-	
-	[self.previewView.nibBundle unload];
 	self.previewView = nil;
 	
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
@@ -426,6 +423,7 @@
 - (IBAction)togglePreview:(id)sender
 {
 	[self presentViewController:self.previewView animated:true completion:nil];
+	[self.previewController renderOnScreen];
 }
 
 - (void)previewDidFinish
