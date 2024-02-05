@@ -280,6 +280,8 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
 
 
 #pragma mark Pagination
+/// Sets a stylesheet and reformats the document
+- (void)setStylesheet:(NSString*)name;
 /// Returns the CURRENT pagination manager in document
 - (BeatPaginationManager*)currentPagination;
 /// Creates and returns a new pagination manager with given lines as input
@@ -332,7 +334,6 @@ JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInt
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(id)scene);
-
 
 #pragma mark Modal windows
 /// Displays a simple modal alert box
@@ -390,13 +391,19 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
+@property (nonatomic, weak, readonly) NSWindow *documentWindow;
 
 /// Returns the file name without extension
 - (NSString*)displayName;
 
+/// Adds a widget view
 - (void)addWidget:(id)widget;
+/// Shows widget panel
 - (IBAction)showWidgets:(id)sender;
-@property (nonatomic, weak, readonly) NSWindow *documentWindow;
+
+/// Sets current zoom level
+- (void)setZoom:(CGFloat)zoomLevel;
+
 #else
 @property (nonatomic, weak, readonly) UIWindow *documentWindow;
 #endif
@@ -419,48 +426,24 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @property (nonatomic) BeatPluginAgent* pluginAgent;
 
-/*
-/// Runs a plugin with given name
-- (void)runPluginWithName:(NSString*)pluginName;
-/// Registers the plugin to stay running in background
-- (void)registerPlugin:(id)parser;
-/// Removes the plugin from memory
-- (void)deregisterPlugin:(id)parser;
- */
-
 /// Sets the given property value in host document. Use only if you *REALLY*, **REALLY** know what the fuck you are doing.
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 /// Gets a property value from host document.
 - (id)getPropertyValue:(NSString*)key;
 
 - (id)document;
+
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
-
-- (NSRange)selectedRange;
-- (void)setSelectedRange:(NSRange)range;
-
-- (void)focusEditor;
-
-- (NSString*)text;
 
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines
 - (NSAttributedString*)getAttributedText;
 
 - (void)scrollTo:(NSInteger)location;
-- (void)scrollToLine:(Line*)line;
 - (void)scrollToLineIndex:(NSInteger)index;
 - (void)scrollToSceneIndex:(NSInteger)index;
-- (void)scrollToScene:(OutlineScene*)scene;
 
-- (BeatExportSettings*)exportSettings;
-
-- (NSLayoutManager*)layoutManager;
-- (NSTextStorage*)textStorage;
-#if TARGET_OS_OSX
-- (void)setZoom:(CGFloat)zoomLevel;
-#endif
 @end
 
 @interface BeatPlugin : NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>

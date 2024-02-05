@@ -127,7 +127,6 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (void)updateOutlineViewsWithChanges:(OutlineChanges* _Nullable)changes;
 
 
-
 #pragma mark - Line lookup
 
 @property (nonatomic) Line* _Nullable previouslySelectedLine;

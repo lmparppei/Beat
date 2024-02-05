@@ -73,11 +73,11 @@
     return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
-/// Reloads all styles
+/// Reloads __current__ stylesheet. Does NOT reload all styles if the stylesheet has changed.
 - (void)reloadStyles
 {
     ((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
-    
+        
     [self.styles reload];
     [self.editorStyles reload];
     [self resetPreview];
@@ -87,6 +87,27 @@
     [self.formatting formatAllLinesOfType:shot];
     
     // NOTE: This might need to be called in OS-specific implementation as well.
+}
+
+/// Set stylesheet and refresh everything
+- (void)setStylesheetAndReformat:(NSString*)name
+{
+    // Check that this sheet exists
+    BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.documentSettings getString:DocSettingStylesheet]];
+    if (styles == nil) name = @"";
+    
+    //
+    [self.documentSettings setString:DocSettingStylesheet as:name];
+    
+    // Re-read all styles, just in case
+    [self reloadFonts];
+    [self.styles reload];
+    [self.editorStyles reload];
+    
+    // Format all lines
+    [self.formatting formatAllLines];
+        
+    [self resetPreview];
 }
 
 /// Returns __actual__ line height for editor view

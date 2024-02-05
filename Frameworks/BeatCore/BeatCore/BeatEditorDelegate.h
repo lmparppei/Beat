@@ -49,14 +49,18 @@
 @class BeatPluginAgent;
 @class BeatFonts;
 
-/// Protocol for editor views which need to be updated in some cases
+/**
+ Protocol for editor views which need to be updated in some cases
+*/
 @protocol BeatEditorView
 - (void)reloadInBackground;
 - (void)reloadView;
 - (bool)visible;
 @end
 
-/// Protocol for any views/objects that need to be updated when selection changes
+/**
+ Protocol for any views/objects that need to be updated when selection changes
+*/
 @protocol BeatSelectionObserver
 - (void)selectionDidChange:(NSRange)selectedRange;
 @end
@@ -65,8 +69,6 @@
  TODO: Make the text editor conform to this protocol to avoid tons of editor view calls in the delegate
  */
 @protocol BeatTextEditor
-//NSLayoutManager* layoutManager;
-//NSTextStorage* textStorage;
 @property (nonatomic) NSString* text;
 @property (nonatomic) NSDictionary<NSAttributedStringKey,id>* typingAttributes;
 
@@ -86,7 +88,6 @@
 @end
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
-
 
 #pragma mark - Core functionality
 
@@ -167,6 +168,7 @@
 
 /// Ensures layout of the text view
 - (void)ensureLayout;
+- (void)updateLayout;
 
 
 #pragma mark - Editor item visibility
@@ -244,7 +246,9 @@
 @property (nonatomic, readonly) BeatStylesheet* editorStyles;
 @property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatEditorFormatting* formatting;
+
 - (void)reloadStyles;
+- (void)setStylesheetAndReformat:(NSString*)name;
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;
