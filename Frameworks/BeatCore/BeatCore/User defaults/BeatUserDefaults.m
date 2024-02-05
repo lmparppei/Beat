@@ -244,9 +244,16 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
+    
+    // No default value provided
+    if (values.count < 2) {
+        NSLog(@"WARNING: No default value specified for key '%@'", docKey);
+        return false;
+    }
 	
 	NSString *settingKey = values[0];
-	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
+	if ([NSUserDefaults.standardUserDefaults objectForKey:settingKey] == nil) {
+        // No value set, return default.
 		return [(NSNumber*)values[1] boolValue];
 	} else {
 		return [NSUserDefaults.standardUserDefaults boolForKey:settingKey];
