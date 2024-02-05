@@ -30,6 +30,8 @@
 @property (nonatomic) bool editing;
 @property (nonatomic) bool dragging;
 
+@property (nonatomic) NSArray<NSTableCellView*>* visibleSnapshots;
+
 @property (nonatomic) NSMutableArray *filteredOutline;
 @property (nonatomic) SceneFiltering *filters;
 
@@ -39,4 +41,8 @@
 -(void)reloadOutlineWithChanges:(OutlineChanges*)changes;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (NSArray*)outline;
+
+- (void)closeSnapshots;
+- (void)addSnapshot:(NSTableCellView*)view;
+
 @end

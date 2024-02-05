@@ -25,6 +25,7 @@
 @interface ScrollView()
 @property (nonatomic) NSGestureRecognizer *recognizer;
 @end
+
 @implementation ScrollView
 
 #define HIDE_INTERVAL 6.0
@@ -191,6 +192,7 @@ double clampf(double d, double min, double max) {
 	const double t = d < min ? min : d;
 	return t > max ? max : t;
 }
+
 
 
 @end

@@ -159,6 +159,13 @@ static CGFloat panelWidth;
 		
 	// Reload PDF preview
 	[self loadPreview];
+	
+	
+	NSRect frame = self.window.frame;
+	NSRect screen = self.window.screen.frame;
+	
+	CGPoint origin = CGPointMake((screen.size.width - frame.size.width) / 2.0, (screen.size.height - frame.size.height) / 2.0);
+	[self.window setFrameOrigin:origin];
 }
 
 - (IBAction)close:(id)sender
@@ -337,7 +344,7 @@ static CGFloat panelWidth;
 	if (checkbox.userDefaultKey.length > 0) {
 		[self.documentDelegate.documentSettings setBool:checkbox.userDefaultKey as:(checkbox.state == NSOnState)];
 	}
-	NSLog(@"Load preview");
+	
 	[self loadPreview];
 }
 

@@ -1183,7 +1183,7 @@ DQ
                             <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>
+                                    <action selector="openTutorial:" target="vEX-2F-hcj" id="8yt-A8-EWx"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Psf-iS-te8"/>
@@ -1266,6 +1266,7 @@ DQ
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
         <customObject id="vEX-2F-hcj" customClass="BeatAppDelegate">
             <connections>
+                <outlet property="backupMenu" destination="7oT-pt-wId" id="Bdm-jJ-X3E"/>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="enterLicenseKeyItem" destination="lM5-aZ-exA" id="Ps7-2o-1sK"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
@@ -1276,7 +1277,6 @@ DQ
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
                 <outlet property="spellCheckingUtils" destination="Ibp-oA-JIB" id="dE7-Pz-M2x"/>
                 <outlet property="templateMenuProvider" destination="8f3-H4-i5J" id="UWU-Hw-hHd"/>
-                <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
             </connections>
         </customObject>
         <customObject id="Ibp-oA-JIB" customClass="BeatSpellCheckingUtils" customModule="Beat" customModuleProvider="target">

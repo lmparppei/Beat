@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
-        <plugIn identifier="com.apple.pdfkit.ibplugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22505"/>
+        <plugIn identifier="com.apple.pdfkit.ibplugin" version="22505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -38,12 +38,12 @@
         <window title="Print" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rg7-lI-xne" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" utility="YES"/>
             <rect key="contentRect" x="382" y="331" width="850" height="434"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="Eh4-Tm-L4f">
                 <rect key="frame" x="0.0" y="0.0" width="850" height="434"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ldK-Nf-fNE">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ldK-Nf-fNE">
                         <rect key="frame" x="365" y="388" width="244" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Print" id="B23-AL-UUS">
@@ -71,7 +71,7 @@
                         <rect key="frame" x="366" y="250" width="247" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
-                    <button verticalHuggingPriority="750" tag="1" id="Pvt-SR-b7W">
+                    <button tag="1" verticalHuggingPriority="750" id="Pvt-SR-b7W">
                         <rect key="frame" x="364" y="329" width="114" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="radio" title="A4" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="QKZ-PI-6GB">
@@ -82,7 +82,7 @@
                             <action selector="selectPaperSize:" target="-2" id="9HR-Sj-Iyo"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" tag="2" id="fcQ-tU-V1q">
+                    <button tag="2" verticalHuggingPriority="750" id="fcQ-tU-V1q">
                         <rect key="frame" x="364" y="307" width="114" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="radio" title="US Letter" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="XaA-mb-KGd">
@@ -114,7 +114,7 @@ Gw
                         </beginningViews>
                         <endViews>
                             <button verticalHuggingPriority="750" id="a5r-9d-7pC">
-                                <rect key="frame" x="128" y="-3" width="60" height="32"/>
+                                <rect key="frame" x="130" y="-3" width="59" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="PDF" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8t8-IM-hHv">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -125,7 +125,7 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" id="oP5-3G-eOr">
-                                <rect key="frame" x="178" y="-3" width="78" height="32"/>
+                                <rect key="frame" x="179" y="-3" width="77" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="  Print  " bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTh-vA-fQk">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -154,7 +154,7 @@ DQ
                         <rect key="frame" x="366" y="293" width="247" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="KuQ-os-ENU">
+                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="KuQ-os-ENU">
                         <rect key="frame" x="364" y="354" width="239" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" title="Page size" id="Gug-Yv-fGM">
@@ -174,7 +174,7 @@ DQ
                                     <rect key="frame" x="12" y="41" width="196" height="379"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="mAn-Bu-KOI">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="mAn-Bu-KOI">
                                             <rect key="frame" x="-2" y="360" width="199" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" title="Page Header" id="vz7-gT-RKM">
@@ -183,7 +183,7 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="5jv-fN-Wdf">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="5jv-fN-Wdf">
                                             <rect key="frame" x="-2" y="293" width="199" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" title="Include Revision Markers" id="tAR-96-UAV">
@@ -192,7 +192,7 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="3ot-50-kVK">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="3ot-50-kVK">
                                             <rect key="frame" x="0.0" y="156" width="197" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" title="Include Invisible Elements" id="Nef-4V-udt">
@@ -219,7 +219,7 @@ DQ
                                                 <action selector="toggleColorCodePages:" target="-2" id="pGS-fp-04X"/>
                                             </connections>
                                         </button>
-                                        <textField verticalHuggingPriority="750" id="KZX-n4-4Sn">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" id="KZX-n4-4Sn">
                                             <rect key="frame" x="0.0" y="335" width="196" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Revision, Version, ..." bezelStyle="round" id="HOf-0E-WLn">
@@ -331,6 +331,8 @@ DQ
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSections"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Sections"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="FLj-Y6-TXp"/>
@@ -349,6 +351,8 @@ DQ
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printSynopsis"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Synopsis"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="4B1-Lp-wC8"/>
@@ -367,6 +371,8 @@ DQ
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="export.printNotes"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="Print Notes"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleInvisibleElement:" target="-2" id="lJq-3z-5Pg"/>

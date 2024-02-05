@@ -35,7 +35,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
 @property (nonatomic) CGFloat magnification;
-@property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) bool showRevisions;
 @property (readonly) bool sceneNumberLabelUpdateOff;
@@ -60,7 +59,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 
 - (bool)isDark;
-- (void)updateLayout;
 - (void)ensureLayout;
 - (void)showLockStatus;
 - (void)handleTabPress;
@@ -79,7 +77,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @class BeatTagging;
 @class BeatPaginationPage;
 
-@interface BeatTextView : NSTextView <BeatTextEditor, NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
+@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
 @property (weak) IBOutlet BeatTagging *tagging;
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
@@ -87,44 +85,76 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @property (nonatomic) bool didType;
 
-@property CGFloat textInsetY;
-@property NSMutableArray* masks;
-@property NSArray* sceneNumbers;
-@property (nonatomic, weak) DynamicColor* marginColor;
-@property NSArray* pageBreaks;
-@property (nonatomic) CGFloat zoomLevel;
-@property NSInteger autocompleteIndex;
 
-@property (nonatomic) CGFloat scaleFactor;
-
-/// Typewriter mode
-@property (nonatomic) bool typewriterMode;
+#pragma mark - Layout and positioning
 
 + (CGFloat)linePadding;
 - (CGFloat)documentWidth;
 
-- (void)setup;
+@property CGFloat textInsetY;
+@property NSArray* sceneNumbers;
+@property (nonatomic, weak) DynamicColor* marginColor;
 
-- (IBAction)showInfo:(id)sender;
+@property (nonatomic) CGFloat zoomLevel;
+@property (nonatomic) CGFloat scaleFactor;
+
+@property (nonatomic) NSTextFinder* textFinder;
+
+- (void)setupZoom;
+- (void)resetZoom;
+- (void)zoom:(bool)zoomIn;
+- (void)adjustZoomLevel:(CGFloat)level;
+
+/// Calculates the insets to make content centered
 - (CGFloat)setInsets;
+
+
+#pragma mark - Pagination
+
+@property NSArray* pageBreaks;
+
+/// Typewriter mode
+@property (nonatomic) bool typewriterMode;
+
+
+#pragma mark - Autocompletion
+
+/// Current popup view mode (autocomplete/tagging/etc.)
+@property (nonatomic) BeatTextviewPopupMode popupMode;
+
+/// Autocompletion results
+@property (nonatomic, strong) NSArray *matches;
+
+/// Selected index in autocomplete popover
+@property NSInteger autocompleteIndex;
+/// Popover for autocompletion
+@property (nonatomic, strong) NSPopover *autocompletePopover;
+/// Table view for autocompletion
+@property (nonatomic, weak) NSTableView *autocompleteTableView;
+/// Displays force element menu
+- (void)forceElement:(id)sender;
+
+
+#pragma mark - Common methods
+
+- (void)setup;
+- (IBAction)showInfo:(id)sender;
+
+
+#pragma mark - Scrolling
+
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 - (void)ensureRangeIsVisible:(NSRange)range;
+
+
+#pragma mark - Drawing
 
 -(void)redrawAllGlyphs;
 -(void)redrawUI;
 -(void)updateMarkupVisibility;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
-
-// Zooming
-- (void)zoom:(bool)zoomIn;
-- (void)setupZoom;
-- (void)resetZoom;
-- (void)adjustZoomLevel:(CGFloat)level;
-
-// Force element
-- (void)forceElement:(id)sender;
 
 
 #pragma mark - Caret

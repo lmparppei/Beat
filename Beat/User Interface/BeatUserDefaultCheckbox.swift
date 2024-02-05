@@ -10,12 +10,13 @@ import Foundation
 
 @objc public class BeatUserDefaultCheckbox:NSButton {
 	@IBInspectable public var resetPreview:Bool = false
+	@IBInspectable public var documentSetting:Bool = false
 	
 	override public func awakeFromNib() {
 		super.awakeFromNib()
 		
 		if userDefaultKey.count == 0 { return }
-		let value = BeatUserDefaults.shared().getBool(userDefaultKey)
+		let value = (!documentSetting) ? BeatUserDefaults.shared().getBool(userDefaultKey) : false
 		
 		if value { self.state = .on }
 		else { self.state = .off }

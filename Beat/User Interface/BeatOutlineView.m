@@ -325,6 +325,7 @@
 	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
 	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
 	
+	view.outlineView = self;
 	view.editorDelegate = self.editorDelegate;
 	view.scene = item;
 	
@@ -796,6 +797,35 @@
 	}
 }
 
+#pragma mark - Mouse tracking
+
+- (void)mouseMoved:(NSEvent *)event {
+	[super mouseMoved:event];
+	CGPoint point = [self convertPoint:event.locationInWindow fromView:self.window.contentView];
+	
+	NSInteger row = [self rowAtPoint:point];
+	
+	for (NSInteger i=0; i<self.numberOfRows; i++) {
+		BeatSceneSnapshotCell* cellView = [self viewAtColumn:0 row:i makeIfNecessary:NO];
+		if (i != row) [cellView closePopover];
+	}
+	
+}
+
+- (void)closeSnapshots
+{
+	for (id view in self.visibleSnapshots) {
+		BeatSceneSnapshotCell* snapshot = view;
+		[snapshot closePopover];
+	}
+	self.visibleSnapshots = @[];
+}
+
+- (void)addSnapshot:(NSTableCellView *)view
+{
+	if (self.visibleSnapshots == nil) self.visibleSnapshots = @[];
+	self.visibleSnapshots = [self.visibleSnapshots arrayByAddingObject:view];
+}
 
 @end
 /*

@@ -396,11 +396,11 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
 	[NSNotificationCenter.defaultCenter removeObserver:self.widgetView];
 	[NSDistributedNotificationCenter.defaultCenter removeObserver:self];
+		
+	[super close];
 	
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
-	
-	[super close];
 }
 
 -(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler {
@@ -1077,7 +1077,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self.textView ensureCaret];
 }
-
 
 
 
@@ -2903,7 +2902,9 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 + (BOOL)preservesVersions {
-	return NO;
+	// Versions are only supported from 12.0+ because of a strange bug in older macOSs
+	if (@available(macOS 13.0, *)) return YES;
+	else return NO;
 }
 
 - (IBAction)toggleAutosave:(id)sender {

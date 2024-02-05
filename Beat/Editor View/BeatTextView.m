@@ -58,9 +58,6 @@
 // Default inset for text view
 #define TEXT_INSET_TOP 50
 
-// Beat draws a bit wider caret. The decimals are just a hack to trick Sonoma's drawing and avoiding integral values.
-#define CARET_WIDTH 1.999999999999
-
 @interface NCRAutocompleteTableRowView : NSTableRowView
 @end
 
@@ -91,23 +88,17 @@
 static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalog.colorPicker";
 
 #pragma mark - Autocompleting
-@interface BeatTextView ()
+@interface BeatTextView () <NSTextFinderClient, BeatTextEditor>
 
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
 @property (nonatomic, strong) NSPopover *taggingPopover;
 
 @property (nonatomic, strong) NSPopover *infoPopover;
-@property (nonatomic, strong) NSTextView *infoTextView;
-
-@property (nonatomic, strong) NSPopover *autocompletePopover;
-@property (nonatomic, weak) NSTableView *autocompleteTableView;
-@property (nonatomic, strong) NSArray *matches;
 
 @property (nonatomic) bool nightMode;
 @property (nonatomic) bool forceElementMenu;
 
-@property (nonatomic) BeatTextviewPopupMode popupMode;
 @property (nonatomic) BeatTagType currentTagType;
 
 // Used to highlight typed characters when autocompleting and insert text
@@ -138,8 +129,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 /// Focus mode controller
 @property (nonatomic) BeatFocusMode* focusMode;
 
-// Validated menu items
+/// Validated menu items
 @property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
+
+@property (nonatomic) BeatFindPanel* findPanel;
 
 @end
 
@@ -154,8 +147,27 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self = [super initWithCoder:coder];
 	[self layoutSetup];
 	
+	/*
+	self.textFinder = NSTextFinder.new;
+	self.textFinder.client = self;
+	[self.textFinder setIncrementalSearchingEnabled:true];
+	*/
+	
 	return self;
 }
+
+/*
+- (BOOL)usesFindPanel {
+	return true;
+}
+
+- (void)performTextFinderAction:(id)sender
+{
+	if ([sender tag] == NSTextFinderActionShowFindInterface || [sender tag] == NSTextFinderActionReplace) {
+		_findPanel = [BeatFindPanel createWithTextView:self];
+	}
+}
+*/
 
 /// Basic text view setup
 - (void)layoutSetup
@@ -178,7 +190,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.automaticDataDetectionEnabled = NO;
 	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;
-
 }
 
 /// Loads and sets up our custom layout manager, `BeatLayoutManager`
@@ -275,35 +286,38 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
 	// matter what the frames are here because they are set when the popover
 	// is displayed
-	NSTableColumn *column1 = [[NSTableColumn alloc] initWithIdentifier:@"text"];
-	[column1 setEditable:NO];
-	[column1 setWidth:POPOVER_WIDTH - 2 * POPOVER_PADDING];
 	
 	NSTableView *tableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
-	[tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleRegular];
-	[tableView setBackgroundColor:[NSColor clearColor]];
-	[tableView setRowSizeStyle:NSTableViewRowSizeStyleSmall];
-	[tableView setIntercellSpacing:INTERCELL_SPACING];
-	[tableView setHeaderView:nil];
-	[tableView setRefusesFirstResponder:YES];
-	[tableView setTarget:self];
-	[tableView setDoubleAction:@selector(clickPopupItem:)];
-	[tableView addTableColumn:column1];
-	[tableView setDelegate:self];
-	[tableView setDataSource:self];
+	tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleRegular;
+	tableView.backgroundColor = NSColor.clearColor;
+	tableView.rowSizeStyle = NSTableViewRowSizeStyleSmall;
+	tableView.intercellSpacing = INTERCELL_SPACING;
+	tableView.headerView = nil;
+	tableView.refusesFirstResponder = true;
+	tableView.target = self;
+	tableView.doubleAction = @selector(clickPopupItem:);
 	
+	tableView.dataSource = self;
+	tableView.delegate = self;
+
 	// Avoid the "modern" padding on Big Sur
-	if (@available(macOS 11.0, *)) {
-		tableView.style = NSTableViewStyleFullWidth;
-	}
+	if (@available(macOS 11.0, *)) tableView.style = NSTableViewStyleFullWidth;
 	
+	// Create column
+	NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier:@"text"];
+	column.editable = false;
+	column.width = POPOVER_WIDTH - 2 * POPOVER_PADDING;
+
+	[tableView addTableColumn:column];
+		
 	self.autocompleteTableView = tableView;
 	
+	// Create the enclosing scroll view
 	NSScrollView *tableScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
-	[tableScrollView setDrawsBackground:NO];
-	[tableScrollView setDocumentView:tableView];
-	[tableScrollView setHasVerticalScroller:YES];
-	
+	tableScrollView.drawsBackground = false;
+	tableScrollView.documentView = tableView;
+	tableScrollView.hasVerticalScroller = true;
+		
 	NSView *contentView = [[NSView alloc] initWithFrame:NSZeroRect];
 	[contentView addSubview:tableScrollView];
 	
@@ -351,6 +365,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	return _touchBar;
 }
+
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
 {
 	if ([identifier isEqualToString:ColorPickerItemIdentifier]) {
@@ -359,10 +374,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return nil;
 }
 
-
 -(void)setBounds:(NSRect)bounds {
 	[super setBounds:bounds];
 }
+
 -(void)setFrame:(NSRect)frame {
 	// There is a strange bug (?) in macOS Monterey which causes some weird sizing errors.
 	// This is a duct-tape fix. Sorry for anyone reading this.
@@ -383,6 +398,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	sizeBeforeThat = prevSize;
 	prevSize = frame.size;
 }
+
 
 #pragma mark - Key events
 
@@ -450,17 +466,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				// force element + skip default
 				[self force:self];
 				preventDefault = YES;
-				//return;
 				
 			} else if (_popupMode == Tagging) {
 				// handle tagging + skip default
 				preventDefault = YES;
-				//return;
 				
 			} else if (self.autocompletePopover.isShown && _popupMode == Autocomplete) {
 				[self insert:self];
 				preventDefault = YES;
-				//return; // don't insert a line-break after tab key
 				
 			} else {
 				// Call delegate to handle normal tab press
@@ -469,34 +482,34 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
 					[self.editorDelegate handleTabPress];
 				}
-				
 				preventDefault = YES;
 			}
+			
 			break;
+			
 		case 36:
-			// HANDLE RETURN
+			// Return key
 			if (self.autocompletePopover.isShown) {
 				// Check whether to force an element or to just autocomplete
 				if (_forceElementMenu || _popupMode == ForceElement) {
 					[self force:self];
 					preventDefault = YES;
 					break;
-					//return; // skip default
+
 				} else if (_popupMode == Tagging) {
 					[self setTag:self];
 					preventDefault = YES;
 					break;
-					//return;
+
 				} else if (_popupMode == SelectTag) {
 					[self selectTag:self];
 					preventDefault = YES;
 					break;
-					//return;
-				} else if (self.autocompletePopover.isShown) {
+
+				} else {
 					[self insert:self];
 				}
-			}
-			else if (theEvent.modifierFlags) {
+			} else if (theEvent.modifierFlags) {
 				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 				
 				// Alt was pressed && autocomplete is not visible
@@ -551,7 +564,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // Typewriter mode
 - (IBAction)toggleTypewriterMode:(id)sender {
 	self.typewriterMode = !self.typewriterMode;
-	[self.editorDelegate updateLayout];
+	
+	for (id<BeatEditorDelegate>doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc updateLayout];
+	}
 }
 
 - (void)updateTypewriterView
@@ -564,8 +580,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat y = rect.origin.y + self.textContainerInset.height;
 	if (y < viewOrigin || y > viewOrigin + viewHeight) [self typewriterScroll];
 }
-
-
 
 - (void)typewriterScroll
 {
@@ -611,6 +625,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	return [super adjustScroll:newVisible];
 }
+
 
 #pragma mark - Info popup
 
@@ -689,17 +704,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		popover.behavior = NSPopoverBehaviorTransient;
 		
 		NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
-		_infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
-		_infoTextView.editable = false;
-		_infoTextView.drawsBackground = false;
-		_infoTextView.richText = false;
-		_infoTextView.usesRuler = false;
-		_infoTextView.selectable = false;
-		[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
+		NSTextView* infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
 		
-		_infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+		infoTextView.editable = false;
+		infoTextView.drawsBackground = false;
+		infoTextView.richText = false;
+		infoTextView.usesRuler = false;
+		infoTextView.selectable = false;
+		[infoTextView setTextContainerInset:NSMakeSize(8, 8)];
 		
-		[infoContentView addSubview:_infoTextView];
+		infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+		
+		[infoContentView addSubview:infoTextView];
 		
 		NSViewController *infoViewController = NSViewController.new;
 		infoViewController.view = infoContentView;
@@ -709,15 +725,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		_infoPopover = popover;
 	}
 	
-	// calculate content size
-	[_infoTextView.textStorage setAttributedString:text];
-	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	NSTextView* infoTextView = (NSTextView*)_infoPopover.contentViewController.view.subviews.firstObject;
 	
-	NSRect usedRect = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
+	// calculate content size
+	[infoTextView.textStorage setAttributedString:text];
+	[infoTextView.layoutManager ensureLayoutForTextContainer:infoTextView.textContainer];
+	
+	NSRect usedRect = [infoTextView.layoutManager usedRectForTextContainer:infoTextView.textContainer];
 	NSRect frame = NSMakeRect(0, 0, 200, usedRect.size.height + 16);
 	
 	_infoPopover.contentSize = frame.size;
-	_infoTextView.frame = NSMakeRect(0, 0, frame.size.width, frame.size.height);
+	infoTextView.frame = NSMakeRect(0, 0, frame.size.width, frame.size.height);
 	
 	return _infoPopover;
 }
@@ -725,6 +743,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Insert
 
+/// Inserts text from autocomplete list
 - (void)insert:(id)sender {
 	if (self.popupMode != Autocomplete) return;
 	
@@ -752,8 +771,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.autocompletePopover close];
 }
 
+
+#pragma mark - Selection events
+
 - (void)didChangeSelection:(NSNotification *)notification {
-	/*
+	/**
 	 
 	 There are TWO different didChangeSelection listeners, here and in Document.
 	 This one deals with text editor events, such as tagging, typewriter scroll,
@@ -777,15 +799,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	// Show tagging/review options for selected range
-	if (_editorDelegate.mode == TaggingMode) {
-		// Show tag list
-		[self showTaggingOptions];
-	} else if (_editorDelegate.mode == ReviewMode) {
-		// Show review editor
-		[_editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
-	} else {
-		// We are in editor mode. Run any required events.
-		[self selectionEvents];
+	
+	switch (_editorDelegate.mode) {
+		case TaggingMode:
+			// Show tag list
+			[self showTaggingOptions];
+			break;
+		case ReviewMode:
+			// Show review editor
+			[_editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
+			break;
+		default:
+			[self selectionEvents];
+			break;
 	}
 }
 
@@ -1108,30 +1134,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Custom drawing
 
-/*
-- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag
-{
-	aRect.size.width = CARET_WIDTH;
-	aRect.origin.x -= 0.5;
-	NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:aRect xRadius:1.0 yRadius:1.0];
-	
-	[aColor setFill];
-	
-	if (flag) [path fill];
-}
-*/
-
 -(void)redrawUI {	
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }
 
-
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect
-{
-	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
-	[super setNeedsDisplayInRect:invalidRect];
-}
 
 /// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
 -(void)redrawAllGlyphs
@@ -1249,10 +1256,8 @@ Line *cachedRectLine;
 {
 	// Top/bottom insets
 	if (self.typewriterMode) {
-		// What the actual fuck is this math ha ha ha
-		// 2023 update: I won't touch this ever again - it works, but I'm scared to know why.
-		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2 + 100) * (2 - self.zoomLevel);
-		self.textInsetY = insetY;
+		// Calculate half of the viewport minus font size
+		self.textInsetY = self.enclosingScrollView.documentVisibleRect.size.height / 2 - _editorDelegate.fonts.regular.pointSize;
 	} else {
 		self.textInsetY = TEXT_INSET_TOP;
 	}
@@ -1287,6 +1292,16 @@ Line *cachedRectLine;
 }
 
 
+#pragma mark - Find panel
+
+- (void)performFindPanelAction:(id)sender
+{
+	if ([sender tag] == NSTextFinderActionShowFindInterface) {
+		NSLog(@"Open");
+	} else {
+		NSLog(@"Open");
+	}
+}
 
 #pragma mark - Scrolling interface
 

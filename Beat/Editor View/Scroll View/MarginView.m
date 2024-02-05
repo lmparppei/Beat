@@ -12,7 +12,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
 
-#define WHITESPACE 0.0
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.0125
 
@@ -39,7 +38,7 @@
 
 - (void)viewWillDraw {
 	self.wantsLayer = YES;
-	CGFloat marginWidth = (_editor.getTextView.textContainerInset.width - WHITESPACE) * self.editor.magnification;
+	CGFloat marginWidth = (_editor.getTextView.textContainerInset.width) * self.editor.magnification;
 	
 	if (!_paper) {
 		// Setup background
@@ -77,9 +76,10 @@
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
 	
 	// Set background paper size
-	CGFloat documentWidth = (_editor.documentWidth + WHITESPACE * 2) * _editor.magnification;
+	CGFloat documentWidth = (_editor.documentWidth) * _editor.magnification;
 	//CGFloat marginWidth = (_editor.inset - WHITESPACE) * _editor.magnification;
 	CGFloat x = (self.frame.size.width - documentWidth) / 2;
+	if (x < 0) x = 0.0;
 	
 	_paper.frame = CGRectMake(x, -50, documentWidth, self.frame.size.height + 100);
 	_paper.bounds = CGRectMake(0, 0, _paper.frame.size.width, _paper.frame.size.height);

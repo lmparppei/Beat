@@ -11,6 +11,7 @@ import AppKit
 @objc public class BeatSceneSnapshotCell:NSTableCellView {
 	@objc weak var editorDelegate:BeatEditorDelegate?
 	@objc weak var scene:OutlineScene?
+	@objc weak var outlineView:BeatOutlineView?
 	
 	var timer:Timer?
 	var popover:NSPopover?
@@ -49,6 +50,9 @@ import AppKit
 	
 	/// Shows a popover view of current scene
 	func showScreenshot() {
+		// First close all previous snapshots
+		self.outlineView?.closeSnapshots()
+		
 		if let scene = self.scene, let delegate = self.editorDelegate, let _ = self.window {
 			// Create an image and a popover
 			guard let image = BeatSceneSnapshot.create(scene: scene, delegate: delegate) else { return }
@@ -70,6 +74,8 @@ import AppKit
 			
 			self.popover?.show(relativeTo: self.frame, of: self, preferredEdge: .minX)
 		}
+		
+		self.outlineView?.addSnapshot(self)
 	}
 	
 	override public func mouseExited(with event: NSEvent) {
@@ -94,7 +100,6 @@ class BeatSceneSnapshot:NSObject {
 	class func create(scene:OutlineScene, delegate:BeatEditorDelegate, maxHeight:CGFloat = 400.0) -> NSImage? {
 		guard let textView = delegate.getTextView(),
 			  let layoutManager = delegate.getTextView().layoutManager else {
-			print("No text view")
 			return nil
 		}
 		
