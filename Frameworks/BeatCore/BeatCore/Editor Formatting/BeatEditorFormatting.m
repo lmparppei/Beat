@@ -197,6 +197,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// Forces reformatting of each line
 - (void)formatAllLines
 {
+    // Reset sizing
+    self.paragraphStyles = NSMutableDictionary.new;
+    
+    // Format all lines
     for (Line* line in self.parser.lines) {
         line.formattedAs = -1; // Force font change
         @autoreleasepool { [self formatLine:line]; }
