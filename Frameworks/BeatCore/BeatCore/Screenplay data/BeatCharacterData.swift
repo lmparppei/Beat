@@ -93,11 +93,10 @@ import Foundation
     @objc public func charactersAndLines(lines providedLines:[Line] = []) -> [String:BeatCharacter] {
         guard let parser = self.delegate?.parser else { return [:] }
         
-        let lines = (providedLines.count > 0) ? providedLines : parser.lines as? [Line] ?? []
+        let lines = (providedLines.count > 0) ? providedLines : parser.safeLines() as? [Line] ?? []
         
         // First get any stored character data and merge
         var characters = self.characters()
-        let storedCharacters = characters
         
         var currentScene:Line?
         
@@ -120,7 +119,7 @@ import Foundation
             }
         }
         
-        var allNames = characters.keys
+        let allNames = characters.keys
         for name in allNames {
             if let character = characters[name] {
                 if character.lines == 0 {
