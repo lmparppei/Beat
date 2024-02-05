@@ -70,3 +70,7 @@ lyrics {
     text-align: center;
 }
 
+titlePageUnknown {
+    margin-left: 10ch;
+}
+

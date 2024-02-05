@@ -31,16 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatPaginationPage;
 @class BeatPaginationBlock;
 @class BeatPaginationManager;
-
-@protocol BeatRendererDelegate
-@property (nonatomic, weak) BeatPaginationManager* pagination;
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber;
-- (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage;
-- (void)reloadStyles;
-@end
+@class BeatRenderer;
 
 @protocol BeatPaginationDelegate
-@property (nonatomic) id<BeatRendererDelegate> __nullable renderer;
+@property (weak, nonatomic) BeatRenderer* _Nullable renderer;
 @property (nonatomic) BeatExportSettings *settings;
 @property (nonatomic) id<BeatEditorDelegate> __nullable editorDelegate;
 - (void)paginationFinished:(BeatPagination*)pagination;
@@ -67,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatPageDelegate
 @property (nonatomic, readonly) bool canceled;
-@property (nonatomic, weak) id<BeatRendererDelegate> __nullable renderer;
+@property (weak, nonatomic) BeatRenderer* __nullable renderer;
 @property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatExportSettings *settings;
 @property (nonatomic, readonly) BeatFonts *fonts;
@@ -85,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPagination : NSObject <BeatPaginationExports>
 /// A class which conforms to `BeatRenderDelegate` protocol and renders paginated blocks as `NSAttributedString` objects. 
-@property (weak, nonatomic) id<BeatRendererDelegate> renderer;
+@property (weak, nonatomic) BeatRenderer* renderer;
 /// Title page content for finished pagination
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
 /// If the pagination finished successfully

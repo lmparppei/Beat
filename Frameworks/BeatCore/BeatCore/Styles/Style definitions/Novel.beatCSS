@@ -28,7 +28,7 @@ page {
     default-width-a4: 60ch;
     default-width-us: 62ch;
     
-    line-height: 26;
+    line-height: 20;
     
     content-padding: 7ch;
  
@@ -89,3 +89,36 @@ lyrics {
     italic: true;
 }
 
+pageBreak {
+    text-align: center;
+}
+
+
+titlePageTitle {
+    margin-top: 26l;
+    margin-bottom: 2l;
+    text-align: center;
+    font-size: 30;
+}
+titlePageAuthor {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageCredit {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageSource {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageContact {
+    text-align: left;
+}
+titlePageDraftDate {
+    margin-top: 1l;
+    text-align: right;
+}
+titlePageUnknown {
+    margin-top: 1l;
+}

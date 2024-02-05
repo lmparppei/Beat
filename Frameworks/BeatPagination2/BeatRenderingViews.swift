@@ -45,6 +45,9 @@ import UXKit
     /// Main text view
     public var textView:BeatPageTextView?
     
+    /// List of all text views on this page. Remember to add them.
+    public var textViews:[UXTextView] = []
+    
     /// Master page style
     var pageStyle:RenderStyle
     /// Export settings
@@ -61,8 +64,12 @@ import UXKit
     /// Set `true` by subclass if needed
     var isTitlePage = false
     
+    public weak var textViewDelegate:UXTextViewDelegate? {
+        didSet { self.textView?.delegate = self.textViewDelegate }
+    }
+    
     /// Page can take in either a `BeatPaginationPage` or a pure `NSAttributedString`. The page is rendered automatically if the pagination has a renderer connected to it.
-	@objc public init(page:BeatPaginationPage?, content:NSAttributedString? = nil, settings:BeatExportSettings, previewController: BeatPreviewManager?) {
+    @objc public init(page:BeatPaginationPage?, content:NSAttributedString? = nil, settings:BeatExportSettings, previewController: BeatPreviewManager?, textViewDelegate:UXTextViewDelegate? = nil) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
 
 		self.attributedString = content
@@ -99,6 +106,7 @@ import UXKit
 		
 		// Create text views and set attributed string
 		createTextView()
+        self.textViewDelegate = textViewDelegate
         
         // Set initial content. We have to guard this because of differing nullability on macOS and iOS.
         if let textStorage = self.textView?.textStorage {
@@ -114,46 +122,50 @@ import UXKit
 	
 	func createTextView() {
 		self.textView = BeatPageTextView(frame: self.textViewFrame())
-        self.textView?.backgroundColor = .red
-
-        self.textView?.previewController = self.previewController
-		
-		self.textView?.isEditable = false
-        textView?.backgroundColor = .white
-
+        guard let textView = self.textView else {
+            return
+        }
+        
+        textViews.append(textView)
+        
+        textView.previewController = self.previewController
+		textView.isEditable = false
+        textView.backgroundColor = .white
+        //self.textView?.font = fonts.regular
+        
         #if os(macOS)
-            self.textView?.linkTextAttributes = [
+            textView.textContainerInset = CGSizeZero
+            textView.linkTextAttributes = [
                 NSAttributedString.Key.font: fonts.regular,
                 NSAttributedString.Key.cursor: NSCursor.pointingHand
             ]
         #else
-            self.textView?.linkTextAttributes = [NSAttributedString.Key.font: fonts.regular]
+            textView.textContainerInset = UIEdgeInsets.zero
+            textView.linkTextAttributes = [.foregroundColor: UIColor.black]
         #endif
         
         #if os(macOS)
-            self.textView?.displaysLinkToolTips = false
-            self.textView?.isAutomaticLinkDetectionEnabled = false
-            self.textView?.textContainer?.lineFragmentPadding = linePadding
-            self.textView?.textContainerInset = NSSize(width: 0, height: 0)
-            self.textView?.drawsBackground = true
+            textView.displaysLinkToolTips = false
+            textView.isAutomaticLinkDetectionEnabled = false
+            textView.textContainer?.lineFragmentPadding = linePadding
+            textView.textContainerInset = NSSize(width: 0, height: 0)
+            textView.drawsBackground = true
         #endif
 		        
-		self.textView?.font = fonts.regular
 		
         #if os(macOS)
+            // Let's force TextKit 1 on macOS
             let layoutManager = BeatRenderLayoutManager()
             layoutManager.pageView = self
-            
-            // We have to have a conditional check here because of differing optionality on macOS/iOS
-            if let textContainer = self.textView?.textContainer {
-                textContainer.replaceLayoutManager(layoutManager)
-                textContainer.lineFragmentPadding = linePadding
-            }
+
+            textView.textContainer?.replaceLayoutManager(layoutManager)
+            textView.textContainer?.lineFragmentPadding = linePadding
         #else
-            self.textView?.textLayoutManager?.delegate = self
+            // iOS uses TextKit 2
+            textView.textLayoutManager?.delegate = self
         #endif
 				
-		self.addSubview(textView!)
+		self.addSubview(textView)
 	}
 	
 	func textViewFrame() -> CGRect {
@@ -202,7 +214,7 @@ import UXKit
 
 @objc open class BeatPageTextView:UXTextView {
 	weak var previewController:BeatPreviewManager?
-	
+    
 #if os(macOS)
 	/// The user clicked on a link, which direct to `Line` objects
 	override public func clicked(onLink link: Any, at charIndex: Int) {
@@ -227,6 +239,8 @@ import UXKit
             super.draw(layer, in: ctx)
         }
     }
+    
+    
     
 #endif
 }
@@ -339,10 +353,9 @@ import UXKit
             let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
             let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
         #else
-            _ = leftColumn.layoutManager.glyphRange(for: leftColumn.textContainer)
-            _ = rightColumn.layoutManager.glyphRange(for: rightColumn.textContainer)
-            let leftRect = leftColumn.layoutManager.usedRect(for: leftColumn.textContainer)
-            let rightRect = rightColumn.layoutManager.usedRect(for: rightColumn.textContainer)
+            // Avoid using TextKit 1
+            let leftRect = leftColumn.attributedText.boundingRect(with: CGSize(width: leftColumn.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
+            let rightRect = rightColumn.attributedText.boundingRect(with: CGSize(width: rightColumn.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
         #endif
 				
 		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
@@ -436,6 +449,7 @@ import UXKit
 			leftColumn?.isSelectable = false
 			
 			self.addSubview(leftColumn!)
+            self.textViews.append(leftColumn!)
 		}
 
 		if (rightColumn == nil) {
@@ -453,6 +467,7 @@ import UXKit
 			rightColumn?.isSelectable = false
 			
 			self.addSubview(rightColumn!)
+            self.textViews.append(rightColumn!)
 		}
 	}
 }

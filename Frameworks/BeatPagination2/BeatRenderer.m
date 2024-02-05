@@ -48,12 +48,14 @@
     return fonts;
 }
 
-- (BeatExportSettings*)settings {
+- (BeatExportSettings*)settings
+{
     if (self.pagination != nil) return self.pagination.settings;
     else return _settings;
 }
 
-- (void)reloadStyles {
+- (void)reloadStyles
+{
     [self.lineTypeAttributes removeAllObjects];
 }
 
@@ -175,7 +177,7 @@
         [attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, attributedString.length)];
         
         // If this is a SPLIT ELEMENT and rules say so, we'll remove its indentation.
-        if (line.unsafeForPageBreak && !style.indentSplitElements) {
+        if (line.unsafeForPageBreak && !style.indentSplitElements && line.paragraphIn) {
             pStyle.headIndent             -= style.indent;
             pStyle.firstLineHeadIndent     -= style.firstLineIndent;
         }
@@ -193,8 +195,6 @@
             if ([styleNames containsObject:@"Italic"]) traits |= NSItalicFontMask;
             [attributedString applyFontTraits:traits range:range];
 #endif
-            
-            
             
             if ([styleNames containsObject:@"Note"]) {
                 RenderStyle* noteStyle = [self.styles forElement:@"note"];
@@ -220,7 +220,7 @@
     if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
         [attributedString addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, attributedString.length - 1)];
     }
-    
+        
     // Trim the line if needed
     if (style.trim) {
         attributedString = [attributedString trimWhiteSpaceWithIncludeLineBreaks:false].mutableCopy;
@@ -486,17 +486,16 @@
 }
 
 #if TARGET_OS_OSX
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber {
+- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber
+{
     // We might skip first page number (in screenplay mode)
     NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
     
-    NSTextTable* table = NSTextTable.new;
-    CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
+    // We'll use A4 size for both page sizes
+    CGFloat width = self.styles.page.defaultWidthA4 - 10.0;
     width += self.styles.page.contentPadding + self.styles.page.marginLeft;
     
-    // This is duct tape fix. I don't know why page headers are a bit too wide in letter.
-    if (self.settings.paperSize == BeatUSLetter) width -= 15.0;
-    
+    NSTextTable* table = NSTextTable.new;
     [table setContentWidth:width type:NSTextBlockAbsoluteValueType];
     
     NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
@@ -547,10 +546,12 @@
     return pageNumberBlock;
 }
 #else
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber {
+- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber
+{
     NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.", pageNumber] : @"";
     
-    CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
+    // We'll use A4 size for both page sizes
+    CGFloat width = self.styles.page.defaultWidthA4 - 10.0;
     width += self.styles.page.contentPadding + self.styles.page.marginLeft;
     
     CGFloat headerWidth = width * 0.7;
@@ -606,12 +607,20 @@
 {
     BXFont* font;
     
+    CGFloat fontSize = (style.fontSize > 0) ? style.fontSize : 12.0;
+    
     if (style.font.length == 0) {
         // Plain fonts
         if (style.italic && style.bold) font = self.fonts.boldItalic;
-        else if (style.italic)             font = self.fonts.italic;
-        else if (style.bold)             font = self.fonts.bold;
-        else                             font = self.fonts.regular;
+        else if (style.italic)          font = self.fonts.italic;
+        else if (style.bold)            font = self.fonts.bold;
+        else                            font = self.fonts.regular;
+        
+        if (fontSize != 12.0) {
+            if (@available(macOS 10.15, *)) font = [font fontWithSize:style.fontSize];
+            else font = [BXFont fontWithName:font.fontName size:style.fontSize];
+        }
+        
     } else {
         // Specific fonts for some situations
         if ([style.font isEqualToString:@"system"]) {
@@ -620,18 +629,12 @@
             if (style.italic) traits |= BXFontDescriptorTraitItalic;
             if (style.bold) traits |= BXFontDescriptorTraitBold;
             
-            CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
-            font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
+            fontSize = (style.fontSize > 0) ? style.fontSize : 11.0;
+            font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:fontSize]];
         } else {
             // Custom font
-            font = [BXFont fontWithName:style.font size:self.fonts.regular.pointSize];
+            font = [BXFont fontWithName:style.font size:fontSize];
         }
-    }
-    
-    // Non-default font size
-    if (style.fontSize > 0.0 && ![style.font isEqualToString:@"system"]) {
-        if (@available(macOS 10.15, *)) font = [font fontWithSize:style.fontSize];
-        else font = [BXFont fontWithName:font.fontName size:style.fontSize];
     }
     
     return font;
@@ -699,16 +702,12 @@
             }];
             
             // Block sizing
-            CGFloat width = [style widthWithPageSize:paperSize];
-            if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:paperSize];
-            
-            CGFloat blockWidth     = width + style.marginLeft + ((paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
-            if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
+            CGFloat blockWidth     = [self blockWidthFor:line dualDialogue:isDualDialogue];
                         
             // Paragraph style
             NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-            pStyle.headIndent                 = style.marginLeft + style.indent;
-            pStyle.firstLineHeadIndent         = style.marginLeft + style.firstLineIndent;
+            pStyle.headIndent               = style.marginLeft + style.indent;
+            pStyle.firstLineHeadIndent      = style.marginLeft + style.firstLineIndent;
             
             // Check for additional rules
             if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.paragraphIn) {
@@ -744,6 +743,7 @@
                 NSTextBlock* textBlock = NSTextBlock.new;
                 [textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
                 pStyle.textBlocks = @[textBlock];
+     
 #else
                 // This is a cursed solution, but what can I say. TextKit 2 (or iOS for that matter) doesn't support text blocks.
                 CGFloat rightMargin = style.marginLeft + blockWidth - style.marginRight;
@@ -786,12 +786,26 @@
 
 #pragma mark - Convenience methods
 
-- (CGFloat)widthFor:(Line*)line {
+- (CGFloat)widthFor:(Line*)line
+{
     RenderStyle* style = [self.styles forLine:line];
     CGFloat width = [style widthWithPageSize:self.settings.paperSize];
     if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
         
     return width;
+}
+
+/// This is the **full** block width, including margins
+- (CGFloat)blockWidthFor:(Line*)line dualDialogue:(bool)isDualDialogue
+{
+    RenderStyle* style = [self.styles forLine:line];
+    CGFloat width = [style widthWithPageSize:self.settings.paperSize];
+    if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
+    
+    CGFloat blockWidth = width + style.marginLeft + ((self.settings.paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
+    if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
+        
+    return blockWidth;
 }
 
 @end

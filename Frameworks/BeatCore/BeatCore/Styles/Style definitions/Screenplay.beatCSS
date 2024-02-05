@@ -33,8 +33,8 @@ page {
 }
 
 heading {
-    width-a4: 60ch - 4ch;
-    width-us: 62ch - 4ch;
+    width-a4: 60ch - 5ch;
+    width-us: 62ch - 5ch;
     
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);

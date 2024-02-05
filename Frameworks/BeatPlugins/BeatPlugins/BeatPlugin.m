@@ -1929,6 +1929,11 @@
 #endif
 }
 
+- (void)setStylesheet:(NSString*)name
+{
+    [self.delegate setStylesheetAndReformat:name];
+}
+
 
 #pragma mark - Temporary attributes
 

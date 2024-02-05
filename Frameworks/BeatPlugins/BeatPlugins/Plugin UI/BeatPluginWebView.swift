@@ -34,13 +34,13 @@ import WebKit
     func runJS(_ js:String, _ callback:JSValue?)
 }
 
-@objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports {
+@objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports, WKNavigationDelegate {
     @objc weak public var host:BeatPlugin?
     /// The folder URL provided by plugin host (if applicable)
     var baseURL:URL?
     /// A temporary URL for the displayed page. Can be `nil` if we're not loading a plugin.
     var tempURL:URL?
-    
+        
     @objc
     public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
         // Create configuration for WKWebView
@@ -76,8 +76,8 @@ import WebKit
         webView.host = host
         webView.baseURL = (host.pluginURL != nil) ? host.pluginURL : nil
         
-        
         webView.setHTML(html)
+        webView.navigationDelegate = webView
         
         return webView
     }
@@ -147,6 +147,27 @@ import WebKit
         if (!loadedURL) {
             self.loadHTMLString(template, baseURL: nil)
         }
+    }
+    
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
+        guard let url = navigationAction.request.url,
+              let scheme = url.scheme
+        else {
+            decisionHandler(.cancel)
+            return
+        }
+
+        #if os(macOS)
+        // Allow e-mails on macOS
+        if scheme.lowercased() == "mailto" {
+            NSWorkspace.shared.open(url)
+            decisionHandler(.cancel)
+            return
+        }
+        #endif
+        
+        decisionHandler(.allow)
     }
     
     #if os(macOS)

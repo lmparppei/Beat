@@ -52,7 +52,7 @@
 }
 
 /**
- This method returns page content as `NSAttributedString`. To get it working, you'll need to hook up a `BeatRendererDelegate` instance to the paginator. macOS and iOS require their own respective classes which comply to the protocol.
+ This method returns page content as `NSAttributedString`. classes which comply to the protocol.
  */
 -(NSAttributedString*)attributedString
 {

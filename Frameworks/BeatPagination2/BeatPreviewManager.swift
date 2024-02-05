@@ -314,12 +314,12 @@ import UXKit
 
         var pageView:UXView?
                         
-        // If we have a title page and page index is 0, we'll return that title page
+        // If we have a title page and page index is 0, we'll return a title page view
         if pageIndex == 0 && pagination.titlePageContent != nil {
             pageView = BeatTitlePageView(titlePage: pagination.titlePage(), settings: settings)
         }
         else if let page = self.pagination?.pages[actualIndex] as? BeatPaginationPage {
-            pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: nil)
+            pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
         }
         
         if (pageView != nil) {
@@ -330,5 +330,13 @@ import UXKit
             return UXView()
         }
     }
-    
+}
+
+extension BeatPreviewManager:UXTextViewDelegate {
+    #if os(iOS)
+    public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        print("URL", URL)
+        return false
+    }
+    #endif
 }

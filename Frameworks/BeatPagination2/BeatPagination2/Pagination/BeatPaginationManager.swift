@@ -81,7 +81,7 @@ import BeatCore
 	weak var delegate:BeatPaginationManagerDelegate?
 
 	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
-	public var renderer: BeatRendererDelegate?
+	public var renderer: BeatRenderer?
     
     /// When `livePagination` is set `true`, pagination operations will try to reuse pre-paginated content when possible.
     public var livePagination = false
@@ -102,11 +102,11 @@ import BeatCore
     
     // MARK: - Initialization
     
-	@objc public convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
+	@objc public convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRenderer?, livePagination:Bool) {
 		self.init(settings: delegate.exportSettings, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
 	
-	@objc public init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
+	@objc public init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRenderer?, livePagination:Bool) {
 		// Load default styles if none were explicitly delivered through export settings
 		if (settings.styles == nil) {
             settings.styles = BeatStyles.shared.defaultStyles

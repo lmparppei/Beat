@@ -19,16 +19,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatRenderer : NSObject <BeatRendererDelegate>
+@interface BeatRenderer : NSObject
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic, weak) BeatPaginationManager* pagination;
 
 - (instancetype)initWithSettings:(BeatExportSettings*)settings;
 
+/// Removes all stored styles.
+/// @note Styles are not actually reloaded, but loaded on the fly as needed after clearing them.
+- (void)reloadStyles;
+
 - (NSArray<NSAttributedString*>*)renderPages:(NSArray<BeatPaginationPage*>*)pages;
 - (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage;
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage;
 - (NSAttributedString*)renderLine:(Line*)line;
+
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages;
+- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber;
+
+- (CGFloat)blockWidthFor:(Line*)line dualDialogue:(bool)isDualDialogue;
 @end
 
 NS_ASSUME_NONNULL_END

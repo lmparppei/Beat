@@ -8,6 +8,8 @@
 import BeatCore
 import BeatParsing
 
+#if os(iOS)
+
 /// `UILabel` subclass which acts as a "table cell" in text attachments
 @objc public class BeatTextTableCell:UILabel {
     var width = 0.0
@@ -24,6 +26,8 @@ import BeatParsing
         self.tintColor = UIColor.black
         self.lineBreakMode = .byWordWrapping
         self.numberOfLines = 50
+        
+        self.layer.shouldRasterize = false
         
         // Get and remove link
         if content.length > 0, let linkAttr = content.attribute(.link, at: 0, effectiveRange: nil) {
@@ -60,10 +64,6 @@ import BeatParsing
         
         // Calculate frame size
         let rect = attributedText.boundingRect(with: CGSize(width: self.frame.width, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
-//        if let pStyle = attributedText.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as? NSParagraphStyle {
-//            rect.size.height -= pStyle.paragraphSpacingBefore;
-//            rect.size.height -= pStyle.paragraphSpacing;
-//        }
         
         self.frame.size.height = rect.size.height
         self.frame.origin.y = 0
@@ -154,9 +154,13 @@ extension BeatPaginationPageView:NSTextLayoutManagerDelegate {
     }
 }
 
-class BeatRenderingTextFragment:NSTextLayoutFragment {
-    override func draw(at point: CGPoint, in context: CGContext) {
-        super.draw(at: point, in: context)
+public class BeatRenderingTextFragment:NSTextLayoutFragment {
+    public func draw(at point: CGPoint, origin:CGPoint, in context: CGContext) {
+        var actualPoint = point
+        actualPoint.x += origin.x
+        actualPoint.y += origin.y
+        
+        super.draw(at: actualPoint, in: context)
         
         let pageView = self.textLayoutManager?.delegate as? BeatPaginationPageView
         let visibleRevisions = BeatRevisions.revisionColors()
@@ -194,6 +198,12 @@ class BeatRenderingTextFragment:NSTextLayoutFragment {
                 let width = 25.0
                 let x = container.size.width - layoutFrame.origin.x - width
                 
+                context.saveGState()
+                if origin != CGPointZero {
+                    // We'll only translate if we're in PDF mode
+                    context.translateBy(x: origin.x + layoutFrame.origin.x, y: origin.y + layoutFrame.origin.y)
+                }
+                
                 // Get line fragment rects from text view
                 let rects = self.textLayoutManager?.lineRects(in: attrRange) ?? []
                 for rect in rects {
@@ -219,14 +229,20 @@ class BeatRenderingTextFragment:NSTextLayoutFragment {
                         NSAttributedString.Key.backgroundColor: UIColor.white
                     ])
                 }
+                
+                context.restoreGState()
 
             })
         }
     }
     
+    override public func draw(at point: CGPoint, in context: CGContext) {
+        draw(at: point, origin:CGPointZero, in: context)
+    }
+    
     /// We need to have line fragments that are as wide as the container, so we can draw on the edges
     /// Thank you, Shadowfacts – https://shadowfacts.net/2022/textkit-2/
-    override var layoutFragmentFrame: CGRect {
+    override public var layoutFragmentFrame: CGRect {
         var rect = super.layoutFragmentFrame
         
         if let container = self.textLayoutManager?.textContainer {
@@ -256,3 +272,5 @@ extension NSTextLayoutManager {
         return textLineRects
     }
 }
+
+#endif

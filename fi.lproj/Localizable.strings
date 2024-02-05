@@ -183,3 +183,5 @@
 "character.editor.age" = "Ikä";
 "character.editor.biography" = "Kuvaus";
 "character.editor.lines" = "Repliikit";
+
+"backup.browseVersions" = "Selaa versioita...";

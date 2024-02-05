@@ -134,12 +134,7 @@
     if (style.font) font = [self fontFor:style];
     
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
-    if (font == nil) {
-        NSLog(@"!!! STOP");
-        NSLog(@"    • fonts: %@", _delegate.fonts);
-        NSLog(@"    • delegate: %@", _delegate);
-        NSLog(@"    .... halt");
-    }
+    
     NSAttributedString* string = [NSMutableAttributedString.alloc initWithString:stringWithoutFormatting attributes:@{
         NSFontAttributeName: font,
         NSParagraphStyleAttributeName: pStyle
@@ -336,7 +331,8 @@
     return pageBreakData;
 }
 
-- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
+- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace
+{
 	Line *line = self.lines.firstObject;
 	NSString *str = [line stripFormattingWithSettings:self.delegate.settings];
 	NSString *retain = @"";
@@ -348,8 +344,10 @@
     CGFloat width = [style widthWithPageSize:paperSize];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
 	
-	// Create the layout manager for remaining space calculation
-    NSLayoutManager *lm = [self layoutManagerForString:str line:line];
+	// Create the layout manager for remaining space calculation.
+    // For reason or another, macOS Sonoma stopped retaining the text storage, and we need to explicitly create it here.
+    NSTextStorage* textStorage;
+    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
 	
 	// We'll get the number of lines rather than calculating exact size in NSTextField
 	__block NSInteger numberOfLines = 0;
@@ -359,8 +357,12 @@
 	__block NSInteger length = 0;
     CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
     
-	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+    NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
+    
+	[lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
+        NSRange cRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+        
 		if (numberOfLines < remainingSpace / lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
 			length += charRange.length;
@@ -369,8 +371,9 @@
 			*stop = true;
 		}
 	}];
-		
-	retain = [str substringToIndex:length];
+    
+    // If there's something to retain, let's split the string
+    if (length <= str.length) retain = [str substringToIndex:length];
 	
 	NSArray *splitElements = [line splitAndFormatToFountainAt:retain.length];
 	Line *prePageBreak = splitElements[0];
@@ -378,7 +381,6 @@
 	
     NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
         
-	//BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line lineHeight:self.delegate.styles.page.lineHeight reason:@"Paragraph split"];
     BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
 	return @[@[prePageBreak], onNextPage, pageBreak];
 }
@@ -661,7 +663,8 @@
 }
 
 /// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
-- (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line
+/// @warning: This code uses **TextKit 1**
+- (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line textStorage:(out NSTextStorage**)textStorage
 {
     LineType type = line.type;
     
@@ -678,33 +681,22 @@
     if (style.font) font = [self fontFor:style];
     
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
-    CGFloat width = [style widthWithPageSize:paperSize];
+    CGFloat width = [self.delegate.renderer blockWidthFor:line dualDialogue:false];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
-    
-    NSParagraphStyle* pStyle = [self.delegate paragraphStyleFor:line];
-    
-#if TARGET_OS_IOS
-    // Set font size to 80% on iOS
-    // font = [font fontWithSize:font.pointSize * 0.8];
-#endif
-    
+        
+    NSAttributedString* attrStr = [self.delegate.renderer renderLine:line ofBlock:self dualDialogueElement:false firstElementOnPage:false];
+            
     // set up the layout manager
-    NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{
-        NSFontAttributeName: font,
-        NSParagraphStyleAttributeName: pStyle
-    }];
+    *textStorage   = [[NSTextStorage alloc] initWithAttributedString:attrStr];
     NSLayoutManager *layoutManager = NSLayoutManager.new;
     
     NSTextContainer *textContainer = NSTextContainer.new;
     [textContainer setSize:CGSizeMake(width, MAXFLOAT)];
     
     [layoutManager addTextContainer:textContainer];
-    [textStorage addLayoutManager:layoutManager];
+    [*textStorage addLayoutManager:layoutManager];
     [textContainer setLineFragmentPadding:0];
     [layoutManager glyphRangeForTextContainer:textContainer];
-    
-    // Perform layout
-    [layoutManager numberOfGlyphs];
     
     return layoutManager;
 }
