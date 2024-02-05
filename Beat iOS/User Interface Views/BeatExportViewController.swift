@@ -24,7 +24,7 @@ class BeatExportSettingViewController:UIViewController {
 }
 
 /// Print/export dialog
-final class BeatExportViewController:BeatExportSettingViewController, PrintViewDelegate {
+final class BeatExportViewController:BeatExportSettingViewController {
 	var printViews: NSMutableArray! = NSMutableArray()
 	
 	@objc weak var senderButton:UIBarButtonItem?
@@ -32,9 +32,7 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 	@IBOutlet @objc weak var temporaryView:UIView?
 	
 	@IBAction override func export(_ sender: Any?) {
-		guard let editorDelegate = self.editorDelegate,
-			  let lines = editorDelegate.parser.lines as? [Line],
-			  let settings = settingController?.exportSettings()
+		guard let editorDelegate = self.editorDelegate
 		else { return }
 		
 		
@@ -47,6 +45,7 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 			   let fileURL = url?.appendingPathComponent(editorDelegate.fileNameString(), isDirectory: false).appendingPathExtension("pdf") {
 				do {
 					try pdfData.write(to: fileURL)
+					print("URL",fileURL)
 					self.didExportFile(at: fileURL)
 				} catch {
 					print("Error",error)
@@ -55,16 +54,18 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 		}
 		
 		printViews.add(printer)
+	}
 		
-		//let printView:BeatPrintView = BeatPrintView(script: lines.swiftArray(), operation: .toPDF, settings: settings, delegate: self)
-		//printViews.add(printView)
-	}
-	
-	func didFinishPreview(at url: URL!) {
-		print("Preview finished")
-	}
-	
 	func didExportFile(at url: URL!) {
+		guard let url = url else {
+			self.dismiss(animated: true)
+			return
+		}
+		
+		let shareController = BeatShareSheetController(items: [url], excludedTypes: [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo])
+		present(shareController, animated: true)
+		
+		/*
 		let avc = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
 		avc.excludedActivityTypes = [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo]
 			
@@ -74,14 +75,47 @@ final class BeatExportViewController:BeatExportSettingViewController, PrintViewD
 		} else {
 			// Let's show the activity controller in place of the original popover
 			self.dismiss(animated: true) {
+				avc.popoverPresentationController?.sourceView = self.view
 				avc.popoverPresentationController?.barButtonItem = self.senderButton
+				avc.modalPresentationStyle = .overCurrentContext
 				self.senderVC?.present(avc, animated: true)
 			}
 		}
+		 */
 	}
 	
 	func viewController() -> UIViewController! {
 		return self
+	}
+}
+
+class BeatShareSheetController: UIViewController {
+	private let activityController: UIActivityViewController
+
+	init(items: [Any], excludedTypes:[UIActivity.ActivityType] = []) {
+		self.activityController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+		self.activityController.excludedActivityTypes = excludedTypes
+		
+		super.init(nibName: nil, bundle: nil)
+		modalPresentationStyle = .formSheet
+	}
+
+	required init?(coder: NSCoder) { fatalError() }
+
+	override func viewDidLoad() {
+		super.viewDidLoad()
+	
+		addChild(activityController)
+		view.addSubview(activityController.view)
+		
+		activityController.view.translatesAutoresizingMaskIntoConstraints = false
+	
+		NSLayoutConstraint.activate([
+			activityController.view.topAnchor.constraint(equalTo: view.topAnchor),
+			activityController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+			activityController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+			activityController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+		])
 	}
 }
 
@@ -170,11 +204,9 @@ final class BeatExportSettingController:UITableViewController {
 	
 	/// Refresh the underlying document
 	func refreshDocument() {
-		weak var editorDelegate = editorDelegate
-		Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-			editorDelegate?.refreshLayoutByExportSettings()
+		DispatchQueue.main.async { [weak self] in
+			self?.editorDelegate?.reloadStyles()
 		}
-		
 	}
 	
 	// MARK: Export settings
@@ -188,6 +220,12 @@ final class BeatExportSettingController:UITableViewController {
 		// Then, let's adjust them according to export panel
 		settings.paperSize = BeatPaperSize(rawValue: self.paperSize?.selectedSegmentIndex ?? 0) ?? .A4
 		settings.printSceneNumbers = printSceneNumbers?.isOn ?? true
+				
+		var additionalTypes = IndexSet()
+		
+		if printSections?.isOn ?? false { additionalTypes.insert(Int(LineType.section.rawValue)) }
+		if printSynopsis?.isOn ?? false { additionalTypes.insert(Int(LineType.synopse.rawValue)) }
+		settings.additionalTypes = additionalTypes
 		
 		var revisions:[String] = BeatRevisions.revisionColors()
 		for rev in hiddenRevisions {

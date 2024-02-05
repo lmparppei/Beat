@@ -133,11 +133,56 @@ class BeatPDFPrinter:NSObject {
 		let data = renderer.pdfData { (context) in
 			for page in self.pageViews {
 				temporaryView?.addSubview(page)
-				temporaryView?.setNeedsDisplay()
+				page.setNeedsLayout()
+				page.setNeedsDisplay()
 				
 				context.beginPage()
-				let cgContext = context.cgContext				
-				page.textView?.layer.render(in: cgContext)
+				
+				let cgContext = context.cgContext
+				
+				// Iterate through each text view on page
+				for textView in page.textViews {
+					
+					guard let location = textView.textLayoutManager?.documentRange.location else {
+						// This view probably uses TextKit 1, in which case all hope is lost
+						continue
+					}
+					
+					textView.textLayoutManager?.enumerateTextLayoutFragments(from: location, options: [.ensuresLayout, .estimatesSize, .ensuresExtraLineFragment], using: { fragment in
+						
+						let frame = fragment.layoutFragmentFrame
+						var origin = textView.frame.origin
+						
+						origin.x += textView.textContainerInset.left
+						origin.y += textView.textContainerInset.top
+						
+						var actualFrame = frame
+						actualFrame.origin.x += origin.x
+						actualFrame.origin.y += origin.y
+												
+						// Draw text attachment
+						if let provider = fragment.textAttachmentViewProviders.first, let view = provider.view {
+							let attachmentFrame = fragment.frameForTextAttachment(at: fragment.rangeInElement.location)
+							actualFrame.origin.y += attachmentFrame.origin.y
+							
+							cgContext.saveGState()
+							cgContext.translateBy(x: actualFrame.origin.x, y: actualFrame.origin.y)
+							view.layer.render(in: cgContext)
+							cgContext.restoreGState()
+							
+							return true
+						}
+						
+						if let paragraph = fragment as? BeatRenderingTextFragment {
+							// Draw Beat fragments
+							paragraph.draw(at: frame.origin, origin: origin, in: cgContext)
+						} else {
+							// Draw plain fragments
+							fragment.draw(at: actualFrame.origin, in: cgContext)
+						}
+						return true
+					})
+				}
 				
 				page.removeFromSuperview()
 			}

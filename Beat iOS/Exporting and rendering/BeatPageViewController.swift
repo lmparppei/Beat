@@ -73,18 +73,19 @@ import BeatCore
         self.delegate = self
         
         self.maximumZoomScale = 2.0
-        self.minimumZoomScale = 0.5
+		self.minimumZoomScale = 1.0
+		
         backgroundColor = .black
         
         let container = UIView()
         self.addSubview(container)
         self.container = container
-        
+		
         self.delegate = self
 	
         reload()
     }
-	
+		
 	public func clear() {
 		for pageView in self.loadedPageViews.values {
 			pageView.removeFromSuperview()
@@ -107,9 +108,19 @@ import BeatCore
             loadPagesInBounds(self.bounds)
         }
     }
+	override public var frame: CGRect {
+		didSet {
+			updateContentPosition()
+			loadPagesInBounds(self.bounds)
+			updateScale()
+		}
+	}
+	
 
     override public var contentSize: CGSize {
-        didSet { updateContentPosition() }
+		didSet {
+			updateContentPosition()
+		}
     }
 	
 	public func scrollToPage(_ pageIndex:Int) {
@@ -130,14 +141,16 @@ import BeatCore
         
         self.zoomScale = scale
         self.minimumZoomScale = scale
+		self.maximumZoomScale = 2.0
     }
     
     private func updateContentPosition() {
-        let subView = subviews[0] // get the content view
-        
+		guard subviews.count > 0 else { return }
+		
+		// get the content view
+        let subView = subviews[0]
         let offsetX = max(0.5 * (bounds.size.width - contentSize.width), 0.0)
-        //let offsetY = max(0.5 * (bounds.size.height - contentSize.height), 0.0)
-
+		
         subView.center = CGPointMake(contentSize.width * 0.5 + offsetX, subView.center.y)
     }
     
@@ -149,9 +162,7 @@ import BeatCore
         
         let pageSize = self.dataSource?.pageSize() ?? BeatPaperSizing.size(for: .A4)
         let pages = self.dataSource?.numberOfPages() ?? 0
-		
-		let originalBounds = self.bounds
-		
+				
         container.frame.size.width = pageSize.width
         container.frame.size.height = Double(pages) * (pageSize.height + spacing)
         
