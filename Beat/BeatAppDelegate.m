@@ -211,7 +211,7 @@
 	[NSNotificationCenter.defaultCenter addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 		
-		if (openDocuments.count == 1 && !self.welcomeWindow) {
+		if (openDocuments.count == 0 && !self.welcomeWindow) {
 			[self showLaunchScreen];
 		}
 		
@@ -379,7 +379,7 @@
 
 #pragma mark - Tutorial and templates
 
-- (IBAction)showReference:(id)sender
+- (IBAction)openTutorial:(id)sender
 {
 	[self showTemplate:@"Tutorial"];
 }
@@ -421,6 +421,7 @@
 
 -(void)showLaunchScreen
 {
+	if (NSDocumentController.sharedDocumentController.documents.count > 0) return;
 	[self showLaunchScreenWithViewControllerName:@"LaunchScreen"];
 }
 
@@ -530,19 +531,18 @@
 #pragma mark - Menu delegation
 
 -(void)menuWillOpen:(NSMenu *)menu {
-	if (menu == _versionMenu) {
-		[self versionMenuItems];
+	if (menu == _backupMenu) {
+		[self backupMenuItems];
 	}
 }
 
 #pragma mark - Version control
 
-// NOTE: This is not in use currently, because of weird autosave errors
-// To put it back, you need a REVERT menu, set its outlet to _versionMenu and
-// set this class as the delegate.
+// Shows a list of backup items
 
-- (void)versionMenuItems {
-	[_versionMenu removeAllItems];
+- (void)backupMenuItems
+{
+	[_backupMenu removeAllItems];
 	
 	NSDocument *doc = NSDocumentController.sharedDocumentController.currentDocument;
 	NSURL *url = doc.fileURL;
@@ -554,30 +554,37 @@
 		[df setDateStyle:NSDateFormatterShortStyle];
 		[df setTimeStyle:NSDateFormatterShortStyle];
 		
+		// Revert to saved
 		BeatMenuItemWithURL *toSaved = [BeatMenuItemWithURL.alloc initWithTitle:NSLocalizedString(@"backup.revertToSaved", nil) action:@selector(revertTo:) keyEquivalent:@""];
 		toSaved.url = doc.fileURL;
+		[_backupMenu addItem:toSaved];
 		
-		[_versionMenu addItem:toSaved];
-		[_versionMenu addItem:NSMenuItem.separatorItem];
+		// Browse versions
+		if (@available(macOS 13.0, *)) {
+			NSMenuItem *browse = [NSMenuItem.alloc initWithTitle:NSLocalizedString(@"backup.browseVersions", nil) action:@selector(browseVersions:) keyEquivalent:@""];
+			[_backupMenu addItem:browse];
+		}
+		
+		[_backupMenu addItem:NSMenuItem.separatorItem];
 		
 		for (BeatBackupFile *version in versions) {
 			NSString *modificationTime = [df stringFromDate:version.date];
-			BeatMenuItemWithURL *item = [BeatMenuItemWithURL.alloc initWithTitle:modificationTime action:@selector(revertTo:) keyEquivalent:@""];
+			BeatMenuItemWithURL *item = [BeatMenuItemWithURL.alloc initWithTitle:modificationTime action:@selector(restoreBackup:) keyEquivalent:@""];
 			item.url = [NSURL fileURLWithPath:version.path];
-			[_versionMenu addItem:item];
+			[_backupMenu addItem:item];
 		}
 		
 		if (versions.count) {
-			[_versionMenu addItem:NSMenuItem.separatorItem];
+			[_backupMenu addItem:NSMenuItem.separatorItem];
 		}
 	}
 	
 	NSMenuItem *backupVault = [NSMenuItem.alloc initWithTitle:[BeatLocalization localizedStringForKey:@"backup.backupVault"] action:@selector(openBackupFolder:) keyEquivalent:@""];
-	[_versionMenu addItem:backupVault];
+	[_backupMenu addItem:backupVault];
 }
 
-- (IBAction)revertTo:(id)sender {
-	
+- (IBAction)restoreBackup:(id)sender
+{
 	BeatModalInput *input = BeatModalInput.alloc.init;
 	[input confirmBoxWithMessage:[BeatLocalization localizedStringForKey:@"backup.reverting.title"]
 							text:[BeatLocalization localizedStringForKey:@"backup.reverting.message"] forWindow:NSDocumentController.sharedDocumentController.currentDocument.windowForSheet completion:^(bool result) {
@@ -600,13 +607,14 @@
 	}];
 }
 
-- (IBAction)openBackupFolder:(id)sender {
+- (IBAction)openBackupFolder:(id)sender
+{
 	[BeatBackup openBackupFolder];
 }
 
-/*
+
 - (void)versionMenuItems {
-	[_versionMenu removeAllItems];
+	[_revertMenu removeAllItems];
 	
 	NSDocument *doc = NSDocumentController.sharedDocumentController.currentDocument;
 	NSURL *url = doc.fileURL;
@@ -624,8 +632,8 @@
 	toSaved.tag = NSNotFound;
 	if (!doc.isDocumentEdited) toSaved.state = NSOnState;
 	
-	[_versionMenu addItem:toSaved];
-	[_versionMenu addItem:NSMenuItem.separatorItem];
+	[_revertMenu addItem:toSaved];
+	[_revertMenu addItem:NSMenuItem.separatorItem];
 	
 	// Only allow 10
 	NSInteger count = 0;
@@ -642,13 +650,13 @@
 		
 		if ([[(Document*)doc revertedTo] isEqualTo:version.URL]) item.state = NSOnState;
 		
-		[_versionMenu addItem:item];
+		[_revertMenu addItem:item];
 		
 		count++;
 	}
 	
-	[_versionMenu addItem:NSMenuItem.separatorItem];
-	[_versionMenu addItemWithTitle:@"Browse Versions..." action:@selector(browseVersions:) keyEquivalent:@""];
+	[_revertMenu addItem:NSMenuItem.separatorItem];
+	[_revertMenu addItemWithTitle:@"Browse Versions..." action:@selector(browseVersions:) keyEquivalent:@""];
 }
 
 - (void)browseVersions:(id)sender {
@@ -678,7 +686,7 @@
 		}
 	} buttons:@[@"Revert", @"Cancel"]];
 }
-*/
+
  
 #pragma mark - Plugin support
 

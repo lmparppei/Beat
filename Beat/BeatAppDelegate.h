@@ -16,39 +16,39 @@
 @property (nonatomic) bool forceLightMode;
 @property (nonatomic) bool forceDarkMode;
 
-// Versioning menu
-@property (nonatomic, weak) IBOutlet NSMenu *versionMenu;
+/// Backup versions
+@property (nonatomic, weak) IBOutlet NSMenu *backupMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *revertMenu;
 
-// Plugin support
 @property (nonatomic, weak) IBOutlet NSMenu *pluginMenu;
 @property (nonatomic, weak) IBOutlet NSMenu *exportMenu;
 @property (nonatomic, weak) IBOutlet NSMenu *importMenu;
 
-// Restoration
-@property (nonatomic) bool preventRestoration;
-
-// Modifier for "pro" version, meaning the App Store edition.
-// You could think that one can just change this byte to true in the open source version, but actually the "pro" stuff is just additional content and not really restricting any other functionality in the app, so it's no use.
-@property (nonatomic) bool proMode;
-
+/// Returns `true` when the app is running in dark mode – either simulated (10.13) or real (10.14+)
 - (bool)isDark;
 - (void)toggleDarkMode;
+/// Returns `true` when the app is forced to light mode, even though the OS is set to dark
 - (bool)isForcedLightMode;
+/// Returns `true` when the app is forced to dark mode, even though the OS is set to light
 - (bool)isForcedDarkMode;
+/// Returns `true` when the OS is set to dark mode
 - (bool)OSisDark;
 
+/// Opens a template file with the given name
 - (void)showTemplate:(NSString*)name;
 
 + (NSURL*)appDataPath:(NSString*)subPath;
 - (NSURL*)appDataPath:(NSString*)subPath;
-- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix;
+- (NSString*)pathForTemporaryFileWithPrefix:(NSString *)prefix;
 - (id)newDocumentWithContents:(NSString*)string;
 
 - (IBAction)openPluginLibrary:(id)sender;
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 
-- (IBAction)showReference:(id)sender;
+/// Opens tutorial
+- (IBAction)openTutorial:(id)sender;
 
+/// Opens template menu
 - (void)showTemplates;
 
 @end
