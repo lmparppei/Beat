@@ -62,13 +62,12 @@ import WebKit
 
         // Initialize (custom) webkit view
         let webView = BeatPluginWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: config)
+        if #available(macOS 13.3, iOS 16.4, tvOS 16.4, *) {
+            webView.isInspectable = true
+        }
+        
         #if os(macOS)
         webView.autoresizingMask = [.width, .height]
-
-        if #available(macOS 13.3, *) {
-            //webView.isInspectable = true
-        }
-
         #elseif os(iOS)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #endif

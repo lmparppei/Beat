@@ -160,15 +160,43 @@ class BeatLaunchScreenButton: NSButtonCell {
 	}
 	
 	override func mouseEntered(with event: NSEvent) {
-		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
-			self.controlView?.layer?.animate(color: NSColor.windowBackgroundColor.withAlphaComponent(0.8).cgColor, keyPath: "backgroundColor", duration: 0.05)
-		})
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance {
+			self.controlView?.layer?.animate(color: NSColor.windowBackgroundColor.withAlphaComponent(0.6).cgColor, keyPath: "backgroundColor", duration: 0.05)
+		}
 	}
 	
 	override func mouseExited(with event: NSEvent) {
-		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance({
+		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance {
 			self.controlView?.layer?.animate(color: NSColor.clear.cgColor, keyPath: "backgroundColor", duration: 0.1)
-		})
+		}
+	}
+}
+
+class BeatTextOnlyButton:NSButton {
+	override func awakeFromNib() {
+		self.window?.acceptsMouseMovedEvents = true
+		super.awakeFromNib()
+		
+		let area = NSTrackingArea(rect: self.bounds, options: [.mouseMoved, .activeAlways, .mouseEnteredAndExited], owner: self)
+		self.addTrackingArea(area)
+		
+
+		
+	}
+	
+	override func mouseEntered(with event: NSEvent) {
+		NSAnimationContext.runAnimationGroup { ctx in
+			ctx.duration = 0.4
+		} completionHandler: {
+			self.alphaValue = 1.0
+		}
+	}
+	override func mouseExited(with event: NSEvent) {
+		NSAnimationContext.runAnimationGroup { ctx in
+			ctx.duration = 0.4
+		} completionHandler: {
+			self.alphaValue = 0.8
+		}
 	}
 }
 
@@ -185,3 +213,4 @@ class BeatLaunchScreenButton: NSButtonCell {
  imagine opening the door
  
  */
+

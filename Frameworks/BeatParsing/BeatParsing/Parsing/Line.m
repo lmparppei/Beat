@@ -437,12 +437,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns the last character as `unichar`
 - (unichar)lastCharacter {
-    if (_string.length > 0) {
-        return [_string characterAtIndex:self.length - 1];
-    } else {
-        // Return error value
-        return 0;
-    }
+    if (_string.length > 0) return [_string characterAtIndex:self.length - 1];
+    else return 0; // 0 is error in this case
 }
 
 /// Returns `true` if the stored original content is equal to current string

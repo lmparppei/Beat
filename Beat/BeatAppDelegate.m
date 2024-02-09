@@ -561,8 +561,8 @@
 		
 		// Browse versions
 		if (@available(macOS 13.0, *)) {
-			NSMenuItem *browse = [NSMenuItem.alloc initWithTitle:NSLocalizedString(@"backup.browseVersions", nil) action:@selector(browseVersions:) keyEquivalent:@""];
-			[_backupMenu addItem:browse];
+			// NSMenuItem *browse = [NSMenuItem.alloc initWithTitle:NSLocalizedString(@"backup.browseVersions", nil) action:@selector(browseVersions:) keyEquivalent:@""];
+			// [_backupMenu addItem:browse];
 		}
 		
 		[_backupMenu addItem:NSMenuItem.separatorItem];

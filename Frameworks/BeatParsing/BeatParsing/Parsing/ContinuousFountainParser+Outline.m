@@ -195,7 +195,7 @@
 - (void)addUpdateToOutlineAtLine:(Line*)line didChangeType:(bool)didChangeType
 {
     OutlineScene* scene = [self outlineElementInRange:line.textRange];
-    if (scene) [self.outlineChanges.updated addObject:scene];
+    if (scene != nil) [self.outlineChanges.updated addObject:scene];
     
     // In some cases we also need to update the surrounding elements
     if (didChangeType) {

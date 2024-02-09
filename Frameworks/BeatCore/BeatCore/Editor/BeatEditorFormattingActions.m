@@ -287,8 +287,49 @@ static NSString *revisionAttribute = @"Revision";
     [_delegate.textActions replaceRange:range withString:string.uppercaseString];
 }
 
-- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(BeatFormatting)style
+/*
+ // An initial attempt at making a more sensible formatting method but... uh. No hope.
+- (void)addFormattingTo:(NSRange)range open:(NSString*)openSymbol close:(NSString*)closeSymbol style:(BeatMarkupStyle)style
 {
+    NSString* text = _delegate.text;
+        
+    bool strip = false;
+    
+    // First look around the item
+    NSInteger start = range.location;
+    NSInteger end = NSMaxRange(range);
+    
+    NSInteger precedingStars = 0;
+    NSInteger followingStars = 0;
+    
+    while (start >= 0) {
+        if ([text characterAtIndex:start] != '*') break;
+        precedingStars++;
+        start--;
+    }
+    while (end < text.length && followingStars < precedingStars) {
+        if ([text characterAtIndex:end] != '*') break;
+        followingStars++;
+        end++;
+    }
+    
+    // Same amount of stars OR over 3 stars. Strip the styling we were about to add
+    if ((precedingStars && followingStars && precedingStars == openSymbol.length) ||
+        (precedingStars == followingStars && precedingStars > 2)) {
+        strip = true;
+    }
+
+    
+    if (strip) {
+        // Remove anything that's here
+    }
+}
+*/
+
+- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(BeatMarkupStyle)style
+{
+    //[self addFormattingTo:cursorLocation open:startingSymbol close:endSymbol style:style];
+    
     // Looking at this in 2023... oh my. TODO: Fix this at some point.
     
 	// Don't go out of range
@@ -380,7 +421,8 @@ static NSString *revisionAttribute = @"Revision";
 	self.delegate.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
 }
 
-- (void)forceElement:(LineType)lineType {
+- (void)forceElement:(LineType)lineType
+{
 	if (lineType == action) [self forceAction:self];
 	else if (lineType == heading) [self forceHeading:self];
 	else if (lineType == character) [self forceCharacter:self];

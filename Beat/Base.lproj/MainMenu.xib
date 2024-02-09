@@ -196,28 +196,22 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="o7H-J0-CK2">
                                     <items>
-                                        <menuItem title="HTML…" hidden="YES" id="gFk-1w-5jg">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="exportHTML:" target="-1" id="uwn-TO-nla"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Export Final Draft (FDX) File..." id="C9z-84-Cmq" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="FDX"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="exportFile:" target="-1" id="oyH-t2-FZW"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Export Rich Text Format (RTF) File..." id="5SZ-7j-p2G" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
+                                        <menuItem title="Export Rich Text Format (RTF) File..." hidden="YES" id="5SZ-7j-p2G" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="format" value="RTF"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="exportFile:" target="-1" id="uMo-BG-fmy"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Export Final Draft (FDX) File..." id="wsV-hQ-HBQ" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="FDX"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="exportFile:" target="-1" id="lfw-6h-ETE"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Export Outline..." id="lAo-B9-uaU">
@@ -267,7 +261,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eOw-SD-I2a"/>
-                            <menuItem title="Show Selection Info" keyEquivalent="I" id="r8I-XP-gc2">
+                            <menuItem title="Show Word and Page Count" keyEquivalent="I" id="r8I-XP-gc2">
                                 <connections>
                                     <action selector="showInfo:" target="-1" id="OZ4-AM-83P"/>
                                 </connections>

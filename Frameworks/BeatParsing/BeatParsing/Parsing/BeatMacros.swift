@@ -4,6 +4,27 @@
 //
 //  Created by Lauri-Matti Parppei on 2.10.2023.
 //
+/**
+ 
+ This is used to parse macros in Fountain content.
+ Macros are specified as ``{{macro}}``. `Line` objects know the raw ranges of macro content, and will also deliver a list of actual macro strings to this parser.
+ 
+ There are three types of macros: `string`, `serial` (which can be `series` for compatibility with Highland) and `date`.
+ String macros require a definition, whereas serials start at `1 ` by default:
+ 
+ __String macros__
+ Definition: `{{ macroName = Hello world }}`
+ Usage: `{{ macroName }}`
+ 
+ __Serial macro__
+ Definition `{{ serial macroName }}` (defaults to 1) or `{{ serial macroName = 100 }}` (starts off at `100`)
+ Usage: `{{ macroName }}`
+ 
+ __Date macro__
+ Outputs the current date.
+ Usage: `{{ date dd.mm.YY }}` or just `{{ date }}` (defaults to current locale)
+ 
+ */
 
 import Foundation
 
@@ -13,7 +34,7 @@ import Foundation
     }
         
     var macros: [String: BeatMacro] = [:]
-    let typeNames = ["string", "serial", "number", "date"]
+    let typeNames = ["string", "serial", "series", "number", "date"]
     
     @objc public func parseMacro(_ macro: String) -> AnyObject? {
         // Remove {{, }} and leading/trailing whitespace
@@ -51,7 +72,7 @@ import Foundation
         
         // Check type
         switch typeName {
-        case "serial":
+        case "serial", "series":
             varType = .serial
         case "number":
             varType = .number

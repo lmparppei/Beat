@@ -48,20 +48,22 @@ heading {
 }
 
 section {
-    margin-top: 12l;
+    margin-top: 18l;
     forced-margin: true;
 
     text-align: center;
     bold: true;
     italic: true;
-    fontSize: 18;
+    fontSize: 24;
     
     begins-page: true;
     trim: true;
     
-    if sectionDepth > 1 then begins-page: false;
-    if sectionDepth > 1 then margin-top: 2l;
-    if sectionDepth > 2 then fontSize: 15;
+    if sectionDepth > 1 then margin-top: 12l;
+    if sectionDepth > 1 then fontSize: 20;
+    if sectionDepth > 2 then begins-page: false;
+    if sectionDepth > 2 then margin-top: 2l;
+    if sectionDepth > 2 then fontSize: 14;
 }
 
 action, dialogue, character, parenthetical {

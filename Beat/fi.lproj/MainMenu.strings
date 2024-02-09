@@ -120,7 +120,7 @@
 "Bw7-FT-i3A.title" = "Tallenna nimellä…";
 
 /* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
-"C9z-84-Cmq.title" = "Vie Final Draft -tiedosto…";
+"wsV-hQ-HBQ.title" = "Vie Final Draft -tiedosto…";
 
 /* Class = "NSMenuItem"; title = "Beat Source Code (Online)"; ObjectID = "CUo-uf-t1s"; */
 "CUo-uf-t1s.title" = "Beat-lähdekoodi (verkossa)";
@@ -476,7 +476,7 @@
 "r2v-xc-qum.title" = "IMPORT PLUGIN PLACEHOLDER";
 
 /* Class = "NSMenuItem"; title = "Show Selection Info"; ObjectID = "r8I-XP-gc2"; */
-"r8I-XP-gc2.title" = "Näytä valinnan tiedot";
+"r8I-XP-gc2.title" = "Näytä sana- ja merkkimäärä";
 
 /* Class = "NSMenu"; title = "Edit"; ObjectID = "rly-4q-iux"; */
 "rly-4q-iux.title" = "Muokkaa";

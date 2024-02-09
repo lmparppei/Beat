@@ -65,7 +65,8 @@ struct ConditionalRenderStyle {
         "font-type": .enumType,
         "visible-elements": .lineType,
         "disabled-types": .lineType,
-        "trim": .boolType
+        "trim": .boolType,
+        "visible": .boolType
     ] }
 
     @objc public var name:String = ""
@@ -82,15 +83,15 @@ struct ConditionalRenderStyle {
     
     @objc public var textAlign:String = "left"
     
-    @objc public var marginTop:CGFloat = 0
-    
-    @objc public var marginLeft:CGFloat = 0
-    
-    @objc public var marginLeftA4:CGFloat = 0
-    @objc public var marginLeftLetter:CGFloat = 0
+    @objc public var visible = true
     
     @objc public var firstPageWithNumber:Int = 2
     
+    @objc public var marginTop:CGFloat = 0
+    @objc public var marginLeft:CGFloat = 0
+    @objc public var marginLeftA4:CGFloat = 0
+    @objc public var marginLeftLetter:CGFloat = 0
+        
     @objc public var marginBottom:CGFloat = 0
     @objc public var marginBottomA4:CGFloat = 0
     @objc public var marginBottomLetter:CGFloat = 0
@@ -137,6 +138,19 @@ struct ConditionalRenderStyle {
     }
     public var _visibleElements:[LineType] = []
     
+    /// This is a pagination rule. Skips the element in pagination if it's preceded by any of the given line types.
+    @objc public var skipIfPrecededBy:NSIndexSet = NSIndexSet() {
+        didSet {
+            self._skipIfPrecededBy = [];
+            self.skipIfPrecededBy.enumerate(using: { idx, stop in
+                if let type = LineType(rawValue: UInt(idx)) {
+                    self._skipIfPrecededBy.append(type)
+                }
+            })
+        }
+    }
+    public var _skipIfPrecededBy:[LineType] = []
+    
     /// @warning: this type can't be correctly represented in ObjC. You need to use `getDisabledTypes` to get an index set, which in turn is compatible with the parser.
     @objc public var disabledTypes:[Any]?
     @objc public func getDisabledTypes() -> IndexSet? {
@@ -174,6 +188,7 @@ struct ConditionalRenderStyle {
                 if let conditions = value as? [ConditionalRenderStyle] {
                     for condition in conditions {
                         let exp = condition.condition()
+                        
                         // Create a new dict for this condition if needed
                         if self.conditionalRules[exp] == nil {
                             // Create empty set of dynamic rules
@@ -291,22 +306,23 @@ struct ConditionalRenderStyle {
     
     @objc public func dynamicStyles(for line:Line) -> RenderStyle? {
         // Nothing to check
-        if self.conditionalRules.count == 0 { print("No conditional styles"); return nil }
+        if self.conditionalRules.count == 0 { return nil }
         
         var dynamicRules:[String:Any] = [:]
         
+        
         // Iterate through conditional rules and append any fitting dynamic rules
-        for conditionalRule in self.conditionalRules.keys {
+        for conditionalRule in self.conditionalRules.keys.sorted() {            
             // We'll split the rule key back to its components (ie. "sectionDepth > 1" -> "sectionDepth", ">", "1")
             let components = conditionalRule.components(separatedBy: " ")
-            if components.count == 0 { continue }
-            
+            if components.count == 0 { print("   ... error"); continue }
+        
             // Get the given value from line
             if let val = line.value(forKey: components[0]) {
                 // Create an expression based on the newly received value, operator and the expected value
                 let expString = "(\(val) \(components[1]) \(components[2]))"
                 let exp = NSPredicate(format: expString)
-                
+                                
                 // Run predicate and if it applies, let's apply new rules
                 if exp.evaluate(with: nil),
                     let rules = self.conditionalRules[conditionalRule]

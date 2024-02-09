@@ -89,7 +89,7 @@ class BeatURLMenuItem:NSMenuItem {
 	}
 }
 
-class BeatURLButton:NSButton {
+class BeatURLButton:BeatTextOnlyButton {
 	@IBInspectable var website:String = ""
 	var url:URL? {
 		return URL(string: website)

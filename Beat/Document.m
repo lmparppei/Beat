@@ -706,7 +706,7 @@ static BeatAppDelegate *appDelegate;
 /// Sets up the custom responder chain
 - (void)setupResponderChain {
 	// Our desired responder chain, add more custom responders when needed
-	NSArray *chain = @[_formattingActions, self.revisionTracking];
+	NSArray *chain = @[_formattingActions, self.revisionTracking, self.notepad];
 	
 	// Store the original responder after text view
 	NSResponder *prev = self.textView;
@@ -1454,10 +1454,10 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Make the replacement string uppercase in parser
 	if (self.characterInput) replacementString = replacementString.uppercaseString;
-	
+
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-		
+	
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
 	return YES;
 }
@@ -1470,7 +1470,7 @@ static NSWindow __weak *currentKeyWindow;
 
 	// Begin from top if no last changed range was set
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
-
+	
 	// Update formatting
 	[self applyFormatChanges];
 	
@@ -1521,6 +1521,8 @@ static NSWindow __weak *currentKeyWindow;
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
 	
 	[self updateChangeCount:NSChangeDone];
+	
+	
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -2903,8 +2905,9 @@ static NSWindow __weak *currentKeyWindow;
 
 + (BOOL)preservesVersions {
 	// Versions are only supported from 12.0+ because of a strange bug in older macOSs
-	if (@available(macOS 13.0, *)) return YES;
-	else return NO;
+	//if (@available(macOS 13.0, *)) return YES;
+	// else return NO;
+	return NO;
 }
 
 - (IBAction)toggleAutosave:(id)sender {

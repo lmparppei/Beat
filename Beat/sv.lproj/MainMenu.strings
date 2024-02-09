@@ -138,7 +138,7 @@
 "bYQ-u3-P9F.title" = "Importera Final Draft...";
 
 /* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
-"C9z-84-Cmq.title" = "Exportera Final Draft (FDX)...";
+"wsV-hQ-HBQ.title" = "Exportera Final Draft (FDX)...";
 
 /* Class = "NSMenuItem"; title = "Title Page Editor"; ObjectID = "ce9-gT-GJX"; */
 "ce9-gT-GJX.title" = "Redigera försättsblad...";
@@ -441,7 +441,7 @@
 "r1G-J4-Ri5.title" = "Språk";
 
 /* Class = "NSMenuItem"; title = "Show Selection Info"; ObjectID = "r8I-XP-gc2"; */
-"r8I-XP-gc2.title" = "Visa information om markering";
+"r8I-XP-gc2.title" = "Visa antal ord och tecken";
 
 /* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
 "R8Y-SU-vpO.title" = "Revisionsläge";

@@ -129,9 +129,12 @@
     pStyle.headIndent           = style.indent;
 
         
-    // Set font for this element
-    BXFont* font = _delegate.fonts.regular;
-    if (style.font) font = [self fontFor:style];
+    // Set font for this element. Make sure we won't encounter a nil value.
+    BXFont* font = (_delegate.fonts.regular) ? _delegate.fonts.regular : BeatFonts.sharedFonts.regular;
+    if (style.font) {
+        BXFont* customFont = [self fontFor:style];
+        if (customFont != nil) font = customFont;
+    }
     
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
     

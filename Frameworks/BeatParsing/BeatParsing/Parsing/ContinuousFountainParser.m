@@ -71,6 +71,8 @@
 //
 @property (nonatomic, weak) Line* prevLineAtLocation;
 
+@property (nonatomic) bool macrosNeedUpdate;
+
 @end
 
 @implementation ContinuousFountainParser
@@ -303,7 +305,7 @@ static NSDictionary* patterns;
             [changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
             [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
         }
-        
+
         [self correctParsesInLines:changedIndices];
     }
 }
@@ -544,16 +546,14 @@ static NSDictionary* patterns;
     }
     
     // Check if this is the last line to be parsed
-    bool lastToParse = (indices.count == 0);
+    bool lastToParse = (indices.count == 1);
     
     Line* currentLine = self.lines[index];
     
     // Remove index as done from array if in array
     if (indices.count) {
         NSUInteger lowestToDo = indices.lowestIndex;
-        if (lowestToDo == index) {
-            [indices removeIndex:index];
-        }
+        if (lowestToDo == index) [indices removeIndex:index];
     }
     
     // Save the original line type
@@ -562,9 +562,12 @@ static NSDictionary* patterns;
     
     NSRange oldMarker = currentLine.markerRange;
     NSIndexSet* oldNotes = currentLine.noteRanges.copy;
-    
+        
     // Parse correct type
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
+        
+    // Update macros when the last line has been updated
+    if (lastToParse && self.macrosNeedUpdate) [self updateMacros];
     
     // Add, remove or update outline elements
     if ((oldType == section || oldType == heading) && !currentLine.isOutlineElement) {
@@ -590,7 +593,7 @@ static NSDictionary* patterns;
         }
         
         // Update all macros
-        if (currentLine.macroRanges.count > 0) [self updateMacros];
+        if (currentLine.macroRanges.count > 0) self.macrosNeedUpdate = true;
     }
     
     // Mark the current index as changed
@@ -712,6 +715,8 @@ static NSDictionary* patterns;
 
 - (void)updateMacros
 {
+    self.macrosNeedUpdate = false;
+    
     BeatMacroParser* parser = BeatMacroParser.new;
     NSArray* lines = self.safeLines;
     

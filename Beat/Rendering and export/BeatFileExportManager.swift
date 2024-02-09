@@ -54,7 +54,7 @@ struct BeatFileExportHandlerInfo {
 		}
 		
 		let savePanel = NSSavePanel()
-		print("!!!", exporter.fileTypes)
+		
 		savePanel.allowedFileTypes = exporter.fileTypes
 		savePanel.nameFieldStringValue = delegate.fileNameString() ?? ""
 		
@@ -66,26 +66,28 @@ struct BeatFileExportHandlerInfo {
 			if let data = exporter.handler(delegate) {
 				self.handleData(data, url: url)
 			}
-		
 		}
 	}
 		
 	func handleData(_ value:Any, url:URL) {
-		if type(of: value) == NSData.self, let data = value as? NSData {
+		if let data = value as? NSData {
 			// This is data
 			data.write(to: url, atomically: true)
-		}
-		else if type(of: value) == NSString.self, let string = value as? NSString {
+		} else if let string = value as? String {
 			// String
 			do {
-				try string.write(to: url, atomically: true, encoding: NSUTF8StringEncoding)
+				try string.write(to: url, atomically: true, encoding: .utf8)
 			} catch {
 				print("Could not save:", error)
 			}
 		} else {
-			// Lets just take it as data
-			if let data = value as? NSData {
-				data.write(to: url, atomically: true)
+			// Lets just take it in as Swift data
+			if let data = value as? Data {
+				do {
+					try data.write(to: url, options: .atomic)
+				} catch {
+					print("ERROR", error)
+				}
 			}
 		}
 	}

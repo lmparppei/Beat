@@ -18,7 +18,7 @@
 
 @protocol BeatEditorDelegate;
 
-typedef NS_ENUM(NSUInteger, BeatFormatting) {
+typedef NS_ENUM(NSUInteger, BeatMarkupStyle) {
 	Block = 0,
 	Bold,
 	Italic,

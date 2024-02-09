@@ -112,13 +112,12 @@ Beat.onTextChange(function (outlineChanges) {
 
 	// If the container is currently in view, let's update it in sync.
 	// Otherwise we'll send set the timer.
-	if (Beat.container != undefined && Beat.container.displayed) {
-		refreshHTML();
-	} else {
-		timer = Beat.timer(1.5, () => {
-			refreshHTML()
-		})
-	}
+	let time = 1.5
+	if (Beat.container != undefined && Beat.container.displayed) time = 0.0;
+		
+	timer = Beat.timer(time, () => {
+		refreshHTML()
+	})
 })
 
 Beat.onSelectionChange((selection) => {
@@ -150,11 +149,12 @@ function refreshHTML() {
 	
 	Beat.async(() => {
 		let html = createOutline(...outline).replaceAll("\"", "\\\"")
+		
 		// Escape the string
 		let htmlString = JSON.stringify(html)
 		
 		Beat.sync(() => {
-			window.runJS('load(' + html + ')')
+			window.runJS('load(' + htmlString + ')')
 			updated = true
 		})
 	})

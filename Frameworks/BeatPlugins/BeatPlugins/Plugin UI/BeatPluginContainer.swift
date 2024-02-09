@@ -99,7 +99,7 @@ import UXKit
             print("No host for container view set: ", self)
             return
         }
-                
+        
         self.webView = BeatPluginWebView.create(html: html, width: self.frame.width, height: self.frame.height, host: host)
         self.webView?.setHTML(html)
         self.host?.container = self
