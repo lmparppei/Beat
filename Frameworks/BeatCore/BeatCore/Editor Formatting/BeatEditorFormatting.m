@@ -631,6 +631,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Don't go out of range
 	if (NSMaxRange(range) >= self.delegate.text.length) {
 		range.length = self.textStorage.length - range.location;
+        if (range.length <= 0 || NSMaxRange(range) > self.delegate.text.length) return;
 	}
 	
 	if (range.length > 0) [self.textStorage addAttribute:key value:value range:range];
