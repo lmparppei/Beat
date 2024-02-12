@@ -619,8 +619,7 @@ static NSDictionary* patterns;
                         [self.changedIndices addIndex:i];
                     }
                     break;
-                }
-                else if (l.type != empty && l.length == 0) {
+                } else if (l.type != empty && l.length == 0) {
                     l.type = empty;
                     [self.changedIndices addIndex:i];
                 }
@@ -646,25 +645,13 @@ static NSDictionary* patterns;
                 currentLine.type == dualDialogueParenthetical ||
                 currentLine.type == dualDialogue ||
                 currentLine.type == empty ||                //If the line became empty, it might
-                //enable the next on to be a heading
-                //or character
-                
-                nextLine.type == titlePageTitle ||          //if the next line is a title page,
-                nextLine.type == titlePageCredit ||         //it might not be anymore
-                nextLine.type == titlePageAuthor ||
-                nextLine.type == titlePageDraftDate ||
-                nextLine.type == titlePageContact ||
-                nextLine.type == titlePageSource ||
-                nextLine.type == titlePageUnknown ||
-                nextLine.type == section ||
+                                                            //enable the next on to be a heading
+                                                            //or character
+                nextLine.isTitlePage ||
+                nextLine.isOutlineElement ||
+                nextLine.isDialogue ||
+                nextLine.isDualDialogue ||
                 nextLine.type == synopse ||
-                nextLine.type == heading ||                 //If the next line is a heading or
-                nextLine.type == character ||               //character or anything dialogue
-                nextLine.type == dualDialogueCharacter ||   //related, it might not be anymore
-                nextLine.type == parenthetical ||
-                nextLine.type == dialogue ||
-                nextLine.type == dualDialogueParenthetical ||
-                nextLine.type == dualDialogue ||
                 
                 // Look for unterminated omits & notes
                 nextLine.omitIn != currentLine.omitOut ||
@@ -2131,10 +2118,9 @@ NSInteger previousSceneIndex = NSNotFound;
     
     // This was probably a part of a note block. Let's parse the whole block instead of this single line.
     if (line.noteIn && line.noteOut && line.noteRanges.count == line.length) {
-        NSInteger positionInLine;
-        NSInteger i = [self findNoteBlockStartIndexFor:line at:lineIndex positionInLine:&positionInLine];
-        
-        [self parseNoteOutFrom:i positionInLine:positionInLine];
+        NSInteger pos;
+        NSInteger i = [self findNoteBlockStartIndexFor:line at:lineIndex positionInLine:&pos];
+        [self parseNoteBlocksFrom:i];
         return;
     }
     
@@ -2184,14 +2170,10 @@ NSInteger previousSceneIndex = NSNotFound;
     // Get previous line for later
     Line* prevLine = (lineIndex > 0) ? _lines[lineIndex - 1] : nil;
     
+    // If this line receives a note, let's find out what's going on -- and enter a world of pain.
     if (line.noteIn || line.noteOut) {
-        // If this line receives a note, let's find out where the block possibly starts and reparse it.
-        NSInteger positionInLine;
-        NSInteger i = [self findNoteBlockStartIndexFor:line at:lineIndex positionInLine:&positionInLine];
-        
-        [self parseNoteOutFrom:i positionInLine:positionInLine];
+        [self parseNoteBlocksFrom:lineIndex];
     }
-    
     else if ((oldType == empty || line.type == empty || prevLine.noteOut) && lineIndex < self.lines.count ) {
         // If the line has changed type, let's try to find out if this line creates or cancels an existing note block.
         // Don't check this when parsing for the first time.
@@ -2204,12 +2186,49 @@ NSInteger previousSceneIndex = NSNotFound;
     }
 }
 
+/// Parses every possible note block from this position
+- (void)parseNoteBlocksFrom:(NSInteger)lineIndex
+{
+    NSInteger idx = lineIndex;
+    NSMutableIndexSet* blocks = NSMutableIndexSet.new;
+    
+    bool stop = false;
+    while (!stop && idx >= 0) {
+        NSInteger pos;
+        NSInteger i = [self findNoteBlockStartIndexFor:self.lines[idx] at:idx positionInLine:&pos];
+        if (i == NSNotFound) break;
+        
+        // Add the index to handled blocks
+        [blocks addIndex:i];
+        
+        // See where we ended up
+        Line* l = self.lines[i];
+        
+        // If we landed on a line which also has ]], it might terminate another block, so let's inspect further
+        if (l.canTerminateNoteBlock)  idx = i - 1;
+        else stop = true;
+    }
+    
+    // Parse all affected notes.
+    [blocks enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        Line* l = self.lines[idx];
+        NSInteger positionInLine;
+        [l canBeginNoteBlockWithActualIndex:&positionInLine];
+        
+        if (positionInLine != NSNotFound) [self parseNoteOutFrom:idx positionInLine:positionInLine];
+    }];
+}
+
 - (void)parseNoteOutFrom:(NSInteger)lineIndex positionInLine:(NSInteger)position
 {
     if (lineIndex == NSNotFound) return;
+
+    bool cancel = false; // A flag to determine if we should remove the note block from existence
+    
+    // We might not know the actual position, so let's retrieve it
+    if (position == NSNotFound) position = [(Line*)self.lines[lineIndex] canBeginNoteBlockWithActualIndex:&position];
     
     NSMutableIndexSet* affectedLines = NSMutableIndexSet.new;
-    bool cancel = false; // Check if we should remove the note block from existence
     Line* lastLine;
     
     for (NSInteger i=lineIndex; i<_lines.count; i++) {
@@ -2218,11 +2237,14 @@ NSInteger previousSceneIndex = NSNotFound;
         if (l.type == empty) cancel = true;
         
         [affectedLines addIndex:i];
-        if (l.canTerminateNoteBlock) {
+        
+        if (l.canTerminateNoteBlock && i != lineIndex) {
+            // Note block might be terminated here
             lastLine = l;
             break;
         }
         else if (l.canBeginNoteBlock && i != lineIndex) {
+            // Another block might begin here
             [affectedLines removeIndex:i];
             break;
         }
@@ -2318,7 +2340,7 @@ NSInteger previousSceneIndex = NSNotFound;
     
     // Create the actual note
     [noteContent setString:[noteContent substringWithRange:NSMakeRange(2, noteContent.length - 4 )]];
-    
+        
     BeatNoteData* note = [BeatNoteData withNote:noteContent range:NSMakeRange(position, firstLine.length - position)];
     note.multiline = true;
     note.color = color;
