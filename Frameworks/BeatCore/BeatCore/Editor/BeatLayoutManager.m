@@ -12,7 +12,9 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatCore/BeatMeasure.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
+//#import <BeatPagination2/BeatPagination2.h>
 #import <CoreText/CoreText.h>
+
 
 #import "BeatRevisions.h"
 
@@ -699,6 +701,8 @@
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
     Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
+    RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
+    
     if (line == nil) return 0;
     
     NSDictionary* attrs = [self.textStorage attributesAtIndex:charIndexes[0] effectiveRange:nil];
@@ -738,7 +742,9 @@
     [muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
     
     // We won't hide notes, except for colors
-    if (line.colorRange.length) [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+    if (line.colorRange.length) {
+        [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+    }
     // Don't remove # and = for sections and synopsis lines
     if (line.type == section || line.type == synopse) {
         [muIndices removeIndexesInRange:(NSRange){ line.position, line.numberOfPrecedingFormattingCharacters }];
@@ -762,8 +768,8 @@
     CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
     CFStringAppend(modifiedStr, str);
     
-    // If it's a heading or transition, render it uppercase
-    if (type == heading || type == transitionLine || type == shot) {
+    // Some types get rendered in uppercase
+    if (style.uppercase) {
         CFStringUppercase(modifiedStr, NULL);
     }
     
