@@ -88,4 +88,4 @@ If you are here just to steal some code for your own Fountain editor, note that 
 The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
 
 Lauri-Matti Parppei    
-www.parppei.com  
+[**www.parppei.com**](https://www.parppei.com)
