@@ -1,6 +1,6 @@
 # Beat
 
-A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
+A simple and elegant screenwriting app for MacOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
 
 [Official website](https://www.beat-app.fi/)  
 [Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)   
@@ -53,7 +53,7 @@ Use the `Beat` workspace.  When building for development, I suggest using the *B
 
 ### Future & state of development
 
-Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. If you encounter a bug, contact me through Twitter, e-mail or file an issue here on GitHub. 
+Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. If you encounter a bug, contact me through Twitter, email or file an issue here on GitHub. 
 
 ### Plugins
 
@@ -65,7 +65,7 @@ Beat for iOS is in closed beta since August 2023. You can subscribe to [**Patreo
 
 ### Will There Be a Windows Version? 
 
-Unfortunately not. Beat is written in Objective C and relies on native macOS APIs. There are no good Fountain editors on Windows, and somebody should really write one! You might be able to use the Beat parser as starting point.
+Unfortunately not. Beat is written in Objective C and relies on native MacOS APIs. There are no good Fountain editors on Windows, and somebody should really write one! You might be able to use the Beat parser as starting point.
 
 ### Can I help?
 
@@ -85,7 +85,7 @@ Beat will stay free and open source forever. I came to filmmaking from a DIY & u
 
 If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
 
-The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
+The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and myself. All apologies.
 
 Lauri-Matti Parppei    
 [**www.parppei.com**](https://www.parppei.com)
