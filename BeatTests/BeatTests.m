@@ -4,9 +4,7 @@
 //
 //  Created by Lauri-Matti Parppei on 5.9.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
-//
 
-#import <XCTest/XCTest.h>
 
 @interface BeatTests : XCTestCase
 
