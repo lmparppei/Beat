@@ -74,11 +74,11 @@
 	self = [super initWithCoder:coder];
 	if (self) {
 		self.documentIsLoading = true;
+		NSLog(@"Opened document: %@", self.document.fileURL);
 	}
 	
 	return self;
 }
-
 
 - (BXWindow*)documentWindow {
 	return self.view.window;
@@ -313,6 +313,12 @@
 }
 
 
+- (void)updateLayout {
+	[self ensureLayout];
+}
+
+
+
 #pragma mark - Text view
 
 - (BXTextView*)getTextView {
@@ -420,6 +426,7 @@
 {
 	[self presentViewController:self.previewView animated:true completion:nil];
 	[self.previewController renderOnScreen];
+	[self.textView scrollToRange:self.textView.selectedRange];
 }
 
 - (void)previewDidFinish
@@ -586,7 +593,8 @@
 	[self.textView resize];
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
 	// We won't allow tabs to be inserted
 	if ([text isEqualToString:@"\t"]) {
 		[self handleTabPress];
@@ -595,22 +603,14 @@
 	
 	Line* currentLine = self.currentLine;
 	
-	// Handle backspaces with forced cues
-	if (range.length == 1 && [text isEqualToString:@""] && self.characterInput && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
-		[self.textView cancelCharacterInput];
-		return NO;
-	}
-	
-	if ([text isEqualToString:@"\n"]) {
-		// Process line break after a forced character input
-		if (self.characterInput && self.characterInputForLine) {
-			// If the cue is empty, reset it
-			if (self.characterInputForLine.string.length == 0) {
-				self.characterInputForLine.type = empty;
-				[self.formatting formatLine:self.characterInputForLine];
-			} else {
-				self.characterInputForLine.forcedCharacterCue = YES;
-			}
+	// Process line break after a forced character input
+	if ([text isEqualToString:@"\n"] && self.characterInput && self.characterInputForLine) {
+		// If the cue is empty, reset it
+		if (self.characterInputForLine.length == 0) {
+			self.characterInputForLine.type = empty;
+			[self.formatting formatLine:self.characterInputForLine];
+		} else {
+			self.characterInputForLine.forcedCharacterCue = YES;
 		}
 	}
 	
@@ -649,7 +649,9 @@
 	// Show review if needed after the text input selection has actually changed
 	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
 		NSInteger pos = self.selectedRange.location;
+		
 		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
+		
 		if (reviewItem && !reviewItem.emptyReview) {
 			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
 			//[self.textView.window makeFirstResponder:self.textView];
@@ -696,25 +698,9 @@
 - (bool)revisionMode {
 	return [self.documentSettings getBool:DocSettingRevisionMode];
 }
+
 -(void)setRevisionMode:(bool)revisionMode {
 	[self.documentSettings setBool:DocSettingRevisionMode as:revisionMode];
-}
-
-- (bool)showPageNumbers {
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageNumbers];
-}
-
-- (void)setShowPageNumbers:(bool)showPageNumbers {
-	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
-	[self.textView setNeedsDisplay];
-}
-
-- (bool)showSceneNumberLabels {
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbers];
-}
--(void)setShowSceneNumberLabels:(bool)showSceneNumberLabels {
-	[BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];
-	[self.textView setNeedsDisplay];
 }
 
 - (NSInteger)spaceBeforeHeading {
@@ -817,6 +803,7 @@
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
 }
+
 - (bool)headingStyleUnderline
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
@@ -910,8 +897,9 @@
 }
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	CGFloat height = self.textView.enclosingScrollView.zoomScale * (size.height + 100.0);
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, height, 0);
+	CGFloat keyboardHeight = self.textView.keyboardLayoutGuide.layoutFrame.size.height;
+	
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);
 	
 	CGRect bounds = self.scrollView.bounds;
 	bool animateBounds = false;
@@ -939,13 +927,13 @@
 		
 		/*
 		 if (self.selectedRange.location == NSNotFound) return;
-		CGRect rect = [self.textView rectForRangeWithRange:self.selectedRange];
-		// Make sure we never hide the selection
-		rect.origin.y += 100.0;
-		rect.size.height += 24.0;
-		CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
-		
-		[self.scrollView safelyScrollRectToVisible:visible animated:true];
+		 CGRect rect = [self.textView rectForRangeWithRange:self.selectedRange];
+		 // Make sure we never hide the selection
+		 rect.origin.y += 100.0;
+		 rect.size.height += 24.0;
+		 CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
+		 
+		 [self.scrollView safelyScrollRectToVisible:visible animated:true];
 		 */
 	}];
 }
@@ -1011,6 +999,7 @@
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
 
+
 /// @warning This method expects the split view controller to be in place (done in storyboard segue)
 - (void)setupEditorViews
 {
@@ -1023,54 +1012,6 @@
 	self.outlineView = self.editorSplitView.outlineView;
 }
 
-
-
-
-/*
- - (void)paginationDidFinish:(BeatPagination * _Nonnull)operation {
- <#code#>
- }
- 
- - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
- <#code#>
- }
- 
- - (void)preferredContentSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
- <#code#>
- }
- 
- - (CGSize)sizeForChildContentContainer:(nonnull id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
- <#code#>
- }
- 
- - (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
- <#code#>
- }
- 
- - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
- <#code#>
- }
- 
- - (void)willTransitionToTraitCollection:(nonnull UITraitCollection *)newCollection withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
- <#code#>
- }
- 
- - (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
- <#code#>
- }
- 
- - (void)setNeedsFocusUpdate {
- <#code#>
- }
- 
- - (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
- <#code#>
- }
- 
- - (void)updateFocusIfNeeded {
- <#code#>
- }
- */
 
 
 

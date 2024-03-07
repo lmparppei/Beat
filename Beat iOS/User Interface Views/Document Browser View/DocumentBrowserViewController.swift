@@ -11,18 +11,17 @@ import UniformTypeIdentifiers
 
 
 class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocumentBrowserViewControllerDelegate {
-    var betaNoteShown = false
+    var welcomeScreenShown = false
 	
 	override init(forOpening contentTypes: [UTType]?) {
 		super.init(forOpening: contentTypes)
 	}
 	
 	required init?(coder: NSCoder) {
-		//super.init(coder: coder)
 		let uti = UTType(filenameExtension: "fountain")
-		let arr = (uti != nil) ? [uti!] : nil
+		let contentTypes = (uti != nil) ? [uti!] : nil
 		
-		super.init(forOpening: arr)
+		super.init(forOpening: contentTypes)
 	}
 	
     override func viewDidLoad() {
@@ -39,19 +38,60 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         browserUserInterfaceStyle = .dark
         view.tintColor = .white
 		
-		if (!betaNoteShown) {
-			showBetaNote()
+		if (!welcomeScreenShown) {
+			showWelcomeScreen()
 		}
     }
 	
-	func showBetaNote() {
+	func showWelcomeScreen() {
+		// If the welcome screen is suppressed, don't show it
+		if (BeatUserDefaults.shared().isSuppressed("welcomeScreen")) {
+			return
+		}
+		
 		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-		let vc = storyBoard.instantiateViewController(withIdentifier: "Beta")
-		vc.modalPresentationStyle = .automatic
-		self.present(vc, animated: true)
-		betaNoteShown = true
+		
+		if let vc = storyBoard.instantiateViewController(withIdentifier: "Beta") as? BeatStartupScreenViewController {
+			vc.modalPresentationStyle = .automatic
+			vc.documentBrowser = self
+			
+			self.present(vc, animated: true)
+		}
+
+		welcomeScreenShown = true
 	}
     
+	/// Force template menu
+	func pickTemplate(importHandler: ((URL?, UIDocumentBrowserViewController.ImportMode) -> Void)? = nil) {
+		let storyboard = UIStoryboard(name: "Main", bundle: nil)
+		let templateVC = storyboard.instantiateViewController(identifier: "TemplateCollectionViewController") as TemplateCollectionViewController
+		templateVC.importHandler = importHandler
+		
+		// If no import handler is provided, replace it with a generic one
+		if importHandler == nil {
+			templateVC.importHandler = { url, mode in
+				guard let url else { return }
+				self.importAndPresentTemplate(url)
+			}
+		}
+		
+		present(templateVC, animated: true)
+	}
+	
+	func importAndPresentTemplate(_ url:URL) {
+		importDocument(at: url, nextToDocumentAt: URL.documentsDirectory, mode: .copy) { url, error in
+			if url != nil {
+				self.presentDocument(at: url!)
+			}
+		}
+	}
+	
+	/// Forces the creation of a new document. Assumes that BeatCore has a file called `New Document.fountain`.
+	public func newDocument() {
+		guard let url = Bundle(for: BeatTemplates.self).url(forResource: "New Document", withExtension: "fountain") else { return }
+		
+		importAndPresentTemplate(url)
+	}
     
     // MARK: UIDocumentBrowserViewControllerDelegate
     
