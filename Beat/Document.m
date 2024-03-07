@@ -749,18 +749,14 @@ static BeatAppDelegate *appDelegate;
 		// Default size for new windows
 		size.width = preferredWidth;
 		origin.x = (screen.size.width - size.width) / 2;
-	}
-	else if (size.width < self.documentWindow.minSize.width || origin.x > screen.size.width || origin.x < 0) {
+	} else if (size.width < self.documentWindow.minSize.width || origin.x > screen.size.width || origin.x < 0) {
 		// This window had a size saved. Let's make sure it stays inside screen bounds or is larger than minimum size.
 		size.width = self.documentWindow.minSize.width;
 		origin.x = (screen.size.width - size.width) / 2;
 	}
 	
 	if (size.height < MIN_WINDOW_HEIGHT || origin.y + size.height > screen.size.height) {
-		size.height = screen.size.height - 100;
-		
-		if (size.height < MIN_WINDOW_HEIGHT) size.height = MIN_WINDOW_HEIGHT;
-		
+		size.height = MAX(MIN_WINDOW_HEIGHT, screen.size.height - 100.0);
 		origin.y = (screen.size.height - size.height) / 2;
 	}
 	
@@ -850,6 +846,7 @@ static BeatAppDelegate *appDelegate;
 	
 	[self.documentWindow setMinSize:NSMakeSize(width, MIN_WINDOW_HEIGHT)];
 }
+
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
 
 /// Restores sidebar on launch
@@ -857,42 +854,29 @@ static BeatAppDelegate *appDelegate;
 	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
 		self.sidebarVisible = YES;
 		[_splitHandle restoreBottomOrLeftView];
-		
-		NSInteger sidebarWidth = [self.documentSettings getInt:DocSettingSidebarWidth];
-		if (sidebarWidth == 0) sidebarWidth = MIN_OUTLINE_WIDTH;
-		_splitHandle.mainConstraint.constant = sidebarWidth;
+		_splitHandle.mainConstraint.constant = MAX([self.documentSettings getInt:DocSettingSidebarWidth], MIN_OUTLINE_WIDTH);
 	}
-}
-
-/// Focuses the editor window
-- (void)focusEditor {
-	[self.documentWindow makeKeyWindow];
-#if TARGET_OS_IOS
-	[self.textView becomeFirstResponder];
-#else
-	[self.textView.window makeFirstResponder:self.textView];
-#endif
 }
 
 
 #pragma mark - Update Editor View by Mode
 
-- (void)updateEditorMode {
-	/// This updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
+/// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
+- (void)updateEditorMode
+{
 	if (_mode == TaggingMode) [self.tagging open];
 	else [self.tagging close];
+	
+	_modeIndicator.hidden = (_mode != EditMode);
 	
 	// Show mode indicator
 	if (_mode != EditMode) {
 		NSString *modeName = @"";
+		
 		if (_mode == TaggingMode) modeName = [BeatLocalization localizedStringForKey:@"mode.taggingMode"];
 		else if (_mode == ReviewMode) modeName = [BeatLocalization localizedStringForKey:@"mode.reviewMode"];
 		
 		[_modeIndicator showModeWithModeName:modeName];
-		
-		_modeIndicator.hidden = NO;
-	} else {
-		_modeIndicator.hidden = YES;
 	}
 	
 	[_documentWindow layoutIfNeeded];
@@ -1647,7 +1631,9 @@ static NSWindow __weak *currentKeyWindow;
 	return [_autocompletion completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
 
+
 #pragma mark - Character input
+// TODO: Move these to text view
 
 - (void)handleTabPress {
 	// TODO: Move this to text view
@@ -2588,7 +2574,7 @@ static NSWindow __weak *currentKeyWindow;
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 
-- (IBAction)toggleSceneLabels: (id) sender {
+- (IBAction)toggleSceneLabels:(id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
@@ -2604,12 +2590,12 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Markers
 
-- (NSArray*)markers {
+- (NSArray*)markers
+{
 	// This could be inquired from the text view, too.
 	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
 	NSMutableArray * markers = NSMutableArray.new;
 	
-
 	CGSize containerSize = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size;
 	if (containerSize.height == 0.0) return @[];
 	
@@ -2635,24 +2621,10 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)toggleTimeline:(id)sender
 {
-	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
-	
-	if (!_timeline.visible) {
-		[_timeline show];
-		[self ensureLayout];
-		[_timelineButton setState:NSOnState];
-		
-		// ???
-		// For some reason the NSTextView scrolls into some weird position when the view
-		// height is changed. Restoring scroll position does NOT fix this.
-		//[self.textScrollView.contentView scrollToPoint:scrollPosition];
-		
-	} else {
-		[_timeline hide];
-		scrollPosition.y = scrollPosition.y * self.magnification;
-		[self.textScrollView.contentView scrollToPoint:scrollPosition];
-		[_timelineButton setState:NSOffState];
-	}
+	if (!_timeline.visible) [_timeline show];
+	else [_timeline hide];
+
+	_timelineButton.state = (_timeline.visible) ? NSOnState : NSOffState;
 }
 
 - (void)setupTouchTimeline {
@@ -2711,16 +2683,7 @@ static NSWindow __weak *currentKeyWindow;
  */
 
 
-#pragma mark - Pagination
-
--(bool)showPageNumbers
-{
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageNumbers];
-}
-- (void)setShowPageNumbers:(bool)showPageNumbers
-{
-	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
-}
+#pragma mark - Pagination manager methods
 
 - (IBAction)togglePageNumbers:(id)sender
 {
@@ -2731,7 +2694,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	self.textView.needsDisplay = true;
 }
-
 
 
 #pragma mark - Paper size
@@ -3061,30 +3023,36 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Locking The Document
 
--(IBAction)lockContent:(id)sender {
+-(IBAction)lockContent:(id)sender
+{
 	[self toggleLock];
 }
 
-- (void)toggleLock {
+- (void)toggleLock
+{
 	bool locked = [self.documentSettings getBool:@"Locked"];
+	[self updateChangeCount:NSChangeDone];
 	
 	if (locked) [self unlock];
-	else {
-		[self updateChangeCount:NSChangeDone];
-		[self lock];
-	}
+	else [self lock];
 }
-- (bool)screenplayLocked {
+
+- (bool)screenplayLocked
+{
 	if ([self.documentSettings getBool:@"Locked"]) return YES;
 	else return NO;
 }
-- (void)lock {
+
+- (void)lock
+{
 	self.textView.editable = NO;
 	[self.documentSettings setBool:@"Locked" as:YES];
 	
 	[self.lockButton show];
 }
-- (void)unlock {
+
+- (void)unlock
+{
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = NSLocalizedString(@"unlock_document.title", nil);
 	alert.informativeText = NSLocalizedString(@"unlock_document.confirm", nil);
@@ -3101,11 +3069,14 @@ static NSWindow __weak *currentKeyWindow;
 		[self.lockButton hide];
 	}
 }
-- (void)showLockStatus {
+
+- (void)showLockStatus
+{
 	[self.lockButton displayLabel];
 }
 
--(bool)contentLocked {
+- (bool)contentLocked
+{
 	return [self.documentSettings getBool:@"Locked"];
 }
 
@@ -3139,7 +3110,8 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Search for scene
 
-- (IBAction)goToScene:(id)sender {
+- (IBAction)goToScene:(id)sender
+{
 	__block BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
 	search.delegate = self;
 	
