@@ -10,11 +10,13 @@
     #define BXColor UIColor
     #define BXView UIView
     #define BXTextView UITextView
+    #define textViewNeedsDisplay setNeedsDisplay
 
 #else
 
     #define BXColor NSColor
     #define BXView NSView
     #define BXTextView NSTextView
+    #define textViewNeedsDisplay setNeedsDisplay:true
 
 #endif
