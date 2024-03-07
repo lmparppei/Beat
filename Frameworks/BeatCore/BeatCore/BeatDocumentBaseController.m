@@ -41,6 +41,11 @@
     return _uuid;
 }
 
+- (nonnull NSString *)fileNameString {
+    NSLog(@"fileNameString: Override in OS-specific implementation");
+    return @"";
+}
+
 
 #pragma mark - Setting getters and setters
 
@@ -268,6 +273,32 @@
 }
 
 
+#pragma mark - Show scene numbers
+
+- (bool)showSceneNumberLabels
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbers];
+}
+- (void)setShowSceneNumberLabels:(bool)showSceneNumberLabels
+{
+    [BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];
+}
+
+
+#pragma mark - Pagination
+
+- (bool)showPageNumbers
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageNumbers];
+}
+
+- (void)setShowPageNumbers:(bool)showPageNumbers
+{
+    [BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
+    [self.textView textViewNeedsDisplay];
+}
+
+
 #pragma mark - Formatting
 /// TODO: WHY ARE THESE HERE???? Move to `BeatFormatting`
 
@@ -412,12 +443,8 @@
         //lm.pageBreaks = pageBreaks;
         [lm updatePageBreaks:pageBreaks];
 
-        #if TARGET_OS_OSX
-            self.textView.needsDisplay = true;
-        #else
-            [self.textView setNeedsDisplay];
-        #endif
-
+        [self.textView textViewNeedsDisplay];
+        
         // Tell plugins the preview has been finished
         for (id<BeatPluginInstance> plugin in self.runningPlugins.allValues) {
             [plugin previewDidFinish:operation indices:changedIndices];
@@ -428,20 +455,32 @@
 
 #pragma mark - Text view components
 
-- (BXTextView*)getTextView { return self.textView; }
-- (NSTextStorage*)textStorage { return self.textView.textStorage; }
+- (BXTextView*)getTextView {
+    return self.textView;
+}
+
+- (NSTextStorage*)textStorage {
+    return self.textView.textStorage;
+}
+
 - (NSLayoutManager*)layoutManager {
     return self.textView.layoutManager;
 }
 
 - (void)refreshTextView
 {
-    // Fuck you Apple for this:
-    #if TARGET_OS_OSX
-        [self.textView setNeedsDisplay:true];
-    #else
-        [self.textView setNeedsDisplay];
-    #endif
+    [self.textView textViewNeedsDisplay];
+}
+
+/// Focuses the editor window
+- (void)focusEditor
+{
+#if TARGET_OS_IOS
+    [self.textView becomeFirstResponder];
+#else
+    [self.textView.window makeKeyWindow];
+    [self.textView.window makeFirstResponder:self.textView];
+#endif
 }
 
 
@@ -651,11 +690,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     }
     
     return shownRevisions;
-}
-
-- (nonnull NSString *)fileNameString {
-    NSLog(@"fileNameString: Override in OS-specific implementation");
-    return @"";
 }
 
 

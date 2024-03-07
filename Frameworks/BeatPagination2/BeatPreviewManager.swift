@@ -38,20 +38,25 @@ import UXKit
     @objc func previewVisible() -> Bool
 }
 
-@objc open class BeatPreviewManager:NSObject, BeatPreviewControllerInstance, BeatPaginationManagerDelegate,BeatPreviewPageViewDataSource {
+@objc open class BeatPreviewManager:NSObject, BeatPreviewControllerInstance, BeatPaginationManagerDelegate {
     
     @IBOutlet public weak var delegate:BeatPreviewManagerDelegate?
     @IBOutlet weak open var previewView:BeatPreviewPageView?
     
+    /// Pagination manager
     @objc public var pagination:BeatPaginationManager?
-    
+    /// Renderer
     var renderer:BeatRenderer?
-    
+    /// Timer for updating the content
     @objc public var timer:Timer?
+    /// If set `true`, the preview view will be rendered right away when pagination has finished
+    public var renderImmediately = false
+    
     public var paginationUpdated = false
     public var lastChangeAt = NSMakeRange(0, 0)
-    public var renderImmediately = false
 
+    /// Page views for iOS page view data source
+    public var pageViews:[Int:UXView] = [:]
     
     /// Returns export settings from editor
     public var settings:BeatExportSettings {
@@ -59,10 +64,11 @@ import UXKit
             // This shouldn't ever happen, but if the delegate fails to return settings, we'll just create our own.
             return BeatExportSettings.operation(.ForPrint, document: nil, header: "", printSceneNumbers: true)
         }
-
+        
         return settings
     }
     
+    /// Fetch export settings from delegate
     public var exportSettings:BeatExportSettings {
         return self.delegate?.exportSettings ?? BeatExportSettings()
     }
@@ -77,7 +83,7 @@ import UXKit
     
     override init() {
         super.init()
-            
+        
         customInit()
     }
     
@@ -112,10 +118,10 @@ import UXKit
         
         // Let's tell the delegate this, too
         self.delegate?.paginationFinished(operation, indices: self.changedIndices, pageBreaks: operation.editorPageBreaks())
-                
+        
         //  Clear changed indices
         self.changedIndices.removeAllIndexes()
-                
+        
         // Return to main thread and render stuff on screen if needed
         DispatchQueue.main.async { [weak self] in
             if (self?.delegate?.previewVisible() ?? false) || self?.renderImmediately ?? false {
@@ -123,7 +129,7 @@ import UXKit
             }
         }
     }
-
+    
     
     // MARK: - Delegate methods (delegated from delegate)
     @objc public var parser: ContinuousFountainParser? { return delegate?.parser }
@@ -167,7 +173,7 @@ import UXKit
             self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
                 // Store revisions into lines in sync
                 self.delegate?.bakeRevisions()
-
+                
                 // Dispatch pagination to a background thread after one second
                 DispatchQueue.global(qos: .utility).async { [weak self] in
                     if let screenplay = BeatScreenplay.from(parser, settings: self?.settings) {
@@ -198,13 +204,13 @@ import UXKit
         self.pagination?.finishedPagination = nil
         self.paginationUpdated = false
         self.changedIndices = NSMutableIndexSet(indexesIn: NSMakeRange(0, self.delegate?.parser.lines.count ?? 0))
-
+        
         self.pageViews = [:]
         
         // Reload styles
         self.renderer?.reloadStyles()
         self.previewView?.clear()
-
+        
         // Create new preview
         let previewVisible = self.delegate?.previewVisible() ?? false
         self.createPreview(withChangedRange: NSMakeRange(0, self.delegate?.text().count ?? 1), sync: previewVisible)
@@ -226,7 +232,7 @@ import UXKit
     // MARK: - Rendering
     
     @objc open func renderOnScreen() {
-       // print("Preview manager: Override renderOnScreen() in OS-specific implementation.")
+        // print("Preview manager: Override renderOnScreen() in OS-specific implementation.")
         guard let previewView = self.previewView,
               let pagination = self.pagination
         else { return }
@@ -251,12 +257,12 @@ import UXKit
         }
         
         DispatchQueue.global(qos: .userInitiated).async {
-            #if os(macOS)
+#if os(macOS)
             // Create page strings in background. At least some of the pages are usually cached, so this should be pretty fast.
             // This only works on macOS though, because iOS rendering requires creating some UI elements. Oh my satan.
             let pages = pagination.pages
             _ = pages.map { $0.attributedString() }
-            #endif
+#endif
             
             DispatchQueue.main.async { [weak self] in
                 if let finishedPagination = pagination.finishedPagination {
@@ -266,7 +272,7 @@ import UXKit
                     // Scroll view to the last edited position
                     self?.scrollToRange(self?.delegate?.selectedRange ?? NSMakeRange(0, 0))
                 }
-                                
+                
                 // Hide animation
                 previewView.endLoadingAnimation()
             }
@@ -276,14 +282,17 @@ import UXKit
     @objc open func reload(with pagination:BeatPagination) {
         print("Preview manager: Override reload() in OS-specific implementation")
     }
-
+    
     @objc open func scrollToRange(_ range:NSRange) {
         print("Preview manager: Override scrollToRange() in OS-specific implementation")
     }
-    
-    
-    // MARK: - Preview view data source
-    
+}
+
+
+// MARK: - Preview view data source (iOS only for now)
+
+extension BeatPreviewManager:BeatPreviewPageViewDataSource {
+        
     public func pageSize() -> CGSize {
         return BeatPaperSizing.size(for: self.settings.paperSize)
     }
@@ -295,8 +304,6 @@ import UXKit
         
         return pages
     }
-
-    public var pageViews:[Int:UXView] = [:]
     
     public func pageView(forPage pageIndex: Int) -> UXView {
         guard let pagination = self.pagination?.finishedPagination
@@ -309,16 +316,18 @@ import UXKit
             return pageViews[pageIndex]!
         }
 
+        let hasTitlePage = (pagination.titlePageContent?.count ?? 0) > 0
+        
         // The *actual* index of page in our pagination. If there's a title page present, pagination index is -1
-        let actualIndex = (pagination.titlePageContent != nil) ? pageIndex - 1 : pageIndex
+        let actualIndex = (hasTitlePage) ? pageIndex - 1 : pageIndex
 
         var pageView:UXView?
                         
-        // If we have a title page and page index is 0, we'll return a title page view
-        if pageIndex == 0 && pagination.titlePageContent != nil {
+        if pageIndex == 0 && hasTitlePage {
+            // If we have a title page and page index is 0, we'll return a title page view
             pageView = BeatTitlePageView(titlePage: pagination.titlePage(), settings: settings)
-        }
-        else if let page = self.pagination?.pages[actualIndex] as? BeatPaginationPage {
+        } else if let page = self.pagination?.pages[actualIndex] as? BeatPaginationPage {
+            // Otherwise we'll just return the actual page
             pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
         }
         

@@ -572,6 +572,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)updateTypewriterView
 {
+	// Do nothing if the selection is longer than 0
+	if (self.selectedRange.length > 0) return;
+	
 	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 	
@@ -1134,11 +1137,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Custom drawing
 
--(void)redrawUI {	
+/// Redraws both the view AND ensures layout for text container. Used to refresh appearance.
+-(void)redrawUI
+{
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }
-
 
 /// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
 -(void)redrawAllGlyphs
@@ -1464,7 +1468,7 @@ Line *cachedRectLine;
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
 	
 	// Set minimum size for text view when Outline view size is dragged
-	[_editorDelegate setSplitHandleMinSize:self.documentWidth * _zoomLevel];
+	[_editorDelegate setSplitHandleMinSize:(self.documentWidth - BeatTextView.linePadding * 2) * _zoomLevel];
 }
 
 /// Actually scales the view
