@@ -1,6 +1,6 @@
 //
 //  BeatPageViewController.swift
-//  BeatiOSRendererPrototype
+//  Beat iOS
 //
 //  Created by Lauri-Matti Parppei on 23.1.2024.
 //
@@ -47,11 +47,12 @@ import BeatCore
 }
 
 @objc open class BeatPageScrollView: UIScrollView, UIScrollViewDelegate {
-	
+	/// Data source provide the views and number of pages
     @IBOutlet public var dataSource:BeatPreviewPageViewDataSource?
-    var container:UIView?
+	/// Container view for pages
+	var container:UIView?
+	/// Spacing between page views
     var spacing = 10.0
-    
     /// Class value
     var loadedPageViews:[Int:UIView] = [:]
     /// Current page rects
@@ -83,9 +84,12 @@ import BeatCore
 		
         self.delegate = self
 	
+		self.contentInset = UIEdgeInsets(top: spacing, left: 0.0, bottom: 0.0, right: 0.0)
+		
         reload()
     }
 		
+	/// Removes all views from page view
 	public func clear() {
 		for pageView in self.loadedPageViews.values {
 			pageView.removeFromSuperview()
@@ -93,13 +97,13 @@ import BeatCore
 		
 		self.loadedPageViews = [:]
 	}
-	
+		
 	public func startLoadingAnimation() {
-		//
+		self.container?.alpha = 0.5
 	}
 	
 	public func endLoadingAnimation() {
-		//
+		self.container?.alpha = 1.0
 	}
  
     override public var bounds: CGRect {
@@ -108,14 +112,13 @@ import BeatCore
             loadPagesInBounds(self.bounds)
         }
     }
+	
 	override public var frame: CGRect {
 		didSet {
 			updateContentPosition()
 			loadPagesInBounds(self.bounds)
-			updateScale()
 		}
 	}
-	
 
     override public var contentSize: CGSize {
 		didSet {
@@ -124,34 +127,32 @@ import BeatCore
     }
 	
 	public func scrollToPage(_ pageIndex:Int) {
-		guard pageIndex < self.pageRects.count else { return }
+		guard let container, pageIndex < self.pageRects.count else { return }
 		
 		let pageRect = self.pageRects[pageIndex]
-		self.scrollRectToVisible(pageRect, animated: true)
+		let localRect = container.convert(pageRect, to: self)
+		
+		self.scrollRectToVisible(localRect, animated: true)
 	}
     
     public func updateScale() {
         // Fit the content to view
         let pageSize = self.dataSource?.pageSize() ?? BeatPaperSizing.size(for: .A4)
+		
+		let smallerSide = min(self.frame.size.width, self.frame.size.height)
+        let scale = (smallerSide / pageSize.width) * 0.9
         
-        let verticalScale = (self.frame.height / pageSize.height) * 0.9
-        let horizontalScale = (self.frame.width / pageSize.width) * 0.9
-        
-        let scale = min(verticalScale, horizontalScale)
-        
-        self.zoomScale = scale
-        self.minimumZoomScale = scale
-		self.maximumZoomScale = 2.0
+		self.setZoomScale(scale, animated: false)
     }
     
     private func updateContentPosition() {
+	
 		guard subviews.count > 0 else { return }
-		
-		// get the content view
+				
+		// get the content view and center it
         let subView = subviews[0]
-        let offsetX = max(0.5 * (bounds.size.width - contentSize.width), 0.0)
-		
-        subView.center = CGPointMake(contentSize.width * 0.5 + offsetX, subView.center.y)
+		let offset = self.bounds.width / 2
+		subView.center = CGPointMake(offset, subView.center.y)
     }
     
     public func reload() {
@@ -160,19 +161,25 @@ import BeatCore
             return
         }
         
+		updateScale()
+		
         let pageSize = self.dataSource?.pageSize() ?? BeatPaperSizing.size(for: .A4)
         let pages = self.dataSource?.numberOfPages() ?? 0
-				
-        container.frame.size.width = pageSize.width
-        container.frame.size.height = Double(pages) * (pageSize.height + spacing)
+		
+		// Why the FUCK do we need to scale the *container*? This seems counterintuitive.
+		container.frame.size.width = pageSize.width * self.zoomScale
+		container.frame.size.height = Double(pages) * (pageSize.height + spacing) * self.zoomScale
         
+		// Reset loaded page views
 		self.loadedPageViews = [:]
 		
-        self.contentSize = container.frame.size
+        //self.contentSize = container.frame.size
+		self.contentSize = container.frame.size
         self.pageRects = rectsForPages()
         
         loadPagesInBounds(self.bounds)
-        updateContentPosition()
+        
+		updateContentPosition()
 		
 		// Restore bounds
 		self.bounds = bounds
@@ -180,12 +187,15 @@ import BeatCore
 
     /// Loads only the pages that have entered our bounds
     public func loadPagesInBounds(_ bounds:CGRect) {
-        guard let dataSource = self.dataSource else { return }
+        guard let container, let dataSource = self.dataSource else { return }
         
         for i in 0..<pageRects.count {
             let pageRect = pageRects[i]
             
-            if !CGRectIntersectsRect(bounds, pageRect) { continue }
+			// Convert the visible page rect to scroll view coordinates
+			let localRect = container.convert(pageRect, to: self)
+			
+            if !CGRectIntersectsRect(bounds, localRect) { continue }
             if loadedPageViews[i] != nil { continue }
             
             let view = dataSource.pageView(forPage: i)
@@ -208,7 +218,8 @@ import BeatCore
         var rects:[CGRect] = []
         
         for i in 0..<pages {
-            let rect = CGRect(x: 0.0, y: (pageSize.height + spacing) * CGFloat(i), width: pageSize.width, height: pageSize.height)
+			let y = (pageSize.height + spacing) * CGFloat(i)
+            let rect = CGRect(x: 0.0, y: y, width: pageSize.width, height: pageSize.height)
             rects.append(rect)
         }
         
@@ -226,4 +237,9 @@ import BeatCore
         
         return rects
     }
+	
+	
+	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+		self.container
+	}
 }
