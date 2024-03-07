@@ -1499,13 +1499,18 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc. to convert it to another style of formatting
 - (NSIndexSet*)formattingRanges {
-    return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
+    return [self formattingRangesWithGlobalRange:NO includeNotes:YES includeOmissions:YES];
+}
+
+- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
+{
+    return [self formattingRangesWithGlobalRange:globalRange includeNotes:includeNotes includeOmissions:YES];
 }
 
 /// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 /// You can use global range flag to return ranges relative to the *whole* document.
 /// Notes are included in formatting ranges by default.
-- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
+- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes includeOmissions:(bool)includeOmissions
 {
 	NSMutableIndexSet *indices = NSMutableIndexSet.new;
 	NSInteger offset = 0;
@@ -1515,12 +1520,12 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	// Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
     NSInteger precedingCharacters = self.numberOfPrecedingFormattingCharacters;
     if (precedingCharacters > 0) {
-        [indices addIndexesInRange:NSMakeRange(0 + offset, precedingCharacters)];
+        [indices addIndexesInRange:NSMakeRange(offset, precedingCharacters)];
 	}
 	
 	// Catch dual dialogue force symbol
 	if (self.type == dualDialogueCharacter && self.string.length > 0 && [self.string characterAtIndex:self.string.length - 1] == '^') {
-		[indices addIndex:self.string.length - 1 +offset];
+		[indices addIndex:self.string.length - 1 + offset];
 	}
 	
 	// Add ranges for > and < (if needed)
@@ -1560,27 +1565,30 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 	
 	// Stylization ranges
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location +offset, BOLD_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + offset, BOLD_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
 	}];
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location +offset, ITALIC_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + offset, ITALIC_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length +offset, ITALIC_PATTERN.length)];
 	}];
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location +offset, UNDERLINE_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + offset, UNDERLINE_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
 	}];
-    /*
-	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, STRIKEOUT_PATTERN.length +offset)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - STRIKEOUT_PATTERN.length +offset, STRIKEOUT_PATTERN.length)];
-	}];
-     */
-			
-	// Add note ranges
-	if (includeNotes) [indices addIndexes:self.noteRanges];
-	[indices addIndexes:self.omittedRanges];
+    
+    if (includeOmissions) {
+        [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
+        }];
+    }
+    
+    if (includeNotes) {
+        [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
+        }];
+    }
+
 	
 	return indices;
 }
@@ -1803,6 +1811,15 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 - (id)getCustomData:(NSString*)key {
 	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
 	return _customDataDictionary[key];
+}
+
+
+#pragma mark - String convenience methods
+
+- (bool)visibleContentIsUppercase
+{
+    NSString* string = self.stripFormatting;
+    return [string containsOnlyUppercase];
 }
 
 
