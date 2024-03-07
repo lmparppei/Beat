@@ -15,6 +15,9 @@ import UIKit
     public var displayed: Bool = false
     var shouldShow = false
     
+    var name:String? {
+        return host?.pluginName
+    }
     
     public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback: JSValue?) {
         self.webView = BeatPluginWebView.create(html: html, width: width, height: height, host: host)
