@@ -313,7 +313,7 @@ static NSDictionary* patterns;
 /// Ensures that the given line is parsed correctly. Continuous parsing only. A bit confusing to use.
 - (void)ensureDialogueParsingFor:(Line*)line {
     if (!line.isAnyCharacter) return;
-    
+        
     NSInteger i = [self indexOfLine:line];
     if (i == NSNotFound) return;
     
@@ -611,10 +611,10 @@ static NSDictionary* patterns;
             
             while (i >= 0) {
                 Line *l = self.lines[i];
-                if (l.length > 0) {
+                
+                if (l.length > 0 && l != self.delegate.characterInputForLine) {
                     // Not a forced character cue, not the preceding line to selection
-                    if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0  &&
-                        l != self.delegate.characterInputForLine) {
+                    if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0) {
                         l.type = action;
                         [self.changedIndices addIndex:i];
                     }
@@ -746,6 +746,7 @@ static NSDictionary* patterns;
 {
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
+    
     line.type = [self parseLineTypeFor:line atIndex:index];
     
     // Remember where our boneyard begins
@@ -851,13 +852,11 @@ static NSDictionary* patterns;
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
     Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
     
-    bool previousIsEmpty = false;
-    
     NSString *trimmedString = (line.string.length > 0) ? [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] : @"";
     
     // Check for everything that is considered as empty
-    if (previousLine.effectivelyEmpty || index == 0) previousIsEmpty = true;
-    
+    bool previousIsEmpty = (previousLine.effectivelyEmpty || index == 0);
+        
     // Check if this line was forced to become a character cue in editor (by pressing tab)    
     if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
         line.forcedCharacterCue = NO;
@@ -936,6 +935,7 @@ static NSDictionary* patterns;
         if (titlePageType != NSNotFound) return titlePageType;
     }
     
+    // Dual dialogue
     if (lastChar == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
         // A character line ending in ^ is a dual dialogue character
         // (94 = ^, we'll compare the numerical value to avoid mistaking Turkish alphabet character Ş as ^)
@@ -946,7 +946,8 @@ static NSDictionary* patterns;
             return dualDialogueCharacter;
         }
     }
-    else if (line.length > 2 && line.lastCharacter == ':' && line.string.containsOnlyUppercase && previousIsEmpty) {
+    // Transitions
+    else if (line.length > 2 && line.lastCharacter == ':' && line.visibleContentIsUppercase && previousIsEmpty) {
         // Check for Transitions
         return transitionLine;
     }
@@ -989,10 +990,9 @@ static NSDictionary* patterns;
         }
     }
     else if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
-        // Parenthetical or dialogue
-        if (firstChar == '(') {
-            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
-        }
+        // If the line begins with open parenthesis, it's a parenthetical line
+        if (firstChar == '(') return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        // Otherwise it's just dialogue
         return (previousLine.isDialogue) ? dialogue : dualDialogue;
     }
     
@@ -1000,16 +1000,17 @@ static NSDictionary* patterns;
     // Basically we'll make any all-caps lines with < 3 characters character cues and/or make all-caps actions character cues when
     // the text is changed to have some dialogue follow it.
     // We're doing this only after everything else has failed.
-    if (previousLine.type == action
-        && previousLine.length > 0
-        && previousLine.string.onlyUppercaseUntilParenthesis
-        && !previousLine.forced
+    else if (previousLine.type == action
+        && !previousIsEmpty
         && line.length > 0
+        && !previousLine.forced
+        && previousLine.string.onlyUppercaseUntilParenthesis
         && [self previousLine:previousLine].type == empty) {
         
         // (94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^')
         if (previousLine.lastCharacter == 94) previousLine.type = dualDialogueCharacter;
         else previousLine.type = character;
+        
         // Note that the previous line got changed
         [_changedIndices addIndex:index-1];
         
@@ -1059,8 +1060,7 @@ static NSDictionary* patterns;
         } else {
             return titlePageUnknown;
         }
-    }
-    else if (previousLine.isTitlePage) {
+    } else if (previousLine.isTitlePage) {
         NSString *key = @"";
         NSInteger i = index - 1;
         while (i >= 0) {
