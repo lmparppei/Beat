@@ -84,9 +84,7 @@ NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontS
 
 NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
 
-#define SECTION_FONTSIZE 13.0
-#define SYNOPSE_FONTSIZE 12.0
-#define SCENE_FONTSIZE 11.5
+NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen";
 
 
 + (BeatUserDefaults*)sharedDefaults
@@ -154,8 +152,9 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
         
         BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0],
         
-        BeatSettingShowPageSeparators: @[BeatSettingShowPageSeparators, @NO]
+        BeatSettingShowPageSeparators: @[BeatSettingShowPageSeparators, @NO],
         
+        BeatSettingiOSShowWelcomeScreen: @[BeatSettingiOSShowWelcomeScreen, @YES]
 	};
 }
 
@@ -284,7 +283,13 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 	}
 }
 
-- (BOOL)isSuppressed:(NSString*)key {
+- (void)resetSuppressedAlerts
+{
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:BeatSettingSuppressedAlert];
+}
+
+- (BOOL)isSuppressed:(NSString*)key
+{
 	NSDictionary *suppressions = [NSUserDefaults.standardUserDefaults objectForKey:BeatSettingSuppressedAlert];
 	if (![suppressions objectForKey:key]) {
 		return NO;
@@ -293,7 +298,8 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 	}
 }
 
-- (void)setSuppressed:(NSString *)key value:(bool)value {
+- (void)setSuppressed:(NSString *)key value:(bool)value
+{
 	NSMutableDictionary *suppressions = [[NSUserDefaults.standardUserDefaults objectForKey:BeatSettingSuppressedAlert] mutableCopy];
 	if (!suppressions) suppressions = NSMutableDictionary.new;
 		

@@ -59,23 +59,49 @@ extern NSString* const BeatSettingShowPageSeparators;
 
 extern NSString* const BeatSettingFocusMode;
 
+extern NSString* const BeatSettingiOSShowWelcomeScreen;
+
+/// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 
+/// Returns user default dictionary with property names and default values
 + (NSDictionary*)userDefaults;
+/// Tries to set all user defaults for given target
 - (void)readUserDefaultsFor:(id)target;
+/// Resets this setting to default
 - (void)resetToDefault:(NSString*)key;
-- (void)save:(id)value forKey:(NSString*)key;
-- (BOOL)isSuppressed:(NSString*)key;
-- (void)setSuppressed:(NSString*)key value:(bool)value;
-- (void)saveBool:(bool)value forKey:(NSString*)key;
-- (__nullable id)get:(NSString*)docKey;
-- (BOOL)getBool:(NSString*)docKey;
-- (CGFloat)getFloat:(NSString*)docKey;
-- (void)saveSettingsFrom:(id)target;
-- (NSInteger)getInteger:(NSString*)docKey;
-- (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
-- (void)saveFloat:(CGFloat)value forKey:(NSString*)key;
+/// Returns the __default__ value for key
 - (id)defaultValueFor:(NSString*)key;
+
+
+/// Resets all suppressed alerts
+- (void)resetSuppressedAlerts;
+/// Checks if given alert type is suppressed
+- (BOOL)isSuppressed:(NSString*)key;
+/// Save suppression state for given alert
+- (void)setSuppressed:(NSString*)key value:(bool)value;
+
+/// Get ANY value (you have to handle typecasting yourself)
+- (__nullable id)get:(NSString*)docKey;
+/// Returns a boolean setting value
+- (BOOL)getBool:(NSString*)docKey;
+/// Returns a float setting value
+- (CGFloat)getFloat:(NSString*)docKey;
+/// Returns an integer setting value
+- (NSInteger)getInteger:(NSString*)docKey;
+
+/// Saves ANY value for the given key. Make sure you are storing correct types.
+- (void)save:(id)value forKey:(NSString*)key;
+/// Saves a bool value
+- (void)saveBool:(bool)value forKey:(NSString*)key;
+/// Saves an integer value
+- (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
+/// Saves a float value
+- (void)saveFloat:(CGFloat)value forKey:(NSString*)key;
+
+/// Saves settings using given object. Checks setting names and tries to access those keys in the target.
+- (void)saveSettingsFrom:(id)target;
+
 @end
 
 NS_ASSUME_NONNULL_END
