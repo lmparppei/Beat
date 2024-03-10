@@ -446,7 +446,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @end
 
-@interface BeatPlugin : NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
+@interface BeatPlugin: NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate;
 + (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate;
 

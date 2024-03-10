@@ -290,18 +290,17 @@
 /// Closes all windows (on macOS)
 - (void)closeWindows
 {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
     if (self.htmlPanel) {
         [self.htmlPanel closePanel:nil];
         self.htmlPanel = nil;
     }
     
-    if (_pluginWindows.count) {
-        for (BeatPluginHTMLWindow *window in _pluginWindows) {
-            [window closeWindow];
-        }
+    for (BeatPluginHTMLWindow *window in _pluginWindows) {
+        [window closeWindow];
     }
 #endif
+    [_pluginWindows removeAllObjects];
 }
 
 /// Restarts the plugin, clearing it from memory first.
@@ -328,6 +327,7 @@
 	
 	_terminating = YES;
 	
+    // Close all windows and remove them from memory
     [self closeWindows];
 	
 	// Stop any timers left
@@ -1357,7 +1357,7 @@
     });
 }
 
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 
 - (BeatPluginHTMLWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
@@ -1369,19 +1369,14 @@
 	if (height <= 0) height = 300;
 	if (height > 800) height = 800;
 	
-	BeatPluginHTMLWindow *panel = [BeatPluginHTMLWindow.alloc initWithHTML:html width:width height:height host:self];
-	//[self.delegate.documentWindow addChildWindow:panel ordered:NSWindowAbove];
-	[panel makeKeyAndOrderFront:nil];
+	BeatPluginHTMLWindow *window = [BeatPluginHTMLWindow.alloc initWithHTML:html width:width height:height host:self];
+    [self registerPluginWindow:window];
+    
+    [window makeKeyAndOrderFront:nil];
+    window.delegate = self;
+    window.callback = callback;
 	
-	if (_pluginWindows == nil) {
-		_pluginWindows = [NSMutableArray array];
-		[_delegate.pluginAgent registerPlugin:self];
-	}
-	[_pluginWindows addObject:panel];
-	panel.delegate = self;
-	panel.callback = callback;
-	
-	return panel;
+	return window;
 }
 
 /// A plugin (HTML) window will close.
@@ -1406,7 +1401,31 @@
 	}
 }
 
+#else
+
+/// Returns a HTML view controller for iOS. Width and height are disregarded.
+- (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+{
+    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:false callback:callback];
+    [self registerPluginWindow:htmlVC];
+        
+    UIViewController* documentVC = self.delegate.document;
+    [documentVC presentViewController:htmlVC animated:true completion:nil];
+        
+    return htmlVC;
+}
+
 #endif
+
+- (void)registerPluginWindow:(id)window
+{
+    if (_pluginWindows == nil) {
+        _pluginWindows = NSMutableArray.new;
+        [_delegate.pluginAgent registerPlugin:self];
+    }
+    
+    [_pluginWindows addObject:window];
+}
 
 /// Reliably closes a plugin window
 - (void)closePluginWindow:(id)sender
@@ -1979,9 +1998,7 @@
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
 {
-	if ([message.name isEqualToString:@"log"]) {
-		[self log:message.body];
-	}
+	if ([message.name isEqualToString:@"log"]) [self log:message.body];
     
     // The following methods will require a real JS context, so if it's no longer there, do nothing.
     if (_context == nil) return;

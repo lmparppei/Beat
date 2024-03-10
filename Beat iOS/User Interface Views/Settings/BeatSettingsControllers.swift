@@ -139,6 +139,10 @@ class BeatSettingsViewController:UITableViewController {
 			UIApplication.shared.open(url)
 		}
 	}
+	
+	@IBAction func resetSuppressedAlerts(_ sender:Any?) {
+		BeatUserDefaults.shared().reset(toDefault: BeatSettingSuppressedAlert)
+	}
 }
 
 class BeatURLButton:UIButton {

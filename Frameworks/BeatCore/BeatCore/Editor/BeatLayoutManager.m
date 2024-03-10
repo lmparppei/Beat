@@ -733,18 +733,16 @@
     
     LineType type = line.type;
     bool currentlyEditing = NSLocationInRange(_editorDelegate.selectedRange.location, line.range) || NSIntersectionRange(_editorDelegate.selectedRange, line.range).length > 0;
-    
-    // Ignore story markers
-    // if (line.type == section || line.type == synopse) return 0;
-    
+            
     // Clear formatting characters etc.
-    NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
+    NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO includeOmissions:NO].mutableCopy;
     [muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
     
     // We won't hide notes, except for colors
     if (line.colorRange.length) {
         [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
     }
+    
     // Don't remove # and = for sections and synopsis lines
     if (line.type == section || line.type == synopse) {
         [muIndices removeIndexesInRange:(NSRange){ line.position, line.numberOfPrecedingFormattingCharacters }];

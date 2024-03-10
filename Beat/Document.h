@@ -55,7 +55,6 @@ THE SOFTWARE.
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;
 
-@property (nonatomic) bool showPageNumbers;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 

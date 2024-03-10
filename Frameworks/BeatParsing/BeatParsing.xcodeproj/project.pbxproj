@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */; };
 		B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */ = {isa = PBXBuildFile; fileRef = B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */; };
 		B63BE8412B5B1A14003814A5 /* BeatLineTypeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */; };
@@ -61,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
+		B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTypeParsingRules.swift; sourceTree = "<group>"; };
 		B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineChanges.h; sourceTree = "<group>"; };
 		B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineChanges.m; sourceTree = "<group>"; };
 		B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLineTypeSet.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
 		B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BadControlCharacters.h"; sourceTree = "<group>"; };
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
+		B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +128,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B62F043B2B7E20C000920E50 /* Experiments */ = {
+			isa = PBXGroup;
+			children = (
+				B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */,
+				B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */,
+			);
+			path = Experiments;
+			sourceTree = "<group>";
+		};
 		B6B37E7928F018A100657F5F = {
 			isa = PBXGroup;
 			children = (
@@ -156,6 +168,7 @@
 		B6B37F2328F01B1500657F5F /* Parsing */ = {
 			isa = PBXGroup;
 			children = (
+				B62F043B2B7E20C000920E50 /* Experiments */,
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
 				B6B144B42B5DCD240030A6B2 /* ContinuousFountainParser+Outline.h */,
@@ -367,6 +380,7 @@
 				B64E438A2ACAA05B003B947F /* BeatMacros.swift in Sources */,
 				B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */,
 				B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */,
+				B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */,
 				B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

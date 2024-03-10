@@ -59,8 +59,9 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	
 	func fetchReviews() {
 		reviewList.removeAllObjects()
+		self.string = self.editorDelegate?.attributedString()
 		
-		string?.enumerateAttribute(NSAttributedString.Key(rawValue: "BeatReview"), in: NSMakeRange(0, string?.length ?? 0), using: { value, range, stop in
+		string?.enumerateAttribute(NSAttributedString.Key(rawValue: BeatReview.attributeKey().rawValue), in: NSMakeRange(0, string?.length ?? 0), using: { value, range, stop in
 			let review:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
 			
 			if (!review.emptyReview) {

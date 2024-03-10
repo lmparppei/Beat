@@ -188,13 +188,8 @@
             NSSet* styleNames = attrs[@"Style"];
             if (styleNames.count == 0) return;
 
-#if TARGET_OS_OSX
-            NSFontTraitMask traits = 0;
-            
-            if ([styleNames containsObject:@"Bold"]) traits |= NSBoldFontMask;
-            if ([styleNames containsObject:@"Italic"]) traits |= NSItalicFontMask;
-            [attributedString applyFontTraits:traits range:range];
-#endif
+            // Apply inline formatting. Note that attributdString is an inout argument.
+            [self applyInlineFormattingWithStyleNames:styleNames range:range attributedString:attributedString];
             
             if ([styleNames containsObject:@"Note"]) {
                 RenderStyle* noteStyle = [self.styles forElement:@"note"];
@@ -239,6 +234,31 @@
     }
     
     return attributedString;
+}
+
+- (void)applyInlineFormattingWithStyleNames:(NSSet*)styleNames range:(NSRange)range attributedString:(inout NSMutableAttributedString*)attributedString
+{
+    if (styleNames.count == 0) return;
+    
+#if TARGET_OS_OSX
+    NSFontTraitMask traits = 0;
+    
+    if ([styleNames containsObject:@"Bold"]) traits |= NSBoldFontMask;
+    if ([styleNames containsObject:@"Italic"]) traits |= NSItalicFontMask;
+    [attributedString applyFontTraits:traits range:range];
+#else
+    UIFontDescriptorSymbolicTraits traits = 0;
+    if ([styleNames containsObject:@"Bold"]) traits |= UIFontDescriptorTraitBold;
+    if ([styleNames containsObject:@"Italic"]) traits |= UIFontDescriptorTraitItalic;
+    if ([styleNames containsObject:@"Bold"]) NSLog(@"BOLD: %@", attributedString.string);
+    if (traits != 0) {
+        UIFont* font = [attributedString attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+        if (font == nil) font = self.fonts.regular;
+    
+        UIFont* stylizedFont = [BeatFonts fontWithTrait:traits font:font];
+        if (stylizedFont) [attributedString addAttribute:NSFontAttributeName value:stylizedFont range:range];
+    }
+#endif
 }
 
 #if TARGET_OS_OSX
@@ -324,16 +344,17 @@
 
     CGFloat contentPadding = self.styles.page.contentPadding;
     CGFloat width = [self widthFor:line];
+
+    // Inherit font
+    BXFont* font = [content attribute:NSFontAttributeName atIndex:0 effectiveRange:nil];
     
     // Create a table with three cells:
     // [scene number] [INT. SCENE HEADING] [scene number]
 
-    // Stylize the actual heading part.
-    // Make a copy of the style just in case.
+    // Stylize the actual heading part. Make a copy of the style just in case.
     NSMutableParagraphStyle* contentStyle = [content attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:nil];
     contentStyle = contentStyle.mutableCopy;
-    BXFont* font = [content attribute:NSFontAttributeName atIndex:0 effectiveRange:nil];
-    
+        
     // Set margins and indents to zero (as we're inside a cell)
     contentStyle.headIndent = 0;
     contentStyle.firstLineHeadIndent = 0;

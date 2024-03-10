@@ -139,7 +139,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		resize()
+		//resize()
 	}
 	
 	
@@ -150,13 +150,22 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	}
 	
 	func scroll(to range: NSRange) {
+		// Current bounds
+		let bounds = self.enclosingScrollView.bounds
+		// The *actually* visible frame (why won't iOS give this automatically?)
+		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.keyboardLayoutGuide.layoutFrame.size.height)
+
+		// Current selection frae
 		var selectionRect = self.rectForRange(range: self.selectedRange)
 		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
 		
-		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
+		// Account for top margin
+		selectionRect.origin.y += self.textContainerInset.top
 		
+		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
+						
 		// If the rect is not visible, scroll to that range
-		if CGRectIntersection(scaledRect, self.enclosingScrollView.bounds).height - 40.0 < 12.0 {
+		if CGRectIntersection(scaledRect, visible).height < 16.0 {
 			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: true)
 		}
 	}

@@ -15,7 +15,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatCore/BeatCompatibility.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 @class BeatStylesheet;
 @class BeatTextIO;
@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) BeatPaperSize pageSize;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool showSceneNumberLabels;
+@property (nonatomic) bool showPageNumbers;
 
 
 #pragma mark - Creating the actual document file
@@ -153,6 +154,8 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (bool)caretAtEnd;
 - (void)refreshTextView;
 
+/// Focuses the editor window and text view
+- (void)focusEditor;
 
 #pragma mark - Text getters and caches
 
@@ -265,6 +268,8 @@ NS_ASSUME_NONNULL_END
 - (void)reloadStyles;
 - (CGFloat)editorLineHeight;
 - (CGFloat)lineHeight;
+
+- (void)setStylesheetAndReformat:(NSString *)name;
 
 @end
 

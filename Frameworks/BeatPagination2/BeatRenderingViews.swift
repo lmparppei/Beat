@@ -83,7 +83,7 @@ import UXKit
             // Pagination has a renderer attached to it
 			self.attributedString = page!.attributedString()
 		} else {
-            // No pagination, we'll use the default content
+            // No pagination, we'll use the provided content
 			self.attributedString = content ?? NSAttributedString(string: "")
 		}
 		

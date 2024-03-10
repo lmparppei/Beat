@@ -362,8 +362,14 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 /// Indices of formatting characters
 - (NSIndexSet*)formattingRanges;
-/// Returns the formatting ranges as *global* (document-wide) ranges
+/// Returns indices of formatting characters.
+/// @param globalRange When `true`, the index set will include global (and not local) indices
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
+/// Returns indices of formatting characters.
+/// @param globalRange When `true`, the index set will include global (and not local) indices (default is false)
+/// @param includeNotes When `true`, the index set will include note ranges (default is true)
+/// @param includeOmissions  When `true`, the index set will include omitted ranges (default is true)
+- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes includeOmissions:(bool)includeOmissions;
 /// Indices of printed content (excluding formatting symbols etc.)
 - (NSIndexSet*)contentRanges;
 /// Indices of printed content (excluding formatting symbols etc.) *including* given ranges.
@@ -543,6 +549,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)hasEmojis;
 - (NSArray<NSValue*>*)emojiRanges;
 
+/// returns `true` if the *visible* content is uppercase, which means that any notes etc. won't be taken into consideration.
+- (bool)visibleContentIsUppercase;
 
 
 #pragma mark - Debugging

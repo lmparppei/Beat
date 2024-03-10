@@ -301,10 +301,10 @@
 			isa = PBXGroup;
 			children = (
 				B692D1002A6EBB9400574D72 /* BeatPlugins.h */,
-				B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */,
-				B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */,
 				B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */,
 				B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */,
+				B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */,
+				B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */,
 				B67F757E2B1D27000028D009 /* BeatPluginAgent.h */,
 				B67F757F2B1D27000028D009 /* BeatPluginAgent.m */,
 				B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */,

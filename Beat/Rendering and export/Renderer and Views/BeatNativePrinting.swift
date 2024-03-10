@@ -133,7 +133,7 @@ class BeatNativePrinting:NSView {
 					// Request URL from user
 					self.url = self.getURLforPDF()
 					if (!(self.url?.startAccessingSecurityScopedResource() ?? false)) {
-						print("ERROR")
+						print("ERROR: The PDF can't be opened")
 						return
 					}
 				}

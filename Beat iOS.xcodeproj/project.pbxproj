@@ -61,6 +61,8 @@
 		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
 		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
 		B696BC472A7426750078BA79 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B696BC462A7426750078BA79 /* dragula.js */; };
+		B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */; };
+		B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
@@ -193,6 +195,8 @@
 		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
 		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStartupScreenViewController.swift; sourceTree = "<group>"; };
+		B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSuppressCheckboxButton.swift; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -395,6 +399,7 @@
 			children = (
 				B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */,
 				B686BD262B345F060074FC67 /* BeatAdaptiveViews.swift */,
+				B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */,
 			);
 			path = "User Interface Elements";
 			sourceTree = "<group>";
@@ -406,8 +411,6 @@
 				B68321B629F6BD7E00A2553E /* BeatPrintView.m */,
 				B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */,
 				B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */,
-				B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */,
-				B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */,
 				B686FF8A2971BC7D00789C8D /* Render to HTML */,
 				B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */,
 			);
@@ -461,6 +464,31 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B6A79B642B801AD7003FF931 /* Welcome Screen */ = {
+			isa = PBXGroup;
+			children = (
+				B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */,
+			);
+			path = "Welcome Screen";
+			sourceTree = "<group>";
+		};
+		B6A79B692B80C89F003FF931 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B610166929A7D14B0090235A /* BeatSettingsControllers.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		B6AD9ACB2B80001D00E80E0C /* Preview View */ = {
+			isa = PBXGroup;
+			children = (
+				B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */,
+				B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */,
+			);
+			path = "Preview View";
+			sourceTree = "<group>";
+		};
 		B6CB96F1282FEB6500C7AFC7 /* Beat iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -484,15 +512,17 @@
 		B6CB9707282FEDAF00C7AFC7 /* User Interface Views */ = {
 			isa = PBXGroup;
 			children = (
+				B6A79B642B801AD7003FF931 /* Welcome Screen */,
+				B6AD9ACB2B80001D00E80E0C /* Preview View */,
 				B61FD0642A69309F00A40883 /* Storyboards */,
 				B61FD0632A69308500A40883 /* Main Document View */,
 				B63D9F5C2830366B00D027B6 /* Editor */,
 				B61FD0572A66BEF000A40883 /* Outline View */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B619DE5B29F80D92007D1838 /* Document Browser View */,
+				B6A79B692B80C89F003FF931 /* Settings */,
 				B619DE5529F6ED51007D1838 /* BeatExportViewController.swift */,
 				B6F61400299FF051002188C0 /* BeatPopover.swift */,
-				B610166929A7D14B0090235A /* BeatSettingsControllers.swift */,
 				B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */,
 			);
 			path = "User Interface Views";
@@ -676,6 +706,7 @@
 				B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */,
 				B6E91E362B67A25700EDB066 /* BeatPageViewController.swift in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
+				B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */,
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
 				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */,
@@ -683,6 +714,7 @@
 				B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
+				B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
@@ -911,7 +943,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 16;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -969,7 +1001,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";

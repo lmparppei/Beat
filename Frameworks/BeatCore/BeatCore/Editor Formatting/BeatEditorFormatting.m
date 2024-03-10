@@ -333,7 +333,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
-    
+        
 	NSRange selectedRange = _delegate.selectedRange;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -405,7 +405,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
-	
+    	
 	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
 		// Do some extra checks for dual dialogue
@@ -416,8 +416,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// Foolproof fix for a strange, rare bug which changes multiple lines into character cues and the user is unable to undo the changes
 		if (NSMaxRange(range) <= selectedRange.location) {
             self.didProcessForcedCharacterCue = true; // Flag that we're processing a character cue (to avoid reparsing the change on iOS)
-			[self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
+			
+            [self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
+            
             self.didProcessForcedCharacterCue = false; // End processing
 
             line.string = line.string.uppercaseString;
