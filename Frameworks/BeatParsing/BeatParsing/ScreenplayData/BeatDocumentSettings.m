@@ -58,6 +58,7 @@ NSString * const DocSettingStylesheet    = @"Stylesheet";
 
 NSString * const DocSettingCharacterData = @"CharacterData";
 
+NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier";
 
 -(id)init
 {
@@ -68,6 +69,28 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 	return self;
 }
 
++ (NSDictionary*)defaultValues
+{
+    static NSDictionary* defaultValues;
+    if (defaultValues != nil) return defaultValues;
+    
+    defaultValues = @{
+        DocSettingNovelLineHeightMultiplier: @(2.0)
+    };
+    
+    return defaultValues;
+}
+/// This is an alias for `+ defaultValues` because of some weird Swift compatibility issues
+- (NSDictionary*)defaultValues
+{
+    return BeatDocumentSettings.defaultValues;
+}
+
++ (NSDictionary*)defaultValue:(NSString*)key
+{
+    return BeatDocumentSettings.defaultValues[key];
+}
+
 - (void)setBool:(NSString*)key as:(bool)value
 {
 	[_settings setValue:[NSNumber numberWithBool:value] forKey:key];
@@ -76,7 +99,7 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 {
 	[_settings setValue:@(value) forKey:key];
 }
-- (void)setFloat:(NSString*)key as:(NSInteger)value
+- (void)setFloat:(NSString*)key as:(CGFloat)value
 {
 	[_settings setValue:[NSNumber numberWithFloat:value] forKey:key];
 }
@@ -90,31 +113,46 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 }
 
 - (bool)has:(NSString*)key {
-	if ([_settings objectForKey:key]) return YES;
+	if (_settings[key] != nil) return YES;
 	else return NO;
 }
 
 - (NSInteger)getInt:(NSString *)key
 {
-	return [(NSNumber*)[_settings valueForKey:key] integerValue];
+    NSNumber* value = (NSNumber*)[self get:key];
+	return value.integerValue;
 }
-- (NSInteger)getFloat:(NSString *)key {
-	return [(NSNumber*)[_settings valueForKey:key] floatValue];
+
+- (CGFloat)getFloat:(NSString *)key
+{
+    NSNumber* value = (NSNumber*)[self get:key];
+	return value.floatValue;
 }
+
 - (bool)getBool:(NSString *)key
 {
-	return [(NSNumber*)[_settings valueForKey:key] boolValue];
+    NSNumber* value = (NSNumber*)[self get:key];
+    return value.boolValue;
 }
+
 - (NSString*)getString:(NSString *) key
 {
-	NSString *value = (NSString*)_settings[key];
+    NSString *value = (NSString*)[self get:key];
 	if (![value isKindOfClass:NSString.class]) value = @"";
 	return value;
 }
+
 - (id)get:(NSString*)key
 {
+    id value;
+    
+    if (_settings[key] == nil) {
+        // If no value is set, try to get default value. It might be null too.
+        value = BeatDocumentSettings.defaultValues[key];
+    }
 	return _settings[key];
 }
+
 - (void)remove:(NSString *)key
 {
 	[_settings removeObjectForKey:key];
@@ -124,6 +162,7 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 - (NSString*)getSettingsString {
 	return [self getSettingsStringWithAdditionalSettings:@{}];
 }
+
 - (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings
 {
 	NSDictionary *settings = _settings.copy;
@@ -144,6 +183,7 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 		return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 	}
 }
+
 - (NSRange)readSettingsAndReturnRange:(NSString*)string
 {
 	NSRange r1 = [string rangeOfString:JSON_MARKER];
