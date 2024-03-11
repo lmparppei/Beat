@@ -28,7 +28,8 @@ page {
     default-width-a4: 60ch;
     default-width-us: 62ch;
     
-    line-height: 20;
+    line-height: 13;
+    line-height-multiplier: documentSetting(novelLineHeightMultiplier);
     
     content-padding: 7ch;
  

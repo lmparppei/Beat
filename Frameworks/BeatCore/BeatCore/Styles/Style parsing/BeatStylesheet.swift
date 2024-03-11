@@ -12,8 +12,7 @@ import OSLog
 @objc public class BeatStylesheet:NSObject, BeatExportStyleProvider {
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
-    
-    var settings:BeatExportSettings?
+    public var settings:BeatExportSettings?
     
     var stylesheet:String?
     
@@ -43,7 +42,8 @@ import OSLog
     }
     
     /// Reloads the given style
-    @objc public func reload() {
+    @objc public func reload(exportSettings:BeatExportSettings? = nil) {
+        if (exportSettings != nil) { self.settings = exportSettings }
         self.loadStyles()
     }
     
