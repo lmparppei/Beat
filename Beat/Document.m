@@ -106,6 +106,7 @@
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
+#import "BeatTextView+Popovers.h"
 #import "BeatFocusMode.h"
 
 @interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
@@ -864,10 +865,15 @@ static BeatAppDelegate *appDelegate;
 /// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
 - (void)updateEditorMode
 {
+	NSLog(@"Editor mode: %lu", _mode);
+	
 	if (_mode == TaggingMode) [self.tagging open];
 	else [self.tagging close];
 	
-	_modeIndicator.hidden = (_mode != EditMode);
+	if (_mode == TaggingMode) NSLog(@"... tagging mode");
+	else if (_mode == EditMode) NSLog(@"... edit mode");
+	
+	_modeIndicator.hidden = (_mode == EditMode);
 	
 	// Show mode indicator
 	if (_mode != EditMode) {
@@ -1771,7 +1777,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)showForceMenu:(id)sender
 {
-	[self.textView forceElement:self];
+	[self.textView showForceElementMenu];
 }
 
 - (void)forceElement:(LineType)lineType
