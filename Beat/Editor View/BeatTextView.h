@@ -14,7 +14,7 @@
 #import "BeatTextStorage.h"
 //#import "Beat-Swift.h"
 
-typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
+typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 	NoPopup,
 	Autocomplete,
 	ForceElement,
@@ -34,12 +34,9 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
-@property (nonatomic) CGFloat magnification;
 @property (readonly) ThemeManager* themeManager;
-@property (readonly) bool showRevisions;
 @property (readonly) bool sceneNumberLabelUpdateOff;
-@property (nonatomic) bool showSceneNumberLabels;
-@property (nonatomic) bool showPageNumbers;
+
 @property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
 @property (readonly) CGFloat fontSize;
@@ -52,14 +49,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (readonly) NSRange lastChangedRange;
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
-@property (nonatomic, readonly) Line *currentLine;
-
-@property (nonatomic, readonly) BeatStylesheet *editorStyles;
-
-@property (nonatomic, readonly) BeatPreviewController* previewController;
 
 - (bool)isDark;
-- (void)ensureLayout;
 - (void)showLockStatus;
 - (void)handleTabPress;
 
@@ -76,12 +67,15 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 @class BeatTagging;
 @class BeatPaginationPage;
+@class BeatEditorPopoverController;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
+
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
 @property (weak) IBOutlet BeatTagging *tagging;
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
 @property (nonatomic) NSString* text;
+@property (nonatomic) BeatEditorPopoverController* popoverController;
 
 @property (nonatomic) bool didType;
 
@@ -119,27 +113,20 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 #pragma mark - Autocompletion
 
-/// Current popup view mode (autocomplete/tagging/etc.)
-@property (nonatomic) BeatTextviewPopupMode popupMode;
-
 /// Autocompletion results
 @property (nonatomic, strong) NSArray *matches;
 
-/// Selected index in autocomplete popover
-@property NSInteger autocompleteIndex;
-/// Popover for autocompletion
-@property (nonatomic, strong) NSPopover *autocompletePopover;
-/// Table view for autocompletion
-@property (nonatomic, weak) NSTableView *autocompleteTableView;
-/// Displays force element menu
-- (void)forceElement:(id)sender;
+/// Used to keep track of when the insert cursor has moved for both autocompletion and other popover handling. See  `didChangeSelection:`.
+@property (nonatomic, assign) NSInteger lastPos;
+
+/// This is the partial autocompletion word/line range
+@property (nonatomic, copy) NSString *partialText;
+
 
 
 #pragma mark - Common methods
 
 - (void)setup;
-- (IBAction)showInfo:(id)sender;
-
 
 #pragma mark - Scrolling
 
@@ -161,5 +148,13 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 - (void)loadCaret;
 - (void)ensureCaret;
+
+
+#pragma mark - Popovers
+
+/// Popover for displaying selection info (cmd-shift-I) has to stay in memory to reliably close it.
+@property (nonatomic, strong) NSPopover *infoPopover;
+
+
 
 @end
