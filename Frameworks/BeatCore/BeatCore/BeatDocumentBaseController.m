@@ -82,9 +82,9 @@
 - (void)reloadStyles
 {
     ((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
-        
-    [self.styles reload];
-    [self.editorStyles reload];
+    
+    [self.styles reloadWithExportSettings:self.exportSettings];
+    [self.editorStyles reloadWithExportSettings:self.exportSettings];
     [self resetPreview];
     
     // Let's reformat certain types of elements (and hope the user doesn't have like 9999999999 of each)
@@ -106,8 +106,8 @@
     
     // Re-read all styles, just in case
     [self reloadFonts];
-    [self.styles reload];
-    [self.editorStyles reload];
+    [self.styles reloadWithExportSettings:self.exportSettings];
+    [self.editorStyles reloadWithExportSettings:self.exportSettings];
     
     // Format all lines
     [self.formatting formatAllLines];
