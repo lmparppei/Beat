@@ -8,6 +8,8 @@
 
 import AppKit
 
+fileprivate let padding = 6.0
+
 @objc protocol BeatQuickSettingsDelegate:BeatEditorDelegate {
 	func toggleSceneLabels(_ sender:Any?)
 	func togglePageNumbers(_ sender:Any?)
@@ -21,6 +23,7 @@ class BeatDesktopQuickSettings:NSViewController {
 	@objc weak var delegate:BeatQuickSettingsDelegate?
 	
 	@IBOutlet weak var stackView:BeatStackView?
+	@IBOutlet weak var additionalSettings:BeatStackView?
 	
 	@IBOutlet weak var sceneNumbers:ITSwitch?
 	@IBOutlet weak var pageNumbers:ITSwitch?
@@ -42,6 +45,9 @@ class BeatDesktopQuickSettings:NSViewController {
 	
 	override func viewDidLoad() {
 		self.updateSettings()
+
+		// Load any additional settings required by the stylesheet
+		addAdditionalSettings()
 	}
 	
 	func updateSettings() {
@@ -73,6 +79,31 @@ class BeatDesktopQuickSettings:NSViewController {
 		else if delegate.mode == .TaggingMode {
 			taggingMode?.checked = true
 		}
+	}
+	
+	/// This currently only supports *one* setting, but it's built this way to be open to adustments
+	func addAdditionalSettings() {
+		guard let settings = self.delegate?.editorStyles.document.additionalSettings,
+			  let container = self.additionalSettings
+		else { return }
+		if settings.count == 0 { return }
+		
+		container.addView(BeatQuickSettingSeparator.newSeparator())
+		
+		for setting in settings {
+			if setting == "novelLineHeightMultiplier" {
+				let item = self.segmentedSetting(setting: setting)
+				container.addView(item)
+			}
+		}
+		
+		container.updateSize()
+		container.frame.origin.y -= container.frame.size.height
+		
+		// Update the view height
+		self.view.frame.size.height += container.frame.height + 6.0
+		
+		self.view.addSubview(container)
 	}
 	
 	func setupQuickSettings() {
@@ -152,11 +183,34 @@ class BeatDesktopQuickSettings:NSViewController {
 	}
 }
 
+
+// MARK: - Additional setting getters and setters
+
+extension BeatDesktopQuickSettings {
+	func segmentedSetting(setting:String) -> NSView {
+		let value = delegate?.documentSettings.getFloat(setting) ?? 2.0
+		let label = NSLocalizedString("quickSettings." + setting, comment: "")
+		
+		let item = BeatQuickSettingItem.newSegment(label, segments: ["2", "1.5"], value: (value < 2.0) ? 1 : 0) { [weak self] value in
+			guard let selected = value as? Int else { return }
+			let lineHeight = (selected == 0) ? 2.0 : 1.5
+			self?.delegate?.documentSettings.setFloat(setting, as:lineHeight)
+			self?.delegate?.reloadStyles()
+		}
+		
+		return item
+	}
+}
+
+
+// MARK: - Additional setting views
+
 enum BeatQuickSettingViewType {
 	case none
 	case separator
 	case toggle
 	case dropdown
+	case segment
 }
 
 class BeatStackView:NSView {
@@ -174,8 +228,18 @@ class BeatStackView:NSView {
 		view.frame.size.width = self.frame.size.width
 		view.frame.origin = CGPoint(x: 0.0, y: y)
 		
-		
 		self.addSubview(view)
+	}
+	
+	func updateSize() {
+		guard let lastView = self.subviews.last else { return }
+		
+		let maxY = lastView.frame.maxY
+		
+		var frame = self.frame
+		frame.size.height = maxY
+		
+		self.frame = frame
 	}
 }
 
@@ -187,7 +251,6 @@ class BeatQuickSettingItem:NSView {
 	override var isFlipped: Bool { return true }
 	
 	static var defaultWidth = 172.0
-	static var padding = 5.0
 	
 	init(frame frameRect: NSRect, type:BeatQuickSettingViewType = .none, handler:((Any) -> Void)? = nil) {
 		self.handler = handler
@@ -246,13 +309,43 @@ class BeatQuickSettingItem:NSView {
 		return item
 	}
 	
+	class func newSegment(_ text:String, segments:[String], value:Int, handler:@escaping (Any) -> Void) -> NSView {
+		let item = BeatQuickSettingItem(frame: NSMakeRect(0.0, 0.0, BeatQuickSettingItem.defaultWidth, 22.0), type: .segment, handler: handler)
+		
+		let segmentedControl = NSSegmentedControl(frame: NSMakeRect(90.0, 0.0, 90.0, 22.0))
+		segmentedControl.frame.origin.x = item.frame.size.width - segmentedControl.frame.width + padding * 2
+		
+		segmentedControl.segmentCount = segments.count
+		segmentedControl.target = item
+		segmentedControl.action = #selector(runAction)
+		segmentedControl.sendAction(on: .leftMouseUp)
+		
+		item.control = segmentedControl
+		item.addSubview(segmentedControl)
+		
+		for i in 0..<segments.count {
+			segmentedControl.setLabel(segments[i], forSegment: i)
+		}
+		
+		
+		let label = NSTextField(labelWithString: text)
+		label.frame.origin = CGPoint(x: padding, y: (item.frame.height - label.frame.height) / 2)
+		item.addSubview(label)
+		
+		segmentedControl.setSelected(true, forSegment: value)
+		
+		return item
+	}
+	
 	@IBAction func runAction(_ sender:BeatQuickSettingItem) {
 		var value:Any?
-		
+				
 		if type == .toggle, let button = control as? ITSwitch {
 			value = button.checked
 		} else if type == .dropdown, let popup = control as? NSPopUpButton, let selected = popup.selectedItem {
 			value = popup.itemArray.firstIndex(of: selected)
+		} else if type == .segment, let segment = control as? NSSegmentedControl {
+			value = segment.selectedSegment
 		}
 		
 		if let handler = self.handler, value != nil {
@@ -263,8 +356,8 @@ class BeatQuickSettingItem:NSView {
 }
 class BeatQuickSettingSeparator:NSBox {
 	class func newSeparator() -> NSView {
-		let view = NSView(frame: NSMakeRect(0.0, 0.0, BeatQuickSettingItem.defaultWidth, 18.0))
-		let box = NSBox(frame: NSMakeRect(0.0, 8.5, BeatQuickSettingItem.defaultWidth, 1.0))
+		let view = NSView(frame: NSMakeRect(0.0, 0.0, BeatQuickSettingItem.defaultWidth, 14.0))
+		let box = NSBox(frame: NSMakeRect(0.0, 7.0, BeatQuickSettingItem.defaultWidth, 1.0))
 		box.boxType = .separator
 		box.autoresizingMask = .width
 		
@@ -272,3 +365,4 @@ class BeatQuickSettingSeparator:NSBox {
 		return view
 	}
 }
+

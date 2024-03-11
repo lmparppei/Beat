@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="BeatDesktopQuickSettings" customModule="Beat" customModuleProvider="target">
             <connections>
+                <outlet property="additionalSettings" destination="tbz-aM-vxv" id="XMg-Ph-SdZ"/>
                 <outlet property="darkMode" destination="4Ra-ss-mEM" id="bkM-hf-PeS"/>
                 <outlet property="pageNumbers" destination="O2M-r4-J5E" id="Z0Y-4g-8Nl"/>
                 <outlet property="pageSizePopup" destination="b0a-dB-njk" id="gnf-Lc-vc1"/>
@@ -67,7 +68,7 @@
                     </connections>
                 </customView>
                 <customView id="O2M-r4-J5E" customClass="ITSwitch">
-                    <rect key="frame" x="19" y="216" width="35" height="22"/>
+                    <rect key="frame" x="20" y="216" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
@@ -227,7 +228,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="MuK-Px-5B3">
-                    <rect key="frame" x="18" y="142" width="76" height="16"/>
+                    <rect key="frame" x="18" y="143" width="76" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="Rt1-qW-ihD">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -235,6 +236,10 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <customView id="tbz-aM-vxv" customClass="BeatStackView" customModule="Beat" customModuleProvider="target">
+                    <rect key="frame" x="11" y="11" width="185" height="1"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                </customView>
             </subviews>
             <point key="canvasLocation" x="566" y="-413"/>
         </customView>
