@@ -391,3 +391,5 @@
 "character.editor.lines" = "Rader";
 
 "backup.browseVersions" = "Visa versioner...";
+
+"quickSettings.novelLineHeightMultiplier" = "Mellanrum";

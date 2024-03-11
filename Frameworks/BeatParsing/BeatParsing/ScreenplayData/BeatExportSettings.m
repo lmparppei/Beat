@@ -37,7 +37,6 @@
 		_header = (header.length) ? header.copy : @"";
 		_printSceneNumbers = printSceneNumbers;
 		_revisions = revisions.copy;
-		//_currentScene = scene;
 		_printNotes = printNotes;
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor.copy;
@@ -59,6 +58,8 @@
         _document = delegate.document;
         
         _styles = delegate.styles;
+        
+        _documentSettings = delegate.documentSettings;
         
         _header = @"";
         _printSceneNumbers = delegate.printSceneNumbers || delegate.showSceneNumberLabels;

@@ -71,6 +71,8 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSString * _Nullable customCSS;
 /// Custom styles for the new, native rendering
 @property (nonatomic) NSString * _Nullable customStyles;
+/// Raw document settings 
+@property (nonatomic) BeatDocumentSettings* documentSettings;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
 

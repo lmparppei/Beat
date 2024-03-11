@@ -200,10 +200,12 @@ static NSString *revisionAttribute = @"Revision";
         NSInteger loc = [currentLine.string rangeOfString:@"("].location;
         self.delegate.selectedRange = NSMakeRange(loc + currentLine.position + 1, 0);
     } else {
+        // Add space if needed
+        if (currentLine.lastCharacter != ' ' && currentLine.length > 0) [self.delegate.textActions addString:@" " atIndex:NSMaxRange(currentLine.textRange)];
         // Add a new extension placeholder
-        NSInteger loc = currentLine.string.length;
-        [self.delegate.textActions addString:@" ()" atIndex:NSMaxRange(currentLine.textRange)];
-        self.delegate.selectedRange = NSMakeRange(currentLine.position + loc + 2, 0);
+        [self.delegate.textActions addString:@"()" atIndex:NSMaxRange(currentLine.textRange)];
+        // Move selection between parentheses
+        self.delegate.selectedRange = NSMakeRange(NSMaxRange(currentLine.textRange) - 1, 0);
     }
 }
 
