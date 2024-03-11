@@ -467,6 +467,8 @@
     
     // Don't add CONT'D when not editing this line
     if (!NSLocationInRange(lineIndex, NSMakeRange(0, _delegate.parser.lines.count))) return NO;
+    // ... or when there's already an extension
+    else if ([currentLine.string containsString:@"("]) return NO;
     
     NSString *charName = currentLine.characterName;
     
