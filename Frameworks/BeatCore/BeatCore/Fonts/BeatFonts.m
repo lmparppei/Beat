@@ -26,7 +26,7 @@
 {
     BeatFonts* fonts;
     
-    if (type == BeatFontTypeFixed && mobile) fonts = BeatFonts.sharedMobileFonts;
+    if (type == BeatFontTypeFixed && mobile) fonts = BeatFonts.sharedFonts;
     else if (type == BeatFontTypeFixed) fonts = BeatFonts.sharedFonts;
     else if (type == BeatFontTypeFixedSansSerif) fonts = BeatFonts.sharedSansSerifFonts;
     else if (type == BeatFontTypeVariableSerif) fonts = BeatFonts.sharedVariableFonts;
