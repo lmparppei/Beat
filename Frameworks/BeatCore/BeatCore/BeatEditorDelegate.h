@@ -16,21 +16,13 @@
 #import <TargetConditionals.h>
 #import <BeatCore/BeatEditorMode.h>
 #import <BeatCore/BeatDocumentDelegate.h>
+#import <BeatCore/BeatCompatibility.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
-    #define BXFont UIFont
-    #define BXChangeType UIDocumentChangeKind
-    #define BXTextView UITextView
-    #define BXWindow UIWindow
-    #define BXPrintInfo UIPrintInfo
+
 #else
     #import <Cocoa/Cocoa.h>
-    #define BXFont NSFont
-    #define BXChangeType NSDocumentChangeType
-    #define BXTextView NSTextView
-    #define BXWindow NSWindow
-    #define BXPrintInfo NSPrintInfo
 #endif
 
 #import <BeatParsing/BeatParsing.h>
