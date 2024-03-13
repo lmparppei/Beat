@@ -19,6 +19,7 @@ public enum RenderStyleValueType:Int {
     case stringType
     case enumType
     case lineType
+    case additionalSettings
 }
 
 enum ConditionalRenderStyleOperator {
@@ -66,7 +67,8 @@ struct ConditionalRenderStyle {
         "visible-elements": .lineType,
         "disabled-types": .lineType,
         "trim": .boolType,
-        "visible": .boolType
+        "visible": .boolType,
+        "additional-settings": .stringType
     ] }
 
     @objc public var name:String = ""
@@ -102,8 +104,15 @@ struct ConditionalRenderStyle {
     /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
     @objc public var forcedMargin = false
 
-    /// `0` means automatic line height
-    @objc public var lineHeight:CGFloat = 0
+    /// Line height is automatically multiplied if needed
+    @objc public var lineHeight:CGFloat {
+        get { return self.actualLineHeight * self.lineHeightMultiplier }
+        set { self.actualLineHeight = newValue }
+    }
+    /// `0` eans automatic line height. Access this value via `.lineHeight`
+    var actualLineHeight:CGFloat = 0
+    
+    @objc public var lineHeightMultiplier:CGFloat = 1.0
     
     @objc public var width:CGFloat = 0
     @objc public var widthA4:CGFloat = 0
@@ -122,6 +131,8 @@ struct ConditionalRenderStyle {
     @objc public var unindentFreshParagraphs:Bool = false
     
     @objc public var trim:Bool = false
+    
+    @objc public var additionalSettings:[String] = []
     
     /// If content is set, it should replace existing text content in this particular element
     @objc public var content:String?
@@ -256,6 +267,8 @@ struct ConditionalRenderStyle {
             return "marginLeftA4"
         case "font-size":
             return "fontSize"
+        case "line-height-multiplier":
+            return "lineHeightMultiplier"
         case "first-line-indent":
             return "firstLineIndent"
         case "indent-split-elements":
@@ -274,6 +287,8 @@ struct ConditionalRenderStyle {
             return "firstPageWithNumber"
         case "disabled-types":
             return "disabledTypes"
+        case "additional-settings":
+            return "additionalSettings"
         default:
             return name
         }
@@ -304,6 +319,8 @@ struct ConditionalRenderStyle {
         return (self.conditionalRules.count > 0)
     }
     
+    
+    /// Checks if there are dynamic (conditional) rules to be resolved for given line, and returns a dynamically customized style.
     @objc public func dynamicStyles(for line:Line) -> RenderStyle? {
         // Nothing to check
         if self.conditionalRules.count == 0 { return nil }

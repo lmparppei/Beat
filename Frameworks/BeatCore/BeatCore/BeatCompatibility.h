@@ -12,11 +12,24 @@
     #define BXTextView UITextView
     #define textViewNeedsDisplay setNeedsDisplay
 
+    #define BXFont UIFont
+    #define BXChangeType UIDocumentChangeKind
+    #define BXWindow UIWindow
+    #define BXPrintInfo UIPrintInfo
+
+    #define is_Mobile (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+
 #else
 
     #define BXColor NSColor
     #define BXView NSView
     #define BXTextView NSTextView
     #define textViewNeedsDisplay setNeedsDisplay:true
+
+    #define BXFont NSFont
+    #define BXChangeType NSDocumentChangeType
+    #define BXWindow NSWindow
+    #define BXPrintInfo NSPrintInfo
+
 
 #endif

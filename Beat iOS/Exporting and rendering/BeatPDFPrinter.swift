@@ -1,5 +1,5 @@
 //
-//  BeatPrintView.swift
+//  BeatPDFPrinter.swift
 //  Beat iOS
 //
 //  Created by Lauri-Matti Parppei on 29.1.2024.

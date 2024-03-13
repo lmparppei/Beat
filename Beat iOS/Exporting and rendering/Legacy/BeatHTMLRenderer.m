@@ -76,7 +76,7 @@
 
 
 - (void)reloadStyles {
-	[(BeatStylesheet*)self.settings.styles reload];
+	[(BeatStylesheet*)self.settings.styles reloadWithExportSettings:self.exportSettings];
 }
 
 /// Creates and returns the full HTML for display and rendering.

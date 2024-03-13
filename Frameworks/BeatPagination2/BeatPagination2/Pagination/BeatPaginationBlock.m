@@ -364,7 +364,7 @@
     
 	[lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
-        NSRange cRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+        //NSRange cRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
         
 		if (numberOfLines < remainingSpace / lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];

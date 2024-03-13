@@ -33,7 +33,6 @@
 #import <BeatPagination2/BeatPagination2.h>
 
 #import "BeatPrintView.h"
-#import "BeatHTMLRenderer.h"
 #import "Beat-Swift.h"
 //#import "Document.h"
 

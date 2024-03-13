@@ -9,6 +9,12 @@ import UIKit
 import BeatPagination2
 import BeatCore
 
+/**
+ 
+ This class provides a dynamically created and scrollable page view. It loads views only for pages inside viewport bounds.
+ - note: Data source protocol is defined in preview manager class, because the idea is to use the same protocol for both macOS and iOS in the future.
+ 
+ */
 @objc public class BeatPageViewController:UIViewController, BeatPreviewPageView {
 	@IBOutlet weak var pageView:BeatPageScrollView?
 	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
@@ -75,7 +81,7 @@ import BeatCore
         
         self.maximumZoomScale = 2.0
 		self.minimumZoomScale = 1.0
-		
+				
         backgroundColor = .black
         
         let container = UIView()
@@ -141,12 +147,15 @@ import BeatCore
 		
 		let smallerSide = min(self.frame.size.width, self.frame.size.height)
         let scale = (smallerSide / pageSize.width) * 0.9
+		
+		// Update minimum zoom scale if needed
+		if (scale < self.minimumZoomScale) { self.minimumZoomScale = scale }
         
 		self.setZoomScale(scale, animated: false)
     }
     
+	/// Centers content view
     private func updateContentPosition() {
-	
 		guard subviews.count > 0 else { return }
 				
 		// get the content view and center it
@@ -155,6 +164,7 @@ import BeatCore
 		subView.center = CGPointMake(offset, subView.center.y)
     }
     
+	/// Reloads page data and draws pages in current bounds
     public func reload() {
         guard let container = self.container else {
             print("BeatPageViewController: No container")

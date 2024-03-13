@@ -50,6 +50,8 @@ import UXKit
     
     /// Master page style
     var pageStyle:RenderStyle
+    /// Title page style
+    var titlePageStyle:RenderStyle?
     /// Export settings
     var settings:BeatExportSettings
 	
@@ -254,9 +256,13 @@ import UXKit
 	var titlePageLines:[[String:[Line]]]
 	
 	@objc public init(previewController: BeatPreviewManager? = nil, titlePage:[[String:[Line]]], settings:BeatExportSettings) {
-		self.titlePageLines = titlePage
+        self.titlePageLines = titlePage
 		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController)
-			
+
+        // Load title page styles
+        let styles = settings.styles as? BeatStylesheet
+        self.titlePageStyle = styles?.titlePage
+        
 		createViews()
 		createTitlePage()
 		
@@ -266,6 +272,57 @@ import UXKit
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+    
+    /// Override page render method for title pages
+    func createViews() {
+        // Use title page style if applicable
+        let pageStyle = (self.titlePageStyle != nil) ? self.titlePageStyle! : self.pageStyle
+        
+        let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        let textViewFrame = CGRect(x: pageStyle.marginLeft,
+                                   y: pageStyle.marginTop,
+                                   width: frame.size.width - pageStyle.marginLeft * 2,
+                                   height: 400)
+        textView?.frame = frame
+        
+        let columnFrame = CGRect(x: pageStyle.marginLeft + 10.0,
+                                 y: textViewFrame.origin.y + textViewFrame.height,
+                                 width: textViewFrame.width / 2 - 10,
+                                 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight() * 4)
+        
+        if (leftColumn == nil) {
+            leftColumn = UXTextView(frame: columnFrame)
+            leftColumn?.isEditable = false
+            #if os(macOS)
+                leftColumn?.drawsBackground = false
+            #else
+                leftColumn?.backgroundColor = .clear
+            #endif
+            
+            leftColumn?.isSelectable = false
+            
+            self.addSubview(leftColumn!)
+            self.textViews.append(leftColumn!)
+        }
+
+        if (rightColumn == nil) {
+            let rightColumnFrame = CGRect(x: frame.width - pageStyle.marginLeft - 10.0 - columnFrame.width,
+                                          y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
+            
+            rightColumn = UXTextView(frame: rightColumnFrame)
+            rightColumn?.isEditable = false
+            #if os(macOS)
+                rightColumn?.drawsBackground = false
+            #else
+                rightColumn?.backgroundColor = .clear
+            #endif
+            
+            rightColumn?.isSelectable = false
+            
+            self.addSubview(rightColumn!)
+            self.textViews.append(rightColumn!)
+        }
+    }
 
 	/// Creates title page content and places the text snippets into correct spots
 	public func createTitlePage() {
@@ -423,53 +480,6 @@ import UXKit
 		createTitlePage()
 	}
 	
-	/// Override page render method for title pages
-	func createViews() {
-		let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-		let textViewFrame = CGRect(x: pageStyle.marginLeft,
-								   y: pageStyle.marginTop,
-								   width: frame.size.width - pageStyle.marginLeft * 2,
-								   height: 400)
-		textView?.frame = frame
-		
-		let columnFrame = CGRect(x: pageStyle.marginLeft,
-								 y: textViewFrame.origin.y + textViewFrame.height,
-								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight() * 2)
-		
-		if (leftColumn == nil) {
-			leftColumn = UXTextView(frame: columnFrame)
-			leftColumn?.isEditable = false
-            #if os(macOS)
-            leftColumn?.drawsBackground = false
-            #else
-            leftColumn?.backgroundColor = .clear
-            #endif
-			
-			leftColumn?.isSelectable = false
-			
-			self.addSubview(leftColumn!)
-            self.textViews.append(leftColumn!)
-		}
-
-		if (rightColumn == nil) {
-			let rightColumnFrame = CGRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
-										  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
-			
-			rightColumn = UXTextView(frame: rightColumnFrame)
-			rightColumn?.isEditable = false
-            #if os(macOS)
-			rightColumn?.drawsBackground = false
-            #else
-            rightColumn?.backgroundColor = .clear
-            #endif
-			
-			rightColumn?.isSelectable = false
-			
-			self.addSubview(rightColumn!)
-            self.textViews.append(rightColumn!)
-		}
-	}
 }
 
 // MARK: - Custom layout manager for text views in rendered page view

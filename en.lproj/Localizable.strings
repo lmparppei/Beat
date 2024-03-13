@@ -206,3 +206,5 @@
 "character.editor.lines" = "Lines";
 
 "backup.browseVersions" = "Browse versions...";
+
+"quickSettings.novelLineHeightMultiplier" = "Line Height";

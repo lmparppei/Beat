@@ -64,6 +64,8 @@
 @property (nonatomic, weak) BeatEditorSplitViewController* editorSplitView;
 @property (nonatomic, weak) IBOutlet UIView* splitViewContainer;
 
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint* topContainerConstraint;
+
 @end
 
 @implementation BeatDocumentViewController
@@ -74,7 +76,6 @@
 	self = [super initWithCoder:coder];
 	if (self) {
 		self.documentIsLoading = true;
-		NSLog(@"Opened document: %@", self.document.fileURL);
 	}
 	
 	return self;
@@ -87,46 +88,50 @@
 /// Creates the text view and replaces placeholder text view
 - (void)createTextView
 {
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-		// For iPhone, we'll compact the scroll view
-		CGRect f = self.pageView.frame;
-		f.size.width = 200.0;
-		self.pageView.frame = f;
-		self.scrollView.maximumZoomScale = 1.0;
-		self.scrollView.minimumZoomScale = 1.0;
-	}
-	
 	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
 	
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 	
-	//[self.textView removeFromSuperview];
 	self.textView = textView;
-	[self.pageView addSubview:self.textView];
-	
 	self.textView.delegate = self;
 	self.textView.editorDelegate = self;
-	self.textView.enclosingScrollView = self.scrollView;
-	self.textView.scrollEnabled = false;
 	self.textView.inputDelegate = self;
 	
+	if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
+		self.textView.enclosingScrollView = self.scrollView;
+		[self.pageView addSubview:self.textView];
+	} else {
+		// Completely replace the scroll view with our text view on phones
+		self.textView.frame = self.scrollView.frame;
+		[self.scrollView.superview addSubview:self.textView];
+		[self.pageView removeFromSuperview];
+		[self.scrollView removeFromSuperview];
+	}
+
 	self.textView.font = self.fonts.regular;
 	
 	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
+}
+
+/// Dismisses editor view keyboard
+- (IBAction)endEditing:(id)sender
+{
+	[self.textView endEditing:true];
 }
 
 - (NSUndoManager *)undoManager {
 	return self.textView.undoManager;
 }
 
+/// NOTE: You need to call `loadDocument` before actually presenting the view
 - (void)viewDidLoad
 {
-	/// NOTE: You need to use `loadDocument` before actually presenting the view
-	
 	[super viewDidLoad];
 	
 	if (!self.documentIsLoading) return;
+	
+	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
 	
 	// Setup plugin support
 	self.runningPlugins = NSMutableDictionary.new;
@@ -139,7 +144,7 @@
 	[splitView loadView];
 	
 	self.editorSplitView = splitView;
-	
+		
 	// Setup the split view
 	[self setupEditorViews];
 	
@@ -148,8 +153,6 @@
 	
 	// Setup document title menu (from Swift extension)
 	[self setupTitleBar];
-	//[self setupTitleMenu];
-	//[self setupScreenplayMenuWithButton:self.screenplayButton];
 	
 	// Setup navigation item delegate
 	self.navigationItem.renameDelegate = self;
@@ -164,8 +167,8 @@
 	
 	[self setupDocument];
 	
-	// Become first responder and scroll to top
-	[self.textView becomeFirstResponder];
+	// Become first responder if text view is empty and scroll to top
+	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
 }
 
@@ -216,7 +219,6 @@
 	// Init preview view
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
-	NSLog(@"Preview view %@", self.previewView);
 	
 	// Init preview controller and pagination
 	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
@@ -654,7 +656,6 @@
 		
 		if (reviewItem && !reviewItem.emptyReview) {
 			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
-			//[self.textView.window makeFirstResponder:self.textView];
 		} else {
 			[self.review closePopover];
 		}
@@ -897,6 +898,9 @@
 }
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
+	// Let's not use this on phones
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
+	
 	CGFloat keyboardHeight = self.textView.keyboardLayoutGuide.layoutFrame.size.height;
 	
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);

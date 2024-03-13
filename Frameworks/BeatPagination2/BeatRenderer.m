@@ -533,7 +533,7 @@
     NSMutableParagraphStyle* headerStyle = NSMutableParagraphStyle.new;
     headerStyle.textBlocks = @[headerCell];
     headerStyle.alignment = NSTextAlignmentCenter;
-    headerStyle.maximumLineHeight = self.styles.page.lineHeight;
+    headerStyle.maximumLineHeight = BeatPagination.lineHeight;
     
     NSMutableParagraphStyle* rightStyle = NSMutableParagraphStyle.new;
     rightStyle.textBlocks = @[rightCell];

@@ -176,7 +176,7 @@
 	[parser updateOutline];
 	
 	// Force reloading of current default stylesheet
-	[BeatStyles.shared.defaultStyles reload];
+	[BeatStyles.shared.defaultStyles reloadWithExportSettings:nil];
 	BeatExportSettings* settings = BeatExportSettings.new;
 	settings.printSceneNumbers = true;
 	

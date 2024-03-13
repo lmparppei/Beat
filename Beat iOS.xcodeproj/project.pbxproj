@@ -37,13 +37,11 @@
 		B64AD62E2B2F900600EBD63A /* BeatThumbnailProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B64AD6352B2F915900EBD63A /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6342B2F915900EBD63A /* BeatParsing.framework */; };
 		B64AD6392B2F916100EBD63A /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6382B2F916100EBD63A /* BeatCore.framework */; };
-		B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6743BF82B31A0BC0081041C /* TemplateCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6743BF72B31A0BC0081041C /* TemplateCollectionViewController.swift */; };
 		B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */; };
 		B682C25B2B30FAB50027511A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B682C25A2B30FAB50027511A /* Localizable.strings */; };
-		B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68321B629F6BD7E00A2553E /* BeatPrintView.m */; };
 		B686BD232B33AF0E0074FC67 /* BeatUserDefaultButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */; };
 		B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686BD262B345F060074FC67 /* BeatAdaptiveViews.swift */; };
 		B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FF9B2971BC7E00789C8D /* PreviewStyles.css */; };
@@ -61,6 +59,7 @@
 		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
 		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
 		B696BC472A7426750078BA79 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B696BC462A7426750078BA79 /* dragula.js */; };
+		B69CE5CB2BA1D87800EF02F2 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */; };
 		B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */; };
 		B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
@@ -195,6 +194,7 @@
 		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
 		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
 		B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStartupScreenViewController.swift; sourceTree = "<group>"; };
 		B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSuppressCheckboxButton.swift; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
@@ -349,6 +349,7 @@
 				B619DE5729F6FD94007D1838 /* PrintingExtensions.swift */,
 				B6B61BB429F970A20098D94D /* UITextView+UX.h */,
 				B6B61BB529F970A20098D94D /* UITextView+UX.m */,
+				B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -385,6 +386,18 @@
 			path = Editor;
 			sourceTree = "<group>";
 		};
+		B648C1902BA04D2700F0DD34 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				B68321B529F6BD7D00A2553E /* BeatPrintView.h */,
+				B68321B629F6BD7E00A2553E /* BeatPrintView.m */,
+				B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */,
+				B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */,
+				B686FF8A2971BC7D00789C8D /* Render to HTML */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
 		B64AD6282B2F900600EBD63A /* BeatThumbnailProvider */ = {
 			isa = PBXGroup;
 			children = (
@@ -407,11 +420,7 @@
 		B686FF892971BC6500789C8D /* Exporting and rendering */ = {
 			isa = PBXGroup;
 			children = (
-				B68321B529F6BD7D00A2553E /* BeatPrintView.h */,
-				B68321B629F6BD7E00A2553E /* BeatPrintView.m */,
-				B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */,
-				B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */,
-				B686FF8A2971BC7D00789C8D /* Render to HTML */,
+				B648C1902BA04D2700F0DD34 /* Legacy */,
 				B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */,
 			);
 			path = "Exporting and rendering";
@@ -425,7 +434,7 @@
 				B686FF962971BC7D00789C8D /* FooterTemplate.html */,
 			);
 			name = "Render to HTML";
-			path = "Beat/Rendering and export/Render to HTML";
+			path = "Beat iOS/Exporting and rendering/Legacy/Render to HTML";
 			sourceTree = SOURCE_ROOT;
 		};
 		B686FF9A2971BC7E00789C8D /* CSS */ = {
@@ -692,7 +701,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
-				B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */,
 				B63AB3C62A58376B00B28BC0 /* BeatTemplateDataSource.swift in Sources */,
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
 				B6743BF82B31A0BC0081041C /* TemplateCollectionViewController.swift in Sources */,
@@ -720,7 +728,7 @@
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */,
 				B619DE5829F6FD94007D1838 /* PrintingExtensions.swift in Sources */,
-				B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */,
+				B69CE5CB2BA1D87800EF02F2 /* ViewControllerExtensions.swift in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -943,7 +951,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1001,7 +1009,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";

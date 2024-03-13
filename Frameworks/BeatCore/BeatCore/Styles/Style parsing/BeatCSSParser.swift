@@ -8,7 +8,7 @@
 //
 
 import Foundation
-import BeatParsing.Line
+import BeatParsing
 
 public protocol BeatCssParserDelegate {
 	func get(key:String)
@@ -152,7 +152,8 @@ public final class CssParser {
 		if value is Int { userSettingValue = String(value as? Int ?? 0) }
 		else if value is Bool { userSettingValue = (value as! Bool) ? "true" : "false" }
 		else if value is String { userSettingValue = String(value as? String ?? "") }
-		
+        else { userSettingValue = "\(value)" }
+        
 		return userSettingValue
 	}
 	
@@ -181,6 +182,21 @@ public final class CssParser {
             value = val
         }
         if let val = replaceGetter(value: value, getter: "setting", { key in return self.settings?.value(forKey: key) }) {
+            value = val
+        }
+        
+        // Document settings are a bit tricky. If a document setting block is not provided, we need to inquire the actual default value.
+        if let val = replaceGetter(value: value, getter: "documentSetting", { key in
+            let documentSettings = settings?.documentSettings ?? BeatDocumentSettings()
+            var v:Any? = documentSettings.get(key)
+            
+            if v == nil {
+                // Try to get default value
+                v = documentSettings.defaultValues()[key]
+            }
+            
+            return v
+        }) {
             value = val
         }
                 

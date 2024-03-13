@@ -269,7 +269,7 @@ NS_ASSUME_NONNULL_END
 - (CGFloat)editorLineHeight;
 - (CGFloat)lineHeight;
 
-- (void)setStylesheetAndReformat:(NSString *)name;
+- (void)setStylesheetAndReformat:(NSString * _Nonnull)name;
 
 @end
 

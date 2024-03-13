@@ -60,6 +60,7 @@ extern NSString* const BeatSettingShowPageSeparators;
 extern NSString* const BeatSettingFocusMode;
 
 extern NSString* const BeatSettingiOSShowWelcomeScreen;
+extern NSString* const BeatSettingPhoneFontSize;
 
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;

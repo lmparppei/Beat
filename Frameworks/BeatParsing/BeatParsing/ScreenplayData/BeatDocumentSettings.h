@@ -11,7 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatEditorDelegate;
+
 @interface BeatDocumentSettings : NSObject
++ (NSDictionary*)defaultValues;
++ (NSDictionary*)defaultValue:(NSString*)key;
+- (NSDictionary*)defaultValues;
+
 @property (atomic) NSMutableDictionary *settings;
 @property (weak) id<BeatEditorDelegate> delegate;
 
@@ -47,15 +52,15 @@ extern NSString * const DocSettingWindowHeight;
 
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)setInt:(NSString*)key as:(NSInteger)value;
-- (void)setFloat:(NSString*)key as:(NSInteger)value;
+- (void)setFloat:(NSString*)key as:(CGFloat)value;
 - (void)setString:(NSString*)key as:(NSString*)value;
 - (void)set:(NSString*)key as:(id)value;
 
 - (NSInteger)getInt:(NSString*)key;
 - (bool)getBool:(NSString*)key;
 - (NSString*)getString:(NSString *) key;
-- (NSInteger)getFloat:(NSString *)key;
-- (id)get:(NSString*)key;
+- (CGFloat)getFloat:(NSString *)key;
+- (id _Nullable)get:(NSString*)key;
 - (bool)has:(NSString*)key;
 
 - (void)remove:(NSString *)key;

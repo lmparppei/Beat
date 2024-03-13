@@ -31,11 +31,12 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
-//#import <BeatCore/BeatCore-Swift.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatTextView.h"
-#import "ScrollView.h"
+#import "BeatTextView+Popovers.h"
+
+//#import "ScrollView.h"
 #import "BeatPasteboardItem.h"
 #import "Beat-Swift.h"
 #import "BeatClipView.h"
@@ -58,68 +59,23 @@
 // Default inset for text view
 #define TEXT_INSET_TOP 50
 
-@interface NCRAutocompleteTableRowView : NSTableRowView
-@end
-
-#pragma mark - Draw autocomplete table
-@implementation NCRAutocompleteTableRowView
-
-- (void)drawSelectionInRect:(NSRect)dirtyRect
-{
-	if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone) {
-		NSRect selectionRect = NSInsetRect(self.bounds, 0.5, 0.5);
-		[NSColor.selectedMenuItemColor setStroke];
-		[NSColor.selectedMenuItemColor setFill];
-		NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:0.0 yRadius:0.0];
-		[selectionPath fill];
-		[selectionPath stroke];
-	}
-}
-- (NSBackgroundStyle)interiorBackgroundStyle
-{
-	if (self.isSelected) {
-		return NSBackgroundStyleDark;
-	} else {
-		return NSBackgroundStyleLight;
-	}
-}
-@end
 
 static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalog.colorPicker";
 
 #pragma mark - Autocompleting
 @interface BeatTextView () <NSTextFinderClient, BeatTextEditor>
 
+/// Touch bar view
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
 @property (nonatomic, strong) NSPopover *taggingPopover;
 
-@property (nonatomic, strong) NSPopover *infoPopover;
-
-@property (nonatomic) bool nightMode;
-@property (nonatomic) bool forceElementMenu;
-
-@property (nonatomic) BeatTagType currentTagType;
-
-// Used to highlight typed characters when autocompleting and insert text
-@property (nonatomic, copy) NSString *substring;
-
-// Used to keep track of when the insert cursor has moved so we
-// can close the popover. See didChangeSelection:
-@property (nonatomic, assign) NSInteger lastPos;
-
-// New scene numbering system
-@property (nonatomic) NSMutableArray *sceneNumberLabels;
-@property (nonatomic) NSUInteger linesBeforeLayout;
-
-// Text container tracking area
+/// Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
 
-// Page number fields
-@property (nonatomic) NSMutableArray *pageNumberLabels;
-
-// Scroll wheel behavior
+/// This is set `true` while the user scrolls using scroll wheel or fingers
 @property (nonatomic) bool scrolling;
+/// A shorthand to return `true` when selection is at end. Use this to avoid going out of range when setting typing attributes.
 @property (nonatomic) bool selectionAtEnd;
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
@@ -282,67 +238,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self setupValidationItems];
 }
 
--(void)setupPopovers {
-	// Make a table view with 1 column and enclosing scroll view. It doesn't
-	// matter what the frames are here because they are set when the popover
-	// is displayed
-	
-	NSTableView *tableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
-	tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleRegular;
-	tableView.backgroundColor = NSColor.clearColor;
-	tableView.rowSizeStyle = NSTableViewRowSizeStyleSmall;
-	tableView.intercellSpacing = INTERCELL_SPACING;
-	tableView.headerView = nil;
-	tableView.refusesFirstResponder = true;
-	tableView.target = self;
-	tableView.doubleAction = @selector(clickPopupItem:);
-	
-	tableView.dataSource = self;
-	tableView.delegate = self;
-
-	// Avoid the "modern" padding on Big Sur
-	if (@available(macOS 11.0, *)) tableView.style = NSTableViewStyleFullWidth;
-	
-	// Create column
-	NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier:@"text"];
-	column.editable = false;
-	column.width = POPOVER_WIDTH - 2 * POPOVER_PADDING;
-
-	[tableView addTableColumn:column];
-		
-	self.autocompleteTableView = tableView;
-	
-	// Create the enclosing scroll view
-	NSScrollView *tableScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
-	tableScrollView.drawsBackground = false;
-	tableScrollView.documentView = tableView;
-	tableScrollView.hasVerticalScroller = true;
-		
-	NSView *contentView = [[NSView alloc] initWithFrame:NSZeroRect];
-	[contentView addSubview:tableScrollView];
-	
-	NSViewController *contentViewController = [[NSViewController alloc] init];
-	[contentViewController setView:contentView];
-	
-	// Autocomplete popover
-	self.autocompletePopover = [[NSPopover alloc] init];
-	self.autocompletePopover.appearance = [NSAppearance appearanceNamed:POPOVER_APPEARANCE];
-	
-	self.autocompletePopover.animates = NO;
-	self.autocompletePopover.contentViewController = contentViewController;
-}
-
--(void)removeFromSuperview {
+-(void)removeFromSuperview
+{
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super removeFromSuperview];
-}
-
-- (void)closePopovers {
-	[_infoPopover close];
-	[_autocompletePopover close];
-	_forceElementMenu = NO;
-	
-	_popupMode = NoPopup;
 }
 
 
@@ -415,9 +314,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	NSInteger row = self.autocompleteTableView.selectedRow;
 	BOOL shouldComplete = YES;
 	BOOL preventDefault = NO;
+	
+	if (self.popoverController.isShown) {
+		
+	}
 	
 	switch (theEvent.keyCode) {
 		case 51:
@@ -428,53 +330,33 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			break;
 		case 53:
 			// Esc
-			if (self.autocompletePopover.isShown || self.infoPopover.isShown) {
+			if (self.popoverController.isShown || self.infoPopover.isShown) {
 				[self closePopovers];
-			}
-			else {
+			} else {
 				[self.editorDelegate cancelOperation:self];
 			}
 			
 			preventDefault = YES;
 			break;
-			
-			//return; // Skip default behavior
+
 		case 125:
 			// Down
-			if (self.autocompletePopover.isShown) {
-				if (row + 1 >= self.autocompleteTableView.numberOfRows) row = -1;
-				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row+1] byExtendingSelection:NO];
-				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
+			if (self.popoverController.isShown) {
+				[self.popoverController moveDown];
 				preventDefault = YES;
-				//return; // Skip default behavior
 			}
 			break;
 		case 126:
 			// Up
-			if (self.autocompletePopover.isShown) {
-				if (row - 1 < 0) row = self.autocompleteTableView.numberOfRows;
-				
-				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row-1] byExtendingSelection:NO];
-				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
+			if (self.popoverController.isShown) {
+				[self.popoverController moveUp];
 				preventDefault = YES;
-				//return; // Skip default behavior
 			}
 			break;
 		case 48:
 			// Tab
-			if (_forceElementMenu || _popupMode == ForceElement) {
-				// force element + skip default
-				[self force:self];
-				preventDefault = YES;
-				
-			} else if (_popupMode == Tagging) {
-				// handle tagging + skip default
-				preventDefault = YES;
-				
-			} else if (self.autocompletePopover.isShown && _popupMode == Autocomplete) {
-				[self insert:self];
-				preventDefault = YES;
-				
+			if (self.popoverController.isShown) {
+				preventDefault = [self.popoverController pickPopoverItem]; // This result is ignored
 			} else {
 				// Call delegate to handle normal tab press
 				NSUInteger flags = theEvent.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
@@ -482,71 +364,43 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
 					[self.editorDelegate handleTabPress];
 				}
-				preventDefault = YES;
 			}
 			
+			// We'll never allow tab to be inserted
+			preventDefault = YES;
 			break;
 			
 		case 36:
 			// Return key
-			if (self.autocompletePopover.isShown) {
-				// Check whether to force an element or to just autocomplete
-				if (_forceElementMenu || _popupMode == ForceElement) {
-					[self force:self];
-					preventDefault = YES;
-					break;
-
-				} else if (_popupMode == Tagging) {
-					[self setTag:self];
-					preventDefault = YES;
-					break;
-
-				} else if (_popupMode == SelectTag) {
-					[self selectTag:self];
-					preventDefault = YES;
-					break;
-
-				} else {
-					[self insert:self];
-				}
+			if (self.popoverController.isShown) {
+				preventDefault = [self.popoverController pickPopoverItem];
 			} else if (theEvent.modifierFlags) {
 				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 				
-				// Alt was pressed && autocomplete is not visible
-				if (flags == NSEventModifierFlagOption && !self.autocompletePopover.isShown) {
-					_forceElementMenu = YES;
-					_popupMode = ForceElement;
-					
-					self.automaticTextCompletionEnabled = YES;
-					
-					[self forceElement:self];
+				// Alt was pressed, show force element menu
+				if (flags == NSEventModifierFlagOption) {
+					[self showForceElementMenu];
 					preventDefault = YES;
 					break;
-					//return; // Skip defaut behavior
 				}
 			}
 	}
 	
-	if (self.infoPopover.isShown) [self closePopovers];
+	// Close info popover when typing
+	if (self.infoPopover.isShown) [self.infoPopover close];
 	
 	// Skip super methods when needed
 	if (preventDefault) return;
 	
-	// Run superclass method for the event
+	// Run superclass method for the event (ie. do what the keyboard says)
 	[super keyDown:theEvent];
 	
 	// Run completion block
-	if (shouldComplete && self.popupMode != Tagging) {
-		if (self.automaticTextCompletionEnabled) {
-			[self complete:self];
-		}
+	if (shouldComplete && self.editorDelegate.mode != TaggingMode) {
+		if (self.automaticTextCompletionEnabled) [self showAutocompletions];
+	} else if (!shouldComplete && self.popoverController.isShown) {
+		[self.popoverController close];
 	}
-}
-
-- (void)clickPopupItem:(id)sender {
-	if (_popupMode == Autocomplete)	[self insert:sender];
-	if (_popupMode == Tagging) [self setTag:sender];
-	else [self closePopovers];
 }
 
 
@@ -630,150 +484,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
-#pragma mark - Info popup
-
-- (IBAction)showInfo:(id)sender {
-	bool wholeDocument = NO;
-	NSRange range = self.selectedRange;
-	
-	if (range.length == 0) {
-		wholeDocument = YES;
-		range = NSMakeRange(0, self.string.length);
-	}
-	
-	NSString* string = [self.string substringWithRange:range];
-	
-	// Calculate amount of words in range
-	NSInteger words = 0;
-	NSArray *lines = [string componentsSeparatedByString:@"\n"];
-	NSInteger symbols = string.length;
-	
-	for (NSString *line in lines) {
-		for (NSString *word in [line componentsSeparatedByString:@" "]) {
-			if (word.length > 0) words += 1;
-		}
-	}
-	
-	// Get number of pages / page number for selection
-	NSInteger numberOfPages = 0;
-	if (wholeDocument) numberOfPages = _editorDelegate.previewController.pagination.numberOfPages;
-	else numberOfPages = [_editorDelegate.previewController.pagination pageNumberAt:self.selectedRange.location];
-	
-	// Create the string
-	NSString* infoString = [NSString stringWithFormat:
-							@"%@\n"
-							"%@: %lu\n"
-							"%@: %lu",
-							(wholeDocument) ? NSLocalizedString(@"textView.information.document", nil) : NSLocalizedString(@"textView.information.selection", nil),
-							NSLocalizedString(@"textView.information.words", nil),
-							words,
-							NSLocalizedString(@"textView.information.characters", nil),
-							symbols];
-	// Append page count
-	if (wholeDocument) {
-		infoString = [infoString stringByAppendingFormat:@"\n%@: %lu", NSLocalizedString(@"textView.information.pages", nil), numberOfPages];
-	}
-	
-	// Create the stylized string with a bolded heading
-	NSMutableAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:infoString];
-	NSDictionary* attributes = @{
-		NSFontAttributeName: [NSFont systemFontOfSize:NSFont.systemFontSize],
-		NSForegroundColorAttributeName: NSColor.textColor
-	};
-	
-	[attrString addAttributes:attributes range:NSMakeRange(0, attrString.length)];
-	[attrString addAttribute:NSFontAttributeName value:[NSFont boldSystemFontOfSize:NSFont.systemFontSize] range:NSMakeRange(0, [attrString.string rangeOfString:@"\n"].location)];
-	
-	// Display popover at selected position
-	NSInteger displayIndex = (wholeDocument) ? self.selectedRange.location : range.location;
-	
-	NSRect rect = [self firstRectForCharacterRange:NSMakeRange(displayIndex, 0) actualRange:NULL];
-	rect = [self.window convertRectFromScreen:rect];
-	rect = [self convertRect:rect fromView:nil];
-	rect.size.width = 5;
-	
-	NSPopover* popover = [self createPopoverWithText:attrString];
-	popover.behavior = NSPopoverBehaviorTransient;
-	[popover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
-	
-	[self.window makeFirstResponder:self];
-}
-
-- (NSPopover*)createPopoverWithText:(NSAttributedString*)text
-{
-	if (_infoPopover == nil) {
-		// Info popover
-		NSPopover* popover = NSPopover.new;
-		popover.behavior = NSPopoverBehaviorTransient;
-		
-		NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
-		NSTextView* infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
-		
-		infoTextView.editable = false;
-		infoTextView.drawsBackground = false;
-		infoTextView.richText = false;
-		infoTextView.usesRuler = false;
-		infoTextView.selectable = false;
-		[infoTextView setTextContainerInset:NSMakeSize(8, 8)];
-		
-		infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
-		
-		[infoContentView addSubview:infoTextView];
-		
-		NSViewController *infoViewController = NSViewController.new;
-		infoViewController.view = infoContentView;
-		
-		popover.contentViewController = infoViewController;
-		
-		_infoPopover = popover;
-	}
-	
-	NSTextView* infoTextView = (NSTextView*)_infoPopover.contentViewController.view.subviews.firstObject;
-	
-	// calculate content size
-	[infoTextView.textStorage setAttributedString:text];
-	[infoTextView.layoutManager ensureLayoutForTextContainer:infoTextView.textContainer];
-	
-	NSRect usedRect = [infoTextView.layoutManager usedRectForTextContainer:infoTextView.textContainer];
-	NSRect frame = NSMakeRect(0, 0, 200, usedRect.size.height + 16);
-	
-	_infoPopover.contentSize = frame.size;
-	infoTextView.frame = NSMakeRect(0, 0, frame.size.width, frame.size.height);
-	
-	return _infoPopover;
-}
-
-
-#pragma mark - Insert
-
-/// Inserts text from autocomplete list
-- (void)insert:(id)sender {
-	if (self.popupMode != Autocomplete) return;
-	
-	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
-		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
-		
-		NSInteger beginningOfWord;
-		
-		Line* currentLine = _editorDelegate.currentLine;
-		if (currentLine) {
-			NSInteger locationInString = self.selectedRange.location - currentLine.position;
-			beginningOfWord = self.selectedRange.location - locationInString;
-		} else {
-			beginningOfWord = self.selectedRange.location - self.substring.length;
-		}
-		
-		NSRange range = NSMakeRange(beginningOfWord, self.substring.length);
-		
-		if ([self shouldChangeTextInRange:range replacementString:string]) {
-			[self replaceCharactersInRange:range withString:string];
-			[self didChangeText];
-			[self setAutomaticTextCompletionEnabled:NO];
-		}
-	}
-	[self.autocompletePopover close];
-}
-
 
 #pragma mark - Selection events
 
@@ -797,8 +507,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 	// If selection moves by more than just one character, hide autocomplete
 	if ((self.selectedRange.location - self.lastPos) > 1) {
-		if (self.autocompletePopover.shown) [self setAutomaticTextCompletionEnabled:NO];
-		[self.autocompletePopover close];
+		if (self.popoverController.isShown) [self setAutomaticTextCompletionEnabled:NO];
+		[self closePopovers];
 	}
 	
 	// Show tagging/review options for selected range
@@ -806,7 +516,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	switch (_editorDelegate.mode) {
 		case TaggingMode:
 			// Show tag list
-			[self showTaggingOptions];
+			[self showTagSelector];
 			break;
 		case ReviewMode:
 			// Show review editor
@@ -844,222 +554,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
-#pragma mark - Tagging / Force Element menu
-
-- (void)showTaggingOptions {
-	NSString *selectedString = [self.string substringWithRange:self.selectedRange];
-	
-	// Don't allow line breaks in tagged content. Limit the selection if break is found.
-	if ([selectedString containsString:@"\n"]) {
-		[self setSelectedRange:(NSRange){ self.selectedRange.location, [selectedString rangeOfString:@"\n"].location }];
-	}
-	
-	if (self.selectedRange.length < 1) return;
-	
-	_popupMode = Tagging;
-	[self showPopupWithItems:BeatTagging.styledTags];
-}
-
-- (void)forceElement:(id)sender {
-	_popupMode = ForceElement;
-	[self showPopupWithItems: [self forceableTypes].allKeys ];
-}
-
-- (void)showPopupWithItems:(NSArray*)items {
-	NSInteger location = self.selectedRange.location;
-	
-	self.matches = items;
-	[self.autocompleteTableView reloadData];
-	
-	NSInteger index = 0;
-	[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
-	[self.autocompleteTableView scrollRowToVisible:index];
-	
-	NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
-	
-	CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
-	NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
-	[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
-	[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame) + POPOVER_PADDING)];
-	
-	self.substring = [self.string substringWithRange:NSMakeRange(location, 0)];
-	
-	NSRect rect = [self firstRectForCharacterRange:NSMakeRange(location, 0) actualRange:NULL];
-	rect = [self.window convertRectFromScreen:rect];
-	rect = [self convertRect:rect fromView:nil];
-	
-	rect.size.width = 5;
-	
-	[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
-}
-
-- (NSDictionary*)forceableTypes {
-	return @{
-		[BeatLocalization localizedStringForKey:@"force.heading"]: @(heading),
-		[BeatLocalization localizedStringForKey:@"force.character"]: @(character),
-		[BeatLocalization localizedStringForKey:@"force.action"]: @(action),
-		[BeatLocalization localizedStringForKey:@"force.lyrics"]: @(lyrics),
-	};
-}
-
-- (void)force:(id)sender {
-	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
-		NSString *localizedType = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
-		NSDictionary *types = [self forceableTypes];
-		NSNumber *val = types[localizedType];
-		
-		// Do nothing if something went wront
-		if (val == nil) return;
-		
-		LineType type = val.integerValue;
-		[self.editorDelegate forceElement:type];
-	}
-	[self.autocompletePopover close];
-	_forceElementMenu = NO;
-	_popupMode = NoPopup;
-}
-
-- (void)setTag:(id)sender {
-	id tag = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
-	
-	NSString *tagStr;
-	if ([tag isKindOfClass:NSAttributedString.class]) tagStr = [(NSAttributedString*)tag string];
-	else tagStr = tag;
-	
-	// Tag string in the menu is prefixed by "● " or "× " so take them it out
-	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
-	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
-	
-	if (self.selectedRange.length > 0) {
-		NSString *tagString = [self.textStorage.string substringWithRange:self.selectedRange].lowercaseString;
-		BeatTagType type = [BeatTagging tagFor:tagStr];
-		
-		if (![self.tagging tagExists:tagString type:type]) {
-			// If a tag with corresponding text & type doesn't exist, let's find possible similar tags
-			NSArray *possibleMatches = [self.tagging searchTagsByTerm:tagString type:type];
-			
-			if (possibleMatches.count == 0)	[self.tagging tagRange:self.selectedRange withType:type];
-			else {
-				NSArray *items = @[[NSString stringWithFormat:@"New: %@", tagString]];
-				self.matches = [items arrayByAddingObjectsFromArray:possibleMatches];
-				_popupMode = SelectTag;
-				_currentTagType = type;
-				[self.autocompleteTableView reloadData];
-				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-				return;
-			}
-			
-		} else {
-			[self.tagging tagRange:self.selectedRange withType:type];
-		}
-		
-		// Deselect
-		self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
-	}
-	
-	[self.autocompletePopover close];
-	_popupMode = NoPopup;
-}
-- (void)selectTag:(id)sender {
-	id tagName;
-	if (_autocompleteTableView.selectedRow == 0) {
-		// First item CREATES A NEW TAG
-		tagName = [self.textStorage.string substringWithRange:self.selectedRange];
-	} else {
-		// This was selected from the list of existing tags
-		tagName = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
-	}
-	
-	id def = [self.tagging definitionWithName:(NSString*)tagName type:_currentTagType];
-	
-	if (def) {
-		// Definition was selected
-		[self.tagging tagRange:self.selectedRange withDefinition:def];
-	} else {
-		// No existing definition selected
-		[self.tagging tagRange:self.selectedRange withType:_currentTagType];
-	}
-	
-	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
-	[self.autocompletePopover close];
-	_popupMode = NoPopup;
-}
-
 #pragma mark - Autocomplete & data source
 
-- (void)complete:(id)sender {
-	NSInteger startOfWord = self.selectedRange.location;
-	for (NSInteger i = startOfWord - 1; i >= 0; i--) {
-		if ([WORD_BOUNDARY_CHARS characterIsMember:[self.string characterAtIndex:i]]) {
-			break;
-		} else {
-			startOfWord--;
-		}
-	}
-	
-	NSInteger lengthOfWord = 0;
-	for (NSInteger i = startOfWord; i < self.string.length; i++) {
-		if ([WORD_BOUNDARY_CHARS characterIsMember:[self.string characterAtIndex:i]]) {
-			break;
-		} else {
-			lengthOfWord++;
-		}
-	}
-	
-	self.substring = [self.string substringWithRange:NSMakeRange(startOfWord, lengthOfWord)];
-	NSRange substringRange = NSMakeRange(startOfWord, self.selectedRange.location - startOfWord);
-	
-	if (substringRange.length == 0 || lengthOfWord == 0) {
-		// This happens when we just started a new word or if we have already typed the entire word
-		[self.autocompletePopover close];
-		return;
-	}
-	
-	NSInteger index = 0;
-	self.matches = [self completionsForPartialWordRange:substringRange indexOfSelectedItem:&index];
-	if (self.matches.count == 0) {
-		[self.autocompletePopover close];
-		return;
-	} else if (self.matches.count == 1) {
-		// if we have only one possible match and it's the same the user has already typed, close it
-		NSString *match = self.matches.firstObject;
-		if ([match localizedCaseInsensitiveCompare:self.substring] == NSOrderedSame) {
-			[self.autocompletePopover close];
-			return;
-		}
-	}
-	
-	self.lastPos = self.selectedRange.location;
-	[self.autocompleteTableView reloadData];
-	
-	[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
-	[self.autocompleteTableView scrollRowToVisible:index];
-	
-	// Make the frame for the popover. We want it to shrink with a small number
-	// of items to autocomplete but never grow above a certain limit when there
-	// are a lot of items. The limit is set by MAX_RESULTS.
-	NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
-	CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
-	NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
-	[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
-	[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-	
-	// We want to find the middle of the first character to show the popover.
-	// firstRectForCharacterRange: will give us the rect at the beginning of
-	// the word, and then we need to find the half-width of the first character
-	// to add to it.
-	NSRect rect = [self firstRectForCharacterRange:substringRange actualRange:NULL];
-	rect = [self.window convertRectFromScreen:rect];
-	rect = [self convertRect:rect fromView:nil];
-	NSString *firstChar = [self.substring substringToIndex:1];
-	NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
-	rect.size.width = firstCharSize.width;
-	
-	_popupMode = Autocomplete;
-	[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
-	[self.window makeFirstResponder:self];
-
-}
 - (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
 	if ([self.delegate respondsToSelector:@selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)]) {
 		return [self.delegate textView:self completions:@[] forPartialWordRange:charRange indexOfSelectedItem:index];
@@ -1067,65 +563,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return @[];
 }
 
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-	return self.matches.count;
-}
 
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-	NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"MyView" owner:self];
-	if (row >= self.matches.count) return cellView; // Return an empty view if something is wrong
-	
-	if (cellView == nil) {
-		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
-		[textField setBezeled:NO];
-		[textField setDrawsBackground:NO];
-		[textField setEditable:NO];
-		[textField setSelectable:NO];
-		
-		cellView = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
-		[cellView addSubview:textField];
-		cellView.textField = textField;
-		
-		if ([self.delegate respondsToSelector:@selector(textView:imageForCompletion:)]) {
-			NSImageView *imageView = [[NSImageView alloc] initWithFrame:NSZeroRect];
-			[imageView setImageFrameStyle:NSImageFrameNone];
-			[imageView setImageScaling:NSImageScaleNone];
-			[cellView addSubview:imageView];
-			cellView.imageView = imageView;
-		}
-		cellView.identifier = @"MyView";
-	}
-	
-	
-	NSMutableAttributedString *as;
-	id label = self.matches[row];
-	
-	// If the row item is an attributed string, handle the previous attributes
-	if ([label isKindOfClass:NSAttributedString.class]) {
-		as = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString*)label];
-		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.regular range:NSMakeRange(0, as.string.length)];
-	} else {
-		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:BeatFonts.sharedFonts.regular, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
-	}
-	
-	if (self.substring) {
-		NSRange range = [as.string rangeOfString:self.substring options:NSAnchoredSearch|NSCaseInsensitiveSearch];
-		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.bold range:range];
-	}
-	
-	[cellView.textField setAttributedStringValue:as];
-	
-	if ([self.delegate respondsToSelector:@selector(textView:imageForCompletion:)]) {
-		//NSImage *image = [self.delegate textView:self imageForCompletion:self.matches[row]];
-		//[cellView.imageView setImage:image];
-	}
-	
-	return cellView;
-}
-
-- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
-	return [[NCRAutocompleteTableRowView alloc] init];
-}
 
 #pragma mark - Setting insets on resize
 
@@ -1283,7 +721,8 @@ Line *cachedRectLine;
 
 #pragma mark - Context Menu
 
--(NSMenu *)menu {
+-(NSMenu *)menu
+{
 	static NSMenu* menu;
 	if (menu == nil) {
 		menu = [super menu];
@@ -1310,14 +749,16 @@ Line *cachedRectLine;
 #pragma mark - Scrolling interface
 
 /// Non-animated scrolling
-- (void)scrollToRange:(NSRange)range {
+- (void)scrollToRange:(NSRange)range
+{
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
 	
 	[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 }
 
-- (void)ensureRangeIsVisible:(NSRange)range {
+- (void)ensureRangeIsVisible:(NSRange)range
+{
 	NSRect rect = [self rectForRange:range];
 	
 	CGFloat changeY = rect.origin.y - rect.size.height;
@@ -1327,7 +768,8 @@ Line *cachedRectLine;
 }
 
 /// Animated scrolling with a callback
-- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock
+{
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
 	
@@ -1339,7 +781,8 @@ Line *cachedRectLine;
 	}];
 }
 
-- (void)scrollToLine:(Line *)line {
+- (void)scrollToLine:(Line *)line
+{
 	if (line == nil) return;
 	
 	self.selectedRange = line.textRange;
@@ -1347,7 +790,8 @@ Line *cachedRectLine;
 }
 
 
-- (void)scrollToScene:(OutlineScene *)scene {
+- (void)scrollToScene:(OutlineScene *)scene
+{
 	if (scene == nil) return;
 	
 	self.selectedRange = scene.line.textRange;
@@ -1722,24 +1166,6 @@ double clamp(double d, double min, double max)
 	[_editorDelegate textStorage:textStorage didProcessEditing:editedMask range:editedRange changeInLength:delta];
 }
 
-- (NSInteger)numberOfLines
-{
-	// This causes jitter. Unusable.
-	
-	NSLayoutManager *layoutManager = self.layoutManager;
-	NSString *string = self.string;
-	NSUInteger numberOfLines, index, stringLength = string.length;
-	
-	for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++) {
-		NSRange tmpRange;
-		
-		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&tmpRange withoutAdditionalLayout:YES];
-		index = NSMaxRange(tmpRange);
-	}
-	
-	return numberOfLines;
-}
-
 
 #pragma mark - Spell Checking
 
@@ -1750,19 +1176,15 @@ double clamp(double d, double min, double max)
 }
 
 - (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
+	// Do nothing when autocompletion list is visible
+	if (self.popoverController.isShown) return;
 	
-	//Line *currentLine = _editorDelegate.currentLine;
 	Line *line = [self.editorDelegate.parser lineAtIndex:range.location];
+	NSArray* newResults = results;
 	
-	if ((line.isAnyCharacter || line.type == heading) && self.popupMode == Autocomplete) {
-		// Do nothing when autocompletion list is visible
-		return;
-	}
-	
+	// Avoid capitalizing parentheticals
 	if (line.isAnyParenthetical) {
-		// Avoid capitalizing parentheticals
 		NSMutableArray<NSTextCheckingResult*> *newResults;
-		
 		NSString *textToChange = [self.textStorage.string substringWithRange:range].uppercaseString;
 		
 		for (NSTextCheckingResult *result in results) {
@@ -1772,13 +1194,11 @@ double clamp(double d, double min, double max)
 				[newResults addObject:result];
 			}
 		}
-		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
-		return;
 	}
 	
-	// default behaviors, including auto-correct
-	[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
+	[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 }
+
 
 
 #pragma mark - Make compatible with iOS stuff

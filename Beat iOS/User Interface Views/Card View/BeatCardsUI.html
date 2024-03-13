@@ -62,8 +62,8 @@
 				window.removeEventListener('touchmove', preventDefault, wheelOpt);
 			}
 
-			
 			{{dragula}}
+			
 		</script>
 		<script>
 			let modes = {
@@ -125,7 +125,7 @@
 				drake = dragula({
 					direction: 'horizontal',
 					revertOnSpill: true,
-					
+
 					invalid: function (el, handle) {
 						return el.classList.contains("section")
 					}
@@ -133,18 +133,13 @@
 				.on('cancel', scroller.stop)
 				.on('drag', scroller.start)
 				.on('drop', function (el, target, source, sibling) {
-					let siblingUUID = sibling.getAttribute("uuid")
+					let siblingUUID = sibling?.getAttribute("uuid") ?? ""
 					let sceneUUID = el.getAttribute("uuid")
 
 					Beat.call("Beat.custom.moveScene('" + sceneUUID + "', '" + siblingUUID + "')")
 				});
 			
-				const containers = document.querySelectorAll(".dragContainer")
-				drake.containers = []
-				for (let container of containers) {
-					drake.containers.push(container)
-				}
-
+				drake.containers = [document.querySelector(".dragContainer")]
 			}
 
 			function filter(element) {
@@ -437,16 +432,15 @@
 
 					let uuid = synopsis.getAttribute("uuid")
 					
-					if (!synopsis.canceled) {
-						// If input wasn't canceled, we'll either modify the existing synopsis or add a new one
-						if (uuid?.length > 0) {
-							modifySynopsis(uuid, synopsis.innerText)
-						} else {
-							let scene = synopsis.closest(".card").getAttribute("uuid")
-							addSynopsis(scene, synopsis.innerText)
-						}
-					} else if (uuid.length == 0) {
-						// This was a temporary item. Remove after cancel.
+					if (uuid?.length > 0) {
+						// Modify existing synopsis
+						modifySynopsis(uuid, synopsis.innerText)
+					} else if (synopsis.innerText.length > 0) {
+						// Add a new synopsis
+						let scene = synopsis.closest(".card").getAttribute("uuid")
+						addSynopsis(scene, synopsis.innerText)
+					} else {
+						// Remove temporary item
 						synopsis.remove()
 					}
 				}

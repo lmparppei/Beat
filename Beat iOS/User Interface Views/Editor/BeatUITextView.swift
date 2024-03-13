@@ -15,6 +15,10 @@ import BeatParsing
 	@objc var formattingActions:BeatEditorFormattingActions { get }
 	@objc var textActions:BeatTextIO { get }
 	@objc var formatting:BeatEditorFormatting { get }
+	
+	//@property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
+	@objc var screenplayButton:UIBarButtonItem? { get }
+	@objc var dismissKeyboardButton:UIBarButtonItem? { get }
 }
 
 class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
@@ -26,9 +30,14 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	
 	@objc public var assistantView:InputAssistantView?
 	
-	var insets = UIEdgeInsets(top: 50, left: 0, bottom: 50, right: 0)
+	var insets:UIEdgeInsets = UIEdgeInsets(top: 50, left: 0, bottom: 50, right: 0)
 	var pinchRecognizer = UIGestureRecognizer()
 	var customLayoutManager:BeatLayoutManager
+	
+	var mobileMode:Bool { return UIDevice.current.userInterfaceIdiom == .phone }
+	var mobileKeyboardManager:KeyboardManager?
+	
+	var mobileDismissButton:UIBarButtonItem?
 	
 	class func linePadding() -> CGFloat {
 		// We'll use very tight padding for iPhone
@@ -57,13 +66,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
 		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
 		textView.textContainer.widthTracksTextView = true
-		textView.isScrollEnabled = false
-		
-		textView.smartDashesType = .no
-		textView.smartQuotesType = .no
-		textView.smartInsertDeleteType = .no
-		//textView.autocorrectionType = .no
-		
+				
 		// Set up the container views
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
@@ -114,32 +117,123 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	}
 	
 	func setup() {
-		self.textContainerInset = insets
-		self.isScrollEnabled = false
-		
 		// Delegates
 		enclosingScrollView?.delegate = self
 		
 		self.enclosingScrollView.keyboardDismissMode = .onDrag
 		
-		// View setup
+		// Text container setup
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.heightTracksTextView = false
-		
+		// Set text container size. Note that in mobile mode, this varies!
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
 		
+		// Text view behavior
+		self.smartDashesType = .no
+		self.smartQuotesType = .no
+		self.smartInsertDeleteType = .no
 		self.keyboardAppearance = .dark
 		
 		resizePaper()
 		resize()
 		
 		setupInputAssistantButtons()
-	}
 		
+		if !mobileMode {
+			// Tablet setup. We'll have an external scroll view on iPad, so let's disable scroll for text view.
+			isScrollEnabled = false
+			self.textContainerInset = insets
+		} else {
+			// Mobile mode setup
+			//self.keyboardDismissMode = .onDrag
+			self.contentInsetAdjustmentBehavior = .automatic
+			
+			self.mobileKeyboardManager = KeyboardManager()
+			self.mobileKeyboardManager?.delegate = self
+			
+			// Disable pinch gesture recognizer
+			let pinchGestureRecognizer = UIPinchGestureRecognizer(target: nil, action: nil)
+			pinchGestureRecognizer.delegate = self
+			self.addGestureRecognizer(pinchGestureRecognizer)
+		}
+		
+		// Set a new frame for this view for mobile mode
+		if mobileMode, let contentView = self.enclosingScrollView.superview {
+			self.frame = CGRectMake(0.0, 0.0, contentView.frame.width, contentView.frame.height)
+			self.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
+			
+			self.maximumZoomScale = 2.0
+			self.minimumZoomScale = 1.0
+		}
+	}
+	
+	
+	
+	// MARK: - Document view width
+	
+	@objc var documentWidth:CGFloat {
+		var width = 0.0
+		let padding = BeatUITextView.linePadding()
+		
+		guard let delegate = self.editorDelegate else { return 0.0 }
+		
+		if delegate.pageSize == .A4 {
+			width = BeatFonts.characterWidth() * 60
+		} else {
+			width = BeatFonts.characterWidth() * 62
+		}
+		
+		width += padding * 2
+		
+		// For iPhone, we'll fit the viewport to view
+		if mobileMode {
+			let availableWidth = self.frame.size.width * (1/self.zoomScale)
+			width = min(availableWidth, width)
+		}
+		
+		return width
+	}
+	
+	private var isUpdatingLayout = false
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		//resize()
+		
+		// Avoid infinite loop
+		guard !isUpdatingLayout else { return }
+		
+		isUpdatingLayout = true
+		mobileViewResize()
+		isUpdatingLayout = false
+	}
+	
+
+	// MARK: - Mobile sizing
+	
+	var mobileScale:CGFloat {
+		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
+		return 1.1 + CGFloat(scale) * 0.15
+		
+	}
+	
+	@objc public func updateMobileScale() {
+		self.zoomScale = mobileScale
+	}
+	
+	func mobileViewResize() {
+		let documentWidth = self.documentWidth
+		self.textContainer.size.width = documentWidth
+		
+		let factor = 1 / self.zoomScale
+		let scaledFrame = self.frame.width * factor
+		
+		var insets = self.insets
+		
+		if (documentWidth < scaledFrame) {
+			insets.left = ((self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2) * factor
+		}
+		
+		self.textContainerInset = insets
 	}
 	
 	
@@ -150,24 +244,38 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	}
 	
 	func scroll(to range: NSRange) {
+		self.scroll(to:range, animated: true)
+	}
+	
+	func scroll(to range: NSRange, animated:Bool = true) {
 		// Current bounds
-		let bounds = self.enclosingScrollView.bounds
+		let bounds = (!mobileMode) ? self.enclosingScrollView.bounds : self.bounds
+		
 		// The *actually* visible frame (why won't iOS give this automatically?)
 		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.keyboardLayoutGuide.layoutFrame.size.height)
-
-		// Current selection frae
+		
+		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
 		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
 		
 		// Account for top margin
 		selectionRect.origin.y += self.textContainerInset.top
 		
-		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
-						
-		// If the rect is not visible, scroll to that range
-		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: true)
+		if !mobileMode {
+			let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
+			
+			// If the rect is not visible, scroll to that range
+			if CGRectIntersection(scaledRect, visible).height < 16.0 {
+				self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			}
+		} else {
+			let scaledRect = convert(selectionRect, from: nil)
+			
+			if CGRectIntersection(scaledRect, visible).height < 16.0 {
+				self.scrollRectToVisible(selectionRect, animated: animated)
+			}
 		}
+
 	}
 	
 	override func scrollRangeToVisible(_ range: NSRange) {
@@ -199,30 +307,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	 Whenever the text view content changes, we'll need to resize the wrapping view and content size of the enclosing scroll view.
 	 
 	 */
-	
-	@objc var documentWidth:CGFloat {
-		var width = 0.0
-		let padding = BeatUITextView.linePadding()
 		
-		guard let delegate = self.editorDelegate else { return 0.0 }
-		
-		if delegate.pageSize == .A4 {
-			width = BeatFonts.characterWidth() * 60
-		} else {
-			width = BeatFonts.characterWidth() * 62
-		}
-		
-		// For iPhone, we'll use a narrow viewport
-		if UIDevice.current.userInterfaceIdiom == .phone {
-			width = self.enclosingScrollView.frame.size.width - padding * 2
-			let pagesize = delegate.editorStyles.page().defaultWidth(pageSize: delegate.pageSize)
-			
-			if width > pagesize { width = pagesize - 10.0 }
-		}
-		
-		return width + padding * 2
-	}
-	
 	@objc func resizePaper() {
 		var frame = pageView.frame
 		frame.size.height = textContainer.size.height
@@ -232,6 +317,12 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	}
 	
 	@objc func resize() {
+		// We'll ignore this method on phones
+		if mobileMode {
+			mobileViewResize()
+			return
+		}
+
 		guard let enclosingScrollView = self.enclosingScrollView else {
 			print("WARNING: No scroll view set for text view")
 			return
@@ -241,7 +332,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
 		self.textContainerInset = insets
-		
+				
 		var frame = pageView.frame
 		var zoom = enclosingScrollView.zoomScale
 		
@@ -272,15 +363,14 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		textViewFrame.size.width = self.documentWidth + self.insets.left + self.insets.right
 		textViewFrame.size.height = self.pageView.frame.size.height
 		self.frame = textViewFrame
-		/*
-		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
-			self.enclosingScrollView.zoomScale = zoom
-		} completion: { _ in
-		}
-		 */
 	}
 	
 	@objc func firstResize() {
+		if (self.mobileMode) {
+			updateMobileScale()
+			return
+		}
+		
 		let newSize = sizeThatFits(CGSize(width: self.documentWidth, height: CGFloat.greatestFiniteMagnitude))
 		let inset = self.textContainerInset
 		
@@ -581,6 +671,18 @@ extension BeatUITextView: UIScrollViewDelegate {
 }
 
 
+// MARK: - Gesture recognizer delegate for mobile
+
+extension BeatUITextView:UIGestureRecognizerDelegate {
+	override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		if gestureRecognizer is UIPinchGestureRecognizer, mobileMode {
+			return false // Disable pinch zoom
+		}
+		return true
+	}
+}
+
+
 // MARK: - Input assistant buttons
 
 extension BeatUITextView {
@@ -733,6 +835,33 @@ extension BeatUITextView {
 		print("wat 2")
 	}
 	 */
+}
+
+// MARK: - Mobile keyboard manager
+
+extension BeatUITextView:KeyboardManagerDelegate {
+	func keyboardWillShow(with size: CGSize, animationTime: Double) {
+		let animator = UIViewPropertyAnimator(duration: animationTime, curve: .easeInOut) {
+			self.contentInset.bottom = self.keyboardLayoutGuide.layoutFrame.height + self.insets.bottom
+		}
+		animator.startAnimation()
+		//self.contentInset.bottom = self.keyboardLayoutGuide.layoutFrame.height
+				
+		self.editorDelegate?.dismissKeyboardButton?.isHidden = false
+		self.editorDelegate?.screenplayButton?.isHidden = true
+	}
+	func keyboardDidShow() {
+		//self.scroll(to: self.selectedRange, animated: false)
+	}
+	func keyboardWillHide() {
+		self.contentInset.bottom = self.insets.bottom
+		self.editorDelegate?.dismissKeyboardButton?.isHidden = true
+		self.editorDelegate?.screenplayButton?.isHidden = false
+	}
+		
+	@objc func dismissKeyboard() {
+		self.endEditing(true)
+	}
 }
 
 // MARK: - Assisting views

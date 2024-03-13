@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic) Line* currentLine; // Current line has to be weak so we don't keep anything weird in memory
 @property (nonatomic) bool moving;
 
-@property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 
@@ -40,8 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
 - (IBAction)openExportPanel:(id)sender;
 
-@property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;;
+@property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
+
 @property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
+@property (nonatomic, weak) IBOutlet UIBarButtonItem* dismissKeyboardButton;
 
 - (IBAction)togglePreview:(id)sender;
 - (IBAction)toggleCards:(id)sender;

@@ -185,3 +185,5 @@
 "character.editor.lines" = "Repliikit";
 
 "backup.browseVersions" = "Selaa versioita...";
+
+"quickSettings.novelLineHeightMultiplier" = "Riviväli";

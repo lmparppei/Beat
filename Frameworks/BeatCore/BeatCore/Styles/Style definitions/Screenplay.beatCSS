@@ -13,9 +13,10 @@
 */
 
 page {
+    padding-left: 60;
+    
     margin-left: 30;
 	margin-right: 25;
-	padding-left: 60;
     margin-top: 40;
 	margin-bottom: 50;
     margin-bottom-us: 0;
@@ -30,6 +31,15 @@ page {
  
     margin-left-a4: 20;
     margin-left-us: 22;
+}
+
+titlePage {
+    margin-top: 40;
+    margin-bottom: 50;
+    margin-left: 40;
+    margin-right: 40;
+    
+    line-height: 12;
 }
 
 heading {
