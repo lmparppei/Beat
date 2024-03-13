@@ -32,3 +32,17 @@ class BeatUserSettingSwitch:UISwitch {
 	}
 }
 
+class BeatUserSettingSegmentedControl:UISegmentedControl {
+	@IBInspectable var setting:String?
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		
+		guard let setting = setting else { return }
+		let value = BeatUserDefaults.shared().getInteger(setting)
+		
+		if value < self.numberOfSegments && value >= 0 {
+			self.selectedSegmentIndex = value
+		}
+	}
+}
