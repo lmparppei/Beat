@@ -1,7 +1,7 @@
 /*
 
  Novel Stylesheet for Beat.
- This is not actual CSS, just uses similar markup.
+ This is not actual CSS, just uses a similar markup.
 
  Changing values without knowing what you are doing can very
  well cause a crash. Dread lightly.
@@ -9,13 +9,12 @@
  "Class" names are internal type names as strings, not .typeAsString names.
  
  © Lauri-Matti Parppei 2021-2022
-disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
 
 */
 
 document {
     visible-elements: [section];
-
+    disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
 }
 
 page {

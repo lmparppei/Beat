@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -146,26 +146,27 @@
         <!--Screenplay-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
-                <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DocumentViewController" extendedLayoutIncludesOpaqueBars="YES" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
-                                <rect key="frame" x="0.0" y="74" width="834" height="1120"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
                             </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="p8x-tU-OOV" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="J80-Q2-U3n">
-                                <variation key="heightClass=regular-widthClass=compact" constant="-60"/>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="top" secondItem="SIE-Uh-Zny" secondAttribute="top" id="J80-Q2-U3n">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="p8x-tU-OOV" firstAttribute="leading" secondItem="SIE-Uh-Zny" secondAttribute="leading" id="QaA-3E-ufM"/>
-                            <constraint firstItem="p8x-tU-OOV" firstAttribute="trailing" secondItem="BoZ-jc-2Y8" secondAttribute="trailing" id="tYN-pd-ZaO"/>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="trailing" secondItem="SIE-Uh-Zny" secondAttribute="trailing" id="tYN-pd-ZaO"/>
                             <constraint firstAttribute="bottom" secondItem="p8x-tU-OOV" secondAttribute="bottom" id="vlJ-Fz-wNq"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Screenplay" largeTitleDisplayMode="never" style="editor" id="G7J-RW-q00">
                         <leftBarButtonItems>
                             <barButtonItem title="Documents" image="folder" catalog="system" id="M6l-mf-X0i">
@@ -181,6 +182,11 @@
                         </leftBarButtonItems>
                         <rightBarButtonItems>
                             <barButtonItem image="ellipsis.circle" catalog="system" id="b7L-my-Myg"/>
+                            <barButtonItem title="Done" hidden="YES" id="sGw-3b-Nxf">
+                                <connections>
+                                    <action selector="endEditing:" destination="M2k-L8-Olo" id="cGb-eS-g1l"/>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem title="Settings" id="57u-GR-Hn4" customClass="BeatAdaptiveNavigationBarButton" customModule="Beat" customModuleProvider="target">
                                 <imageReference key="image" image="gearshape.fill" catalog="system" symbolScale="default"/>
                                 <userDefinedRuntimeAttributes>
@@ -211,16 +217,18 @@
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
+                        <outlet property="dismissKeyboardButton" destination="sGw-3b-Nxf" id="HQY-ki-as6"/>
                         <outlet property="screenplayButton" destination="b7L-my-Myg" id="QO6-NY-3nm"/>
                         <outlet property="splitViewContainer" destination="p8x-tU-OOV" id="Qaf-fN-91e"/>
                         <outlet property="titleBar" destination="G7J-RW-q00" id="muY-Lo-xAP"/>
+                        <outlet property="topContainerConstraint" destination="J80-Q2-U3n" id="Rnb-jv-xky"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1700.7194244604318" y="653.7688442211055"/>
+            <point key="canvasLocation" x="1697" y="571"/>
         </scene>
         <!--Beat Page View Controller-->
         <scene sceneID="LHN-S5-hsX">
@@ -260,7 +268,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3136.6906474820148" y="367.8391959798995"/>
+            <point key="canvasLocation" x="3094" y="571"/>
         </scene>
         <!--Beat Editor View Controller-->
         <scene sceneID="uc1-BM-eyz">
@@ -304,7 +312,7 @@
         <!--Beat Editor Split View Controller-->
         <scene sceneID="Obe-C1-u81">
             <objects>
-                <splitViewController storyboardIdentifier="EditorSplitView" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="EditorSplitView" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -349,6 +357,7 @@
                             </tableViewCell>
                         </prototypes>
                     </tableView>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="I7h-LD-beH"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
@@ -364,7 +373,7 @@
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="nAh-EZ-1Yr">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="nAh-EZ-1Yr">
                         <rect key="frame" x="100" y="0.0" width="0.0" height="0.0"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -379,12 +388,13 @@
         <!--Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
             <objects>
-                <navigationController id="n1j-v5-5jA" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" id="n1j-v5-5jA" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JT7-eO-PGz">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="JT7-eO-PGz">
                         <rect key="frame" x="0.0" y="24" width="834" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <navigationBarAppearance key="compactAppearance"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Yej-qc-tWD">
@@ -396,7 +406,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dpN-fA-ldJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1005" y="654"/>
+            <point key="canvasLocation" x="992" y="571"/>
         </scene>
         <!--Beat Export View Controller-->
         <scene sceneID="aZk-OS-lpt">
@@ -948,7 +958,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Bvb-Pd-rfA">
                                                     <rect key="frame" x="20" y="4" width="794" height="35"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" title="Reset Suppressed Dialogs" titleAlignment="center"/>
                                                     <userDefinedRuntimeAttributes>
@@ -956,11 +966,36 @@
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
                                                         <action selector="resetSuppressedAlerts:" destination="N4L-hY-9di" eventType="primaryActionTriggered" id="vfR-nA-bpZ"/>
-                                                        <action selector="visitSite:" destination="N4L-hY-9di" eventType="primaryActionTriggered" id="12s-gP-jra"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
                                         </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="pTB-PG-2Ss" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="1031" width="834" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pTB-PG-2Ss" id="b9F-TG-CWv">
+                                            <rect key="frame" x="0.0" y="0.0" width="834" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="25P-FH-sFF">
+                                                    <rect key="frame" x="20" y="4" width="794" height="35"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <buttonConfiguration key="configuration" style="plain" title="Close" titleAlignment="center">
+                                                        <backgroundConfiguration key="background"/>
+                                                    </buttonConfiguration>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="url" value="https://discord.gg/FPHjfH7ms3"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="dismissViewControllerWithSender:" destination="N4L-hY-9di" eventType="primaryActionTriggered" id="Kvw-ci-7er"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="hiddenOnPad" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -988,8 +1023,47 @@
                         <sections>
                             <tableViewSection headerTitle="Document Settings" id="j8E-t1-16b">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ma6-Xw-q8u" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="2g1-cl-qVj" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
                                         <rect key="frame" x="20" y="55.5" width="362" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2g1-cl-qVj" id="sW9-Vh-OB5">
+                                            <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Font Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="EVd-vQ-sek">
+                                                    <rect key="frame" x="16" y="11" width="167" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="Faa-2e-ifG" customClass="BeatUserSettingSegmentedControl" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="191" y="6" width="155" height="32"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <segments>
+                                                        <segment title="" image="textformat.size.smaller" catalog="system"/>
+                                                        <segment title="" image="textformat.size.larger" catalog="system"/>
+                                                        <segment title="">
+                                                            <imageReference key="image" image="textformat.size.larger" catalog="system" symbolScale="large"/>
+                                                        </segment>
+                                                    </segments>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="phoneFontSize"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleFontSize:" destination="HAz-LJ-FEM" eventType="primaryActionTriggered" id="CNU-lQ-YMf"/>
+                                                    </connections>
+                                                </segmentedControl>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="hiddenOnMobile" value="NO"/>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="hiddenOnPad" value="YES"/>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="name" value="Font size cell"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ma6-Xw-q8u" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="99" width="362" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ma6-Xw-q8u" id="vTK-IP-neI">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
@@ -1021,7 +1095,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="EMy-nH-L8N" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="20" y="99" width="362" height="43.5"/>
+                                        <rect key="frame" x="20" y="142.5" width="362" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="EMy-nH-L8N" id="H5V-qT-vcS">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
@@ -1053,7 +1127,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="yam-a4-Rdm">
-                                        <rect key="frame" x="20" y="142.5" width="362" height="43.5"/>
+                                        <rect key="frame" x="20" y="186" width="362" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yam-a4-Rdm" id="Rn1-cd-a0U">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
@@ -1085,7 +1159,7 @@
                             <tableViewSection headerTitle="Revisions" id="nZD-KR-bTn">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="QEe-tw-JWT">
-                                        <rect key="frame" x="20" y="242" width="362" height="43.5"/>
+                                        <rect key="frame" x="20" y="285.5" width="362" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="QEe-tw-JWT" id="CfW-AP-ZMh">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
@@ -1113,7 +1187,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="84" id="pAH-8s-8nY">
-                                        <rect key="frame" x="20" y="285.5" width="362" height="84"/>
+                                        <rect key="frame" x="20" y="329" width="362" height="84"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pAH-8s-8nY" id="7jy-cz-gwn">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="84"/>
@@ -1143,7 +1217,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="oOa-WT-KMk">
-                                        <rect key="frame" x="20" y="369.5" width="362" height="43.5"/>
+                                        <rect key="frame" x="20" y="413" width="362" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oOa-WT-KMk" id="HuR-KT-hpE">
                                             <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
@@ -1172,6 +1246,35 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="MGE-MW-o0q">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Frd-Re-rA0" customClass="BeatAdaptiveCellView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="492.5" width="362" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Frd-Re-rA0" id="2fW-4Q-vRt">
+                                            <rect key="frame" x="0.0" y="0.0" width="362" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="WZ9-IR-Ihd">
+                                                    <rect key="frame" x="16" y="4" width="330" height="35"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" title="Close" titleAlignment="center"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="url" value="https://discord.gg/FPHjfH7ms3"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="dismissViewControllerWithSender:" destination="HAz-LJ-FEM" eventType="primaryActionTriggered" id="OuH-PH-3LV"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="hiddenOnPad" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="HAz-LJ-FEM" id="I78-x7-wzk"/>
@@ -1180,6 +1283,7 @@
                     </tableView>
                     <size key="freeformSize" width="402" height="563"/>
                     <connections>
+                        <outlet property="fontSizeSwitch" destination="Faa-2e-ifG" id="1qy-KE-K8R"/>
                         <outlet property="pageSizeSwitch" destination="I6b-zv-KGS" id="tSE-bz-B68"/>
                         <outlet property="revisionGeneration" destination="Mbh-IR-IZd" id="J8X-Dm-9ax"/>
                         <outlet property="revisionMode" destination="TEb-Op-nAC" id="okC-uR-56O"/>
@@ -1194,11 +1298,11 @@
             <objects>
                 <viewController title="Index Card View" id="UZW-Mv-jzT" customClass="BeatPluginContainerViewController" customModule="BeatPlugins" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="XsT-vL-ctF">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
@@ -1223,7 +1327,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iR4-kY-YYF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2483" y="368"/>
+            <point key="canvasLocation" x="2440" y="571"/>
         </scene>
         <!--Beat Export Setting Controller-->
         <scene sceneID="ZxL-Wj-Jkf">
@@ -1700,7 +1804,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JGZ-op-YYp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="p9m-T7-vBu" customClass="BeatTemplateDataSource" customModule="Beat" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="559.3525179856116" y="-52.261306532663319"/>
+            <point key="canvasLocation" x="53" y="-31"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eA9-vR-ovT">
@@ -1739,6 +1843,8 @@
         <image name="map" catalog="system" width="128" height="112"/>
         <image name="sidebar.left" catalog="system" width="128" height="93"/>
         <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
+        <image name="textformat.size.larger" catalog="system" width="128" height="128"/>
+        <image name="textformat.size.smaller" catalog="system" width="128" height="120"/>
         <image name="xmark.circle.fill" width="40" height="40"/>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>

@@ -725,13 +725,7 @@
 	[_delegate setSelectedRange:(NSRange){range.location + range.length, 0}];
 	[_delegate updateChangeCount:BXChangeDone];
     [_delegate invalidatePreviewAt:range.location];
-	
-    /*
-	[_delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-        [self.delegate renderBackgroundForRange:originalRange];
-	}];
-	*/
-    
+	    
     // Create an undo step
 #if TARGET_OS_OSX
     // I don't know why, but we shouldn't invoke undo manager on iOS

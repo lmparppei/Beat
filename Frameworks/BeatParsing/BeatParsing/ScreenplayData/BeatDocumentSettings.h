@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentSettings : NSObject
 + (NSDictionary*)defaultValues;
-+ (NSDictionary*)defaultValueFor:(NSString*)key;
++ (NSDictionary*)defaultValue:(NSString*)key;
 - (NSDictionary*)defaultValues;
 
 @property (atomic) NSMutableDictionary *settings;

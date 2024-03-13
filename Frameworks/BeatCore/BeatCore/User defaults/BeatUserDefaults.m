@@ -85,6 +85,7 @@ NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontS
 NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
 
 NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen";
+NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 
 
 + (BeatUserDefaults*)sharedDefaults
@@ -154,7 +155,9 @@ NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen
         
         BeatSettingShowPageSeparators: @[BeatSettingShowPageSeparators, @NO],
         
-        BeatSettingiOSShowWelcomeScreen: @[BeatSettingiOSShowWelcomeScreen, @YES]
+        BeatSettingiOSShowWelcomeScreen: @[BeatSettingiOSShowWelcomeScreen, @YES],
+        
+        BeatSettingPhoneFontSize: @[BeatSettingPhoneFontSize, @(1)]
 	};
 }
 
