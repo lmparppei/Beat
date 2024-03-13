@@ -24,7 +24,7 @@ extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 		if let view = sender.value(forKey: "view") as? UIView {
 			frame = view.frame
 			frame.origin.x += view.superview?.frame.origin.x ?? 0
-			frame.origin.y += 20
+			frame.origin.y -= 40.0
 			buttonFrame = frame
 		}
 		
@@ -67,6 +67,9 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet var revisionMode:UISwitch?
 	@IBOutlet var pageSizeSwitch:UISegmentedControl?
 	@IBOutlet var headingSpacingSwitch:UISegmentedControl?
+	
+	/// Font size switch is only available on iOS
+	@IBOutlet var fontSizeSwitch:UISegmentedControl?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -130,6 +133,7 @@ class BeatSettingsViewController:UITableViewController {
 		// Hide certain cells
 		if let cell = self.tableView(tableView, cellForRowAt: indexPath) as? BeatAdaptiveCellView {
 			if cell.hiddenOnMobile && UIDevice.current.userInterfaceIdiom == .phone { return 0.0 }
+			if cell.hiddenOnPad && UIDevice.current.userInterfaceIdiom == .pad { return 0.0 }
 		}
 		return super.tableView(tableView, heightForRowAt: indexPath)
 	}
@@ -142,6 +146,17 @@ class BeatSettingsViewController:UITableViewController {
 	
 	@IBAction func resetSuppressedAlerts(_ sender:Any?) {
 		BeatUserDefaults.shared().reset(toDefault: BeatSettingSuppressedAlert)
+	}
+	
+	@IBAction func toggleFontSize(_ sender:BeatUserSettingSegmentedControl) {
+		guard let key = sender.setting else { return }
+		
+		let size = sender.selectedSegmentIndex
+		BeatUserDefaults.shared().save(size, forKey: key)
+		
+		// All fucking right
+		guard let textView = self.delegate?.getTextView() as? BeatUITextView else { return }
+		textView.updateMobileScale()
 	}
 }
 

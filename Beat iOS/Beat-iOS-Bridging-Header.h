@@ -20,6 +20,4 @@
 #import "BeatPrintView.h"
 // #import "TemplateCollectionViewController.h"
 
-#import "BeatHTMLRenderer.h"
-
 #endif /* Beat_iOS_Bridging_Header_h */
