@@ -13,6 +13,8 @@ let json
 let window 
 let timer
 let updated = false
+let processing = false
+let process = "" // Process UUID to avoid race conditions
 
 // Currently selected range, because we can't ask for that in background. Remember to update this when creating HTML.
 let selectedRange = { location: 0, length: 0 }
@@ -114,7 +116,7 @@ Beat.onTextChange(function (outlineChanges) {
 	// Otherwise we'll send set the timer.
 	let time = 1.5
 	if (Beat.container != undefined && Beat.container.displayed) time = 0.0;
-		
+	
 	timer = Beat.timer(time, () => {
 		refreshHTML()
 	})
@@ -143,13 +145,20 @@ Beat.onSelectionChange((selection) => {
 // ###################################
 
 function refreshHTML() {
+	if (processing) return;
+	
 	const outline = [...Beat.outline()]
+
 	// Store selected range
 	selectedRange = Beat.selectedRange()
 	
 	Beat.async(() => {
+		// Avoid race conditions
+		if (processing) return
+		processing = true
+			
 		let html = createOutline(...outline).replaceAll("\"", "\\\"")
-		
+			
 		// Escape the string
 		let htmlString = JSON.stringify(html)
 		
@@ -157,6 +166,7 @@ function refreshHTML() {
 			window.runJS('load(' + htmlString + ')')
 			updated = true
 		})
+		processing = false
 	})
 }
 
@@ -353,7 +363,7 @@ Beat.custom = {
 			outline[targetIndex] && outline[targetIndex].omitted && !scene.omitted) {
 			stringToMove = "\n*/\n\n" + stringToMove + "\n/*\n\n"
 		}
-		else if (sibling.omitted && outline[targetIndex - 1] && !outline[targetIndex - 1].omitted && !scene.omitted) {
+		else if (sibling?.omitted && outline[targetIndex - 1] && !outline[targetIndex - 1].omitted && !scene.omitted) {
 			// Find the omission
 			targetPosition = sibling.omissionStartsAt
 		} else if (scene.omitted) {
@@ -377,22 +387,20 @@ Beat.custom = {
 		}
 
 		// Disable listeners for a second
-		Beat.onSelectionChangeDisabled = true 
+		Beat.onSelectionChangeDisabled = true
 		Beat.onTextChangeDisabled = true
 
 		if (targetPosition < scene.position) {
 			Beat.replaceRange(position, length, "")
 			Beat.replaceRange(targetPosition, 0, stringToMove)
-
-			//Beat.setSelectedRange(targetPosition, 0)
 		} else {
 			Beat.replaceRange(targetPosition, 0, stringToMove)
-			//Beat.setSelectedRange(targetPosition, 0)
 			Beat.replaceRange(position, length, "")
 		}
 
 		Beat.onSelectionChangeDisabled = false
 		Beat.onTextChangeDisabled = false
+		
 		refreshHTML()
 	},
 	
