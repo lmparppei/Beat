@@ -120,5 +120,8 @@ import OSLog
     @objc public var section:RenderStyle {
         return self.forElement(Line.typeName(.section))
     }
+    @objc public var titlePage:RenderStyle {
+        return self.forElement("titlePage")
+    }
 
 }
