@@ -301,14 +301,12 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Lines can hold any sort of custom data when needed. Used by plugins.
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
 
-/// No idea
-// @property (nonatomic) NSMutableDictionary<NSIndexSet*, NSArray*>* attachments;
-
 
 #pragma mark Generated metadata
 
 /// Index of line in parser, experimental
 @property (nonatomic, readonly) NSUInteger index;
+
 
 
 #pragma mark - Editor booleans

@@ -120,8 +120,36 @@ import OSLog
     @objc public var section:RenderStyle {
         return self.forElement(Line.typeName(.section))
     }
+    @objc public var heading:RenderStyle {
+        return self.forElement(Line.typeName(.heading))
+    }
     @objc public var titlePage:RenderStyle {
         return self.forElement("titlePage")
     }
+    @objc public var pagination:RenderStyle {
+        return self.forElement("pagination")
+    }
 
+}
+
+
+// MARK: - Pagination shorthands for ObjC interop
+
+extension BeatStylesheet {
+    @objc public func hasPaginationRules() -> Bool {
+        return self.pagination.paginationRules.count > 0
+    }
+    
+    /// Ask if this item should be included or not
+    @objc public func shouldInclude(_ type:LineType, after prevType:LineType) -> Bool {
+        for rule in self.pagination.paginationRules {
+            if rule.rule == .skip,
+               rule.precededBy == prevType,
+                rule.followedBy == type {
+                return false
+            }
+        }
+            
+        return true
+    }
 }

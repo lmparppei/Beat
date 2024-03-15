@@ -43,7 +43,7 @@
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
 {
     // Create a copy of parsed lines
-    NSMutableArray *linesForPrinting = NSMutableArray.array;
+    NSMutableArray *preprocessedLines = NSMutableArray.array;
     Line *precedingLine;
     BeatMacroParser* macros = BeatMacroParser.new;
     
@@ -51,13 +51,12 @@
         // Stop at boneyard
         if (line.isBoneyardSection) break;
     
-        [linesForPrinting addObject:line.clone];
+        [preprocessedLines addObject:line.clone];
                 
-        Line *l = linesForPrinting.lastObject;
+        Line *l = preprocessedLines.lastObject;
         
         // Preprocess macros
         if (l.macroRanges.count > 0) {
-            
             NSArray<NSValue*>* macroKeys = [l.macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {
                 return (obj1.rangeValue.location > obj2.rangeValue.location);
             }];
@@ -73,7 +72,7 @@
          
         // Skip line if it's a macro and has no results
         if (l.macroRanges.count == l.length && l.resolvedMacros.count == 0) {
-            [linesForPrinting removeLastObject];
+            [preprocessedLines removeLastObject];
             l.type = empty;
             precedingLine = l;
             continue;
@@ -106,12 +105,12 @@
         if (sceneNumber < 1) sceneNumber = 1;
     }
     
-    //
+    
     // The array for printable elements
-    NSMutableArray *preprocessedLines = NSMutableArray.new;
+    NSMutableArray *linesToPrint = NSMutableArray.new;
     Line *previousLine;
     
-    for (Line *line in linesForPrinting) {
+    for (Line *line in preprocessedLines) {
         // Fix a weird bug for first line
         if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
         
@@ -154,9 +153,9 @@
         // If this is a dual dialogue character cue, we'll need to search for the previous one
         // and make it aware of being a part of a dual dialogue block.
         if (line.type == dualDialogueCharacter) {
-            NSInteger i = preprocessedLines.count - 1;
+            NSInteger i = linesToPrint.count - 1;
             while (i >= 0) {
-                Line *precedingLine = [preprocessedLines objectAtIndex:i];
+                Line *precedingLine = linesToPrint[i];
                                 
                 if (precedingLine.type == character) {
                     precedingLine.nextElementIsDualDialogue = YES;
@@ -170,12 +169,12 @@
             }
         }
         
-        [preprocessedLines addObject:line];
+        [linesToPrint addObject:line];
         
         previousLine = line;
     }
     
-    return preprocessedLines;
+    return linesToPrint;
 }
 
 

@@ -49,6 +49,17 @@ struct ConditionalRenderStyle {
     }
 }
 
+enum PaginationRuleType {
+    case none
+    case skip
+}
+
+struct PaginationRule {
+    var precededBy:LineType
+    var followedBy:LineType
+    var rule:PaginationRuleType
+}
+
 @objc public class RenderStyle:NSObject {
     // Map property names to types
     public class var types:[String:RenderStyleValueType] { return [
@@ -68,7 +79,8 @@ struct ConditionalRenderStyle {
         "disabled-types": .lineType,
         "trim": .boolType,
         "visible": .boolType,
-        "additional-settings": .stringType
+        "additional-settings": .stringType,
+        "skip-if-preceded-by": .lineType
     ] }
 
     @objc public var name:String = ""
@@ -142,6 +154,9 @@ struct ConditionalRenderStyle {
     
     /// A dictionary of sub-rules
     var conditionalRules:[String:[String:Any]] = [:]
+    
+    /// Pagination rules
+    var paginationRules:[PaginationRule] = []
     
     @objc public var visibleElements:[AnyObject] = [] {
         /// Int arrays are not supported in ObjC, so we'll use a shadow array here to provide actual values for Swift
@@ -218,6 +233,9 @@ struct ConditionalRenderStyle {
                 }
                 
                 continue
+            } else if key == "_paginationRules" {
+                self.paginationRules = rules[key] as? [PaginationRule] ?? []
+                continue
             }
                         
             // Check that the property exists to avoid any unnecessary crashes
@@ -226,6 +244,10 @@ struct ConditionalRenderStyle {
             } else {
                 print("Warning: Unrecognized BeatCSS key: ", property)
             }
+        }
+        
+        if self.paginationRules.count > 0 {
+            print("-> paginatino rules", self.paginationRules)
         }
     }
     
@@ -289,6 +311,8 @@ struct ConditionalRenderStyle {
             return "disabledTypes"
         case "additional-settings":
             return "additionalSettings"
+        case "skip-if-preceded-by":
+            return "skipIfPrecededBy"
         default:
             return name
         }

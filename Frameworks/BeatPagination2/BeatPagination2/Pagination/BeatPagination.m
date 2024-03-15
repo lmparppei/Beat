@@ -370,22 +370,46 @@
 	return true;
 }
 
+- (NSArray<Line*>*)applyPaginationRulesToBlock:(NSArray<Line*>*)block previous:(Line*)prevLine
+{
+    Line* previousLine = prevLine;
+    NSMutableArray<Line*>* processedBlock = [NSMutableArray arrayWithCapacity:block.count];
+    
+    for (Line* line in block) {
+        if ([self.styles shouldInclude:line.type after:previousLine.type]) {
+            [processedBlock addObject:line];
+            previousLine = line;
+        }
+    }
+    
+    return processedBlock;
+}
+
 /// Creates blocks out of arrays of `Line` objects and adds them onto pages. Also handles breaking the blocks across pages, and adds the overflowing lines to queue.
 - (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks
 {
 	// Do nothing. This can happen with live pagination.
 	if (blocks.count == 0) return;
-
-	// Array for possible blocks
-	NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
-		
+    
+    // Array for possible blocks
+    NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
+    
+    NSArray<Line*>* previousBlock;
+    
 	for (NSArray<Line*>* block in blocks) {
 		if (block.count == 0) continue;
-		
-		BeatPaginationBlock *pageBlock = [BeatPaginationBlock withLines:block delegate:self];
-		[pageBlocks addObject:pageBlock];
-		
-		[_lineQueue removeObjectsInRange:NSMakeRange(0, block.count)];
+        
+        // if we have pagination rules, let's apply them here
+        NSArray<Line*>* aBlock = (self.styles.hasPaginationRules) ? [self applyPaginationRulesToBlock:block previous:previousBlock.lastObject] : block;
+        
+        // create a block for pagination
+        if (aBlock.count > 0) {
+            BeatPaginationBlock *pageBlock = [BeatPaginationBlock withLines:aBlock delegate:self];
+            [pageBlocks addObject:pageBlock];
+            previousBlock = block;
+        }
+        
+        [_lineQueue removeObjectsInRange:NSMakeRange(0, block.count)];
 	}
 	
 	if (pageBlocks.count == 0) return;
@@ -458,12 +482,13 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	NSInteger i = idx + 1;
 	Line* nextLine = self.lineQueue[i];
 	
-	// If next line is a heading or a line break, this block ends here
-	if (nextLine.type == heading || nextLine.type == pageBreak) {
+	// If next line is a heading or a line break AND we didn't just begin a higher-level block, this one ends here
+	if ((nextLine.type == heading || nextLine.type == pageBreak) && line.type != section) {
 		return @[block];
 	}
 	
-	// Headings, shots and sections swallow up the whole next block
+	// Headings, shots and sections swallow up the whole next block.
+    // Note that this COULD lead to a silly recursive loop, but let's hope it doesn't.
 	if (line.type == heading || line.type == shot || line.type == section) {
 		NSArray* followingBlocks = [self blocksForLineAt:i];
 		NSMutableArray *blocks = [NSMutableArray arrayWithObject:block];

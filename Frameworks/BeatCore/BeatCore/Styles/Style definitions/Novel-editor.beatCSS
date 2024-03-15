@@ -39,6 +39,7 @@ page {
 
 heading {
     text-align: center;
+    scene-number: false;
 }
 
 section {

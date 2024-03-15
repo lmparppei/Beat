@@ -71,7 +71,7 @@ public final class CssParser {
 				
                 // Clean up key. If it's a conditional, don't remove unnecessary spaces.
                 var key = propertyLine.removeTrailing(startWith: ":").trimmingCharacters(in: .whitespaces)
-                if !key.hasPrefix("if") {
+                if !key.hasPrefix("if"), !key.hasPrefix("skip") {
                     // Remove unnecessary spaces if it's not a conditional
                     key = key.replacingOccurrences(strings: [" "])
                 }
@@ -127,6 +127,19 @@ public final class CssParser {
                         let conditionalStyle = parseConditional(ruleKey, value) {
                         conditionalRules.append(conditionalStyle)
                         rules["_conditionals"] = conditionalRules
+                    }
+                    continue
+                } else if ruleKey.hasPrefix("skip ") {
+                    if rules["_paginationRules"] == nil {
+                        // Create key when needed
+                        rules["_paginationRules"] = [PaginationRule]()
+                    }
+                    
+                    // Parse pagination rule and add it to existing rules
+                    if var paginationRules = rules["_paginationRules"] as? [PaginationRule],
+                       let rule = parsePaginationRule(ruleKey) {
+                        paginationRules.append(rule)
+                        rules["_paginationRules"] = paginationRules
                     }
                     continue
                 }
@@ -280,5 +293,29 @@ public final class CssParser {
         
         let actualValue = readStyleValue(value: value, key: key)
         return ConditionalRenderStyle(property: p, comparison: o, value: v, ruleName: ruleName, ruleValue:actualValue)
+    }
+    
+    /// A highly experimental way to add pagination rules to styles. Not used for now.
+    func parsePaginationRule(_ key:String) -> PaginationRule? {
+        let components = key.components(separatedBy: " ")
+        guard components.count == 4 else { return PaginationRule(precededBy: .empty, followedBy: .empty, rule: .none) }
+        
+        var rule:PaginationRuleType
+        //if components[0] == "skip" { rule = .skip } ...
+        rule = .skip
+        
+        let precededBy:LineType
+        let followedBy:LineType
+        
+        // operator is either "after" or "before"
+        if components[2] == "after" {
+            precededBy = Line.type(fromName: components[3])
+            followedBy = Line.type(fromName: components[1])
+        } else {
+            precededBy = Line.type(fromName: components[1])
+            followedBy = Line.type(fromName: components[3])
+        }
+
+        return PaginationRule(precededBy: precededBy, followedBy: followedBy, rule: rule)
     }
 }

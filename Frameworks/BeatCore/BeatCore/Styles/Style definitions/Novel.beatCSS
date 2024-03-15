@@ -12,6 +12,10 @@
 
 */
 
+pagination {
+    skip heading after section;
+}
+
 document {
     visible-elements: [section];
     disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];

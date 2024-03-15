@@ -451,7 +451,7 @@
     #endif
         
     // Scene number drawing is off, return
-    if (!self.editorDelegate.showSceneNumberLabels) return;
+    if (!self.editorDelegate.showSceneNumberLabels || !self.editorDelegate.editorStyles.heading.sceneNumber) return;
     // Don't draw scene numbers when the container is too small. This mostly affects iPhones.
     else if (inset.width + X_OFFSET + line.sceneNumber.length * 7.5 > inset.width + self.textContainers.firstObject.lineFragmentPadding) return;
     
