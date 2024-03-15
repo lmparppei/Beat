@@ -104,7 +104,7 @@ Most plugin API methods are documented in the GitHub repository Wiki.
 
 ## Fountain
 
-Beat document conforms to the Fountain markup specification: http://fountain.io/
+Beat document conforms to the Fountain markup specification: https://fountain.io/
 
 The files are saved using `.fountain` extension to maintain compatibility with other Fountain editors, such as Slugline, Logline and Highland. Everything should be readable in any other app, save for ranges marked for removal. They appear as plain text. Beat-specific stuff, such as revisions and tagging, are also unavailable in other apps. 
 

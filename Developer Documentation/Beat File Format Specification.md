@@ -2,7 +2,7 @@
 
 ## Fountain
 
-Beat document (almost) fully conforms to the Fountain markup specification: http://fountain.io/
+Beat document (almost) fully conforms to the Fountain markup specification: https://fountain.io/
 The only thing missing are notes spanning over multiple lines. That is being worked on.
 
 The files are saved using `.fountain` extension to maintain compatibility with other Fountain editors, such as Slugline, Logline and Highland. Basically everything should be readable in any other app, save for ranges marked for removal. They appear as plain text. 

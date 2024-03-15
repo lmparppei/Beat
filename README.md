@@ -17,29 +17,26 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Writer/) by Hendrik Noeller and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.99.x
+## Latest release: Beat 1.999.x
 
-**Features**
+**Selected Features**
 * Minimalistic UI with as little distractions as possible
 * Smart, automatic screenplay formatting
+* Multiple story structure views with filtering, sections and synopses, including a collapsing list, index cards and timeline
 * Dark mode for the children of the night
-* Fountain syntax fully supported
 * Hide Fountain markup
-* Final Draft import / export, supporting revisions and outline items 
+* Final Draft import / export, including revisions, outline items and soon tags 
 * Title page editor
-* JavaScript plugin API
-* Automatic page and scene numbering in edit view
+* JavaScript [plugin API](https://github.com/lmparppei/BeatPlugins)
+* Automatic scene numbering
+* Page numbers and separators
 * Revision generation management
-* Outline list view, with sections and synopses, scene reordering and filtering
-* Outline card view, with sections & synopses
-* Timeline view with sections & synopses
 * Autocompletion for characters and scene headings
 * Color-coded scenes
-* Analysis view, with line count per character, inclusivity by gender, scene locations, etc.
-* Fountain Quicklook in Finder
-* Autosave & script backups in case of crashes 
-* Automatic paragraphs & tab key for auto character cue
-* Productivity timer
+* Statistics view, with line count per character, inclusivity by gender, scene locations, etc.
+* Fountain QuickLook plugin for Finder
+* Backup vault  
+* ... and much more!
 
 
 ## Building from repo
@@ -85,7 +82,7 @@ Beat will stay free and open source forever. I came to filmmaking from a DIY & u
 
 If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
 
-The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
+The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and myself. All apologies.
 
 Lauri-Matti Parppei    
-www.parppei.com  
+[www.parppei.com](https://www.parppei.com)  
