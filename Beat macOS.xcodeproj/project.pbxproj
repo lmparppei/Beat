@@ -177,9 +177,6 @@
 		B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA82AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
-		B67E7BD02AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
-		B67E7BD12AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
-		B67E7BD22AEF12CF00977F7D /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B67E7BCF2AEF12CE00977F7D /* Credits.pdf */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B67F75702B1735400028D009 /* BeatQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B6B85FB92A224E3000C7713A /* BeatQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B67F75742B1735540028D009 /* BeatQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B6B85FB92A224E3000C7713A /* BeatQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -316,6 +313,8 @@
 		B6AA48062B01421A0047EB65 /* BeatTimerWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */; };
 		B6AA48482B0657DF0047EB65 /* cards.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48472B0657DF0047EB65 /* cards.jpg */; };
 		B6AA48492B0657DF0047EB65 /* cards.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6AA48472B0657DF0047EB65 /* cards.jpg */; };
+		B6AE236C2BA235300020FBCE /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B6AE236B2BA235300020FBCE /* Credits.pdf */; };
+		B6AE236D2BA235300020FBCE /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B6AE236B2BA235300020FBCE /* Credits.pdf */; };
 		B6B6C87625650BA4005294FE /* HighlandImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B6C87525650BA4005294FE /* HighlandImport.m */; };
 		B6B80BE02726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
 		B6B80BE12726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
@@ -715,7 +714,6 @@
 		B67C73CD2B37227C002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
 		B67C73CE2B3774FB002BD12F /* BeatSceneSnapshotCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSceneSnapshotCell.swift; sourceTree = "<group>"; };
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
-		B67E7BCF2AEF12CE00977F7D /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
 		B67F75A02B1F310D0028D009 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatTimerWindow.xib; sourceTree = "<group>"; };
 		B67F75A22B1F31130028D009 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatTimerWindow.strings; sourceTree = "<group>"; };
@@ -782,6 +780,7 @@
 		B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAntilateralThoughts.m; path = Beat/Extras/BeatAntilateralThoughts.m; sourceTree = SOURCE_ROOT; };
 		B6AA48042B01421A0047EB65 /* BeatTimerWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTimerWindow.swift; sourceTree = "<group>"; };
 		B6AA48472B0657DF0047EB65 /* cards.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cards.jpg; sourceTree = "<group>"; };
+		B6AE236B2BA235300020FBCE /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
 		B6B37F6628F0585C00657F5F /* BeatFontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontManager.swift; sourceTree = "<group>"; };
 		B6B462E82708A4860056EEF1 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = System/Library/Frameworks/PreferencePanes.framework; sourceTree = SDKROOT; };
 		B6B6C87425650BA4005294FE /* HighlandImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HighlandImport.h; sourceTree = "<group>"; };
@@ -1023,7 +1022,7 @@
 		B138B57619E1C973000489C4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B67E7BCF2AEF12CE00977F7D /* Credits.pdf */,
+				B6AE236B2BA235300020FBCE /* Credits.pdf */,
 				B6D2B72B2218B51D005B8447 /* Credits.rtf */,
 				B6F632FA28416FB600494BD7 /* Icon-MacOS-256x256@1x.png */,
 				B623BD472549AFDA00201BC9 /* B_256_logo.png */,
@@ -2019,7 +2018,6 @@
 				B65BBF78280C3FD500FCA23E /* BeatAboutScreen.xib in Resources */,
 				B6AA48482B0657DF0047EB65 /* cards.jpg in Resources */,
 				B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
-				B67E7BD02AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B606FDC22817F09C00D89CD6 /* BeatPrintDialog.xib in Resources */,
 				B6763E5A2782295E00284907 /* Localizable.strings in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
@@ -2044,6 +2042,7 @@
 				B6F31176274BF70400D0840D /* BeatPluginLibrary.xib in Resources */,
 				B6F632FB28416FB600494BD7 /* Icon-MacOS-256x256@1x.png in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B6AE236C2BA235300020FBCE /* Credits.pdf in Resources */,
 				B6C70251295DFF5C00920D82 /* Courier Prime Bold Italic.ttf in Resources */,
 				B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B6C7024D295DFF5C00920D82 /* Courier Prime Bold.ttf in Resources */,
@@ -2064,6 +2063,7 @@
 				B68B608D260B849300463AD8 /* InfoPlist.strings in Resources */,
 				B619C5072B70404B0000C840 /* BeatFindPanel.xib in Resources */,
 				B6E38948270DDE120067DD0C /* printview.png in Resources */,
+				B6AE236D2BA235300020FBCE /* Credits.pdf in Resources */,
 				B6763E562782295700284907 /* MainMenu.xib in Resources */,
 				B6763E582782295A00284907 /* Document.xib in Resources */,
 				B68691A227845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */,
@@ -2085,7 +2085,6 @@
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B67C2CEA2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */,
 				B6AA48492B0657DF0047EB65 /* cards.jpg in Resources */,
-				B67E7BD12AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B688F2CA274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B63525162A48C53700510B95 /* BeatOutlineSettings.xib in Resources */,
 				B6C70250295DFF5C00920D82 /* Courier Prime Italic.ttf in Resources */,
@@ -2132,7 +2131,6 @@
 				B6C629B62A249D98003FB7FD /* Courier Prime Sans Italic.ttf in Resources */,
 				B6C629B22A249D98003FB7FD /* Courier Prime Sans.ttf in Resources */,
 				B6C629B12A249D98003FB7FD /* Courier Prime Bold.ttf in Resources */,
-				B67E7BD22AEF12CF00977F7D /* Credits.pdf in Resources */,
 				B6C629B72A249D98003FB7FD /* Courier Prime Sans Bold.ttf in Resources */,
 				B6C629B52A249D98003FB7FD /* Courier Prime.ttf in Resources */,
 				B6C629B42A249D98003FB7FD /* Courier Prime Italic.ttf in Resources */,

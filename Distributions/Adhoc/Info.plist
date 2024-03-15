@@ -119,7 +119,7 @@
 			<key>UTTypeIdentifier</key>
 			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeReferenceURL</key>
-			<string>http://fountain.io</string>
+			<string>https://fountain.io</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
