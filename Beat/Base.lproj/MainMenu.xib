@@ -1210,7 +1210,7 @@ DQ
                             <menuItem title="Discord Community" id="u5m-eu-948" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://discord.gg/FPHjfH7ms3"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://discord.gg/FPHjfH7ms3"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="Ayq-hy-XVQ"/>
@@ -1238,7 +1238,7 @@ DQ
                             <menuItem title="Fountain Website (Online)" id="oSB-uU-Wcb" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.fountain.io/"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.fountain.io/"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="dgC-z2-ebf"/>
