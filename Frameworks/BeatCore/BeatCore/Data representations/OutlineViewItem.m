@@ -10,7 +10,6 @@
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-#import "OutlineViewItem.h"
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
 

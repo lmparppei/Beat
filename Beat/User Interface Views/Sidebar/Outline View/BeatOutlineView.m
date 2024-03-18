@@ -12,10 +12,10 @@
 #import <BeatCore/BeatMeasure.h>
 #import <BeatCore/BeatAutocomplete.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
+#import <BeatCore/OutlineViewItem.h>
 
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
-#import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
 #import "Beat-Swift.h"
 
