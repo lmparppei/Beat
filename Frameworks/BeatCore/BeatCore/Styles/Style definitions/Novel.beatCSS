@@ -21,6 +21,15 @@ document {
     disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
 }
 
+titlePage {
+    margin-top: 40;
+    margin-bottom: 65;
+    margin-left: 40;
+    margin-right: 40;
+    
+    line-height: 12;
+}
+
 page {
     margin-left: 30;
     margin-right: 30;
@@ -43,6 +52,8 @@ page {
     
     first-page-with-number: 1;
 }
+
+
 
 heading {
     margin-top: 1l;

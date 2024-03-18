@@ -10,15 +10,17 @@ import BeatParsing
 import OSLog
 
 @objc public class BeatStylesheet:NSObject, BeatExportStyleProvider {
+    public var name = ""
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
     public var settings:BeatExportSettings?
     
     var stylesheet:String?
     
-    public init(url:URL, settings:BeatExportSettings? = nil) {
+    public init(url:URL, name:String, settings:BeatExportSettings? = nil) {
         self.settings = settings
-                
+        self.name = name
+
         super.init()
         
         do {

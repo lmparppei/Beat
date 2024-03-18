@@ -67,7 +67,7 @@ public class BeatStyles:NSObject {
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay.beatCSS, otherwise the app will crash.
         let url = stylesheets[name] ?? stylesheets[BeatStyles.defaultStyleName]!
-        let stylesheet = BeatStylesheet(url: url)
+        let stylesheet = BeatStylesheet(url: url, name: name)
         _loadedStyles[name] = stylesheet
         
         return stylesheet
@@ -89,7 +89,7 @@ public class BeatStyles:NSObject {
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
         let url = stylesheets[name] ?? stylesheets[defaultStyle]!
-        let stylesheet = BeatStylesheet(url: url)
+        let stylesheet = BeatStylesheet(url: url, name: styleName)
         _loadedStyles[name] = stylesheet
         
         return stylesheet

@@ -279,7 +279,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// - note We're using `NSMutableAttributedString` in place of text storage to support ahead-of-time rendering.
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 { @autoreleasepool {
-    NSLog(@" -> %@", line);
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor

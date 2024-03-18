@@ -44,6 +44,8 @@
 		B6743BFB2B31A6850081041C /* New Document.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6743BF62B319ECE0081041C /* New Document.fountain */; };
 		B676DD262BA8772000F7DBDA /* Novel Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */; };
 		B676DD282BA87AB100F7DBDA /* Novel.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B676DD272BA879AD00F7DBDA /* Novel.fountain */; };
+		B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B676DD2A2BA8AC7600F7DBDA /* OutlineViewItem.m */; };
+		B676DD2D2BA8AC7700F7DBDA /* OutlineViewItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
 		B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -152,6 +154,8 @@
 		B6743BF92B31A6100081041C /* Tutorial iOS.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Tutorial iOS.fountain"; sourceTree = "<group>"; };
 		B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Novel Tutorial.fountain"; sourceTree = "<group>"; };
 		B676DD272BA879AD00F7DBDA /* Novel.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = Novel.fountain; sourceTree = "<group>"; };
+		B676DD2A2BA8AC7600F7DBDA /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
+		B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B67C2CF12A2D1AD000B88B0F /* BeatFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFont.h; sourceTree = "<group>"; };
@@ -279,6 +283,7 @@
 				B633C1C2298C5FA50011449D /* BeatColors */,
 				B6D32029298EBEDA003DA45D /* Extensions */,
 				B682C2622B30FB4A0027511A /* Templates */,
+				B676DD292BA8AC5C00F7DBDA /* Data representations */,
 				B681D58F29A37DBD00DF16CA /* BeatDocument.h */,
 				B681D59029A37DBD00DF16CA /* BeatDocument.m */,
 				B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */,
@@ -344,6 +349,15 @@
 				B67C73D12B383831002BD12F /* BeatCharacterData.swift */,
 			);
 			path = "Screenplay data";
+			sourceTree = "<group>";
+		};
+		B676DD292BA8AC5C00F7DBDA /* Data representations */ = {
+			isa = PBXGroup;
+			children = (
+				B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */,
+				B676DD2A2BA8AC7600F7DBDA /* OutlineViewItem.m */,
+			);
+			path = "Data representations";
 			sourceTree = "<group>";
 		};
 		B679B6F429DFEB28005FFC40 /* Translations */ = {
@@ -523,6 +537,7 @@
 				B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */,
 				B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */,
 				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
+				B676DD2D2BA8AC7700F7DBDA /* OutlineViewItem.h in Headers */,
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
 				B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */,
 				B663B3BA2AFA69CE007217E3 /* BeatDocumentBaseController.h in Headers */,
@@ -650,6 +665,7 @@
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */,
 				B6D15A322AF96C0A00DAB66D /* BeatEditorFormatting.m in Sources */,
+				B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
 				B63AB3BE2A56B33200B28BC0 /* BeatReviewEditor.swift in Sources */,
 				B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */,
