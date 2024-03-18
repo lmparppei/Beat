@@ -37,3 +37,8 @@ class BeatAdaptiveCellView:UITableViewCell {
 		if hiddenOnPad && device == .pad { self.isHidden = true }
 	}
 }
+
+class BeatStylesheetAdaptiveCellView:UITableViewCell {
+	@IBInspectable var stylesheet:String = ""
+}
+

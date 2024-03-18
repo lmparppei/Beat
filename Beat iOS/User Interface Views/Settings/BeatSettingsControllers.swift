@@ -131,10 +131,18 @@ class BeatSettingsViewController:UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 		// Hide certain cells
-		if let cell = self.tableView(tableView, cellForRowAt: indexPath) as? BeatAdaptiveCellView {
+		let cell = self.tableView(tableView, cellForRowAt: indexPath)
+		
+		if let cell = cell as? BeatAdaptiveCellView {
+			// Adapt to device
 			if cell.hiddenOnMobile && UIDevice.current.userInterfaceIdiom == .phone { return 0.0 }
-			if cell.hiddenOnPad && UIDevice.current.userInterfaceIdiom == .pad { return 0.0 }
+			else if cell.hiddenOnPad && UIDevice.current.userInterfaceIdiom == .pad { return 0.0 }
+		} else if let cell = cell as? BeatStylesheetAdaptiveCellView {
+			// Adapt to stylesheet
+			if cell.stylesheet != delegate?.styles.name ?? "" { return 0.0 }
 		}
+		
+		
 		return super.tableView(tableView, heightForRowAt: indexPath)
 	}
 	
