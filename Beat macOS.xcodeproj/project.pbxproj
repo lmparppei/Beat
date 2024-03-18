@@ -76,8 +76,6 @@
 		B61765632BA5A1A700F18417 /* SceneFiltering.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765612BA5A1A700F18417 /* SceneFiltering.m */; };
 		B61765662BA5A1B100F18417 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765642BA5A1B100F18417 /* BeatOutlineView.m */; };
 		B61765672BA5A1B100F18417 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765642BA5A1B100F18417 /* BeatOutlineView.m */; };
-		B617656A2BA5A1BC00F18417 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765682BA5A1BC00F18417 /* OutlineViewItem.m */; };
-		B617656B2BA5A1BC00F18417 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765682BA5A1BC00F18417 /* OutlineViewItem.m */; };
 		B617656E2BA5A1C600F18417 /* BeatOutlineSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B617656C2BA5A1C500F18417 /* BeatOutlineSettings.xib */; };
 		B617656F2BA5A1C600F18417 /* BeatOutlineSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B617656C2BA5A1C500F18417 /* BeatOutlineSettings.xib */; };
 		B61765702BA5A1C600F18417 /* BeatOutlineSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B617656D2BA5A1C600F18417 /* BeatOutlineSettings.swift */; };
@@ -593,8 +591,6 @@
 		B61765612BA5A1A700F18417 /* SceneFiltering.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = "Sidebar/Outline View/SceneFiltering.m"; sourceTree = "<group>"; };
 		B61765642BA5A1B100F18417 /* BeatOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = "Sidebar/Outline View/BeatOutlineView.m"; sourceTree = "<group>"; };
 		B61765652BA5A1B100F18417 /* BeatOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = "Sidebar/Outline View/BeatOutlineView.h"; sourceTree = "<group>"; };
-		B61765682BA5A1BC00F18417 /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Sidebar/Outline View/OutlineViewItem.m"; sourceTree = "<group>"; };
-		B61765692BA5A1BC00F18417 /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Sidebar/Outline View/OutlineViewItem.h"; sourceTree = "<group>"; };
 		B617656C2BA5A1C500F18417 /* BeatOutlineSettings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = BeatOutlineSettings.xib; path = "Sidebar/Outline View/BeatOutlineSettings.xib"; sourceTree = "<group>"; };
 		B617656D2BA5A1C600F18417 /* BeatOutlineSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatOutlineSettings.swift; path = "Sidebar/Outline View/BeatOutlineSettings.swift"; sourceTree = "<group>"; };
 		B61765722BA5A1D200F18417 /* BeatSceneSnapshotCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatSceneSnapshotCell.swift; path = "Sidebar/Outline View/BeatSceneSnapshotCell.swift"; sourceTree = "<group>"; };
@@ -1134,8 +1130,6 @@
 				B61765612BA5A1A700F18417 /* SceneFiltering.m */,
 				B61765652BA5A1B100F18417 /* BeatOutlineView.h */,
 				B61765642BA5A1B100F18417 /* BeatOutlineView.m */,
-				B61765692BA5A1BC00F18417 /* OutlineViewItem.h */,
-				B61765682BA5A1BC00F18417 /* OutlineViewItem.m */,
 				B617656D2BA5A1C600F18417 /* BeatOutlineSettings.swift */,
 				B617656C2BA5A1C500F18417 /* BeatOutlineSettings.xib */,
 				B61765722BA5A1D200F18417 /* BeatSceneSnapshotCell.swift */,
@@ -2256,7 +2250,6 @@
 				B6E66791292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */,
 				B6E0E0FE2AC5BAEF00948752 /* BeatPreviewSettings.swift in Sources */,
 				B6F547432B9B212400379064 /* BeatTextView+Popovers.m in Sources */,
-				B617656A2BA5A1BC00F18417 /* OutlineViewItem.m in Sources */,
 				B682FED82B615A5F00D8C50A /* BeatFileExportManager.swift in Sources */,
 				B6C35D5D2934BF9400FF2630 /* BeatWebResources.swift in Sources */,
 				B616518D29FC491C00D20882 /* MarginView.m in Sources */,
@@ -2394,7 +2387,6 @@
 				B6E66792292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */,
 				B6E0E0FF2AC5BAEF00948752 /* BeatPreviewSettings.swift in Sources */,
 				B6F547442B9B212400379064 /* BeatTextView+Popovers.m in Sources */,
-				B617656B2BA5A1BC00F18417 /* OutlineViewItem.m in Sources */,
 				B682FED92B615A5F00D8C50A /* BeatFileExportManager.swift in Sources */,
 				B6C35D5E2934BF9400FF2630 /* BeatWebResources.swift in Sources */,
 				B616518E29FC491C00D20882 /* MarginView.m in Sources */,
@@ -2890,7 +2882,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133323;
+				CURRENT_PROJECT_VERSION = 133324;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2934,7 +2926,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133323;
+				CURRENT_PROJECT_VERSION = 133324;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;

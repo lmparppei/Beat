@@ -14,10 +14,7 @@
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 
-#import "OutlineViewItem.h"
 #import "BeatDocumentViewController.h"
-
 #import "BeatPrintView.h"
-// #import "TemplateCollectionViewController.h"
 
 #endif /* Beat_iOS_Bridging_Header_h */
