@@ -157,6 +157,12 @@
 "templates.threeActOutline.title" = "Kolminäytöksinen pohja";
 "templates.threeActOutline.description" = "Klassinen elokuvan rakenteen mallipohja";
 
+"templates.novel-tutorial.title" = "Romaanitutoriaali";
+"templates.novel-tutorial.description" = "Pikaopas romaanien kirjoittamiseen Beatilla";
+
+"templates.novel.title" = "Romaani";
+"templates.novel.description" = "Yksinkertainen romaanin mallipohja";
+
 "templates.showTutorialsAndTemplates" = "Näytä tutoriaalit ja mallit...";
 
 "revisions.downgrade.title" = "Alenna korjausten tasoa";

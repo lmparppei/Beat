@@ -106,8 +106,14 @@
     else return 1;
 }
 
-/// Gets and resets the changes to outline
-- (OutlineChanges*)changesInOutline
+/// Call this after text was changed. This in turn calls `outlineDidChange` in your document controller when needed.
+- (void)checkForChangesInOutline
+{
+    [self getAndResetChangesInOutline];
+}
+
+/// Gets and resets the changes to outline. Document controller base class provides a method called `outlineDidChange` to handle these.
+- (OutlineChanges*)getAndResetChangesInOutline
 {
     // Refresh the changed outline elements
     for (OutlineScene* scene in self.outlineChanges.updated) {
@@ -375,6 +381,11 @@
     
     // Do the actual scene number update.
     [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
+    
+    if (self.outlineChanges.hasChanges) {
+        [self.delegate outlineDidUpdateWithChanges:self.outlineChanges];
+    }
+    self.outlineChanges = nil;
 }
 
 /// NOTE: This method is used by line preprocessing to avoid recreating the outline. It has some overlapping functionality with `updateOutlineHierarchy` and `updateSceneNumbers:forcedNumbers:`.

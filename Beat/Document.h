@@ -49,54 +49,67 @@ THE SOFTWARE.
 @class BeatTextIO;
 
 
-@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
+@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
-@property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
-@property (nonatomic, readonly) NSString* _Nullable preprocessedText;
+
+#pragma mark - Editor flags
+
+/// Current editor magnification. This value is forwarded from text view.
 @property (nonatomic) CGFloat magnification;
+
+/// Current editor view. This is __not__ a sidebar tab, but the underlying tab view in full document view. Editor, preview and index cards are different tabs.
+@property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
-
 @property (nonatomic) bool revisionMode;
-
 @property (nonatomic) bool contentLocked;
 
-- (void)reloadOutline;
+/// Current editor mode flag. Changing this should change the editor behavior as well.
+@property (nonatomic) BeatEditorMode mode;
 
-@property (nonatomic) NSMutableIndexSet*  _Nullable changes;
-
-// Plugin support
-@property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
-
-// Versioning
+/// For versioning support. This is probably not used right now.
 @property (nonatomic) NSURL* _Nullable revertedTo;
 
-// Tab
-@property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 
-- (IBAction)togglePrintSceneNumbers:(id _Nullable)sender;
+#pragma mark - Applying settings
+
 - (void)readUserSettings;
 - (void)applyUserSettings;
 
-// Analysis
+
+#pragma mark - Outline data
+
+@property (nonatomic) NSMutableIndexSet*  _Nullable changes;
+@property (nonatomic, readwrite) bool outlineEdit;
+@property (nonatomic) bool moving;
+- (void)reloadOutline;
+
+
+#pragma mark - Plugin support
+
+@property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
+/// Returns gender JSON from document settings.
 @property (nonatomic) NSDictionary<NSString*, NSString*>* _Nullable characterGenders;
 
-// Set document colors
+
+#pragma mark - UI appearance
+
+/// Updates the UI to current scene
 - (void)updateTheme;
+/// Because we are supporting forced light/dark mode even on pre-10.14 systems, you can reliably check the appearance with this method.
 - (bool)isDark;
+/// Redraws all UI elements to reliably update theme or appearance
 - (void)updateUIColors;
 
-// Mode
-@property (nonatomic) BeatEditorMode mode;
-
-@property (nonatomic, readwrite) bool outlineEdit;
-- (NSMutableArray* _Nullable)filteredOutline;
-
-@property (nonatomic) bool moving;
 
 
-// Scrolling
+#pragma mark - Window controls
+
+@property (nonatomic, weak) NSWindow* _Nullable currentKeyWindow;
+
+
+#pragma mark - Scrolling methods (move these elsewhere)
 
 /// Scroll to given scene number (number is `NSString`)
 - (void)scrollToSceneNumber:(NSString* __nullable)sceneNumber;

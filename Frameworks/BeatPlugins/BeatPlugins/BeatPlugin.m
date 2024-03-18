@@ -154,7 +154,7 @@
 #pragma mark - Helpers
 
 - (void)setupErrorHandler {
-	__weak typeof(id<BeatEditorDelegate>) weakDoc = self.delegate.document;
+	__weak typeof(id<BeatEditorDelegate>) weakDoc = self.delegate;
 	__weak typeof(self) weakSelf = self;
 	
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
@@ -860,11 +860,11 @@
 	
 	#if !TARGET_OS_IOS
 		BeatConsole *console = BeatConsole.shared;
-		if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate.document];
+		if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate];
 		else {
 			// Allow logging in background thread
 			dispatch_async(dispatch_get_main_queue(), ^(void){
-				[console logToConsole:string pluginName:self.pluginName context:self.delegate.document];
+				[console logToConsole:string pluginName:self.pluginName context:self.delegate];
 			});
 		}
 	#else
@@ -1478,7 +1478,7 @@
 
 - (id)paginator:(NSArray*)lines
 {
-	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
+	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate];
 }
 
 
@@ -1486,7 +1486,7 @@
 
 - (BeatPaginationManager*)pagination
 {
-	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
+	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate];
 }
 
 - (BeatPaginationManager*)currentPagination
@@ -1667,7 +1667,7 @@
 /// Calls Objective C methods.
 /// @note Do **NOT** use this if you don't know what you are doing.
 - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments {
-	Class class = [self.delegate.document class];
+	Class class = [self.delegate class];
 	
 	SEL selector = NSSelectorFromString(methodName);
 	Method method = class_getClassMethod(class, selector);
@@ -1675,15 +1675,15 @@
 	char returnType[10];
 	method_getReturnType(method, returnType, 10);
 	
-	if (![self.delegate.document respondsToSelector:selector]) {
+	if (![self.delegate respondsToSelector:selector]) {
 		[self log:[NSString stringWithFormat:@"Unknown selector: %@", methodName]];
 		return nil;
 	}
 	
-	NSMethodSignature* signature = [self.delegate.document methodSignatureForSelector:selector];
+	NSMethodSignature* signature = [(id)self.delegate methodSignatureForSelector:selector];
 	
 	NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
-	invocation.target = self.delegate.document;
+	invocation.target = self.delegate;
 	invocation.selector = selector;
 	
 	@try {
@@ -1858,7 +1858,7 @@
 
 - (void)newDocument:(NSString*)string
 {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
     // This fixes a rare and weird NSResponder issue. Forward this call to the actual document, no questions asked.
     if (![string isKindOfClass:NSString.class]) [self.delegate.document newDocument:nil];
     

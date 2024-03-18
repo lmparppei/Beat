@@ -1,0 +1,36 @@
+Title:  Novel Tutorial
+Credit: by
+Author: (beat)
+Draft date: 2024/3/18
+Contact: beat@beat-app.fi
+
+#Novel Tutorial
+
+> For Beat <
+
+##How to Write a Novel in Beat
+
+This is a novel template for Beat. It works pretty much in the same way as screenplay mode: if it looks like a novel, it becomes novel.
+Consecutive paragraphs are indented, while paragraphs with one empty line between them begin a new block. By default, pressing return adds two line breaks. To add just one line break, press **shift-return**. You can make return add a single line break by toggling *Format → Automatic Paragraph Breaks* on/off.
+
+.Scene markers
+
+Take a look at the heading in *Preview Mode*. A scene (prefixed by a dot) adds # between paragraphs, but you can still see the scene heading text in the outline view. This can help structure your story.
+###Subheadings
+
+In novel mode, sections are visible elements, not just structure helpers. 
+Top-level section (#) is pretty big, and always begins a new page. You can use it to separate larger acts. Second-level sections (##) begin a new page, but are a tad smaller, formatted like your usual chapter headings in novels. Third-level sections (###) and below are subheadings, and won't create a new page. 
+
+##{{serial chapter}}. Advanced: Fun With Macros 
+
+If you want to add an automatically incremented chapter number, macros make it very easy. Use curly brackets, keyword *serial* and a single-word macro name, for example: {{serial macroName}}. Now, every time you mention *macroName* in curly brackets in your text, the number will be one higher. Look: {{macroName}}, {{macroName}}, {{macroName}}!
+Try it out yourself. You can see the result in preview mode. Beat manual (under *Help* menu) has a comprehensive tutorial about using macros.
+
+##{{chapter}}. That's All
+
+You might need an idea to write a novel, but everyone has at least one.
+A tried and tested way to write a novel is to come up with one-page synopsis, then start writing what your character does, then what they feel, followed by loose associations – repeated ad nauseam. 
+
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Stylesheet":"Novel"} END_BEAT */

@@ -194,6 +194,7 @@
 #pragma mark - Plugin access
 
 @property (nonatomic, readonly) NSMutableDictionary* runningPlugins;
+@property (nonatomic, readonly) NSMutableArray* registeredPluginContainers;
 @property (nonatomic) BeatPluginAgent* pluginAgent;
 
 #pragma mark - Fonts

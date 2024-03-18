@@ -158,6 +158,8 @@
 {
     [self.documentSettings setInt:DocSettingPageSize as:pageSize];
     if (!self.documentIsLoading) [self.formatting resetSizing];
+    
+    [self.previewController resetPreview];
 }
 
 
@@ -313,8 +315,11 @@
 - (void)applyFormatChanges
 {
     [self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= _parser.lines.count) { *stop = true; return; }
-        [_formatting formatLine:self.parser.lines[idx]];
+        if (idx >= _parser.lines.count) {
+            *stop = true;
+        } else {
+            [_formatting formatLine:self.parser.lines[idx]];
+        }
     }];
     
     [self.parser.changedIndices removeAllIndexes];
@@ -322,24 +327,13 @@
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices
 {
-    [indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        NSMutableString *str = [NSMutableString string];
-        
-        Line *line = self.parser.lines[idx];
-        
-        [line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-            [str appendString:[line.string substringWithRange:range]];
-        }];
-        
-        [_formatting formatLine:line];
-    }];
+    [self.formatting reformatLinesAtIndices:indices];
 }
 
 - (void)renderBackgroundForRange:(NSRange)range
 {
     NSArray *lines = [self.parser linesInRange:range];
     for (Line* line in lines) {
-        // Invalidate layout
         [self.formatting refreshRevisionTextColorsInRange:line.textRange];
         [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
     }
@@ -347,11 +341,10 @@
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear
 {
-    // Invalidate layout
     [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 }
 
-/// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
+/// Forces a type on a line and formats it accordingly. Can be abused to do strange and esoteric stuff.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type
 {
     line.type = type;
@@ -361,7 +354,6 @@
 - (void)renderBackgroundForLines
 {
     for (Line* line in self.lines) {
-        // Invalidate layout
         [self.formatting refreshRevisionTextColorsInRange:line.textRange];
         [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
     }
@@ -380,6 +372,27 @@
 {
     if (self.parser.outline == nil) return @[];
     else return self.parser.outline.copy;
+}
+
+
+#pragma mark - Outline update
+
+- (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes
+{
+    if (changes.hasChanges == false) return;
+    
+    // Redraw scene numbers
+    for (OutlineScene* scene in changes.updated) {
+        if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
+    }
+
+    // Update outline views
+    for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
+        [view reloadWithChanges:changes];
+    }
+    
+    // Update plugin agent
+    [(id<BeatPluginAgentInstance>)self.pluginAgent updatePluginsWithOutline:self.parser.outline changes:changes];
 }
 
 

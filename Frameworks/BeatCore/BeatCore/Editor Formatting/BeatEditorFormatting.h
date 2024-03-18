@@ -46,8 +46,9 @@ typedef enum {
 - (void)formatAllLinesOfType:(LineType)type;
 /// Reapplies all paragraph styles
 - (void)resetSizing;
+/// Reformats all lines in given index set
+- (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices;
 
-- (void)forceEmptyCharacterCue;
 - (void)refreshRevisionTextColors;
 - (void)refreshRevisionTextColorsInRange:(NSRange)range;
 

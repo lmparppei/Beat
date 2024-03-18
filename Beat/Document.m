@@ -78,8 +78,12 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
+#import "Beat-Swift.h"
 
 #import "Document.h"
+#import "Document+WindowManagement.h"
+#import "Document+SceneActions.h"
+
 #import "ScrollView.h"
 #import "FDXInterface.h"
 #import "ColorView.h"
@@ -103,7 +107,6 @@
 #import "BeatNotepad.h"
 #import "BeatCharacterList.h"
 #import "BeatPrintDialog.h"
-#import "Beat-Swift.h"
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
@@ -166,7 +169,7 @@
 @property (nonatomic) bool headingStyleUnderline;
 
 // Views
-@property (nonatomic) NSMutableSet<BeatPluginContainerView*>* registeredPluginContainers;
+@property (nonatomic) NSMutableArray<BeatPluginContainerView*>* registeredPluginContainers;
 
 // Sidebar & Outline view
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
@@ -232,7 +235,6 @@
 
 // Printing
 @property (nonatomic) bool printPreview;
-@property (nonatomic, readwrite) NSString *preprocessedText;
 
 // Some settings for edit view behaviour
 @property (nonatomic) bool matchParentheses;
@@ -318,38 +320,21 @@
 
 #pragma mark - Document Initialization
 
-/// **Warning**: This is used for returning the actual document through editor delegate. Handle with care.
--(Document*)document
-{
-	return self;
-}
+/// **Warning**: This is used for returning the actual document object through editor delegate. Handle with care. 
+-(Document*)document { return self; }
 
-- (instancetype)init
-{
-	self = [super init];
-	return self;
-}
 
+/// A paranoid method to actually null every-fucking-thing.
 - (void)close
 {
-	if (!self.hasUnautosavedChanges) {
-		[self.documentWindow saveFrameUsingName:self.fileNameString];
-	}
-	
+	// Save frame IF the document was saved
+	if (!self.hasUnautosavedChanges) [self.documentWindow saveFrameUsingName:self.fileNameString];
+
+	// Null page break map to avoid memory leaks of line data
 	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
 	
-	// Remove plugin containers (namely the index card view)
-	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
-		[container unload];
-	}
-	[self.registeredPluginContainers removeAllObjects];
-	
-	// Terminate running plugins
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin* plugin = self.runningPlugins[pluginName];
-		[plugin end];
-	}
-	[self.runningPlugins removeAllObjects];
+	// Unload all plugins
+	[self.pluginAgent unloadPlugins];
 		
 	// This stuff is here to fix some strange memory issues.
 	// Most of these might be unnecessary, but I'm unfamiliar with both ARC & manual memory management. Better safe than sorry.
@@ -357,17 +342,21 @@
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
 		
-	for (NSView* view in self.registeredViews) {
-		[view removeFromSuperview];
-	}
+	// Remove all registered views
+	for (NSView* view in self.registeredViews) [view removeFromSuperview];
 	[self.registeredViews removeAllObjects];
-	
 	[self.registeredSelectionObservers removeAllObjects];
 	
+	// Invalidate all view timers
 	[self.textScrollView.mouseMoveTimer invalidate];
 	[self.textScrollView.timerMouseMoveTimer invalidate];
 	self.textScrollView.mouseMoveTimer = nil;
 	self.textScrollView.timerMouseMoveTimer = nil;
+	
+	// Invalidate autosave timer
+	[self.autosaveTimer invalidate];
+	self.autosaveTimer = nil;
+
 	
 	// Null other stuff, just in case
 	self.formatting = nil;
@@ -387,11 +376,7 @@
 	self.review = nil;
 	
 	self.previewController = nil;
-	
-	// Terminate autosave timer
-	if (_autosaveTimer) [self.autosaveTimer invalidate];
-	self.autosaveTimer = nil;
-	
+		
 	// Kill observers
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
@@ -414,15 +399,11 @@
 	}
 }
 
-static BeatAppDelegate *appDelegate;
-
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController {
 	[super windowControllerWillLoadNib:windowController];
-	
-	//Put any previously loaded data into the text view
-	self.documentIsLoading = YES;
-	
+
 	// Initialize parser
+	self.documentIsLoading = YES;
 	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
 }
 
@@ -439,7 +420,7 @@ static BeatAppDelegate *appDelegate;
 	[super windowControllerDidLoadNib:aController];
 		
 	_documentWindow = aController.window;
-	_documentWindow.delegate = self;
+	_documentWindow.delegate = self; // The conformance is provided by Swift, don't worry
 	
 	// Setup plugins
 	self.runningPlugins = NSMutableDictionary.new;
@@ -498,15 +479,6 @@ static BeatAppDelegate *appDelegate;
 -(void)renderDocument {
 	// Initialize edit tracking
 	[self.revisionTracking setup];
-/*
-	NSMutableAttributedString* string = self.textView.attributedString.mutableCopy;
-	BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:string];
-	formatting.delegate = self;
-	for (Line* line in self.parser.lines) [formatting formatLine:line];
-	
-	[self.textView.textStorage setAttributedString:string];
-	[self loadingComplete];
-*/
 
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		if (self.parser.lines.count > 1000) {
@@ -630,18 +602,6 @@ static BeatAppDelegate *appDelegate;
 	return fileName;
 }
 
-
-#pragma mark - Editor styles
-
-- (BeatStylesheet *)editorStyles {
-	BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet]];
-	return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
-}
-- (BeatStylesheet *)styles {
-	BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.documentSettings getString:DocSettingStylesheet]];
-	return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
-}
-
 	
 #pragma mark - Misc document stuff
 
@@ -660,11 +620,8 @@ static BeatAppDelegate *appDelegate;
 - (void)readUserSettings
 {
 	[BeatUserDefaults.sharedDefaults readUserDefaultsFor:self];
-	
 	// Do some additional setup if needed
 	self.printSceneNumbers = self.showSceneNumberLabels;
-	
-	return;
 }
 
 - (void)applyUserSettings
@@ -865,13 +822,8 @@ static BeatAppDelegate *appDelegate;
 /// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
 - (void)updateEditorMode
 {
-	NSLog(@"Editor mode: %lu", _mode);
-	
 	if (_mode == TaggingMode) [self.tagging open];
 	else [self.tagging close];
-	
-	if (_mode == TaggingMode) NSLog(@"... tagging mode");
-	else if (_mode == EditMode) NSLog(@"... edit mode");
 	
 	_modeIndicator.hidden = (_mode == EditMode);
 	
@@ -889,108 +841,6 @@ static BeatAppDelegate *appDelegate;
 	[self updateLayout];
 }
 
-
-#pragma mark - Window management
-
-static NSWindow __weak *currentKeyWindow;
-
--(void)windowWillBeginSheet:(NSNotification *)notification {
-	if (self.documentIsLoading) return;
-	
-	[self.documentWindow makeKeyAndOrderFront:self];
-	[self hideAllPluginWindows];
-}
-
--(void)windowDidEndSheet:(NSNotification *)notification {
-	if (self.documentIsLoading) return;
-	
-	[self showPluginWindowsForCurrentDocument];
-}
-
-- (void)windowDidBecomeMain:(NSNotification *)notification {
-	// Show all plugin windows associated with the current document
-	[self showPluginWindowsForCurrentDocument];
-	[NSNotificationCenter.defaultCenter postNotificationName:@"Document changed" object:self];
-	
-	if (currentKeyWindow != nil && currentKeyWindow.visible) {
-		[currentKeyWindow makeKeyAndOrderFront:nil];
-	}
-}
--(void)windowDidBecomeKey:(NSNotification *)notification {
-	currentKeyWindow = nil;
-	// Show all plugin windows associated with the current document
-	if (notification.object == self.documentWindow && self.documentWindow.sheets.count == 0) {
-		[self showPluginWindowsForCurrentDocument];
-	}
-}
--(void)windowDidResignKey:(NSNotification *)notification {
-	if (self.documentIsLoading) return;
-	
-	currentKeyWindow = NSApp.keyWindow;
-	
-	if ([currentKeyWindow isKindOfClass:NSOpenPanel.class]) {
-		[self hideAllPluginWindows];
-	} else if ([currentKeyWindow isKindOfClass:NSSavePanel.class] || self.documentWindow.sheets.count > 0) {
-		[self hideAllPluginWindows];
-		[self.documentWindow makeKeyAndOrderFront:nil];
-	}
-}
-
-- (void)windowDidResignMain:(NSNotification *)notification {
-	if (self.documentIsLoading) return;
-	
-	// When window resigns it main status, we'll have to hide possible floating windows
-	NSWindow *mainWindow = NSApp.mainWindow;
-	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:mainWindow];
-}
-
-- (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		[self.runningPlugins[pluginName] hideAllWindows];
-		[self.runningPlugins[pluginName] documentDidResignMain];
-	}
-	
-	if (!mainWindow.isMainWindow && self.runningPlugins.count > 0) {
-		[mainWindow makeKeyAndOrderFront:nil];
-	}
-}
-
-
-- (void)showPluginWindowsForCurrentDocument
-{
-	// When document becomes main window, iterate through all documents.
-	// If they have plugin windows open, hide those windows behind the current document window.
-	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
-		if (doc == self) continue;
-		for (NSString *pluginName in doc.runningPlugins.allKeys) {
-			[doc.runningPlugins[pluginName] hideAllWindows];
-		}
-	}
-	
-	// Reveal all plugin windows for the current document
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		[self.runningPlugins[pluginName] showAllWindows];
-	}
-	
-	[self.documentWindow orderFront:nil];
-	
-	// Notify running plugins that the window became main after the document *actually* is main window
-	[self.pluginAgent notifyPluginsThatWindowBecameMain];
-}
-
-- (void)hideAllPluginWindows
-{
-	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
-		for (NSString *pluginName in doc.runningPlugins.allKeys) {
-			[(BeatPlugin*)doc.runningPlugins[pluginName] hideAllWindows];
-		}
-	}
-}
-
--(void)spaceDidChange
-{
-	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
-}
 
 
 #pragma mark - Quick Settings Popover
@@ -1189,7 +1039,7 @@ static NSWindow __weak *currentKeyWindow;
 /// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view
 {
-	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableSet.new;
+	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableArray.new;
 	[_registeredPluginContainers addObject:(BeatPluginContainerView*)view];
 }
 
@@ -1452,7 +1302,9 @@ static NSWindow __weak *currentKeyWindow;
 	return YES;
 }
 
+
 #pragma mark Text did change
+
 - (void)textDidChange:(NSNotification *)notification
 {
 	// If we are just opening the document, do nothing
@@ -1467,24 +1319,9 @@ static NSWindow __weak *currentKeyWindow;
 	// Save attributed text to cache
 	self.attrTextCache = [self getAttributedText];
 	
-	// Check changes to outline
-	// NOTE: calling this method removes the outline changes from parser
-	OutlineChanges* changesInOutline = self.parser.changesInOutline;
+	// Check for changes in outline. If any changes are found, all registered outline views will be updated.
+	[self.parser checkForChangesInOutline];
 
-	// Update scene numbers
-	for (OutlineScene* scene in changesInOutline.updated) {
-		if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
-	}
-	
-	if (changesInOutline.hasChanges == YES) {
-		// TODO: Conform side bar with BeatSceneOutlineView protocol
-		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changesInOutline];
-		
-		[self.pluginAgent updatePluginsWithOutline:self.parser.outline changes:changesInOutline];
-		
-		[self updateOutlineViewsWithChanges:changesInOutline];
-	}
-	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
 	[self updateEditorViewsInBackground];
@@ -1511,8 +1348,6 @@ static NSWindow __weak *currentKeyWindow;
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
 	
 	[self updateChangeCount:NSChangeDone];
-	
-	
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -1528,7 +1363,8 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-- (void)textViewDidChangeSelection:(NSNotification *)notification {
+- (void)textViewDidChangeSelection:(NSNotification *)notification
+{
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
 	
@@ -1577,10 +1413,21 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
+#pragma mark Update outline views
+
+- (void)outlineDidUpdateWithChanges:(OutlineChanges *)changes
+{
+	[super outlineDidUpdateWithChanges:changes];
+	// TODO: Conform sidebar outline view to outline view protocol
+	if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changes];
+}
+
+
+
 #pragma mark Update UI with current scene
 
 /// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
-/// TODO: Register the views which need scene index udpate.
+/// TODO: Register the views which need scene index update. This is a mess.
 - (void)updateUIwithCurrentScene
 {
 	OutlineScene *currentScene = self.currentScene;
@@ -1620,10 +1467,12 @@ static NSWindow __weak *currentKeyWindow;
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {
 	self.textView.automaticTextCompletionEnabled = value;
 }
+
 - (void)setZoom:(CGFloat)zoomLevel
 {
 	[self.textView adjustZoomLevel:zoomLevel];
 }
+
 
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,
@@ -1659,7 +1508,6 @@ static NSWindow __weak *currentKeyWindow;
 	if (self.characterInput) return;
 	
 	[self.formattingActions addCue];
-	[self.formatting forceEmptyCharacterCue];
 }
 
 - (void)cancelCharacterInput {
@@ -1763,6 +1611,7 @@ static NSWindow __weak *currentKeyWindow;
 		[doc reloadFonts];
 	}
 }
+
 - (IBAction)selectSansSerif:(id)sender {
 	NSMenuItem* item = sender;
 	if (item.state != NSOnState) self.useSansSerif = YES;
@@ -1784,6 +1633,15 @@ static NSWindow __weak *currentKeyWindow;
 {
 	[self.formattingActions forceElement:lineType];
 }
+
+
+#pragma mark - Select stylesheet
+
+- (IBAction)selectStylesheet:(BeatMenuItemWithStylesheet*)sender
+{
+	[self setStylesheetAndReformat:sender.stylesheet];
+}
+
 
 
 #pragma mark - Revision Tracking
@@ -1897,9 +1755,6 @@ static NSWindow __weak *currentKeyWindow;
 - (void)setupMenuItems {
 	// Menu items which need to check their on/off state against bool properties in this class
 	_itemsToValidate = @[
-		// Swift class alternative:
-		// [BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
-		
 		[BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:BeatSettingMatchParentheses target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:BeatSettingAutomaticLineBreaks target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:BeatSettingShowSceneNumbers target:self],
@@ -1916,6 +1771,8 @@ static NSWindow __weak *currentKeyWindow;
 		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
 		
 		[BeatValidationItem.alloc initWithAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
+		
+		[BeatValidationItem.alloc initWithMatchedValue:DocSettingStylesheet setting:DocSettingStylesheet action:@selector(selectStylesheet:) target:self.documentSettings]
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -1938,31 +1795,12 @@ static NSWindow __weak *currentKeyWindow;
 		
 		// If CARD VIEW is enabled
 		if (self.currentTab == _cardsTab) {
-			//
 			if (menuItem.action == @selector(toggleCards:)) {
 				menuItem.state = NSOnState;
 				return YES;
 			}
 			
-			// Allow undoing scene move in card view, but nothing else
-			if (menuItem.action == @selector(undoEdit:)) {
-				//if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
-				if ([self.undoManager.undoActionName isEqualToString:@"Move Scene"]) {
-					NSString *title = NSLocalizedString(@"general.undo", nil);
-					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager undoActionName]];
-					return YES;
-				}
-			}
-			
-			// Allow redoing, too
-			if (menuItem.action == @selector(redoEdit:)) {
-				//if ([menuItem.title rangeOfString:@"Redo"].location != NSNotFound) {
-				if ([self.undoManager.redoActionName isEqualToString:@"Move Scene"]) {
-					NSString *title = NSLocalizedString(@"general.redo", nil);
-					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager redoActionName]];
-					return YES;
-				}
-			}
+			if (menuItem.action == @selector(undoEdit:) || menuItem.action == @selector(redoEdit:)) return YES;
 		}
 		
 		// Rest of the items are disabled for non-editor views
@@ -2011,7 +1849,7 @@ static NSWindow __weak *currentKeyWindow;
 		
 	}
 	else if (menuItem.action == @selector(toggleDarkMode:)) {
-		if ([(BeatAppDelegate *)[NSApp delegate] isDark]) [menuItem setState:NSOnState];
+		if (self.isDark) [menuItem setState:NSOnState];
 		else [menuItem setState:NSOffState];
 		
 	}
@@ -2059,6 +1897,15 @@ static NSWindow __weak *currentKeyWindow;
 			menuItem.hidden = YES;
 			return NO;
 		}
+	}
+	else if (menuItem.action == @selector(selectStylesheet:)) {
+		BeatMenuItemWithStylesheet* m = (BeatMenuItemWithStylesheet*)menuItem;
+		NSString* stylesheet = [self.documentSettings getString:DocSettingStylesheet];
+		if (stylesheet == nil) stylesheet = @"";
+		
+		m.state = [m.stylesheet isEqualToString:stylesheet] ? NSOnState : NSOffState;
+		
+		return true;
 	}
 	
 	// So, I have overriden everything regarding undo (because I couldn't figure it out)
@@ -2385,11 +2232,6 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Outline View
 
-- (NSMutableArray*)filteredOutline
-{
-	return self.outlineView.filteredOutline;
-}
-
 - (void)reloadOutline
 {
 	[self.outlineView reloadOutline];
@@ -2538,7 +2380,9 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
+
 #pragma mark - Scene numbering
+// TODO: What the actual hell is this stuff
 
 - (IBAction)togglePrintSceneNumbers:(id)sender
 {
@@ -2551,7 +2395,6 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
-	
 	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
 		[_sceneNumberStartInput setIntegerValue:[self.documentSettings getInt:DocSettingSceneNumberStart]];
 	}
@@ -2563,7 +2406,7 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (IBAction)applySceneNumberStart:(id)sender {
-	if (_sceneNumberStartInput.integerValue > 1) {
+	if (_sceneNumberStartInput.integerValue > 1 && _sceneNumberStartInput.integerValue != NSNotFound) {
 		[self.documentSettings setInt:DocSettingSceneNumberStart as:_sceneNumberStartInput.integerValue];
 	} else {
 		[self.documentSettings remove:DocSettingSceneNumberStart];
@@ -2571,21 +2414,15 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Rebuild outline everywhere
 	[self.parser updateOutline];
-	[self.outlineView reloadOutline];
-	[self.timeline reload];
-	
-	self.textView.needsDisplay = true;
+
+	[self ensureLayout];
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 
-- (IBAction)toggleSceneLabels:(id) sender {
+- (IBAction)toggleSceneLabels:(id)sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
-	//if (self.showSceneNumberLabels) [self ensureLayout];
-	//else [self.textView deleteSceneNumberLabels];
 	[self ensureLayout];
 	
 	// Update the print preview accordingly
@@ -2638,15 +2475,6 @@ static NSWindow __weak *currentKeyWindow;
 	self.touchbarTimelineButton.delegate = self;
 }
 
-/*
- 
- nyt tulevaisuus
- on musta aukko
- nyt tulevaisuus
- on musta aukko
- 
- */
-
 
 #pragma mark - Timeline Delegation
 
@@ -2680,14 +2508,6 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-/*
- 
- 5am
- out again
- triangle walks
- 
- */
-
 
 #pragma mark - Pagination manager methods
 
@@ -2712,86 +2532,20 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)selectPaperSize:(id)sender
 {
-	//NSPopUpButton *button = (NSPopUpButton*)sender;
+	// (Wow, we are treading on pretty thin ice here)
 	NSMenuItem *item;
 	if ([sender isKindOfClass:NSPopUpButton.class]) item = [(NSPopUpButton*)sender selectedItem];
 	else item = (NSMenuItem*)sender;
 	
-	BeatPaperSize size;
-	if ([item.title isEqualToString:@"A4"]) size = BeatA4;
-	else size = BeatUSLetter;
-	
-	self.pageSize = size;
+	self.pageSize = ([item.title isEqualToString:@"A4"]) ? BeatA4 : BeatUSLetter;
 }
 
 - (void)setPageSize:(BeatPaperSize)pageSize
 {
 	[super setPageSize:pageSize];
-	
 	[self updateLayout];
-	
-	[self.previewController resetPreview];
-	
-	// Ensure layout for text container
-	[self.textView setInsets];
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 }
 
-
-/*
- 
- mä haluun sut edelleen
- haluun sun kanssa perheen
- haluun nähdä miten lapset kasvaa
- haluun kukkii ja rakkautta
- 
- haluun kasvaa sun mukana
- haluun rypistyy ja harmaantua
- haluun uupuu ja kaljuuntua
- ja pysyy sun rinnalla
- 
- mut et voi lyödä mua enää
- et saa lyödä mua enää
- et uhata polttaa mun kotia
- et enää nimitellä ja haukkua
- 
- koska haluun sut edelleen
- haluun sun kanssa perheen
- haluun herätä sun läheltä
- sanoo etten mee pois ikinä
- 
- keitän sulle aamuisin kahvia
- hoidan aina meidän lapsia
- pidän huolta niistä kasveista
- kun sä oot taas matkoilla
- 
- sanon joka päivä et oot ihana
- teen sulle upeita ruokia
- mut et saa heittää niitä lattioille
- etkä kuumaa kahvii mun kasvoille...
- 
- et saa lyödä mua enää
- et saa lyödä mua enää
- et tuhota mun kotia
- ei enää huutoo ja uhkailua
- 
- mut mä haluun sut koska
- tiedän mitä oot sisältä
- haluut vaan kontrollii, haluut varmuutta
- ja lupaan auttaa sua aina ja ihan kaikessa
- 
- mut ei väkivaltaa enää
- ei väkivaltaa enää
- ehkä seuraavan kerran
- et nää mua enää ikinä
- 
- ja mä odotan
- odotan
- odotan
- niin kauan kuin haluat
- 
- 
- */
 
 #pragma mark - Title page editor
 
@@ -2809,49 +2563,6 @@ static NSWindow __weak *currentKeyWindow;
 - (IBAction)showTimer:(id)sender {
 	_beatTimer.delegate = self;
 	[_beatTimer showTimer];
-}
-
-
-#pragma mark - Moving between scenes and elements
-
-- (IBAction)nextScene:(id)sender {
-	Line* line = [self.parser nextOutlineItemOfType:heading from:self.selectedRange.location];
-	if (line != nil) [self scrollToLine:line];
-}
-- (IBAction)previousScene:(id)sender {
-	Line* line = [self.parser previousOutlineItemOfType:heading from:self.selectedRange.location];
-	if (line != nil) [self scrollToLine:line];
-}
-
-- (IBAction)nextSection:(id)sender {
-	Line* line = [self.parser nextOutlineItemOfType:section from:self.selectedRange.location];
-	if (line != nil) [self scrollToLine:line];
-}
-
-- (IBAction)previousSection:(id)sender {
-	Line* line = [self.parser previousOutlineItemOfType:section from:self.selectedRange.location];
-	if (line != nil) [self scrollToLine:line];
-}
-
-- (IBAction)nextSectionOfSameDepth:(id)sender {
-	Line* line = self.currentLine;
-	if (line.type != section) {
-		line = [self.parser previousOutlineItemOfType:section from:line.position];
-	}
-	
-	line = [self.parser nextOutlineItemOfType:section from:line.position depth:line.sectionDepth];
-	if (line != nil) [self scrollToLine:line];
-}
-
-- (IBAction)previousSectionOfSameDepth:(id)sender {
-	Line* line = self.currentLine;
-	if (line.type != section) {
-		line = [self.parser previousOutlineItemOfType:section from:line.position];
-	}
-	
-	Line * sectionLine = [self.parser previousOutlineItemOfType:section from:self.selectedRange.location depth:line.sectionDepth];
-	if (sectionLine != nil) [self scrollToLine:sectionLine];
-	else if (line != nil) [self scrollToLine:line];
 }
 
 

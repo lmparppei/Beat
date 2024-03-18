@@ -576,6 +576,12 @@
                                     <action selector="makeUnderlined:" target="-1" id="jB4-Tq-def"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Center" id="kSY-9r-dEq">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="makeCentered:" target="-1" id="hF2-QG-3YA"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Pfc-pX-Eb8"/>
                             <menuItem title="Force Element..." id="zQH-Oq-iw8">
                                 <string key="keyEquivalent" base64-UTF8="YES">
@@ -701,6 +707,29 @@ DQ
                                 <connections>
                                     <action selector="addTitlePage:" target="-1" id="s6K-xU-xbT"/>
                                 </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="nSg-0b-sL2"/>
+                            <menuItem title="Style" id="r9x-8r-i9c">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="S2O-Ze-xD3">
+                                    <items>
+                                        <menuItem title="Screenplay" id="G06-e0-hLT" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="selectStylesheet:" target="-1" id="BOd-3t-PK3"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Novel" id="Sro-5T-gB1" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="stylesheet" value="Novel"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="selectStylesheet:" target="-1" id="KUq-qZ-prr"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
                             <menuItem title="Start Scene Numbering From..." id="12m-8C-qlE">

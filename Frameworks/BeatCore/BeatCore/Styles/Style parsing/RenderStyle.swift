@@ -80,7 +80,8 @@ struct PaginationRule {
         "trim": .boolType,
         "visible": .boolType,
         "additional-settings": .stringType,
-        "skip-if-preceded-by": .lineType
+        "skip-if-preceded-by": .lineType,
+        "reformat-following-paragraph-after-type-change": .boolType
     ] }
 
     @objc public var name:String = ""
@@ -151,6 +152,9 @@ struct PaginationRule {
     
     /// Whether this object always begins a new page
     @objc public var beginsPage = false
+    
+    /// This
+    @objc public var reformatFollowingParagraphAfterTypeChange = false
     
     /// A dictionary of sub-rules
     var conditionalRules:[String:[String:Any]] = [:]
@@ -244,11 +248,7 @@ struct PaginationRule {
             } else {
                 print("Warning: Unrecognized BeatCSS key: ", property)
             }
-        }
-        
-        if self.paginationRules.count > 0 {
-            print("-> paginatino rules", self.paginationRules)
-        }
+        }        
     }
     
     public func styleNameToProperty (name:String) -> String {
@@ -313,6 +313,8 @@ struct PaginationRule {
             return "additionalSettings"
         case "skip-if-preceded-by":
             return "skipIfPrecededBy"
+        case "reformat-following-paragraph-after-type-change":
+            return "reformatFollowingParagraphAfterTypeChange"
         default:
             return name
         }

@@ -42,7 +42,6 @@ Well, that was easy. You should be able to write a full screenplay by using thos
 Now, if you dare, let's get more technical!
 
 
-
 /*
 
 This is a note. It won't be printed or exported, don't worry. This way, you can add longer comments and omit scenes.
@@ -125,4 +124,4 @@ You can find more information about the Fountain markup language at https://www.
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":""} END_BEAT */
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]}} END_BEAT */

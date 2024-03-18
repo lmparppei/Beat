@@ -568,13 +568,8 @@
 	// Update formatting
 	[self applyFormatChanges];
 	
-	// NOTE: calling this method removes the outline changes from parser
-	OutlineChanges* changesInOutline = self.parser.changesInOutline;
-	
-	if (changesInOutline.hasChanges) {
-		// Update any outline views
-		if (self.sidebarVisible) [self.outlineProvider update];
-	}
+	// Checks for changes in outline and updates outline views if needed
+	[self.parser checkForChangesInOutline];
 	
 	// Editor views can register themselves and have to conform to BeatEditorView protocol,
 	// which includes methods for reloading both in sync and async
@@ -643,6 +638,16 @@
 	
 	return true;
 }
+
+
+/// Updates outline views.
+/// TODO: Conform sidebar to a editor view, please
+- (void)outlineDidUpdateWithChanges:(OutlineChanges *)changes
+{
+	[super outlineDidUpdateWithChanges:changes];
+	if (self.sidebarVisible) [self.outlineProvider update];
+}
+
 
 #pragma mark - Text input delegate
 
@@ -861,7 +866,6 @@
 	}
 	
 	[self.formattingActions addCue];
-	[self.formatting forceEmptyCharacterCue];
 	[self.textView updateAssistingViews];
 }
 

@@ -5,6 +5,12 @@
 //  Created by Lauri-Matti Parppei on 22.1.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ This class matches item selector to a property in another class, and checks if it's `true` or `false`.
+ It's used to validate menus in document view. This approach should be deprecated ASAP.
+ 
+ */
 
 import Foundation
 
@@ -31,6 +37,13 @@ class BeatValidationItem: NSObject {
 		super.init()
 	}
 	
+	@objc init(matchedValue:String, setting:String, action:Selector, target:AnyObject) {
+		self.selector = action
+		self.target = target
+		self.setting = setting
+		
+		super.init()
+	}
 	
 	@objc func validate() -> Bool {
 		var value:Bool = false
@@ -40,6 +53,7 @@ class BeatValidationItem: NSObject {
 			if let settings = self.target as? BeatDocumentSettings {
 				value = settings.getBool(self.setting)
 			}
+			
 		} else if (self.target.className == "BeatUserDefaults") {
 			// User defaults
 			value = BeatUserDefaults.shared().getBool(self.setting)

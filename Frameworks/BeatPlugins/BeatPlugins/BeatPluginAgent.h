@@ -11,10 +11,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPluginAgent : NSObject
+
 - (instancetype)initWithDelegate:(id<BeatPluginDelegate>)delegate;
 
 - (void)registerPlugin:(id<BeatPluginInstance>)plugin;
 - (void)deregisterPlugin:(id<BeatPluginInstance>)plugin;
+
+- (void)unloadPlugins;
 
 /// Runs a plugin with a name in plugin manager.
 - (void)runPluginWithName:(NSString*)pluginName;

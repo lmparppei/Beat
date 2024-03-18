@@ -196,3 +196,9 @@
 "character.editor.biography" = "Biografija";
 "character.editor.lines" = "Vrstice";
 
+"templates.novel-tutorial.title" = "Vodnik za roman";
+"templates.novel-tutorial.description" = "Začnite z pisanjem romanov";
+
+"templates.novel.title" = "Roman";
+"templates.novel.description" = "Osnovna predloga za roman";
+

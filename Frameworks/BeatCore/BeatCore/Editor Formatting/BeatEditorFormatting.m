@@ -38,6 +38,7 @@
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSMutableParagraphStyle*>*>* paragraphStyles;
 @property (nonatomic) NSMutableAttributedString* textStorage;
 @property (nonatomic) BeatFonts* fonts;
+@property (nonatomic) NSMutableIndexSet* linesToFormat;
 @end
 
 @implementation BeatEditorFormatting
@@ -257,6 +258,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     }
 }
 
+- (void)reformatLinesAtIndices:(NSIndexSet*)indices
+{
+    [indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        Line *line = self.parser.lines[idx];
+        [self formatLine:line];
+    }];
+}
+
+
 #pragma mark - Format a single line
 
 /// Formats a single line in editor
@@ -265,71 +275,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self formatLine:line firstTime:NO];
 }
 
-- (BXFont* _Nonnull)fontFamilyForLine:(Line*)line {
-	NSDictionary* fonts = @{
-        @(synopse): self.synopsisFont,
-        @(lyrics): self.italic,
-        @(pageBreak): self.bold
-    };
-	
-	BXFont* font;
-	
-	// Section fonts are generated on the fly
-	if (line.type == section) {
-        // Make lower sections a bit smaller
-		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
-		if (size < 12.0) size = 12.0;
-		
-        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
-	}
-	else if (fonts[@(line.type)] != nil) {
-		// Check if we have stored a specific font for this line type
-		font = fonts[@(line.type)];
-	}
-	else {
-		// Otherwise use plain courier
-		font = self.regular;
-	}
-    
-	return font;
-}
-
-/// Sets the font for given line (if needed)
-- (void)setFontForLine:(Line*)line {
-	[self setFontForLine:line force:false];
-}
-/// Sets the font for given line. You can force it if needed.
-- (void)setFontForLine:(Line*)line force:(bool)force {
-    NSMutableAttributedString *textStorage = self.textStorage;
-	
-	NSRange range = line.textRange;
-
-	BXFont* font = [self fontFamilyForLine:line];
-	__block bool resetFont = (force) ? true : false;
-	
-	if (!resetFont) {
-		if (range.length > 0 && line.type != section && line.type != synopse) {
-			[textStorage enumerateAttribute:NSFontAttributeName inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-				BXFont* currentFont = value;
-				if (![currentFont.familyName isEqualToString:font.familyName]) {
-					resetFont = true;
-					*stop = true;
-					return;
-				}
-			}];
-		} else if (line.type == section || line.type == synopse) {
-			resetFont = true;
-		}
-	}
-	
-	// Avoid extra work and only add the font attribute when needed
-	if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
-}
-
 /// Formats one line of screenplay.
 /// - note We're using `NSMutableAttributedString` in place of text storage to support ahead-of-time rendering.
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 { @autoreleasepool {
+    NSLog(@" -> %@", line);
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
@@ -365,7 +315,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (range.length > 0) {
 		Line* representedLine = [textStorage attribute:BeatRepresentedLineKey atIndex:line.position longestEffectiveRange:&representedRange inRange:range];
 		if (representedLine != line || representedRange.length != range.length) {
-			//forceFont = true;
 			[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
 		}
 	} else {
@@ -379,8 +328,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Add to attributes if needed
 	if (![attributes[NSParagraphStyleAttributeName] _equalTo:paragraphStyle]) {
 		newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
-		// Also update the paragraph style to current attributes
-		// attributes[NSParagraphStyleAttributeName] = paragraphStyle;
 	}
     
     // Foreground color
@@ -390,7 +337,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
-		[_delegate setTypingAttributes:attributes];
+		[_delegate.getTextView setTypingAttributes:attributes];
 		
 		// If we need to update the line, do it here
 		if (newAttributes[BeatRepresentedLineKey]) {
@@ -481,15 +428,21 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
 	    
-	// Set typing attributes
-	attributes[NSFontAttributeName] = _delegate.fonts.regular;
-	
-	[_delegate setTypingAttributes:attributes];
-
+    // Apply inline formatting
 	[self applyInlineFormatting:line reset:forceFont textStorage:textStorage];
+    
+    // Revised text colors
 	[self revisedTextStyleForRange:range];
 	
+    // Actual text colors
 	[self setTextColorFor:line];
+    
+    // Set typing attributes
+    if (NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
+        attributes[NSFontAttributeName] = _delegate.fonts.regular;
+        [_delegate.getTextView setTypingAttributes:attributes];
+    }
+
 
     if (!alreadyEditing) [textStorage endEditing];
     
@@ -614,6 +567,70 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[textStorage applyFontTraits:trait range:range];
 #endif
 }
+
+
+#pragma mark - Set font
+
+- (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
+{
+    NSDictionary* fonts = @{
+        @(synopse): self.synopsisFont,
+        @(lyrics): self.italic,
+        @(pageBreak): self.bold
+    };
+    
+    BXFont* font;
+    
+    // Section fonts are generated on the fly
+    if (line.type == section) {
+        // Make lower sections a bit smaller
+        CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
+        if (size < 12.0) size = 12.0;
+        
+        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
+    } else if (fonts[@(line.type)] != nil) {
+        // Check if we have stored a specific font for this line type
+        font = fonts[@(line.type)];
+    } else {
+        // Otherwise use plain courier
+        font = self.regular;
+    }
+    
+    return font;
+}
+
+/// Sets the font for given line (if needed)
+- (void)setFontForLine:(Line*)line {
+    [self setFontForLine:line force:false];
+}
+/// Sets the font for given line. You can force it if needed.
+- (void)setFontForLine:(Line*)line force:(bool)force {
+    NSMutableAttributedString *textStorage = self.textStorage;
+    
+    NSRange range = line.textRange;
+
+    BXFont* font = [self fontFamilyForLine:line];
+    __block bool resetFont = (force) ? true : false;
+    
+    if (!resetFont) {
+        if (range.length > 0 && line.type != section && line.type != synopse) {
+            [textStorage enumerateAttribute:NSFontAttributeName inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+                BXFont* currentFont = value;
+                if (![currentFont.familyName isEqualToString:font.familyName]) {
+                    resetFont = true;
+                    *stop = true;
+                    return;
+                }
+            }];
+        } else if (line.type == section || line.type == synopse) {
+            resetFont = true;
+        }
+    }
+    
+    // Avoid extra work and only add the font attribute when needed
+    if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
+}
+
 
 #pragma mark - Set foreground color
 
@@ -835,16 +852,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 
-#pragma mark - Forced dialogue
-
-- (void)forceEmptyCharacterCue
-{
-	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleForType:character];
-	paragraphStyle.maximumLineHeight = _delegate.editorStyles.page.lineHeight;
-	paragraphStyle.firstLineHeadIndent = _delegate.editorStyles.character.marginLeft;
-	
-	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.fonts.regular } ];
-}
 
 @end
 

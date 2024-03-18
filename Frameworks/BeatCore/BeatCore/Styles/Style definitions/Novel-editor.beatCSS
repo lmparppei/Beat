@@ -15,6 +15,7 @@
 document {
     disabled-types: [character];
     additional-settings: [novelLineHeightMultiplier];
+    reformat-following-paragraph-after-type-change: true;
 }
 
 page {

@@ -1013,9 +1013,7 @@ double clamp(double d, double min, double max)
 	NSDictionary *options = NSDictionary.new;
 	
 	// See if we can read anything from the pasteboard
-	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
-	
-	if (ok) {
+	if ([pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]]) {
 		// We know for a fact that if the data originated from beat, the FIRST item will be
 		// the custom object we created when copying. So let's just pick the first one of the
 		// readable objects.
@@ -1028,7 +1026,6 @@ double clamp(double d, double min, double max)
 			// Plain text
 			NSString* result = [BeatPasteboardItem sanitizeString:obj];
 			[self.editorDelegate replaceRange:self.selectedRange withString:result];
-			return;
 			
 		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
@@ -1054,16 +1051,15 @@ double clamp(double d, double min, double max)
 				}
 			}];
 			[self.textStorage endEditing];
-			
-			// Render background for pasted text where needed
-			for (Line* l in linesToRender) {
-				[self.editorDelegate renderBackgroundForLine:l clearFirst:YES];
-			}
-		}
-		else {
+
+		} else {
+			// If everything else fails, try normal paste
 			[super paste:sender];
 		}
 	}
+	
+	// If we didn't call super, the text view might not scroll back to caret
+	[self scrollRangeToVisible:self.selectedRange];
 }
 
 

@@ -177,6 +177,13 @@ static NSString *revisionAttribute = @"Revision";
         _delegate.selectedRange = NSMakeRange(loc, 0);
     }
     
+    // If the caret is at end, we need to do some very, very nasty trickery for some reason
+    NSRange selectedRange = self.delegate.selectedRange;
+    if (NSMaxRange(selectedRange) == self.delegate.textStorage.length) {
+        [_delegate.textActions addString:@"\n" atIndex:NSMaxRange(selectedRange)];
+        self.delegate.selectedRange = selectedRange;
+    }
+    
     // If no line is selected, return and do nothing.
     Line *currentLine =_delegate.currentLine;
     if (currentLine == nil) return;

@@ -39,6 +39,8 @@
 
 #pragma mark - Fetching outline data
 
+/// Call this after text was changed. This in turn calls `outlineDidChange` in your document controller when needed.
+- (void)checkForChangesInOutline;
 /// Returns a tree structure for the outline. Only top-level elements are included, get the rest using `element.chilren`.
 - (NSArray*)outlineTree;
 /// Updates scene numbers for scenes. Autonumbered will get incremented automatically.
@@ -49,7 +51,7 @@
 /// Returns the number from which automatic scene numbering should start from
 - (NSInteger)sceneNumberOrigin;
 /// Gets and resets the changes to outline
-- (OutlineChanges*)changesInOutline;
+//- (OutlineChanges*)changesInOutline;
 /// Returns an array of dictionaries with UUID mapped to the actual string.
 -(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs;
 

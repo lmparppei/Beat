@@ -29,9 +29,9 @@ CHARACTER 2
 (gently nodding their head)
 Well done.
 
-You can also press Tab to force a character cue and not worry about writing in all caps.
+You can also press Tab to force a character cue and not worry about writing in all caps. After one empty line break the format will change back to action. 
 
-After one empty line break the format will change back to action. Beat automatically adds two line breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
+Beat automatically adds two line breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks). To avoid this, press shift-enter.
 
 You can also use transitions just by typing out something in all-caps and ending it with a colon, like this:
 
@@ -125,4 +125,5 @@ You can find more information about the Fountain markup language at https://www.
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note. Press ⌘R to review any selected text.","range":[4024,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4084,9,"blue"]]},"Active Plugins":[],"Revision Color":""} END_BEAT */
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[4059,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Changed Indices":{"115":"blue"},"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4119,9,"blue"]]}} END_BEAT */

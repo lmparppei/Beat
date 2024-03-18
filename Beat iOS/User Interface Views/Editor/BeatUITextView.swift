@@ -803,7 +803,6 @@ extension BeatUITextView {
 	
 	@objc func addCue() {
 		self.editorDelegate?.formattingActions.addCue()
-		self.editorDelegate?.formatting.forceEmptyCharacterCue()
 		self.updateAssistingViews()
 	}
 	

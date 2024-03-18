@@ -4,11 +4,18 @@
 //
 //  Created by Lauri-Matti Parppei on 3.12.2023.
 //
+/**
+ 
+ An object to handle everything plugin-related in document view classes.
+ 
+ */
 
 #import "BeatPluginAgent.h"
+#import <BeatPlugins/BeatPlugin.h>
+#import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatCore/BeatEditorDelegate.h>
 
-@interface BeatPluginAgent()
+@interface BeatPluginAgent() <BeatPluginAgentInstance>
 @property (nonatomic, weak) id<BeatPluginDelegate> delegate;
 @end
 
@@ -119,5 +126,23 @@
     }
 }
 
+
+#pragma mark - Containers
+
+- (void)unloadPlugins
+{
+    // Remove plugin containers (namely the index card view)
+    for (id<BeatPluginContainer> container in self.delegate.registeredPluginContainers) {
+        [container unload];
+    }
+    [self.delegate.registeredPluginContainers removeAllObjects];
+    
+    // Terminate running plugins
+    for (NSString *pluginName in self.delegate.runningPlugins.allKeys) {
+        BeatPlugin* plugin = self.delegate.runningPlugins[pluginName];
+        [plugin end];
+    }
+    [self.delegate.runningPlugins removeAllObjects];
+}
 
 @end

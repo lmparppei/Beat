@@ -411,7 +411,7 @@ static NSDictionary* patterns;
     Line* lastLine = self.lines[lastIndex];
     
     bool originalLineWasEmpty = (firstLine.string.length == 0);
-    bool lastLineWasEmpty = (lastLine.string.length == 0);
+    bool lastLineWasEmpty = (lastLine.string.length == 0 || lastLine.type == empty);
     
     bool omitOut = false;
     bool omitIn = false;
@@ -534,6 +534,37 @@ static NSDictionary* patterns;
     }
 }
 
+/// Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
+- (void)correctOrphanedDialogueAt:(NSUInteger)index {
+    if (index == 0) return;
+    
+    Line *prevLine = self.lines[index - 1]; // Get previous line
+    NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0; // Get selection
+    
+    // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
+    if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
+        NSInteger i = index - 1;
+        
+        while (i >= 0) {
+            Line *l = self.lines[i];
+            
+            if (l.length > 0 && l != self.delegate.characterInputForLine) {
+                // Not a forced character cue, not the preceding line to selection
+                if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0) {
+                    l.type = action;
+                    [self.changedIndices addIndex:i];
+                }
+                break;
+            } else if (l.type != empty && l.length == 0) {
+                l.type = empty;
+                [self.changedIndices addIndex:i];
+            }
+            
+            i -= 1;
+        }
+    }
+}
+
 /// Corrects parsing in a single line. Once done, it will be removed from `indices`, but note that new indices might be added in the process.
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
@@ -599,35 +630,8 @@ static NSDictionary* patterns;
     // Mark the current index as changed
     [self.changedIndices addIndex:index];
     
-    if (index > 0) {
-        // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
-        
-        Line *prevLine = self.lines[index - 1]; // Get previous line
-        NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0; // Get selection
-        
-        // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
-        if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
-            NSInteger i = index - 1;
-            
-            while (i >= 0) {
-                Line *l = self.lines[i];
-                
-                if (l.length > 0 && l != self.delegate.characterInputForLine) {
-                    // Not a forced character cue, not the preceding line to selection
-                    if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0) {
-                        l.type = action;
-                        [self.changedIndices addIndex:i];
-                    }
-                    break;
-                } else if (l.type != empty && l.length == 0) {
-                    l.type = empty;
-                    [self.changedIndices addIndex:i];
-                }
-                
-                i -= 1;
-            }
-        }
-    }
+    // Correct orphaned dialogue if needed
+    [self correctOrphanedDialogueAt:index];
     
     //If there is a next element, check if it might need a reparse because of a change in type or omit out
     if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
@@ -635,18 +639,15 @@ static NSDictionary* patterns;
         
         if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
+            
             if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
                 currentLine.type == section ||
                 currentLine.type == synopse ||
-                currentLine.type == character ||        					    //if the line became anything to
-                currentLine.type == parenthetical ||        					//do with dialogue, it might cause
-                (currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
-                currentLine.type == dualDialogueCharacter ||
-                currentLine.type == dualDialogueParenthetical ||
-                currentLine.type == dualDialogue ||
-                currentLine.type == empty ||                //If the line became empty, it might
-                                                            //enable the next on to be a heading
-                                                            //or character
+                currentLine.isDialogue ||
+                currentLine.isDualDialogue ||
+                currentLine.type == empty ||                // if the line became empty, it might change type of next line
+                (currentLine.type != empty && oldType == empty) ||
+                                                            
                 nextLine.isTitlePage ||
                 nextLine.isOutlineElement ||
                 nextLine.isDialogue ||
@@ -656,7 +657,8 @@ static NSDictionary* patterns;
                 // Look for unterminated omits & notes
                 nextLine.omitIn != currentLine.omitOut ||
                 ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
-                ) {
+                ) 
+            {
                 [self correctParseInLine:index+1 indicesToDo:indices];
             }
         }
@@ -1969,10 +1971,43 @@ NSInteger previousSceneIndex = NSNotFound;
 			NSLocationInRange(range.location + range.length, line.textRange)) &&
 			NSIntersectionRange(range, line.textRange).length > 0) {
 			[linesInRange addObject:line];
-		}
+        } else if (NSMaxRange(range) < NSMaxRange(line.range)) {
+            // We've gone past the given range, break
+            break;
+        }
 	}
 	
 	return linesInRange;
+}
+
+/// Returns a range of indices of lines in given range (even overlapping)
+- (NSRange)lineIndicesInRange:(NSRange)range
+{
+    NSArray* lines = self.safeLines;
+    NSMutableIndexSet* indices = NSMutableIndexSet.new;
+    
+    NSRange indexRange = NSMakeRange(NSNotFound, 0);
+    
+    for (NSInteger i=0; i<lines.count; i++) {
+        Line* line = lines[i];
+        
+        // (wtf is this conditional?)
+        if ((NSLocationInRange(line.position, range) ||
+            NSLocationInRange(range.location, line.textRange) ||
+            NSLocationInRange(NSMaxRange(range), line.textRange)) &&
+            NSIntersectionRange(range, line.textRange).length > 0) {
+            
+            // Adjust range
+            if (indexRange.location == NSNotFound) indexRange.location = i;
+            else indexRange.length += 1;
+            
+        } else if (NSMaxRange(range) < NSMaxRange(line.range)) {
+            // We've gone past the given range, break
+            break;
+        }
+    }
+    
+    return indexRange;
 }
 
 /// Returns the scenes which intersect with given range.

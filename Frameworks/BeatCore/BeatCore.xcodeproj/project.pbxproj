@@ -42,6 +42,8 @@
 		B663B3C02AFA7FF7007217E3 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */; };
 		B6743BFA2B31A6830081041C /* Tutorial iOS.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6743BF92B31A6100081041C /* Tutorial iOS.fountain */; };
 		B6743BFB2B31A6850081041C /* New Document.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6743BF62B319ECE0081041C /* New Document.fountain */; };
+		B676DD262BA8772000F7DBDA /* Novel Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */; };
+		B676DD282BA87AB100F7DBDA /* Novel.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B676DD272BA879AD00F7DBDA /* Novel.fountain */; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
 		B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -148,6 +150,8 @@
 		B663B3BC2AFA7FF3007217E3 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6743BF62B319ECE0081041C /* New Document.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "New Document.fountain"; sourceTree = "<group>"; };
 		B6743BF92B31A6100081041C /* Tutorial iOS.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Tutorial iOS.fountain"; sourceTree = "<group>"; };
+		B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Novel Tutorial.fountain"; sourceTree = "<group>"; };
+		B676DD272BA879AD00F7DBDA /* Novel.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = Novel.fountain; sourceTree = "<group>"; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B67C2CF12A2D1AD000B88B0F /* BeatFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFont.h; sourceTree = "<group>"; };
@@ -369,6 +373,8 @@
 				B682C2632B30FB7F0027511A /* One Page Synopsis.fountain */,
 				B682C25E2B30FB4A0027511A /* Comic Book Template.fountain */,
 				B682C25F2B30FB4A0027511A /* Three-act Outline.fountain */,
+				B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */,
+				B676DD272BA879AD00F7DBDA /* Novel.fountain */,
 				B682C2612B30FB4A0027511A /* BeatTemplates.swift */,
 			);
 			path = Templates;
@@ -599,8 +605,10 @@
 				B6D15A642AF9790A00DAB66D /* Styles.beatCSS in Resources */,
 				B682C2662B30FBD60027511A /* Comic Book Template.fountain in Resources */,
 				B682C2692B30FBD60027511A /* Tutorial.fountain in Resources */,
+				B676DD282BA87AB100F7DBDA /* Novel.fountain in Resources */,
 				B68C0F6B299D8A4F0031AE6B /* BeatReviewEditor macOS.xib in Resources */,
 				B6D15A682AF9790A00DAB66D /* Novel-editor.beatCSS in Resources */,
+				B676DD262BA8772000F7DBDA /* Novel Tutorial.fountain in Resources */,
 				B682C2642B30FB800027511A /* One Page Synopsis.fountain in Resources */,
 				B6D15A662AF9790A00DAB66D /* Screenplay.beatCSS in Resources */,
 				B686BD252B3444390074FC67 /* Screenplay-editor-iOS.beatCSS in Resources */,

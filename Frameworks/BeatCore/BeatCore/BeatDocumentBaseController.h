@@ -46,6 +46,10 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (void)previewDidFinish:(BeatPagination* _Nullable)operation indices:(NSIndexSet* _Nullable)indices;
 @end
 
+@protocol BeatPluginAgentInstance
+- (void)updatePluginsWithOutline:(NSArray* _Nonnull)outline changes:(OutlineChanges* _Nullable)changes;
+@end
+
 /// This is a protocol for the generic preview controller. Because of cross-framework mess, we can't use the actual controller here.
 @protocol BeatPreviewControllerInstance
 - (id _Nullable)getPagination;
@@ -81,6 +85,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 /// Line on which the input is happening. This is not the best approach, but whatever.
 @property (nonatomic) Line* _Nullable characterInputForLine;
 @property (nonatomic) NSIndexSet* _Nullable disabledTypes;
+
 
 #pragma mark - Basic document settings
 
@@ -134,6 +139,11 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) Line* _Nullable currentLine;
 @property (nonatomic, weak) OutlineScene* _Nullable currentScene;
 - (OutlineScene* _Nullable)getCurrentSceneWithPosition:(NSInteger)position;
+
+
+#pragma mark - Updating outline views
+
+- (void)outlineDidUpdateWithChanges:(OutlineChanges* _Nullable)changes;
 
 
 #pragma mark - Text view

@@ -303,6 +303,12 @@
 /* (No Comment) */
 "templates.outliningTutorial.title" = "Outlining självstudie";
 
+"templates.novel-tutorial.title" = "Romanhandledning";
+"templates.novel-tutorial.description" = "Kom igång med att skriva romaner";
+
+"templates.novel.title" = "Roman";
+"templates.novel.description" = "Enkel romanmall";
+
 /* (No Comment) */
 "templates.templates" = "Självstudier";
 

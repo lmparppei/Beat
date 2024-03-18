@@ -40,6 +40,18 @@
 			<key>icon</key>
 			<string>list.and.film</string>
 		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Novel Tutorial.fountain</string>
+			<key>title</key>
+			<string>templates.novel-tutorial.title</string>
+			<key>description</key>
+			<string>templates.novel-tutorial.description</string>
+			<key>icon</key>
+			<string>book</string>
+			<key>target</key>
+			<string>macOS</string>
+		</dict>
 	</array>
 	<key>Templates</key>
 	<array>
@@ -72,6 +84,16 @@
 			<string>templates.comicBook.description</string>
 			<key>icon</key>
 			<string>bubble.right.fill</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Novel.fountain</string>
+			<key>title</key>
+			<string>templates.novel.title</string>
+			<key>description</key>
+			<string>templates.novel.description</string>
+			<key>icon</key>
+			<string>book.fill</string>
 		</dict>
 	</array>
 </dict>

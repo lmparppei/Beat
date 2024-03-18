@@ -46,7 +46,9 @@ public struct BeatTemplateFile {
 	
 	/// Returns the full template data
 	public func getTemplates() -> [String:[BeatTemplateFile]] {
-		if _allTemplates != nil { return _allTemplates! }
+        if let _allTemplates {
+            return _allTemplates
+        }
 		
 		// get the plist file
 		let bundle = Bundle(for: type(of: self))
@@ -83,6 +85,8 @@ public struct BeatTemplateFile {
                     }
 				}
 			}
+            
+            print(templateData)
 		
 			return templateData
 			

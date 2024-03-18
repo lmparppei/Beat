@@ -145,7 +145,7 @@
 "templates.templates" = "Templates";
 
 "templates.tutorial.title" = "Tutorial";
-"templates.tutorial.description" = "Get started quickly with Beat!";
+"templates.tutorial.description" = "Quickstart guide to Beat!";
 
 "templates.outliningTutorial.title" = "Outlining Tutorial";
 "templates.outliningTutorial.description" = "Learn more advanced outlining tricks";
@@ -158,6 +158,13 @@
 
 "templates.threeActOutline.title" = "Three-Act Outline";
 "templates.threeActOutline.description" = "The classical story structure in 8 sequences";
+
+"templates.novel-tutorial.title" = "Novel Tutorial";
+"templates.novel-tutorial.description" = "Get started with writing novels in Beat";
+
+"templates.novel.title" = "Novel";
+"templates.novel.description" = "Bare-bones novel template";
+
 
 /* Selection / information */
 

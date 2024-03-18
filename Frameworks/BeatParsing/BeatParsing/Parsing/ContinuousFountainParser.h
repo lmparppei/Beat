@@ -31,6 +31,8 @@
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 /// Forces any changes in parser to be reformatted in editor
 - (void)applyFormatChanges;
+/// Notify that the outline was changed
+- (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes;
 @end
 
 // Plugin compatibility
