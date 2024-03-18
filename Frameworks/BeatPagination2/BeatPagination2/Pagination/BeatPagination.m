@@ -483,7 +483,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	Line* nextLine = self.lineQueue[i];
 	
 	// If next line is a heading or a line break AND we didn't just begin a higher-level block, this one ends here
-	if ((nextLine.type == heading || nextLine.type == pageBreak) && line.type != section) {
+	if (((nextLine.type == heading || nextLine.type == pageBreak) && line.type != section) || (line.type == section && nextLine.type == section)) {
 		return @[block];
 	}
 	
