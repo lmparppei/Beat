@@ -8,18 +8,18 @@
 
 import UIKit
 
-class BeatUserSettingSwitch:UISwitch {
-	@IBInspectable var setting:String?
+public class BeatUserSettingSwitch:UISwitch {
+	@IBInspectable public var setting:String?
 	// If the given setting is a document settings and not a user default
-	@IBInspectable var documentSetting:Bool = false
+	@IBInspectable public var documentSetting:Bool = false
 	
-	@IBInspectable var resetPreview:Bool = false
-	@IBInspectable var redrawTextView:Bool = false
-	@IBInspectable var reformatHeadings:Bool = false
+	@IBInspectable public var resetPreview:Bool = false
+	@IBInspectable public var redrawTextView:Bool = false
+	@IBInspectable public var reformatHeadings:Bool = false
 	
-	@IBInspectable var reloadOutline:Bool = false
+	@IBInspectable public var reloadOutline:Bool = false
 	
-	override func awakeFromNib() {
+	public override func awakeFromNib() {
 		super.awakeFromNib()
 		
 		guard let setting = self.setting else { return }
@@ -32,10 +32,11 @@ class BeatUserSettingSwitch:UISwitch {
 	}
 }
 
-class BeatUserSettingSegmentedControl:UISegmentedControl {
-	@IBInspectable var setting:String?
+public class BeatUserSettingSegmentedControl:UISegmentedControl {
+	@IBInspectable public var setting:String?
+	@IBInspectable public var documentSetting:Bool = false
 	
-	override func awakeFromNib() {
+	public override func awakeFromNib() {
 		super.awakeFromNib()
 		
 		guard let setting = setting else { return }
