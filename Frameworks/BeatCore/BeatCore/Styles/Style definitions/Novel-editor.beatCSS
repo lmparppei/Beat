@@ -6,16 +6,17 @@
  Changing values without knowing what you are doing can very
  well cause a crash. Dread lightly.
  
- "Class" names are internal type names as strings, not .typeAsString names.
+ "Class" names use .typeName identifieres, not .typeAsString names.
  
- © Lauri-Matti Parppei 2021-2022
+ © Lauri-Matti Parppei 2021-2024
 
 */
 
 document {
-    disabled-types: [character];
+    disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
     additional-settings: [novelLineHeightMultiplier];
     reformat-following-paragraph-after-type-change: true;
+    disable-automatic-paragraphs: true;
 }
 
 page {

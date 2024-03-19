@@ -16,18 +16,18 @@ page {
     padding-left: 60;
     
     margin-left: 30;
-	margin-right: 25;
+    margin-right: 25;
     margin-top: 40;
-	margin-bottom: 50;
+    margin-bottom: 50;
     margin-bottom-us: 0;
     margin-bottom-a4: 10;
-	
-	default-width-a4: 60ch;
-	default-width-us: 63ch;
-	
-	line-height: 12;
-	
-	content-padding: 7ch;
+    
+    default-width-a4: 60ch;
+    default-width-us: 63ch;
+    
+    line-height: 12;
+    
+    content-padding: 7ch;
  
     margin-left-a4: 20;
     margin-left-us: 22;
@@ -48,9 +48,9 @@ heading {
     
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);
-	underline: userSetting(headingStyleUnderline);
-	
-	uppercase: true;
+    underline: userSetting(headingStyleUnderline);
+    
+    uppercase: true;
 }
 
 section {
@@ -81,16 +81,16 @@ action {
 }
 
 centered {
-	width-a4: 60ch;
-	width-us: 62ch;
+    width-a4: 60ch;
+    width-us: 62ch;
 
-	margin-top: 1l;
-	text-align: center;
+    margin-top: 1l;
+    text-align: center;
 }
 
 character {
     width-a4: 38ch;
-	width-us: 40ch;
+    width-us: 40ch;
     
     margin-left: 20ch;
     margin-top: 1l;
@@ -98,15 +98,15 @@ character {
 
 parenthetical {
     width-a4: 28ch;
-	width-us: 28ch;
-	
+    width-us: 28ch;
+    
     margin-left: 16ch;
     margin-top: 0;
 }
 
 dialogue {
     width-a4: 35ch;
-	width-us: 35ch;
+    width-us: 35ch;
     
     margin-top: 0;
     margin-left: 11ch;
@@ -114,22 +114,22 @@ dialogue {
 
 more {
     width-a4: 38ch;
-	width-us: 38ch;
+    width-us: 38ch;
     
     margin-left: 136px;
     margin-top: 0;
 }
 
 dualDialogueCharacter {
-	width-a4: 20ch;
-	width-us: 21ch;
+    width-a4: 20ch;
+    width-us: 21ch;
 
     margin-top: 1l;
     margin-left: 7ch;
 }
 dualDialogueMore {
-	width-a4: 20ch;
-	width-us: 21ch;
+    width-a4: 20ch;
+    width-us: 21ch;
 
     margin-top: 0;
     margin-left: 6ch;
@@ -142,61 +142,61 @@ dualDialogueParenthetical {
     margin-left: 4ch;
 }
 dualDialogue {
-	width-a4: 27ch;
-	width-us: 28ch;
+    width-a4: 27ch;
+    width-us: 28ch;
 
     margin-left: 0ch;
-	margin-right: 1ch;
+    margin-right: 1ch;
 }
 
 transition {
     margin-top: 1l;
-	
+    
     text-align: right;
-	uppercase: true;
+    uppercase: true;
 }
 
 lyrics {
     margin-top: 1l;
     text-align: center;
-	italic: true;
+    italic: true;
 }
 
 shot {
-	uppercase: true;
-	
-	bold: userSetting(shotStyleBold);
+    uppercase: true;
+    
+    bold: userSetting(shotStyleBold);
     underline: userSetting(shotStyleUnderline);
-	margin-top: 1l;
+    margin-top: 1l;
 }
 
 titlePageTitle {
-	margin-top: 23l;
-	margin-bottom: 2l;
-	text-align: center;
-	uppercase: true;
+    margin-top: 23l;
+    margin-bottom: 2l;
+    text-align: center;
+    uppercase: true;
 }
 titlePageAuthor {
-	margin-top: 1l;
-	text-align: center;
+    margin-top: 1l;
+    text-align: center;
 }
 titlePageCredit {
-	margin-top: 1l;
-	text-align: center;
+    margin-top: 1l;
+    text-align: center;
 }
 titlePageSource {
-	margin-top: 1l;
-	text-align: center;
+    margin-top: 1l;
+    text-align: center;
 }
 titlePageContact {
-	text-align: left;
+    text-align: left;
 }
 titlePageDraftDate {
     margin-top: 1l;
-	text-align: right;
+    text-align: right;
 }
 titlePageUnknown {
-	margin-top: 1l;
+    margin-top: 1l;
 }
 
 note {

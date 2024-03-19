@@ -10,7 +10,7 @@ import BeatParsing
 import OSLog
 
 @objc public class BeatStylesheet:NSObject, BeatExportStyleProvider {
-    public var name = ""
+    @objc public var name = ""
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
     public var settings:BeatExportSettings?

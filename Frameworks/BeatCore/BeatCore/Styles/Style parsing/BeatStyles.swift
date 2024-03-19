@@ -66,10 +66,16 @@ public class BeatStyles:NSObject {
         if _loadedStyles[name] != nil { return _loadedStyles[name]! }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay.beatCSS, otherwise the app will crash.
-        let url = stylesheets[name] ?? stylesheets[BeatStyles.defaultStyleName]!
-        let stylesheet = BeatStylesheet(url: url, name: name)
-        _loadedStyles[name] = stylesheet
+        var url:URL? = stylesheets[name]
+        if url == nil, let userStyle = userStylesheet(name: name) {
+            // Check user folder
+            url = userStyle
+        } else if url == nil {
+            url = stylesheets[BeatStyles.defaultStyleName]!
+        }
         
+        let stylesheet = BeatStylesheet(url: url!, name: name)
+        _loadedStyles[name] = stylesheet
         return stylesheet
     }
     
@@ -83,15 +89,26 @@ public class BeatStyles:NSObject {
         // Make sure the name isn't just an empty string
         let name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
         
-        if _loadedStyles[name] != nil {
-            return _loadedStyles[name]!
-        }
+        if _loadedStyles[name] != nil { return _loadedStyles[name]! }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
-        let url = stylesheets[name] ?? stylesheets[defaultStyle]!
-        let stylesheet = BeatStylesheet(url: url, name: styleName)
-        _loadedStyles[name] = stylesheet
+        var url:URL? = stylesheets[name]
         
+        // If no URL is available, first check user folder
+        if url == nil, let userStyle = userStylesheet(name: name) {
+            url = userStyle
+        } else if url == nil {
+            url = stylesheets[defaultStyle]!
+        }
+        
+        let stylesheet = BeatStylesheet(url: url!, name: name)
+        _loadedStyles[name] = stylesheet
+         
         return stylesheet
+    }
+    
+    func userStylesheet(name:String) -> URL? {
+        let url = BeatPaths.appDataPath("Styles").appendingPathComponent(name + ".beatCSS")
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 }
