@@ -81,7 +81,8 @@ struct PaginationRule {
         "visible": .boolType,
         "additional-settings": .stringType,
         "skip-if-preceded-by": .lineType,
-        "reformat-following-paragraph-after-type-change": .boolType
+        "reformat-following-paragraph-after-type-change": .boolType,
+        "disable-automatic-paragraphs": .boolType
     ] }
 
     @objc public var name:String = ""
@@ -153,8 +154,8 @@ struct PaginationRule {
     /// Whether this object always begins a new page
     @objc public var beginsPage = false
     
-    /// This
     @objc public var reformatFollowingParagraphAfterTypeChange = false
+    @objc public var disableAutomaticParagraphs = false
     
     /// A dictionary of sub-rules
     var conditionalRules:[String:[String:Any]] = [:]
@@ -315,6 +316,8 @@ struct PaginationRule {
             return "skipIfPrecededBy"
         case "reformat-following-paragraph-after-type-change":
             return "reformatFollowingParagraphAfterTypeChange"
+        case "disable-automatic-paragraphs":
+            return "disableAutomaticParagraphs"
         default:
             return name
         }
