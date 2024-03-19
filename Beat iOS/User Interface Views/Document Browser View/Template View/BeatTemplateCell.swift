@@ -16,3 +16,8 @@ class BeatTemplateCell:UICollectionViewCell {
 	@objc var url:URL?
 	@objc var product:String?
 }
+
+class BeatTemplateHeading:UICollectionViewCell {
+	@objc @IBOutlet var title:UILabel?
+}
+

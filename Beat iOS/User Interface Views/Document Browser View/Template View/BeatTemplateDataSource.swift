@@ -13,26 +13,33 @@ import BeatCore
 	
 	var templateData = BeatTemplates.shared()
 	
-	var templates:[BeatTemplateFile] = []
+	var templates:[[BeatTemplateFile]] = []
+	var templateNames = [
+		NSLocalizedString("templates.heading.newDocument", comment: "Start a new project"),
+		NSLocalizedString("templates.heading.tutorials", comment: "Tutorials"),
+		NSLocalizedString("templates.heading.templates", comment: "Templates")
+	]
 	
 	override init() {
 		super.init()
 		
-		templates = BeatTemplates.shared().forFamily("Tutorials")
-		templates.append(contentsOf: BeatTemplates.shared().forFamily("Templates"))
+		let tutorials = BeatTemplates.shared().forFamily("Tutorials")
+		let templates = BeatTemplates.shared().forFamily("Templates")
 		
 		// Insert a new, blank document
 		var newDoc = BeatTemplateFile(filename: "New Document.fountain", title: "templates.newDocument.title", description: "templates.newDocument.description", product: nil)
 		newDoc.url = Bundle(for: BeatTemplates.self).url(forResource: newDoc.filename, withExtension: "")
-		templates.insert(newDoc, at: 0)
+		//tutorials.insert(newDoc, at: 0)
+
+		self.templates = [[newDoc], tutorials, templates]
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return templates.count
+		return templates[section].count
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let template = self.templates[indexPath.last ?? 0]
+		let template = self.templates[indexPath.first ?? 0][indexPath.last ?? 0]
 		
 		let title = NSLocalizedString(template.title, comment: "Template title")
 		let description = NSLocalizedString(template.description, comment: "Template description")
@@ -64,7 +71,15 @@ import BeatCore
 	}
 	
 	func numberOfSections(in collectionView: UICollectionView) -> Int {
-		return 1
+		return self.templates.count
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+		if let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SectionHeader", for: indexPath) as? BeatTemplateHeading {
+			sectionHeader.title?.text = self.templateNames[indexPath.first ?? 0]
+			return sectionHeader
+		}
+		return UICollectionReusableView()
 	}
 	
 }
