@@ -23,7 +23,6 @@
 		B621D1BF2A803EBB00D072E6 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */; };
 		B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; };
 		B621D1C52A803EE700D072E6 /* UnzipKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
 		B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F76E29B7C9B80024D73A /* InputAssistantView.swift */; };
@@ -148,8 +147,6 @@
 		B621D1C32A803EE700D072E6 /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
-		B633C14D298C566E0011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
-		B633C14E298C566E0011449D /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Beat/User Interface/OutlineViewItem.m"; sourceTree = SOURCE_ROOT; };
 		B633C1E3298C622F0011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B636F76E29B7C9B80024D73A /* InputAssistantView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantView.swift; sourceTree = "<group>"; };
 		B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantCollectionView.swift; sourceTree = "<group>"; };
@@ -304,8 +301,6 @@
 			children = (
 				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
 				B637EE172A4B423D00F4E7AA /* BeatOutlineDataSource.swift */,
-				B633C14D298C566E0011449D /* OutlineViewItem.h */,
-				B633C14E298C566E0011449D /* OutlineViewItem.m */,
 			);
 			path = "Outline View";
 			sourceTree = "<group>";
@@ -521,10 +516,10 @@
 		B6CB9707282FEDAF00C7AFC7 /* User Interface Views */ = {
 			isa = PBXGroup;
 			children = (
+				B61FD0632A69308500A40883 /* Main Document View */,
 				B6A79B642B801AD7003FF931 /* Welcome Screen */,
 				B6AD9ACB2B80001D00E80E0C /* Preview View */,
 				B61FD0642A69309F00A40883 /* Storyboards */,
-				B61FD0632A69308500A40883 /* Main Document View */,
 				B63D9F5C2830366B00D027B6 /* Editor */,
 				B61FD0572A66BEF000A40883 /* Outline View */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
@@ -720,7 +715,6 @@
 				B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */,
 				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
 				B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */,
-				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
 				B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
@@ -951,7 +945,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1009,7 +1003,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";

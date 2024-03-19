@@ -223,6 +223,7 @@
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
+
 /// Check if the editor tab is visible on macOS
 #if !TARGET_OS_IOS
 - (bool)editorTabVisible;
@@ -241,7 +242,9 @@
 @property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatEditorFormatting* formatting;
 
+/// Forces full reload of editor styles and invalidates preview.
 - (void)reloadStyles;
+/// Sets the stylesheet and forces full reformatting in editor (and invalidates preview)
 - (void)setStylesheetAndReformat:(NSString*)name;
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;

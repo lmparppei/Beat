@@ -144,13 +144,12 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 
 - (id)get:(NSString*)key
 {
-    id value;
+    id value = _settings[key];
     
-    if (_settings[key] == nil) {
-        // If no value is set, try to get default value. It might be null too.
-        value = BeatDocumentSettings.defaultValues[key];
-    }
-	return _settings[key];
+    // If no value is set, try to get default value. It might be null too.
+    if (value == nil) value = BeatDocumentSettings.defaultValues[key];
+    
+	return value;
 }
 
 - (void)remove:(NSString *)key

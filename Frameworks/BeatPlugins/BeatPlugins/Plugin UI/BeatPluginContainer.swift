@@ -25,7 +25,7 @@ import UXKit
     func closePanel(_ sender:AnyObject?)
 }
 
-@objc public protocol BeatPluginContainer:BeatHTMLView, BeatPluginContainerExports {
+@objc public protocol BeatPluginContainer:BeatHTMLView, BeatPluginContainerExports, BeatPluginContainerInstance {
     var pluginName:String { get set }
     var pluginOptions:[String:AnyObject] { get set }
     var webView:BeatPluginWebView? { get set }

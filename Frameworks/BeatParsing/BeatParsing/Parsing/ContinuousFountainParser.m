@@ -1984,8 +1984,6 @@ NSInteger previousSceneIndex = NSNotFound;
 - (NSRange)lineIndicesInRange:(NSRange)range
 {
     NSArray* lines = self.safeLines;
-    NSMutableIndexSet* indices = NSMutableIndexSet.new;
-    
     NSRange indexRange = NSMakeRange(NSNotFound, 0);
     
     for (NSInteger i=0; i<lines.count; i++) {

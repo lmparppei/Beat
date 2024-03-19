@@ -19,6 +19,26 @@
 				<string>io.fountain</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>txt</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Text File</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>txt</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
+			<key>NSDocumentClass</key>
+			<string>Document</string>
+		</dict>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict/>
@@ -55,6 +75,28 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>fountain</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>io.fountain</string>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Text File</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.text</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>txt</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/plain</string>
 				</array>
 			</dict>
 		</dict>

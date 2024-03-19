@@ -27,3 +27,13 @@
 
 "templates.newDocument.title" = "New Screenplay";
 "templates.newDocument.description" = "Create a new, blank document";
+
+"templates.novel-tutorial.title" = "Novel Tutorial";
+"templates.novel-tutorial.description" = "Get started with writing novels in Beat";
+
+"templates.novel.title" = "Novel";
+"templates.novel.description" = "Bare-bones novel template";
+
+"templates.heading.newDocument" = "Start a new project";
+"templates.heading.tutorials" = "Tutorials";
+"templates.heading.templates" = "Templates";

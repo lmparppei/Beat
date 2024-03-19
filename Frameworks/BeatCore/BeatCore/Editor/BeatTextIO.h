@@ -31,14 +31,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)addNewParagraph:(NSString*)string;
 @end
 
-@protocol BeatTextIODelegate
-@property (nonatomic) ContinuousFountainParser* parser;
+@protocol BeatTextIODelegate <BeatEditorDelegate>
 @property (nonatomic, readwrite) bool moving;
-@property (nonatomic, readwrite) NSRange selectedRange;
 @optional @property (nonatomic) NSUndoManager* undoManager;
-- (Line*)currentLine;
-- (BXTextView*)getTextView;
-- (NSString*)text;
 - (void)textDidChange:(NSNotification *)notification;
 
 #if TARGET_OS_IOS

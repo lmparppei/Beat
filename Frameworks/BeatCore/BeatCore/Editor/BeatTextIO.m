@@ -12,9 +12,11 @@
  */
 
 #import "BeatTextIO.h"
+#import <BeatCore/BeatCore-Swift.h>
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
 #import "BeatUserDefaults.h"
+
 
 @interface BeatTextIO()
 @property (nonatomic) bool skipAutomaticLineBreaks;
@@ -322,7 +324,11 @@
         // Some methods can opt out of this behavior. Reset the flag once it's been used.
         _skipAutomaticLineBreaks = false;
         return NO;
+    } else if (_delegate.editorStyles.document.disableAutomaticParagraphs) {
+        // Styles can disable automatic paragraphs
+        return NO;
     }
+    
     
     // Don't add a dual line break if shift is pressed
     NSUInteger currentIndex = [_delegate.parser indexOfLine:currentLine];
