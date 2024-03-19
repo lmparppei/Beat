@@ -67,6 +67,7 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet var revisionMode:UISwitch?
 	@IBOutlet var pageSizeSwitch:UISegmentedControl?
 	@IBOutlet var headingSpacingSwitch:UISegmentedControl?
+	@IBOutlet var lineHeightSwitch:UISegmentedControl?
 	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
@@ -82,6 +83,9 @@ class BeatSettingsViewController:UITableViewController {
 		
 		let spacing = BeatUserDefaults.shared().getInteger(BeatSettingSceneHeadingSpacing)
 		self.headingSpacingSwitch?.selectedSegmentIndex = (spacing == 2) ? 0 : 1
+		
+		let lineSpacing = delegate.documentSettings.getFloat(DocSettingNovelLineHeightMultiplier)
+		self.lineHeightSwitch?.selectedSegmentIndex = (lineSpacing < 2) ? 1 : 0
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {
@@ -110,6 +114,17 @@ class BeatSettingsViewController:UITableViewController {
 		if button.reloadOutline {
 			// ?
 		}
+	}
+	
+	@IBAction func toggleLineSpacing(_ sender:BeatUserSettingSegmentedControl) {
+		guard let setting = sender.setting else { return }
+
+		if sender.documentSetting {
+			let value = (sender.selectedSegmentIndex == 0) ? 2 : 1.5
+			self.delegate?.documentSettings.set(setting, as:value)
+		}
+		
+		self.delegate?.reloadStyles()
 	}
 	
 	@IBAction func togglePageSize(_ sender:UISegmentedControl) {
@@ -162,7 +177,6 @@ class BeatSettingsViewController:UITableViewController {
 		let size = sender.selectedSegmentIndex
 		BeatUserDefaults.shared().save(size, forKey: key)
 		
-		// All fucking right
 		guard let textView = self.delegate?.getTextView() as? BeatUITextView else { return }
 		textView.updateMobileScale()
 	}
