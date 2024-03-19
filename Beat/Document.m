@@ -168,7 +168,7 @@
 @property (nonatomic) bool headingStyleUnderline;
 
 // Views
-@property (nonatomic) NSMutableArray<BeatPluginContainerView*>* registeredPluginContainers;
+//@property (nonatomic) NSMutableArray<BeatPluginContainerView*>* registeredPluginContainers;
 
 // Sidebar & Outline view
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
@@ -1032,15 +1032,6 @@
  and sorrows end.
  
  */
-
-#pragma mark - Editor view registration
-
-/// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
-- (void)registerPluginContainer:(id<BeatPluginContainer>)view
-{
-	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableArray.new;
-	[_registeredPluginContainers addObject:(BeatPluginContainerView*)view];
-}
 
 
 
@@ -2814,14 +2805,6 @@
 	[self showWidgets:nil];
 }
 
-// For those who REALLY, REALLY know what the fuck they are doing
-- (void)setPropertyValue:(NSString*)key value:(id)value {
-	[self setValue:value forKey:key];
-}
-
-- (id)getPropertyValue:(NSString*)key {
-	return [self valueForKey:key];
-}
 
 
 #pragma mark - Search for scene

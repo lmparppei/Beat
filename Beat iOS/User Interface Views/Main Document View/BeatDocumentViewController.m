@@ -36,8 +36,6 @@
 /// The range where the *edit* happened
 @property (nonatomic) NSRange lastEditedRange;
  
-@property (nonatomic) NSMutableSet<id<BeatPluginContainer>>* registeredPluginContainers;
-
 @property (nonatomic) bool sidebarVisible;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* sidebarConstraint;
 
@@ -81,8 +79,21 @@
 	return self;
 }
 
+
 - (BXWindow*)documentWindow {
 	return self.view.window;
+}
+
+/// @warning This method expects the split view controller to be in place (done in storyboard segue)
+- (void)setupEditorViews
+{
+	self.editorSplitView.editorDelegate = self;
+	[self.editorSplitView setupWithEditorDelegate:self];
+	
+	self.pageView = self.editorSplitView.editorView.pageView;
+	self.scrollView = self.editorSplitView.editorView.scrollView;
+	
+	self.outlineView = self.editorSplitView.outlineView;
 }
 
 /// Creates the text view and replaces placeholder text view
@@ -108,7 +119,7 @@
 		[self.pageView removeFromSuperview];
 		[self.scrollView removeFromSuperview];
 	}
-
+	
 	self.textView.font = self.fonts.regular;
 	
 	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
@@ -144,7 +155,7 @@
 	[splitView loadView];
 	
 	self.editorSplitView = splitView;
-		
+	
 	// Setup the split view
 	[self setupEditorViews];
 	
@@ -598,6 +609,8 @@
 		return false;
 	}
 	
+	bool undoOrRedo = (self.undoManager.isUndoing || self.undoManager.isRedoing);
+	
 	Line* currentLine = self.currentLine;
 	
 	// Process line break after a forced character input
@@ -611,7 +624,7 @@
 		}
 	}
 	
-	if (!self.undoManager.isUndoing && !self.undoManager.isRedoing && self.selectedRange.length == 0 && currentLine != nil) {
+	if (!undoOrRedo && self.selectedRange.length == 0 && currentLine != nil) {
 		// Test if we'll add extra line breaks and exit the method
 		if (range.length == 0 && [text isEqualToString:@"\n"]) {
 			// Line break after character cue
@@ -858,6 +871,7 @@
 
 #pragma mark - General editor stuff
 
+/// TODO: Move this to text view?
 - (void)handleTabPress {
 	if (self.textView.assistantView.numberOfSuggestions > 0) {
 		//Select the first one
@@ -871,10 +885,6 @@
 
 -(void)focusEditor {
 	[self.textView becomeFirstResponder];
-}
-
-- (void)registerPluginContainer:(id<BeatPluginContainer>)view {
-	if (_registeredPluginContainers == nil) _registeredPluginContainers = NSMutableSet.new;
 }
 
 - (void)toggleMode:(BeatEditorMode)mode {
@@ -932,17 +942,6 @@
 		
 	} completion:^(BOOL finished) {
 		[self.textView resize];
-		
-		/*
-		 if (self.selectedRange.location == NSNotFound) return;
-		 CGRect rect = [self.textView rectForRangeWithRange:self.selectedRange];
-		 // Make sure we never hide the selection
-		 rect.origin.y += 100.0;
-		 rect.size.height += 24.0;
-		 CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
-		 
-		 [self.scrollView safelyScrollRectToVisible:visible animated:true];
-		 */
 	}];
 }
 
@@ -979,14 +978,6 @@
 	//[self runPluginWithName:pluginName];
 }
 
-- (id)getPropertyValue:(NSString *)key {
-	return [self valueForKey:key];
-}
-
-- (void)setPropertyValue:(NSString *)key value:(id)value {
-	[self setValue:value forKey:key];
-}
-
 
 #pragma mark - Segues
 
@@ -1006,20 +997,6 @@
 {
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
-
-
-/// @warning This method expects the split view controller to be in place (done in storyboard segue)
-- (void)setupEditorViews
-{
-	self.editorSplitView.editorDelegate = self;
-	[self.editorSplitView setupWithEditorDelegate:self];
-	
-	self.pageView = self.editorSplitView.editorView.pageView;
-	self.scrollView = self.editorSplitView.editorView.scrollView;
-	
-	self.outlineView = self.editorSplitView.outlineView;
-}
-
 
 
 
