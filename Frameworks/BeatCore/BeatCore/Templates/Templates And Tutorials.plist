@@ -52,6 +52,20 @@
 			<key>target</key>
 			<string>macOS</string>
 		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Novel Tutorial iOS.fountain</string>
+			<key>product</key>
+			<string>Novel Tutorial.fountain</string>
+			<key>title</key>
+			<string>templates.novel-tutorial.title</string>
+			<key>description</key>
+			<string>templates.novel-tutorial.description</string>
+			<key>icon</key>
+			<string>book</string>
+			<key>target</key>
+			<string>iOS</string>
+		</dict>
 	</array>
 	<key>Templates</key>
 	<array>
