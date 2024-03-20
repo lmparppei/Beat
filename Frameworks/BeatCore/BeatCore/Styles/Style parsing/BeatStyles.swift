@@ -60,6 +60,10 @@ public class BeatStyles:NSObject {
         return keys
     }
     
+    @objc public func reset() {
+        _stylesheets = [:]
+    }
+    
     /// Returns the styles for given name
     @objc public func styles(for name:String = BeatStyles.defaultStyleName) -> BeatStylesheet {
         // This style is already loaded

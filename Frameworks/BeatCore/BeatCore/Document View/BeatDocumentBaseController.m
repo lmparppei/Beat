@@ -78,6 +78,12 @@
     return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
+- (void)resetStyles
+{
+    [BeatStyles.shared reset];
+    [self reloadStyles];
+}
+
 /// Reloads __current__ stylesheet. Does NOT reload all styles if the stylesheet has changed.
 - (void)reloadStyles
 {

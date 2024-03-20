@@ -246,6 +246,8 @@
 - (void)reloadStyles;
 /// Sets the stylesheet and forces full reformatting in editor (and invalidates preview)
 - (void)setStylesheetAndReformat:(NSString*)name;
+/// Resets all styles
+- (void)resetStyles;
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;
