@@ -243,6 +243,8 @@ extension BeatReview {
 					closePopover()
 					return
 				}
+                // ... if we *are* showing it, let's end editing as well
+                self.delegate?.getTextView().endEditing(true)
                 #endif
 				// Set new review and store it
 				reviewItem = item
@@ -289,15 +291,21 @@ extension BeatReview {
 			}
 			reviewRange = displayRange
 		}
-				
-		// Create editor popover
-		self.reviewEditor = BeatReviewEditor(review: reviewItem, delegate: self, editable: forEditing)
-		self.reviewEditor?.show(range: range, editable: forEditing, sender: delegate.getTextView())
+        
+		// Create editor popover if we're not already displaying it
+        if self.reviewEditor?.item != reviewItem {
+            self.reviewEditor = BeatReviewEditor(review: reviewItem, delegate: self, editable: forEditing)
+            self.reviewEditor?.show(range: range, editable: forEditing, sender: delegate.getTextView())
+        }
 	}
 	    
     @objc public func closePopover() {
 		self.reviewEditor?.close()
 		self.reviewEditor = nil
+    }
+    
+    @objc public var editorVisible:Bool {
+        return (self.reviewEditor != nil)
     }
     
     func editorDidClose(for item:BeatReviewItem) {

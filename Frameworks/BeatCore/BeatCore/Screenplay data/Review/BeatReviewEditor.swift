@@ -6,7 +6,14 @@
 //
 /**
  
- This class is a __complete__ mess. It aims to be cross-platform compatbile without really understanding MVVM design.
+ THIS IS NOT A PLACE OF HONOR
+ no highly esteemed deed is commemorated here
+ nothing valued is here
+ 
+ 
+ 
+ 
+ OK, now that you've read that, this class is a __complete__ mess. It aims to be cross-platform compatbile without really understanding MVVM design.
  
  You should be able to create a `BeatReviewEditor` instance and on both iOS and macOS and ignore this class altogether.
  `BeatReviewEditorView` is the actual popup content view,
@@ -23,12 +30,15 @@ protocol BeatReviewEditorDelegate:AnyObject {
     func applyReview(item:BeatReviewItem)
     func deleteReview(item:BeatReviewItem)
     func saveReview(item:BeatReviewItem)
+        
     func close()
     
     //func editorDidClose(for item:BeatReviewItem)
     
     #if os(macOS)
     var popover:NSPopover? { get }
+    #else
+    func presentForEditing(item:BeatReviewItem)
     #endif
 }
 
@@ -66,33 +76,48 @@ protocol BeatReviewEditorDelegate:AnyObject {
             
         #elseif os(iOS)
         
-            guard let editor = self.editor else { return }
+            guard let editor = self.editor,
+                  let vc = self.delegate.delegate as? UIViewController
+            else { return }
 
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                editor.modalPresentationStyle = .popover
-                
-                let popoverController = editor.popoverPresentationController
-                
-                var sourceRect = rect
-                sourceRect.origin.y += 5.0
-                sourceRect.origin.x += rect.size.width / 2
-                sourceRect.size.width = rect.size.width / 2
-            
-                popoverController?.sourceView = sender
-                popoverController?.sourceRect = sourceRect
-                
-                popoverController?.permittedArrowDirections = [.up]
+            if (!editable) {
+                // Non-editable view
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    editor.modalPresentationStyle = .popover
+                    
+                    let popoverController = editor.popoverPresentationController
+                    
+                    var sourceRect = rect
+                    sourceRect.origin.y += 5.0
+                    sourceRect.origin.x += rect.size.width / 2
+                    sourceRect.size.width = rect.size.width / 2
+                    
+                    popoverController?.sourceView = sender
+                    popoverController?.sourceRect = sourceRect
+                    
+                    popoverController?.permittedArrowDirections = [.up]
+                } else {
+                    self.editor?.modalPresentationStyle = .pageSheet
+                    self.editor?.sheetPresentationController?.detents = [.medium()]
+                }
             } else {
-                self.editor?.modalPresentationStyle = .pageSheet
-                self.editor?.sheetPresentationController?.detents = [.medium()]
+                // Editable view
+                self.editor?.modalPresentationStyle = .formSheet
             }
                 
-
-            if let vc = self.delegate.delegate as? UIViewController {
-                vc.present(editor, animated: true)
-            } 
+            vc.present(editor, animated: true)
         #endif
     }
+    
+    #if os(iOS)
+    func presentForEditing(item: BeatReviewItem) {
+        
+        self.editor?.dismiss(animated: false)
+        self.editor = BeatReviewEditorView(reviewItem: self.item, delegate: self, editable: true)
+        
+        show(range: self.delegate.delegate?.selectedRange ?? NSRange(), editable: true, sender: nil)
+    }
+    #endif
     
     func rectForRange(range:NSRange) -> CGRect {
         guard let textView = delegate.delegate?.getTextView() as? UXTextView
@@ -191,7 +216,6 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
     var item:BeatReviewItem
     var shown:Bool = false
     
-    
     let editorContentSize = CGSizeMake(250, 160)
     
     var editable = false {
@@ -212,11 +236,17 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         view?.viewController = self
         
         self.view.insetsLayoutMarginsFromSafeArea = true
+        self.textView?.textContainerInset = UIEdgeInsets.zero
         
-        if UIDevice.current.userInterfaceIdiom != .phone {
-            closeButton?.isHidden = true
+        // Setting the delegate will automatically make this class save the changes
+        self.textView?.delegate = self
+        
+        if editable {
+            self.setContentSize(CGSizeMake(400.0, 300.0))
+            self.textView?.becomeFirstResponder()
         }
         
+        if UIDevice.current.userInterfaceIdiom != .phone { closeButton?.removeFromSuperview() }
     }
     
     required init?(coder: NSCoder) {
@@ -234,9 +264,23 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         
         guard let direction = self.popoverPresentationController?.arrowDirection else { return }
         if (direction != .up) {
-            self.additionalSafeAreaInsets = UIEdgeInsets(top: -20.0, left: 0.0, bottom: 0.0, right: 0.0)
+            self.additionalSafeAreaInsets = UIEdgeInsets(top: -20.0, left: 0.0, bottom: 20.0, right: 0.0)
         }
     }
+    
+    @IBAction public func editReviewNote(sender:Any?) {
+        if self.editable {
+            // In edit mode, this button dismisses the view
+            self.dismiss(animated: true)
+        } else {
+            self.delegate?.presentForEditing(item: self.item)
+        }
+    }
+    
+    public func textViewDidChange(_ textView: UITextView) {
+        self.textDidChange(Notification(name: Notification.Name("")))
+    }
+    
 }
 
 class BeatReviewEditorActualView:UIView {
@@ -268,26 +312,48 @@ extension BeatReviewEditorView {
     
     /// Update editor mode when setting `editable` property
     func updateEditorMode() {
-        guard let textView = self.textView else { return }
-        
-        textView.isEditable = editable
+        textView?.isEditable = editable
         editButton?.isHidden = editable
         
         if (!editable) {
-            // Calculate appropriate size for the content
-            let textSize = textView.attributedString().height(containerWidth: editorContentSize.width)
-            let insetHeight = textView.getInsets().height
-            
-            let size = CGSizeMake(editorContentSize.width, 40 + textSize * 1.1 + insetHeight * 2)
-            self.setContentSize(size)
+            adjustTextViewToContent()
         } else {
-            self.setContentSize(editorContentSize)
-                        
-            #if os(macOS)
-            textView.window?.makeFirstResponder(self.textView)
-            delegate?.popover?.contentSize = self.editorContentSize
-            #endif
+            focusTextView()
         }
+        
+        #if os(iOS)
+        editButton?.isHidden = false
+        editButton?.title = (editable) ? NSLocalizedString("review.editor.done", comment: "Done") : NSLocalizedString("review.editor.edit", comment: "Edit")
+        #endif
+    }
+    
+    /// Adjusts text view to non-editable note content
+    func adjustTextViewToContent() {
+        guard let textView = self.textView else { return }
+        
+        // Calculate appropriate size for the content
+        let textSize = textView.attributedString().height(containerWidth: editorContentSize.width)
+        let insetHeight = textView.getInsets().height
+        
+        #if os(macOS)
+        let size = CGSizeMake(editorContentSize.width, 40 + textSize * 1.1 + insetHeight * 2)
+        #else
+        let size = CGSizeMake(editorContentSize.width, textSize * 1.1 + insetHeight * 2 + 80)
+        #endif
+        
+        self.setContentSize(size)
+    }
+    
+    /// Focuses the editable text view
+    func focusTextView() {
+        self.setContentSize(editorContentSize)
+                    
+        #if os(macOS)
+        textView?.window?.makeFirstResponder(self.textView)
+        delegate?.popover?.contentSize = self.editorContentSize
+        #else
+        self.textView?.becomeFirstResponder()
+        #endif
     }
     
     @IBAction public func confirm(sender:Any?) {
@@ -298,7 +364,7 @@ extension BeatReviewEditorView {
     @IBAction public func edit(sender:Any?) {
         self.editable = true
     }
-    
+        
     @IBAction public func delete(sender:Any?) {
         delegate?.deleteReview(item: item)
     }
@@ -306,7 +372,7 @@ extension BeatReviewEditorView {
     
     // MARK: Text view delegation
     public func textDidChange(_ notification: Notification) {
-        item.string = textView?.string as? NSString
+        item.string = textView?.text as? NSString
         delegate?.saveReview(item: item)
     }
     
