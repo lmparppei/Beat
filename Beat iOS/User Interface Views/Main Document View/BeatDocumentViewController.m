@@ -550,7 +550,7 @@
 	}
 	
 	// Update outline view
-	if (self.outlineView.visible) [self.outlineView update];
+	if (self.outlineView.visible) [self.outlineView reloadData];
 	
 	// Update text view input view and scroll range to visible
 	[self.textView updateAssistingViews];
@@ -650,15 +650,6 @@
 	_lastChangedRange = (NSRange){ range.location, text.length };
 	
 	return true;
-}
-
-
-/// Updates outline views.
-/// TODO: Conform sidebar to a editor view, please
-- (void)outlineDidUpdateWithChanges:(OutlineChanges *)changes
-{
-	[super outlineDidUpdateWithChanges:changes];
-	if (self.sidebarVisible) [self.outlineProvider update];
 }
 
 

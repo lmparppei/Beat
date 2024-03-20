@@ -8,13 +8,17 @@
 
 import Foundation
 import BeatCore
+import BeatParsing
 
 @objc class BeatOutlineDataProvider:NSObject {
 	var dataSource:UITableViewDiffableDataSource<Int,OutlineDataItem>
 	var delegate:BeatEditorDelegate
-
+	weak var tableView:UITableView?
+	
 	@objc init(delegate:BeatEditorDelegate, tableView:UITableView) {
 		self.delegate = delegate
+		self.tableView = tableView
+		
 		self.dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
 			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 			
@@ -35,13 +39,29 @@ import BeatCore
 		super.init()
 		
 		// Create initial snapshot
-		self.update()
+		if let snapshot = self.initialSnapshot() {
+			self.dataSource.apply(snapshot, animatingDifferences: true)
+		}
 	}
 	
 	@objc func update() {
+		guard let outline = delegate.parser.outline as? [OutlineScene] else { return }
+		
+		let items:[OutlineDataItem] = outline.map { OutlineDataItem(with: $0) }
+		
+		var snapshot = NSDiffableDataSourceSnapshot<Int, OutlineDataItem>()
+		snapshot.appendSections([0])
+		snapshot.appendItems(items)
+		
+		self.dataSource.applySnapshotUsingReloadData(snapshot)		
+	}
+	
+	func initialSnapshot() -> NSDiffableDataSourceSnapshot<Int, OutlineDataItem>? {
+		guard let outline = delegate.parser.outline as? [OutlineScene] else { return nil }
+		
 		var items:[OutlineDataItem] = []
-		for scene in delegate.parser.outline {
-			let item = OutlineDataItem(with: scene as! OutlineScene)
+		for scene in outline {
+			let item = OutlineDataItem(with: scene)
 			items.append(item)
 		}
 		
@@ -49,7 +69,7 @@ import BeatCore
 		snapshot.appendSections([0])
 		snapshot.appendItems(items)
 		
-		self.dataSource.apply(snapshot, animatingDifferences: false)
+		return snapshot
 	}
 }
 
@@ -72,17 +92,16 @@ class OutlineDataItem:Hashable {
 		self.beats = scene.beats as! [Storybeat]
 		self.markers = scene.markers as! [[String : String]]
 		self.sceneNumber = scene.sceneNumber ?? ""
-		self.uuid = scene.line.uuid!
+		self.uuid = scene.line.uuid ?? UUID()
 		self.range = scene.range()
 		self.selected = false
 	}
 	
 	func hash(into hasher: inout Hasher) {
+		hasher.combine(uuid)
 		hasher.combine(string)
 		hasher.combine(color)
-		hasher.combine(synopsis)
 		hasher.combine(markers)
-		hasher.combine(range)
 	}
 
 	static func == (lhs: OutlineDataItem, rhs: OutlineDataItem) -> Bool {

@@ -82,13 +82,19 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 			editorDelegate.toggleSidebar(self)
 		}
 	}
-		
+	
+	override func numberOfRows(inSection section: Int) -> Int {
+		return self.editorDelegate?.parser.outline.count ?? 0
+	}
+	
 	/// Updates current scene
 	var previousLine:Line?
 	var selectedItem:OutlineDataItem?
 	
 	@objc func update() {
 		guard let editorDelegate = self.editorDelegate else { return }
+		
+		if !self.visible() { return }
 		
 		// Do nothing if the line hasn't changed
 		if editorDelegate.currentLine() == previousLine { return }
