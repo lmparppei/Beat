@@ -37,3 +37,6 @@
 "templates.heading.newDocument" = "Start a new project";
 "templates.heading.tutorials" = "Tutorials";
 "templates.heading.templates" = "Templates";
+
+"review.editor.done" = "Done";
+"review.editor.edit" = "Edit";
