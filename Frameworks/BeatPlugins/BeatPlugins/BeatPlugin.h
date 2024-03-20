@@ -290,6 +290,7 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
 - (BeatPaginationManager*)pagination;
 /// Resets the preview and clears pagination
 - (void)resetPreview;
+- (void)resetStyles;
 
 #pragma mark Reformatting
 JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)len);

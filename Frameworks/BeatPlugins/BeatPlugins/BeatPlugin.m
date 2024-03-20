@@ -1954,6 +1954,10 @@
     [self.delegate setStylesheetAndReformat:name];
 }
 
+- (void)resetStyles
+{
+    [self.delegate resetStyles];
+}
 
 #pragma mark - Temporary attributes
 
