@@ -42,8 +42,6 @@
 #import "Beat-Swift.h"
 #import "BeatClipView.h"
 
-#import "BeatFocusMode.h"
-
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
 
@@ -999,7 +997,6 @@ double clamp(double d, double min, double max)
 {
 	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
-	NSDictionary *options = NSDictionary.new;
 	
 	// See if we can read anything from the pasteboard
 	if ([pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]]) {
@@ -1007,7 +1004,7 @@ double clamp(double d, double min, double max)
 		// the custom object we created when copying. So let's just pick the first one of the
 		// readable objects.
 		
-		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
+		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:@{}];
 		
 		id obj = objectsToPaste[0];
 		
@@ -1031,6 +1028,31 @@ double clamp(double d, double min, double max)
 	// If we didn't call super, the text view might not scroll back to caret
 	[self scrollRangeToVisible:self.selectedRange];
 }
+
+/*
+/// This is a bit convoluted method. It checks the current pasteboard items and prioritizes the internal Beat type.
+- (id)readablePasteboardItem
+{
+	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
+	NSArray *objects = [NSPasteboard.generalPasteboard readObjectsForClasses:classArray options:@{}];
+	
+	id itemToPaste;
+	
+	// Iterate from first to last if we can see a Beat-compatible pasteboard item in the board
+	for (NSInteger i=objects.count-1; i>=0; i--) {
+		id item = objects[i];
+		
+		if ([item isKindOfClass:BeatPasteboardItem.class]) {
+			itemToPaste = item; break;
+		} else if ([item isKindOfClass:NSString.class]) {
+			itemToPaste = item;
+		}
+	}
+	
+	if (itemToPaste == nil) itemToPaste = objects[0];
+	return itemToPaste;
+}
+ */
 
 
 #pragma mark - Validate menu items

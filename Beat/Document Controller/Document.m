@@ -109,7 +109,6 @@
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
-#import "BeatFocusMode.h"
 
 @interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
@@ -148,8 +147,8 @@
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
-@property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool hideFountainMarkup;
+@property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) NSMutableArray *recentCharacters;
 
 /// The range where last actual edit happened in text storage
