@@ -1070,9 +1070,28 @@ DQ
                             </menuItem>
                             <menuItem title="Focus Mode" id="IBj-Is-T2j">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleFocusMode:" target="-1" id="dzj-rh-rfL"/>
-                                </connections>
+                                <menu key="submenu" id="C3s-IR-YIi">
+                                    <items>
+                                        <menuItem title="Off" id="Ky4-4V-X4n">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleFocusMode:" target="-1" id="xuF-hG-wN3"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Sentence" tag="1" id="Uev-il-t8u">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleFocusMode:" target="-1" id="Dsq-L6-HlX"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Paragraph" tag="2" id="EMs-tv-EBx">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toggleFocusMode:" target="-1" id="1iZ-YB-pFb"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="tVJ-xa-3TK"/>
                             <menuItem title="Dark Mode" id="8a1-24-Jc9">
