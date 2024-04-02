@@ -1,0 +1,387 @@
+
+/* Class = "NSTextFieldCell"; title = "Select a previous version to print out a file with markers aside the changes"; ObjectID = "0hB-KJ-SPD"; */
+"0hB-KJ-SPD.title" = "Valitse aiempi versio, johon nykyistä tiedostoa verrataan";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "2UR-53-QPX"; */
+"2UR-53-QPX.title" = "Syaani";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "2lb-aO-myG"; */
+"2lb-aO-myG.title" = "Punainen";
+
+/* Class = "NSButtonCell"; title = "PDF"; ObjectID = "2w8-v4-zai"; */
+"2w8-v4-zai.title" = "PDF";
+
+/* Class = "NSButtonCell"; title = "Select Script"; ObjectID = "2yw-7s-I3z"; */
+"2yw-7s-I3z.title" = "Valitse…";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "32z-eW-bTT"; */
+"32z-eW-bTT.title" = "Punainen";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "3zP-Qf-Nxg"; */
+"3zP-Qf-Nxg.title" = "Peruuta";
+
+/* Class = "NSTextFieldCell"; title = "Notepad"; ObjectID = "4ZQ-iA-Rxf"; */
+"4ZQ-iA-Rxf.title" = "Muistio";
+
+/* Class = "NSMenuItem"; title = "Clear Revisions"; ObjectID = "6SY-H3-Ej1"; */
+"6SY-H3-Ej1.title" = "Tyhjennä korjausmerkinnät";
+
+/* Class = "NSTextFieldCell"; title = "Paper Size"; ObjectID = "6Yb-zo-0AS"; */
+"6Yb-zo-0AS.title" = "Paperikoko";
+
+/* Class = "NSTabViewItem"; label = "Cards"; ObjectID = "798-ya-EGc"; */
+"798-ya-EGc.label" = "Kortit";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "8n7-A7-WU4"; */
+"8n7-A7-WU4.title" = "Vihreä";
+
+/* Class = "NSSearchFieldCell"; placeholderString = "Scene Heading"; ObjectID = "8pP-ME-BEt"; */
+"8pP-ME-BEt.placeholderString" = "Kohtausotsikko";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "8rU-6s-EUe"; */
+"8rU-6s-EUe.title" = "Ruskea";
+
+/* Class = "NSMenuItem"; title = "Track Storyline"; ObjectID = "9RQ-zI-QP5"; */
+"9RQ-zI-QP5.title" = "Seuraa juonilinjaa";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "AVO-4E-ZtX"; */
+"AVO-4E-ZtX.title" = "Oranssi";
+
+/* Class = "NSMenuItem"; title = "Color"; ObjectID = "Afp-fN-Tl7"; */
+"Afp-fN-Tl7.title" = "Väri";
+
+/* Class = "NSButtonCell"; title = "  Print  "; ObjectID = "BoT-Wm-Cvo"; */
+"BoT-Wm-Cvo.title" = "Tulosta";
+
+/* Class = "NSMenuItem"; title = "Mark as Revised"; ObjectID = "BqD-vz-DpD"; */
+"BqD-vz-DpD.title" = "Merkitse korjatuksi";
+
+/* Class = "NSTextFieldCell"; title = "Scene Numbering"; ObjectID = "Cw1-Zn-mbx"; */
+"Cw1-Zn-mbx.title" = "Kohtausnumerointi";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibExternalAccessibilityDescription" = "Näytä esikatselu";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibShadowedToolTip" = "Näytä esikatselu";
+
+/* Class = "NSTabViewItem"; label = "Notepad"; ObjectID = "ELh-pn-Go0"; */
+"ELh-pn-Go0.label" = "Muisto";
+
+/* Class = "NSTextFieldCell"; title = "Mark Changes To..."; ObjectID = "EU5-TD-jAn"; */
+"EU5-TD-jAn.title" = "Vertaa muutoksia...";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "EzC-hd-0ex"; */
+"EzC-hd-0ex.title" = "Sininen";
+
+/* Class = "NSButtonCell"; title = "OK"; ObjectID = "FCG-mm-dLY"; */
+"FCG-mm-dLY.title" = "OK";
+
+/* Class = "NSTextFieldCell"; title = "Scene Numbers"; ObjectID = "FcY-wT-YPP"; */
+"FcY-wT-YPP.title" = "Kohtausnumerot";
+
+/* Class = "NSTextFieldCell"; title = "Advanced Options"; ObjectID = "G3o-zq-apk"; */
+"G3o-zq-apk.title" = "Lisäasetukset";
+
+/* Class = "NSPopoverTouchBarItem"; collapsedRepresentationLabel = "💡"; ObjectID = "GmR-Ks-GH7"; */
+"GmR-Ks-GH7.collapsedRepresentationLabel" = "💡";
+
+/* Class = "NSTextFieldCell"; title = "Statistics"; ObjectID = "Hmf-kZ-O5M"; */
+"Hmf-kZ-O5M.title" = "Tilastot";
+
+/* Class = "NSWindow"; title = "Timer"; ObjectID = "Hmo-7c-h1l"; */
+"Hmo-7c-h1l.title" = "Ajastin";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "IUI-JC-aZs"; */
+"IUI-JC-aZs.title" = "Ikkuna";
+
+/* Class = "NSButtonCell"; title = "Print Scene Numbers"; ObjectID = "IYb-QC-vky"; */
+"IYb-QC-vky.title" = "Tulosta kohtausnumerot";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "IzO-h2-Esp"; */
+"IzO-h2-Esp.placeholderString" = "Versio, korjaukset, ...";
+
+/* Class = "NSMenuItem"; title = "Character"; ObjectID = "J2Y-LT-NZj"; */
+"J2Y-LT-NZj.title" = "Hahmo";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "JLw-Th-DgB"; */
+"JLw-Th-DgB.title" = "Sivunumerot";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "KUg-Bv-fNP"; */
+"KUg-Bv-fNP.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "LgM-Xa-gig"; */
+"LgM-Xa-gig.title" = "Ei mitään";
+
+/* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "MCV-a7-c8J"; */
+"MCV-a7-c8J.title" = "Lisää otsake";
+
+/* Class = "NSTextFieldCell"; title = "Filter Scenes"; ObjectID = "NAI-kd-UO5"; */
+"NAI-kd-UO5.title" = "Suodata kohtauksia";
+
+/* Class = "NSTextFieldCell"; title = "Character"; ObjectID = "NLd-GN-ebP"; */
+"NLd-GN-ebP.title" = "Hahmo";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "NfX-B5-spN"; */
+"NfX-B5-spN.title" = "Toinen";
+
+/* Class = "NSTabViewItem"; label = "Outline"; ObjectID = "O5H-I2-RI4"; */
+"O5H-I2-RI4.label" = "Rakenne";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "PtV-0l-a6v"; */
+"PtV-0l-a6v.title" = "Oranssi";
+
+/* Class = "NSTextFieldCell"; title = "Set Timer"; ObjectID = "PxP-37-Hnj"; */
+"PxP-37-Hnj.title" = "Aseta ajastin";
+
+/* Class = "NSWindow"; title = "Print"; ObjectID = "QbD-Re-N9Z"; */
+"QbD-Re-N9Z.title" = "Tulosta";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "RwW-JZ-rsu"; */
+"RwW-JZ-rsu.title" = "A4";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibExternalAccessibilityDescription" = "Näytä aikajana";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibShadowedToolTip" = "Näytä aikajana";
+
+"L0v-T6-wwt.ibShadowedToolTip" = "Siirry kohtaukseen...";
+
+/* Class = "NSTextFieldCell"; title = "Revision Color"; ObjectID = "Teo-oJ-Dwq"; */
+"Teo-oJ-Dwq.title" = "Korjausversio";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "Thz-O0-hCD"; */
+"Thz-O0-hCD.title" = "Ensimäinen";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "Tol-77-c6p"; */
+"Tol-77-c6p.title" = "US Letter";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "UFH-LF-mx7"; */
+"UFH-LF-mx7.title" = "US Letter";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Outline view"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Sivupalkki";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Outline"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibShadowedToolTip" = "Näytä/kätke sivupalkki";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "Uq4-Ad-AU8"; */
+"Uq4-Ad-AU8.title" = "Ruskea";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "X1d-1b-z0n"; */
+"X1d-1b-z0n.title" = "Ei mitään";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[0] = "Outline"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[0]" = "Rakenne";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[1] = "Notepad"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[1]" = "Muistio";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[2] = "Characters and Dialogue"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[2]" = "Hahmot ja dialogi";
+
+/* Class = "NSTabViewItem"; label = "Render"; ObjectID = "Ycm-en-OeX"; */
+"Ycm-en-OeX.label" = "Näytä";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibExternalAccessibilityDescription" = "Näytä kohtauskortit";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibShadowedToolTip" = "Näytä kohtauskortit";
+
+/* Class = "NSTextFieldCell"; title = "Tagging"; ObjectID = "Zo3-K1-aDo"; */
+"Zo3-K1-aDo.title" = "Merkinnät";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "Zu3-Fk-iUY"; */
+"Zu3-Fk-iUY.title" = "Pinkki";
+
+/* Class = "NSTextFieldCell"; placeholderString = "mm"; ObjectID = "Zwl-Qz-7rQ"; */
+"Zwl-Qz-7rQ.placeholderString" = "kk";
+
+/* Class = "NSTextFieldCell"; title = "25"; ObjectID = "Zwl-Qz-7rQ"; */
+"Zwl-Qz-7rQ.title" = "25";
+
+/* Class = "NSTextFieldCell"; title = "Print"; ObjectID = "a1m-TO-uci"; */
+"a1m-TO-uci.title" = "Tulosta";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "aEe-qy-xc9"; */
+"aEe-qy-xc9.title" = "Syaani";
+
+/* Class = "NSTextFieldCell"; title = "Document is locked"; ObjectID = "aMy-cb-lJ3"; */
+"aMy-cb-lJ3.title" = "Dokumentti on lukittu";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "aZa-eN-JMs"; */
+"aZa-eN-JMs.title" = "Sivun koko";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "bJU-Vk-ZPT"; */
+"bJU-Vk-ZPT.title" = "Sininen";
+
+/* Class = "NSMenuItem"; title = "Purple"; ObjectID = "bbu-dp-keE"; */
+"bbu-dp-keE.title" = "Kolmas";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "bd3-1f-TNb"; */
+"bd3-1f-TNb.title" = "A4";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "cGw-JR-l1k"; */
+"cGw-JR-l1k.title" = "Pinkki";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "cYq-6M-VKh"; */
+"cYq-6M-VKh.title" = "Värikoodaa korjatut sivut";
+
+/* Class = "NSButtonCell"; title = "Close"; ObjectID = "cYv-Uf-2S4"; */
+"cYv-Uf-2S4.title" = "Sulje";
+
+/* Class = "NSTextFieldCell"; placeholderString = "1"; ObjectID = "dJ4-oY-Is8"; */
+"dJ4-oY-Is8.placeholderString" = "1";
+
+/* Class = "NSTextFieldCell"; title = "???"; ObjectID = "dxt-PX-eFi"; */
+"dxt-PX-eFi.title" = "???";
+
+/* Class = "NSTextFieldCell"; title = "Refresh for an anti-lateral thought"; ObjectID = "ebZ-HO-Ch9"; */
+"ebZ-HO-Ch9.title" = "Päivitä ja saat uuden antilateraalisen ajatuksen";
+
+/* Class = "NSTextFieldCell"; title = "Revision Mode"; ObjectID = "fPt-b4-RaB"; */
+"fPt-b4-RaB.title" = "Merkitse korjaukset";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "g4z-ZF-efk"; */
+"g4z-ZF-efk.title" = "Vihreä";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "gJz-gC-KoS"; */
+"gJz-gC-KoS.title" = "Neljäs";
+
+/* Class = "NSTextFieldCell"; title = "Start Scene Numbers From"; ObjectID = "mRh-Qz-Ja7"; */
+"mRh-Qz-Ja7.title" = "Aloita kohtausnumerointi numerosta…";
+
+/* Class = "NSTextFieldCell"; title = "Quick Settings"; ObjectID = "mg9-HW-sgj"; */
+"mg9-HW-sgj.title" = "Pika-asetukset";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "nJB-TZ-Pzd"; */
+"nJB-TZ-Pzd.title" = "Syaani";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "ndy-dL-efa"; */
+"ndy-dL-efa.title" = "Punainen";
+
+/* Class = "NSTextFieldCell"; title = "Color"; ObjectID = "pXN-uS-1oE"; */
+"pXN-uS-1oE.title" = "Väri";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibExternalAccessibilityDescription" = "Näytä esikatselu";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Quick Settings"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibShadowedToolTip" = "Pika-asetukset";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "ps0-21-Xqb"; */
+"ps0-21-Xqb.title" = "Peruuta";
+
+/* Class = "NSTextFieldCell"; title = "min"; ObjectID = "qpX-2d-VTF"; */
+"qpX-2d-VTF.title" = "min";
+
+/* Class = "NSMenuItem"; title = "Mark for Removal"; ObjectID = "qyR-1a-dcy"; */
+"qyR-1a-dcy.title" = "Merkitse poistettavaksi";
+
+/* Class = "NSTabViewItem"; label = "Text"; ObjectID = "stc-hX-uX6"; */
+"stc-hX-uX6.label" = "Text";
+
+/* Class = "NSButtonCell"; title = "Start"; ObjectID = "sxo-w9-MOL"; */
+"sxo-w9-MOL.title" = "Aloita";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "tLV-bS-9E1"; */
+"tLV-bS-9E1.title" = "Vihreä";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "uIu-iR-xUP"; */
+"uIu-iR-xUP.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "uq9-i5-BtV"; */
+"uq9-i5-BtV.title" = "Oranssi";
+
+/* Class = "NSTextFieldCell"; title = "Dark Mode"; ObjectID = "vbP-uh-iii"; */
+"vbP-uh-iii.title" = "Tumma tila";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Filters"; ObjectID = "vzo-na-BYD"; */
+"vzo-na-BYD.ibShadowedToolTip" = "Näytä suotimet";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "xOd-HO-29H"; */
+"xOd-HO-29H.title" = "Ikkuna";
+
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xYu-On-Cas"; */
+"xYu-On-Cas.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "Scene Color"; ObjectID = "xjT-UK-F6b"; */
+"xjT-UK-F6b.title" = "Kohtauksen väri";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "xmV-DE-c1g"; */
+"xmV-DE-c1g.title" = "Sininen";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "D3I-np-42U"; */
+"D3I-np-42U.title" = "Punainen";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "8rC-im-g9Q"; */
+"8rC-im-g9Q.title" = "Pinkki";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "S2S-kO-ppA"; */
+"S2S-kO-ppA.title" = "Oranssi";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "IfA-Gs-aGd"; */
+"IfA-Gs-aGd.title" = "Ruskea";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "N2F-gE-zqw"; */
+"N2F-gE-zqw.title" = "Ei mitään";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "fE1-Z4-bDc"; */
+"fE1-Z4-bDc.title" = "Syaani";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
+"Y9s-uT-czv.title" = "Vihreä";
+
+// Omit Scene
+"ANY-cT-k2w.title" = "Piilota kohtaus";
+
+"fAX-F7-N9t.title" = "Lisää osio";
+
+"ps4-nn-ia5.title" = "Laajenna kaikki";
+
+"9Hu-ZZ-R2Y.title" = "Supista kaikki";
+
+"loV-KA-MUj.title" = "Korjausmerkinnät";
+"esD-y8-BeQ.title" = "Ensimmäinen";
+"ikS-5U-mWo.title" = "Toinen";
+"fGV-hL-GIJ.title" = "Kolmas";
+"uy0-uW-DaR.title" = "Neljäs";
+
+"axM-px-rlb.title" = "Leikkaa";
+"Lwv-Iv-oxi.title" = "Kopioi";
+"cDb-FF-7Yh.title" = "Liitä";
+
+"hsK-HD-ZF6.title" = "Muunnokset";
+"gYW-We-YV1.title" = "Muuta isoiksi kirjaimiksi";
+"jZI-02-ygY.title" = "Muuta pieniksi kirjaimiksi";
+"KCV-1L-Tgi.title" = "Jokainen sana isolla alkukirjaimella";
+
+"zdG-bo-7vy.title" = "Puhe";
+"iSJ-Qh-fbM.title" = "Aloita puhuminen";
+"OBz-up-lLC.title" = "Lopeta puhuminen";
+
+"9mq-p8-xgn.title" = "Oikeinkirjoitus ja kielioppi";
+"NCB-Un-1Sv.title" = "Näytä oikeinkirjoitus ja kielioppi";
+"PI0-iU-WRM.title" = "Tarkista dokumentti nyt";
+"QNX-Vh-rk0.title" = "Tarkista oikeinkirjoitus kirjoittaessa";
+"Qv9-dn-iAA.title" = "Tarkista kielioppi oikeinkirjoituksen ohessa";
+"Atc-GY-N44.title" = "Korjaa oikeinkirjoitus automaattisesti";
+
+"cfc-Bs-BT3.title" = "Poistu";
+
+"2DV-H2-pU8.title" = "Kommenttitila";
+"KZo-wr-Yqv.title" = "Ei kommentteja";
+"M5R-75-VTw.title" = "Voit lisätä kommentteja valitsemalla tekstiä ja painamalla ⌘R tai siirtymällä kommenttitilaan Käsikirjoitus-pudotusvalikosta.";
+
+"z15-hg-1Mt.title" = "Lisää kommentti valintaan";
+
+"8th-8G-eoo.title" = "Ohita valitut sanat";
+
+"YI8-dS-5dg.title" = "Näytä synopsikset";
+
+"K3n-Te-7ny.title" = "Siirrä muistiinpanoihin";
+
+"syr-XT-LEZ.title" = "Näytä sana- ja merkkimäärä";

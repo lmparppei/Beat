@@ -126,9 +126,6 @@
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
 
-@property (nonatomic) NSAttributedString *attributedContentCache;
-//@property (nonatomic) NSURL *mostRecentlySavedFileURL;
-
 // Editor buttons
 @property (nonatomic, weak) IBOutlet NSButton *outlineButton;
 @property (nonatomic, weak) IBOutlet NSButton *previewButton;
@@ -154,9 +151,6 @@
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSMutableArray *recentCharacters;
-
-/// The last **change** range which was parsed, **not** the last edited range.
-@property (nonatomic) NSRange lastChangedRange;
 
 /// The range where last actual edit happened in text storage
 @property (nonatomic) NSRange lastEditedRange;
@@ -1184,112 +1178,94 @@
 {
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
+	
 	Line* currentLine = self.currentLine;
 	
-	// Don't allow certain symbols
-	if (replacementString.length == 1) {
-		unichar c = [replacementString characterAtIndex:0];
-		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) {
-			return false;
-		}
-	}
+	bool change = true;
+	bool undoOperation = self.undoManager.isRedoing || self.undoManager.isUndoing;
 	
 	// This shouldn't be here :-)
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
 	}
+		
+	// Don't allow certain symbols
+	if (replacementString.length == 1) {
+		unichar c = [replacementString characterAtIndex:0];
+		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
+	}
+	
 	
 	// Check for character input trouble
 	if (self.characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.characterInputForLine.position) {
 		[self cancelCharacterInput];
-		return NO;
+		//return NO;
+		change = false;
 	}
 	
 	// Don't repeat ) or ]
 	else if ([self.textActions shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
 		!self.undoManager.redoing && !self.undoManager.undoing) {
-		return NO;
+		change = false;
 	}
 	
 	// Handle new line breaks (when actually typed)
-	else if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
-		
+	else if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !undoOperation) {
 		// Line break after character cue
-		if (currentLine.isAnyCharacter && self.automaticContd) {
-			// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
-			if ([self.textActions shouldAddContdIn:affectedCharRange string:replacementString]) {
-				return NO;
-			}
+		// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
+		if (currentLine.isAnyCharacter && self.automaticContd && [self.textActions shouldAddContdIn:affectedCharRange string:replacementString])
+		{
+			change = false;
 		}
 		
 		// When on a parenthetical, don't split it when pressing enter, but move downwards to next dialogue block element
 		// Note: This logic is a bit faulty. We should probably just move on next line regardless of next character
 		else if (currentLine.isAnyParenthetical && self.selectedRange.length == 0) {
-			if (self.textView.string.length >= affectedCharRange.location + 1) {
-				unichar chr = [self.textView.string characterAtIndex:affectedCharRange.location];
+			if (self.text.length >= affectedCharRange.location + 1) {
+				unichar chr = [self.text characterAtIndex:affectedCharRange.location];
 				if (chr == ')') {
 					NSInteger lineIndex = [self.lines indexOfObject:currentLine];
 					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
 					if (lineIndex < self.lines.count) [self.formatting formatLine:self.lines[lineIndex]];
 					
 					[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
-					return NO;
+					change = false;
 				}
 			}
 		}
-		
-		// Handle automatic line breaks
-		else if (self.autoLineBreaks) {
-			if ([self.textActions shouldAddLineBreaks:currentLine range:affectedCharRange]) {
-				return NO;
-			}
-		}
-		
 		// Process line break after a forced character input
-		if (self.characterInput && self.characterInputForLine) {
-			// Don't go out of range
-			if (NSMaxRange(self.characterInputForLine.textRange) <= self.textView.string.length) {
-				// If the cue is empty, reset it
-				if (self.characterInputForLine.string.length == 0) {
-					self.characterInputForLine.type = empty;
-					[self.formatting formatLine:self.characterInputForLine];
-				}
-				else {
-					self.characterInputForLine.forcedCharacterCue = YES;
-				}
+		else if (self.characterInput && self.characterInputForLine && NSMaxRange(self.characterInputForLine.textRange) <= self.text.length) {
+			// If the cue is empty, reset it
+			if (self.characterInputForLine.string.length == 0) {
+				[self setTypeAndFormat:self.characterInputForLine type:empty];
+			} else {
+				self.characterInputForLine.forcedCharacterCue = YES;
 			}
+		}
+		// Handle automatic line breaks
+		else if ([self.textActions shouldAddLineBreaks:currentLine range:affectedCharRange]) {
+			change = false;
 		}
 	}
 	
-	// Some checks for single characters
-	else if (replacementString.length == 1 && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
+	// Single characters
+	else if (replacementString.length == 1 && !undoOperation) {
 		// Auto-close () and [[]]
 		if (self.matchParentheses) [self.textActions matchParenthesesIn:affectedCharRange string:replacementString];
-		
-		// When adding to a dialogue block, add an extra line break
-		if (self.currentLine.length == 0 && ![replacementString isEqualToString:@" "]) {
-			NSInteger lineIndex = [self.parser indexOfLine:self.currentLine];
-			if (lineIndex != NSNotFound && lineIndex > 0 && self.currentLine != self.parser.lines.lastObject) {
-				Line *prevLine = self.parser.lines[lineIndex-1];
-				Line *nextLine = self.parser.lines[lineIndex+1];
-				if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
-					NSString *stringAndLineBreak = [NSString stringWithFormat:@"%@\n", replacementString];
-					[self addString:stringAndLineBreak atIndex:affectedCharRange.location];
-					self.selectedRange = NSMakeRange(affectedCharRange.location+1, 0);
-					return NO;
-				}
-			}
-		}
 	}
 	
-	// Make the replacement string uppercase in parser
-	if (self.characterInput) replacementString = replacementString.uppercaseString;
-
-	// Parse changes so far
-	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+	// If change is true, we can safely add the string (and parse the addition)
+	if (change) {
+		// Make the replacement string uppercase in parser
+		if (self.characterInput) replacementString = replacementString.uppercaseString;
+		
+		// Parse changes so far
+		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+		
+		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+	}
 	
-	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	return YES;
+	return change;
 }
 
 
@@ -1297,47 +1273,18 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	// If we are just opening the document, do nothing
-	if (self.documentIsLoading) return;
-
-	// Begin from top if no last changed range was set
-	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
-	
-	// Update formatting
-	[self applyFormatChanges];
-	
-	// Save attributed text to cache
-	self.attrTextCache = [self getAttributedText];
-	
-	// Check for changes in outline. If any changes are found, all registered outline views will be updated.
-	[self.parser checkForChangesInOutline];
-
-	// Editor views can register themselves and have to conform to BeatEditorView protocol,
-	// which includes methods for reloading both in sync and async
-	[self updateEditorViewsInBackground];
-
-	// Paginate
-	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
-	
-	// A larger chunk of text was pasted. Ensure layout.
-	if (_lastChangedRange.length > 5) [self ensureLayout];
-	
-	// Update any running plugins
-	[self.pluginAgent updatePlugins:_lastChangedRange];
-	
-	// Cache current text state
-	self.contentCache = self.textView.string.copy;
-	
+	[super textDidChange];
+		
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
 	
 	// If this was an undo operation, scroll to where the alteration was made
-	if (self.undoManager.isUndoing) [self.textView ensureRangeIsVisible:_lastChangedRange];
-	
-	// Reset last changed range
-	_lastChangedRange = NSMakeRange(NSNotFound, 0);
-	
+	if (self.undoManager.isUndoing) [self.textView ensureRangeIsVisible:self.lastChangedRange];
+		
 	[self updateChangeCount:NSChangeDone];
+	
+	// Finally, reset last changed range
+	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -1347,8 +1294,8 @@
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes
-		if (_revisionMode && _lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
-			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
+		if (_revisionMode && self.lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
+			[self.revisionTracking registerChangesWithLocation:editedRange.location length:self.lastChangedRange.length delta:delta];
 		}
 	}
 }
@@ -1380,6 +1327,9 @@
 	
 	// Update hidden Fountain markup
 	[self.textView updateMarkupVisibility];
+	
+	// Update typing attributes
+	//[self.formatting updateTypingAttributes];
 	
 	// Scroll to view if needed
 	if (self.selectedRange.length == 0) {
