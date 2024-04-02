@@ -27,9 +27,6 @@
 
 @property (nonatomic, readonly) bool disableFormatting;
 
-/// The range which was *actually* changed
-@property (nonatomic) NSRange lastChangedRange;
-
 /// Preview controller override
 @property (nonatomic) BeatPreviewController* previewController;
 
@@ -115,6 +112,9 @@
 	} else {
 		// Completely replace the scroll view with our text view on phones
 		self.textView.frame = self.scrollView.frame;
+		
+		[self.view addSubview:self.textView];
+		
 		[self.scrollView.superview addSubview:self.textView];
 		[self.pageView removeFromSuperview];
 		[self.scrollView removeFromSuperview];
@@ -363,18 +363,15 @@
 
 
 - (NSString*)contentForSaving {
+	NSLog(@" -> content");
 	return [self createDocumentFile];
 }
 
 
 #pragma mark - Getters for parser data
-/**
- 
- These shouldn't exist to be honest, save for maybe `currentScene`. This is mostly a backwards-compatibility thing, and any new classes should target the parser methods directly.
- 
- */
 
-- (NSArray*)markers {
+- (NSArray*)markers
+{
 	// This could be inquired from the text view, too.
 	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
 	NSMutableArray * markers = NSMutableArray.new;
@@ -492,8 +489,8 @@
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes
-		if (self.revisionMode && _lastChangedRange.location != NSNotFound) {
-			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
+		if (self.revisionMode && self.lastChangedRange.location != NSNotFound) {
+			[self.revisionTracking registerChangesWithLocation:editedRange.location length:self.lastChangedRange.length delta:delta];
 		}
 	}
 	
@@ -543,22 +540,36 @@
 	
 }
 
--(void)textViewDidChangeSelection:(UITextView *)textView {
+-(void)textViewDidChangeSelection:(UITextView *)textView
+{
 	if (self.characterInputForLine != nil && self.currentLine != self.characterInputForLine) {
-		self.characterInput = false;
-		self.characterInputForLine = nil;
+		[self.textView cancelCharacterInput];
 	}
+			
+	// If this is not a touch event, scroll to content
+	if (self.textView.floatingCursor) return;
+	
+	[self textViewDidEndSelection:textView selectedRange:textView.selectedRange];
+}
+
+/// Called when touch event *actually* changed the selection
+- (void)textViewDidEndSelection:(UITextView *)textView selectedRange:(NSRange)selectedRange
+{
+	[self.textView scrollRangeToVisible:textView.selectedRange];
 	
 	// Update outline view
 	if (self.outlineView.visible) [self.outlineView reloadData];
 	
 	// Update text view input view and scroll range to visible
 	[self.textView updateAssistingViews];
-	[self.textView scrollRangeToVisible:textView.selectedRange];
-	
+
 	// Update plugins
-	[self.pluginAgent updatePluginsWithSelection:textView.selectedRange];
+	[self.pluginAgent updatePluginsWithSelection:selectedRange];
+	
+	// Show review if needed
+	[self showReviewIfNeeded];
 }
+
 
 /// Forces text reformat and editor view updates
 - (void)textDidChange:(NSNotification *)notification {
@@ -566,39 +577,25 @@
 	[self textViewDidChange:self.textView];
 }
 
+// TODO: This can be made OS-agnostic
 -(void)textViewDidChange:(UITextView *)textView {
-	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
-	self.attrTextCache = textView.attributedText;
-	
-	// If we are just opening the document, do nothing
-	if (self.documentIsLoading) return;
-	
-	// Save
-	[self.document updateChangeCount:UIDocumentChangeDone];
-	
-	// Update formatting
-	[self applyFormatChanges];
-	
-	// Checks for changes in outline and updates outline views if needed
-	[self.parser checkForChangesInOutline];
-	
-	// Editor views can register themselves and have to conform to BeatEditorView protocol,
-	// which includes methods for reloading both in sync and async
-	[self updateEditorViewsInBackground];
-	
-	// Paginate
-	[self.previewController createPreviewWithChangedRange:_lastChangedRange sync:false];
-	
-	// Update plugins
-	[self.pluginAgent updatePlugins:_lastChangedRange];
+	[super textDidChange];
 	
 	// If this was an undo operation, scroll to where the alteration was made
-	if (self.undoManager.isUndoing) [self.textView scrollRangeToVisible:_lastChangedRange];
+	if (self.undoManager.isUndoing) [self.textView scrollRangeToVisible:self.lastChangedRange];
 	
 	// Reset last changed range
-	_lastChangedRange = NSMakeRange(NSNotFound, 0);
+	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
+
+	if (!self.documentIsLoading) [self updateChangeCount:UIDocumentChangeDone];
 	
 	[self.textView resize];
+}
+
+/// Alias for macOS-compatibility
+- (BOOL)textView:(BXTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
+{
+	return [self textView:textView shouldChangeTextInRange:affectedCharRange replacementText:replacementString];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -647,7 +644,7 @@
 		return false;
 	}
 	
-	_lastChangedRange = (NSRange){ range.location, text.length };
+	self.lastChangedRange = (NSRange){ range.location, text.length };
 	
 	return true;
 }
@@ -657,18 +654,7 @@
 
 - (void)selectionDidChange:(id<UITextInput>)textInput
 {
-	// Show review if needed after the text input selection has actually changed
-	if (self.textView.text.length > 0 && self.selectedRange.location < self.text.length && self.selectedRange.location != NSNotFound) {
-		NSInteger pos = self.selectedRange.location;
-		
-		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
-		
-		if (reviewItem && !reviewItem.emptyReview) {
-			[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
-		} else {
-			[self.review closePopover];
-		}
-	}
+	
 }
 
 - (void)selectionWillChange:(id<UITextInput>)textInput
@@ -679,6 +665,24 @@
 - (void)textWillChange:(nullable id<UITextInput>)textInput
 {
 	//
+}
+
+
+#pragma mark - Display reviews
+// TODO: Wtf. Move this to the review class. Isn't this just duplicate code?
+
+- (void)showReviewIfNeeded
+{
+	if (self.text.length == 0 || self.selectedRange.location == self.text.length) return;
+	
+	NSInteger pos = self.selectedRange.location;
+	BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
+	
+	if (reviewItem && !reviewItem.emptyReview) {
+		[self.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
+	} else {
+		[self.review closePopover];
+	}
 }
 
 
@@ -839,23 +843,20 @@
 #pragma mark - Printing stuff for iOS
 
 - (IBAction)openExportPanel:(id)sender {
-	BeatExportViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportPanel"];
-	vc.modalPresentationStyle = UIModalPresentationFormSheet;
-	vc.popoverPresentationController.barButtonItem = sender;
-	vc.senderButton = sender;
-	vc.senderVC = self;
+	//BeatExportViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportPanel"];
+	BeatExportSettingController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportSettingsTable"];
 	vc.editorDelegate = self;
 	
-	[self presentViewController:vc animated:false completion:^{
-		
-	}];
+	[self.navigationController pushViewController:vc animated:true];
 }
 
-- (id)documentForDelegation {
+- (id)documentForDelegation
+{
 	return self.document;
 }
 
-- (UIPrintInfo*)printInfo {
+- (UIPrintInfo*)printInfo
+{
 	return UIPrintInfo.new;
 }
 

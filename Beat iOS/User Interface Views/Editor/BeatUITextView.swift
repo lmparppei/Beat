@@ -19,6 +19,8 @@ import BeatParsing
 	//@property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
 	@objc var screenplayButton:UIBarButtonItem? { get }
 	@objc var dismissKeyboardButton:UIBarButtonItem? { get }
+	
+	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
 }
 
 class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
@@ -29,6 +31,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	@IBOutlet weak var pageView:UIView!
 	
 	@objc public var assistantView:InputAssistantView?
+	
+	@objc public var floatingCursor = false
 	
 	var insets:UIEdgeInsets = UIEdgeInsets(top: 50, left: 0, bottom: 50, right: 0)
 	var pinchRecognizer = UIGestureRecognizer()
@@ -65,7 +69,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		// Create the text view and connect the container + layout manager
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
 		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
-		textView.textContainer.widthTracksTextView = true
 				
 		// Set up the container views
 		textView.pageView = pageView
@@ -134,7 +137,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		self.smartQuotesType = .no
 		self.smartInsertDeleteType = .no
 		self.keyboardAppearance = .dark
-		
+				
 		resizePaper()
 		resize()
 		
@@ -146,7 +149,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			self.textContainerInset = insets
 		} else {
 			// Mobile mode setup
-			//self.keyboardDismissMode = .onDrag
 			self.contentInsetAdjustmentBehavior = .automatic
 			
 			self.mobileKeyboardManager = KeyboardManager()
@@ -246,8 +248,13 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	func scroll(to range: NSRange) {
 		self.scroll(to:range, animated: true)
 	}
-	
+			
 	func scroll(to range: NSRange, animated:Bool = true) {
+		if mobileMode {
+			super.scrollRangeToVisible(range)
+			return
+		}
+		
 		// Current bounds
 		let bounds = (!mobileMode) ? self.enclosingScrollView.bounds : self.bounds
 		
@@ -296,7 +303,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		self.selectedRange = range
 		self.scroll(to: range)
 	}
-		
+	
 	
 	// MARK: - Resize scroll view and text view
 	/**
@@ -420,11 +427,12 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	// MARK: - Dialogue input
 	
 	func shouldCancelCharacterInput() -> Bool {
-		guard let editorDelegate = self.editorDelegate else { return false }
-		let line = editorDelegate.currentLine()
+		guard let editorDelegate = self.editorDelegate,
+			  let line = editorDelegate.currentLine()
+		else { return true }
 		
-		/// We'll return `true` when the current line is empty
-		if editorDelegate.characterInput && line!.string.count == 0 {
+		/// We'll return `true` when current line is empty (what is this)
+		if editorDelegate.characterInput && line.string.count == 0 {
 			return true
 		} else {
 			return false
@@ -448,6 +456,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			NSAttributedString.Key.paragraphStyle: paragraphStyle
 		]
 		
+		self.updateAssistingViews()
+		
 		self.typingAttributes = attributes
 		self.setNeedsDisplay()
 		self.setNeedsLayout()
@@ -468,29 +478,61 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	
 	// MARK: - Touch events
 	
+	var selectedRangeBeforeTouch = NSRange(location: -1, length: 0)
+	
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
-		for touch in touches {
-			touch.location(in: self.enclosingScrollView)
+		if !mobileMode {
+			for touch in touches {
+				touch.location(in: self.enclosingScrollView)
+			}
 		}
+		
 		super.touchesBegan(touches, with: event)
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
-		for touch in touches {
-			touch.location(in: self.enclosingScrollView)
+		if !mobileMode {
+			for touch in touches {
+				touch.location(in: self.enclosingScrollView)
+			}
 		}
+		
 		super.touchesMoved(touches, with: event)
 	}
-	
+
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		for touch in touches {
-			touch.location(in: self.enclosingScrollView)
+		if !mobileMode {
+			for touch in touches {
+				touch.location(in: self.enclosingScrollView)
+			}
 		}
+				
 		super.touchesEnded(touches, with: event)
 	}
+	
+	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+		super.touchesCancelled(touches, with: event)
+	}
+	
+	
+	override func beginFloatingCursor(at point: CGPoint) {
+		super.beginFloatingCursor(at: point)
+		
+		floatingCursor = true
+		self.selectedRangeBeforeTouch = self.selectedRange
+	}
+	
+	override func endFloatingCursor() {
+		super.endFloatingCursor()
 
+		floatingCursor = false
+		print("float end")
+		if self.selectedRangeBeforeTouch != self.selectedRange {
+			self.editorDelegate?.textViewDidEndSelection(self, selectedRange: self.selectedRange)
+		}
+	}
 	
 	// MARK: - Update assisting views
 	
@@ -678,6 +720,7 @@ extension BeatUITextView:UIGestureRecognizerDelegate {
 		if gestureRecognizer is UIPinchGestureRecognizer, mobileMode {
 			return false // Disable pinch zoom
 		}
+		
 		return true
 	}
 }
@@ -887,3 +930,5 @@ class BeatScrollView: UIScrollView {
 		super.scrollRectToVisible(rect, animated: animated)
 	}
 }
+
+
