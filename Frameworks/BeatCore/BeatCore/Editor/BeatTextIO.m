@@ -12,6 +12,7 @@
  */
 
 #import "BeatTextIO.h"
+#import <BeatCore/BeatAttributes.h>
 #import <BeatCore/BeatCore-Swift.h>
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
@@ -30,6 +31,11 @@
         self.delegate = delegate;
     }
     return self;
+}
+
+- (BXTextView*)textView
+{
+    return self.delegate.getTextView;
 }
 
 #pragma mark - iOS weirdness fix
@@ -60,7 +66,7 @@
  */
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
-    BXTextView* textView = self.delegate.getTextView;
+    BXTextView* textView = self.textView;
     
     // If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
     if (range.length + range.location > _delegate.text.length) {
@@ -72,12 +78,12 @@
     // When replacing stuff directly in the view, we need to call it manually.
     
 #if TARGET_OS_IOS
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementText:string]) {
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
         
         UITextRange *textRange = textView.selectedTextRange;
-        [self.delegate.getTextView setSelectedTextRange:oldRange];
+        [self.textView setSelectedTextRange:oldRange];
         
         [textView replaceRange:textRange withText:string];
         
@@ -313,6 +319,38 @@
 }
 
 
+#pragma mark - Add text with Beat attributes
+
+/// Adds an attributed string to text view. Only accepts Beat attributes.
+- (void)replaceRange:(NSRange)range withAttributedString:(NSAttributedString *)attrString
+{
+    NSMutableAttributedString* newString = [NSMutableAttributedString.alloc initWithString:attrString.string];
+    
+    // Enumerate custom attributes
+    [attrString enumerateAttributesInRange:NSMakeRange(0, attrString.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        // If no custom attributes are found, just skip
+        if (![BeatAttributes containsCustomAttributes:attrs]) return;
+        
+        // Only spare our custom, registered attributes
+        NSDictionary* customAttrs = [BeatAttributes stripUnnecessaryAttributesFrom:attrs];
+        [newString addAttributes:customAttrs range:NSMakeRange(range.location, range.length)];
+    }];
+
+    if ([self.delegate textView:self.textView shouldChangeTextInRange:range replacementString:newString.string]) {
+        NSAttributedString* oldString = [self.textView.textStorage attributedSubstringFromRange:range];
+        
+        [self.textView.textStorage beginEditing];
+        [self.textView.textStorage replaceCharactersInRange:range withAttributedString:newString];
+        [self.textView.textStorage endEditing];
+#if TARGET_OS_OSX
+        [self.textView didChangeText];
+#endif
+        
+        [[_delegate.undoManager prepareWithInvocationTarget:self] replaceRange:NSMakeRange(range.location, newString.length) withAttributedString:oldString];
+    }
+
+}
+
 
 #pragma mark - Additional editor convenience stuff
 
@@ -320,14 +358,18 @@
 /// @warning: Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange
 {
-    if (_skipAutomaticLineBreaks) {
+    bool prevent = false;
+    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingAutomaticLineBreaks] == false ||
+        _delegate.editorStyles.document.disableAutomaticParagraphs) {
+        // Check if automatic paragraphs are disabled either in settings or in styles
+        prevent = true;
+    } else if (_skipAutomaticLineBreaks) {
         // Some methods can opt out of this behavior. Reset the flag once it's been used.
         _skipAutomaticLineBreaks = false;
-        return NO;
-    } else if (_delegate.editorStyles.document.disableAutomaticParagraphs) {
-        // Styles can disable automatic paragraphs
-        return NO;
+        prevent = true;
     }
+    // Prevent default
+    if (prevent) return false;
     
     
     // Don't add a dual line break if shift is pressed
@@ -347,10 +389,8 @@
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
             return YES;
-        }
-        
-        // Action lines need to perform some checks
-        else if (currentLine.type == action) {
+        } else if (currentLine.type == action) {
+            // Action lines need to perform some checks
             // Perform a double-check if there is a next line
             if (currentIndex + 1 < _delegate.parser.lines.count && currentIndex != NSNotFound) {
                 Line* nextLine = _delegate.parser.lines[currentIndex + 1];
@@ -366,15 +406,14 @@
                 return YES;
             }
         }
-    }
-    else if (currentLine.string.length == 0) {
+    } else if (currentLine.string.length == 0) {
         Line *prevLine = [_delegate.parser previousLine:currentLine];
         Line *nextLine = [_delegate.parser nextLine:currentLine];
         
         // Add a line break above and below when writing something in between two dialogue blocks
         if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
-            _delegate.getTextView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
+            self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
             return YES;
         }
     }

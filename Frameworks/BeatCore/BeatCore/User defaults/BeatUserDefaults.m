@@ -137,7 +137,7 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
 		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],
         
-        BeatSettingFocusMode: @[BeatSettingFocusMode, @NO],
+        BeatSettingFocusMode: @[BeatSettingFocusMode, @(0)],
 		
         BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
         BeatSettingShowSceneNumbersInOutline: @[BeatSettingShowSceneNumbersInOutline, @YES],

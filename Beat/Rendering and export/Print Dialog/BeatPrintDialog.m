@@ -35,10 +35,12 @@
 @property (weak) IBOutlet NSButton* secondaryButton;
 @property (weak) IBOutlet NSTextField* title;
 @property (weak) IBOutlet NSTextField* headerText;
+@property (weak) IBOutlet NSSegmentedControl* headerAlign;
 @property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
 @property (weak) IBOutlet NSButton *colorCodePages;
 @property (weak) IBOutlet NSView *advancedOptions;
 @property (weak) IBOutlet NSButton* advancedOptionsButton;
+
 
 @property (weak) IBOutlet NSProgressIndicator* progressIndicator;
 
@@ -104,6 +106,11 @@ static CGFloat panelWidth;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSections]) _printSections.state = NSOnState;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis]) _printSynopsis.state = NSOnState;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes.state = NSOnState;
+	
+	BeatExportSettings* settings = self.exportSettings;
+	
+	self.headerText.stringValue = settings.header;
+	[self.headerAlign setSelectedSegment:[self.documentDelegate.documentSettings getInt:DocSettingHeaderAlignment]];
 	
 	[self toggleAdvancedOptions:_advancedOptionsButton];
 }
@@ -250,7 +257,7 @@ static CGFloat panelWidth;
 	BeatExportSettings* settings = self.documentDelegate.exportSettings;
 
 	// Set header
-	settings.header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
+	// settings.header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
 	// Set custom settings from dialog
 	settings.revisions = [self printedRevisions];
@@ -268,11 +275,6 @@ static CGFloat panelWidth;
 
 
 #pragma mark - Export setting actions
-
-- (IBAction)headerTextChange:(id)sender
-{
-	[self loadPreview];
-}
 
 - (IBAction)selectPaperSize:(id)sender
 {
@@ -372,7 +374,8 @@ static CGFloat panelWidth;
 	_firstPreview = NO;
 }
 
-- (NSArray*)printedRevisions {
+- (NSArray*)printedRevisions
+{
 	NSMutableArray *printedRevisions = NSMutableArray.new;
 	NSArray *colors = BeatRevisions.revisionColors;
 	if (self.revisionFirst.state == NSOnState) [printedRevisions addObject:colors[0]];
@@ -381,6 +384,18 @@ static CGFloat panelWidth;
 	if (self.revisionFourth.state == NSOnState) [printedRevisions addObject:colors[3]];
 	
 	return printedRevisions;
+}
+
+- (IBAction)headerTextChange:(id)sender
+{
+	[self.documentDelegate.documentSettings setString:DocSettingHeader as:(self.headerText.stringValue != nil) ? self.headerText.stringValue : @""];
+	[self loadPreview];
+}
+
+- (IBAction)toggleHeaderAlignment:(NSSegmentedControl*)sender
+{
+	[self.documentDelegate.documentSettings setInt:DocSettingHeaderAlignment as:sender.selectedSegment];
+	[self loadPreview];
 }
 
 @end

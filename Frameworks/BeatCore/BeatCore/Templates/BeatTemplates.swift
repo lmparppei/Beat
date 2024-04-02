@@ -86,8 +86,6 @@ public struct BeatTemplateFile {
 				}
 			}
             
-            print(templateData)
-		
 			return templateData
 			
 		} catch {

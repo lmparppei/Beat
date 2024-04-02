@@ -440,7 +440,6 @@
         // Break the block group
         //NSLog(@"Break: %@", group.blocks.firstObject.lines.firstObject);
         //1NSLog(@"     remaining %f / height %f ", remainingSpace, group.blocks.firstObject.height);
-
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace styles:self.styles];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
 	}

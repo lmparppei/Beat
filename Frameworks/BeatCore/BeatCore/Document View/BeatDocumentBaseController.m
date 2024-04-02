@@ -178,6 +178,40 @@
 }
 
 
+#pragma mark - Text view delegate / events
+
+/// Common text view delegate method
+- (void)textDidChange
+{
+    if (self.documentIsLoading) return;
+    
+    // Begin from top if no last changed range was set
+    if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
+
+    // Update formatting
+    [self applyFormatChanges];
+    
+    // Save attributed text to cache
+    self.attrTextCache = [self getAttributedText];
+    
+    // Check for changes in outline. If any changes are found, all registered outline views will be updated.
+    [self.parser checkForChangesInOutline];
+    
+    // Editor views should register themselves and have to conform to BeatEditorView protocol,
+    // which includes methods for reloading both in sync and async
+    [self updateEditorViewsInBackground];
+    
+    // Paginate
+    [self.previewController createPreviewWithChangedRange:self.lastChangedRange sync:false];
+    
+    // A larger chunk of text was pasted. Ensure layout.
+    if (self.lastChangedRange.length > 5) [self ensureLayout];
+    
+    // Update any running plugins
+    [(id<BeatPluginAgentInstance>)self.pluginAgent updatePlugins:self.lastChangedRange];
+}
+
+
 
 #pragma mark - Line lookup
 
@@ -190,7 +224,7 @@
     if (location >= self.text.length) {
         // Check if we're on the last line
         return self.parser.lines.lastObject;
-    } else if (NSLocationInRange(location, _currentLine.range) && _currentLine != nil) {
+    } else if (_currentLine != nil && NSLocationInRange(location, _currentLine.range)) {
         // Don't fetch the line if we already know it
         return _currentLine;
     } else {
@@ -199,6 +233,13 @@
         _currentLine = line;
         return _currentLine;
     }
+}
+
+/// Null references to possibly deleted lines
+- (void)lineWasRemoved:(Line *)line
+{
+    if (_currentLine == line) _currentLine = nil;
+    if (_previouslySelectedLine == line) _previouslySelectedLine = nil;
 }
 
 
@@ -635,7 +676,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     }
     
     // Resort to content buffer if needed
-    if (content == nil) content = self.contentCache;
+    if (content == nil) content = self.attrTextCache.string;
     
     // Save added/removed ranges
     // This saves the revised ranges into Document Settings

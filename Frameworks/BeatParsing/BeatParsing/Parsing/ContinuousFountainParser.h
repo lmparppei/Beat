@@ -33,6 +33,8 @@
 - (void)applyFormatChanges;
 /// Notify that the outline was changed
 - (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes;
+/// Notify that a line was deleted
+- (void)lineWasRemoved:(Line*)line;
 @end
 
 // Plugin compatibility

@@ -64,10 +64,6 @@ dialogue {
     margin-left: 11ch;
 }
 
-section {
-    margin-top: 1l;
-}
-
 more {
     width-a4: 38ch;
     width-us: 38ch;

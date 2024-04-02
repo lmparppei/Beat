@@ -17,6 +17,12 @@
 @class BeatExportSettings;
 @class Line;
 
+typedef NS_ENUM(NSInteger, BeatHeaderAlignment) {
+    BeatHeaderAlignmentLeft = 0,
+    BeatHeaderAlignmentCenter,
+    BeatHeaderAlignmentRight
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRenderer : NSObject

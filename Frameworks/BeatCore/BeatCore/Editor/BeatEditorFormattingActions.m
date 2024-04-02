@@ -139,7 +139,6 @@ static NSString *revisionAttribute = @"Revision";
     }
 }
 
-
 /// Adds a character cue in the current position. **Note** that you might need to set the typing attributes for text view separately for the cue to take action.
 - (void)addCue
 {
@@ -200,6 +199,7 @@ static NSString *revisionAttribute = @"Revision";
 - (void)addOrEditCharacterExtension
 {
     Line * currentLine = self.delegate.currentLine;
+    NSLog(@"Current line: %@", currentLine);
     if (!currentLine.isAnyCharacter) return;
     
     if (currentLine.hasExtension) {

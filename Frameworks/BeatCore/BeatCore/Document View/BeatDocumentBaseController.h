@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @end
 
 @protocol BeatPluginAgentInstance
+- (void)updatePlugins:(NSRange)range;
 - (void)updatePluginsWithOutline:(NSArray* _Nonnull)outline changes:(OutlineChanges* _Nullable)changes;
 @end
 
@@ -154,7 +155,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 #pragma mark - Line lookup
 
 @property (nonatomic) Line* _Nullable previouslySelectedLine;
-@property (nonatomic) Line* _Nullable currentLine;
+@property (nonatomic, weak) Line* _Nullable currentLine;
 @property (nonatomic, weak) OutlineScene* _Nullable currentScene;
 - (OutlineScene* _Nullable)getCurrentSceneWithPosition:(NSInteger)position;
 
@@ -176,6 +177,12 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (NSTextStorage* _Nonnull)textStorage;
 - (NSLayoutManager* _Nonnull)layoutManager;
 
+/// The last **change** range which was parsed, **not** the last edited range.
+@property (nonatomic) NSRange lastChangedRange;
+
+/// Call when editor text changed
+- (void)textDidChange;
+
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent;
@@ -196,7 +203,6 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 - (NSAttributedString * _Nonnull)getAttributedText;
 - (NSAttributedString * _Nonnull)attributedString;
-@property (nonatomic) NSString* _Nullable contentCache;
 @property (atomic) NSAttributedString*  _Nullable attrTextCache;
 
 

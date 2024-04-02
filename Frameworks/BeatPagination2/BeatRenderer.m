@@ -529,11 +529,13 @@
     
     NSMutableParagraphStyle* leftStyle = NSMutableParagraphStyle.new;
     leftStyle.textBlocks = @[leftCell];
+    leftStyle.maximumLineHeight = BeatPagination.lineHeight;
+    leftStyle.alignment = NSTextAlignmentLeft;
     
     NSMutableParagraphStyle* headerStyle = NSMutableParagraphStyle.new;
     headerStyle.textBlocks = @[headerCell];
-    headerStyle.alignment = NSTextAlignmentCenter;
     headerStyle.maximumLineHeight = BeatPagination.lineHeight;
+    headerStyle.alignment = NSTextAlignmentCenter;
     
     NSMutableParagraphStyle* rightStyle = NSMutableParagraphStyle.new;
     rightStyle.textBlocks = @[rightCell];
@@ -541,28 +543,67 @@
     rightStyle.maximumLineHeight = BeatPagination.lineHeight; // We'll use standard line heights here
     rightStyle.paragraphSpacing = BeatPagination.lineHeight * 2;
     
-    // Left cell is just empty, no additional styles needed
-    NSMutableAttributedString* leftContent = [NSMutableAttributedString.alloc initWithString:@" \n" attributes:@{
-        NSParagraphStyleAttributeName: leftStyle
-    }];
-    // Header content (centered at the top of page)
-    NSString* header = [NSString stringWithFormat:@"%@\n", (self.settings.header != nil) ? self.settings.header : @""];
-    NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:header attributes:@{
-        NSParagraphStyleAttributeName: headerStyle,
-        NSFontAttributeName: self.fonts.regular,
-        NSForegroundColorAttributeName: NSColor.blackColor
-    }];
-    // Actual page number goes in right corner
-    NSMutableAttributedString* rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
-        NSParagraphStyleAttributeName: rightStyle,
-        NSFontAttributeName: self.fonts.regular,
-        NSForegroundColorAttributeName: NSColor.blackColor
-    }];
+    NSMutableAttributedString* leftContent;
+    NSMutableAttributedString* headerContent;
+    NSMutableAttributedString* rightContent;
+    
+    if (self.settings.headerAlignment == BeatHeaderAlignmentCenter) {
+        // Left cell is just empty, no additional styles needed
+        leftContent = [NSMutableAttributedString.alloc initWithString:@" \n" attributes:@{
+            NSParagraphStyleAttributeName: leftStyle
+        }];
+        // Header content (centered at the top of page)
+        NSString* header = [NSString stringWithFormat:@"%@\n", (self.settings.header != nil) ? self.settings.header : @""];
+        headerContent = [NSMutableAttributedString.alloc initWithString:header attributes:@{
+            NSParagraphStyleAttributeName: headerStyle,
+            NSFontAttributeName: self.fonts.regular,
+            NSForegroundColorAttributeName: NSColor.blackColor
+        }];
+        // Actual page number goes in right corner
+        rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
+            NSParagraphStyleAttributeName: rightStyle,
+            NSFontAttributeName: self.fonts.regular,
+            NSForegroundColorAttributeName: NSColor.blackColor
+        }];
+    } else if (self.settings.headerAlignment == BeatHeaderAlignmentRight) {
+        // Right content is enough here
+        [rightCell setContentWidth:100.0 type:NSTextBlockPercentageValueType];
+        [headerCell setContentWidth:0.0 type:NSTextBlockPercentageValueType];
+        [leftCell setContentWidth:0.0 type:NSTextBlockPercentageValueType];
+        
+        NSString* header = (self.settings.header) ? [NSString stringWithFormat:@"%@", self.settings.header] : @"";
+        if (pageNumber >= self.styles.page.firstPageWithNumber && header.length > 0) header = [header stringByAppendingString:@" -"];
+        
+        NSString* fullString = [NSString stringWithFormat:@"%@ %@", header, pageNumberString];
+        rightContent = [NSMutableAttributedString.alloc initWithString:fullString attributes:@{
+            NSParagraphStyleAttributeName: rightStyle,
+            NSFontAttributeName: self.fonts.regular,
+            NSForegroundColorAttributeName: NSColor.blackColor
+        }];
+    } else {
+        // Adjust left side to be full width
+        [leftCell setContentWidth:85 type:NSTextBlockPercentageValueType];
+        [headerCell setContentWidth:0.0 type:NSTextBlockPercentageValueType];
+        NSString* header = (self.settings.header) ? [NSString stringWithFormat:@"%@\n", self.settings.header] : @"";
+        
+        leftContent = [NSMutableAttributedString.alloc initWithString:header attributes:@{
+            NSParagraphStyleAttributeName: leftStyle,
+            NSFontAttributeName: self.fonts.regular,
+            NSForegroundColorAttributeName: NSColor.blackColor
+        }];
+        
+        // Actual page number goes in right corner
+        rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
+            NSParagraphStyleAttributeName: rightStyle,
+            NSFontAttributeName: self.fonts.regular,
+            NSForegroundColorAttributeName: NSColor.blackColor
+        }];
+    }
     
     NSMutableAttributedString* pageNumberBlock = NSMutableAttributedString.new;
-    [pageNumberBlock appendAttributedString:leftContent];
-    [pageNumberBlock appendAttributedString:headerContent];
-    [pageNumberBlock appendAttributedString:rightContent];
+    if (leftContent != nil) [pageNumberBlock appendAttributedString:leftContent];
+    if (headerContent != nil) [pageNumberBlock appendAttributedString:headerContent];
+    if (rightContent != nil) [pageNumberBlock appendAttributedString:rightContent];
     
     return pageNumberBlock;
 }
@@ -752,10 +793,10 @@
             if (!isDualDialogue && !line.isTitlePage) {
                 // Add content padding where needed
                 pStyle.firstLineHeadIndent     += self.styles.page.contentPadding;
-                pStyle.headIndent             += self.styles.page.contentPadding;
+                pStyle.headIndent              += self.styles.page.contentPadding;
             } else if (!line.isTitlePage) {
                 pStyle.firstLineHeadIndent     = style.marginLeft;
-                pStyle.headIndent             = style.marginLeft;
+                pStyle.headIndent              = style.marginLeft;
             }
             
             // Create text block for non-title page elements to restrict horizontal size
@@ -764,11 +805,10 @@
                 NSTextBlock* textBlock = NSTextBlock.new;
                 [textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
                 pStyle.textBlocks = @[textBlock];
-     
 #else
                 // This is a cursed solution, but what can I say. TextKit 2 (or iOS for that matter) doesn't support text blocks.
-                CGFloat rightMargin = style.marginLeft + blockWidth - style.marginRight;
-                pStyle.tailIndent = rightMargin;
+                CGFloat rightMargin = style.marginLeft / 2 + blockWidth - style.marginRight;
+                pStyle.tailIndent = rightMargin;                
 #endif
             }
             

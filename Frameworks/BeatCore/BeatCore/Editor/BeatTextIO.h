@@ -35,12 +35,7 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 @property (nonatomic, readwrite) bool moving;
 @optional @property (nonatomic) NSUndoManager* undoManager;
 - (void)textDidChange:(NSNotification *)notification;
-
-#if TARGET_OS_IOS
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
-#else
-- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
-#endif
+- (BOOL)textView:(BXTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
 @end
 
 @interface BeatTextIO : NSObject <BeatTextIOExports>
@@ -59,6 +54,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
+
+/// Replaces characters with an **attributed string**. Only accepts registered Beat attributes.
+- (void)replaceRange:(NSRange)range withAttributedString:(NSAttributedString *)attrString;
 
 - (void)addNewParagraph:(NSString*)string;
 - (void)addNewParagraph:(NSString*)string caretPosition:(NSInteger)newPosition;

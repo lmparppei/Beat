@@ -65,6 +65,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 - (void)setParser:(ContinuousFountainParser *)parser { _staticParser = parser; }
+
 - (ContinuousFountainParser*)parser
 {
     if (_delegate != nil) return _delegate.parser;
@@ -101,36 +102,35 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// Returns paragraph style for given line
 - (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line
 {
-	if (line == nil) line = [Line withString:@"" type:action];
-	
-	LineType type = line.type;
+    if (line == nil) line = [Line withString:@"" type:action];
+    
+    LineType type = line.type;
     BeatPaperSize paperSize = self.pageSize;
     BeatStylesheet* styles = self.editorStyles;
     
     Line* prevLine; // We'll look up previous line ONLY IF NEEDED. It will be NULL for anything else.
     
-	// Catch forced character cue
-	if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
-	
-	// We need to get left margin here to avoid issues with extended line types
-	if (line.isTitlePage) type = titlePageUnknown;
-	RenderStyle* elementStyle = [styles forElement:[Line typeName:type]];
-	
-	// Paragraph sizing
-	CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];
-	if (width == 0.0) width = [styles.page defaultWidthWithPageSize:paperSize];
-		
-	CGFloat leftMargin = elementStyle.marginLeft;
-	CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
-	
-	// Extended types for title page fields and sections
+    // Catch forced character cue
+    if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
+    
+    // We need to get left margin here to avoid issues with extended line types
+    if (line.isTitlePage) type = titlePageUnknown;
+    RenderStyle* elementStyle = [styles forElement:[Line typeName:type]];
+    
+    // Paragraph sizing
+    CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];
+    if (width == 0.0) width = [styles.page defaultWidthWithPageSize:paperSize];
+    
+    CGFloat leftMargin = elementStyle.marginLeft;
+    CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
+    
+    // Extended types for title page fields and sections
     if (line.isTitlePage && line.titlePageKey.length == 0) {
         type = (LineType)titlePageSubField;
-    }
-    else if (line.type == section && line.sectionDepth > 1) {
+    } else if (line.type == section && line.sectionDepth > 1) {
         type = (LineType)subSection;
     }
-    // In some cases we'll have to create different keys
+    // In some cases we'll have to create different keys for lines that are of the same type but meet other conditions
     else if (elementStyle.unindentFreshParagraphs) {
         // Check the previous line
         prevLine = [self.delegate.parser previousLine:line];
@@ -140,24 +140,37 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     }
     
     // We'll cache the paragraph styles when possible
-	NSNumber* paperSizeKey = @(paperSize);
-	NSNumber* typeKey = @(type);
-        
-	// Let's create two-dimensional dictionary for each type of element, with page size as key.
+    NSNumber* paperSizeKey = @(paperSize);
+    NSNumber* typeKey = @(type);
+    
+    // Let's create two-dimensional dictionary for each type of element, with page size as key.
     // Paragraph styles are then reused when possible.
-	if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
-	if (_paragraphStyles[paperSizeKey] == nil) _paragraphStyles[paperSizeKey] = NSMutableDictionary.new;
-		
-	// This style already exists, return the premade value
-	if (_paragraphStyles[paperSizeKey][typeKey] != nil) {
-		return _paragraphStyles[paperSizeKey][typeKey];
-	}
+    if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
+    if (_paragraphStyles[paperSizeKey] == nil) _paragraphStyles[paperSizeKey] = NSMutableDictionary.new;
+    
+    // This style already exists, return the premade value
+    if (_paragraphStyles[paperSizeKey][typeKey] != nil) {
+        return _paragraphStyles[paperSizeKey][typeKey];
+    }
+    
+    // Create paragraph style
+    NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
+    
+    // Set default line height
+    CGFloat lineHeight = styles.page.lineHeight;
 
-	// Create paragraph style
-	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	style.minimumLineHeight = styles.page.lineHeight;
-    style.maximumLineHeight = styles.page.lineHeight;
-    style.lineSpacing = 1.0;
+    // Set element-based line height
+    if (elementStyle.fontSize > 0) {
+        lineHeight = elementStyle.fontSize;
+    } else if (line.type == section) {
+        BXFont* font = [self fontFamilyForLine:line];
+        lineHeight = font.pointSize;
+    }
+    
+    style.minimumLineHeight = lineHeight;
+    style.maximumLineHeight = lineHeight;
+    style.lineHeightMultiple = (elementStyle.lineHeightMultiplier > 0) ? elementStyle.lineHeightMultiplier : styles.page.lineHeightMultiplier;
+
     	
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
@@ -167,7 +180,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;
 	style.headIndent = leftMargin + elementStyle.indent;
 	style.tailIndent = rightMargin;
-    	
+        	
     // Unindent novel paragraphs
     if (elementStyle.unindentFreshParagraphs && prevLine.type != line.type) {
         style.firstLineHeadIndent -= elementStyle.firstLineIndent;
@@ -181,12 +194,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	else if (type == subSection) {
 		style.paragraphSpacingBefore = styles.page.lineHeight;
-		style.paragraphSpacing = 0.0;
 	}
 	else if (type == section) {
 		style.paragraphSpacingBefore = styles.page.lineHeight * 1.5;
-		style.paragraphSpacing = 0.0;
 	}
+    
+    // You *can* override these if you want to see forests burn and innocence drop from childrens' faces
+    if (elementStyle.marginTop > 0) style.paragraphSpacingBefore = elementStyle.marginTop;
+    if (elementStyle.marginBottom > 0) style.paragraphSpacing = elementStyle.marginBottom;
 	
 	_paragraphStyles[paperSizeKey][typeKey] = style;
 	
@@ -397,16 +412,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (range.length == 0 && range.location < textStorage.string.length) {
 		attrRange = NSMakeRange(range.location, range.length + 1);
 	}
-	
-	if (newAttributes.count) {
-		[textStorage addAttributes:newAttributes range:attrRange];
-	}
-	
+		
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
 	// If we are editing a dialogue block at the end of the document, the line will be empty.
 	// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
-	if (line.string.length == 0 && !firstTime &&
-		NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
+	if (!firstTime && line.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		Line* previousLine;
 		
 		NSInteger lineIndex = [self.parser.lines indexOfObject:line];
@@ -415,18 +425,25 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// Keep dialogue input after any dialogue elements
 		if (previousLine.isDialogue && previousLine.length > 0) {
 			paragraphStyle = [self paragraphStyleForType:dialogue];
-		}
-		else if (previousLine.isDualDialogue && previousLine.length > 0) {
+		} else if (previousLine.isDualDialogue && previousLine.length > 0) {
 			paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
 			paragraphStyle = [self paragraphStyleFor:line];
 		}
 		
 		attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+        newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+        
+        [_delegate.getTextView setTypingAttributes:attributes];
 	} else {
 		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
-	    
+    
+    // Apply formatting
+    if (newAttributes.count) {
+        [textStorage addAttributes:newAttributes range:attrRange];
+    }
+    
     // Apply inline formatting
 	[self applyInlineFormatting:line reset:forceFont textStorage:textStorage];
     
@@ -435,16 +452,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
     // Actual text colors
 	[self setTextColorFor:line];
-    
-    // Set typing attributes
-    if (NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
-        attributes[NSFontAttributeName] = _delegate.fonts.regular;
-        [_delegate.getTextView setTypingAttributes:attributes];
-    }
 
-
-    if (!alreadyEditing) [textStorage endEditing];
-    
+    if (!alreadyEditing) [textStorage endEditing];    
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage
@@ -849,7 +858,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         [self setTextColorFor:line];
 	}
 }
-
 
 
 @end

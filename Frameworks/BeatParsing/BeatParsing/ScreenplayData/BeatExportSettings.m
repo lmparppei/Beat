@@ -41,6 +41,8 @@
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor.copy;
 		_paperSize = NSNotFound;
+        
+        _headerAlignment = 1;
 	}
 	return self;
 }
@@ -61,7 +63,10 @@
         
         _documentSettings = delegate.documentSettings;
         
-        _header = @"";
+        NSString* header = [delegate.documentSettings getString:DocSettingHeader];
+        _header = (header) ? header : @"";
+        _headerAlignment = [delegate.documentSettings getInt:DocSettingHeaderAlignment];
+        
         _printSceneNumbers = delegate.printSceneNumbers || delegate.showSceneNumberLabels;
         _revisions = delegate.shownRevisions;
         

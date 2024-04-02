@@ -171,16 +171,33 @@ import UXKit
 	}
 	
 	func textViewFrame() -> CGRect {
+        // Title page frame is a bit different
+        if isTitlePage { return titlePageTextViewFrame() }
+        
 		let size = BeatPaperSizing.size(for: settings.paperSize)
 		let marginOffset = (settings.paperSize == .A4) ? pageStyle.marginLeftA4 : pageStyle.marginLeftLetter
 		
-		let textFrame = CGRect(x: self.pageStyle.marginLeft - linePadding + marginOffset,
-							   y: self.pageStyle.marginTop,
-							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
-							   height: size.height - self.pageStyle.marginTop)
+		let textFrame = CGRect(x: pageStyle.marginLeft - linePadding + marginOffset,
+							   y: pageStyle.marginTop,
+							   width: size.width - pageStyle.marginLeft - pageStyle.marginRight,
+							   height: size.height - pageStyle.marginTop)
 		
 		return textFrame
 	}
+    
+    /// Title page doesn't need to take line fragment padding etc. into account
+    func titlePageTextViewFrame() -> CGRect {
+        let size = BeatPaperSizing.size(for: settings.paperSize)
+        let offset = 20.0
+        
+        let pageStyle = (self.isTitlePage && self.titlePageStyle != nil) ? self.titlePageStyle! : self.pageStyle
+        let textFrame = CGRect(x: pageStyle.marginLeft + offset,
+                               y: pageStyle.marginTop,
+                               width: size.width - pageStyle.marginLeft - pageStyle.marginRight - offset * 2,
+                               height: size.height - pageStyle.marginTop)
+        
+        return textFrame
+    }
 	
 	func updateContainerSize() {
 		paperSize = settings.paperSize
@@ -278,10 +295,12 @@ import UXKit
         // Use title page style if applicable
         let pageStyle = (self.titlePageStyle != nil) ? self.titlePageStyle! : self.pageStyle
         
+        print("Title page margin left", pageStyle.marginLeft)
+        
         let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         let textViewFrame = CGRect(x: pageStyle.marginLeft,
                                    y: pageStyle.marginTop,
-                                   width: frame.size.width - pageStyle.marginLeft * 2,
+                                   width: frame.size.width - pageStyle.marginLeft - pageStyle.marginRight,
                                    height: 400)
         textView?.frame = frame
         
@@ -388,7 +407,7 @@ import UXKit
         #if os(macOS)
 		leftColumn.drawsBackground = false
 		rightColumn.drawsBackground = false
-		textView.drawsBackground = false
+		textView.drawsBackground = true
         #endif
 		
 		// Layout manager doesn't handle newlines too well, so let's trim the column content
@@ -426,6 +445,8 @@ import UXKit
             leftColumn.textContainerInset = UIEdgeInsets(top: insetLeft, left: 0.0, bottom: 0.0, right: 0.0)
             rightColumn.textContainerInset = UIEdgeInsets(top: insetRight, left: 0.0, bottom: 0.0, right: 0.0)
         #endif
+        
+        textView.frame = self.titlePageTextViewFrame()
 	}
 	
 	/// Gets **and removes** a title page element from title page array. The array looks like `[ [key: value], [key: value], ...]` to keep the title page elements organized.

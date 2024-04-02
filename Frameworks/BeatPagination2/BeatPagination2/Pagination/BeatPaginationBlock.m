@@ -263,23 +263,38 @@
 
 /// Returns the indexes in which this block *could* be broken apart. Basically useless for anything else than dialogue at this point.
 - (NSIndexSet*)possiblePageBreakIndices {
-	// For every non-dialogue block, we'll just return 0
-	Line* firstLine = self.lines.firstObject;
-	if (!firstLine.isAnyCharacter) {
-		return [NSIndexSet indexSetWithIndex:0];
-	}
+	// Dialogue blocks have different types of safe indices
+    Line* firstLine = self.lines.firstObject;
+	if (firstLine.isAnyCharacter) return [self possiblePageBreakIndicesForDialogueBlock];
 
-	NSMutableIndexSet* indices = [NSMutableIndexSet indexSetWithIndex:0];
-	for (NSInteger i=0; i<self.lines.count; i++) {
-		Line *line = _lines[i];
-		
+    NSMutableIndexSet* indices = NSMutableIndexSet.new;
+    
+    Line* previousLine = nil;
+    for (NSInteger i=0; i<self.lines.count; i++) {
+        Line* l = self.lines[i];
+        
+        bool unsafe = (previousLine.type == section || previousLine.type == heading || previousLine.type == shot);
+        if (!unsafe) [indices addIndex:i];
+        
+        previousLine = l;
+    }
+    
+	return indices;
+}
+
+- (NSIndexSet*)possiblePageBreakIndicesForDialogueBlock
+{
+    NSMutableIndexSet* indices = [NSMutableIndexSet indexSetWithIndex:0];
+    for (NSInteger i=0; i<self.lines.count; i++) {
+        Line *line = _lines[i];
+        
         // Any parenthetical after the first one are good places to break the page
         if (line.isAnyParenthetical && i > 1) [indices addIndex:i];
         // Any line of dialogue is a good place to attempt to break the page
         if (line.isAnyDialogue) [indices addIndex:i];
-	}
-	
-	return indices;
+    }
+    
+    return indices;
 }
 
 /// Used to check if this block can be split across pages at all.
@@ -325,8 +340,15 @@
     } else if (spiller.isDialogueElement || spiller.isDualDialogueElement) {
         // Break apart dialogue blocks
         pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
+    } else if (pageBreakIndex > 0) {
+        // Centered or lyrics, split at given safe index
+        //pageBreakData = [self splitMultilineBlockAt:spiller];
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:pageBreakIndex element:spiller attributedString:nil reason:@"Multi-line block"];
+        NSArray* thisPage = [self.lines subarrayWithRange:NSMakeRange(0, pageBreakIndex)];
+        NSArray* nextPage = [self.lines subarrayWithRange:NSMakeRange(pageBreakIndex, self.lines.count - pageBreakIndex)];
+        pageBreakData = @[thisPage, nextPage, pageBreak];
     } else {
-        // This is something else (like lyrics, transition, whatever, let's just split it at beginning)
+        // This is something else (let's just split it at beginning)
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"No page break index found"];
         pageBreakData = @[@[], self.lines, pageBreak];
     }
@@ -439,7 +461,7 @@
     NSInteger cutoff = 0;       // Index at which we'll cut the dialogue in two
     
     // Find out where we can split the block
-    NSIndexSet* splittableIndices = [self possiblePageBreakIndices];
+    NSIndexSet* splittableIndices = [self possiblePageBreakIndicesForDialogueBlock];
         
     NSMutableArray* safeLines = NSMutableArray.new;
     

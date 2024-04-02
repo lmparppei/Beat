@@ -40,6 +40,8 @@ NSString * const DocSettingSidebarVisible = @"Sidebar Visible";
 NSString * const DocSettingSidebarWidth = @"Sidebar Width";
 
 NSString * const DocSettingHeadingUUIDs = @"Heading UUIDs";
+NSString * const DocSettingHeader = @"headerString";
+NSString * const DocSettingHeaderAlignment = @"headerAlignment";
 
 NSString * const DocSettingWindowWidth = @"Window Width";
 NSString * const DocSettingWindowHeight = @"Window Height";
@@ -75,7 +77,8 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
     if (defaultValues != nil) return defaultValues;
     
     defaultValues = @{
-        DocSettingNovelLineHeightMultiplier: @(2.0)
+        DocSettingNovelLineHeightMultiplier: @(2.0),
+        DocSettingHeaderAlignment: @(1)
     };
     
     return defaultValues;

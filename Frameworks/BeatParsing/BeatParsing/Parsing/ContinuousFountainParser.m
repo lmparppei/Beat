@@ -486,12 +486,16 @@ static NSDictionary* patterns;
     
     Line* line = self.lines[index];
     
+    // Check if this line affects the outline
     if (line.isOutlineElement) [self removeOutlineElementForLine:line];
-    
     [self addUpdateToOutlineIfNeededAt:index];
     
+    // Remove the line
     [self.lines removeObjectAtIndex:index];
     [self decrementLinePositionsFromIndex:index amount:line.range.length];
+    
+    // Notify delegate
+    [self.delegate lineWasRemoved:line];
     
     // Reset cached line
     _lastEditedLine = nil;

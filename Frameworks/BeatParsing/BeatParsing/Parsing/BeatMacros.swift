@@ -36,21 +36,20 @@ import Foundation
     var macros: [String: BeatMacro] = [:]
     let typeNames = ["string", "serial", "series", "number", "date"]
     
+    
+    /// Resolves the given macro content and returns the resulting value. `{{` and `}}` are removed automatically, so you can also provide a generic macro for weird tricks, not just the macro range from a line.
     @objc public func parseMacro(_ macro: String) -> AnyObject? {
         // Remove {{, }} and leading/trailing whitespace
         let trimmedMacro = macro.replacingOccurrences(of: "{{", with: "").replacingOccurrences(of: "}}", with: "").trimmingCharacters(in: .whitespaces)
         // Separate in two (if applicable)
         let components = trimmedMacro.split(separator: "=").map { $0.trimmingCharacters(in: .whitespaces) }
         
-        guard components.count > 0 else {
-            // Invalid macro format
-            return nil
-        }
+        // Check that macro format is valid
+        guard components.count > 0 else { return nil }
         
         var varName = ""
-        var varType:MacroType = .string
-        
-        var typeName = "string"        
+        var typeName = "string"
+        var subValue = -1
         
         if let leftSide = components.first?.components(separatedBy: " ") {
             if leftSide.count > 1, let t = leftSide.first?.lowercased().trimmingCharacters(in: .whitespaces) {
@@ -61,41 +60,48 @@ import Foundation
             }
         }
         
-        if varName == "" {
-            print("Invalid macro")
-            return nil
+        // Variable names are case-insensitive
+        varName = varName.lowercased()
+        
+        // Check for sub-values for serials
+        if varName.contains(".") {
+            // A sub value is something like {{page.sub}} or {{page.sub.sub.sub}}. We get the sub value index by calculating the amount of components called "sub".
+            let components = varName.components(separatedBy: ".")
+            varName = components[0]
+            
+            for i in 1..<components.count {
+                if components[i] == "sub" { subValue += 1 }
+                else { break }
+            }
         }
-        else if varName == "date" {
+        
+        print("-> varName", varName, "sub", subValue)
+        
+        if varName == "date" {
             typeName = "date"
             varName = ""
         }
         
-        // Check type
-        switch typeName {
-        case "serial", "series":
-            varType = .serial
-        case "number":
-            varType = .number
-        case "date":
-            varType = .date
-        default:
-            varType = .string
-        }
+        // Don't let empty macro names through
+        if varName == "" { print("Invalid macro"); return nil; }
+
+        var varType = BeatMacro.typeName(for: typeName)
+        let macro:BeatMacro
         
-        // Variable names are case insensitive
         if varType != .date {
-            varName = varName.lowercased()
-            
-            if macros[varName] == nil{
-                // Macro doesn't exist, create it
+            // If the macro doesn't exist, create it
+            if macros[varName] == nil {
                 macros[varName] = BeatMacro(name: varName, type: varType, value: nil)
             }
-
+            
+            // Retrieve macro type
+            macro = macros[varName]!
+            varType = macro.type
+        } else {
+            // Create a date macro
+            macro = BeatMacro(name: "date", type: .date, value: nil)
         }
 
-        // Get the macro value from dictionary
-        let macro = (varType != .date) ? macros[varName]! : BeatMacro(name: "date", type: .date, value: nil)
-        
         if components.count > 1 {
             let rightSide = components[1]
             
@@ -117,10 +123,7 @@ import Foundation
             
             if macro.type == .serial {
                 // serial numbers are incremented every time we encounter them
-                if var n = macro.value as? Int {
-                    n += 1
-                    macro.value = n
-                }
+                macro.incrementValue(subValue: subValue)
             }
         }
         
@@ -134,7 +137,14 @@ import Foundation
             df.dateFormat = format
             return df.string(from: Date()) as NSString
         } else {
-            return macro.intValue
+            if subValue == -1 {
+                print("Macro value", macro.intValue)
+                return macro.intValue
+            } else {
+                print("Sub value", macro.subValues[subValue])
+                return NSNumber(integerLiteral: macro.subValues[subValue] ?? -1)
+            }
+            
         }
     }
 }
@@ -147,7 +157,14 @@ import Foundation
 class BeatMacro {
     var type:MacroType
     var name:String
-    var value:Any?
+    var value:Any? {
+        didSet {
+            // Reset sub value whenever the value is changed
+            if self.type == .serial { subValues = [:] }
+        }
+    }
+    
+    var subValues:[Int:Int] = [:]
     
     var intValue:NSNumber {
         guard let num = value as? NSNumber else { return NSNumber(integerLiteral: -1) }
@@ -163,6 +180,35 @@ class BeatMacro {
         self.value = value
         self.type = type
         self.name = name
+    }
+    
+    func incrementValue(subValue:Int = -1) {
+        if var n = value as? Int, subValue == -1 {
+            n += 1
+            value = n
+        } else {
+            // Increment sub value
+            if let val = self.subValues[subValue] {
+                self.subValues[subValue] = val + 1
+            } else {
+                self.subValues[subValue] = 1
+            }
+        }
+    }
+
+    
+    class func typeName(for string:String) -> MacroType {
+        // Check type
+        switch string {
+        case "serial", "series":
+            return .serial
+        case "number":
+            return .number
+        case "date":
+            return .date
+        default:
+            return .string
+        }
     }
 }
 

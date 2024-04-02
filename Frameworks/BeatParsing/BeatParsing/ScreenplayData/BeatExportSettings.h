@@ -48,10 +48,12 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @interface BeatExportSettings : NSObject
 
 @property (nonatomic, weak) id<BeatExportSettingDelegate> delegate;
-@property (nonatomic) NSString *header;
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) NSString * _Nullable pageRevisionColor;
 @property (nonatomic) bool coloredPages;
+
+@property (nonatomic) NSString *header;
+@property (nonatomic) NSInteger headerAlignment;
 
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
