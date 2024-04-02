@@ -35,7 +35,12 @@ class iOSDocument: UIDocument {
 		let text = delegate?.createDocumentFile() ?? self.rawText ?? ""
 		return text.data(using: .utf8) as Any
     }
-	    
+	
+	override func save(to url: URL, for saveOperation: UIDocument.SaveOperation) async -> Bool {
+		print("Save?")
+		return await super.save(to: url, for: saveOperation)
+	}
+		
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
 		rawText = String(data: contents as! Data, encoding: .utf8)
@@ -92,20 +97,18 @@ class iOSDocument: UIDocument {
 	}
 	
 	var canRename:Bool {
-
 		let documentURL = self.fileURL.standardizedFileURL
 		let localDocumentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 		
 		if localDocumentsURL != nil && documentURL.path.hasPrefix(localDocumentsURL!.path) {
 			// Yes, we can rename documents in our local storage
 			return true
+		} else {
+			return false
 		}
-		
-		return false
 	}
 	
 	@objc func renameDocument(to newTitle: String) {
-		print("Renaming", self.fileURL)
 		let fileURL = self.fileURL
 		
 		let fileManager = FileManager.default
