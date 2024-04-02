@@ -43,7 +43,7 @@ Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Wri
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. I still can't use branches. Dread lightly, dear friend!
 
-Use the `Beat` workspace.  When building for development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but no external libraries or frameworks are be needed. If you want to build the ad hoc target (which is currently not maintained) you will need the latest Sparkle package.  
+Use the `Beat` workspace.  When building for macOS development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but the main macOS target doesn't have any external dependencies.  
 
 
 ## FAQ
