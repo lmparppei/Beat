@@ -7,7 +7,7 @@
 //
 /**
  
- This class  provides a native `UIView`-based  printing component for iOS version of Beat.
+ This convoluted class  provides a native `UIView`-based  printing component for iOS version of Beat.
  
  You need to provide export settings, and a window which owns this operation. If you specify a delegate, screenplay content will be automatically requested from there. Otherwise you need to send a `BeatScreenplay` object.
  
@@ -150,14 +150,14 @@ class BeatPDFPrinter:NSObject {
 					
 					textView.textLayoutManager?.enumerateTextLayoutFragments(from: location, options: [.ensuresLayout, .estimatesSize, .ensuresExtraLineFragment], using: { fragment in
 						
-						let frame = fragment.layoutFragmentFrame
+						var frame = fragment.layoutFragmentFrame
 						var origin = textView.frame.origin
 						
-						origin.x += textView.textContainerInset.left
+						//origin.x += textView.textContainerInset.left
 						origin.y += textView.textContainerInset.top
 						
 						var actualFrame = frame
-						actualFrame.origin.x += origin.x
+						actualFrame.origin.x = origin.x
 						actualFrame.origin.y += origin.y
 												
 						// Draw text attachment
@@ -175,6 +175,7 @@ class BeatPDFPrinter:NSObject {
 						
 						if let paragraph = fragment as? BeatRenderingTextFragment {
 							// Draw Beat fragments
+							frame.origin.x = -5.0
 							paragraph.draw(at: frame.origin, origin: origin, in: cgContext)
 						} else {
 							// Draw plain fragments
@@ -191,4 +192,49 @@ class BeatPDFPrinter:NSObject {
 		return data
 	}
 		
+}
+
+// MARK: - Controller
+
+protocol BeatPDFControllerDelegate:NSObject {
+	var editorDelegate:BeatEditorDelegate? { get }
+}
+
+/// This is a wrapper class for PDF printer, which handles asynchronous printing.
+class BeatPDFController:NSObject {
+	var printViews: NSMutableArray! = NSMutableArray()
+	var temporaryView:UIView?
+	
+	weak var editorDelegate:BeatEditorDelegate?
+	weak var delegate:BeatPDFControllerDelegate?
+	
+	init (delegate:BeatPDFControllerDelegate, temporaryView:UIView?) {
+		self.delegate = delegate
+		self.editorDelegate = self.delegate?.editorDelegate
+		
+		super.init()
+	}
+
+	func createPDF(completion:@escaping (_ url:URL?) -> Void) {
+		guard let editorDelegate = self.editorDelegate
+		else { return }
+		
+		let printer = BeatPDFPrinter(delegate: editorDelegate, temporaryView: self.temporaryView) { data in
+			if data == nil { return }
+			
+			let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+			
+			if let pdfData = data,
+			   let fileURL = url?.appendingPathComponent(editorDelegate.fileNameString(), isDirectory: false).appendingPathExtension("pdf") {
+				do {
+					try pdfData.write(to: fileURL)
+					completion(fileURL)
+				} catch {
+					print("Error",error)
+				}
+			}
+		}
+		
+		printViews.add(printer)
+	}
 }

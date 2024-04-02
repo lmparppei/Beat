@@ -7,122 +7,20 @@
 //
 
 import UIKit
+import PDFKit
 import BeatCore
 
-/// Generic view controller for showing export settings
-class BeatExportSettingViewController:UIViewController {
-	@objc var editorDelegate:BeatEditorDelegate?
-	weak var settingController:BeatExportSettingController?
-	
-	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if segue.identifier == "ToSettingsTable" {
-			settingController = segue.destination as? BeatExportSettingController
-			settingController?.editorDelegate = editorDelegate
-		}
-		super.prepare(for: segue, sender: sender)
-	}
-}
-
-/// Print/export dialog
-final class BeatExportViewController:BeatExportSettingViewController {
-	var printViews: NSMutableArray! = NSMutableArray()
-	
-	@objc weak var senderButton:UIBarButtonItem?
-	@objc weak var senderVC:UIViewController?
-	@IBOutlet @objc weak var temporaryView:UIView?
-	
-	@IBAction override func export(_ sender: Any?) {
-		guard let editorDelegate = self.editorDelegate
-		else { return }
-		
-		
-		let printer = BeatPDFPrinter(delegate: editorDelegate, temporaryView: self.temporaryView) { data in
-			if data == nil { return }
-			
-			let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
-			
-			if let pdfData = data,
-			   let fileURL = url?.appendingPathComponent(editorDelegate.fileNameString(), isDirectory: false).appendingPathExtension("pdf") {
-				do {
-					try pdfData.write(to: fileURL)
-					print("URL",fileURL)
-					self.didExportFile(at: fileURL)
-				} catch {
-					print("Error",error)
-				}	
-			}
-		}
-		
-		printViews.add(printer)
-	}
-		
-	func didExportFile(at url: URL!) {
-		guard let url = url else {
-			self.dismiss(animated: true)
-			return
-		}
-		
-		let shareController = BeatShareSheetController(items: [url], excludedTypes: [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo])
-		present(shareController, animated: true)
-		
-		/*
-		let avc = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
-		avc.excludedActivityTypes = [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo]
-			
-		if (self.senderButton == nil) {
-			avc.popoverPresentationController?.sourceView = self.view
-			viewController().present(avc, animated: true)
-		} else {
-			// Let's show the activity controller in place of the original popover
-			self.dismiss(animated: true) {
-				avc.popoverPresentationController?.sourceView = self.view
-				avc.popoverPresentationController?.barButtonItem = self.senderButton
-				avc.modalPresentationStyle = .overCurrentContext
-				self.senderVC?.present(avc, animated: true)
-			}
-		}
-		 */
-	}
-	
-	func viewController() -> UIViewController! {
-		return self
-	}
-}
-
-class BeatShareSheetController: UIViewController {
-	private let activityController: UIActivityViewController
-
-	init(items: [Any], excludedTypes:[UIActivity.ActivityType] = []) {
-		self.activityController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-		self.activityController.excludedActivityTypes = excludedTypes
-		
-		super.init(nibName: nil, bundle: nil)
-		modalPresentationStyle = .formSheet
-	}
-
-	required init?(coder: NSCoder) { fatalError() }
-
-	override func viewDidLoad() {
-		super.viewDidLoad()
-	
-		addChild(activityController)
-		view.addSubview(activityController.view)
-		
-		activityController.view.translatesAutoresizingMaskIntoConstraints = false
-	
-		NSLayoutConstraint.activate([
-			activityController.view.topAnchor.constraint(equalTo: view.topAnchor),
-			activityController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-			activityController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-			activityController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-		])
-	}
-}
 
 /// Export setting table view controller
-final class BeatExportSettingController:UITableViewController {
-	@IBOutlet var host:Any?
+final class BeatExportSettingController:UITableViewController, BeatPDFControllerDelegate {
+	@IBOutlet @objc weak var temporaryView:UIView?
+	@IBOutlet @objc weak var activityIndicator:UIActivityIndicatorView?
 	
+	// MARK: PDF view
+	@IBOutlet var previewView:PDFView?
+	var pdfController:BeatPDFController?
+	
+	// MARK: Setting switches etc.
 	@IBOutlet var revisionSwitches:[UISwitch]?
 	@IBOutlet var paperSize:UISegmentedControl?
 	@IBOutlet var printSceneNumbers:UISwitch?
@@ -135,7 +33,9 @@ final class BeatExportSettingController:UITableViewController {
 	@IBOutlet var printSections:UISwitch?
 	@IBOutlet var printSynopsis:UISwitch?
 	
-	weak var editorDelegate:BeatEditorDelegate?
+	@IBOutlet var header:UITextField?
+	
+	@objc weak var editorDelegate:BeatEditorDelegate?
 	
 	var hiddenRevisions:[String] {
 		guard let revisionSwitches = self.revisionSwitches else { return [] }
@@ -152,6 +52,9 @@ final class BeatExportSettingController:UITableViewController {
 	
 	override func viewWillAppear(_ animated: Bool) {
 		guard let editorDelegate = self.editorDelegate else { return }
+		self.activityIndicator?.startAnimating()
+		
+		pdfController = BeatPDFController(delegate: self, temporaryView: self.temporaryView)
 		
 		printSceneNumbers?.setOn(editorDelegate.showSceneNumberLabels, animated: false)
 		paperSize?.selectedSegmentIndex = editorDelegate.pageSize.rawValue
@@ -165,10 +68,22 @@ final class BeatExportSettingController:UITableViewController {
 		printNotes?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintNotes), animated: false)
 		printSections?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintSections), animated: false)
 		printSynopsis?.setOn(editorDelegate.documentSettings.getBool(DocSettingPrintSynopsis), animated: false)
+		
+		header?.text = self.editorDelegate?.documentSettings.getString(DocSettingHeader) ?? ""
+				
+		refreshPreview()
 	}
 	
+	@IBAction func close(_ sender:Any?) {
+		self.navigationController?.popViewController(animated: true)
+
+	}
 	
 	// MARK: Toggle settings
+	
+	@IBAction func togglePaperSize(_ sender:Any?) {
+		refreshDocument()
+	}
 	
 	@IBAction func toggleSetting(sender:BeatUserSettingSwitch?) {
 		guard let button = sender,
@@ -206,10 +121,66 @@ final class BeatExportSettingController:UITableViewController {
 	func refreshDocument() {
 		DispatchQueue.main.async { [weak self] in
 			self?.editorDelegate?.reloadStyles()
+			self?.refreshPreview()
 		}
 	}
 	
-	// MARK: Export settings
+	/// Refresh preview
+	var timer:Timer?
+	var firstPreview = true
+	func refreshPreview() {
+		// Clear the preview
+		self.previewView?.document = nil
+		self.activityIndicator?.startAnimating()
+		
+		let bounds = self.previewView?.bounds ?? CGRect.zero
+		let scale = self.previewView?.scaleFactor ?? 1.0
+		
+		timer?.invalidate()
+		timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false, block: { [weak self] _ in
+			DispatchQueue.main.async {
+				self?.pdfController?.createPDF(completion: { url in
+					if let url = url, let pdf = PDFDocument(url: url), let previewView = self?.previewView {
+						previewView.document = pdf
+						previewView.bounds = bounds
+
+						if (self?.firstPreview ?? false) {
+							previewView.scaleFactor = previewView.scaleFactorForSizeToFit - 0.3
+						} else {
+							previewView.scaleFactor = scale
+						}
+						
+						self?.activityIndicator?.stopAnimating()
+					}
+				})
+			}
+		})
+	}
+	
+	@IBAction func editHeader(_ sender:UITextField?) {
+		self.editorDelegate?.documentSettings.set(DocSettingHeader, as: sender?.text ?? "")
+	}
+	
+	
+	// MARK: - Export button
+	
+	@IBAction func savePDF(_ sender:Any?) {
+		self.pdfController?.createPDF(completion: { url in
+			guard let url = url else {
+				self.close(sender)
+				return
+			}
+			
+			let shareController = BeatShareSheetController(items: [url], excludedTypes: [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo])
+			
+			self.present(shareController, animated: true) {
+				self.close(nil)
+			}
+		})
+	}
+	
+	
+	// MARK: - Export settings
 	
 	func exportSettings() -> BeatExportSettings {
 		guard let settings = editorDelegate?.exportSettings else {
@@ -220,7 +191,7 @@ final class BeatExportSettingController:UITableViewController {
 		// Then, let's adjust them according to export panel
 		settings.paperSize = BeatPaperSize(rawValue: self.paperSize?.selectedSegmentIndex ?? 0) ?? .A4
 		settings.printSceneNumbers = printSceneNumbers?.isOn ?? true
-				
+		
 		var additionalTypes = IndexSet()
 		
 		if printSections?.isOn ?? false { additionalTypes.insert(Int(LineType.section.rawValue)) }
@@ -237,6 +208,5 @@ final class BeatExportSettingController:UITableViewController {
 		return settings
 	}
 }
-
 
 
