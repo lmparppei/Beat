@@ -142,6 +142,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.automaticDataDetectionEnabled = NO;
 	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;
+	
+	self.usesFindBar = true;
+	self.usesFindPanel = false;
 }
 
 /// Loads and sets up our custom layout manager, `BeatLayoutManager`

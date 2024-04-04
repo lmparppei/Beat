@@ -42,6 +42,9 @@
 	
 	self.wantsLayer = NO;
 	
+	// Make the default Y -1000 so we know that it's unchanged
+	_buttonDefaultY = -1000;
+	
 	_recognizer = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
 	[self addGestureRecognizer:_recognizer];
 }
@@ -154,17 +157,16 @@
 	CGFloat height = self.findBarView.frame.size.height;
 	
 	// Save original constant
-	if (_buttonDefaultY == 0) _buttonDefaultY = _buttonView.frame.origin.y;
+	if (_buttonDefaultY < 0) _buttonDefaultY = _buttonView.frame.origin.y;
 	
 	if (!findBarVisible) {
 		frame.origin.y = _buttonDefaultY;		
 		[self.window makeFirstResponder:self.documentView];
 	} else {
-		frame.origin.y -= height;
+		frame.origin.y = _buttonDefaultY - height;
 	}
 	
 	_buttonView.frame = frame;
-	
 }
 
 - (void)findBarViewDidChangeHeight {
@@ -172,6 +174,7 @@
 		NSRect frame = _buttonView.frame;
 		CGFloat height = self.findBarView.frame.size.height;
 		frame.origin.y = _buttonDefaultY - height;
+				
 		_buttonView.frame = frame;
 	}
 	
