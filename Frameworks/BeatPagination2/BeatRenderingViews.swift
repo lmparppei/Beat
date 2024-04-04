@@ -295,8 +295,6 @@ import UXKit
         // Use title page style if applicable
         let pageStyle = (self.titlePageStyle != nil) ? self.titlePageStyle! : self.pageStyle
         
-        print("Title page margin left", pageStyle.marginLeft)
-        
         let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         let textViewFrame = CGRect(x: pageStyle.marginLeft,
                                    y: pageStyle.marginTop,

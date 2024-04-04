@@ -361,7 +361,7 @@ struct PaginationRule {
         for conditionalRule in self.conditionalRules.keys.sorted() {            
             // We'll split the rule key back to its components (ie. "sectionDepth > 1" -> "sectionDepth", ">", "1")
             let components = conditionalRule.components(separatedBy: " ")
-            if components.count == 0 { print("   ... error"); continue }
+            if components.count == 0 { print("Warning: No components found in conditional rule", conditionalRule); continue }
         
             // Get the given value from line
             if let val = line.value(forKey: components[0]) {

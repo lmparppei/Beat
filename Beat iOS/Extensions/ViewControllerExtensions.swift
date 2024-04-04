@@ -10,7 +10,6 @@ import Foundation
 
 extension UIViewController {
 	@IBAction func dismissViewController(sender:Any?) {
-		print("Dismissing")
 		self.dismiss(animated: true)
 	}
 }

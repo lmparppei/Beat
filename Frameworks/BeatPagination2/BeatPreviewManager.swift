@@ -344,7 +344,6 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
 extension BeatPreviewManager:UXTextViewDelegate {
     #if os(iOS)
     public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        print("URL", URL)
         return false
     }
     #endif

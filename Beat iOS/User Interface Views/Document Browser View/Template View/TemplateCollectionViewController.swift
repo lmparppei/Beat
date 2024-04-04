@@ -57,7 +57,7 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 			let alert = UIAlertController(title: "Error loading template", message: "Take a screenshot of this message and send it to the developer:\n\(self.errorMessage ?? "")", preferredStyle: .alert)
 			alert.addAction(UIAlertAction(title: "OK", style: .default))
 			self.parent?.present(alert, animated: true)
-			print(self.errorMessage ?? "(error)")
+			print(self.errorMessage ?? "(error loading template)")
 		}
 		
 		// Dismiss the template controller

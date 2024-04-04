@@ -528,7 +528,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		super.endFloatingCursor()
 
 		floatingCursor = false
-		print("float end")
+		
 		if self.selectedRangeBeforeTouch != self.selectedRange {
 			self.editorDelegate?.textViewDidEndSelection(self, selectedRange: self.selectedRange)
 		}
@@ -869,14 +869,6 @@ extension BeatUITextView {
 			editorDelegate.replace(r, with: suggestion)
 		}
 	}
-	/*
-	@objc internal func _scrollSelectionToVisibleInContainingScrollView() {
-		print("wat")
-	}
-	@objc internal func _scrollRect(_ arg1:CGRect, toVisibleInContainingScrollView arg2:Bool) {
-		print("wat 2")
-	}
-	 */
 }
 
 // MARK: - Mobile keyboard manager

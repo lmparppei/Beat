@@ -75,8 +75,6 @@ import Foundation
             }
         }
         
-        print("-> varName", varName, "sub", subValue)
-        
         if varName == "date" {
             typeName = "date"
             varName = ""
@@ -138,10 +136,8 @@ import Foundation
             return df.string(from: Date()) as NSString
         } else {
             if subValue == -1 {
-                print("Macro value", macro.intValue)
                 return macro.intValue
             } else {
-                print("Sub value", macro.subValues[subValue])
                 return NSNumber(integerLiteral: macro.subValues[subValue] ?? -1)
             }
             

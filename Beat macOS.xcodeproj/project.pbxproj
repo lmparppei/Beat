@@ -171,6 +171,8 @@
 		B669E03C2923885300891DD1 /* NSFont+CFTraits.m in Sources */ = {isa = PBXBuildFile; fileRef = B669E03A2923885200891DD1 /* NSFont+CFTraits.m */; };
 		B669E03E29238AC400891DD1 /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B669E03D29238AC400891DD1 /* BeatFontExtensions.swift */; };
 		B669E03F29238AC400891DD1 /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B669E03D29238AC400891DD1 /* BeatFontExtensions.swift */; };
+		B66CC4A92BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66CC4A82BBD7DDA002F6841 /* BeatEditorNotificationManager.swift */; };
+		B66CC4AA2BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66CC4A82BBD7DDA002F6841 /* BeatEditorNotificationManager.swift */; };
 		B66CDF1D28170EE300EF4137 /* BeatPrintDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */; };
 		B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */; };
 		B66E2CC229EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */; };
@@ -690,6 +692,7 @@
 		B669E03A2923885200891DD1 /* NSFont+CFTraits.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFont+CFTraits.m"; sourceTree = "<group>"; };
 		B669E03D29238AC400891DD1 /* BeatFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontExtensions.swift; sourceTree = "<group>"; };
 		B66B5A912739B54800BBC9C6 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		B66CC4A82BBD7DDA002F6841 /* BeatEditorNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatEditorNotificationManager.swift; sourceTree = "<group>"; };
 		B66CDF1A28170EE300EF4137 /* BeatPrintDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintDialog.h; sourceTree = "<group>"; };
 		B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintDialog.m; sourceTree = "<group>"; };
 		B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentWindow.swift; sourceTree = "<group>"; };
@@ -1835,6 +1838,7 @@
 			children = (
 				B1B62A3819E3402F009F6E23 /* ColorView.h */,
 				B617654A2BA59EDD00F18417 /* ColorView.m */,
+				B66CC4A82BBD7DDA002F6841 /* BeatEditorNotificationManager.swift */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
@@ -2244,6 +2248,7 @@
 				B61443DB280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B61765812BA5A26100F18417 /* BeatTimeline.m in Sources */,
 				B6F4850C2B3C34E1003548DC /* BeatTextFolding.swift in Sources */,
+				B66CC4A92BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */,
 				B61765542BA59F3700F18417 /* FlatButton.swift in Sources */,
 				B637EE152A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
 				B6D2B7072218B308005B8447 /* BeatAppDelegate.m in Sources */,
@@ -2380,6 +2385,7 @@
 				B61443DC280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B61765822BA5A26100F18417 /* BeatTimeline.m in Sources */,
 				B6F4850D2B3C34E1003548DC /* BeatTextFolding.swift in Sources */,
+				B66CC4AA2BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */,
 				B61765552BA59F3700F18417 /* FlatButton.swift in Sources */,
 				B637EE162A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
 				B68B6036260B849300463AD8 /* BeatAppDelegate.m in Sources */,

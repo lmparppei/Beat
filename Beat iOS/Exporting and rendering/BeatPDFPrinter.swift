@@ -230,7 +230,7 @@ class BeatPDFController:NSObject {
 					try pdfData.write(to: fileURL)
 					completion(fileURL)
 				} catch {
-					print("Error",error)
+					print("Error when writing PDF",error)
 				}
 			}
 		}

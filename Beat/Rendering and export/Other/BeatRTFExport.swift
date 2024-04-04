@@ -24,7 +24,6 @@ public class BeatRTFExport:NSObject {
 		for element in delegate.styles.document._visibleElements {
 			types.insert(Int(element.rawValue))
 		}
-		print("types", types)
 		
 		settings.additionalTypes = types
 		
@@ -56,10 +55,9 @@ public class BeatRTFExport:NSObject {
 		
 		do {
 			let data = try attrStr.data(from: attrStr.range, documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]) as NSData
-			print("Data", data)
 			return data
 		} catch {
-			print("Error",error)
+			print("RTF export error:",error)
 			return nil
 		}
 	}

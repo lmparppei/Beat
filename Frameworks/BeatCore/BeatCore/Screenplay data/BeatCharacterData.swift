@@ -194,7 +194,6 @@ import Foundation
             }
         }
         
-        print("DICT", dict)
         // Save data to document settings
         self.delegate?.documentSettings.set(DocSettingCharacterData, as: dict)
     }

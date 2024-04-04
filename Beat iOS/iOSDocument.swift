@@ -37,7 +37,6 @@ class iOSDocument: UIDocument {
     }
 	
 	override func save(to url: URL, for saveOperation: UIDocument.SaveOperation) async -> Bool {
-		print("Save?")
 		return await super.save(to: url, for: saveOperation)
 	}
 		
