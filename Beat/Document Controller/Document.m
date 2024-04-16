@@ -612,8 +612,6 @@
 - (void)readUserSettings
 {
 	[BeatUserDefaults.sharedDefaults readUserDefaultsFor:self];
-	// Do some additional setup if needed
-	self.printSceneNumbers = self.showSceneNumberLabels;
 }
 
 - (void)applyUserSettings
@@ -1698,7 +1696,7 @@
 		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:BeatSettingAutomaticLineBreaks target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:BeatSettingShowSceneNumbers target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:BeatSettingShowPageNumbers target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(togglePrintSceneNumbers:) setting:BeatSettingPrintSceneNumbers target:self],
+		
 		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:BeatSettingAutosave target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:BeatSettingHideFountainMarkup target:self],
 		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:BeatSettingDisableFormatting target:self],
@@ -2012,7 +2010,6 @@
 
 #pragma mark - Preview
 
-
 - (IBAction)preview:(id)sender
 {
 	if (self.currentTab != _nativePreviewTab) {
@@ -2021,12 +2018,8 @@
 	} else {
 		[self returnToEditor];
 	}
-	return;
 }
-- (BOOL)previewVisible {
-	return (self.currentTab == _nativePreviewTab);
-}
-
+- (BOOL)previewVisible { return (self.currentTab == _nativePreviewTab); }
 
 - (void)cancelOperation:(id) sender
 {
@@ -2042,6 +2035,7 @@
 	}
 }
 
+/// TODO: Move this to preview view
 - (IBAction)showPreviewOptions:(id)sender
 {
 	NSButton* button = (NSButton*)sender;
@@ -2052,7 +2046,7 @@
 	
 	self.previewOptionsPopover.contentViewController = previewOptions;
 	self.previewOptionsPopover.behavior = NSPopoverBehaviorTransient;
-	[self.previewOptionsPopover showRelativeToRect:button.bounds ofView:sender preferredEdge:NSRectEdgeMinY];
+	[self.previewOptionsPopover showRelativeToRect:button.bounds ofView:sender preferredEdge:NSRectEdgeMaxY];
 }
 
 /*
@@ -2072,11 +2066,13 @@
 #pragma  mark - Sidebar methods
 // Move all of this into a separate sidebar handler class
 
-- (CGFloat)sidebarWidth {
+- (CGFloat)sidebarWidth
+{
 	return self.splitHandle.bottomOrLeftView.frame.size.width;
 }
 
-- (IBAction)toggleSidebar:(id)sender {
+- (IBAction)toggleSidebar:(id)sender
+{
 	[self toggleSidebarView:sender];
 }
 - (IBAction)toggleSidebarView:(id)sender
@@ -2322,15 +2318,6 @@
 
 #pragma mark - Scene numbering
 // TODO: What the actual hell is this stuff
-
-- (IBAction)togglePrintSceneNumbers:(id)sender
-{
-	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
-	for (Document* doc in openDocuments) {
-		doc.printSceneNumbers = !doc.printSceneNumbers;
-	}
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-}
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting

@@ -25,7 +25,7 @@
 
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
 
-@interface BeatPrintDialog ()
+@interface BeatPrintDialog () <NSTextFieldDelegate, PDFViewDelegate>
 
 @property (weak) IBOutlet NSButton* printSceneNumbers;
 @property (weak) IBOutlet NSButton* radioA4;
@@ -149,15 +149,11 @@ static CGFloat panelWidth;
 {
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
-			
-	// Get setting from document
-	if (_documentDelegate.printSceneNumbers) [_printSceneNumbers setState:NSOnState];
-	else [_printSceneNumbers setState:NSOffState];
+					
+	[self loadWindow];
 		
-	// We have to show the panel here to be able to set the radio buttons (???)
-	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
-		[self.documentDelegate releasePrintDialog];
-	}];
+	// Get setting from document
+	self.printSceneNumbers.state = (_documentDelegate.printSceneNumbers) ? NSOnState : NSOffState;
 	
 	// Check the paper size
 	// WIP: Unify these so the document knows its BeatPaperSize too
@@ -165,14 +161,19 @@ static CGFloat panelWidth;
 	else [_radioLetter setState:NSOnState];
 		
 	// Reload PDF preview
+	_firstPreview = YES;
 	[self loadPreview];
-	
 	
 	NSRect frame = self.window.frame;
 	NSRect screen = self.window.screen.frame;
 	
 	CGPoint origin = CGPointMake((screen.size.width - frame.size.width) / 2.0, (screen.size.height - frame.size.height) / 2.0);
 	[self.window setFrameOrigin:origin];
+	
+	// We have to show the panel here to be able to set the radio buttons, because I can't figure out how to load the window.
+	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+		[self.documentDelegate releasePrintDialog];
+	}];
 }
 
 - (IBAction)close:(id)sender
@@ -355,22 +356,11 @@ static CGFloat panelWidth;
 	// Stop progress indicator
 	[self.progressIndicator stopAnimation:nil];
 	self.pdfView.alphaValue = 1.0;
-	
-	// This is a hack. Sorry.
-	// We find the scroll view for PDFView, save its bounds and load them when
-	// the preview is refreshed. Because the coordinate system is flipped, we
-	// can only do it after the initial preview was created, not to end up at the
-	// end of the document.
-	_firstPreview = YES;
-	NSScrollView *scrollView = _pdfView.subviews.firstObject;
-	NSRect frame = scrollView.contentView.bounds;
-	
+
 	// Load the actual PDF into the view
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
 	[_pdfView setDocument:doc];
 	
-	// Load the old bounds (if this is not the first time preview was loaded)
-	if (!_firstPreview) scrollView.contentView.bounds = frame;
 	_firstPreview = NO;
 }
 
@@ -386,15 +376,23 @@ static CGFloat panelWidth;
 	return printedRevisions;
 }
 
-- (IBAction)headerTextChange:(id)sender
-{
-	[self.documentDelegate.documentSettings setString:DocSettingHeader as:(self.headerText.stringValue != nil) ? self.headerText.stringValue : @""];
-	[self loadPreview];
-}
-
 - (IBAction)toggleHeaderAlignment:(NSSegmentedControl*)sender
 {
 	[self.documentDelegate.documentSettings setInt:DocSettingHeaderAlignment as:sender.selectedSegment];
+	[self loadPreview];
+}
+
+
+#pragma mark - Header text did change
+
+- (void)controlTextDidChange:(NSNotification *)obj
+{
+	[self headerTextChange:nil];
+}
+
+- (IBAction)headerTextChange:(id)sender
+{
+	[self.documentDelegate.documentSettings setString:DocSettingHeader as:(self.headerText.stringValue != nil) ? self.headerText.stringValue : @""];
 	[self loadPreview];
 }
 

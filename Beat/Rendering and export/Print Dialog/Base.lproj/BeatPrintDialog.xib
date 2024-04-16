@@ -185,7 +185,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="KZX-n4-4Sn">
-                                            <rect key="frame" x="0.0" y="363" width="196" height="21"/>
+                                            <rect key="frame" x="1" y="363" width="196" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Revision, Version, ..." bezelStyle="round" id="HOf-0E-WLn">
                                                 <font key="font" metaFont="system"/>
@@ -194,6 +194,7 @@ DQ
                                             </textFieldCell>
                                             <connections>
                                                 <action selector="headerTextChange:" target="-2" id="NOm-kU-kRg"/>
+                                                <outlet property="delegate" destination="-2" id="bSj-6a-hvP"/>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="5jv-fN-Wdf">
