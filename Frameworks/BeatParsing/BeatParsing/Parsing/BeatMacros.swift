@@ -64,7 +64,7 @@ import Foundation
         varName = varName.lowercased()
         
         // Check for sub-values for serials
-        if varName.contains(".") {
+        if varName.contains(".") && typeName != "date" {
             // A sub value is something like {{page.sub}} or {{page.sub.sub.sub}}. We get the sub value index by calculating the amount of components called "sub".
             let components = varName.components(separatedBy: ".")
             varName = components[0]
@@ -75,14 +75,15 @@ import Foundation
             }
         }
         
+        // Don't let empty macro names through
+        if varName == "" { print("Invalid macro"); return nil; }
+        
+        // Dates don't work as other macros
         if varName == "date" {
             typeName = "date"
             varName = ""
         }
         
-        // Don't let empty macro names through
-        if varName == "" { print("Invalid macro"); return nil; }
-
         var varType = BeatMacro.typeName(for: typeName)
         let macro:BeatMacro
         
@@ -111,6 +112,7 @@ import Foundation
             }
         } else if varType == .date {
             // When defining a date, the type/name convention doesn't work as usual
+            print("-> date value", varName)
             macro.value = varName
         } else {
             // If this value is UNDEFINED but printed, we'll assign a value
