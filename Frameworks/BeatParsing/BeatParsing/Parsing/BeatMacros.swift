@@ -61,7 +61,7 @@ import Foundation
         }
         
         // Variable names are case-insensitive
-        varName = varName.lowercased()
+        if typeName != "date" { varName = varName.lowercased() }
         
         // Check for sub-values for serials
         if varName.contains(".") && typeName != "date" {
