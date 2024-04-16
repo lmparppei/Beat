@@ -254,13 +254,13 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			super.scrollRangeToVisible(range)
 			return
 		}
-		
+
 		// Current bounds
-		let bounds = (!mobileMode) ? self.enclosingScrollView.bounds : self.bounds
+		let bounds = self.enclosingScrollView.bounds
 		
 		// The *actually* visible frame (why won't iOS give this automatically?)
-		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.keyboardLayoutGuide.layoutFrame.size.height)
-		
+		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.enclosingScrollView.adjustedContentInset.bottom - self.enclosingScrollView.contentInset.bottom)
+				
 		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
 		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
@@ -268,19 +268,11 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		// Account for top margin
 		selectionRect.origin.y += self.textContainerInset.top
 		
-		if !mobileMode {
-			let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
-			
-			// If the rect is not visible, scroll to that range
-			if CGRectIntersection(scaledRect, visible).height < 16.0 {
-				self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
-			}
-		} else {
-			let scaledRect = convert(selectionRect, from: nil)
-			
-			if CGRectIntersection(scaledRect, visible).height < 16.0 {
-				self.scrollRectToVisible(selectionRect, animated: animated)
-			}
+		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
+
+		// If the rect is not visible, scroll to that range
+		if CGRectIntersection(scaledRect, visible).height < 16.0 {
+			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
 		}
 
 	}
@@ -299,8 +291,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		selectAndScroll(to: scene.line.textRange())
 	}
 	
-	func selectAndScroll(to range:NSRange) {
-		self.selectedRange = range
+	@objc func selectAndScroll(to range:NSRange) {
+		self.selectedRange = NSMakeRange(NSMaxRange(range), 0)
 		self.scroll(to: range)
 	}
 	
@@ -315,17 +307,23 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	 
 	 */
 		
+	/// Called when setting up the view and adjusting paper size
 	@objc func resizePaper() {
 		var frame = pageView.frame
 		frame.size.height = textContainer.size.height
 		frame.size.width = self.documentWidth + textContainerInset.left + textContainerInset.right + BeatUITextView.linePadding()
 		
 		pageView.frame = frame
+		
+		let containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
+		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
+		self.textContainerInset = insets
 	}
 	
+	/// Used to reliably resize the text view to fit content
 	@objc func resize() {
 		// We'll ignore this method on phones
-		if mobileMode {
+		guard !mobileMode else {
 			mobileViewResize()
 			return
 		}
@@ -335,11 +333,9 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			return
 		}
 		
-		let containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
+		// Resize content view size in scroll view. This value has to be set before any of the following calculations.
+		resizeScrollViewContent()
 		
-		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
-		self.textContainerInset = insets
-				
 		var frame = pageView.frame
 		var zoom = enclosingScrollView.zoomScale
 		
@@ -354,22 +350,33 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		}
 		
 		// Center the page view
-		var x = (enclosingScrollView.frame.width - pageView.frame.width) / 2
-		if (x < 0) { x = 0 }
-		frame.origin.x = x
+		let x = (enclosingScrollView.frame.width - pageView.frame.width) / 2
+		frame.origin.x = max(x, 0.0)
 		
-		resizeScrollViewContent()
-				
-		frame.size.width = zoom * (self.documentWidth + self.insets.left + self.insets.right)
+		// Calculate page view size
+		let width = floor(self.documentWidth + self.insets.left + self.insets.right)
+		let height = floor(self.pageView.frame.size.height)
+
+		// Page view size is scaled
+		frame.size.width = zoom * width
 		frame.size.height = enclosingScrollView.contentSize.height
+						
+		// And now, welcome to fun with floating points.
+		// iOS frame sizes tend to be off by ~0.000001, so we'll have to round everything to ensure we're not doing anything unnecessary.
 		
-		self.pageView.frame = frame
-		
+		if preciseRound(frame.origin.x, precision: .tenths) != preciseRound(pageView.frame.origin.x, precision: .tenths) { pageView.frame.origin.x = frame.origin.x }
+		if preciseRound(frame.width, precision: .tenths) != preciseRound(pageView.frame.width, precision: .tenths) { pageView.frame.size.width = frame.width }
+		if preciseRound(frame.height, precision: .tenths) != preciseRound(pageView.frame.height, precision: .tenths) { pageView.frame.size.height = frame.height }
+				
+		// Check if we should resize text view frame or not.
 		var textViewFrame = self.frame
-		textViewFrame.origin.x = 0.0
-		textViewFrame.size.width = self.documentWidth + self.insets.left + self.insets.right
-		textViewFrame.size.height = self.pageView.frame.size.height
-		self.frame = textViewFrame
+		
+		if width != floor(self.frame.width) || height != floor(self.frame.height) {
+			textViewFrame.origin.x = 0.0
+			textViewFrame.size.width = width
+			textViewFrame.size.height = height
+			self.frame = textViewFrame
+		}
 	}
 	
 	@objc func firstResize() {
@@ -709,6 +716,28 @@ extension BeatUITextView: UIScrollViewDelegate {
 		default:
 			super.pressesEnded(presses, with: event)
 		}
+	}
+}
+
+// Specify the decimal place to round to using an enum
+public enum RoundingPrecision {
+	case ones
+	case tenths
+	case hundredths
+}
+
+// Round to the specific decimal place
+public func preciseRound(
+	_ value: Double,
+	precision: RoundingPrecision = .ones) -> Double
+{
+	switch precision {
+	case .ones:
+		return round(value)
+	case .tenths:
+		return round(value * 10) / 10.0
+	case .hundredths:
+		return round(value * 100) / 100.0
 	}
 }
 
