@@ -14,6 +14,7 @@
 import AppKit
 
 @objc class BeatPreviewOptions:NSViewController {
+	@IBOutlet weak var printSceneNumbers:NSButton?
 	@IBOutlet weak var printSynopsis:NSButton?
 	@IBOutlet weak var printSections:NSButton?
 	@IBOutlet weak var printNotes:NSButton?
@@ -34,6 +35,7 @@ import AppKit
 		guard let documentSettings = self.editorDelegate?.documentSettings else { return }
 		
 		self.settings = [
+			DocSettingPrintSceneNumbers: printSceneNumbers!,
 			DocSettingPrintNotes: printNotes!,
 			DocSettingPrintSynopsis: printSynopsis!,
 			DocSettingPrintSections: printSections!
