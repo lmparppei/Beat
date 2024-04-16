@@ -67,7 +67,7 @@
         _header = (header) ? header : @"";
         _headerAlignment = [delegate.documentSettings getInt:DocSettingHeaderAlignment];
         
-        _printSceneNumbers = delegate.printSceneNumbers || delegate.showSceneNumberLabels;
+        _printSceneNumbers = delegate.printSceneNumbers;
         _revisions = delegate.shownRevisions;
         
         _coloredPages = false;

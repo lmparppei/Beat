@@ -52,6 +52,7 @@ NSString * const DocSettingPageSize = @"Page Size";
 
 NSString * const DocSettingCharacterGenders = @"CharacterGenders";
 
+NSString * const DocSettingPrintSceneNumbers = @"Print Scene Numbers";
 NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
 NSString * const DocSettingPrintSections = @"Print Sections";
 NSString * const DocSettingPrintNotes    = @"Print Notes";
@@ -78,7 +79,8 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
     
     defaultValues = @{
         DocSettingNovelLineHeightMultiplier: @(2.0),
-        DocSettingHeaderAlignment: @(1)
+        DocSettingHeaderAlignment: @(1),
+        DocSettingPrintSceneNumbers: @(true)
     };
     
     return defaultValues;

@@ -44,6 +44,7 @@ extern NSString * const DocSettingCharacterData;
 extern NSString * const DocSettingHeader;
 extern NSString * const DocSettingHeaderAlignment;
 
+extern NSString * const DocSettingPrintSceneNumbers;
 extern NSString * const DocSettingPrintSynopsis;
 extern NSString * const DocSettingPrintSections;
 extern NSString * const DocSettingPrintNotes;
