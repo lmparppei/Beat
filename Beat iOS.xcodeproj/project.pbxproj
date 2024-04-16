@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,6 +23,9 @@
 		B621D1BF2A803EBB00D072E6 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */; };
 		B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; };
 		B621D1C52A803EE700D072E6 /* UnzipKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1C32A803EE700D072E6 /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */; };
+		B622801C2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */; };
+		B6298D4B2BC66E3D00F9AAF0 /* BeatNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6298D4A2BC66E3D00F9AAF0 /* BeatNavigationController.swift */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
 		B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F76E29B7C9B80024D73A /* InputAssistantView.swift */; };
@@ -63,7 +66,6 @@
 		B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
 		B6C7AA8A2BB3113E00A43284 /* BeatShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C7AA892BB3113E00A43284 /* BeatShareSheetController.swift */; };
-		B6C7AA8F2BB348C300A43284 /* TPKeyboardAvoiding in Frameworks */ = {isa = PBXBuildFile; productRef = B6C7AA8E2BB348C300A43284 /* TPKeyboardAvoiding */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
 		B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */; };
@@ -83,6 +85,10 @@
 		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
 		B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
+		B6DEA4812BC45A3900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
+		B6DEA4822BC45A3900F15208 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */; };
+		B6DEA4832BC45A3900F15208 /* TPKeyboardAvoidingCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA4802BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.m */; };
+		B6DEA4842BC45A3900F15208 /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA4792BC45A2800F15208 /* TPKeyboardAvoidingScrollView.m */; };
 		B6E91E362B67A25700EDB066 /* BeatPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */; };
 		B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */; };
 		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
@@ -147,6 +153,9 @@
 		B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatIndexCardView.swift; sourceTree = "<group>"; };
 		B62117152A7062F90053228F /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B621D1C32A803EE700D072E6 /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatUITextView+KeyCommands.swift"; sourceTree = "<group>"; };
+		B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+KeyCommands.swift"; sourceTree = "<group>"; };
+		B6298D4A2BC66E3D00F9AAF0 /* BeatNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNavigationController.swift; sourceTree = "<group>"; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B633C1E3298C622F0011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -220,6 +229,14 @@
 		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
+		B6DEA4792BC45A2800F15208 /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
+		B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
+		B6DEA47B2BC45A2800F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
+		B6DEA47C2BC45A2900F15208 /* TPKeyboardAvoidingScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingScrollView.h; sourceTree = "<group>"; };
+		B6DEA47D2BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingCollectionView.h; sourceTree = "<group>"; };
+		B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TPKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
+		B6DEA47F2BC45A2900F15208 /* TPKeyboardAvoidingTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingTableView.h; sourceTree = "<group>"; };
+		B6DEA4802BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingCollectionView.m; sourceTree = "<group>"; };
 		B6E91E352B67A25700EDB066 /* BeatPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPageViewController.swift; sourceTree = "<group>"; };
 		B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPDFPrinter.swift; sourceTree = "<group>"; };
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
@@ -253,7 +270,6 @@
 				B621D1C42A803EE700D072E6 /* UnzipKit.framework in Frameworks */,
 				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
 				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
-				B6C7AA8F2BB348C300A43284 /* TPKeyboardAvoiding in Frameworks */,
 				B6D3202F298EC64C003DA45D /* BeatDynamicColor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +331,7 @@
 				B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */,
 				B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */,
 				B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */,
+				B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */,
 			);
 			path = "Main Document View";
 			sourceTree = "<group>";
@@ -345,6 +362,7 @@
 		B633C132298C54BC0011449D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B6DEA4782BC45A0B00F15208 /* Keyboard avoiding table view */,
 				B619DE5729F6FD94007D1838 /* PrintingExtensions.swift */,
 				B6B61BB429F970A20098D94D /* UITextView+UX.h */,
 				B6B61BB529F970A20098D94D /* UITextView+UX.m */,
@@ -378,6 +396,7 @@
 			isa = PBXGroup;
 			children = (
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */,
 				B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */,
 				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
@@ -412,6 +431,7 @@
 				B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */,
 				B686BD262B345F060074FC67 /* BeatAdaptiveViews.swift */,
 				B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */,
+				B6298D4A2BC66E3D00F9AAF0 /* BeatNavigationController.swift */,
 			);
 			path = "User Interface Elements";
 			sourceTree = "<group>";
@@ -561,6 +581,21 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		B6DEA4782BC45A0B00F15208 /* Keyboard avoiding table view */ = {
+			isa = PBXGroup;
+			children = (
+				B6DEA47D2BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.h */,
+				B6DEA4802BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.m */,
+				B6DEA47C2BC45A2900F15208 /* TPKeyboardAvoidingScrollView.h */,
+				B6DEA4792BC45A2800F15208 /* TPKeyboardAvoidingScrollView.m */,
+				B6DEA47F2BC45A2900F15208 /* TPKeyboardAvoidingTableView.h */,
+				B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */,
+				B6DEA47B2BC45A2800F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.h */,
+				B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */,
+			);
+			path = "Keyboard avoiding table view";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -598,7 +633,6 @@
 			);
 			name = "Beat iOS";
 			packageProductDependencies = (
-				B6C7AA8E2BB348C300A43284 /* TPKeyboardAvoiding */,
 			);
 			productName = "Beat iOS";
 			productReference = B6CB96F0282FEB6500C7AFC7 /* Beat.app */;
@@ -639,7 +673,6 @@
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			packageReferences = (
-				B6C7AA8D2BB348C300A43284 /* XCRemoteSwiftPackageReference "TPKeyboardAvoiding" */,
 			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
@@ -724,6 +757,11 @@
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
 				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */,
+				B6DEA4812BC45A3900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
+				B622801C2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift in Sources */,
+				B6DEA4822BC45A3900F15208 /* TPKeyboardAvoidingTableView.m in Sources */,
+				B6DEA4832BC45A3900F15208 /* TPKeyboardAvoidingCollectionView.m in Sources */,
+				B6DEA4842BC45A3900F15208 /* TPKeyboardAvoidingScrollView.m in Sources */,
 				B63AB3C42A57153B00B28BC0 /* BeatTemplateCell.swift in Sources */,
 				B6C7AA8A2BB3113E00A43284 /* BeatShareSheetController.swift in Sources */,
 				B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */,
@@ -731,6 +769,8 @@
 				B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
+				B6298D4B2BC66E3D00F9AAF0 /* BeatNavigationController.swift in Sources */,
+				B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */,
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */,
 				B619DE5829F6FD94007D1838 /* PrintingExtensions.swift in Sources */,
@@ -869,8 +909,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -894,11 +933,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -933,11 +968,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatThumbnailProvider;
@@ -966,7 +997,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 23;
+				CURRENT_PROJECT_VERSION = 30;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -987,10 +1018,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1027,7 +1055,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 23;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1043,10 +1071,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1095,25 +1120,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		B6C7AA8D2BB348C300A43284 /* XCRemoteSwiftPackageReference "TPKeyboardAvoiding" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/michaeltyson/TPKeyboardAvoiding";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.5;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		B6C7AA8E2BB348C300A43284 /* TPKeyboardAvoiding */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B6C7AA8D2BB348C300A43284 /* XCRemoteSwiftPackageReference "TPKeyboardAvoiding" */;
-			productName = TPKeyboardAvoiding;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B138B56B19E1C973000489C4 /* Project object */;
 }
