@@ -179,6 +179,7 @@
 "export.printSections" = "Sections";
 "export.printSynopsis" = "Synopsis";
 "export.printNotes" = "Notes";
+"export.printSceneNumbers" = "Scene Numbers";
 
 "templates.showTutorialsAndTemplates" = "Show Tutorials and Templates...";
 

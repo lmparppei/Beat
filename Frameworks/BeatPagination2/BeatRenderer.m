@@ -250,7 +250,7 @@
     UIFontDescriptorSymbolicTraits traits = 0;
     if ([styleNames containsObject:@"Bold"]) traits |= UIFontDescriptorTraitBold;
     if ([styleNames containsObject:@"Italic"]) traits |= UIFontDescriptorTraitItalic;
-    if ([styleNames containsObject:@"Bold"]) NSLog(@"BOLD: %@", attributedString.string);
+
     if (traits != 0) {
         UIFont* font = [attributedString attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
         if (font == nil) font = self.fonts.regular;

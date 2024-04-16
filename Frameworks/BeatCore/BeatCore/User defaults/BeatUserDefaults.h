@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString * const BeatSettingMatchParentheses;
 extern NSString * const BeatSettingShowPageNumbers;
 extern NSString * const BeatSettingShowSceneNumbers;
-extern NSString * const BeatSettingPrintSceneNumbers;
+
 extern NSString * const BeatSettingAutosave;
 extern NSString * const BeatSettingTypewriterMode;
 extern NSString * const BeatSettingHideFountainMarkup;

@@ -112,7 +112,7 @@
 "backup.reverting.message" = "Kaikki tallentamattomat muutokset hävitetään, kun palaat varmuuskopioituun versioon. Haluatko varmasti jatkaa?";
 
 "editor.setSceneNumber" = "Aseta kohtausnumero";
-"editor.setSceneNumber.info" = "Muokatto kohtausnumero (voi sisältää myös kirjaimia tai pelkän välilyönnin)";
+"editor.setSceneNumber.info" = "Muokattu kohtausnumero (voi sisältää myös kirjaimia tai pelkän välilyönnin)";
 
 "force.character" = "Hahmo";
 "force.heading" = "Kohtausotsikko";
@@ -124,6 +124,13 @@
 
 "export.prefix" = "Vie";
 "import.prefix" = "Tuo";
+
+"export.includeInvisibleElements" = "Näkymättömät elementit";
+"export.printSections" = "Osiot";
+"export.printSynopsis" = "Synopsikset";
+"export.printNotes" = "Muistiinpanot";
+"export.printSceneNumbers" = "Kohtausnumerot";
+
 
 "timer.reset" = "Nollaa";
 "timer.start" = "Käynnistä";

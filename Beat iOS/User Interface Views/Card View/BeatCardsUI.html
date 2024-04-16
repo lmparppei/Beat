@@ -357,14 +357,21 @@
 				cards.forEach((card) => {
 					let uuid = card.getAttribute("uuid")
 
+					// Tap for iOS
+					card.ontouchend = () => {
+						scrollToLine(uuid);
+						Beat.call("Beat.custom.returnToEditor()");
+					}
+					
 					// Update click
 					card.onclick = () => {
 						if (contextMenu != null) contextMenu.close();
 						
 						// In non-container mode we'll scroll to the line, and on iOS we'll close the view
 						if (iOS || mode == modes.window) {
-							if (iOS) Beat.call("Beat.custom.returnToEditor()");
+							Beat.log("Scrolling to" + uuid)
 							scrollToLine(uuid);
+							if (iOS) Beat.call("Beat.custom.returnToEditor()");
 						}
 					}
 					// Update double click (macOS)

@@ -1474,7 +1474,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
@@ -1517,10 +1517,10 @@
                                                 <action selector="preview:" target="-2" id="uBX-BZ-AiS"/>
                                             </connections>
                                         </button>
-                                        <button id="u0f-Cg-wvv">
-                                            <rect key="frame" x="1069" y="620.5" width="23" height="29"/>
+                                        <button toolTip="Printout Settings" id="u0f-Cg-wvv">
+                                            <rect key="frame" x="1069" y="619.5" width="23" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="eye.square.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="b1S-3C-jJm">
+                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="doc.badge.gearshape" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="b1S-3C-jJm">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -2114,7 +2114,7 @@ Gw
         <image name="NSLockLockedTemplate" width="19" height="19"/>
         <image name="NSRefreshTemplate" width="18" height="21"/>
         <image name="NSStatusNone" width="16" height="16"/>
-        <image name="NSStopProgressFreestandingTemplate" width="19" height="19"/>
+        <image name="NSStopProgressFreestandingTemplate" width="20" height="20"/>
         <image name="NSTouchBarGoDownTemplate" width="18" height="11"/>
         <image name="NSTouchBarGoUpTemplate" width="18" height="11"/>
         <image name="Notepad" width="512" height="512"/>
@@ -2139,7 +2139,7 @@ Gw
         <image name="color.orange" width="15" height="15"/>
         <image name="color.pink" width="15" height="15"/>
         <image name="color.red" width="15" height="15"/>
-        <image name="eye.square.fill" catalog="system" width="15" height="14"/>
+        <image name="doc.badge.gearshape" catalog="system" width="16" height="18"/>
         <image name="sidebar.left" catalog="system" width="18" height="14"/>
         <image name="xmark.circle.fill" catalog="system" width="15" height="15"/>
     </resources>

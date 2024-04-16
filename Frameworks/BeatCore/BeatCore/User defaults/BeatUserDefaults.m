@@ -39,7 +39,6 @@ NSString* const BeatSettingMatchParentheses				= @"matchParentheses";
 NSString* const BeatSettingShowPageNumbers 				= @"showPageNumbers";
 NSString* const BeatSettingShowPageSeparators           = @"showPageSeparators";
 NSString* const BeatSettingShowSceneNumbers 			= @"showSceneNumberLabels";
-NSString* const BeatSettingPrintSceneNumbers 			= @"printSceneNumbers";
 
 NSString* const BeatSettingAutosave 					= @"autosave";
 NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
@@ -115,7 +114,7 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 		BeatSettingAutosave: @[AUTOSAVE_KEY, @NO],
 		BeatSettingAutocomplete: @[AUTOCOMPLETE_KEY, @YES],
 		BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
-		BeatSettingPrintSceneNumbers: @[PRINT_SCENE_NUMBERS_KEY, @YES],
+
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
 		

@@ -173,6 +173,8 @@
 "export.printSynopsis" = "Sinopsis";
 "export.printNotes" = "Opombe";
 
+"export.printSceneNumbers" = "Številke prizorov";
+
 "templates.showTutorialsAndTemplates" = "Pokaži vadnice in predloge ...";
 
 "revisions.downgrade.title" = "Ponižaj revizije";

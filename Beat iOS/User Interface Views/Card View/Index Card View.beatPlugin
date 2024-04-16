@@ -315,6 +315,7 @@ Beat.custom = {
 	},
 	scrollToLine: (uuid) => {
 		let line = Beat.currentParser.lineWithUUID(uuid)
+		
 		Beat.scrollToLine(line)
 		Beat.focusEditor()
 	},

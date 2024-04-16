@@ -150,7 +150,8 @@
 #pragma mark - Find bar listener
 
 // Listen to find bar open/close and move the outline / card view buttons accordingly
-- (void)setFindBarVisible:(BOOL)findBarVisible {
+- (void)setFindBarVisible:(BOOL)findBarVisible
+{
 	[super setFindBarVisible:findBarVisible];
 	
 	NSRect frame = _buttonView.frame;

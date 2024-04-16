@@ -70,6 +70,12 @@
 /* (No Comment) */
 "export.prefix" = "Export";
 
+"export.includeInvisibleElements" = "Osynliga element";
+"export.printSections" = "Sektioner";
+"export.printSynopsis" = "Synopsis";
+"export.printNotes" = "Anteckningar";
+"export.printSceneNumbers" = "Scennummer";
+
 /* (No Comment) */
 "force.action" = "Scenbeskrivning";
 
