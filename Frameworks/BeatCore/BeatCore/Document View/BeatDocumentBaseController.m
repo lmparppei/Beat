@@ -56,12 +56,12 @@
 
 - (bool)printSceneNumbers
 {
-    return [BeatUserDefaults.sharedDefaults getBool:@"printSceneNumbers"];
+    return [self.documentSettings getBool:DocSettingPrintSceneNumbers];
 }
 
 - (void)setPrintSceneNumbers:(bool)value
 {
-    [BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
+    [self.documentSettings setBool:DocSettingPrintSceneNumbers as:value];
 }
 
 

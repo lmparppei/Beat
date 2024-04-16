@@ -92,6 +92,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) Line* _Nullable characterInputForLine;
 @property (nonatomic) NSIndexSet* _Nullable disabledTypes;
 
+- (void)lineWasRemoved:(Line * _Nonnull)line;
 
 #pragma mark - Basic document settings
 
@@ -306,6 +307,7 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) BeatStylesheet* _Nonnull editorStyles;
 
 - (void)reloadStyles;
+- (void)resetStyles;
 - (CGFloat)editorLineHeight;
 - (CGFloat)lineHeight;
 
