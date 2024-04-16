@@ -17,10 +17,22 @@ import BeatCore
  */
 @objc public class BeatPageViewController:UIViewController, BeatPreviewPageView {
 	@IBOutlet weak var pageView:BeatPageScrollView?
+		
 	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
 		didSet {
 			self.pageView?.dataSource = dataSource
 		}
+	}
+	
+	public override func viewDidLoad() {
+		self.pageView?.becomeFirstResponder()
+	}
+	
+	public override var keyCommands: [UIKeyCommand]? {
+		return [
+			UIKeyCommand(action: #selector(closePreview), input: "e", modifierFlags: .command, discoverabilityTitle: "Close preview"),
+			UIKeyCommand(action: #selector(closePreview), input: UIKeyCommand.inputEscape)
+		]
 	}
 	
 	public func clear() {
@@ -45,7 +57,13 @@ import BeatCore
 		self.pageView?.reload()
 	}
 	
+	/// This pops the preview from navigation
+	@IBAction @objc func closePreview(sender:Any?) {
+		self.navigationController?.popViewController(animated: true)
+		self.pageView?.clear()
+	}
 	
+	/// This just dismisses the view
 	@IBAction func dismissPreviewView(sender:Any) {
 		self.dismiss(animated: true)
 		self.pageView?.clear()
@@ -94,6 +112,11 @@ import BeatCore
 		
         reload()
     }
+	
+	public override var keyCommands: [UIKeyCommand]? {
+		print("wut")
+		return superview?.keyCommands
+	}
 		
 	/// Removes all views from page view
 	public func clear() {
