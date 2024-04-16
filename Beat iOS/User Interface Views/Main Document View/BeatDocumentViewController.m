@@ -239,8 +239,9 @@
 	self.scrollView.zoomScale = 1.4;
 	
 	// Keyboard manager
-	self.keyboardManager = KeyboardManager.new;
-	self.keyboardManager.delegate = self;
+	//self.keyboardManager = KeyboardManager.new;
+	//self.keyboardManager.delegate = self;
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybWillShow:) name:UIKeyboardWillShowNotification object:nil];
 	
 	// Text I/O
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
@@ -254,22 +255,17 @@
 	[self.textView firstResize];
 	[self.textView resize];
 	
-	// Data source
-	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
-	
 	// Setup outline view
 	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
 	self.outlineView.editorDelegate = self;
-	_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
 	
-	
-	
-	// Restore caret position
-	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
-	if (position < self.text.length) {
-		[self.textView setSelectedRange:NSMakeRange(position, 0)];
-		[self.textView scrollToRange:self.textView.selectedRange];
-	}
+	// One day we'll migrate to diffable data source, but that day is not now.
+	//_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
+}
+
+- (void)dealloc
+{
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)setupTitleBar
@@ -295,6 +291,13 @@
 		[self.textView resize];
 		
 		self.documentIsLoading = false;
+		
+		// Restore caret position
+		NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+		if (position < self.text.length) {
+			[self.textView setSelectedRange:NSMakeRange(position, 0)];
+			[self.textView scrollToRange:self.textView.selectedRange];
+		}
 	}
 }
 
@@ -394,24 +397,29 @@
 #pragma mark - Sidebar
 
 - (IBAction)toggleSidebar:(id)sender {
+	bool shown = false;
+	
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		// iPhone
 		if (self.editorSplitView.sidebar.viewIfLoaded.window) {
-			[self.outlineProvider update];
 			[self.editorSplitView showColumn:UISplitViewControllerColumnSecondary];
 		} else {
+			//[self.outlineProvider update];
 			[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
+			shown = true;
 		}
-		
-		return;
+	} else {
+		// iPad
+		if (self.editorSplitView.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
+			//[self.outlineProvider update];
+			[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
+			shown = true;
+		} else {
+			[self.editorSplitView hideColumn:UISplitViewControllerColumnPrimary];
+		}
 	}
 	
-	// iPad
-	if (self.editorSplitView.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
-		[self.outlineProvider update];
-		[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
-	} else {
-		[self.editorSplitView hideColumn:UISplitViewControllerColumnPrimary];
-	}
+	if (shown) [self.outlineView reloadInBackground];
 }
 
 - (bool)sidebarVisible
@@ -434,9 +442,13 @@
 
 - (IBAction)togglePreview:(id)sender
 {
-	[self presentViewController:self.previewView animated:true completion:nil];
-	[self.previewController renderOnScreen];
-	[self.textView scrollToRange:self.textView.selectedRange];
+	if (![self.navigationController.viewControllers containsObject:self.previewView]) {
+		[self.navigationController pushViewController:self.previewView animated:true];
+		[self.previewController renderOnScreen];
+		[self.textView scrollToRange:self.textView.selectedRange];
+	} else {
+		[self.previewView closePreviewWithSender:nil];
+	}
 }
 
 - (void)previewDidFinish
@@ -545,7 +557,7 @@
 	if (self.characterInputForLine != nil && self.currentLine != self.characterInputForLine) {
 		[self.textView cancelCharacterInput];
 	}
-			
+	
 	// If this is not a touch event, scroll to content
 	if (self.textView.floatingCursor) return;
 	
@@ -558,11 +570,11 @@
 	[self.textView scrollRangeToVisible:textView.selectedRange];
 	
 	// Update outline view
-	if (self.outlineView.visible) [self.outlineView reloadData];
+	if (self.outlineView.visible) [self.outlineView selectCurrentScene];
 	
 	// Update text view input view and scroll range to visible
 	[self.textView updateAssistingViews];
-
+	
 	// Update plugins
 	[self.pluginAgent updatePluginsWithSelection:selectedRange];
 	
@@ -577,7 +589,6 @@
 	[self textViewDidChange:self.textView];
 }
 
-// TODO: This can be made OS-agnostic
 -(void)textViewDidChange:(UITextView *)textView {
 	[super textDidChange];
 	
@@ -586,10 +597,10 @@
 	
 	// Reset last changed range
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
-
+	
 	if (!self.documentIsLoading) [self updateChangeCount:UIDocumentChangeDone];
 	
-	[self.textView resize];
+	[self.textView resize];	
 }
 
 /// Alias for macOS-compatibility
@@ -654,7 +665,7 @@
 
 - (void)selectionDidChange:(id<UITextInput>)textInput
 {
-	
+	//
 }
 
 - (void)selectionWillChange:(id<UITextInput>)textInput
@@ -721,10 +732,6 @@
 	return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
 }
 
-- (bool)printSceneNumbers {
-	return self.showSceneNumberLabels;
-}
-
 - (bool)showRevisedTextColor {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
 }
@@ -786,7 +793,7 @@
 }
 /// Selects the given line and scrolls it into view
 - (void)scrollToLine:(Line*)line {
-	if (line != nil) [self selectAndScrollTo:line.textRange];
+	if (line != nil) [self selectAndScrollTo:NSMakeRange(NSMaxRange(line.textRange), 0)];
 }
 /// Selects the line at given index and scrolls it into view
 - (void)scrollToLineIndex:(NSInteger)index {
@@ -838,6 +845,11 @@
 	
 	[self.textView setTypingAttributes:self.typingAttributes];
 }
+
+- (void)lineWasRemoved:(Line *)line { 
+	
+}
+
 
 
 #pragma mark - Printing stuff for iOS
@@ -903,13 +915,26 @@
 	return true;
 }
 
+/// Fuck me, sorry for this
+- (void)keybWillShow:(NSNotification*)notification
+{
+	NSDictionary * info = notification.userInfo;
+	NSValue* endFrame = info[UIKeyboardFrameEndUserInfoKey];
+	NSNumber* rate = info[UIKeyboardAnimationDurationUserInfoKey];
+	
+	if (info == nil || endFrame == nil || rate == nil) return;
+	
+	CGRect currentKeyboard = endFrame.CGRectValue;
+	CGRect convertedFrame = [self.view convertRect:currentKeyboard fromView:nil];
+	
+	[self keyboardWillShowWith:convertedFrame.size animationTime:rate.floatValue];
+}
+
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
 	// Let's not use this on phones
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
 	
-	CGFloat keyboardHeight = self.textView.keyboardLayoutGuide.layoutFrame.size.height;
-	
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
 	
 	CGRect bounds = self.scrollView.bounds;
 	bool animateBounds = false;
@@ -926,10 +951,10 @@
 		}
 	}
 	
+	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
 		self.outlineView.contentInset = insets;
-		
 		if (animateBounds) self.scrollView.bounds = bounds;
 		
 	} completion:^(BOOL finished) {
@@ -979,14 +1004,15 @@
 		
 		vc.delegate = self;
 		vc.pluginName = @"Index Card View";
-	}
-	else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
+		
+	} else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
 		self.editorSplitView = segue.destinationViewController;
 	}
 }
 
 - (IBAction)toggleCards:(id)sender
 {
+// if ([self.navigationController.viewControllers containsObject:<#(nonnull __kindof UIViewController *)#>])
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
 
