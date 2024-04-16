@@ -71,8 +71,8 @@ class BeatPDFPrinter:NSObject {
 		paginateAndRender()
 	}
 	
-	@objc convenience init(delegate:BeatEditorDelegate, temporaryView:UIView?, callback:@escaping (Data?) -> ()) {
-		self.init(settings: delegate.exportSettings, delegate: delegate, temporaryView:temporaryView, screenplays: nil, callback: callback)
+	@objc convenience init(delegate:BeatEditorDelegate, settings:BeatExportSettings? = nil, temporaryView:UIView?, callback:@escaping (Data?) -> ()) {
+		self.init(settings: (settings != nil) ? settings! : delegate.exportSettings, delegate: delegate, temporaryView:temporaryView, screenplays: nil, callback: callback)
 	}
 	
 	required init?(coder: NSCoder) {
@@ -198,6 +198,7 @@ class BeatPDFPrinter:NSObject {
 
 protocol BeatPDFControllerDelegate:NSObject {
 	var editorDelegate:BeatEditorDelegate? { get }
+	func exportSettings() -> BeatExportSettings
 }
 
 /// This is a wrapper class for PDF printer, which handles asynchronous printing.
@@ -219,7 +220,7 @@ class BeatPDFController:NSObject {
 		guard let editorDelegate = self.editorDelegate
 		else { return }
 		
-		let printer = BeatPDFPrinter(delegate: editorDelegate, temporaryView: self.temporaryView) { data in
+		let printer = BeatPDFPrinter(delegate: editorDelegate, settings:delegate?.exportSettings(), temporaryView: self.temporaryView) { data in
 			if data == nil { return }
 			
 			let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first

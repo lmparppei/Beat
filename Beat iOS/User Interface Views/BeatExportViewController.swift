@@ -56,7 +56,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		
 		pdfController = BeatPDFController(delegate: self, temporaryView: self.temporaryView)
 		
-		printSceneNumbers?.setOn(editorDelegate.showSceneNumberLabels, animated: false)
+		printSceneNumbers?.setOn(editorDelegate.printSceneNumbers, animated: false)
 		paperSize?.selectedSegmentIndex = editorDelegate.pageSize.rawValue
 		
 		sceneHeadingBolded?.setOn(BeatUserDefaults.shared().getBool(BeatSettingHeadingStyleBold), animated: false)
@@ -132,7 +132,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		// Clear the preview
 		self.previewView?.document = nil
 		self.activityIndicator?.startAnimating()
-		
+				
 		let bounds = self.previewView?.bounds ?? CGRect.zero
 		let scale = self.previewView?.scaleFactor ?? 1.0
 		
@@ -144,11 +144,9 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 						previewView.document = pdf
 						previewView.bounds = bounds
 
-						if (self?.firstPreview ?? false) {
-							previewView.scaleFactor = previewView.scaleFactorForSizeToFit - 0.3
-						} else {
-							previewView.scaleFactor = scale
-						}
+						previewView.scaleFactor = 0.6
+//						if (self?.firstPreview ?? false) { previewView.scaleFactor = previewView.scaleFactorForSizeToFit - 0.3 }
+//						else { previewView.scaleFactor = scale }
 						
 						self?.activityIndicator?.stopAnimating()
 					}
@@ -191,6 +189,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		// Then, let's adjust them according to export panel
 		settings.paperSize = BeatPaperSize(rawValue: self.paperSize?.selectedSegmentIndex ?? 0) ?? .A4
 		settings.printSceneNumbers = printSceneNumbers?.isOn ?? true
+		print(" -> print scene numbers", settings.printSceneNumbers)
 		
 		var additionalTypes = IndexSet()
 		
