@@ -1423,7 +1423,7 @@ static NSDictionary* patterns;
     
     if (range.location != NSNotFound) {
         line.omitOut = true;
-        [indexSet addIndexesInRange:NSMakeRange(range.location, line.length - range.location + 1)];
+        [indexSet addIndexesInRange:NSMakeRange(range.location, line.length - range.location)];
     } else {
         line.omitOut = false;
     }

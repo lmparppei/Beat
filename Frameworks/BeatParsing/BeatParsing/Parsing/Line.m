@@ -641,7 +641,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 - (bool)omitted
 {
     bool omitted = false;
-    if (self.omittedRanges.count + self.noteRanges.count >= self.string.length) {
+    
+    NSMutableIndexSet* allOmissions = [NSMutableIndexSet.alloc initWithIndexSet:self.omittedRanges];
+    [allOmissions addIndexes:self.noteRanges];
+    
+    if (allOmissions.count == self.string.length) {
         // The line is wrapped in an omission
         omitted = true;
     } else if (self.omittedRanges.count > 0 && self.omittedRanges.count == self.string.length - 1) {
@@ -1588,8 +1592,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
         }];
     }
-
-	
+    
 	return indices;
 }
 
