@@ -887,7 +887,7 @@ extension BeatUITextView {
 		
 	
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
-		guard let editorDelegate = self.editorDelegate else { return }
+		guard let editorDelegate = self.editorDelegate, suggestion.count > 0 else { return }
 		
 		if suggestion[0] == "(" && editorDelegate.currentLine().isAnyCharacter() {
 			// This is a character extension
