@@ -172,7 +172,7 @@
         }
         
         NSString* fullSuggestion = [NSString stringWithFormat:@"%@%@", prefix, suggestion];
-        if (found && ![matches containsObject:fullSuggestion]) [matches addObject:fullSuggestion];
+        if (found && ![matches containsObject:fullSuggestion] && fullSuggestion.length > 0) [matches addObject:fullSuggestion];
     }
     
     // If no matches were found and the line is a character cue, provide a list of extensions
