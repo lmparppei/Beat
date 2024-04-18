@@ -94,8 +94,7 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 			if currentResults.count == 0 && line.length == 0 {
 				// Display every character
 				currentResults = self.autocompletion.characterNames.swiftArray()
-			}
-			else if ((currentResults.count > 0 && currentResults.first! == line.string) ||
+			} else if ((currentResults.count > 0 && currentResults.first! == line.string) ||
 					(currentResults.count == 0 && line.length > 0)) {
 				// If results were empty and/or there was a single result which is the same as the current line, show extensions
 				showExtensions = true
