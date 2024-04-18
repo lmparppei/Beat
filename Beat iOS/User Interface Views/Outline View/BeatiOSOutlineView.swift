@@ -15,6 +15,21 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	//var dataProvider:BeatOutlineDataProvider?
 	var outlineDataSource:BeatOutlineDataSource?
 	
+	/// This is a placeholder for diffable data source I guess
+	var selectedItem:OutlineDataItem?
+	
+	/// Returns the currently selected scene
+	var selectedScene:OutlineScene? {
+		guard let i = self.indexPathForSelectedRow?.row,
+			  i != NSNotFound,
+			  i >= 0,
+			  i < self.editorDelegate?.parser.outline.count ?? 0
+		else { return nil }
+		
+		return self.editorDelegate?.parser.outline[i] as? OutlineScene
+	}
+	
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -75,9 +90,18 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	
 	@objc public func reload() {
 		guard self.visible() else { return }
+		
+		// Stop scrolling, just in case
+		self.setContentOffset(self.contentOffset, animated: false)
+		
 		self.reloadData()
+		
+		DispatchQueue.main.async {
+			self.selectCurrentScene()
+		}
+		
+		// Diffable alternative
 		// self.dataProvider?.update()
-		self.selectCurrentScene()
 	}
 		
 	func visible() -> Bool {
@@ -93,8 +117,11 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		guard let editorDelegate = self.editorDelegate else { return }
 		
 		let i = indexPath.row
-		if i > editorDelegate.parser.outline.count { return }
-		guard let scene = editorDelegate.parser.outline[i] as? OutlineScene else { return }
+		
+		// Avoid any false positives
+		guard i < editorDelegate.parser.outline.count,
+			  i != NSNotFound,
+			  let scene = editorDelegate.parser.outline[i] as? OutlineScene else { return }
 		
 		editorDelegate.scroll(to: scene.line)
 		
@@ -109,20 +136,6 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		//return self.dataProvider?.dataSource.snapshot().numberOfItems ?? 0
 	}
 	
-	/// Updates current scene
-	var previousLine:Line?
-	var selectedItem:OutlineDataItem?
-	
-	var selectedScene:OutlineScene? {
-		guard let i = self.indexPathForSelectedRow?.row,
-			  i != NSNotFound,
-			  i >= 0,
-			  i < self.editorDelegate?.parser.outline.count ?? 0
-		else { return nil }
-		
-		return self.editorDelegate?.parser.outline[i] as? OutlineScene
-	}
-		
 	@objc func update() {
 		// ? 
 	}
@@ -140,13 +153,17 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	}
 	
 	func selectScene(_ scene:OutlineScene) {
-		// Do nothing if we've already selected this scene.
-		guard scene != self.selectedScene else { return }
+		// Do nothing if we've already selected this scene or it doesn't exist.
+		guard scene != self.selectedScene,
+			  let i = self.editorDelegate?.parser.outline.index(of:scene),
+			  i != NSNotFound
+		else { return }
 		
-		if let i = self.editorDelegate?.parser.outline.index(of:scene), i != NSNotFound {
-			let path = IndexPath(row: i, section: 0)
-			self.selectRow(at: path, animated: true, scrollPosition: .middle)
-		}
+		// Stop scrolling, just in case
+		self.setContentOffset(self.contentOffset, animated: false)
+		
+		let path = IndexPath(row: i, section: 0)
+		self.selectRow(at: path, animated: true, scrollPosition: .middle)
 	}
 	
 	/*
@@ -190,6 +207,9 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		self.scrollToRow(at: index, at: .middle, animated: true)
 	}
 }
+
+
+// MARK: - Cell view for scenes
 
 class BeatOutlineViewCell:UITableViewCell {
 	@IBOutlet var textField:UILabel?
