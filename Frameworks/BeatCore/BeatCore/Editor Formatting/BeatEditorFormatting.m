@@ -308,7 +308,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
-	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
+	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
 
 	bool forceFont = false;
     if (line.formattedAs != line.type) forceFont = true;
@@ -700,7 +700,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 	// Enumerate FORMATTING RANGES and make all of them invisible
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
 	}];
 	
 	// Enumerate MACRO RANGES

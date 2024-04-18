@@ -751,7 +751,7 @@
     // Marker indices
     NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
     
-    // Nothing to do
+    // Nothing to do (TODO: To avoid extra range calculations after every change to attributes, retrieve markup ranges AFTER checking if hiding markup is on)
     if (muIndices.count == 0 && markerIndices.count == 0 &&
         !(type == heading || type == transitionLine || type == character) &&
         !(line.string.containsOnlyWhitespace && line.string.length > 1)
