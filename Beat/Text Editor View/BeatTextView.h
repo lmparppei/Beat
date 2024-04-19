@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 - (void)showLockStatus;
 - (void)handleTabPress;
 
--(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
+- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)forceElement:(LineType)lineType;
 - (CGFloat)lineHeight;
@@ -62,7 +62,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 - (void)setSplitHandleMinSize:(CGFloat)value;
 
 - (void)cancelOperation:(id)sender;
-
 @end
 
 @class BeatTagging;
