@@ -297,7 +297,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
-        
+    
 	NSRange selectedRange = _delegate.selectedRange;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -305,13 +305,16 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Get editing status from delegate
 	bool alreadyEditing = (_delegate.textStorage.editedMask != 0);
 	alreadyEditing = true;
+    
+    // Begin editing attributes
+    if (!alreadyEditing) [textStorage beginEditing];
 	
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
 
-	bool forceFont = false;
-    if (line.formattedAs != line.type) forceFont = true;
+    // Check if we should force the font or not. If the current type is NOT the formatted type, we should always reset font.
+	bool forceFont = (line.formattedAs != line.type);
 			
 	// Current attribute dictionary
 	NSMutableDictionary* attributes;
@@ -353,14 +356,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		[_delegate.getTextView setTypingAttributes:attributes];
 		
-		// If we need to update the line, do it here
+		// If we need to update the represented line, do it here
 		if (newAttributes[BeatRepresentedLineKey]) {
-			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:range];
+			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:fullRange];
 		}
 		
 		if (!alreadyEditing) [textStorage endEditing];
 		
-		[self addAttribute:NSBackgroundColorAttributeName value:BXColor.clearColor range:line.range];
+		//[self addAttribute:NSBackgroundColorAttributeName value:BXColor.clearColor range:line.range];
 		return;
 	}
 	
@@ -403,10 +406,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			if (line == self.parser.lines.lastObject) range = line.textRange; // Don't go out of range
 		}
 	}
-    
-	// Begin editing attributes
-	if (!alreadyEditing) [textStorage beginEditing];
-	
+    	
 	// Add new attributes
 	NSRange attrRange = range;
 	if (range.length == 0 && range.location < textStorage.string.length) {
@@ -453,7 +453,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Actual text colors
 	[self setTextColorFor:line];
 
-    if (!alreadyEditing) [textStorage endEditing];    
+    if (!alreadyEditing) [textStorage endEditing];
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage

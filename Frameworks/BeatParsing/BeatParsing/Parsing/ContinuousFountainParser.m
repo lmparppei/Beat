@@ -295,13 +295,14 @@ static NSDictionary* patterns;
     
     @synchronized (self.lines) {
         NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
-        if (range.length == 0) { // Addition
+        if (range.length == 0) {
+            // Addition
             [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-            
-        } else if (string.length == 0) { // Removal
+        } else if (string.length == 0) {
+            // Removal
             [changedIndices addIndexes:[self parseRemovalAt:range]];
-            
-        } else { //Replacement
+        } else {
+            //Replacement
             [changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
             [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
         }
@@ -310,8 +311,9 @@ static NSDictionary* patterns;
     }
 }
 
-/// Ensures that the given line is parsed correctly. Continuous parsing only. A bit confusing to use.
-- (void)ensureDialogueParsingFor:(Line*)line {
+/// Ensures that any dialogue on the given line is parsed correctly. Continuous parsing only. A bit confusing to use. Unhelpful documentation.
+- (void)ensureDialogueParsingFor:(Line*)line
+{
     if (!line.isAnyCharacter) return;
         
     NSInteger i = [self indexOfLine:line];
@@ -630,10 +632,7 @@ static NSDictionary* patterns;
         // Update all macros
         if (currentLine.macroRanges.count > 0) self.macrosNeedUpdate = true;
     }
-    
-    // Mark the current index as changed
-    [self.changedIndices addIndex:index];
-    
+        
     // Correct orphaned dialogue if needed
     [self correctOrphanedDialogueAt:index];
     
@@ -667,6 +666,10 @@ static NSDictionary* patterns;
             }
         }
     }
+    
+    // Mark the current index as changed if needed
+    bool noNeedToUpdate = currentLine.type == empty && oldType == currentLine.type;
+    if (!noNeedToUpdate) [self.changedIndices addIndex:index];
 }
 
 

@@ -87,7 +87,7 @@
         
         [textView replaceRange:textRange withText:string];
         
-        [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
+        //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
@@ -384,7 +384,6 @@
 #endif
     
     if (currentLine.string.length > 0 && !shiftPressed) {
-        
         // Add double breaks for outline element lines
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
