@@ -261,7 +261,7 @@
 
 - (NSAttributedString*)getAttributedText;
 
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 - (CGFloat)sidebarWidth;
 - (NSPrintInfo*)printInfo;
 - (id)document;
@@ -314,6 +314,11 @@
 - (NSLayoutManager*)layoutManager;
 
 - (void)refreshTextView;
+
+#if TARGET_OS_IOS
+- (bool)sidebarVisible;
+#endif
+
 
 @optional
 
