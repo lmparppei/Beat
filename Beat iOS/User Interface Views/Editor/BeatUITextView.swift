@@ -363,7 +363,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 						
 		// And now, welcome to fun with floating points.
 		// iOS frame sizes tend to be off by ~0.000001, so we'll have to round everything to ensure we're not doing anything unnecessary.
-		
 		if preciseRound(frame.origin.x, precision: .tenths) != preciseRound(pageView.frame.origin.x, precision: .tenths) { pageView.frame.origin.x = frame.origin.x }
 		if preciseRound(frame.width, precision: .tenths) != preciseRound(pageView.frame.width, precision: .tenths) { pageView.frame.size.width = frame.width }
 		if preciseRound(frame.height, precision: .tenths) != preciseRound(pageView.frame.height, precision: .tenths) { pageView.frame.size.height = frame.height }
