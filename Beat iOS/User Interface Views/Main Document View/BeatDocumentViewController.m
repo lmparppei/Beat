@@ -27,6 +27,8 @@
 
 @property (nonatomic, readonly) bool disableFormatting;
 
+@property (nonatomic) bool processingEdit;
+
 /// Preview controller override
 @property (nonatomic) BeatPreviewController* previewController;
 
@@ -506,6 +508,8 @@
 		}
 	}
 	
+	_processingEdit = true;
+	
 	NSRange affectedRange = NSMakeRange(NSNotFound, 0);
 	NSString* string = @"";
 	
@@ -567,8 +571,19 @@
 /// Called when touch event *actually* changed the selection
 - (void)textViewDidEndSelection:(UITextView *)textView selectedRange:(NSRange)selectedRange
 {
-	[self.textView scrollRangeToVisible:textView.selectedRange];
+	// Let's not do any of this stuff if we're processing an edit. For some reason selection end is posted *before* text change. :--)
+	if (!_processingEdit) {
+		[self.textView scrollRangeToVisible:textView.selectedRange];
+		
+		[self updateSelection];
+	}
 	
+	_processingEdit = false;
+}
+
+/// Call this whenever selection can be safely posted to assisting views and observers
+- (void)updateSelection
+{
 	// Update outline view
 	if (self.outlineView.visible) [self.outlineView selectCurrentScene];
 	
@@ -576,12 +591,11 @@
 	[self.textView updateAssistingViews];
 	
 	// Update plugins
-	[self.pluginAgent updatePluginsWithSelection:selectedRange];
+	[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
 	
 	// Show review if needed
 	[self showReviewIfNeeded];
 }
-
 
 /// Forces text reformat and editor view updates
 - (void)textDidChange:(NSNotification *)notification {
@@ -589,7 +603,8 @@
 	[self textViewDidChange:self.textView];
 }
 
--(void)textViewDidChange:(UITextView *)textView {
+-(void)textViewDidChange:(UITextView *)textView
+{
 	[super textDidChange];
 	
 	// If this was an undo operation, scroll to where the alteration was made
@@ -599,8 +614,11 @@
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
 	
 	if (!self.documentIsLoading) [self updateChangeCount:UIDocumentChangeDone];
+
+	[self.textView resize];
 	
-	[self.textView resize];	
+	// We should update selection here
+	[self updateSelection];
 }
 
 /// Alias for macOS-compatibility
@@ -654,7 +672,7 @@
 		// Jump over already-typed parentheses and other closures
 		return false;
 	}
-	
+		
 	self.lastChangedRange = (NSRange){ range.location, text.length };
 	
 	return true;
@@ -930,7 +948,8 @@
 	[self keyboardWillShowWith:convertedFrame.size animationTime:rate.floatValue];
 }
 
--(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
+-(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime
+{
 	// Let's not use this on phones
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
 	

@@ -184,19 +184,19 @@
 - (void)textDidChange
 {
     if (self.documentIsLoading) return;
-    
+        
     // Begin from top if no last changed range was set
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
 
     // Update formatting
     [self applyFormatChanges];
-    
+
     // Save attributed text to cache
     self.attrTextCache = [self getAttributedText];
     
     // Check for changes in outline. If any changes are found, all registered outline views will be updated.
     [self.parser checkForChangesInOutline];
-    
+
     // Editor views should register themselves and have to conform to BeatEditorView protocol,
     // which includes methods for reloading both in sync and async
     [self updateEditorViewsInBackground];
@@ -220,19 +220,19 @@
     _previouslySelectedLine = _currentLine;
     
     NSInteger location = self.selectedRange.location;
+    Line* currentLine;
     
     if (location >= self.text.length) {
         // Check if we're on the last line
-        return self.parser.lines.lastObject;
-    } else if (_currentLine != nil && NSLocationInRange(location, _currentLine.range)) {
-        // Don't fetch the line if we already know it
-        return _currentLine;
+        currentLine = self.parser.lines.lastObject;
     } else {
-        // Otherwise get the line and store it
+        // Otherwise get the line at given position
         Line *line = [self.parser lineAtPosition:location];
-        _currentLine = line;
-        return _currentLine;
+        currentLine = line;
     }
+    
+    _currentLine = currentLine;
+    return currentLine;
 }
 
 /// Null references to possibly deleted lines
@@ -362,11 +362,8 @@
 - (void)applyFormatChanges
 {
     [self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= _parser.lines.count) {
-            *stop = true;
-        } else {
-            [_formatting formatLine:self.parser.lines[idx]];
-        }
+        if (idx >= _parser.lines.count) *stop = true;
+        else [_formatting formatLine:self.parser.lines[idx]];
     }];
     
     [self.parser.changedIndices removeAllIndexes];

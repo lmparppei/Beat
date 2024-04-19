@@ -80,8 +80,13 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 				indices.insert(i)
 			}
 		}*/
-				
+		
+		self.setContentOffset(self.contentOffset, animated: false)
 		self.reload()
+	}
+	
+	override func layoutSubviews() {
+		super.layoutSubviews()
 	}
 	
 	@objc func reloadInBackground() {
@@ -89,10 +94,10 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	}
 	
 	@objc public func reload() {
-		guard self.visible() else { return }
+		guard self.visible(), self.hasUncommittedUpdates == false else { return }
 		
 		// Stop scrolling, just in case
-		self.setContentOffset(self.contentOffset, animated: false)
+		// self.setContentOffset(self.contentOffset, animated: false)
 		
 		self.reloadData()
 		
@@ -105,8 +110,8 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	}
 		
 	func visible() -> Bool {
-		guard let view = self.superview else { return false }
-		return (view.frame.width > 1)
+		guard let delegate = self.editorDelegate else { return false }
+		return delegate.sidebarVisible()
 	}
 	
 	@objc func swipeToClose() {
@@ -158,9 +163,6 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 			  let i = self.editorDelegate?.parser.outline.index(of:scene),
 			  i != NSNotFound
 		else { return }
-		
-		// Stop scrolling, just in case
-		self.setContentOffset(self.contentOffset, animated: false)
 		
 		let path = IndexPath(row: i, section: 0)
 		self.selectRow(at: path, animated: true, scrollPosition: .middle)
