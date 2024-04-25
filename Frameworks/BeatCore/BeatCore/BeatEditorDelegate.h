@@ -78,6 +78,8 @@
 @protocol BeatSceneOutlineView<BeatEditorView>
 /// Reloads the view with given changes. Changes can be `nil` in which case the view should do a complete reload.
 - (void)reloadWithChanges:(OutlineChanges*)changes;
+//- (void)didMoveToScene:(OutlineScene*)scene;
+- (void)didMoveToSceneIndex:(NSInteger)index;
 @end
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
@@ -116,8 +118,6 @@
 - (Line*)currentLine;
 
 - (NSAttributedString*)attributedString;
-- (NSArray*)markers;
-
 
 
 #pragma mark - Screenplay document data
@@ -188,7 +188,6 @@
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 - (void)scrollToScene:(OutlineScene*)scene;
-- (void)setTypingAttributes:(NSDictionary*)attrs;
 
 
 #pragma mark - Plugin access
@@ -315,9 +314,7 @@
 
 - (void)refreshTextView;
 
-#if TARGET_OS_IOS
 - (bool)sidebarVisible;
-#endif
 
 
 @optional

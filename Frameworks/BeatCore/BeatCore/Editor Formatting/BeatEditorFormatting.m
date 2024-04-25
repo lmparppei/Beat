@@ -297,18 +297,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
-    
-	NSRange selectedRange = _delegate.selectedRange;
+
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
     // Get editing status from delegate
-	bool alreadyEditing = (_delegate.textStorage.editedMask != 0);
-	alreadyEditing = true;
-    
-    // Begin editing attributes
+    bool alreadyEditing = _delegate.textStorage.isEditing;
     if (!alreadyEditing) [textStorage beginEditing];
 	
+    NSRange selectedRange = _delegate.selectedRange;
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
@@ -353,7 +350,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
     
 	// Do nothing for already formatted empty lines (except remove the background)
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && 
+        line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		[_delegate.getTextView setTypingAttributes:attributes];
 		
 		// If we need to update the represented line, do it here
@@ -363,7 +361,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		if (!alreadyEditing) [textStorage endEditing];
 		
-		//[self addAttribute:NSBackgroundColorAttributeName value:BXColor.clearColor range:line.range];
 		return;
 	}
 	
@@ -475,39 +472,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self setFontForLine:line force:force];
 	line.formattedString = astr;
 
-	
-	/*
-	// An die Nachgeborenen.
-	// Tuleville sukupolville.
-	// For future generations.
-	 
-	// An attempt at reusing parts of the formatted string.
-	
-	 NSInteger changeAt = _delegate.lastEditedRange.location + _delegate.lastEditedRange.length;
-
-	NSAttributedString* astr = line.attributedStringForFDX;
-	if ([astr isEqualToAttributedString:line.formattedString]) {
-		// We've already formatted the string, no need to reformat inline content
-		return;
-	}
-	else if (NSLocationInRange(changeAt, line.range) && line.formattedString.length > changeAt - line.position) {
-		// If we are editing this string, let's check if we can reuse parts of it
-		NSRange headRange = NSMakeRange(0, changeAt - line.position);
-		
-		NSAttributedString* head = [astr attributedSubstringFromRange:headRange];
-		NSAttributedString* oldHead = [line.formattedString attributedSubstringFromRange:headRange];
-
-		if ([head isEqualTo:oldHead]) {
-			// Adjust range
-			range = NSMakeRange(changeAt - line.position, line.length - (changeAt - line.position));
-		} else {
-			// Reset font
-			[self setFontForLine:line force:true];
-		}
-	}
-	line.formattedString = astr;
-	 */
-	
 	NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
 	
 	// Remove underline/strikeout

@@ -11,10 +11,9 @@ import AppKit
 fileprivate let padding = 6.0
 
 @objc protocol BeatQuickSettingsDelegate:BeatEditorDelegate {
-	func toggleSceneLabels(_ sender:Any?)
-	func togglePageNumbers(_ sender:Any?)
+	//func toggleSceneLabels(_ sender:Any?)
+	//func togglePageNumbers(_ sender:Any?)
 	func toggleRevisionMode(_ sender:Any?)
-	func toggleDarkMode(_ sender:Any?)
 	func toggleReview(_ sender:Any?)
 	func toggleTagging(_ sender:Any?)
 }
@@ -112,13 +111,17 @@ class BeatDesktopQuickSettings:NSViewController {
 				
 		let items = [
 			BeatQuickSettingItem.newToggle("Show Scene Numbers", key: BeatSettingShowSceneNumbers, handler: { value in
-				self.delegate?.toggleSceneLabels(nil)
+				delegate.showSceneNumberLabels = !delegate.showSceneNumberLabels
+				delegate.getTextView().needsDisplay = true
 			}),
 			BeatQuickSettingItem.newToggle("Show Page Numbers", key: BeatSettingShowPageNumbers, handler: { value in
-				self.delegate?.togglePageNumbers(nil)
+				delegate.showPageNumbers = !delegate.showPageNumbers
+				delegate.getTextView().needsDisplay = true
 			}),
 			BeatQuickSettingItem.newToggle("Dark Mode", initialValue: delegate.isDark().intValue, handler: { [weak self] value in
-				self?.delegate?.toggleDarkMode(nil)
+				if let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate {
+					appDelegate.toggleDarkMode()
+				}
 			}),
 			BeatQuickSettingSeparator.newSeparator(),
 			BeatQuickSettingItem.newDropdown("Paper Size",
@@ -148,25 +151,29 @@ class BeatDesktopQuickSettings:NSViewController {
 	}
 	
 	@IBAction func toggleValue(sender:ITSwitch?) {
-		guard let button = sender else { return }
+		guard let button = sender, let delegate else { return }
 		
 		switch button {
 		case sceneNumbers:
-			self.delegate?.toggleSceneLabels(nil); break
+			delegate.showSceneNumberLabels = !delegate.showSceneNumberLabels; break
 		case pageNumbers:
-			self.delegate?.togglePageNumbers(nil); break
+			delegate.showPageNumbers = !delegate.showPageNumbers; break
 		case revisionMode:
 			self.delegate?.toggleRevisionMode(nil); break
 		case reviewMode:
 			self.delegate?.toggleReview(nil); break
 		case darkMode:
-			self.delegate?.toggleDarkMode(nil); break
+			if let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate {
+				appDelegate.toggleDarkMode()
+			}
+			break
 		case taggingMode:
 			self.delegate?.toggleTagging(nil); break
 		default:
 			break
 		}
 		
+		delegate.getTextView().needsDisplay = true
 		self.updateSettings()
 	}
 	

@@ -112,6 +112,7 @@
 		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
+		B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -219,6 +220,7 @@
 		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
 		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
+		B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStorageExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -509,6 +511,7 @@
 				B61FD0602A6926BF00A40883 /* NSArray+JSON.m */,
 				B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */,
 				B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */,
+				B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -659,6 +662,7 @@
 				B68C0F5C299D821A0031AE6B /* BeatReview.swift in Sources */,
 				B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */,
 				B65BB73C2B0A96DE00145FCE /* NSBezierPath+UX.swift in Sources */,
+				B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */,
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
 				B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */,
 				B64AD5ED2B2F65EB00EBD63A /* BeatTitlePage.swift in Sources */,

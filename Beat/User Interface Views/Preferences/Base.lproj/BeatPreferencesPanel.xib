@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,8 +18,6 @@
                 <outlet property="defaultPageSize" destination="OOl-ZM-PBd" id="fxe-zL-gpN"/>
                 <outlet property="headingSpacing1" destination="IO7-Hz-k6N" id="kgE-0i-OlE"/>
                 <outlet property="headingSpacing2" destination="BHk-g1-cy2" id="CHZ-to-mfu"/>
-                <outlet property="headingStyleBold" destination="2IJ-xC-SPZ" id="Y4G-i8-6Mx"/>
-                <outlet property="headingStyleUnderline" destination="aHV-Ph-6Mp" id="K4K-QV-eeT"/>
                 <outlet property="hideFountainMarkup" destination="zb1-5Z-ZFC" id="LqH-52-9Md"/>
                 <outlet property="language" destination="Hif-pI-nQF" id="JSV-nv-PXn"/>
                 <outlet property="matchParentheses" destination="AgT-pV-Zlk" id="rWF-iN-fvz"/>
@@ -231,7 +229,7 @@
                                                 <action selector="toggle:" target="-2" id="UGI-7K-hiH"/>
                                             </connections>
                                         </button>
-                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="LS5-SQ-rLY">
+                                        <popUpButton verticalHuggingPriority="750" id="LS5-SQ-rLY">
                                             <rect key="frame" x="196" y="71" width="205" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Small" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VQS-1g-QZ6" id="3RH-A7-bPE">
@@ -390,7 +388,7 @@
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="zRm-l9-A1E">
                                                             <rect key="frame" x="0.0" y="0.0" width="524" height="165"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <textView editable="NO" selectable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="0Zp-cK-fHI">
                                                                     <rect key="frame" x="0.0" y="0.0" width="524" height="165"/>

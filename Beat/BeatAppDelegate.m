@@ -375,6 +375,11 @@
 	}
 	
 	[NSUserDefaults.standardUserDefaults setBool:_darkMode forKey:DARKMODE_KEY];
+	
+	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
+	for (Document* doc in openDocuments) {
+		[doc updateUIColors];
+	}
 }
 
 #pragma mark - Tutorial and templates
@@ -611,7 +616,6 @@
 {
 	[BeatBackup openBackupFolder];
 }
-
 
 - (void)versionMenuItems {
 	[_revertMenu removeAllItems];

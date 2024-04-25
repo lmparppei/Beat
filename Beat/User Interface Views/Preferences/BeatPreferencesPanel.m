@@ -263,7 +263,7 @@
 	[BeatUserDefaults.sharedDefaults saveInteger:modifier forKey:BeatSettingOutlineFontSizeModifier];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc reloadOutline];
+		[doc updateOutlineViews];
 	}
 }
 
