@@ -6,9 +6,10 @@
 //  Copyright © 2024 Lauri-Matti Parppei. All rights reserved.
 //
 
+
 import Foundation
 
-fileprivate var exportModules = [BeatRTFExport.self]
+fileprivate var exportModules = [BeatRTFExport.self, BeatFDXExport.self, OutlineExtractor.self]
 
 struct BeatFileExportHandlerInfo {
 	var format:String
@@ -27,8 +28,9 @@ struct BeatFileExportHandlerInfo {
 		// Register all available export modules here
 		BeatFDXExport.register(self)
 		BeatRTFExport.register(self)
+		OutlineExtractor.register(self)
 	}
-	
+		
 	/// Registers the given handler, called by export modules
 	@objc public func registerHandler(for format:String, fileTypes:[String], supportedStyles:[String], handler:@escaping ((_ delegate:BeatEditorDelegate) -> Any?)) {
 		let handler = BeatFileExportHandlerInfo(format: format, fileTypes: fileTypes, supportedStyles: supportedStyles, handler: handler)
@@ -45,6 +47,13 @@ struct BeatFileExportHandlerInfo {
 		
 		return nil
 	}
+	
+	/// Check if the handler for given format is actually supported by this style
+	@objc public func formatSupportedByStyle(format:String, style:String) -> Bool {
+		guard let handler = handlerForFormat(format) else { print("    .... no handler"); return false }
+		return handler.supportedStyles.contains(style)
+	}
+
 	
 	/// Shows save panel and exports the file
 	@objc public func export(delegate:BeatEditorDelegate, format:String) {
@@ -93,9 +102,7 @@ struct BeatFileExportHandlerInfo {
 	}
 }
 
-extension BeatFileExportManager {
-	
-}
+
 class BeatFileExportMenuItem:NSMenuItem {
 	@IBInspectable var format:String = ""
 	

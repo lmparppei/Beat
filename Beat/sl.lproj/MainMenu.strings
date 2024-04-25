@@ -113,6 +113,8 @@
 /* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
 "wsV-hQ-HBQ.title" = "Izvozi datoteko Final Draft (FDX) ...";
 
+"5SZ-7j-p2G.title" = "Izvozi datoteko Rich Text Format (RTF)...";
+
 /* Class = "NSMenuItem"; title = "Beat Source Code (Online)"; ObjectID = "CUo-uf-t1s"; */
 "CUo-uf-t1s.title" = "Izvorna koda Beat (splet)";
 

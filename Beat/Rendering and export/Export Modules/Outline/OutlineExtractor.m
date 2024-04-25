@@ -8,8 +8,18 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "OutlineExtractor.h"
+#import "Beat-Swift.h"
 
 @implementation OutlineExtractor
+
++ (void)register:(BeatFileExportManager*)manager
+{
+	// Register as export handler
+	[manager registerHandlerFor:@"Outline" fileTypes:@[@"fountain", @"txt"] supportedStyles:@[@"Screenplay"] handler:^id _Nullable(id<BeatEditorDelegate> _Nonnull delegate) {
+
+		return [OutlineExtractor outlineFromParse:delegate.parser];
+	}];
+}
 
 + (NSString*)outlineFromParse:(ContinuousFountainParser*)parser
 {

@@ -120,6 +120,7 @@ static NSDictionary *fdxIds;
 {
 	// Register as export handler
 	[manager registerHandlerFor:@"FDX" fileTypes:@[@"fdx"] supportedStyles:@[@"Screenplay"] handler:^id _Nullable(id<BeatEditorDelegate> _Nonnull delegate) {
+
 		BeatFDXExport* export = [BeatFDXExport.alloc initWithString:delegate.text attributedString:delegate.attributedString includeTags:true includeRevisions:true paperSize:delegate.pageSize];
 		return export.fdxString;
 	}];

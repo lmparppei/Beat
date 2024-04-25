@@ -143,6 +143,8 @@
 /* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
 "wsV-hQ-HBQ.title" = "Exportera Final Draft (FDX)...";
 
+"5SZ-7j-p2G.title" = "Exportera Rich Text Format (RTF)...";
+
 /* Class = "NSMenuItem"; title = "Title Page Editor"; ObjectID = "ce9-gT-GJX"; */
 "ce9-gT-GJX.title" = "Redigera försättsblad...";
 

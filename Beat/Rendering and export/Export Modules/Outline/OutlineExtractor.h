@@ -10,5 +10,6 @@
 
 @class ContinuousFountainParser;
 @interface OutlineExtractor : NSObject
++ (void)register:(id)manager;
 + (NSString*)outlineFromParse:(ContinuousFountainParser*)parser;
 @end
