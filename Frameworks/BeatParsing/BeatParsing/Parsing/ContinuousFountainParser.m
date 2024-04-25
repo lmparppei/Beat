@@ -545,18 +545,18 @@ static NSDictionary* patterns;
     if (index == 0) return;
     
     Line *prevLine = self.lines[index - 1]; // Get previous line
-    NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0; // Get selection
+    NSRange selection = (NSThread.isMainThread) ? self.delegate.selectedRange : NSMakeRange(0, 0); // Get selection
     
     // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
-    if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
+    if (prevLine.type != empty && prevLine.length == 0 && selection.location != prevLine.position - 1) {
         NSInteger i = index - 1;
         
         while (i >= 0) {
             Line *l = self.lines[i];
             
-            if (l.length > 0 && l != self.delegate.characterInputForLine) {
+            if (l.length > 0 && l != self.delegate.characterInputForLine && l.numberOfPrecedingFormattingCharacters == 0) {
                 // Not a forced character cue, not the preceding line to selection
-                if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0) {
+                if (l.type == character && selection.location != NSMaxRange(l.textRange) && !NSLocationInRange(selection.location, l.range)) {
                     l.type = action;
                     [self.changedIndices addIndex:i];
                 }
@@ -602,7 +602,7 @@ static NSDictionary* patterns;
         
     // Parse correct type
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
-        
+    
     // Update macros when the last line has been updated
     if (lastToParse && self.macrosNeedUpdate) [self updateMacros];
     
@@ -662,14 +662,16 @@ static NSDictionary* patterns;
                 ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
                 ) 
             {
-                [self correctParseInLine:index+1 indicesToDo:indices];
+                [indices addIndex:index+1];
+                //[self correctParseInLine:index+1 indicesToDo:indices];
             }
         }
     }
     
     // Mark the current index as changed if needed
-    bool noNeedToUpdate = currentLine.type == empty && oldType == currentLine.type;
-    if (!noNeedToUpdate) [self.changedIndices addIndex:index];
+    //bool noNeedToUpdate = currentLine.type == empty && oldType == empty;
+    //if (!noNeedToUpdate) [self.changedIndices addIndex:index];
+    [self.changedIndices addIndex:index];
 }
 
 
@@ -987,10 +989,14 @@ static NSDictionary* patterns;
             if (index + 2 < self.lines.count) {
                 Line* twoLinesOver = (Line*)self.lines[index+2];
                 
+                NSRange selection = self.delegate.selectedRange;
+                
                 // Next line is empty, line after that isn't - and we're not on that particular line
-                if ((nextLine.string.length == 0 && twoLinesOver.string.length > 0) ||
-                    (nextLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, nextLine.range))
-                    ) {
+                bool nextLinesAreEmpty = (nextLine.length == 0 && twoLinesOver.length == 0);
+                bool selectionOnNextLine = (nextLine.length == 0 && NSLocationInRange(selection.location, nextLine.range));
+                bool selectionOnCurrentLine = NSLocationInRange(selection.location, line.range);
+                
+                if (!selectionOnCurrentLine && (nextLinesAreEmpty || selectionOnCurrentLine)) {
                     return action;
                 }
             }
