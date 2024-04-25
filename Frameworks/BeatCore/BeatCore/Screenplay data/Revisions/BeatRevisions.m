@@ -16,6 +16,7 @@
  
  */
 
+#import <BeatCore/BeatCore-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 #import "BeatUserDefaults.h"
 #import "BeatRevisions.h"
@@ -54,6 +55,12 @@
     }
     return self;
 }
+@end
+
+@interface BeatRevisions ()
+@property (nonatomic) bool queuedChanges;
+@property (nonatomic) NSRange queuedRange;
+@property (nonatomic) NSInteger queuedDelta;
 @end
 
 @implementation BeatRevisions
@@ -470,30 +477,49 @@
 
 #pragma mark Register changes
 
+/// Because Apple changed something in macOS Sonoma, we need to queue changes when characters are edited AND then apply those changes if needed. Oh my fucking god.
+- (void)queueRegisteringChangesInRange:(NSRange)range delta:(NSInteger)delta
+{
+    _queuedChanges = true;
+    _queuedRange = range;
+    _queuedDelta = delta;
+}
+
+/// Call when you reliably known that the text has changed AND you've successfully registered the changes.
+- (void)applyQueuedChanges
+{
+    if (!_queuedChanges) return;
+    
+    [self registerChangesInRange:_queuedRange delta:_queuedDelta];
+    _queuedChanges = false;
+}
+
 /// This is for registering changes via `NSTextStorage` delegate method `didProcessEditing`.
-- (void)registerChangesWithLocation:(NSInteger)location length:(NSInteger)length delta:(NSInteger)delta {
-    if (delta < 0 && length == 0) {
+- (void)registerChangesInRange:(NSRange)range delta:(NSInteger)delta
+{
+    if (delta < 0 && range.length == 0) {
         // This is a removal.
         // In the near future, we'll add a removal marker here.
-        if (delta > 0) location -= labs(delta);
-        else location -= 1;
-        length = 1;
+        if (delta > 0) range.location -= labs(delta);
+        else range.location -= 1;
+        range.length = 1;
     }
     
-    if (location < 0) return;
+    if (range.location < 0) return;
     
-    [self registerChangesInRange:NSMakeRange(location, length)];
+    [self registerChangesInRange:NSMakeRange(range.location, range.length)];
     
     // Fix the attributes on this line to avoid zillions of extra attributes
-    Line* editedLine = [self.delegate.parser lineAtPosition:location];
+    Line* editedLine = [self.delegate.parser lineAtPosition:range.location];
     [self fixRevisionAttributesInRange:editedLine.textRange];
 }
 
 /// When in revision mode, this method automatically adds revision markers to given range. Should only invoked when editing has happened.
-- (void)registerChangesInRange:(NSRange)range {
+- (void)registerChangesInRange:(NSRange)range
+{
     // Avoid going out of range
     if (NSMaxRange(range) > self.delegate.text.length) return;
-    
+        
 	NSString * change = [self.delegate.text substringWithRange:range];
 
 	// Check if this was just a line break
@@ -505,7 +531,7 @@
 			if (NSMaxRange(range) == NSMaxRange(line.range)) return;
 		}
 	}
-	
+	    
 	[_delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
 	[_delegate.textStorage addAttribute:BeatRevisions.attributeKey value:[BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor] range:range];
 }

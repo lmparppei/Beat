@@ -149,7 +149,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 /// Loads and sets up our custom layout manager, `BeatLayoutManager`
 - (void)setupLayoutManager
-{
+{	
 	// Set text storage delegate
 	self.textStorage.delegate = self;
 	
@@ -370,6 +370,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 					break;
 				}
 			}
+			break;
 	}
 	
 	// Close info popover when typing
@@ -1226,6 +1227,36 @@ double clamp(double d, double min, double max)
 - (void)ensureCaret
 {
 	[self updateInsertionPointStateAndRestartTimer:true];
+}
+
+
+#pragma mark - Markers
+
+- (NSArray*)markersAndPositions
+{
+	// This could be inquired from the text view, too.
+	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
+	NSMutableArray * markers = NSMutableArray.new;
+	
+	CGSize containerSize = [self.layoutManager usedRectForTextContainer:self.textContainer].size;
+	if (containerSize.height == 0.0) return @[];
+	
+	for (Line* line in self.editorDelegate.parser.lines) { @autoreleasepool {
+		if (line.marker.length == 0 && line.color.length == 0) continue;
+		
+		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
+		
+		CGFloat yPosition = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer].origin.y;
+		CGFloat relativeY = yPosition / containerSize.height;
+		
+		// Ignore faulty values
+		if (relativeY > 1.0) continue;
+		
+		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
+		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
+	} }
+	
+	return markers;
 }
 
 

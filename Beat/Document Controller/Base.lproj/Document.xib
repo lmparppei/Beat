@@ -48,7 +48,6 @@
                 <outlet property="tabWidgets" destination="o1x-nn-5KN" id="HGF-Og-QXQ"/>
                 <outlet property="tagTextView" destination="dhb-rg-0uZ" id="kSd-aj-23f"/>
                 <outlet property="tagging" destination="IRq-m7-MkJ" id="qGH-ra-h2r"/>
-                <outlet property="textClipView" destination="sxN-R8-PHt" id="cYv-gE-6zc"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
                 <outlet property="timeline" destination="pm8-b1-sOe" id="Z6f-Fv-qKI"/>
@@ -57,7 +56,6 @@
                 <outlet property="timelineViewHeight" destination="naH-It-ilq" id="qVu-x1-36J"/>
                 <outlet property="touchBar" destination="FXM-lH-N3d" id="WEh-pV-JrM"/>
                 <outlet property="touchbarTimeline" destination="LyB-YR-3Ea" id="zM3-ee-1Bq"/>
-                <outlet property="touchbarTimelineButton" destination="nWW-nu-Y7P" id="3zj-IU-5iw"/>
                 <outlet property="widgetView" destination="ol0-Ui-RVn" id="Coz-7a-RP6"/>
                 <outlet property="window" destination="xOd-HO-29H" id="8yb-so-gNm"/>
             </connections>
@@ -216,7 +214,7 @@
                                                                     </userDefinedRuntimeAttributes>
                                                                     <accessibility description="Show Timeline"/>
                                                                     <connections>
-                                                                        <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
+                                                                        <action selector="toggleTimeline:" target="pm8-b1-sOe" id="nEZ-uu-241"/>
                                                                     </connections>
                                                                 </button>
                                                                 <button toolTip="Go to scene..." allowsExpansionToolTips="YES" id="L0v-T6-wwt" userLabel="Timeline Button" customClass="BeatEditorButton">
@@ -1474,7 +1472,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
@@ -1627,7 +1625,7 @@
                                 <font key="font" usesAppearanceFont="YES"/>
                             </buttonCell>
                             <connections>
-                                <action selector="toggleTimeline:" target="-2" id="HBZ-a4-hTE"/>
+                                <action selector="toggleTimeline:" target="-1" id="tx8-Xr-BiG"/>
                             </connections>
                         </button>
                     </viewController>
@@ -1711,7 +1709,9 @@
                                 <viewController key="viewController" id="KSd-sk-RAR">
                                     <view key="view" translatesAutoresizingMaskIntoConstraints="NO" id="LyB-YR-3Ea" customClass="TouchTimelineView">
                                         <rect key="frame" x="0.0" y="0.0" width="685" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="pMW-H4-giz"/>
+                                        </connections>
                                     </view>
                                 </viewController>
                             </touchBarItem>
@@ -1720,9 +1720,12 @@
                             <outlet property="delegate" destination="-2" id="aHx-9Q-zKt"/>
                         </connections>
                     </touchBar>
+                    <connections>
+                        <outlet property="timeline" destination="LyB-YR-3Ea" id="m57-Mt-9BH"/>
+                    </connections>
                 </touchBarPopoverItem>
             </touchBarItems>
-            <point key="canvasLocation" x="19" y="-372"/>
+            <point key="canvasLocation" x="19" y="-401"/>
         </touchBar>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="IUI-JC-aZs" userLabel="Scene Numbering" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>

@@ -57,6 +57,7 @@ extern NSString * const DocSettingWindowHeight;
 extern NSString * const DocSettingNovelLineHeightMultiplier;
 
 - (void)setBool:(NSString*)key as:(bool)value;
+- (void)toggleBool:(NSString*)key;
 - (void)setInt:(NSString*)key as:(NSInteger)value;
 - (void)setFloat:(NSString*)key as:(CGFloat)value;
 - (void)setString:(NSString*)key as:(NSString*)value;

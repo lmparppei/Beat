@@ -7,14 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "TouchTimelineView.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol TouchPopoverDelegate <NSObject>
-- (void)touchPopoverDidShow;
-- (void)touchPopoverDidHide;
-@end
+
 @interface TouchTimelinePopover : NSPopoverTouchBarItem
-@property (weak) id <TouchPopoverDelegate> delegate;
+@property (weak) IBOutlet TouchTimelineView* timeline;
 @end
 
 NS_ASSUME_NONNULL_END

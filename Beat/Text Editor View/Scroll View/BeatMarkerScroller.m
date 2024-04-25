@@ -13,6 +13,7 @@
 
 #import <BeatCore/BeatUserDefaults.h>
 #import "BeatMarkerScroller.h"
+#import "BeatTextView.h"
 
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;
@@ -83,16 +84,23 @@
 	return path;
 }
 
-- (void)drawRect:(NSRect)dirtyRect {
+- (void)drawRect:(NSRect)dirtyRect
+{
 	if ([BeatUserDefaults.sharedDefaults getBool:@"showMarkersInScrollbar"]) {
 		// Reload markers
-		if (self.editorDelegate.hasChanged) _markers = _editorDelegate.markers;
+		if (self.editorDelegate.hasChanged) {
+			BeatTextView* textView = (BeatTextView*)self.editorDelegate.getTextView;
+			_markers = textView.markersAndPositions;
+		}
 		
 		for (NSDictionary *marker in _markers) {
 			NSColor *color = [BeatColors color:marker[@"color"]];
 			if (color) {
 				[color setFill];
 				CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
+				
+				// Do nothing if we're not in the rect
+				if (y < dirtyRect.origin.y || y >= NSMaxY(dirtyRect)) continue;
 				
 				if (!marker[@"scene"]) {
 					NSBezierPath *path = [self marker:y];

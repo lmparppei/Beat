@@ -25,6 +25,25 @@
 
 @implementation BeatTextIO
 
+static NSString *lineBreak = @"\n\n===\n\n";
+static NSString *boldSymbol = @"**";
+static NSString *italicSymbol = @"*";
+static NSString *underlinedSymbol = @"_";
+static NSString *noteOpen = @"[[";
+static NSString *noteClose= @"]]";
+static NSString *omitOpen = @"/*";
+static NSString *omitClose= @"*/";
+static NSString *forceHeadingSymbol = @".";
+static NSString *forceActionSymbol = @"!";
+static NSString *forceCharacterSymbol = @"@";
+static NSString *forceTransitionLineSymbol = @">";
+static NSString *forceLyricsSymbol = @"~";
+static NSString *forceDualDialogueSymbol = @"^";
+
+static NSString *centeredStart = @"> ";
+static NSString *centeredEnd = @" <";
+
+
 -(instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate {
     self = [super init];
     if (self) {
@@ -786,6 +805,91 @@
     // Select the moved line
     if (blockRange.length > 0) {
         [self.delegate setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
+    }
+}
+
+
+#pragma mark - Force element types
+
+- (void)forceLineType:(LineType)lineType
+{
+    if (lineType == action) [self forceLineType:action range:self.delegate.selectedRange];
+    else if (lineType == heading) [self forceLineType:heading range:self.delegate.selectedRange];
+    else if (lineType == character) [self forceLineType:character range:self.delegate.selectedRange];
+    else if (lineType == lyrics) [self forceLineType:lyrics range:self.delegate.selectedRange];
+    else if (lineType == transitionLine) [self forceLineType:transitionLine range:self.delegate.selectedRange];
+}
+
+- (NSString*)forcedSymbolFor:(LineType)lineType
+{
+    static NSDictionary<NSNumber*,NSString*>* symbols;
+    if (symbols == nil) symbols = @{
+        @(heading): forceHeadingSymbol,
+        @(character): forceCharacterSymbol,
+        @(action): forceActionSymbol,
+        @(lyrics): forceLyricsSymbol,
+        @(transitionLine): forceTransitionLineSymbol
+    };
+    
+    return symbols[@(lineType)];
+}
+
+- (void)forceLineType:(LineType)type range:(NSRange)cursorLocation
+{
+    NSString* symbol = [self forcedSymbolFor:type];
+    
+    //Find the index of the first symbol of the line
+    NSUInteger indexOfLineBeginning = cursorLocation.location;
+    while (true) {
+        if (indexOfLineBeginning == 0) {
+            break;
+        }
+        NSString *characterBefore = [_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
+        if ([characterBefore isEqualToString:@"\n"]) {
+            break;
+        }
+        
+        indexOfLineBeginning--;
+    }
+    
+    NSRange firstCharacterRange;
+    
+    // If the cursor resides in an empty line
+    // (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
+    // The range for the first charater in line needs to be an empty string
+    
+    if (indexOfLineBeginning == _delegate.text.length) {
+        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
+    } else if ([[_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
+        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
+    } else {
+        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 1);
+    }
+    NSString *firstCharacter = [_delegate.text substringWithRange:firstCharacterRange];
+    
+    // If the line is already forced to the desired type, remove the force
+    if ([firstCharacter isEqualToString:symbol]) {
+        [_delegate.textActions replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
+    } else {
+        // If the line is not forced to the desired type, check if it is forced to be something else
+        BOOL otherForce = NO;
+        
+        NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forceTransitionLineSymbol];
+        
+        for (NSString *otherSymbol in allForceSymbols) {
+            if (otherSymbol != symbol && [firstCharacter isEqualToString:otherSymbol]) {
+                otherForce = YES;
+                break;
+            }
+        }
+        
+        //If the line is forced to be something else, replace that force with the new force
+        //If not, insert the new character before the first one
+        if (otherForce) {
+            [_delegate.textActions replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
+        } else {
+            [_delegate.textActions addString:symbol atIndex:firstCharacterRange.location];
+        }
     }
 }
 

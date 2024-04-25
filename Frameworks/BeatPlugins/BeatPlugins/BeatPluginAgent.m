@@ -55,12 +55,14 @@
     return plugin;
 }
 
+/// Evaluates the given string in a plugin context
 - (void)call:(NSString*)script context:(NSString*)pluginName
 {
     BeatPlugin* plugin = [self pluginContextWithName:pluginName];
     [plugin call:script];
 }
 
+/// Returns actual plugin context for given plugin name. Can be used to manipulate already running plugins.
 - (BeatPlugin*)pluginContextWithName:(NSString*)pluginName
 {
     return self.delegate.runningPlugins[pluginName];
@@ -127,8 +129,37 @@
 }
 
 
+#pragma mark - Restoring plugins on load
+
+/// Call this on load to restore plugins that were open when the document was saved. (macOS only for now)
+- (void)restorePlugins
+{
+    bool preventRestoration = false;
+#if TARGET_OS_OSX
+    // Pressing shift will disable restoring plugins on macOS
+    preventRestoration = (NSEvent.modifierFlags & NSEventModifierFlagShift);
+#endif
+    
+    // Restore all plugins
+    if (preventRestoration) {
+        // Pressing shift stops plugins from loading and stores and empty array instead
+        [self.delegate.documentSettings set:DocSettingActivePlugins as:@[]];
+    } else {
+        NSDictionary* plugins = [self.delegate.documentSettings get:DocSettingActivePlugins];
+        for (NSString* pluginName in plugins) {
+            @try {
+                [self runPluginWithName:pluginName];
+            } @catch (NSException *exception) {
+                NSLog(@"Plugin error: %@", exception);
+            }
+        }
+    }
+}
+
+
 #pragma mark - Containers
 
+/// Removes all existing plugins from memory. 
 - (void)unloadPlugins
 {
     // Remove plugin containers (namely the index card view)

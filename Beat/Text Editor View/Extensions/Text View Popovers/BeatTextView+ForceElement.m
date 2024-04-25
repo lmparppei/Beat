@@ -13,25 +13,30 @@
 
 #pragma mark - Force element
 
+- (IBAction)showForceMenu:(id)sender
+{
+	[self showForceElementMenu];
+}
+
 - (void)showForceElementMenu
 {
 	[self.popoverController displayWithRange:self.selectedRange items:self.forceableTypes.allKeys callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
-		[self forceElementTypeWithString:string];
+		[self forceLineTypeWithName:string];
 		// Prevent default
 		return true;
 	}];
 }
 
-- (void)forceElementTypeWithString:(NSString*)string
+- (void)forceLineTypeWithName:(NSString*)string
 {
 	NSDictionary *types = [self forceableTypes];
 	NSNumber *val = types[string];
 	
-	// Do nothing if something went wront
+	// Do nothing if something went wrong
 	if (val == nil) return;
 	
 	LineType type = (LineType)val.integerValue;
-	[self.editorDelegate forceElement:type];
+	[self.editorDelegate.textActions forceLineType:type];
 }
 
 /// The UI uses localized type names. This method provides a dictionary which has localized name as key and the actual raw `LineType` as `NSNumber`: `"Localized Name": (rawIntegerTypeValue)`

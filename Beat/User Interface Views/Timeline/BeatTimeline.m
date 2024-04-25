@@ -370,6 +370,11 @@
 	if (_visibleStorylines) [self updateStorylineLabels];
 }
 
+/// Called by the editor to tell we moved to this scene
+- (void)didMoveToSceneIndex:(NSInteger)index
+{
+	[self scrollToSceneIndex:index];
+}
 
 - (void)scrollToScene:(OutlineScene*)scene
 {
@@ -620,7 +625,18 @@
 }
 
 
-#pragma mark - Sizing + frame
+#pragma mark - Displaying the view
+
+- (IBAction)toggleTimeline:(id)sender
+{
+	self.visible = !self.visible;
+	if (self.visible) [self show]; else [self hide];
+
+	NSButton* button = (NSButton*)sender;
+	if (button != nil) {
+		button.state = (self.visible) ? NSOnState : NSOffState;
+	}
+}
 
 - (void)show
 {
@@ -760,7 +776,7 @@
 
 - (void)reloadWithChanges:(OutlineChanges *)changes
 {
-	[self reload];
+	if (self.visible) [self reload];
 }
 
 

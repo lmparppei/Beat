@@ -57,6 +57,7 @@
 	
 	return self;
 }
+
 -(void)awakeFromNib {
 	self.buttons = @[self.buttonDefault, self.buttonRed, self.buttonGreen, self.buttonBlue, self.buttonPink, self.buttonOrange, self.buttonBrown, self.buttonCyan, self.buttonMagenta];
 	
@@ -75,6 +76,12 @@
 	[self setTypingAttributes:@{
 		NSForegroundColorAttributeName: _currentColor
 	}];
+}
+
+- (void)setup
+{
+	NSString* notes = [self.editorDelegate.documentSettings getString:@"Notes"];
+	if (notes.length > 0) [self loadString:notes];
 }
 
 - (void)setColor:(NSString*)colorName

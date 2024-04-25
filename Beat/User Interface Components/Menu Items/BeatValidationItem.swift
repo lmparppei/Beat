@@ -46,7 +46,7 @@ class BeatValidationItem: NSObject {
 	}
 	
 	@objc func validate() -> Bool {
-		var value:Bool = false
+		var value = false
 		
 		if (self.target.className == "BeatDocumentSettings") {
 			// Document settings
@@ -68,3 +68,25 @@ class BeatValidationItem: NSObject {
 	}
 }
 
+/// A more sensible way to do the above
+@objc class BeatOnOffMenuItem:NSMenuItem {
+	@IBInspectable var documentSetting:Bool = false
+	@IBInspectable var settingKey:String = ""
+	@IBInspectable var requiresRedraw = false
+	
+	@objc func setChecked(document:BeatEditorDelegate? = nil) -> Bool {
+		guard let document else { return false }
+		
+		var value = false
+		
+		if self.documentSetting {
+			value = document.documentSettings.getBool(settingKey)
+		} else {
+			value = BeatUserDefaults.shared().getBool(settingKey)
+		}
+				
+		self.state = (value) ? .on : .off
+
+		return true
+	}
+}

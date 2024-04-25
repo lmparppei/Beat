@@ -48,6 +48,12 @@
 
 
 #pragma mark - Setting getters and setters
+// TODO: Maybe toss these into a Swift extension or a category?
+
+- (bool)showRevisions
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisions];
+}
 
 - (bool)showRevisedTextColor
 {
@@ -63,6 +69,34 @@
 {
     [self.documentSettings setBool:DocSettingPrintSceneNumbers as:value];
 }
+
+- (bool)autocomplete
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutocomplete];
+}
+- (void)setAutocomplete:(bool)autocomplete
+{
+    [BeatUserDefaults.sharedDefaults saveBool:autocomplete forKey:BeatSettingAutocomplete];
+}
+
+- (bool)autoLineBreaks
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutomaticLineBreaks];
+}
+- (void)setAutoLineBreaks:(bool)autoLineBreaks
+{
+    [BeatUserDefaults.sharedDefaults saveBool:autoLineBreaks forKey:BeatSettingAutomaticLineBreaks];
+}
+
+- (bool)automaticContd
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutomaticContd];
+}
+- (void)setAutomaticContd:(bool)automaticContd
+{
+    [BeatUserDefaults.sharedDefaults saveBool:automaticContd forKey:BeatSettingAutomaticContd];
+}
+
 
 
 #pragma mark - Editor styles
@@ -184,7 +218,7 @@
 - (void)textDidChange
 {
     if (self.documentIsLoading) return;
-        
+    
     // Begin from top if no last changed range was set
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
 
@@ -843,6 +877,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
         [view reloadWithChanges:changes];
     }
 }
+/// Updates all outline views from scratch and in sync.
+- (void)updateOutlineViews
+{
+    for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
+        [view reloadView];
+    }
+}
+
 
 /// Registers an observer which checks when selection changes
 - (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer

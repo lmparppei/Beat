@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Displays force element menu
 - (void)showForceElementMenu;
-- (void)forceElementTypeWithString:(NSString*)string;
+- (void)forceLineTypeWithName:(NSString*)string;
 
 @end
 

@@ -30,13 +30,11 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a 5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
+ Beat has been cooked up by using lots of trial and error, and this file has become a monster. I am a filmmaker and musician, with no real coding experience prior to this project. I've started fixing some of my silliest coding practices, but it's still a WIP. Parts of the code originally came from Writer, an open source Fountain editor by Hendrik Noeller.
  
  Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
  As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing that stuff when I have the time.
- 
- This particular class (Document) should be split into multiple chunks, as it's 4500-line monster. I've moved a ton of stuff into their respective classes, but as Objective C clases can't really be extended as easily as in Swift, I'm conflicted about how to actually modularize this mess.
  
  I originally started the project to combat a creative block, while overcoming some difficult PTSD symptoms. Coding helped to escape those feelings. If you are in an abusive relationship, leave RIGHT NOW. You might love that person, but it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file.
  
@@ -83,54 +81,38 @@
 #import "Document.h"
 #import "Document+WindowManagement.h"
 #import "Document+SceneActions.h"
+#import "Document+Menus.h"
+#import "Document+AdditionalActions.h"
+#import "Document+ThemesAndAppearance.h"
+#import "Document+Sidebar.h"
+#import "Document+Lock.h"
 
 #import "ScrollView.h"
-#import "FDXInterface.h"
-#import "ColorView.h"
 #import "BeatAppDelegate.h"
-#import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
-#import "FDXImport.h"
-#import "OutlineExtractor.h"
 #import "SceneCards.h"
 #import "MarginView.h"
-#import "BeatModalInput.h"
-#import "ThemeEditor.h"
-#import "BeatFDXExport.h"
-#import "ITSwitch.h"
-#import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
 #import "BeatColorMenuItem.h"
 #import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
-#import "BeatCharacterList.h"
 #import "BeatPrintDialog.h"
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 
-@interface Document () <BeatPreviewManagerDelegate, BeatThemeManagedDocument, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
-@property (weak) IBOutlet TKSplitHandle *splitHandle;
-@property (nonatomic) NSArray *itemsToValidate; // Menu items
 
 // Cached
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
 
 // Autosave
-@property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
-
-// Editor buttons
-@property (nonatomic, weak) IBOutlet NSButton *outlineButton;
-@property (nonatomic, weak) IBOutlet NSButton *previewButton;
-@property (nonatomic, weak) IBOutlet NSButton *timelineButton;
-@property (nonatomic, weak) IBOutlet NSButton *cardsButton;
-@property (nonatomic, weak) IBOutlet BeatLockButton *lockButton;
 
 // Quick settings
 @property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
@@ -139,14 +121,6 @@
 // Text view
 @property (weak, nonatomic) IBOutlet BeatTextView *textView;
 
-//@property (nonatomic) IBOutlet BeatTextIO* textActions;
-@property (weak, nonatomic) IBOutlet ScrollView *textScrollView;
-@property (weak, nonatomic) IBOutlet MarginView *marginView;
-@property (weak, nonatomic) IBOutlet NSClipView *textClipView;
-
-@property (nonatomic) bool autocomplete;
-@property (nonatomic) bool autoLineBreaks;
-@property (nonatomic) bool automaticContd;
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) NSMutableArray *recentCharacters;
@@ -164,16 +138,10 @@
 //@property (nonatomic) NSMutableArray<BeatPluginContainerView*>* registeredPluginContainers;
 
 // Sidebar & Outline view
-@property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
-@property (weak) IBOutlet NSTabView *sideBarTabs;
-@property (weak) IBOutlet BeatOutlineView *outlineView;
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
-@property (nonatomic) BOOL sidebarVisible;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 @property (nonatomic, weak) IBOutlet NSMenu *colorMenu;
-
-@property (nonatomic, weak) IBOutlet BeatCharacterList *characterList;
 
 // Right side view
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *rightSidebarConstraint;
@@ -184,24 +152,11 @@
 // Notepad
 @property (nonatomic, weak) IBOutlet BeatNotepad *notepad;
 
-// Views
-@property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
-@property (weak) IBOutlet ColorView *backgroundView; // Master background
-@property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
-
-@property (weak) IBOutlet NSTabViewItem *editorTab;
-@property (weak) IBOutlet NSTabViewItem *previewTab;
-@property (weak) IBOutlet NSTabViewItem *cardsTab;
-@property (weak) IBOutlet NSTabViewItem *nativePreviewTab;
-
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
 @property (nonatomic) NSPopover* previewOptionsPopover;
-
-// Analysis
-@property (nonatomic) BeatStatisticsPanel *analysisWindow;
 
 // Card view
 @property (nonatomic) bool cardsVisible;
@@ -214,9 +169,6 @@
 @property (weak) IBOutlet NSTouchBar *touchBar;
 @property (weak) IBOutlet NSTouchBar *timelineBar;
 @property (weak) IBOutlet TouchTimelineView *touchbarTimeline;
-@property (weak) IBOutlet TouchTimelinePopover *touchbarTimelineButton;
-
-@property (weak) IBOutlet BeatTimeline *timeline;
 
 // Scene number labels
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
@@ -252,37 +204,16 @@
 // Parser
 //@property (strong, nonatomic) ContinuousFountainParser* parser;
 
-// Title page editor
-@property (nonatomic) BeatTitlePageEditor *titlePageEditor;
-
-// Theme settings
-@property (nonatomic) ThemeManager* themeManager;
-
-// Timer
-@property (weak) IBOutlet BeatTimer *beatTimer;
-
-// Tagging
+/// Tagging view on the right side of the screen
 @property (weak) IBOutlet NSTextView *tagTextView;
 
-@property (nonatomic) NSDate *executionTime;
-@property (nonatomic) NSTimeInterval executionTimeCache;
-@property (nonatomic) Line* lineCache;
-
+/// When loading longer documents, we need to show a progress panel
 @property (nonatomic) NSPanel* progressPanel;
+/// The indicator for above panel
 @property (nonatomic) NSProgressIndicator *progressIndicator;
 
+/// A collection of all sorts of formatting-related `IBAction`s. A cross-platform class.
 @property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
-
-
-// Sidebar tabs
-@property (nonatomic, weak) IBOutlet NSTabViewItem *tabOutline;
-@property (nonatomic, weak) IBOutlet NSTabViewItem *tabNotepad;
-@property (nonatomic, weak) IBOutlet NSTabViewItem *tabDialogue;
-@property (nonatomic, weak) IBOutlet NSTabViewItem *tabReviews;
-@property (nonatomic, weak) IBOutlet NSTabViewItem *tabWidgets;
-
-// Debug flags
-@property (nonatomic) bool debug;
 
 @end
 
@@ -314,7 +245,6 @@
 
 /// **Warning**: This is used for returning the actual document object through editor delegate. Handle with care. 
 -(Document*)document { return self; }
-
 
 /// A paranoid method to actually null every-fucking-thing.
 - (void)close
@@ -358,13 +288,11 @@
 	self.outlineView = nil;
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
-	self.analysisWindow = nil;
 	self.currentScene = nil;
 	self.outlineView.filters = nil;
 	
 	self.outlineView.filteredOutline = nil;
 	self.tagging = nil;
-	self.itemsToValidate = nil;
 	self.review = nil;
 	
 	self.previewController = nil;
@@ -425,9 +353,7 @@
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
 	
-	// Initialize Theme Manager
-	// (before formatting the content, because we need the colors for formatting!)
-	self.themeManager = [ThemeManager sharedManager];
+	// Initialize theme
 	[self loadSelectedTheme:false];
 	
 	// Setup views
@@ -441,7 +367,6 @@
 	// Setup views
 	[self setupResponderChain];
 	[self.textView setup];
-	[self setupTouchTimeline];
 	[self setupColorPicker];
 	[self.outlineView setup];
 		
@@ -468,10 +393,12 @@
 	[self updateSelectionObservers];
 }
 
--(void)renderDocument {
-	// Initialize edit tracking
+-(void)renderDocument
+{
+	// Initialize revision tracing here, so revisions are loaded before formatting.
 	[self.revisionTracking setup];
 
+	// Begin formatting lines after load
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		if (self.parser.lines.count > 1000) {
 			// Show a progress bar for longer documents
@@ -496,41 +423,48 @@
 }
 
 -(void)loadingComplete {
+	// Close progress panel and nil the reference
 	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	self.progressPanel = nil;
 	
+	// Reset parser and cache attributed content after load
 	[self.parser.changedIndices removeAllIndexes];
 	self.attrTextCache = self.textView.attributedString;
 	
-	[self.review setup]; // Setup review system
-	[self.tagging setup]; // Setup tagging
+	// Setup reviews and tagging
+	[self.review setup];
+	[self.tagging setup];
 
+	// Setup text IO
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
 	
-	// Document loading has ended
+	// Document loading has ended. This has to be done after reviews and tagging are loaded.
 	self.documentIsLoading = NO;
 			
 	// Init autosave
 	[self initAutosave];
 	
 	// Lock status
-	if ([self.documentSettings getBool:@"Locked"]) [self lock];
+	if ([self.documentSettings getBool:DocSettingLocked]) [self lock];
 	
 	// Notepad
-	if ([self.documentSettings getString:@"Notes"].length) [self.notepad loadString:[self.documentSettings getString:@"Notes"]];
+	[self.notepad setup];
 	
 	// If this a recovered autosave, the file might be changed when it opens, so let's save this info
-	bool saved = YES;
-	if (self.hasUnautosavedChanges) saved = NO;
+	bool saved = (self.hasUnautosavedChanges) ? NO : YES;
 	
 	// Sidebar
 	[self restoreSidebar];
-	
+
+	/*
 	// Setup page size
 	[self.undoManager disableUndoRegistration]; // (We'll disable undo registration here, so the doc won't appear as edited on open)
+	
+	// Uh, is this legacy from the old printing system?
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
 	self.printInfo = [BeatPaperSizing setSize:self.pageSize printInfo:printInfo];
 	[self.undoManager enableUndoRegistration]; // Enable undo registration and clear any changes to the document (if needed)
+	*/
 	
 	if (saved) [self updateChangeCount:NSChangeCleared];
 	
@@ -543,20 +477,8 @@
 	// Setup layout
 	[self setupLayout];
 		
-	// Restore all plugins
-	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
-		// Pressing shift stops plugins from loading and stores and empty array instead
-		[self.documentSettings set:DocSettingActivePlugins as:@[]];
-	} else {
-		NSDictionary* plugins = [self.documentSettings get:DocSettingActivePlugins];
-		for (NSString* pluginName in plugins) {
-			@try {
-				[self.pluginAgent runPluginWithName:pluginName];
-			} @catch (NSException *exception) {
-				NSLog(@"Plugin error: %@", exception);
-			}
-		}
-	}
+	// Restore previously running plugins
+	[self.pluginAgent restorePlugins];
 	
 	// Reload editor views in background
 	[self updateEditorViewsInBackground];
@@ -573,6 +495,7 @@
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 	
+	// Set up listener for appearance change. Handled in Document+ThemesAndAppearance.h.
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 
@@ -598,11 +521,11 @@
 #pragma mark - Misc document stuff
 
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
-	NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
+	//NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
 }
 
 -(id)valueForUndefinedKey:(NSString *)key {
-	NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
+	//NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
 	return nil;
 }
 
@@ -654,7 +577,7 @@
 /// Sets up the custom responder chain
 - (void)setupResponderChain {
 	// Our desired responder chain, add more custom responders when needed
-	NSArray *chain = @[_formattingActions, self.revisionTracking, self.notepad];
+	NSArray *chain = @[_formattingActions, self.revisionTracking, self.notepad, self.timeline];
 	
 	// Store the original responder after text view
 	NSResponder *prev = self.textView;
@@ -729,20 +652,18 @@
 
 # pragma mark - Window interactions
 
-/// Returns the index of current view
-- (NSUInteger)selectedTab
+/// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
+- (NSTabViewItem*)currentTab
 {
-	return [self.tabView indexOfTabViewItem:self.tabView.selectedTabViewItem];
+	return self.tabView.selectedTabViewItem;
 }
 
 /// Returns `true` when the editor view is visible
-- (bool)editorTabVisible {
-	if (self.currentTab == _editorTab) return YES;
-	else return NO;
-}
+- (bool)editorTabVisible { return (self.currentTab == _editorTab); }
 
 /// Move to another editor view
-- (void)showTab:(NSTabViewItem*)tab {
+- (void)showTab:(NSTabViewItem*)tab
+{
 	[self.tabView selectTabViewItem:tab];
 	[tab.view.subviews.firstObject becomeFirstResponder];
 	
@@ -750,11 +671,6 @@
 	for (id<BeatPluginContainer> view in self.registeredPluginContainers) {
 		if (![tab.view.subviews containsObject:(NSView*)view]) [view containerViewDidHide];
 	}
-}
-
-/// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
-- (NSTabViewItem*)currentTab {
-	return self.tabView.selectedTabViewItem;
 }
 
 /// Returns `true` if the document window is full screen
@@ -773,21 +689,23 @@
 	[self updateLayout];
 }
 
-/// I have no idea what this method is
+/// Ensures minimum window size, sets text view insets and forces editor views to be displayed. After that, ensures text view layout.
 - (void)updateLayout
 {
 	[self setMinimumWindowSize];
 
 	[self.textView setInsets];
-	[self.textScrollView setNeedsDisplay:YES];
-	[self.marginView setNeedsDisplay:YES];
+	
+	self.textView.enclosingScrollView.needsDisplay = true;
+	self.marginView.needsDisplay = true;
 	
 	[self ensureLayout];
 }
 
-- (void)setMinimumWindowSize {
+- (void)setMinimumWindowSize
+{
 	CGFloat width = (self.textView.textContainer.size.width - (2 * BeatTextView.linePadding)) * self.magnification + 30;
-	if (_sidebarVisible) width += _outlineView.frame.size.width;
+	if (self.sidebarVisible) width += _outlineView.frame.size.width;
 
 	// Clamp the value. I can't use max methods.
 	if (width > self.documentWindow.screen.frame.size.width) width = self.documentWindow.screen.frame.size.width;
@@ -797,8 +715,9 @@
 
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
 
-/// Restores sidebar on launch
-- (void)restoreSidebar {
+/// Restores sidebar status on launch
+- (void)restoreSidebar
+{
 	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
 		self.sidebarVisible = YES;
 		[_splitHandle restoreBottomOrLeftView];
@@ -1084,38 +1003,17 @@
 	self.attrTextCache = [self getAttributedText];
 	self.printDialog = [BeatPrintDialog showForPDF:self];
 }
-
-- (void)releasePrintDialog {
-	_printDialog = nil;
-}
+- (void)releasePrintDialog { _printDialog = nil; }
 
 - (void)printDialogDidFinishPreview:(void (^)(void))block {
 	block();
-}
-
-
-- (IBAction)exportFDX:(id)sender
-{
-	NSSavePanel *saveDialog = [NSSavePanel savePanel];
-	[saveDialog setAllowedFileTypes:@[@"fdx"]];
-	[saveDialog setNameFieldStringValue:[self fileNameString]];
-	
-	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
-		if (result == NSModalResponseOK) {
-			NSString* string = (self.text) ? self.text : @"";
-			NSAttributedString* attrString = (self.textView.attributedString) ? self.textView.attributedString : NSAttributedString.new;
-			
-			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:string attributedString:attrString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
-			[fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
-		}
-	}];
 }
 
 - (IBAction)exportOutline:(id)sender
 {
 	NSSavePanel *saveDialog = [NSSavePanel savePanel];
 	[saveDialog setAllowedFileTypes:@[@"fountain"]];
-	[saveDialog setNameFieldStringValue:[[self fileNameString] stringByAppendingString:@" Outline"]];
+	[saveDialog setNameFieldStringValue:[self.fileNameString stringByAppendingString:@" Outline"]];
 	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
 		if (result == NSModalResponseOK) {
 			NSString* outlineString = [OutlineExtractor outlineFromParse:self.parser];
@@ -1153,18 +1051,17 @@
  */
 
 
-#pragma mark - Text input settings
+#pragma mark - Toggling user default settings on/off
 
-- (IBAction)toggleAutoLineBreaks:(id)sender {
-	self.autoLineBreaks = !self.autoLineBreaks;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-}
-
-- (IBAction)toggleMatchParentheses:(id)sender
+/// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
+- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem
 {
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	for (Document* doc in openDocuments) doc.matchParentheses = !doc.matchParentheses;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	if (menuItem == nil || menuItem.settingKey.length == 0) return;
+	
+	if (menuItem.documentSetting) [self.documentSettings toggleBool:menuItem.settingKey];
+	else [BeatUserDefaults.sharedDefaults toggleBool:menuItem.settingKey];
+	
+	[self ensureLayout];
 }
 
 
@@ -1280,19 +1177,24 @@
 		
 	[self updateChangeCount:NSChangeDone];
 	
+	// Apply any revisions
+	[self.revisionTracking applyQueuedChanges];
+	
 	// Finally, reset last changed range
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
 }
 
--(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+-(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
+{
 	if (self.documentIsLoading) return;
 	
 	if (editedMask & NSTextStorageEditedCharacters) {
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
-		// Register changes
+		// Register changes. Because macOS Sonoma somehow changed attribute handling, we need to _queue_ those changes and
+		// then release them when text has changed
 		if (_revisionMode && self.lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
-			[self.revisionTracking registerChangesWithLocation:editedRange.location length:self.lastChangedRange.length delta:delta];
+			[self.revisionTracking queueRegisteringChangesInRange:NSMakeRange(editedRange.location, editedRange.length) delta:delta];
 		}
 	}
 }
@@ -1324,10 +1226,7 @@
 	
 	// Update hidden Fountain markup
 	[self.textView updateMarkupVisibility];
-	
-	// Update typing attributes
-	//[self.formatting updateTypingAttributes];
-	
+		
 	// Scroll to view if needed
 	if (self.selectedRange.length == 0) {
 		[self.textView scrollRangeToVisible:self.selectedRange];
@@ -1350,17 +1249,6 @@
 }
 
 
-#pragma mark Update outline views
-
-- (void)outlineDidUpdateWithChanges:(OutlineChanges *)changes
-{
-	[super outlineDidUpdateWithChanges:changes];
-	// TODO: Conform sidebar outline view to outline view protocol
-	if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutlineWithChanges:changes];
-}
-
-
-
 #pragma mark Update UI with current scene
 
 /// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
@@ -1370,20 +1258,14 @@
 	OutlineScene *currentScene = self.currentScene;
 	__block NSInteger sceneIndex = [self.parser.outline indexOfObject:currentScene];
 	
-	// Update Timeline & TouchBar Timeline
-	if (self.timeline.visible) [_timeline scrollToSceneIndex:sceneIndex];
-	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[self.outline indexOfObject:currentScene]];
+	// Do nothing if no index found
+	if (sceneIndex == NSNotFound) return;
 	
-	// Locate current scene & reload outline without building it in parser
-	if (self.sidebarVisible && !self.outlineView.dragging && !self.outlineView.editing) {
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			[self.outlineView scrollToScene:currentScene];
-			self.outlineView.needsDisplay = true;
-		});
+	// Update any registered outline views
+	for (id<BeatSceneOutlineView>view in self.registeredOutlineViews) {
+		if (view.visible) [view didMoveToSceneIndex:sceneIndex];
 	}
-
-	self.sideBarTabs.needsDisplay = true;
-	
+		
 	// Update touch bar color if needed
 	if (currentScene.color) {
 		NSColor* color = [BeatColors color:currentScene.color];
@@ -1397,11 +1279,8 @@
 
 #pragma mark - Text I/O
 
-- (void)setTypingAttributes:(NSDictionary*)attrs {
-	self.textView.typingAttributes = attrs;
-}
-
-- (void)setAutomaticTextCompletionEnabled:(BOOL)value {
+- (void)setAutomaticTextCompletionEnabled:(BOOL)value
+{
 	self.textView.automaticTextCompletionEnabled = value;
 }
 
@@ -1458,6 +1337,7 @@
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	[paragraphStyle setFirstLineHeadIndent:0];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+	
 	[self.textView setTypingAttributes:attributes];
 	self.textView.needsDisplay = YES;
 	self.textView.needsLayout = YES;
@@ -1484,8 +1364,9 @@
 }
 
 /// Formats all lines while loading the document
-- (void)formatAllWithDelayFrom:(NSInteger)idx {
-	// We split the document into chunks of 400 lines and render them asynchronously
+- (void)formatAllWithDelayFrom:(NSInteger)idx
+{
+	// We split the document into chunks of 1000 lines and render them asynchronously
 	// to throttle the initial loading of document a bit
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		Line *line;
@@ -1508,7 +1389,7 @@
 			// If the document is done formatting, complete the loading process.
 			[self loadingComplete];
 		} else {
-			// Else render 400 more lines
+			// Else render 1000 more lines
 			[self formatAllWithDelayFrom:lastIndex + 1];
 		}
 	});
@@ -1534,9 +1415,9 @@
 
 # pragma  mark - Fonts
 
+/// Called for any OS-specific stuff after fonts were loaded
 - (void)fontDidLoad
 {
-	// Do any OS-specific settings here
 	self.textView.font = self.fonts.regular;
 }
 
@@ -1551,24 +1432,13 @@
 
 - (IBAction)selectSansSerif:(id)sender {
 	NSMenuItem* item = sender;
-	if (item.state != NSOnState) self.useSansSerif = YES;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	bool sansSerif = (item.state != NSOnState);
+
+	[BeatUserDefaults.sharedDefaults saveBool:sansSerif forKey:BeatSettingUseSansSerif];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc reloadFonts];
 	}
-}
-
-#pragma mark - Formatting Buttons
-
-- (IBAction)showForceMenu:(id)sender
-{
-	[self.textView showForceElementMenu];
-}
-
-- (void)forceElement:(LineType)lineType
-{
-	[self.formattingActions forceElement:lineType];
 }
 
 
@@ -1580,34 +1450,24 @@
 }
 
 
-
 #pragma mark - Revision Tracking
 
 // UI side
 
 -(IBAction)toggleShowRevisions:(id)sender
 {
-	_showRevisions = !_showRevisions;
-	
+	// Save user default
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowRevisions];
+
 	// Refresh layout + settings
 	self.textView.needsLayout = true;
 	self.textView.needsDisplay = true;
-	
-	// Save user default
-	[BeatUserDefaults.sharedDefaults saveBool:_showRevisions forKey:@"showRevisions"];
 }
 
 -(IBAction)toggleShowRevisedTextColor:(id)sender
 {
-	bool revisedText = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
-	[BeatUserDefaults.sharedDefaults saveBool:!revisedText forKey:BeatSettingShowRevisedTextColor];
-	
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowRevisedTextColor];
 	[self.formatting refreshRevisionTextColorsInRange:NSMakeRange(0, self.text.length)];
-}
-
-- (bool)showRevisedTextColor
-{
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
 }
 
 -(IBAction)toggleRevisionMode:(id)sender {
@@ -1656,343 +1516,13 @@
 }
 
 
-#pragma mark - Force Scene Numbering
-
-- (IBAction)forceSceneNumberForScene:(id)sender
-{
-	BeatModalInput *input = BeatModalInput.new;
-	
-	[input inputBoxWithMessage:[BeatLocalization localizedStringForKey:@"editor.setSceneNumber"]
-						  text:[BeatLocalization localizedStringForKey:@"editor.setSceneNumber.info"]
-				   placeholder:@"123A" forWindow:_documentWindow
-					completion:^(NSString * _Nonnull result) {
-						if (result.length > 0) {
-							OutlineScene *scene = self.currentScene;
-							
-							if (scene) {
-								if (scene.line.sceneNumberRange.length) {
-									// Remove existing scene number
-									[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:result];
-								} else {
-									// Add empty scene number
-									[self addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
-								}
-							}
-						}
-	}];
-}
-
-
-#pragma mark - Menus
-
-//Empty function, which needs to exists to make the share access the validateMenuItems function
-- (IBAction)share:(id)sender {}
-- (IBAction)export:(id)sender {}
-
-- (void)setupMenuItems {
-	// Menu items which need to check their on/off state against bool properties in this class
-	_itemsToValidate = @[
-		[BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:BeatSettingMatchParentheses target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:BeatSettingAutomaticLineBreaks target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:BeatSettingShowSceneNumbers target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:BeatSettingShowPageNumbers target:self],
-		
-		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:BeatSettingAutosave target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:BeatSettingHideFountainMarkup target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:BeatSettingDisableFormatting target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisions:) setting:BeatSettingShowRevisions target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisedTextColor:) setting:BeatSettingShowRevisedTextColor target:self],
-		
-		[BeatValidationItem.alloc initWithAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"visible" target:self.timeline],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
-		
-		[BeatValidationItem.alloc initWithAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
-		
-		[BeatValidationItem.alloc initWithMatchedValue:DocSettingStylesheet setting:DocSettingStylesheet action:@selector(selectStylesheet:) target:self.documentSettings]
-	];
-}
-- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
-{
-	// Special conditions for other than normal edit view
-	if (self.currentTab != _editorTab) {
-		// If PRINT PREVIEW is enabled
-		if (self.currentTab == _previewTab || self.currentTab == _nativePreviewTab) {
-			if (menuItem.action == @selector(preview:)) {
-				[menuItem setState:NSOnState];
-				return YES;
-			}
-			
-			if (menuItem.action == @selector(zoomIn:) ||
-				menuItem.action == @selector(zoomOut:) ||
-				menuItem.action == @selector(openPrintPanel:) ||
-				menuItem.action == @selector(openPDFPanel:)
-				) return YES;
-		}
-		
-		// If CARD VIEW is enabled
-		if (self.currentTab == _cardsTab) {
-			if (menuItem.action == @selector(toggleCards:)) {
-				menuItem.state = NSOnState;
-				return YES;
-			}
-			
-			if (menuItem.action == @selector(undoEdit:) || menuItem.action == @selector(redoEdit:)) return YES;
-		}
-		
-		// Rest of the items are disabled for non-editor views
-		return NO;
-	}
-	
-	
-	// Validate ALL on/of items
-	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
-	for (BeatValidationItem *item in _itemsToValidate) {
-		if (menuItem.action == item.selector) {
-			bool on = [item validate];
-			if (on) [menuItem setState:NSOnState];
-			else [menuItem setState:NSOffState];
-		}
-	}
-	
-	if (menuItem.action == @selector(toggleTagging:)) {
-		if (_mode == TaggingMode) menuItem.state = NSOnState;
-		else menuItem.state = NSOffState;
-	}
-	
-	else if (menuItem.action == @selector(toggleReview:)) {
-		if (_mode == ReviewMode) menuItem.state = NSOnState;
-		else menuItem.state = NSOffState;
-	}
-	else if (menuItem.action == @selector(reviewSelectedRange:)) {
-		if (self.selectedRange.length == 0) return NO;
-		else return YES;
-	}
-	
-	else if (menuItem.action == @selector(toggleAutosave:)) {
-		if (_autosave) menuItem.state = NSOnState;
-		else menuItem.state = NSOffState;
-		
-	}
-	else if (menuItem.action == @selector(selectSansSerif:)) {
-		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
-		if (sansSerif) menuItem.state = NSOnState;
-		else menuItem.state = NSOffState;
-	}
-	else if (menuItem.action == @selector(selectSerif:)) {
-		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
-		if (!sansSerif) menuItem.state = NSOnState;
-		else menuItem.state = NSOffState;
-		
-	}
-	else if (menuItem.action == @selector(toggleDarkMode:)) {
-		if (self.isDark) [menuItem setState:NSOnState];
-		else [menuItem setState:NSOffState];
-		
-	}
-	else if (menuItem.submenu.itemArray.firstObject.action == @selector(shareFromService:)) {
-		[menuItem.submenu removeAllItems];
-		NSArray *services = @[];
-		
-		if (self.fileURL) {
-			// This produces an error, but still works. Why?
-			services = [NSSharingService sharingServicesForItems:@[self.fileURL]];
-			
-			for (NSSharingService *service in services) {
-				NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:service.title action:@selector(shareFromService:) keyEquivalent:@""];
-				item.image = service.image;
-				service.subject = [self.fileURL lastPathComponent];
-				item.representedObject = service;
-				[menuItem.submenu addItem:item];
-			}
-		}
-		if (services.count == 0) {
-			NSMenuItem *noThingPleaseSaveItem = [[NSMenuItem alloc] initWithTitle:@"Please save the file to share" action:nil keyEquivalent:@""];
-			noThingPleaseSaveItem.enabled = NO;
-			[menuItem.submenu addItem:noThingPleaseSaveItem];
-		}
-		
-	}
-	else if (menuItem.action == @selector(openPrintPanel:) || menuItem.action == @selector(openPDFPanel:)) {
-		// Don't allow printing empty documents
-		NSArray* words = [self.text componentsSeparatedByCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-		NSString* visibleCharacters = [words componentsJoinedByString:@""];
-		if (visibleCharacters.length == 0) return NO;
-	}
-	
-	else if (menuItem.action == @selector(toggleCards:)) {
-		menuItem.state = NSOffState;
-	}
-	else if (menuItem.action == @selector(showWidgets:)) {
-		// Don't show menu item for widget view, if no widgets are visible
-
-		if (self.widgetView.subviews.count > 0) {
-			menuItem.hidden = NO;
-			return YES;
-		} else {
-			menuItem.state = NSOffState;
-			menuItem.hidden = YES;
-			return NO;
-		}
-	}
-	else if (menuItem.action == @selector(selectStylesheet:)) {
-		BeatMenuItemWithStylesheet* m = (BeatMenuItemWithStylesheet*)menuItem;
-		NSString* stylesheet = [self.documentSettings getString:DocSettingStylesheet];
-		if (stylesheet == nil) stylesheet = @"";
-		
-		m.state = [m.stylesheet isEqualToString:stylesheet] ? NSOnState : NSOffState;
-		
-		return true;
-	}
-	
-	// So, I have overriden everything regarding undo (because I couldn't figure it out)
-	// That's why we need to handle enabling/disabling undo manually. This sucks.
-	else if (menuItem.action == @selector(undoEdit:)) {
-		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
-		if (!self.undoManager.canUndo) return NO;
-	}
-	else if (menuItem.action == @selector(redoEdit:)) {
-		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.redo", nil), [self.undoManager redoActionName]];
-		if (!self.undoManager.canRedo) return NO;
-	}
-	
-	return YES;
-}
-
-- (IBAction)shareFromService:(id)sender
-{
-	[[sender representedObject] performWithItems:@[self.fileURL]];
-}
-
-
-
-#pragma mark - Themes & UI
-
-- (IBAction)toggleDarkMode:(id)sender {
-	[(BeatAppDelegate *)NSApp.delegate toggleDarkMode];
-	
-	[self updateUIColors];
-
-	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
-	for (Document* doc in openDocuments) {
-		if (doc != self) [doc updateUIColors];
-	}
-}
-
-- (void)didChangeAppearance {
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		[self updateUIColors];
-	});
-}
-
-- (bool)isDark {
-	return [(BeatAppDelegate *)[NSApp delegate] isDark];
-}
-
-- (void)updateUIColors {
-	if (_documentWindow.frame.size.height == 0 || _documentWindow.frame.size.width == 0) return;
-
-	if (@available(macOS 10.14, *)) {
-		// Force the whole window into dark mode if possible.
-		// This redraws everything by default.
-		self.documentWindow.appearance = [NSAppearance appearanceNamed:(self.isDark) ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua];
-		self.documentWindow.viewsNeedDisplay = true;
-	} else {
-		// Else, we need to force everything to redraw, in a very clunky way.
-		// Please god, if you exist, give me the courage to drop support for macOS 10.13
-		[self.documentWindow setViewsNeedDisplay:true];
-		
-		[self.documentWindow.contentView setNeedsDisplay:true];
-		[self.backgroundView setNeedsDisplay:true];
-		[self.textScrollView setNeedsDisplay:true];
-		[self.marginView setNeedsDisplay:true];
-		
-		[self.textScrollView layoutButtons];
-		
-		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-		
-		[self.textView drawViewBackgroundInRect:self.textView.bounds];
-		
-		self.textView.needsDisplay = true;
-		self.textView.needsLayout = true;
-	}
-	
-	if (_sidebarVisible) {
-		self.outlineBackgroundView.needsDisplay = true;
-		
-		self.sideBarTabs.needsDisplay = true;
-		self.sideBarTabs.needsLayout = true;
-		self.sideBarTabControl.needsDisplay = true;
-		self.sideBarTabControl.needsLayout = true;
-		
-		[self.outlineView reloadOutline];
-	}
-	
-	// Set global background
-	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkColor : self.themeManager.outlineBackground.lightColor;
-	self.backgroundView.layer.backgroundColor = bgColor.CGColor;
-	
-	[self.textScrollView layoutButtons];
-	[self.documentWindow setViewsNeedDisplay:true];
-	[self.textView redrawUI];
-
-
-	// Update background layers
-	[_marginView updateBackground];
-}
-
-- (void)updateTheme
-{
-	[self setThemeFor:self setTextColor:NO];
-}
-
-- (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor {
-	if (!doc) doc = self;
-	
-	doc.textView.textColor = self.themeManager.textColor;
-	doc.textView.marginColor = self.themeManager.marginColor;
-	doc.textScrollView.marginColor = self.themeManager.marginColor;
-	
-	[doc.textView setSelectedTextAttributes:@{
-		NSBackgroundColorAttributeName: self.themeManager.selectionColor,
-		NSForegroundColorAttributeName: self.themeManager.backgroundColor
-	}];
-	
-	if (setTextColor) [doc.textView setTextColor:self.themeManager.textColor];
-	else {
-		[self.textView setNeedsLayout:YES];
-		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
-	}
-	[doc.textView setInsertionPointColor:self.themeManager.caretColor];
-		
-	[doc updateUIColors];
-	
-	[doc.documentWindow setViewsNeedDisplay:YES];
-	[doc.textView setNeedsDisplay:YES];
-}
-
-- (void)loadSelectedTheme:(bool)forAll
-{
-	NSArray* openDocuments;
-	
-	if (forAll) openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	else openDocuments = @[self];
-	
-	for (Document* doc in openDocuments) {
-		[self setThemeFor:doc setTextColor:YES];
-	}
-}
-
-
 
 #pragma mark - Hiding markup
 
 - (IBAction)toggleHideFountainMarkup:(id)sender {
-	self.hideFountainMarkup = !self.hideFountainMarkup;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingHideFountainMarkup];
 	[self.textView toggleHideFountainMarkup];
-	//[self resetSceneNumberLabels];
+	
 	self.textView.needsDisplay = true;
 	self.textView.needsLayout = true;
 	
@@ -2066,111 +1596,16 @@
 #pragma  mark - Sidebar methods
 // Move all of this into a separate sidebar handler class
 
+- (BOOL)sidebarVisible
+{
+	return !self.splitHandle.bottomOrLeftViewIsCollapsed;
+}
+
 - (CGFloat)sidebarWidth
 {
 	return self.splitHandle.bottomOrLeftView.frame.size.width;
 }
 
-- (IBAction)toggleSidebar:(id)sender
-{
-	[self toggleSidebarView:sender];
-}
-- (IBAction)toggleSidebarView:(id)sender
-{
-	self.sidebarVisible = !self.sidebarVisible;
-	
-	// Save sidebar state to settings
-	[self.documentSettings setBool:DocSettingSidebarVisible as:self.sidebarVisible];
-	
-	if (_sidebarVisible) {
-		[_outlineButton setState:NSOnState];
-		
-		// Show outline
-		[self.outlineView reloadOutline];
-		
-		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
-		
-		if (![self isFullscreen] && !self.documentWindow.isZoomed) {
-			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-			CGFloat newWidth = _documentWindow.frame.size.width + sidebarWidth;
-			CGFloat newX = _documentWindow.frame.origin.x - sidebarWidth / 2;
-			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
-			
-			// Ensure the main document won't go out of screen bounds when opening the sidebar
-			if (newWidth > screenWidth) {
-				newWidth = screenWidth;
-				newX = screenWidth / 2 - newWidth / 2;
-			}
-			
-			if (newX + newWidth > screenWidth) {
-				newX = newX - (newX + newWidth - screenWidth);
-			}
-			
-			if (newX < 0) newX = 0;
-			
-			NSRect newFrame = NSMakeRect(newX,
-										 _documentWindow.frame.origin.y,
-										 newWidth,
-										 _documentWindow.frame.size.height);
-			[_documentWindow setFrame:newFrame display:YES];
-		}
-		
-		// Show sidebar
-		[_splitHandle restoreBottomOrLeftView];
-	} else {
-		[_outlineButton setState:NSOffState];
-		
-		// Hide outline
-		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
-		
-		if (![self isFullscreen] && !self.documentWindow.isZoomed) {
-			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-			CGFloat newX = _documentWindow.frame.origin.x + sidebarWidth / 2;
-			NSRect newFrame = NSMakeRect(newX,
-										 _documentWindow.frame.origin.y,
-										 _documentWindow.frame.size.width - sidebarWidth,
-										 _documentWindow.frame.size.height);
-			
-			[_documentWindow setFrame:newFrame display:YES];
-		}
-		
-		[_splitHandle collapseBottomOrLeftView];
-	}
-	
-	// Fix layout
-	[_documentWindow layoutIfNeeded];
-	
-	[self updateLayout];
-}
-
-- (IBAction)showOutline:(id)sender {
-	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:_tabOutline];
-}
-- (IBAction)showNotepad:(id)sender {
-	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:_tabNotepad];
-}
-- (IBAction)showCharactersAndDialogue:(id)sender {
-	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:_tabDialogue];
-}
-- (IBAction)showReviews:(id)sender {
-	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:_tabReviews];
-}
-- (IBAction)showWidgets:(id)sender {
-	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:_tabWidgets];
-}
-
-
-#pragma mark - Outline View
-
-- (void)reloadOutline
-{
-	[self.outlineView reloadOutline];
-}
 
 /*
  
@@ -2180,6 +1615,23 @@
  and most of my life is gone
  
  */
+
+
+#pragma mark - Sidebar
+
+/// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
+
+- (IBAction)toggleSidebar:(id)sender
+{
+	[self toggleSidebarView:sender];
+}
+
+- (IBAction)showWidgets:(id)sender {
+	if (!self.sidebarVisible) [self toggleSidebarView:nil];
+	[self.sideBarTabs selectTabViewItem:self.tabWidgets];
+}
+
+
 
 #pragma mark - Outline/timeline context menu, including setting colors
 
@@ -2307,9 +1759,8 @@
 
 #pragma mark - Refresh any outline views
 
-- (void)refreshAllOutlineViews {
-	if (_sidebarVisible) [self.outlineView reloadOutline];
-	
+- (void)refreshAllOutlineViews
+{
 	for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
 		[view reloadView];
 	}
@@ -2347,81 +1798,6 @@
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 
-- (IBAction)toggleSceneLabels:(id)sender {
-	self.showSceneNumberLabels = !self.showSceneNumberLabels;
-	[self ensureLayout];
-	
-	// Update the print preview accordingly
-	[self.previewController resetPreview];
-}
-
-
-
-#pragma mark - Markers
-
-- (NSArray*)markers
-{
-	// This could be inquired from the text view, too.
-	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
-	NSMutableArray * markers = NSMutableArray.new;
-	
-	CGSize containerSize = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size;
-	if (containerSize.height == 0.0) return @[];
-	
-	for (Line* line in self.parser.lines) { @autoreleasepool {
-		if (line.marker.length == 0 && line.color.length == 0) continue;
-		
-		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
-		
-		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
-		CGFloat relativeY = yPosition / containerSize.height;
-		
-		// Ignore faulty values
-		if (relativeY > 1.0) continue;
-		
-		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
-		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
-	} }
-	
-	return markers;
-}
-
-#pragma mark - Timeline + chronometry
-
-- (IBAction)toggleTimeline:(id)sender
-{
-	if (!_timeline.visible) [_timeline show];
-	else [_timeline hide];
-
-	_timelineButton.state = (_timeline.visible) ? NSOnState : NSOffState;
-}
-
-- (void)setupTouchTimeline {
-	self.touchbarTimeline.delegate = self;
-	self.touchbarTimelineButton.delegate = self;
-}
-
-
-#pragma mark - Timeline Delegation
-
-- (void)touchPopoverDidShow {
-	self.touchbarTimeline.visible = true;
-	[self.touchbarTimeline reloadView];
-}
-- (void)touchPopoverDidHide {
-	self.touchbarTimeline.visible = false;
-}
-
-
-#pragma mark - Analysis
-
-- (IBAction)showAnalysis:(id)sender {
-	_analysisWindow = [[BeatStatisticsPanel alloc] initWithParser:self.parser delegate:self];
-	[_documentWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
-		self.analysisWindow = nil;
-	}];
-}
-
 
 #pragma mark - Character gender getter
 
@@ -2429,10 +1805,8 @@
 - (NSDictionary<NSString*, NSString*>*)characterGenders
 {
 	NSDictionary * genders = [self.documentSettings get:DocSettingCharacterGenders];
-	if (genders != nil) return genders;
-	return @{};
+	return (genders != nil) ? genders : @{};
 }
-
 
 
 #pragma mark - Pagination manager methods
@@ -2450,45 +1824,10 @@
 
 #pragma mark - Paper size
 
-- (void)setPrintInfo:(NSPrintInfo *)printInfo
-{
-	[super setPrintInfo:printInfo];
-	[self updateLayout];
-}
-
-- (IBAction)selectPaperSize:(id)sender
-{
-	// (Wow, we are treading on pretty thin ice here)
-	NSMenuItem *item;
-	if ([sender isKindOfClass:NSPopUpButton.class]) item = [(NSPopUpButton*)sender selectedItem];
-	else item = (NSMenuItem*)sender;
-	
-	self.pageSize = ([item.title isEqualToString:@"A4"]) ? BeatA4 : BeatUSLetter;
-}
-
 - (void)setPageSize:(BeatPaperSize)pageSize
 {
 	[super setPageSize:pageSize];
 	[self updateLayout];
-}
-
-
-#pragma mark - Title page editor
-
-- (IBAction)editTitlePage:(id)sender {
-	_titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];
-	
-	[_documentWindow beginSheet:_titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
-		self.titlePageEditor = nil;
-	}];
-}
-
-
-#pragma mark - Timer
-
-- (IBAction)showTimer:(id)sender {
-	_beatTimer.delegate = self;
-	[_beatTimer showTimer];
 }
 
 
@@ -2500,6 +1839,11 @@
   
  */
 
+- (BOOL)autosave
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutosave];
+}
+
 + (BOOL)autosavesInPlace {
 	return NO;
 }
@@ -2510,14 +1854,10 @@
 
 + (BOOL)preservesVersions {
 	// Versions are only supported from 12.0+ because of a strange bug in older macOSs
+	// WHY IS THIS BUGGY? It works but produces weird error messages.
 	//if (@available(macOS 13.0, *)) return YES;
 	// else return NO;
 	return NO;
-}
-
-- (IBAction)toggleAutosave:(id)sender {
-	self.autosave = !self.autosave;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
 - (BOOL)writeSafelyToURL:(NSURL *)url ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError *__autoreleasing  _Nullable *)outError {
@@ -2586,21 +1926,7 @@
 }
 
 - (void)saveDocumentAs:(id)sender {
-	//NSString *previousName = self.fileNameString;
-	
 	[super saveDocumentAs:sender];
-	
-	/*
-	NSURL *url = [BeatAppDelegate appDataPath:@"Autosave"];
-	url = [url URLByAppendingPathComponent:previousName];
-	url = [url URLByAppendingPathExtension:@"fountain"];
-	
-	// Delete old drafts when saving under a new name
-	NSFileManager *fileManager = NSFileManager.defaultManager;
-	if ([fileManager fileExistsAtPath:url.path]) {
-		[fileManager removeItemAtURL:url error:nil];
-	}
-	*/
 }
 
 -(void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation delegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
@@ -2610,131 +1936,65 @@
 
 #pragma mark - split view listener
 
-- (void)splitViewDidResize {
+- (void)splitViewDidResize
+{
 	[self.documentSettings setInt:DocSettingSidebarWidth as:(NSInteger)self.splitHandle.bottomOrLeftView.frame.size.width];
 	[self updateLayout];
 }
-- (void)leftViewDidShow {
+
+- (void)leftViewDidShow
+{
 	self.sidebarVisible = YES;
 	[_outlineButton setState:NSOnState];
 	[self.outlineView reloadOutline];
 }
-- (void)leftViewDidHide {
-	// unused for now
+
+- (void)leftViewDidHide
+{
+	self.sidebarVisible = NO;
 }
 
-
-#pragma mark - Color Customization
-
-- (IBAction)customizeColors:(id)sender {
-	ThemeEditor* editor = ThemeEditor.sharedEditor;
-	[editor showWindow:editor.window];
-}
 
 #pragma mark - Review Mode
 
-- (IBAction)toggleReview:(id)sender {
+- (IBAction)toggleReview:(id)sender
+{
 	if (_mode == ReviewMode) self.mode = EditMode;
 	else self.mode = ReviewMode;
 }
 
--(void)toggleMode:(BeatEditorMode)mode {
+-(void)toggleMode:(BeatEditorMode)mode
+{
 	if (_mode != mode) _mode = EditMode;
 	else _mode = mode;
 	[self updateEditorMode];
 }
--(void)setMode:(BeatEditorMode)mode {
+
+-(void)setMode:(BeatEditorMode)mode
+{
 	_mode = mode;
 	[self updateEditorMode];
 }
 
-- (IBAction)reviewSelectedRange:(id)sender {
+- (IBAction)reviewSelectedRange:(id)sender
+{
 	if (self.selectedRange.length == 0) return;
 	[self.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
 }
 
+
 #pragma mark - Tagging Mode
 
-// NOTE: Move all of this into BeatTagging class
-
-- (IBAction)toggleTagging:(id)sender {
+- (IBAction)toggleTagging:(id)sender
+{
 	if (_mode == TaggingMode) _mode = EditMode;
 	else _mode = TaggingMode;
 	
 	[self updateEditorMode];
 }
 
-#pragma mark - Locking The Document
 
--(IBAction)lockContent:(id)sender
-{
-	[self toggleLock];
-}
-
-- (void)toggleLock
-{
-	bool locked = [self.documentSettings getBool:@"Locked"];
-	[self updateChangeCount:NSChangeDone];
-	
-	if (locked) [self unlock];
-	else [self lock];
-}
-
-- (bool)screenplayLocked
-{
-	if ([self.documentSettings getBool:@"Locked"]) return YES;
-	else return NO;
-}
-
-- (void)lock
-{
-	self.textView.editable = NO;
-	[self.documentSettings setBool:@"Locked" as:YES];
-	
-	[self.lockButton show];
-}
-
-- (void)unlock
-{
-	NSAlert *alert = [[NSAlert alloc] init];
-	alert.messageText = NSLocalizedString(@"unlock_document.title", nil);
-	alert.informativeText = NSLocalizedString(@"unlock_document.confirm", nil);
-	
-	[alert addButtonWithTitle:NSLocalizedString(@"general.yes", nil)];
-	[alert addButtonWithTitle:NSLocalizedString(@"general.no", nil)];
-	
-	NSModalResponse response = [alert runModal];
-	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
-		self.textView.editable = YES;
-		[self.documentSettings setBool:@"Locked" as:NO];
-		[self updateChangeCount:NSChangeDone];
-		
-		[self.lockButton hide];
-	}
-}
-
-- (void)showLockStatus
-{
-	[self.lockButton displayLabel];
-}
-
-- (bool)contentLocked
-{
-	return [self.documentSettings getBool:@"Locked"];
-}
-
-
-#pragma mark - Plugin support
-
-/// Called from `BeatPluginMenuItem`, which contains the plugin name to be run in this window.
-- (IBAction)runPlugin:(id)sender
-{
-	// Get plugin filename from menu item
-	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
-	NSString *pluginName = menuItem.pluginName;
-	
-	[self.pluginAgent runPluginWithName:pluginName];
-}
+#pragma mark - Widgets
 
 - (void)addWidget:(id)widget {
 	[self.widgetView addWidget:widget];
@@ -2742,21 +2002,9 @@
 }
 
 
-
-#pragma mark - Search for scene
-
-- (IBAction)goToScene:(id)sender
-{
-	__block BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
-	search.delegate = self;
-	
-	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
-		search = nil;
-	}];
-}
-
-
 #pragma mark - Scrolling
+
+// TODO: How do I move these into a category?
 
 - (void)scrollToSceneNumber:(NSString*)sceneNumber
 {
@@ -2816,11 +2064,16 @@
 
 - (bool)hasChanged {
 	if ([self.textView.string isEqualToString:_bufferedText]) return NO;
-	else {
-		_bufferedText = [NSString stringWithString:self.textView.string];
-		return YES;
-	}
+	
+	_bufferedText = [NSString stringWithString:self.textView.string];
+	return YES;
 }
+
+
+#pragma mark - Appearance
+
+/// Because we are supporting forced light/dark mode even on pre-10.14 systems, you can reliably check the appearance with this method.
+- (bool)isDark { return [(BeatAppDelegate *)[NSApp delegate] isDark]; }
 
 
 #pragma mark - Copy
@@ -2828,6 +2081,15 @@
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
 	return [Document.alloc initWithContentsOfURL:self.fileURL ofType:self.fileType error:nil];
 }
+
+
+#pragma mark - Lock
+
+- (void)showLockStatus
+{
+	[self.lockButton displayLabel];
+}
+
 
 @end
 

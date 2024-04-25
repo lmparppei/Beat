@@ -22,7 +22,7 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 
-@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate>
+@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate, BeatSceneOutlineView>
 
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 
@@ -67,8 +67,11 @@
 //    They stil don't give a fuck for the lives of their workers.
 //	  BURN DOWN THEIR FACTORIES.
 //    STEAL YOUR MAC.
-
+//
 //    2023 pre-new-year edit: FUCK YOU APPLE.
+//
+//    2024 edit: I'm conforming this class to the outline view protocol, and almost forgot to add that APPLE SHOULD GO FUCK THEMSELVES.
+
 
 //    So, back to the code:
 
@@ -115,8 +118,11 @@
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-
+	
 	[self hideFilterView];
+	
+	// Register this view
+	[self.editorDelegate registerSceneOutlineView:self];
 }
 
 -(void)setup
@@ -146,7 +152,7 @@
 		NSColor* fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkColor : ThemeManager.sharedManager.outlineHighlight.lightColor;
 		[fillColor setFill];
 		
-		[bg fill];		
+		[bg fill];
 	}
 }
 
@@ -156,36 +162,65 @@
 }
 
 
+#pragma mark - Listen to changes in editor
+
+- (bool)visible
+{
+	return (self.editorDelegate.sidebarVisible && self.enclosingTabView.tabView.selectedTabViewItem == self.enclosingTabView);
+}
+
+- (void)reloadInBackground { 
+	// Maybe we don't need this here?
+}
+
+- (void)reloadView { 
+	if (self.visible) [self reloadOutline];
+}
+
+
+- (void)didMoveToSceneIndex:(NSInteger)index
+{
+	if (self.dragging || self.editing) return;
+	
+	OutlineScene* scene = self.editorDelegate.parser.outline[index];
+	[self scrollToScene:scene];
+	
+	self.needsDisplay = true;
+}
+
+
 #pragma mark - Reload data
 
 /*
-// For those who come after.
--(void)reloadDiffedOutline {
-	NSArray* outline = self.outline;
-	
-	if (@available(macOS 10.15, *)) {
-		NSOrderedCollectionDifference* diff = [outline differenceFromArray:self.cachedOutline];
-		
-		for (OutlineScene* removed in diff.removals) {
-			NSLog(@"Removed: %@", removed);
-		}
-		
-		for (OutlineScene* inserted in diff.insertions) {
-			NSLog(@"Added: %@", inserted);
-		}
-		
-		self.cachedOutline = outline.copy;
-		
-	} else {
-		[self reloadData];
-		return;
-	}
-}
+ // For those who come after.
+ -(void)reloadDiffedOutline {
+ NSArray* outline = self.outline;
+ 
+ if (@available(macOS 10.15, *)) {
+ NSOrderedCollectionDifference* diff = [outline differenceFromArray:self.cachedOutline];
+ 
+ for (OutlineScene* removed in diff.removals) {
+ NSLog(@"Removed: %@", removed);
+ }
+ 
+ for (OutlineScene* inserted in diff.insertions) {
+ NSLog(@"Added: %@", inserted);
+ }
+ 
+ self.cachedOutline = outline.copy;
+ 
+ } else {
+ [self reloadData];
+ return;
+ }
+ }
  */
 
 
--(void)reloadOutlineWithChanges:(OutlineChanges*)changes
+-(void)reloadWithChanges:(OutlineChanges*)changes
 {
+	if (!self.visible) return;
+	
 	// Store current outline
 	NSArray* outline = self.outline;
 	
@@ -259,7 +294,7 @@
 	
 	// Scroll back to where we were
 	self.enclosingScrollView.contentView.bounds = bounds;
-
+	
 	self.cachedOutline = outline;
 }
 
@@ -308,12 +343,12 @@
 -(void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(nonnull id)cell forTableColumn:(nullable NSTableColumn *)tableColumn item:(nonnull id)item
 {
 	/*
-	// For those who come after
-	if (![item isKindOfClass:[OutlineScene class]]) return;
-	
-	OutlineScene *scene = item;
-	if (scene.type == section) [cell setEditable:YES];
-	*/
+	 // For those who come after
+	 if (![item isKindOfClass:[OutlineScene class]]) return;
+	 
+	 OutlineScene *scene = item;
+	 if (scene.type == section) [cell setEditable:YES];
+	 */
 }
 
 
@@ -337,7 +372,7 @@
 	// Update row heights when needed
 	[NSAnimationContext beginGrouping];
 	[[NSAnimationContext currentContext] setDuration:0.0];
-
+	
 	[self noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:(NSRange){ 0, self.numberOfRows }]];
 	
 	[NSAnimationContext endGrouping];
@@ -406,7 +441,7 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	_editing = NO;
-		
+	
 	if (![item isKindOfClass:[OutlineScene class]]) return NO;
 	
 	[self.editorDelegate scrollToScene:item];
@@ -415,18 +450,18 @@
 
 /*
  // View based setup
--(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
-	_editing = NO;
-	if (![item isKindOfClass:[OutlineScene class]]) return;
-	
-	OutlineScene *scene = item;
-	NSString *newValue = [(NSAttributedString*)object string];
-	if (scene.type != section || newValue == 0) return;
-	
-	newValue = [NSString stringWithFormat:@"# %@", newValue];
-	
-	[self replaceRange:scene.line.textRange withString:newValue];
-}
+ -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+ _editing = NO;
+ if (![item isKindOfClass:[OutlineScene class]]) return;
+ 
+ OutlineScene *scene = item;
+ NSString *newValue = [(NSAttributedString*)object string];
+ if (scene.type != section || newValue == 0) return;
+ 
+ newValue = [NSString stringWithFormat:@"# %@", newValue];
+ 
+ [self replaceRange:scene.line.textRange withString:newValue];
+ }
  */
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
@@ -475,7 +510,7 @@
 	 I have no idea what this code actually does. I've written it in lockdown (probably) and it's now November 2022.
 	 Now, I'll do my best to document and comment the code.
 	 */
-
+	
 	// Target is always a SECTION, childIndex speaks for itself.
 	
 	OutlineScene *scene;
@@ -483,7 +518,7 @@
 	NSInteger numberOfChildren = [self numberOfChildrenOfItem:targetItem];
 	
 	OutlineScene* targetScene = targetItem;
-
+	
 	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetItem];
 	
 	NSInteger to = index;
@@ -532,7 +567,7 @@
 		NSInteger location = scenesInSection.firstObject.position;
 		NSInteger length = scenesInSection.lastObject.position + scenesInSection.lastObject.length - location;
 		NSRange sectionRange = (NSRange){ location, length };
-				
+		
 		[self.editorDelegate moveStringFrom:sectionRange to:position actualString:[self.editorDelegate.text substringWithRange:sectionRange]];
 		return YES;
 	}
@@ -545,19 +580,19 @@
 }
 
 /*
--(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-	// For those who come after
-	
-	OutlineScene *outlineItem = item;
-	if (outlineItem.type == section) {
-		self.editing = YES;
-		return YES;
-	}
-	else {
-		self.editing = NO;
-		return NO;
-	}
-}
+ -(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+ // For those who come after
+ 
+ OutlineScene *outlineItem = item;
+ if (outlineItem.type == section) {
+ self.editing = YES;
+ return YES;
+ }
+ else {
+ self.editing = NO;
+ return NO;
+ }
+ }
  */
 
 - (void)scrollToScene:(OutlineScene*)scene
@@ -574,7 +609,7 @@
 	if (scene.parent != nil) {
 		if (![self isItemExpanded:scene.parent]) [self expandItemWithoutAnimation:scene expandChildren:false];
 	}
-
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
 			context.allowsImplicitAnimation = YES;
@@ -612,9 +647,9 @@
 	} else {
 		[_filters resetScenes];
 	}
-
+	
 	//_filteredOutline = _filters.filteredScenes;
-
+	
 	for (OutlineScene * scene in self.editorDelegate.outline) {
 		if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}
@@ -643,7 +678,7 @@
 - (IBAction)toggleColorFilter:(id)sender
 {
 	ColorCheckbox *button = (ColorCheckbox*)sender;
-		
+	
 	if (button.state == NSControlStateValueOn) {
 		// Apply color filter
 		[_filters addColorFilter:button.colorName];
@@ -682,7 +717,7 @@
 - (IBAction)filterByCharacter:(id)sender
 {
 	NSString *characterName = _characterBox.selectedItem.title;
-
+	
 	if ([characterName isEqualToString:@" "] || characterName.length == 0) {
 		[self resetCharacterFilter:nil];
 		return;
@@ -728,9 +763,9 @@
 -(void)expandItemWithoutAnimation:(id)item expandChildren:(BOOL)expandChildren {
 	[NSAnimationContext beginGrouping];
 	[[NSAnimationContext currentContext] setDuration:0.0];
-
+	
 	[super expandItem:item expandChildren:expandChildren];
-
+	
 	[NSAnimationContext endGrouping];
 }
 

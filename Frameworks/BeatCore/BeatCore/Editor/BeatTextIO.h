@@ -17,6 +17,15 @@
 
 #import <BeatCore/BeatEditorDelegate.h>
 
+typedef NS_ENUM(NSUInteger, BeatMarkupStyle) {
+    Block = 0,
+    Bold,
+    Italic,
+    Underline,
+    Note,
+    Centered
+};
+
 @class OutlineScene;
 @class ContinuousFountainParser;
 @class Line;
@@ -80,6 +89,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 
 - (void)moveBlockUp:(NSArray<Line*>*)lines;
 - (void)moveBlockDown:(NSArray<Line*>*)lines;
+
+- (void)forceLineType:(LineType)lineType;
+- (void)forceLineType:(LineType)type range:(NSRange)cursorLocation;
 
 @end
 

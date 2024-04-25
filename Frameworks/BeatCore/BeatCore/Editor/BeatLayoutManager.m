@@ -5,6 +5,14 @@
 //  Created by Lauri-Matti Parppei on 11.2.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ TextKit 1 layout manager for both macOS and iOS.
+ Handles drawing scene numbers, revisions and reviews, as well as transforming text to uppercase and hiding Fountain markup.
+ 
+ Because iOS and macOS APIs are *almost* similar but still incompatible, there are tons of target conditionals ahead.
+ 
+ */
 
 #import "BeatLayoutManager.h"
 #import <BeatCore/BeatCore.h>
@@ -36,7 +44,6 @@
     #define BXBezierPath UIBezierPath
 
     // Because of different line heights on iOS, we'll need to add an offset
-    //#define Y_OFFSET -3.5
     #define Y_OFFSET -1.0
 
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]

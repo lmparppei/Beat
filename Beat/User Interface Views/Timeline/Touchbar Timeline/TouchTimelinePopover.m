@@ -9,11 +9,17 @@
 #import "TouchTimelinePopover.h"
 
 @implementation TouchTimelinePopover
--(void)showPopover:(id)sender {
+
+-(void)showPopover:(id)sender
+{
 	[super showPopover:sender];
-	[self.delegate touchPopoverDidShow];
+
+	self.timeline.visible = true;
+	[self.timeline reloadView];
 }
--(void)dismissPopover:(id)sender {
+-(void)dismissPopover:(id)sender
+{
+	self.timeline.visible = false;
 	[super dismissPopover:sender];
 }
 @end

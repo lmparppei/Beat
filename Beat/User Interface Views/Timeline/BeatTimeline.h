@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hide;
 - (void)reload;
 - (void)refreshWithDelay;
-- (void)scrollToSceneIndex:(NSInteger)index;
+- (void)didMoveToSceneIndex:(NSInteger)index;
 - (CGFloat)playheadPosition;
 
 @end

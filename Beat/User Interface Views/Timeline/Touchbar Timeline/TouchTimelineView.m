@@ -64,7 +64,7 @@
  
 }
 
-# pragma mark - Setting data
+#pragma mark - Setting data
 
 - (void)setData:(NSMutableArray*)data {
      _items = [NSMutableArray array];
@@ -89,6 +89,36 @@
 	
 	[self setNeedsDisplay:YES];
 }
+
+
+#pragma mark - Listen to changes in delegate
+
+- (void)didMoveToSceneIndex:(NSInteger)index
+{
+	[self selectItem:index];
+}
+
+- (void)reloadInBackground
+{
+	[self.timer invalidate];
+	__weak __block TouchTimelineView* weakSelf = self;
+	self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
+		[weakSelf reloadView];
+		self.timer = nil;
+	}];
+}
+
+- (void)reloadView
+{
+	if (self.visible) [self setData:self.delegate.parser.outline];
+}
+
+
+- (void)reloadWithChanges:(OutlineChanges *)changes
+{
+	if (self.visible) [self reloadView];
+}
+
 
 # pragma mark - Drawing
 - (void)drawRect:(NSRect)dirtyRect {
@@ -196,6 +226,7 @@
     _playheadPosition = [touch locationInView:self].x;
     [self setNeedsDisplay:YES];
 }
+
 - (void)touchesMovedWithEvent:(NSEvent *)event {
     [super touchesMovedWithEvent:event];
     /*
@@ -239,6 +270,7 @@
     }
     //_isPanning = NO;
 }
+
 - (void)locateScene {
     for (NSInteger i = 0; i < self.items.count; i++) {
         NSDictionary *item = [self.items objectAtIndex:i];
@@ -269,7 +301,9 @@
     
     return;
 }
-- (void)selectItem:(NSInteger)index {
+
+- (void)selectItem:(NSInteger)index
+{
 	if (index >= self.items.count) return;
 	else if (index < 0) return;
 	
@@ -279,6 +313,7 @@
         [self setNeedsDisplay:YES];
     }
 }
+
 - (void)didSelectItem:(NSInteger)item {
 	OutlineScene* scene = self.delegate.parser.outline[item];
 	if (scene != nil) {
@@ -287,7 +322,9 @@
 		
 	}
 }
-- (NSUInteger)getSelectedItem {
+
+- (NSUInteger)getSelectedItem
+{
     [self locateScene];
     return _selectedItem;
 }
@@ -322,24 +359,6 @@
     _originalScrollPosition = _scrollPosition;
     _originalMagnification = _magnification;
     return YES;
-}
-
-- (void)reloadInBackground {
-	[self.timer invalidate];
-	__weak __block TouchTimelineView* weakSelf = self;
-	self.timer = [NSTimer scheduledTimerWithTimeInterval:2.0 repeats:NO block:^(NSTimer * _Nonnull timer) {
-		[weakSelf reloadView];
-		self.timer = nil;
-	}];
-}
-
-- (void)reloadView {
-	[self setData:self.delegate.parser.outline];
-}
-
-
-- (void)reloadWithChanges:(OutlineChanges *)changes {
-	[self reloadView];
 }
 
 

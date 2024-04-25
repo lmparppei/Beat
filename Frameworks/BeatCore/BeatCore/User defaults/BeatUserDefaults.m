@@ -320,6 +320,15 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 		[NSUserDefaults.standardUserDefaults setBool:value forKey:settingKey];
 	}
 }
+
+/// Toggles a boolean value on/off
+- (void)toggleBool:(NSString*)key
+{
+    bool value = [self getBool:key];
+    [self saveBool:!value forKey:key];
+}
+
+
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key
 {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;

@@ -95,6 +95,8 @@ extern NSString* const BeatSettingPhoneFontSize;
 - (void)save:(id)value forKey:(NSString*)key;
 /// Saves a bool value
 - (void)saveBool:(bool)value forKey:(NSString*)key;
+/// Toggles a boolean value on/off
+- (void)toggleBool:(NSString*)key;
 /// Saves an integer value
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
 /// Saves a float value

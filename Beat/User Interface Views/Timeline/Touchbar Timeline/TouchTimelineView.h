@@ -11,11 +11,14 @@
 #import <BeatCore/BeatCore.h>
 
 @interface TouchTimelineView : NSView  <BeatSceneOutlineView, NSGestureRecognizerDelegate>
+@property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> delegate;
+
 @property (nonatomic) bool visible;
+
 @property CGFloat magnification;
 @property bool allowsMagnification;
-@property (nonatomic, weak) id<BeatEditorDelegate> delegate;
 @property NSUInteger selectedItem;
+
 - (void)selectItem:(NSInteger)index;
 - (NSUInteger)getSelectedItem;
 - (void)setData:(NSMutableArray*)array;

@@ -78,6 +78,7 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
     if (defaultValues != nil) return defaultValues;
     
     defaultValues = @{
+        DocSettingStylesheet: @"Screenplay",
         DocSettingNovelLineHeightMultiplier: @(2.0),
         DocSettingHeaderAlignment: @(1),
         DocSettingPrintSceneNumbers: @(true)
@@ -100,6 +101,12 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 {
 	[_settings setValue:[NSNumber numberWithBool:value] forKey:key];
 }
+- (void)toggleBool:(NSString*)key
+{
+    bool value = [self getBool:key];
+    [self setBool:key as:!value];
+}
+
 - (void)setInt:(NSString*)key as:(NSInteger)value
 {
 	[_settings setValue:@(value) forKey:key];

@@ -26,12 +26,6 @@ static NSString *noteOpen = @"[[";
 static NSString *noteClose= @"]]";
 static NSString *omitOpen = @"/*";
 static NSString *omitClose= @"*/";
-static NSString *forceHeadingSymbol = @".";
-static NSString *forceActionSymbol = @"!";
-static NSString *forceCharacterSymbol = @"@";
-static NSString *forcetransitionLineSymbol = @">";
-static NSString *forceLyricsSymbol = @"~";
-static NSString *forceDualDialogueSymbol = @"^";
 
 static NSString *centeredStart = @"> ";
 static NSString *centeredEnd = @" <";
@@ -41,8 +35,6 @@ static NSString *highlightSymbolClose = @">>";
 static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
 
-static NSString *tagAttribute = @"BeatTag";
-static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Init
 
@@ -430,104 +422,33 @@ static NSString *revisionAttribute = @"Revision";
 	self.delegate.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
 }
 
-- (void)forceElement:(LineType)lineType
-{
-	if (lineType == action) [self forceAction:self];
-	else if (lineType == heading) [self forceHeading:self];
-	else if (lineType == character) [self forceCharacter:self];
-	else if (lineType == lyrics) [self forceLyrics:self];
-	else if (lineType == transitionLine) [self forceTransition:self];
-}
-
 - (IBAction)forceHeading:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceHeadingSymbol];
+	[self.delegate.textActions forceLineType:heading];
 }
 
 - (IBAction)forceAction:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceActionSymbol];
+	[self.delegate.textActions forceLineType:action];
 }
 
 - (IBAction)forceCharacter:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceCharacterSymbol];
+	[self.delegate.textActions forceLineType:character];
 }
 
 - (IBAction)forceTransition:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self forceLineType:cursorLocation symbol:forcetransitionLineSymbol];
+	[self.delegate.textActions forceLineType:transitionLine];
 }
 
 - (IBAction)forceLyrics:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceLyricsSymbol];
+	[self.delegate.textActions forceLineType:lyrics];
 }
 
 - (IBAction)force:(id)sender {
 	
-}
-
-- (void)forceLineType:(NSRange)cursorLocation symbol:(NSString*)symbol
-{
-	//Find the index of the first symbol of the line
-	NSUInteger indexOfLineBeginning = cursorLocation.location;
-	while (true) {
-		if (indexOfLineBeginning == 0) {
-			break;
-		}
-		NSString *characterBefore = [_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
-		if ([characterBefore isEqualToString:@"\n"]) {
-			break;
-		}
-		
-		indexOfLineBeginning--;
-	}
-	
-	NSRange firstCharacterRange;
-	
-	// If the cursor resides in an empty line
-	// (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
-	// The range for the first charater in line needs to be an empty string
-	
-	if (indexOfLineBeginning == _delegate.text.length) {
-		firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-	} else if ([[_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
-		firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-	} else {
-		firstCharacterRange = NSMakeRange(indexOfLineBeginning, 1);
-	}
-	NSString *firstCharacter = [_delegate.text substringWithRange:firstCharacterRange];
-	
-	// If the line is already forced to the desired type, remove the force
-	if ([firstCharacter isEqualToString:symbol]) {
-		[_delegate.textActions replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
-	} else {
-		// If the line is not forced to the desired type, check if it is forced to be something else
-		BOOL otherForce = NO;
-		
-		NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forcetransitionLineSymbol];
-		
-		for (NSString *otherSymbol in allForceSymbols) {
-			if (otherSymbol != symbol && [firstCharacter isEqualToString:otherSymbol]) {
-				otherForce = YES;
-				break;
-			}
-		}
-		
-		//If the line is forced to be something else, replace that force with the new force
-		//If not, insert the new character before the first one
-		if (otherForce) {
-			[_delegate.textActions replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
-		} else {
-			[_delegate.textActions addString:symbol atIndex:firstCharacterRange.location];
-		}
-	}
 }
 
 - (NSRange)rangeUntilLineBreak:(NSRange)range {
@@ -662,6 +583,7 @@ static NSString *revisionAttribute = @"Revision";
     NSArray *lines = [self.delegate.parser blockForRange:self.delegate.selectedRange];
     [self.delegate.textActions moveBlockUp:lines];
 }
+
 - (IBAction)moveSelectedLinesDown:(id)sender
 {
     NSArray *lines = [self.delegate.parser blockForRange:self.delegate.selectedRange];
@@ -676,6 +598,7 @@ static NSString *revisionAttribute = @"Revision";
     [self.delegate setSelectedRange:range];
     [self.delegate.getTextView copy:self];
 }
+
 - (IBAction)cutBlock:(id)sender
 {
     NSArray *block = [self.delegate.parser blockForRange:self.delegate.selectedRange];
@@ -685,14 +608,6 @@ static NSString *revisionAttribute = @"Revision";
     [self.delegate.getTextView cut:self];
 }
 
-
-#pragma mark - Helpers
-
-- (NSInteger)maxLinePosition
-{
-    return NSMaxRange(self.delegate.currentLine.range);
-    
-}
 
 @end
 

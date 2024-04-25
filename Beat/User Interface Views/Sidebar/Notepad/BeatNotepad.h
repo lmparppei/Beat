@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatNotepad : NSTextView
 @property (weak, nonatomic) IBOutlet id<BeatEditorDelegate> editorDelegate;
--(void)loadString:(NSString*)string;
+- (void)setup;
+- (void)loadString:(NSString*)string;
 @end
 
 NS_ASSUME_NONNULL_END

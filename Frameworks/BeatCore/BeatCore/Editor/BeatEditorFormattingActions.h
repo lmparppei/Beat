@@ -18,19 +18,10 @@
 
 @protocol BeatEditorDelegate;
 
-typedef NS_ENUM(NSUInteger, BeatMarkupStyle) {
-	Block = 0,
-	Bold,
-	Italic,
-	Underline,
-	Note,
-    Centered
-};
 
 @interface BeatEditorFormattingActions : BXResponder
 @property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> delegate;
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
-- (void)forceElement:(LineType)lineType;
 
 - (void)addCue;
 - (void)addOrEditCharacterExtension;

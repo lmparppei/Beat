@@ -112,7 +112,6 @@ import Foundation
             }
         } else if varType == .date {
             // When defining a date, the type/name convention doesn't work as usual
-            print("-> date value", varName)
             macro.value = varName
         } else {
             // If this value is UNDEFINED but printed, we'll assign a value

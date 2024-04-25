@@ -26,6 +26,7 @@
 
 @interface BeatOutlineView : NSOutlineView <NSOutlineViewDelegate, NSOutlineViewDataSource>
 @property (nonatomic, weak) IBOutlet id<BeatOutlineViewEditorDelegate, BeatEditorDelegate> editorDelegate;
+@property (nonatomic, weak) IBOutlet NSTabViewItem* enclosingTabView;
 @property (weak) IBOutlet NSTouchBar *touchBar;
 @property (nonatomic) bool editing;
 @property (nonatomic) bool dragging;
@@ -38,7 +39,7 @@
 -(void)setup;
 
 -(void)reloadOutline;
--(void)reloadOutlineWithChanges:(OutlineChanges*)changes;
+-(void)reloadWithChanges:(OutlineChanges*)changes;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (NSArray*)outline;
 

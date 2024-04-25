@@ -17,7 +17,11 @@
 
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
+
 #import "Document.h"
+#import "Document+ThemesAndAppearance.h"
+#import "Document+Menus.h"
+
 #import "BeatNotepad.h"
 #import "BeatPrintDialog.h"
 #import "BeatTextView.h"
@@ -30,5 +34,6 @@
 #import "BeatColorMenuItem.h"
 
 #import "BeatFDXExport.h"
+#import "OutlineExtractor.h"
 
 #endif /* Beat_Bridging_Header_h */

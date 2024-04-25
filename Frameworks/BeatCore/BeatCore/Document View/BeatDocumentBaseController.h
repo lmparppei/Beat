@@ -9,6 +9,9 @@
  This class aims to be a cross-platform base class for both `Document` (macOS) and `BeatDocumentViewController` (iOS).
  Move **any** overlapping code here when possible, and leave only UI- and OS-specific stuff in the main implementations.
  
+ Because of legacy code, macOS uses `Document` directly, rather than `NSViewController`, resulting in a silly target conditional below.
+ I'll fix this one day. That day isn't today.
+ 
  */
 
 #import <Foundation/Foundation.h>
@@ -94,12 +97,17 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 - (void)lineWasRemoved:(Line * _Nonnull)line;
 
+
 #pragma mark - Basic document settings
 
 @property (nonatomic) BeatPaperSize pageSize;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool showPageNumbers;
+
+@property (nonatomic) bool autocomplete;
+@property (nonatomic) bool autoLineBreaks;
+@property (nonatomic) bool automaticContd;
 
 
 #pragma mark - Creating the actual document file
@@ -148,6 +156,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 /// Updates all selection observers with current selection
 - (void)updateSelectionObservers;
 - (void)updateOutlineViewsWithChanges:(OutlineChanges* _Nullable)changes;
+- (void)updateOutlineViews;
 
 /// Registers a an editor view which hosts a plugin. Because plugins are separated into another framework, we need to have this weird placeholder protocol. One day I'll fix this.
 - (void)registerPluginContainer:(id<BeatPluginContainerInstance> _Nonnull)view;

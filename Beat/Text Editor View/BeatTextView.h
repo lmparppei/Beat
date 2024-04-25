@@ -34,7 +34,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
-@property (readonly) ThemeManager* themeManager;
 @property (readonly) bool sceneNumberLabelUpdateOff;
 
 @property (readonly) NSMutableIndexSet *changes;
@@ -56,7 +55,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
-- (void)forceElement:(LineType)lineType;
 - (CGFloat)lineHeight;
 
 - (void)setSplitHandleMinSize:(CGFloat)value;
@@ -154,6 +152,11 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 /// Popover for displaying selection info (cmd-shift-I) has to stay in memory to reliably close it.
 @property (nonatomic, strong) NSPopover *infoPopover;
 
+
+#pragma mark - Markers
+
+/// Returns an array of dictionaries which contain y position and scene / marker color
+- (NSArray*)markersAndPositions;
 
 
 @end

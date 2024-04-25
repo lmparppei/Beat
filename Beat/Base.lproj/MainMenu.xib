@@ -115,10 +115,13 @@
                                     <action selector="saveDocumentAs:" target="-1" id="mDf-zr-I0C"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Autosave" id="eZ7-I2-Df6">
+                            <menuItem title="Autosave" id="eZ7-I2-Df6" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="autosave"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleAutosave:" target="-1" id="UJw-ny-khR"/>
+                                    <action selector="toggleSetting:" target="-1" id="zYx-RY-IwE"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Backups" id="NBi-pE-q3K">
@@ -130,8 +133,12 @@
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
-                            <menuItem title="Lock Document" id="dTg-uk-VoW">
+                            <menuItem title="Lock Document" id="dTg-uk-VoW" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="Locked"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="lockContent:" target="-1" id="AQ9-Kg-rOk"/>
                                 </connections>
@@ -196,15 +203,6 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="o7H-J0-CK2">
                                     <items>
-                                        <menuItem title="Export Rich Text Format (RTF) File..." hidden="YES" id="5SZ-7j-p2G" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="RTF"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="exportFile:" target="-1" id="uMo-BG-fmy"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="Export Final Draft (FDX) File..." id="wsV-hQ-HBQ" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
@@ -214,10 +212,22 @@
                                                 <action selector="exportFile:" target="-1" id="lfw-6h-ETE"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Export Outline..." id="lAo-B9-uaU">
+                                        <menuItem title="Export Outline..." id="lAo-B9-uaU" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="Outline"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
-                                                <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
+                                                <action selector="exportFile:" target="-1" id="BdP-Sj-zgR"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Export Rich Text Format (RTF) File..." id="5SZ-7j-p2G" customClass="BeatFileExportMenuItem" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="format" value="RTF"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="exportFile:" target="-1" id="uMo-BG-fmy"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -677,16 +687,22 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="mN1-gt-Mb1"/>
-                            <menuItem title="Match Parentheses" state="on" id="s7C-kV-oq3">
+                            <menuItem title="Match Parentheses" state="on" id="s7C-kV-oq3" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="matchParentheses"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleMatchParentheses:" target="-1" id="Bhq-on-LD2"/>
+                                    <action selector="toggleSetting:" target="-1" id="3xP-Fd-ub8"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Automatic Paragraph Breaks" state="on" id="6Wc-Ky-Bx7">
+                            <menuItem title="Automatic Paragraph Breaks" state="on" id="6Wc-Ky-Bx7" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="autoLineBreaks"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleAutoLineBreaks:" target="-1" id="hOj-eO-cgP"/>
+                                    <action selector="toggleSetting:" target="-1" id="wAN-b3-RvM"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -863,8 +879,12 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="DDw-pc-ugk"/>
-                            <menuItem title="Revision Mode" id="R8Y-SU-vpO">
+                            <menuItem title="Revision Mode" id="R8Y-SU-vpO" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="Revision Mode"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleRevisionMode:" target="-1" id="G7q-gJ-aE7"/>
                                 </connections>
@@ -1005,7 +1025,7 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="8U3-o3-D1z"/>
-                            <menuItem title="Show Cards" keyEquivalent="D" id="ab0-W3-2f9">
+                            <menuItem title="Show Index Cards" keyEquivalent="D" id="ab0-W3-2f9">
                                 <connections>
                                     <action selector="toggleCards:" target="-1" id="W45-hd-uTy"/>
                                 </connections>
@@ -1021,14 +1041,20 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Trs-SM-X3K"/>
-                            <menuItem title="Show Scene Numbers" state="on" id="V7o-Tn-OF3">
+                            <menuItem title="Show Scene Numbers" state="on" id="V7o-Tn-OF3" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showSceneNumberLabels"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleSceneLabels:" target="-1" id="TFS-Qz-xVG"/>
+                                    <action selector="toggleSetting:" target="-1" id="Her-jL-Lpz"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Page Numbers" id="FCU-0n-nVu">
+                            <menuItem title="Show Page Numbers" id="FCU-0n-nVu" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showPageNumbers"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
@@ -1037,13 +1063,16 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Highlight Revisions Using..." id="Uuq-ET-iMU">
                                     <items>
-                                        <menuItem title="Underlining" id="ADX-2t-uCR">
+                                        <menuItem title="Underlining" id="ADX-2t-uCR" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showRevisions"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleShowRevisions:" target="-1" id="Hv5-dG-SeW"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Text Color" tag="3" id="efm-eP-Ffo">
+                                        <menuItem title="Text Color" tag="3" id="efm-eP-Ffo" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showRevisedTextColor"/>
@@ -1056,14 +1085,20 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="5k0-hN-7vj"/>
-                            <menuItem title="Hide Fountain Markup" id="ayj-TQ-Go1">
+                            <menuItem title="Hide Fountain Markup" id="ayj-TQ-Go1" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="hideFountainMarkup"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleHideFountainMarkup:" target="-1" id="x4v-W6-YXw"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Typewriter Mode" id="Lej-vD-RFS">
+                            <menuItem title="Typewriter Mode" id="Lej-vD-RFS" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="typewriterMode"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleTypewriterMode:" target="-1" id="huT-2l-VQV"/>
                                 </connections>
@@ -1126,8 +1161,11 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="oJk-jp-R3x"/>
-                            <menuItem title="Disable Formatting" id="hAp-vJ-Myg">
+                            <menuItem title="Disable Formatting" id="hAp-vJ-Myg" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="disableFormatting"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleDisableFormatting:" target="-1" id="KSj-os-foW"/>
                                 </connections>

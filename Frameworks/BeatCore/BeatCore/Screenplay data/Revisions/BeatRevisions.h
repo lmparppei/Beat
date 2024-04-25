@@ -58,8 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
 - (void)loadRevisions;
+
+/// Because Apple changed something in macOS Sonoma, we need to queue changes when characters are edited AND then apply those changes if needed. Oh my fucking god.
+- (void)queueRegisteringChangesInRange:(NSRange)range delta:(NSInteger)delta;
+- (void)applyQueuedChanges;
+
 - (void)registerChangesInRange:(NSRange)range;
-- (void)registerChangesWithLocation:(NSInteger)location length:(NSInteger)length delta:(NSInteger)delta;
+- (void)registerChangesInRange:(NSRange)range delta:(NSInteger)delta;
 - (void)markerAction:(RevisionType)type;
 - (void)fixRevisionAttributesInRange:(NSRange)fullRange;
 
