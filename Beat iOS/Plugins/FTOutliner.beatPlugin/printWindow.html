@@ -1,0 +1,510 @@
+<body>
+
+    
+    <div id="preview">
+        <div id="tite" contenteditable=true>undefined</div>
+        <div id="subtitle" contenteditable=true>undefined</div>
+        
+    </div>
+
+    <div id="settings">this is the print wondow.</div>
+    
+</body>
+
+<script>
+
+let preview = document.getElementById("preview")
+let documentSetting
+
+window.addEventListener('load', function () {
+
+    preview.innerHTML += pageData
+
+    Beat.callAndWait(() => {
+            let ftoutlinerObject = Beat.getDocumentSetting("ftoutlinerObject")
+			return ftoutlinerObject
+    	})
+    	.then(
+			response => { 
+				documentSetting = JSON.parse(response)
+                document.querySelector("#tite").innerHTML = documentSetting.documentName || "document title"
+                document.querySelector("#subtitle").innerHTML = documentSetting.documentSubName || "document info"
+			},
+        	error => { 
+				console.log("Error retrieving userDefault") 
+			}
+    )
+
+
+})
+
+
+
+</script>
+<style>
+
+:root{
+
+    --menu-background: hsla(25, 64%, 96%, 1.00);/* rgb(240, 240, 240); /*was 232*/
+    --menu-border-color: #c1c1c1;
+    --menu-color: black; /*rgb(233,233,233);*/
+    --menu-hover-color: #027aff;
+
+}
+
+@media (prefers-color-scheme: dark) {
+
+:root{
+
+    --menu-background: hsla(25, 10%, 24%, 1.00);
+    --menu-border-color: rgb(81,81,81);
+    --menu-color: rgb(233,233,233);
+
+    --inkOnPaper: 0, 0%, 100%;
+    --paperBehindInk: 0, 0%, 0%;
+
+    }
+}
+
+body{
+
+    background-color: var(--menu-background) !important;
+    color: var(--menu-color);
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 17px;
+
+    padding: 20px;
+
+}
+
+#tite{
+
+    position: absolute;
+    top: 1cm;
+    width: 100%;
+
+    text-align: center;
+
+    font-size: 32px;
+    font-weight: 800;
+
+    margin-bottom: 10px;
+    color: black;
+
+}
+
+#subtitle{
+
+    position: absolute;
+    top: 1.9cm;
+    width: 100%;
+
+    text-align: center;
+
+    font-size: 22px;
+    font-weight: 200;
+
+    margin-bottom: 20px;
+    color: black;
+
+}
+
+#settings {
+
+    font-size: 13px;
+
+    float: right;
+    width: auto;
+    height: auto;
+    top: 0;
+
+    outline: 1px solid lime;
+}
+
+#preview{
+
+    position: absolute;
+
+    background-color: white;
+    border: 1px solid var(--menu-border-color);
+    
+    /* height: calc(100vh - 40px);
+    max-height: calc(100vh - 40px);
+    width: calc((100vh - 40px) / (29.7/21));
+    max-width: calc((100vh - 40px) / (29.7/21)); */
+
+    height: 29.7cm !important;
+    width: 21cm !important;
+
+    transform-origin: top left;
+    scale: calc(65/100);
+
+
+    top: 20px;
+    left: 20px;
+    /* aspect-ratio: 21/29.7 !important; */
+
+    overflow: hidden;
+
+}
+
+#preview .flexiContainer {
+
+    position: absolute;
+
+    top: 2.7cm;
+    left: 1cm;
+
+    width: 19.5cm !important;
+    height: 26.5cm !important;
+    /* outline: 1px dotted teal; */
+
+    overflow: visible;
+
+}
+
+#preview * {
+
+    --fontSizeFactor: 0.7 !important;
+    --heightFactor: calc(13 / (21 / 29.7));
+
+    box-shadow: none !important;
+
+    
+}
+
+#preview .flexiContainer *{
+
+    pointer-events: none !important;
+
+}
+
+#preview .pageDivider{
+
+    border-color: black !important;
+    color: black !important
+
+}
+
+#---FROM_PRINTCSS{}
+
+root{
+
+/* --yellow: rgb(255, 210, 0);
+--red: rgb(239,0,73);
+--green: rgb(0,223,121);
+--blue: rgb(0,129,239);
+--cyan: rgb(7, 189, 236);
+--magenta: rgb(236,0,140);
+--orange: rgb(255, 161, 13);
+--purple: rgb(181, 32, 218);
+--pink: rgb(250,111,193);
+--brown: rgb(169, 106, 7);
+--teal: rgb(12, 224, 227);
+--gray: rgb(150, 150, 150);
+--black: rgb(40,40,40);
+--white: rgb(255,255,255);
+--special: rgba(0,0,0,0); */
+
+/* --yellow: hsl(55, 100%, 75%);
+--red: hsl(5, 100%, 75%);
+--green: hsl(100, 100%, 75%);
+--blue: hsl(212, 100%, 75%);
+--cyan: hsl(175, 100%, 75%);
+--magenta: hsl(315, 100%, 75%);
+--orange: hsl(30, 100%, 75%);
+--purple: hsl(270, 100%, 85%);
+--pink: hsl(330,100%,90%);
+--brown: hsl(37, 55%, 65%);
+--teal: hsl(192, 65%, 67%);
+--gray: hsl(0, 0%, 75%);
+--black: rgb(40,40,40);
+--white: rgb(255,255,255);
+--special: rgba(0,0,0,0); */
+
+--yellow: 55, 100%, 75%;
+--red: 5, 100%, 75%;
+--green: 100, 100%, 75%;
+--blue: 212, 100%, 75%;
+--cyan: 175, 100%, 75%;
+--magenta: 315, 100%, 75%;
+--orange: 30, 100%, 75%;
+--purple: 270, 100%, 85%;
+--pink: 330,100%,90%;
+--brown: 37, 55%, 65%;
+--teal: 192, 65%, 67%;
+--gray: 0, 0%, 75%;
+--black: 0, 0%, 16%;
+--white: 0, 0%, 100%;
+--special: rgba(0,0,0,0);
+
+/* --pageBackground: #222; */
+
+--act-length-opacity: 60%;
+
+}
+
+* {
+    background-image: none;
+}
+
+/* :root{
+    --heightFactor: 30;/*29; /*840px;*/ /*calc(29.7 / 2.54) ;
+    --fontSizeFactor: 0.8;
+} */
+
+/* #flexiContainer{
+
+    margin-top: 3mm; 
+
+    width: 21cm;
+    min-width: 21cm;
+    max-width: 21cm;
+    height: 29.6cm;
+    min-height: 29.6cm; 
+    max-height: calc(29.6cm - 30px);
+
+    outline: 1px dotted black;
+
+    overflow: visible !important;
+} */
+
+* {
+    -webkit-print-color-adjust: exact;
+}
+
+.showPageNumbers, .showSceneLength, .showSceneNum, .showActLength, .showSectionPageNumber{
+    display: inline !important;
+}
+
+.sectionLengths, .level1 > .section-heading > .showSectionPageNumber {
+    display: none !important;
+}
+
+.showActLength {
+	color: #555;
+	opacity: 0.8 !important;
+}
+
+.showSectionPageNumber {
+	color: #222;
+    margin-top: 0.8pt !important;
+}
+
+.indicator {
+	display: none !important;
+}
+
+/* .showSceneNum {
+    display:none
+} */
+
+.scene {
+	border: 1px solid !important;
+	border-color: #555 !important;
+	box-shadow: none !important;
+	box-sizing: content-box !important;
+	margin-bottom: 0px !important;
+	margin-top: -1px !important;
+
+    overflow: hidden; 
+
+    /* height: calc(var(--flexibleHeight) * var(--paperHeightFactor)) !important; */
+
+}
+
+.uncolorAllScenesBut .scene,
+.dimmedScene {
+	background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.9) ,rgba(255,255,255,0.9) 100%);
+	color: rgba(0,0,0,0.8) !important; 
+	opacity: 0.2;
+	/* border: 1px solid rgba(0,0,0,0.3) !important; */
+}
+
+div.scene:not(.scene + .scene) {
+
+margin-top: 0.5px !important ;
+
+}
+
+.section-heading{ 
+     padding-right: 0px;
+    max-width: calc(100% - 4.5px)
+}
+
+p.headline {
+    display: block;
+    font-weight: 900;
+    font-size: 22pt;
+    line-height: 24pt !important;
+    text-align: center;
+    /* padding-top: 40px; */
+    /* margin-top: 40px; */
+
+    /* height: 30px !important; */
+    page-break-after:  avoid;
+
+    margin: 0 !important
+}
+
+p.headline2{
+    display: block;
+    font-weight: 500;
+    font-size: 14pt;
+    line-height: 16pt !important;
+    text-align: center;
+
+    color: #555;
+
+    page-break-after:  avoid;
+
+    margin: 2mm 0 0 0 !important;
+}
+
+.footer{
+    font-size: 7pt;
+    opacity: 0.4;
+    text-align: right;
+    /* margin-top:40px; */
+
+    width: 21cm; 
+    position: absolute;
+    bottom: 10px;
+    /* position: absolute; */
+    /* bottom: 0.5in; */
+}
+
+    a, .padlockIcon{
+    display: none !important;
+}
+
+.uncolorAllScenesBut .padlockIcon{
+    display: none !important;
+}
+
+.uncolorAllScenesBut .section-heading {
+	color: rgba(0,0,0,0.3);
+}
+
+.level1>.section-heading,
+.section.special>.section-heading,
+.uncolorAllScenesBut .level1>.section-heading,
+.uncolorAllScenesBut .section.special>.section-heading,
+
+.uncolorAllScenesBut.red .section.red > .section-heading,
+.uncolorAllScenesBut.orange .section.orange > .section-heading,
+.uncolorAllScenesBut.yellow .section.yellow > .section-heading,
+.uncolorAllScenesBut.green .section.green > .section-heading,
+.uncolorAllScenesBut.teal .section.teal > .section-heading,
+.uncolorAllScenesBut.cyan .section.cyan > .section-heading,
+.uncolorAllScenesBut.blue .section.blue > .section-heading,
+.uncolorAllScenesBut.purple .section.purple > .section-heading,
+.uncolorAllScenesBut.magenta .section.magenta > .section-heading,
+.uncolorAllScenesBut.pink .section.pink > .section-heading,
+.uncolorAllScenesBut.brown .section.brown > .section-heading,
+.uncolorAllScenesBut.black .section.black > .section-heading,
+.uncolorAllScenesBut.gray .section.gray > .section-heading,
+.uncolorAllScenesBut.white .section.white > .section-heading
+
+{
+	color: black !important;
+
+}
+
+.sluglineIsHidden, .scene.sluglineIsHidden {
+    color: rgba(0,0,0,0) !important;
+}
+
+/* .sluglineIsHidden, .sceneheading.sluglineIsHidden{
+		color: rgba(0,0,0,1) !important;
+        overflow: hidden !important;
+        -webkit-column-width: 100px !important;
+        column-width: 100px !important;
+        border: 1px orange solid !important;
+} */
+
+.note {
+    display: none
+}
+
+.scene.special {
+
+    color: gray !important;
+    border-color: lightgray !important; 
+}
+
+.orphanText{
+    border: 1px #aaa dotted;
+    background: 
+        /* repeating-linear-gradient(
+        -45deg,
+        white 0%,
+        white 1%,
+        black 1%,
+        black 1%)
+            , */
+        #eee !important
+        ;
+
+    background: none !important;
+}
+
+.sceneheading,
+.section-heading{ /*to override any white-on-dark onscreen text*/
+    color: black !important
+}
+
+.synopsis{
+
+    color: black !important;
+}
+
+#outerEdge{
+
+    height: max-content !important;
+    /* min-height: calc(29.7cm - 1in) !important; */
+    min-height: calc(29.7cm) !important;
+    display: block;
+
+    /* border: gold 1px solid */
+
+}
+
+.boneyard, 
+/* .marker,  */
+/* .note,  */
+.notepanel {
+
+    display: none;
+}
+
+.blankPage{
+
+    box-sizing: border-box !important;
+
+    /* border-top: 10px transparent !important; prepare space for cogs */
+	background-image: none !important;
+                    /* linear-gradient(transparent, transparent),
+					linear-gradient(to bottom right, 
+						transparent 50.5%, 
+						var(--pageBackground) 50.5%), 
+					linear-gradient(to bottom left, 
+						transparent 50.5%, 
+						var(--pageBackground) 50.5%), */
+					/* linear-gradient(var(--pageBackground),var(--pageBackground)); */
+
+    background: white !important;
+
+    border-top: 1px dotted #555 !important;
+
+    /* border-left: 2px solid white !important;
+    border-right: 2px solid white !important;
+    border-bottom: 2px solid white !important; */
+    /* outline: lime 1px solid; */
+
+}
+
+</style>

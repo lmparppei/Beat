@@ -1,0 +1,6 @@
+
+Beat.log("Hello world")
+
+if (Beat.iOS()) {
+	Beat.log("We are running on iOS!")
+}

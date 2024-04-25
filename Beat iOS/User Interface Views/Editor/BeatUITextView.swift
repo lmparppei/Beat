@@ -78,6 +78,11 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: textView)
 		textView.assistantView?.attach(to: textView)
 		
+		// The same object will be responsible for all of these delegations
+		textView.editorDelegate = editorDelegate as? BeatTextEditorDelegate
+		textView.delegate = editorDelegate as? UITextViewDelegate
+		textView.inputDelegate = editorDelegate as? UITextInputDelegate
+		
 		textView.setup()
 				
 		return textView

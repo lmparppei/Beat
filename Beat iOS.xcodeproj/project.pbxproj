@@ -94,6 +94,38 @@
 		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
 		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
+		B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */; };
+		B6FDCF4B2BD4414900A6C9B6 /* addelements.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF282BD4414900A6C9B6 /* addelements.html */; };
+		B6FDCF4C2BD4414900A6C9B6 /* changelog in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF292BD4414900A6C9B6 /* changelog */; };
+		B6FDCF4D2BD4414900A6C9B6 /* charactertracking.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2A2BD4414900A6C9B6 /* charactertracking.html */; };
+		B6FDCF4E2BD4414900A6C9B6 /* contextmenu.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2B2BD4414900A6C9B6 /* contextmenu.html */; };
+		B6FDCF4F2BD4414900A6C9B6 /* dialogs.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2C2BD4414900A6C9B6 /* dialogs.html */; };
+		B6FDCF502BD4414900A6C9B6 /* displaynotes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2D2BD4414900A6C9B6 /* displaynotes.html */; };
+		B6FDCF512BD4414900A6C9B6 /* documentation.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2E2BD4414900A6C9B6 /* documentation.html */; };
+		B6FDCF522BD4414900A6C9B6 /* drag-and-drop.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF2F2BD4414900A6C9B6 /* drag-and-drop.html */; };
+		B6FDCF532BD4414900A6C9B6 /* editcontent.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF302BD4414900A6C9B6 /* editcontent.html */; };
+		B6FDCF542BD4414900A6C9B6 /* feedback.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF312BD4414900A6C9B6 /* feedback.html */; };
+		B6FDCF552BD4414900A6C9B6 /* FTOutliner.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF322BD4414900A6C9B6 /* FTOutliner.beatPlugin */; };
+		B6FDCF562BD4414900A6C9B6 /* globals.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF332BD4414900A6C9B6 /* globals.html */; };
+		B6FDCF572BD4414900A6C9B6 /* indexCards.css in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF342BD4414900A6C9B6 /* indexCards.css */; };
+		B6FDCF582BD4414900A6C9B6 /* indexCards.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF352BD4414900A6C9B6 /* indexCards.html */; };
+		B6FDCF592BD4414900A6C9B6 /* keyboard.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF362BD4414900A6C9B6 /* keyboard.html */; };
+		B6FDCF5A2BD4414900A6C9B6 /* menu.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF372BD4414900A6C9B6 /* menu.html */; };
+		B6FDCF5B2BD4414900A6C9B6 /* menuObjects.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF382BD4414900A6C9B6 /* menuObjects.html */; };
+		B6FDCF5C2BD4414900A6C9B6 /* notepanel.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF392BD4414900A6C9B6 /* notepanel.html */; };
+		B6FDCF5D2BD4414900A6C9B6 /* outline.css in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3A2BD4414900A6C9B6 /* outline.css */; };
+		B6FDCF5E2BD4414A00A6C9B6 /* outline.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3B2BD4414900A6C9B6 /* outline.html */; };
+		B6FDCF5F2BD4414A00A6C9B6 /* printing.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3C2BD4414900A6C9B6 /* printing.html */; };
+		B6FDCF602BD4414A00A6C9B6 /* printOutlineCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3D2BD4414900A6C9B6 /* printOutlineCSS.css */; };
+		B6FDCF612BD4414A00A6C9B6 /* printWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3E2BD4414900A6C9B6 /* printWindow.html */; };
+		B6FDCF622BD4414A00A6C9B6 /* reset.css in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF3F2BD4414900A6C9B6 /* reset.css */; };
+		B6FDCF632BD4414A00A6C9B6 /* scenepanel.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF402BD4414900A6C9B6 /* scenepanel.html */; };
+		B6FDCF642BD4414A00A6C9B6 /* scenepanelhelpwindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF412BD4414900A6C9B6 /* scenepanelhelpwindow.html */; };
+		B6FDCF652BD4414A00A6C9B6 /* scenepanelsettingswindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF422BD4414900A6C9B6 /* scenepanelsettingswindow.html */; };
+		B6FDCF662BD4414A00A6C9B6 /* screenshot.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF432BD4414900A6C9B6 /* screenshot.jpg */; };
+		B6FDCF672BD4414A00A6C9B6 /* settingswindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF442BD4414900A6C9B6 /* settingswindow.html */; };
+		B6FDCF682BD4414A00A6C9B6 /* textDumpWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF452BD4414900A6C9B6 /* textDumpWindow.html */; };
+		B6FDCF692BD4414A00A6C9B6 /* welcomewindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF462BD4414900A6C9B6 /* welcomewindow.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -242,6 +274,38 @@
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
 		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
 		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
+		B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; path = Test.beatPlugin; sourceTree = "<group>"; };
+		B6FDCF282BD4414900A6C9B6 /* addelements.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = addelements.html; sourceTree = "<group>"; };
+		B6FDCF292BD4414900A6C9B6 /* changelog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changelog; sourceTree = "<group>"; };
+		B6FDCF2A2BD4414900A6C9B6 /* charactertracking.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = charactertracking.html; sourceTree = "<group>"; };
+		B6FDCF2B2BD4414900A6C9B6 /* contextmenu.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = contextmenu.html; sourceTree = "<group>"; };
+		B6FDCF2C2BD4414900A6C9B6 /* dialogs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = dialogs.html; sourceTree = "<group>"; };
+		B6FDCF2D2BD4414900A6C9B6 /* displaynotes.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = displaynotes.html; sourceTree = "<group>"; };
+		B6FDCF2E2BD4414900A6C9B6 /* documentation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = documentation.html; sourceTree = "<group>"; };
+		B6FDCF2F2BD4414900A6C9B6 /* drag-and-drop.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "drag-and-drop.html"; sourceTree = "<group>"; };
+		B6FDCF302BD4414900A6C9B6 /* editcontent.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = editcontent.html; sourceTree = "<group>"; };
+		B6FDCF312BD4414900A6C9B6 /* feedback.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = feedback.html; sourceTree = "<group>"; };
+		B6FDCF322BD4414900A6C9B6 /* FTOutliner.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = FTOutliner.beatPlugin; sourceTree = "<group>"; };
+		B6FDCF332BD4414900A6C9B6 /* globals.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = globals.html; sourceTree = "<group>"; };
+		B6FDCF342BD4414900A6C9B6 /* indexCards.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = indexCards.css; sourceTree = "<group>"; };
+		B6FDCF352BD4414900A6C9B6 /* indexCards.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = indexCards.html; sourceTree = "<group>"; };
+		B6FDCF362BD4414900A6C9B6 /* keyboard.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = keyboard.html; sourceTree = "<group>"; };
+		B6FDCF372BD4414900A6C9B6 /* menu.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = menu.html; sourceTree = "<group>"; };
+		B6FDCF382BD4414900A6C9B6 /* menuObjects.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = menuObjects.html; sourceTree = "<group>"; };
+		B6FDCF392BD4414900A6C9B6 /* notepanel.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = notepanel.html; sourceTree = "<group>"; };
+		B6FDCF3A2BD4414900A6C9B6 /* outline.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = outline.css; sourceTree = "<group>"; };
+		B6FDCF3B2BD4414900A6C9B6 /* outline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = outline.html; sourceTree = "<group>"; };
+		B6FDCF3C2BD4414900A6C9B6 /* printing.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = printing.html; sourceTree = "<group>"; };
+		B6FDCF3D2BD4414900A6C9B6 /* printOutlineCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = printOutlineCSS.css; sourceTree = "<group>"; };
+		B6FDCF3E2BD4414900A6C9B6 /* printWindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = printWindow.html; sourceTree = "<group>"; };
+		B6FDCF3F2BD4414900A6C9B6 /* reset.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = reset.css; sourceTree = "<group>"; };
+		B6FDCF402BD4414900A6C9B6 /* scenepanel.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = scenepanel.html; sourceTree = "<group>"; };
+		B6FDCF412BD4414900A6C9B6 /* scenepanelhelpwindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = scenepanelhelpwindow.html; sourceTree = "<group>"; };
+		B6FDCF422BD4414900A6C9B6 /* scenepanelsettingswindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = scenepanelsettingswindow.html; sourceTree = "<group>"; };
+		B6FDCF432BD4414900A6C9B6 /* screenshot.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = screenshot.jpg; sourceTree = "<group>"; };
+		B6FDCF442BD4414900A6C9B6 /* settingswindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = settingswindow.html; sourceTree = "<group>"; };
+		B6FDCF452BD4414900A6C9B6 /* textDumpWindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = textDumpWindow.html; sourceTree = "<group>"; };
+		B6FDCF462BD4414900A6C9B6 /* welcomewindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = welcomewindow.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -395,10 +459,10 @@
 		B63D9F5C2830366B00D027B6 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
 				B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */,
 				B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */,
-				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 			);
 			path = Editor;
@@ -527,6 +591,7 @@
 				B619DE5F29F80E40007D1838 /* Templates */,
 				B686FF892971BC6500789C8D /* Exporting and rendering */,
 				B633C132298C54BC0011449D /* Extensions */,
+				B6FDCF242BD4411C00A6C9B6 /* Plugins */,
 				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
 				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
 				B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */,
@@ -542,10 +607,10 @@
 			isa = PBXGroup;
 			children = (
 				B61FD0632A69308500A40883 /* Main Document View */,
+				B63D9F5C2830366B00D027B6 /* Editor */,
 				B6A79B642B801AD7003FF931 /* Welcome Screen */,
 				B6AD9ACB2B80001D00E80E0C /* Preview View */,
 				B61FD0642A69309F00A40883 /* Storyboards */,
-				B63D9F5C2830366B00D027B6 /* Editor */,
 				B61FD0572A66BEF000A40883 /* Outline View */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B619DE5B29F80D92007D1838 /* Document Browser View */,
@@ -594,6 +659,53 @@
 				B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */,
 			);
 			path = "Keyboard avoiding table view";
+			sourceTree = "<group>";
+		};
+		B6FDCF242BD4411C00A6C9B6 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDCF472BD4414900A6C9B6 /* FTOutliner.beatPlugin */,
+				B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */,
+			);
+			path = Plugins;
+			sourceTree = "<group>";
+		};
+		B6FDCF472BD4414900A6C9B6 /* FTOutliner.beatPlugin */ = {
+			isa = PBXGroup;
+			children = (
+				B6FDCF282BD4414900A6C9B6 /* addelements.html */,
+				B6FDCF292BD4414900A6C9B6 /* changelog */,
+				B6FDCF2A2BD4414900A6C9B6 /* charactertracking.html */,
+				B6FDCF2B2BD4414900A6C9B6 /* contextmenu.html */,
+				B6FDCF2C2BD4414900A6C9B6 /* dialogs.html */,
+				B6FDCF2D2BD4414900A6C9B6 /* displaynotes.html */,
+				B6FDCF2E2BD4414900A6C9B6 /* documentation.html */,
+				B6FDCF2F2BD4414900A6C9B6 /* drag-and-drop.html */,
+				B6FDCF302BD4414900A6C9B6 /* editcontent.html */,
+				B6FDCF312BD4414900A6C9B6 /* feedback.html */,
+				B6FDCF322BD4414900A6C9B6 /* FTOutliner.beatPlugin */,
+				B6FDCF332BD4414900A6C9B6 /* globals.html */,
+				B6FDCF342BD4414900A6C9B6 /* indexCards.css */,
+				B6FDCF352BD4414900A6C9B6 /* indexCards.html */,
+				B6FDCF362BD4414900A6C9B6 /* keyboard.html */,
+				B6FDCF372BD4414900A6C9B6 /* menu.html */,
+				B6FDCF382BD4414900A6C9B6 /* menuObjects.html */,
+				B6FDCF392BD4414900A6C9B6 /* notepanel.html */,
+				B6FDCF3A2BD4414900A6C9B6 /* outline.css */,
+				B6FDCF3B2BD4414900A6C9B6 /* outline.html */,
+				B6FDCF3C2BD4414900A6C9B6 /* printing.html */,
+				B6FDCF3D2BD4414900A6C9B6 /* printOutlineCSS.css */,
+				B6FDCF3E2BD4414900A6C9B6 /* printWindow.html */,
+				B6FDCF3F2BD4414900A6C9B6 /* reset.css */,
+				B6FDCF402BD4414900A6C9B6 /* scenepanel.html */,
+				B6FDCF412BD4414900A6C9B6 /* scenepanelhelpwindow.html */,
+				B6FDCF422BD4414900A6C9B6 /* scenepanelsettingswindow.html */,
+				B6FDCF432BD4414900A6C9B6 /* screenshot.jpg */,
+				B6FDCF442BD4414900A6C9B6 /* settingswindow.html */,
+				B6FDCF452BD4414900A6C9B6 /* textDumpWindow.html */,
+				B6FDCF462BD4414900A6C9B6 /* welcomewindow.html */,
+			);
+			path = FTOutliner.beatPlugin;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -698,28 +810,60 @@
 			files = (
 				B686FFCE2971BC7E00789C8D /* FooterTemplate.html in Resources */,
 				B696BC422A74200D0078BA79 /* BeatCardsUI.css in Resources */,
+				B6FDCF642BD4414A00A6C9B6 /* scenepanelhelpwindow.html in Resources */,
+				B6FDCF4F2BD4414900A6C9B6 /* dialogs.html in Resources */,
+				B6FDCF5F2BD4414A00A6C9B6 /* printing.html in Resources */,
+				B6FDCF672BD4414A00A6C9B6 /* settingswindow.html in Resources */,
+				B6FDCF602BD4414A00A6C9B6 /* printOutlineCSS.css in Resources */,
 				B696BC412A74200D0078BA79 /* BeatCardsPrint.css in Resources */,
+				B6FDCF562BD4414900A6C9B6 /* globals.html in Resources */,
+				B6FDCF682BD4414A00A6C9B6 /* textDumpWindow.html in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
+				B6FDCF582BD4414900A6C9B6 /* indexCards.html in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
+				B6FDCF5B2BD4414900A6C9B6 /* menuObjects.html in Resources */,
 				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B6FDCF4E2BD4414900A6C9B6 /* contextmenu.html in Resources */,
 				B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */,
 				B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */,
+				B6FDCF5C2BD4414900A6C9B6 /* notepanel.html in Resources */,
+				B6FDCF692BD4414A00A6C9B6 /* welcomewindow.html in Resources */,
+				B6FDCF502BD4414900A6C9B6 /* displaynotes.html in Resources */,
 				B619DE6329F80E40007D1838 /* New Document.fountain in Resources */,
+				B6FDCF5D2BD4414900A6C9B6 /* outline.css in Resources */,
 				B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */,
 				B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */,
 				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
+				B6FDCF572BD4414900A6C9B6 /* indexCards.css in Resources */,
 				B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */,
+				B6FDCF662BD4414A00A6C9B6 /* screenshot.jpg in Resources */,
 				B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */,
+				B6FDCF512BD4414900A6C9B6 /* documentation.html in Resources */,
+				B6FDCF532BD4414900A6C9B6 /* editcontent.html in Resources */,
 				B682C25B2B30FAB50027511A /* Localizable.strings in Resources */,
+				B6FDCF592BD4414900A6C9B6 /* keyboard.html in Resources */,
 				B686FFCC2971BC7E00789C8D /* HeaderTemplate.html in Resources */,
 				B686FFC52971BC7E00789C8D /* ScreenplayStyles.css in Resources */,
+				B6FDCF4B2BD4414900A6C9B6 /* addelements.html in Resources */,
 				B6D32041298F04C3003DA45D /* Courier Prime Bold.ttf in Resources */,
+				B6FDCF552BD4414900A6C9B6 /* FTOutliner.beatPlugin in Resources */,
+				B6FDCF522BD4414900A6C9B6 /* drag-and-drop.html in Resources */,
+				B6FDCF542BD4414900A6C9B6 /* feedback.html in Resources */,
+				B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */,
 				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
+				B6FDCF622BD4414A00A6C9B6 /* reset.css in Resources */,
+				B6FDCF5A2BD4414900A6C9B6 /* menu.html in Resources */,
+				B6FDCF5E2BD4414A00A6C9B6 /* outline.html in Resources */,
 				B686FFC62971BC7E00789C8D /* PreviewStyles-iOS.css in Resources */,
+				B6FDCF4D2BD4414900A6C9B6 /* charactertracking.html in Resources */,
+				B6FDCF652BD4414A00A6C9B6 /* scenepanelsettingswindow.html in Resources */,
+				B6FDCF632BD4414A00A6C9B6 /* scenepanel.html in Resources */,
 				B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */,
 				B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */,
 				B6D3203F298F04C3003DA45D /* Courier Prime Sans.ttf in Resources */,
+				B6FDCF612BD4414A00A6C9B6 /* printWindow.html in Resources */,
 				B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */,
+				B6FDCF4C2BD4414900A6C9B6 /* changelog in Resources */,
 				B696BC472A7426750078BA79 /* dragula.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,0 +1,1364 @@
+
+<style>
+
+.generalButtonStyle {
+	border: 1px #aaa solid !important;
+	border-radius: 6px !important;
+	/* box-shadow: 1px 1px 2px #ccc; */
+	background-color: white !important;
+
+	text-decoration: none !important;
+	padding: 2px 8px !important;
+	color: black !important;
+
+	display: inline-block;
+	text-overflow: ellipsis !important;
+	overflow: hidden !important;
+	max-width: 90% !important;
+	white-space: nowrap;
+
+	font-size: 14px
+}
+
+.defaultButton {
+
+	/* background-color: #eee !important; */
+}
+
+.generalButtonStyle:hover {
+	
+	background: #027aff !important;
+	color: white !important
+}
+
+.generalButtonStyle:focus{
+
+	outline: none;
+}
+
+
+/* #settings * , #tracking *{
+ transition: 0.5s !important;
+ line-height: 16px !important;
+} */
+
+.dialogBottomButtonRow {
+
+	position: absolute;
+	bottom: 40px;
+	right: 40px;	
+
+}
+
+.settingsWindow{
+	position:absolute !important; 
+	top: 50% !important; 
+	left: 50% !important;
+	transform: translate(-50%, -50%) !important;
+	/* min-height: 650px !important; */
+	width: 650px !important; 
+	padding: 40px;
+	background-color:rgba(240,240,240,0.95); 
+	background-color: var(--menu-background);
+	border: 0.5px black solid;
+	border: 0.5px var(--menu-border-color) solid;
+	border-radius:12px;
+	z-index: 9998;
+	white-space: normal !important;
+	box-shadow: 5px 5px 50px black !important;
+	
+	font-size: 14px;
+	line-height: 16px;
+	font-weight: 500;
+
+	transition: 0.2s;
+
+	-webkit-backdrop-filter: blur(10px);
+}
+
+#aboutBox,
+#printbox,
+#errorWindow,
+#textContainer{
+	height: auto !important;
+	z-index: 9998 !important;
+
+	max-width: 96% !important;
+}
+
+#warningDiv{
+	width: 100px !important;
+	height: auto !important;
+	margin-top: -70px !important;
+	margin-left: -5px !important;
+	margin-bottom: 20px !important;
+}
+
+#introtext, #outrotext, .normalWindowText{
+	white-space: normal !important;
+	max-width: 560px;
+	margin-left: auto;
+	margin-right: auto;
+
+	max-height: 500px;
+}
+
+.errorWindowText, .errorWindowText b, .errorWindowText i{
+	white-space: normal !important;
+	margin-left: auto;
+	margin-right: auto;
+
+	line-height: 16px !important;
+
+	margin-top: 16px !important;
+
+	pointer-events: all !important;
+
+}
+
+#errorBox{
+
+	font-family: inherit;
+	font-size: inherit;
+
+	border: 1px black solid !important;
+	border-radius: 8px !important;
+	background-color: white !important;
+
+	white-space: normal !important;
+	padding: 8px 8px !important;
+
+	pointer-events: all !important;
+
+	width: 100% !important;
+	height: 200px !important;
+	z-index: 10000 !important;
+
+	resize: none !important;
+}
+
+.key{
+	margin: 2px;
+	display: inline-block;
+	/* background-color: #555; */
+	background-color: #111;
+	border: 1px solid #000;
+	border-radius: 2px;
+	font-size: 12px;
+	font-weight: 500;
+	padding: 1px 4px;
+	color:rgb(222,222,222);
+	text-align: center;
+	min-width: 17px;
+	height: 17px;
+	line-height: 14px;
+
+	z-index: 10000;
+
+	/* box-shadow: none !important; */
+	/* text-shadow: none !important; */
+	/* filter: none !important; */
+	}
+	
+.blurWindow{
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important; 
+	height: 100% !important;
+
+	background-color: rgba(0,0,0,0);
+		
+	/* background-color: rgba(85,85,85,0.45); */
+	/* z-index: 9997 !important; */
+	/* -webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px); */
+	}
+
+.blurWindow.lessBlur{
+	-webkit-backdrop-filter: none !important;
+	backdrop-filter: none !important;
+	background-color: rgba(85,85,85,0.35) !important;
+	z-index: 9997 !important;
+}
+
+#buttons{
+    border: rgb(240, 240, 240) 2px ridge; 
+    border-radius: 5px; 
+    padding: 20px 60px 20px 80px; 
+    white-space: normal !important; 
+    /* line-height: 28px; */
+
+	max-width: 560px !important;
+	margin: auto auto !important;
+	/* transition: 1s; */
+
+	overflow: none !important;
+	overflow-y: scroll !important;
+
+	max-height: 90% !important;
+}
+
+#buttons::-webkit-scrollbar{
+	display: none;
+}
+
+.headline{
+    font-weight: 800; 
+    font-size:24px;
+    white-space: normal !important;
+	/* transition: 1s !important; */
+	/* max-width: 560px;
+	margin-left: auto !important;
+	margin-right: auto !important; */
+	max-height: 200px;
+	line-height: 28px !important;
+}
+
+.subheading{
+	margin-left: -20px !important;
+	margin-bottom: 2px !important;
+	margin-top: 10px !important;	
+	font-weight: 700;
+}
+
+.shortcutText{
+    font-size: 12px; 
+    font-weight: 400;
+    font-style: italic; 
+    color:hsl(0, 0%, 40%);
+    white-space: normal !important;
+	/* transition: 1s !important; */
+}
+
+p.shortcutText{
+    line-height: 16px !important;
+    margin-left: 20px !important;
+	white-space: normal !important;
+}
+
+label{
+    margin-left: 0px;
+    padding-left: -20px;
+    white-space: normal !important;
+}
+
+label input{
+    margin-left: -20px;
+    margin-top: 12px;
+}
+
+#printbox label{
+
+	margin-left: auto !important;
+	width: unset;
+	max-width: unset;
+	min-width: unset;
+
+	line-height: 30px !important;
+}
+
+#printbox input{
+
+	box-sizing: content-box !important;
+
+	height: 22px;
+	/* line-height: 30px !important; */
+	border: 1px lightgray solid !important;
+	border-radius: 4px !important;
+	padding-left: 5px !important;
+
+	font-size: 13px !important;
+
+	/* transform: translateY(3px); */
+}
+
+#printbox p{
+
+	white-space: normal;
+}
+
+#buttons * {
+	white-space: normal;
+}
+
+#reachtext {
+	line-height: 16px !important;
+	max-height: 500px;
+}
+
+#okbutton {
+	font-size: 14px; 
+	padding: 5px 0px 5px auto;
+}
+
+#okbuttonpara{
+	width: 100% !important;
+	max-width: 560px;
+	margin: 0px auto !important;
+}
+
+#upperframe {
+	height: 70% !important;
+}
+
+#emptyScreenMessage, #emptyScreenMessage > p, 
+#emptyScreenMessage > h1, 
+#emptyScreenMessage > h1 > b {
+
+font-size: 16px !important;
+line-height: 20px !important;
+
+margin-top: auto !important; 
+margin-bottom: auto !important; 
+color: white !important; 
+white-space: normal !important;
+margin-left: auto !important;
+margin-right: auto !important;
+
+min-width: 100px !important;
+max-width: 80% !important;
+
+/* outline: red 1px solid !important */
+}
+
+#emptyScreenMessage > h1, 
+#emptyScreenMessage > h1 > b {
+	/* line-height: 24px !important; */
+	font-weight: 700 !important;
+}
+
+html[data-outdoors='1'] #emptyScreenMessage *:not(button:hover){
+	color: black !important;
+}
+
+#helpWindow {
+	/* border: 6px rgb(220,220,220) solid !important; */
+	/* background-color: rgba(85, 85, 85, 0.8) !important; */
+	/* box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.3) !important; */
+	/* border: 100px rgba(85, 85, 85, 0.8) solid !important; */
+
+	position: absolute !important;
+	left: 0px !important;
+	top: 0px !important;
+	width: 100% !important;
+	height: 100% !important;
+
+	transform: none !important;
+	border-radius: 0px !important;
+
+	/* background-color: rgba(85, 85, 85, 0.8) !important; */
+	background-color: rgba(85, 85, 85, 0.95) !important;
+
+	white-space: normal !important;
+
+	/* background: none !important; */
+	
+
+	/* box-shadow: none !important; */
+
+	overflow-y: auto !important;
+
+}
+
+#helpWindowInnerDiv{
+
+	position: relative;
+
+	/* top: 50% !important;
+	left: 50% !important; */
+	
+	column-width: 340px;
+	column-gap: 20px;
+	/* column-rule: #aaa solid 1px; */
+
+	width: 100% !important;
+	height: auto !important;
+	/* max-width: 95% !important;  */
+	/* height: auto !important; */
+	/* max-height: 100% !important;	 */
+
+	color: rgb(240,240,240) !important;
+	white-space: normal !important;
+
+	/* padding: 0 5px 0 70px !important ; */
+	/* transform: translate(-50%, -50%) !important; */
+
+	overflow: auto !important;
+	overflow-y: scroll !important;
+	
+	/* content: " "; */
+
+	/* z-index: -1; */
+}
+
+
+/* #helpWindow::-webkit-scrollbar,
+#helpWindowInnerDiv::-webkit-scrollbar {
+	display: hidden !important;
+	background-color: transparent;
+} */
+
+/* #helpWindow p,  */
+#aboutBox .mostText,
+#printbox .mostText,
+#helpWindow .mostText, 
+#helpWindow .subheading,
+#helpWindow .headline{
+/* filter: drop-shadow(0px 0px 2px black) !important; */
+text-shadow: 1px 1px 6px black !important;
+/* -webkit-text-shadow: 0px 0px 3px black !important; */
+white-space: normal !important;
+line-height: 18px !important;
+
+
+}
+
+#aboutBox .mostText,
+#printbox .mostText{
+	text-shadow: none !important;
+	font-size: 12px !important;
+	line-height: 15px !important;
+
+}
+
+#innerDiv {
+	height: auto;
+}
+
+#aboutBox, #printbox{
+	max-height: 98% !important;
+	overflow-y: auto !important;
+}
+
+#helpWindow .mostText{
+	font-size: 12px !important;
+	font-weight: 300;
+}
+
+#helpWindow p{
+	margin-left: 24px !important;
+}
+
+#helpWindow p.subheading{
+	-webkit-column-break-after: avoid;
+	-webkit-column-break-before: auto;
+	margin-left: 0px !important; 
+	margin-bottom: 12px !important;
+	margin-left: -15px !important; 
+
+}
+
+#helpWindow .subheading {
+	/* margin-left: -48px !important; */
+	/* margin-bottom: 6px !important; */
+	margin-top: 6px !important;
+	/* margin-left: 0px !important;	 */
+	-webkit-column-break-after: avoid;
+	-webkit-column-break-before: auto;
+
+	font-size:  14px !important;
+}
+
+#helpWindow .headline{
+	/* margin-left: -20px !important; */
+	/* margin-left: -48px !important; */
+	margin-left: 0px !important;
+	column-span: all;
+	padding-bottom: 20px !important;
+	padding-top: 20px !important;
+	text-align: center;
+}
+
+#helpWindow .key:first-child{
+	-webkit-column-break-before: avoid;
+	filter: none !important;
+	/* margin-left: -28px !important */
+	margin-left: -24px; 
+}
+
+
+
+#helpWindow p:last-child{
+	padding-bottom: 22px;
+}
+
+@media screen and (max-width: 700px), (max-height: 700px) {
+
+	#helpWindowInnerDiv{
+		column-count: 0;
+	}
+
+	#settings, #tracking {
+		height: calc(80% - 20px) !important;
+		width: calc(60% - 20px) !important;
+		padding-top: auto !important;
+		padding-bottom: auto !important;
+		/* transition: 1s !important; */
+	}
+
+	.floatright{
+		float: none !important;
+	}
+
+	#trackertext{
+		width: 0px !important;
+		overflow: hidden;
+		opacity: 0 !important;
+	}
+
+	#selectlistparent {
+		/* max-height: 50% !important; */
+		float: none !important;
+		width: 100% !important;
+		/* padding-left: 0px !important;
+		margin-left: -40px !important; */
+		/* text-align: left !important; */
+	}
+
+	select, select * {
+		width: 100% !important;
+		margin-left: -40px !important;
+		padding-left: -40px !important;
+		text-align: left !important;
+	}
+
+
+	#buttons {
+		max-width: 560px !important;
+		margin: auto auto !important;
+		/* transition: 1s; */
+	}
+
+	#shortcutForTop {
+		display: none !important;
+	}
+
+}
+
+.collection{
+	background: rgba(0,0,0,0.3);
+	border-radius: 6px;
+	margin-bottom: 10px;
+	padding: 10px;
+	break-inside: avoid;
+	
+	padding-left: 25px !important;
+
+}
+
+@media screen and (max-width: 500px) {
+
+	.headline:not(#helpWindow .headline), 
+	#introtext, #outrotext, #reachtext, hr,
+	#trackingoutro {
+		opacity: 0%;
+		max-height: 0px !important; 
+		/* transition: 1s; */
+	}
+
+	.floatright{
+		float: none !important;
+	}
+
+	#trackertext {
+		max-height: calc(50% - 30px) !important;
+		overflow: hidden !important;
+		margin-top: 15px !important;
+	}
+
+
+
+	#trackertext ul, #trackertext li {
+		text-overflow: ellipsis !important;
+	}
+
+	/* #selectlistparent {
+		max-height: 50% !important;
+		float: none !important;
+		width: 100% !important;
+		padding-left: 0px !important;
+		margin-left: -40px !important;
+		text-align: left !important;
+	} */
+
+	#selectlistparent {
+		/* max-height: 50% !important; */
+		float: none !important;
+		width: 100% !important;
+		/* padding-left: 0px !important;
+		margin-left: -40px !important; */
+		text-align: left !important;
+	}
+
+	select, select * {
+		width: 100% !important;
+		margin-left: -40px !important;
+		padding-left: -40px !important;
+		text-align: left !important;
+	}
+
+	#upperframe {
+		height: calc(100% - 50px) !important;
+	}
+
+	.shortcutText{
+		display: none;
+	}
+
+	#errorClickButton.generalButtonStyle{
+		max-width: 90% !important;
+	}
+}
+@media screen and (max-height: 625px) {
+	.headline, 
+	#introtext, #outrotext, #reachtext, hr,
+	#trackingoutro {
+		opacity: 0%;
+		max-height: 0px !important; 
+		/* transition: 1s; */
+	}
+
+	/* .floatright{
+		float: none !important;
+	}*/
+
+	#trackertext {
+		max-height: calc(100% - 50px) !important;
+		overflow: hidden !important;
+		margin-top: 15px !important;
+	}
+
+	#trackertext ul, #trackertext li {
+		text-overflow: ellipsis !important;
+	}*/
+
+	#selectlistparent {
+		height: 100% !important;
+		/* float: none !important;
+		width: 100% !important;
+		padding-left: 0px !important;
+		margin-left: -40px !important;
+		text-align: left !important; */
+	}
+
+	select, select * {
+		height: 100% !important;
+		/* width: 100% !important;
+		margin-left: -40px !important;
+		padding-left: -40px !important;
+		text-align: left !important; */
+	}
+
+	#upperframe {
+		height: calc(100% - 40px) !important;
+	} 
+
+}
+
+#outOfSyncMessage{
+	text-align: left !important;
+	padding-left: 120px !important;
+}
+
+#---CHANGELOG{}
+
+#textContainer{
+
+max-height: 85%;
+}
+
+[class*=changelog],
+#textContainer *{
+
+/* font-family: 'Courier Prime Sans', monospace; */
+/*font-size: 12px !important; */
+line-height: 18px !important; 
+white-space: pre-wrap !important;
+
+}
+
+.changelog-bold{
+
+	font-weight: 900;
+	font-size: 14pt;
+
+}
+
+.changelog-mosttext,
+.changelog-mosttext p{
+
+	/* color: red; */
+}
+
+.changelog-item,
+.changelog-item-bullet {
+
+	/* margin-left: 3ch !important; */
+	margin-left: 15px !important;
+	/* color: blue; */
+
+	margin-top: 6px !important;
+	margin-bottom: 0px !important;
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+	
+
+}
+
+.changelog-item-bullet::before {
+
+	content: "⚫︎";
+	/* content: "*"; */
+	/* margin-left: -2ch !important; */
+	margin-left: -15px !important;
+
+}
+
+.changelog-subitem,
+.changelog-subitem-bullet{
+	
+	/* margin-left: 5ch; */
+	margin-left: 30px;
+	/* color: green */
+}
+
+.changelog-subitem-bullet::before{
+
+	/* content: "◦"; */
+	/* font-size: 20pt; */
+	content: "⚪︎";
+	/* margin-left: -2ch !important; */
+	margin-left: -15px !important;
+	
+}	
+
+.bottomArea{
+
+	position: sticky;
+	bottom: -40px !important;
+	left: -40px !important;
+
+	margin-left: -40px !important;
+
+	height: 100px;
+	width: calc(100% + 80px);
+
+	background: linear-gradient(0deg,
+		var(--menu-background) 0%,
+		var(--menu-background) 65%,
+		transparent 100%
+		);
+
+	mix-blend-mode: screen;
+
+}
+
+#advancedSettings.settingsWindow {
+
+	position: absolute !important;
+	padding: 20px !important;
+
+	/* max-height: unset !important; */
+	/* height: auto !important; *//*somehow, height auto SETS a clipping height rather than adjusting. Very weird. */
+
+	/* line-height: 10px !important; */
+}
+
+#advancedSettings.settingsWindow ul:last-of-type{
+
+	padding-bottom: 50px;
+	/*outline: 2px solid hotpink */
+
+}
+
+#advancedSettings li {
+
+	display: relative !important;
+
+}
+
+#advancedSettings label{
+
+	/* text-indent: 50px hanging !important; */
+	display: inline-block;
+	position: relative;
+	
+	min-width: calc(100% - 50px) !important;
+	width: calc(100% - 50px) !important;
+	max-width: calc(100% - 50px) !important;
+	vertical-align: top !important;
+
+}
+
+#advancedSettings .labelBefore{
+
+	min-width: unset !important;
+	width: unset !important;
+
+}
+
+#advancedSettings .shortcut{
+
+	position: absolute;
+	right: 0px !important
+
+}
+
+
+</style>
+
+<!-- here's some actual HTML that is not generated from JS. Change when I get the time. -->
+
+<div id="outOfSyncDiv">
+	<p id="outOfSyncMessage"></p>
+	<p id="theScenesDiv"></p>
+</div>
+
+<!--THE HELP WINDOW -->
+
+<div id="helpWindow" class="settingsWindow" style="display: none;" onclick="toggleHelpContainer();">
+	
+	<div id="helpWindowInnerDiv">
+	
+	<p class="headline">KEYBOARD SHORTCUTS<br/>
+
+	<p class="mostText" style="column-span: all; margin: auto !important; max-width: 600px;">Most of FTOutliner’s commands can be reached from the menus, where you will also find the respective keyboard shortcuts. 
+		Menus can be cycled with F1 (or fn + F1 if your function keys are mapped to MacOS features like brightness).<br/><br/>
+		NOTE: Because FTOutliner is a plugin and sits in its own window, shortcuts will work only if the plugin window is focused. If you are typing into your document, an extra click in the FTOutliner window is needed to focus it before any mouse or keyboard interaction.<br/>
+		&nbsp;
+	</p>
+
+	<div class="collection">
+		<p class="subheading"><b>SWITCHING MODES</b></p>
+	
+		<p class="mostText"><span class="key">F</span> toggle between Flexible Time Mode and Non-proportional</p>
+		<p class="mostText"><span class="key">X</span> toggle Index Card Mode on and off</p>
+	
+		<p class="mostText"><span class="key">O</span> toggle One-column view on and off</p>
+	</div>
+	<div class="collection">
+	
+		<p class="subheading"><b>WORKING WITH THE OUTLINE</b></p>
+	
+		<p class="mostText"><span class="key">CLICK</span> anything to scroll document to corresponding position</p>
+		<p class="mostText"><span class="key">RIGHT CLICK</span> for context menu with options</p>
+		<p class="mostText"><span class="key"> ↵ </span> with elements selected, also opens context menu</p>
+		<br/>
+	
+		<p class="mostText"><span class="key">&#8984;</span><span class="key">A</span> select All scenes and sections</p>
+		<p class="mostText"><span class="key">^</span><span class="key">A</span> select All scenes (excluding sections)</p>
+		<p class="mostText"><span class="key">&#8984;</span><span class="key">D</span> Deselect all scenes and sections</p>
+	
+		<p class="mostText" style="margin-left: 0px !important;"><br/><span style=" margin-top: 2px !important; float: left;">NOTE: &nbsp;</span><span class="key">&#8984;</span>/<span class="key">^</span><span class="key">A</span> only selects non-dimmed scenes. Use with tracking and filtering to select scenes with certain character or color.<br/>&nbsp;</p>
+	
+		<p class="mostText"><span class="key">↑</span>/<span class="key">↓</span> walk through the outline</p>
+		<p class="mostText"><span class="key">&nbsp;⇧&nbsp;</span><span class="key">↑</span>/<span class="key">↓</span> extend selection</p>
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>SHOW INFO IN OUTLINE</b></p>
+	
+		<p class="mostText"><span class="key">P</span> show/hide Page numbers</p>
+		<p class="mostText"><span class="key">S</span> show/hide Scene numbers</p>
+		<p class="mostText"><span class="key">L</span> show/hide Length of scenes (in eights)</p>
+		<br/>
+	
+		<p class="mostText"><span class="key">^</span><span class="key">S</span> toggle multiple Scene heading lines<br/>(Fixed and Flexible Modes only)</p>	
+		<p class="mostText"><span class="key">Y</span> show/hide sYnopsis <br/>(always shown in Index Card Mode)</p>	
+		<p class="mostText"><span class="key">^</span><span class="key">Y</span> hide sceneheadings when synopsis is shown</p>	
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>SCRIPT NOTES &amp; MARKERS</b></p>
+		<p class="mostText"><span class="key">N</span><span class="mostText"> Show/Hide Notes</p>
+		<p class="mostText"><span class="key">&nbsp; &#8677; &nbsp;</span> and <span class="key">&nbsp;⇧&nbsp;</span><span class="key">&nbsp; &#8677; &nbsp;</span><span class="mostText"> Cycle all notes one by one</p>
+		<p class="mostText"><span class="key">M</span><span class="mostText"> Show/Hide Markers</p>
+		<p class="mostText"><span class="key">B</span><span class="mostText"> Show/Hide Beats</p>
+		<br>
+		<p class="mostText"><span class="key">§</span><span class="mostText"> Show/Hide the NOTE PANEL</p>
+		<br/>
+		<p class="mostText" style="margin-left: 0px !important">NOTE: Notes are shown in yellow unless starting with ? (green) or !, !! or !!! (red, magenta or purple, respectively). </p>
+		<br/>
+		</div>
+	<div class="collection">
+		<p class="subheading"><b>EXPANDING AND COLLAPSING</b></p>
+		
+		<p class="mostText" style="margin: 0px !important">In Index Card and Non-proportional modes, scenes can be collapsed and expanded by clicking the arrow (scenes) or the right icon in section cards (index card mode only).
+		<br/><br>Affect all at once with <span class="key">⌥</span><span class="key">CLICK</span> or:</p>
+		<br/>
+		<p class="mostText"><span class="key">E</span> toggle Expand/Collapse for all scenes</p>
+		<p class="mostText"><span class="key">D</span> toggle Expand/Collapse for all sections</p>
+		
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>BONEYARD</b></p>
+		
+		<p class="mostText"><span class="key">⌘</span><span class="key">B</span> If no Boneyard present: Add one</p>
+		<p class="mostText"><span class="key">⌘</span><span class="key">B</span> If Boneyard present: Toggle it</p>
+		<br/>
+		<p class="mostText" style="margin-left: 0px !important">NOTE: The Boneyard is just a regular act, but with special properties like being hideable in the outline.<br/><br/>While great for storing scenes and sections you don't know what to do with, remember that this is a FTOutliner feature only.<br/>Beat will regard any boneyard content as regular screenplay material, printing and exporting it along with everything else, so any boneyard contents should be deleted manually before distribution.</p>
+		
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>VIEW OPTIONS</b></p>
+		
+		<p class="mostText"><span class="key">⌘</span><span class="key">+</span> and <span class="key">⌘</span><span class="key">-</span> change font size</p>
+		<p class="mostText"><span class="key">⌘</span><span class="key">0</span> reset font size to default</p>
+		<br/>
+		<p class="mostText"><span class="key">^</span><span class="key">+</span> and <span class="key">^</span><span class="key">-</span> change index card height</p>
+		<p class="mostText"><span class="key">^</span><span class="key">0</span> reset index card height to default</p>
+		<br/>
+		<p class="mostText"><span class="key">C</span> toggle color scheme</p>
+		<p class="mostText"><span class="key">^</span><span class="key">C</span> temporarily disable scene colors</p>
+		<p class="mostText"><span class="key">H</span> toggle Hi Contrast (black and white only) mode</p>
+		<br/>
+		<p class="mostText" style="margin: 0px !important;"><span style="margin-top: 2px; float:left;">NOTE: For US keyboards, substitute </span><span class="key">+</span> with <span class="key">=</span></p>
+		
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>FILTER BY COLOR</b></p>
+		<p class="mostText"><span class="key">⌥</span><span class="key">CLICK</span> on scene to filter by color</p>
+		<p class="mostText"><span class="key">⌥</span><span class="key">&nbsp;⇧&nbsp;</span><span class="key">CLICK</span> to add filter color</p>
+		<br/>
+		<p class="mostText"><span class="key">ESC</span> or <span class="key">⌥</span><span class="key">CLICK</span> on empty space to exit</p>
+		<br/>
+		<p class="subheading"><b>FILTER BY CHARACTER</b></p>
+		<p class="mostText"><span class="key">1</span>&mdash;<span class="key">9</span> filter by nine characters with most speeches</p>
+		<p class="mostText"><span class="key">&nbsp;⇧&nbsp;</span><span class="key">1</span>&mdash;<span class="key">9</span> add characters to filter</p>
+		<p class="mostText"><span class="key">T</span> Track from complete list of speaking characters</p>
+		<br/>
+		<p class="mostText"><span class="key">0</span> exit character filtering</p>
+		<br/>
+		<p class="mostText" style="margin: 0px !important;">Characters are ordered by most number of speeches. Selecting more than one will highlight scenes with both/all present.</p>
+		
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>PRINTING & EXPORTING</b></p>
+		
+		<p class="mostText"><span class="key">⌘</span><span class="key">P</span> Print or save to PDF</p>
+		<p class="mostText"><span class="key">⌘</span><span class="key">E</span> Export to HTML</p>
+		<p class="mostText"><span class="key">&nbsp;⇧&nbsp;</span><span class="key">⌘</span><span class="key">P</span> Print/Export Settings</p>
+
+		
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>EDITING AND ADDING NEW ELEMENTS</b></p>
+		
+		<p class="mostText" style="margin: 0px !important;">You can edit names of scenes and sections, and add new ones, directly within FTOUtliner.<br/><br/>While these features were designed for the Index Card Mode, some of them work in other modes too.</p>
+		<br/>
+		<p class="mostText"><span class="key">DOUBLE CLICK</span> scene heading, section title or synopsis text to EDIT</p>	
+		<p class="mostText"><span class="key">DOUBLE CLICK</span> empty area of index card to ADD new synopsis</p>
+		<br/>
+		<p class="mostText"><span class="key">⌥</span> when hovering scenes and sequences to show button for adding new scene or sequence</p>
+	</div>
+	<div class="collection">
+		<p class="subheading"><b>ADVANCED (OH WELL) SETTINGS</b></p>
+		
+		<p class="mostText"><span class="key">W</span> toggle Warnings when deleting, moving and more</p>
+		
+		<p class="mostText"><span class="key">R</span> toggle Real Time updates. Typically, this should be kept ON, unless your computer exhibits lagging issues.</p>
+		
+	</div>
+
+</div></div>
+
+<dialog id="advancedSettings" class="settingsWindow modal">
+
+	<p class="headline">Advanced Settings</p>
+	<hr>
+
+	<ul>
+		<strong><br/>Scene And Section Headers</strong><br/>
+		<li  onclick="advancedTogglers('dualSceneLines', 'buttonForDualLines')">
+			<input id="buttonForDualLines" type="checkbox">
+			<div class="switch"></div>
+					<label style="pointer-events: none" for="buttonForDualLines">Show multiple SCENE lines<span class="shortcut" style="float:right">^S</span></label>
+		</li>
+		<li  onclick="advancedTogglers('dualSectionLines', 'buttonForDualSectionLines')">
+			<input id="buttonForDualSectionLines" type="checkbox">
+			<div class="switch"></div>  
+					<label style="pointer-events: none" for="buttonForDualSectionLines">Show multiple SECTION lines<span class="shortcut" style="float:right">^T</span></label>
+		</li>
+	<!--/ul>
+	<ul>
+		<strong><br/>Section headings:</strong--><br/>
+		<li onclick="advancedTogglers('allowLowerCaseSections', 'buttonForLowerCase')">
+			<input id="buttonForLowerCase" type="checkbox">
+			<div class="switch" onclick="$id('buttonForLowerCase').click()"></div>  
+					<label style="pointer-events: none" for="buttonForLowerCase">Show SECTION capitalization as typed rather than uppercase only<span class="shortcut" style="float:right">^U</span></label>
+		</li>
+		<li onclick="advancedTogglers('showLengthsInSections', 'buttonForSectionLengths')">
+			<input id="buttonForSectionLengths" type="checkbox">
+			<div class="switch" onclick="$id('buttonForSectionLengths').click()"></div>  
+					<label style="pointer-events: none" for="buttonForSectionLengths">Show accumulated length-in-pages for sections<span class="shortcut" style="float:right"></span></label>
+		</li>
+	</ul>
+	<br/>
+	<hr>
+	<ul>
+	<strong><br/>Pages</strong><br/>
+	<li  onclick="advancedTogglers('showPageDividers', 'buttonForPageDividers')">
+		<input id="buttonForPageDividers" type="checkbox" checked="">
+			<div class="switch"></div>  
+				<label style="pointer-events: none" for="buttonForPageDividers">Show page dividers (Flexible view only)<span class="shortcut" style="float:right">^P</span></label>
+	</li>
+	<li style="margin-left: 50px; overflow: hidden" class="" onclick="advancedTogglers('always', 'buttonForAlways')">
+		<input id="buttonForAlways" type="checkbox">
+			<label for="buttonForAlways" class="labelBefore">When hovering</label>
+				<div class="switch"></div>
+			<label for="buttonForAlways" class="labelAfter">All the time<span class="shortcut" style="padding-right: 110px; float:right">^⌥P</span></label>
+	</li>
+	<!--li  onclick="advancedTogglers('always', 'buttonForAlways')">
+		<input id="buttonForAlways" type="checkbox">
+		<div class="switch"></div>  
+				<label style="pointer-events: none" for="buttonForAlways">at all times, not just when hovered<span class="shortcut" style="float:right">⌥P</span></label>
+	</li-->
+	</ul>
+	<br/>
+	<hr>
+	<ul>
+		<strong><br/>Index Cards View:</strong><br/>
+		<li  onclick="advancedTogglers('verticals', 'buttonForVerticals')">
+			<input id="buttonForVerticals" type="checkbox">
+			<div class="switch"></div>  
+					<label style="pointer-events: none" for="buttonForVerticals">Show vertical bars for section levels<span class="shortcut" style="float:right">^V</span></label>
+		</li>
+		<li  onclick="advancedTogglers('autoWiden', 'buttonForAutoWiden')">
+			<input id="buttonForAutoWiden" type="checkbox">
+			<div class="switch"></div>  
+					<label style="pointer-events: none" for="buttonForAutoWiden">Automatically widen index cards when editing<span class="shortcut" style="float:right"></span></label>
+		</li>
+		<li  onclick="advancedTogglers('widenedColumnsGetAutoHeight', 'buttonForAutoHeight')">
+			<input id="buttonForAutoHeight" type="checkbox">
+			<div class="switch"></div>  
+					<label style="pointer-events: none" for="buttonForAutoheight">Widened cards also adjust height to fit<span class="shortcut" style="float:right"></span></label>
+		</li>
+	</ul>
+
+	<p><br/></p>
+	<div class="dialogBottomButtonRow">
+		<button class="generalButtonStyle" onclick="for (butn of $$('#advancedSettings input')){if(butn.checked){butn.click()}}">Revert to defaults</button>
+		<button class="generalButtonStyle" onclick="$id('advancedSettings').close()">Close</button>
+	</div>
+</dialog>
+
+<script>
+
+function displayEmptyScreenMessage(){
+
+	if (!documentSetting.scenesAreProportional){toggleProportional()} //or else message is not nicely centered vertically.
+
+	document.getElementById('outOfSyncDiv').style.display = 'none'
+	document.getElementById('outOfSyncDiv').classList.remove('animate')
+	
+	flexiContainer.classList.remove("wait")
+
+	document.getElementById("flexiContainer").innerHTML = /*html*/`
+	
+	<div id="emptyScreenMessage">
+	<h1><b>Welcome to FTOutliner</b></h1>
+	<p>&nbsp;</p>
+	<p>This is a plugin that will show your screenplay divided into acts and sequences, and with your scenes displayed in a top-to-bottom timeline fashion with their size proportional to their length in the script.</p>
+	<p>&nbsp;</p>
+	<p>As soon as you add some structural elements into the document window this text will go away.<br/>
+		Or click the button below to have some basic elements added for you!</p>
+	<p>&nbsp;</p>
+	<p>Happy writing!</p>
+	<p>&nbsp;</p>
+	<p style="text-align: center; margin-top: 60px !important;">
+	<button class="generalButtonStyle" onclick="addTemplate()" style="text-align: center; font-size: 14px !important">Sure! Add some elements to get me started!</button>
+	</p>
+	`
+}
+
+function addTemplate(){
+
+	mylog("adding template")
+	
+	let contentString = /*html*/ `#ACT I\\n\\n##Sequence 1\\n\\nInt. Somewhere -- day\\n\\nInt. Somewhere ELSE -- day\\n\\n##Sequence 2\\n\\nInt. ANOTHER PLACE -- day\\n\\nInt. YET ANOTHER PLACE -- day\\n\\n#ACT II\\n\\n##Sequence 3\\n\\nExt. some other location -- night\\n\\nInt. AND ONE MORE -- NIGHT\\n\\nInt. THEN THIS ONE -- day\\n\\n##Sequence 4\\n\\nInt. AND ALSO THIS -- DAY\\n\\nInt. FOLLOWED BY THIS -- day\\n\\n#ACT III\\n\\n##Sequence 5\\n\\nInt. Then finally the last few scenes -- evening\\n\\n##Sequence 6\\n\\nint. Just one more after this -- night\\n\\nInt. And thats it -- dusk\\n`
+	
+	mylog("string is written")
+	
+	Beat.call(`Beat.replaceRange(0, 0, "${contentString}")`)
+	
+	mylog("replace range has run")
+
+	// let hardCodedNumberOfScenes = 12
+
+	// for (let i = 0; i < hardCodedNumberOfScenes; i++){
+	// 	cardStateForSections.push("false")
+	// 	cardStateForScenes.push("false")
+	// }
+
+	setTimeout(function(){
+
+		let allSections = $$(".section:not(.level1)")
+		for (section of allSections){
+
+			section.classList.add("isExpanded")
+
+		}
+
+	}, 600)
+
+}
+
+
+function displayErrorMessage(information){
+
+	errorHasFired = true
+
+	let hrefText = `mailto:ftoutliner@eviltomato.com?subject=Error report from FTOutliner&body=Hi,%0D%0A%0D%0AI just experienced an error in FTOutliner.%0D%0A%0D%0A
+			Here's what I was doing: (please be as detailed as possible)%0D%0A%0D%0A%0D%0A%0D%0A
+			____________________________________________________________%0D%0A
+			Below are the last up to 100 log entries leading up to the error.%0D%0A%0D%0A 
+			${information.join('%0D%0A').replaceAll('"', '%22').replaceAll("&", "%26").replaceAll(" ", "%20").replaceAll("\n", "%0D%0A")}%0D%0A%0D%0A`
+
+	let emergencyLevelText = /*html*/`
+		<p class="errorWindowText"><strong>FIRST OF ALL: </strong><i><b>Your script is most likely okay!</b></i></p>
+		<p class="errorWindowText">Most of the time, FTOutliner does not touch the contents of your script. There is no indication this error occured during one of those few instances.</p>
+		<p class="errorWindowText"><i>Of course, feel free to check the script for any anomalies. Should you find any, remember to hit UNDO (cmd+z) to return to the state before this error happened.</i></p>
+	`
+
+	if (actualChangesToScriptInProgress){
+		emergencyLevelText = /*html*/`
+			<p class="errorWindowText"><strong>THE BAD NEWS: </strong></p>
+			<p class="errorWindowText">It seems that FTOUtliner was right in the middle of MOVING, DELETING or EDITING text when this happened.
+				</p>
+			<p class="errorWindowText">This means if we're really out of luck, FTOutliner may have managed to start, but not finish, a process of altering the contents of your script.</p>
+
+			<p class="errorWindowText"><strong>THE GOOD NEWS: </strong><p>
+			<p class="errorWindowText">If it did, you should be able to use UNDO (cmd+z) to get back to your previous state. Once should be enough.<br/>
+				<i>So please look through your script document now to check if anything is off.</i></p>
+
+			<p class="errorWindowText">Also please remember that Beat constantly autosaves as-you-type, so should you not be able to undo, selecting FILE > REVERT TO... will give you a list of your most recent auto-saved states.</p>
+		`
+	}
+
+	let message = /*html*/`
+	
+		<div id="errorWindow" class="settingsWindow" style="white-space: normal; ">
+		<div id="warningDiv">${warningSign}</div>
+		<p class="headline" >Uh-oh! We’ve encountered a problem.</p>
+		<p class="errorWindowText">This is embarrassing. FTOutliner just ran into an error and will need to be restarted.</p>
+		
+		${emergencyLevelText}
+
+		<p>&nbsp;</p>
+		<hr>
+		
+		<p class="errorWindowText"><b>WHEN YOU CLOSE THIS DIALOG, </b>FTOutliner will try to create an email with some data that may help track down exactly where in the code the error happened.</p>
+		<p class="errorWindowText">Please add as much detail as possible about what you were doing when the error message occurred, and send it to the pre-typed address. The only forwarded data will be the names of the latest jumps in the code. </p>
+		<p class="errorWindowText">&nbsp;</p>
+
+		<p id="closeAfterErrorButtonPara" style="text-align: center"><a id="errorClickButton" class="generalButtonStyle" href="${hrefText}" onclick="Beat.call('Beat.custom.reallyQuit(true)')">Close FTOutliner and create email</a>
+
+		<p>&nbsp;</p>
+		</div>
+	`
+
+	coverContainer.style.display = "block"
+	coverContainer.innerHTML += message
+
+}
+
+
+function displayAnyBox(message){
+
+
+	if($id("menu"))$id("menu").remove()
+
+	let textContainer = document.createElement("div")
+		textContainer.id = "textContainer"
+		textContainer.classList.add("settingsWindow")
+		textContainer.style.overflowY = "scroll"
+		textContainer.onclick = function(){toggleTrackingContainer(true)}
+		
+	let innerContainer = document.createElement("div")
+		innerContainer.classList.add("innerDiv")
+		// innerContainer.style.fontFamily = "'Courier Prime Sans', monospace"
+		innerContainer.innerHTML = "<br/><p class='headline'>Version History</p>"
+
+	let bottomArea = document.createElement("div")
+		bottomArea.id = "bottomArea"
+		bottomArea.classList.add("bottomArea")
+
+	let closeButton = document.createElement("div")
+		closeButton.id = "textCloseButton"
+		closeButton.classList.add("generalButtonStyle")
+		closeButton.style.position = "absolute"
+		closeButton.style.bottom = "20px"
+		closeButton.style.left = "50%"
+		closeButton.style.transform = "translateX(-50%)"
+		closeButton.innerHTML = "Sure. Fine. Whatever."
+		closeButton.onclick = function(){toggleTrackingContainer(true)}
+		
+		message = message.replace(/(\n.*\n)\s*-+\s*\n/gm, "<strong><u>$1</u></strong>\n") //underlined
+		message = message.replace(/^[^\S\n]+-\s+(.*)\n/gm, "<p class='changelog-subitem-bullet'> $1</p>\n") //sub-bullet
+		message = message.replace(/\n<p class='changelog-subitem-bullet'>/gm, "<p class='changelog-subitem-bullet'>") //sub-bullet double linebreak
+		message = message.replace(/^[^\S\n]+(.*)\n/gm, "<p class='changelog-subitem'>$1</p>\n") //sub no-bullet
+		
+		message = message.replace(/^\*\s+(.*)\n/gm, "<p class='changelog-item-bullet'> $1</p>") //bullet
+
+		message = message.replace(/^(\=+)/gm, "")//"<span class='changelog-bold'>$1</span>")
+		message = message.replace(/^(v\s\d.*)\n/gm, "<hr><br/><span class='changelog-bold'>$1</span>") //bold
+
+		// message = message.replace(/^[^\S\n]+(.*)\n/gm, "<p class='changelog-subitem'>$1</p><br/>")
+
+		// message = message.replace(/\s-\s(.*)\n/g, "<p class='changelog-sub-item'>$1</p>")
+		// message = message.replace(/\*(.*)\n/g, "<p class='changelog-item';'>$1</p>")
+		// message = message.replace(/\n\n/g, "</p><br/><p class='changelog-mosttext'>")
+		message = message.replace(/\n/g, "<br/>")
+		innerContainer.innerHTML += "<p class='changelog-mosttext'>" + message + "</p>"
+	
+	coverContainer.style.display = "block"
+	$id("flexiContainer").appendChild(textContainer)
+	$id("textContainer").appendChild(innerContainer)
+	$id("textContainer").appendChild(bottomArea)
+	$id("bottomArea").appendChild(closeButton)
+	
+}
+
+function displayAboutBox(){
+
+
+
+	message = /*html*/`
+
+		<div id="aboutBox" class="settingsWindow" onclick="">
+		<div id="innerDiv">
+		<p class="headline">
+			About things. Such as this plugin. And me.
+		</p>
+		<br/>
+		<p class="mostText">
+			Hi. I'm Fredrik T Olsson. I am a Swedish screenwriter.<br/>
+			<br/> 
+			Ever since starting out in this profession, I have longed for someone to create a screenwriting app with an outline feature that's more than just a list of scenes. One that would give me a visual overview of my story, that would simplify navigation as well as help me structure and re-structure, and where notes and scene lengths and other important info were available right there in the outline where they belong.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;When Beat came along and allowed for external plugins, I decided to try my hand at making one myself. This is the result.<br/>
+			<br/>
+			One year into the existence of FTOutliner, Beat has become the screenwriting app I live in. My gratitude to Lauri-Matti Parppei for creating Beat in the first place (and then tirelessly helping this javascript newbie understand my ways around the API) knows almost no limits.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;At this point, I don't think I could imagine myself writing in another app again, and without FTOutliner on one half of the screen helping me navigate.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;That is my current setup, and I use it daily for the work I do. Here's hoping it will help you as much as it has helped me.<br/>
+			<br/>
+			I'm not a coder, so you might well find quirks that aren't intended. If you do, please let me know.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Oh, and if you don't, but just happen to like my plugin, feel free to tell me that too. We're all screenwriters; it's not like we get too many pats on our backs for what we do.<br/>
+			<br/>
+			Questions, feedback and bug reports can be sent to <a href="mailto:ftoutliner@eviltomato.com">ftoutliner@eviltomato.com</a><br/>
+			<br/>
+			Finally, why FTOutliner? That's an awfully contrived name. Well. I pretend it's short for Flexible Time. But of course it isn't, really. I'm just trying to get my initials in there. Again, we're all screenwriters. If we don't take credit, we rarely get it. <br/>
+			<br/>
+			This plugin, its design, code and underlying ideas, to any degree that they can be copyrighted and claimed, should be considered © Fredrik T Olsson 2021—2022 and onwards. If you like what you see, please don't steal it. I put a lot of work into it.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Also, I am providing it for free and as is, which means that while I am continuously doing my best to ensure that FTOutliner won't cause any harm to what you (or I) write, by using it you acknowledge that the usual legalese applies. Which basically means that should anything bad happen all the same, you were the one taking a chance on a free, hobbyist app, and I cannot be held responsible. So there.<br/>
+			<br/>
+			That's about it, I think! Happy writing! Let's tell some exciting stories!<br/>
+			<br/>
+			Version: ${userDefault.ftoutlinerVersion}<br/>
+			© Fredrik T Olsson, 2021—2023<br/>
+
+	</p>
+	<br/>
+	<div style="display: flex; align-items: center; justify-content: center;">
+		<p class="generalButtonStyle" onclick="closeMe()" >Sure, dismiss already!</p>
+	</div>
+
+</div></div>
+`
+
+	if($id("menu"))$id("menu").remove()
+	coverContainer.style.display = "block"
+	let aboutContainer = document.createElement("div")
+		aboutContainer.innerHTML = message
+		$id("flexiContainer").appendChild(aboutContainer)
+	
+}
+
+function closeMe(){
+	//mylog("run by " + JSON.stringify(closeMe.caller?.name))
+	$id("aboutBox")?.remove()
+	coverContainer.style.display = "none"
+	$id("menu")?.remove()
+}
+
+function newPrintBox(){
+
+	if($id("printbox"))return
+
+	let printbox = document.createElement("div")
+		printbox.id = "printbox"
+		printbox.classList.add("settingsWindow")
+
+	let nameValue = documentSetting.documentName || ""
+	let subNameValue = documentSetting.documentSubName || ""
+	let authorValue = documentSetting.documentAuthor || ""
+
+	let contents = /*html*/`
+		<div id="innerDiv">
+		<p class="headline">Print/Export Settings</p>
+		<br/>
+		<p>The following text will be used for information in the printed/exported page. <br/>
+			Fields that are left blank will print blank.</p>
+		<br/>
+		<label for="screenplayname" style="text-align: right; display: inline-block; width: 24% !important; padding-right: 0px;">Title &nbsp;</label><input type="text" tabindex="1" id="screenplayname" style="width: 74%;" value="${nameValue}" placeholder="The name of your screenplay"><br/>
+		<label for="subheader" style="text-align: right; display: inline-block; width: 24% !important; padding-right: 0px;">Subheader &nbsp;</label><input type="text" tabindex="2" id="subheader" style="width: 74%" value="${subNameValue}" placeholder="episode number, name of draft, etc"><br/>
+		<label for="writernames" style="text-align: right; display: inline-block; width: 24% !important; padding-right: 0px;">Writer(s) &nbsp;</label><input type="text" tabindex="3" id="writernames" style="width: 74%" value="${authorValue}" placeholder="That would be you"><br/>
+		</p>
+		<br/>&nbsp;
+		<br/>
+		<p class="mostText">NOTE: the outline will print in the same mode (flexible or non-proportional) and with the same scenes collapsed/expanded as shown on screen.</p>
+		<br/>
+		<br/>
+		<!--div style="display: flex; align-items: center; justify-content: center;"-->
+		<div style="text-align: right; white-space: normal;">
+		<div id="cancelButton" onclick="storeAndClosePrintbox(false)" class="generalButtonStyle">Cancel</div>
+		<div id="submitButton" style="margin-left: 2px;" onclick="storeAndClosePrintbox(true)" class="generalButtonStyle defaultButton">Save & Exit</div>
+		</div>
+		</div>`
+
+		printbox.innerHTML = contents
+
+		if($id("menu"))$id("menu").remove()
+			toggleCaptureKeypresses(false)
+			document.addEventListener("keydown", textFieldListener)
+
+			coverContainer.style.display = "block"
+			flexiContainer.appendChild(printbox)
+
+		// saveCurrentState()
+
+}
+
+function storeAndClosePrintbox(yesToStore){
+
+	if(yesToStore){
+
+		documentSetting.documentName = $id("screenplayname").value 
+		documentSetting.documentSubName = $id("subheader").value 
+		documentSetting.documentAuthor = $id("writernames").value 
+
+		saveCurrentState()
+		Beat.call(`Beat.custom.setTheWindowTitle()`)
+
+	}
+
+	document.removeEventListener("keydown", textFieldListener)
+	toggleCaptureKeypresses(true)
+	$id("printbox")?.remove()
+
+}
+
+function textFieldListener(e){
+
+	if(e.key == "Escape"){
+		event.preventDefault()
+		storeAndClosePrintbox(false)
+		return
+	}
+	if(e.key == "Enter"){
+		event.preventDefault()
+		storeAndClosePrintbox(true)
+	}
+
+}
+
+
+</script>

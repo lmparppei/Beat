@@ -1,0 +1,75 @@
+<script>
+function togglePrintMode(exportInstead){
+
+	if (documentSetting.indexCardMode && !exportInstead){
+		let message1 = "Sorry, cannot print Index Cards"
+		let message2 = "FTOutliner is currently limited to printing in outline mode only.\\n\\nYou can, however, choose to print outlines either with flexible or non-flexible scene heights.\\n\\nAny filters (by color or by character(s)) are respected too."
+		Beat.call("Beat.alert('" + message1 + "','" + message2 + "')")
+		return
+	}
+	
+	document.getElementById("flexiContainer").classList.toggle("printMode")	
+	if (![...document.getElementById("flexiContainer").classList].includes("printMode")){
+		recalculateHeights()
+		return}
+
+	//resetting heights and hide-slugs for print!
+	if(!exportInstead){
+		let allScenes = $$(".scene")
+		let flexiHeight = $id("flexiContainer").getBoundingClientRect().height
+			for(scene of allScenes){
+				scene.classList.remove("sluglineIsHidden")
+				if (scene.getBoundingClientRect().height / flexiHeight < 0.012){
+					//scene.classList.add("sluglineIsHidden")
+				}
+			}
+	}
+
+	//create a print box 
+
+	$$(".scene, .orphan").forEach(element => {element.style.setProperty('--paperHeightFactor', paperHeightFactor)})
+	//hack to get paperheight over to printout
+		
+	let content = document.getElementById("flexiContainer").innerHTML
+	// if (!exportInstead){content = content.replace(/px\s\*\svar\(--heightFactor\)/g, "px * " + paperHeightFactor + "")}
+	if (exportInstead){content = content.replace(/px\s\*\svar\(--heightFactor\)/g, " * (var(--heightFactor) / 60) * (80vh - " + (unDistributableHeight + 60) + "px)")}
+
+	let classListOfFlexiContainer = [...document.getElementById("flexiContainer").classList].join(" ")
+
+	let documentName = documentSetting.documentName || ""
+	let documentSubName = documentSetting.documentSubName || ""
+	let documentAuthor = documentSetting.documentAuthor || ""
+
+	if(!exportInstead){
+
+		callString = "Beat.custom.printThis(`" + (content) + "` , `" + (classListOfFlexiContainer) + "`, `" + documentName + "` , `" + documentSubName + "` , `" + documentAuthor + "`)"
+	}else{
+		callString = "Beat.custom.exportThis(`" + (content) + "` , `" + (classListOfFlexiContainer) + "`, `" + documentName + "` , `" + documentSubName + "` , `" + documentAuthor + "`)"
+	}
+	
+	Beat.call(callString)
+}
+
+function preflight(){
+
+dialogHTML = /*html*/`
+
+    <div>Screenplay title</div>
+    <div>Subheading</div>
+    <div>Writer</div>
+    <div>Some fields may have been auto-filled from the data on your title page. Delete and leave blank to have fields print with no value</div>
+
+    <div>Flexible (TOGGLE) None-proportional</div>
+    <div>Index cards currently cannot be printed.</div>
+
+    <div>One Column (TOGGLE) Multiple
+    
+
+
+`
+
+
+
+}
+
+</script>

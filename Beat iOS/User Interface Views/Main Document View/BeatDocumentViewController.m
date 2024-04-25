@@ -104,10 +104,8 @@
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 	
 	self.textView = textView;
-	self.textView.delegate = self;
-	self.textView.editorDelegate = self;
-	self.textView.inputDelegate = self;
 	
+	// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
 	if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
 		self.textView.enclosingScrollView = self.scrollView;
 		[self.pageView addSubview:self.textView];
@@ -504,7 +502,7 @@
 		
 		// Register changes
 		if (self.revisionMode && self.lastChangedRange.location != NSNotFound) {
-			[self.revisionTracking registerChangesWithLocation:editedRange.location length:self.lastChangedRange.length delta:delta];
+			[self.revisionTracking registerChangesInRange:NSMakeRange(editedRange.location, self.lastChangedRange.length) delta:delta];
 		}
 	}
 	
@@ -732,10 +730,6 @@
 - (void)setShowRevisions:(bool)showRevisions {
 	[BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
 	[self.textView setNeedsDisplay];
-}
-
-- (bool)automaticContd {
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutomaticContd];
 }
 
 - (bool)revisionMode {

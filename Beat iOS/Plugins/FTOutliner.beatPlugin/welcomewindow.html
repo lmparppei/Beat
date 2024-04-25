@@ -1,0 +1,435 @@
+
+
+<div id = "main">
+	<p class="headline">Welcome to FTOutliner!<span class="versionnumber"></span></p>
+	<br<br/>
+	FTOutliner is a plugin for navigating, editing and getting a bird's eye view of your screenplay. If this is your first time here, don't be too confused. FTOutliner is meant to make your screenwriting life esier, so just keep it open next to your screenplay as you write and I'm sure you'll gradually find your own best way to use it.<br/><br/>
+	<strong>Here's what's new in this version:</strong>
+	<div id="changelog-wrapper">
+		<div id="changelog"></div>
+	</div>
+	<!-- <strong>That's all!</strong> Let's go writing, both of us!<br/><br/><br/> -->
+		<!--hr-->
+		<ul>
+		<!--strong><br/>Behavior Settings</strong><br/-->
+		<li id="changeThis" style="width: max-content; margin-left: auto; margin-right: auto; padding-right: 40px"> 
+			<input id="buttonFor-dontShowWelcomeWindowFor" + userDefault.ftoutlinerVersion type="checkbox">
+			<label for="buttonFor-dontShowWelcomeWindowFor" + userDefault.ftoutlinerVersion>Don't show this dialog again for this version<span class="shortcut" style="float:right"></span></label>
+			<!--span class="explanation">Unless there's something new to say that's really important.<br/>In which case sure, fine, go ahead.</span-->
+		</li>
+		</ul>
+
+	<p><br/></p>
+	<div class="dialogBottomButtonRow">
+		<!-- <button class="generalButtonStyle" onclick="for (butn of $$('#advancedSettings input')){if(butn.checked){butn.click()}}">Revert to defaults</button> -->
+		<button class="generalButtonStyle" onclick="Beat.call('Beat.custom.closeSecondWindow()')">Close</button>
+	</div>
+</div>
+
+<script>
+
+	//Dynamically adding version number to checkbox to automatically reset it when new version is released:
+
+	window.addEventListener('load', function () {
+
+		Beat.callAndWait(() => {
+			let ftoutlinerVersion = Beat.getUserDefault("ftoutlinerVersion")
+			let userDefault = Beat.getUserDefault("ftoutlinerObject")
+			return(JSON.stringify([ftoutlinerVersion, userDefault]))
+		})
+		.then(
+        	response => {
+				
+				response = JSON.parse(response)
+				userDefault = JSON.parse(response[1])
+
+				document.querySelector(".versionnumber").innerHTML = "v" + response[0]
+
+				ftoutlinerVersion = response[0].replace(/\./g, "")
+				
+				let listItem = document.getElementById("changeThis")
+					listItem.onclick = function(){
+						toggleThis('dontShowWelcomeWindowFor' + ftoutlinerVersion, 'buttonFor-dontShowWelcomeWindowFor' + ftoutlinerVersion)
+					}
+					listItem.querySelector("input").id = "buttonFor-dontShowWelcomeWindowFor" + ftoutlinerVersion
+					listItem.querySelector("label").setAttribute("for", "buttonFor-dontShowWelcomeWindowFor" + ftoutlinerVersion)
+					listItem.querySelector("input").checked = userDefault['dontShowWelcomeWindowFor' + ftoutlinerVersion]
+		},
+        	error => { console.log("Error retrieving userDefault") }
+    	)
+
+		Beat.callAndWait(() => {
+			let changelog = Beat.assetAsString("changelog")
+			return(changelog)
+		})
+		.then(
+        	response => {
+				
+				changelog = response
+				document.querySelector("#changelog").innerHTML = markupToHTML(changelog)
+				
+		},
+        	error => { console.log("Error retrieving changelog") }
+    	)
+
+	})
+
+	//STARTUP SEQUENCE:
+
+	var userDefault = {}
+	var documentSetting = {}
+    
+    Beat.callAndWait(() => {
+        let ftoutlinerObject = Beat.getUserDefault("ftoutlinerObject")
+        return(ftoutlinerObject)
+    })
+    .then(
+        response => { userDefault = JSON.parse(response)
+			
+			//Apply the correct checkbox states on open:
+			for ([key, value] of Object.entries(userDefault)){					
+					let button = document.getElementById("buttonFor-" + key)
+						if(button){ 
+							if(value == true) button.setAttribute("checked", true) 
+						}
+				}
+		},
+        error => { console.log("Error retrieving userDefault") }
+    )
+
+    Beat.callAndWait(() => {
+        let ftoutlinerObject = Beat.getDocumentSetting("ftoutlinerObject")
+        return ftoutlinerObject
+    	})
+		.then(
+			response => { documentSetting = JSON.parse(response)
+		
+				//Apply the correct checkbox states on open:
+					for ([key, value] of Object.entries(documentSetting)){					
+						let button = document.getElementById("buttonFor-" + key)
+							if(button){ 
+								if(value == true) button.setAttribute("checked", true) 
+							}
+					}
+			},
+			error => { console.log("Error retrieving documentSetting") }
+		)
+
+
+	//FUNCTIONS:
+
+	function toggleThis(settingName, settingButton, invertSelection){
+
+		userDefault[settingName] = document.getElementById("buttonFor-" + settingName).checked
+		
+		let valueAsJSON = JSON.stringify(userDefault[settingName])
+			Beat.call(`	Beat.custom.sendToMain("${settingName}", ${valueAsJSON}, "userDefault") `)
+
+	}
+
+	function markupToHTML(text){
+
+		let html = document.createElement("div")
+
+		text.split("\n").forEach(line => {
+
+			line = line.replace(/\*(\S.+?)\*/g, "<strong>$1</strong>")
+			line = line.replace(/\_(.+?)\_/g, "<i>$1</i>")
+
+			// first line below: replaces all backticks, included escaped ones
+			// second line: uses negative lookbehind to only replace backticks that are not escaped
+				// //line = line.replaceAll(/\`(.+?)\`/g, "<code>$1</code>")
+				// line = line.replaceAll(/(?<!\\)\`(.+?)(?<!\\)\`/g, "<code>$1</code>").replaceAll(/\\`/g, "`")
+
+			//the below replaces the negativ lookbehind in the commented out regex above bc not supported on older systems
+				line = line.replace(/\\\`/g, "€"); 						// Temporarily replaces escaped backticks to avoid conflict
+				line = line.replace(/\`(.+?)\`/g, "<code>$1</code>"); 	// Replaces backtick-surrounded text with <code> tags
+				line = line.replace(/€/g, "\`"); 						// Replaces back the escaped backticks
+
+			if(line.startsWith("#")){
+
+				let headline = document.createElement("p")
+					headline.classList.add("headline")
+					headline.innerHTML = line.replace("#", "")
+					html.appendChild(headline)
+
+			}else if(line.startsWith("* ")){
+
+				let listItem = document.createElement("li")
+					listItem.classList.add("changelogList")
+					listItem.innerHTML = line.replace("* ", "")
+					html.appendChild(listItem)
+
+			}else if(line.startsWith("  -")){
+
+				let listItem = document.createElement("li")
+					listItem.classList.add("changelogList")
+					listItem.classList.add("level2")
+					listItem.innerHTML = line.replace("  -", "")
+					html.appendChild(listItem)
+
+			}else{
+
+				let paragraph = document.createElement("p")
+					paragraph.innerHTML = line
+					html.appendChild(paragraph)
+
+			}
+
+		})
+
+		return(html.innerHTML)
+
+	}
+
+
+</script>
+
+<style>
+
+    :root{
+
+        --menu-background: hsla(25, 64%, 96%, 1.00);/* rgb(240, 240, 240); /*was 232*/
+	    --menu-border-color: #c1c1c1;
+	    --menu-color: black; /*rgb(233,233,233);*/
+	    --menu-hover-color: #027aff;
+
+		--changelog-background: white
+
+    }
+
+    @media (prefers-color-scheme: dark) {
+
+        :root{
+
+            --menu-background: hsla(25, 10%, 24%, 1.00);
+            --menu-border-color: rgb(81,81,81);
+            --menu-color: rgb(233,233,233);
+
+            --inkOnPaper: 0, 0%, 100%;
+            --paperBehindInk: 0, 0%, 0%;
+
+			--changelog-background: #222;
+
+        }
+    }
+
+    body{
+
+        background-color: var(--menu-background);
+		color: var(--menu-color);
+
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 20px;
+
+		padding: 20px 40px 20px 40px;
+
+		overflow: hidden;
+
+    }
+
+	#changelog-wrapper{
+
+		position: relative;
+		overflow: hidden;
+		width: auto;
+		height: auto;
+		margin: 20px 0px 20px 0px;
+		border-radius: 4px;
+		border: 1px solid transparent;
+
+	}
+
+	#changelog{
+
+		position: relative;
+		white-space: pre-wrap;
+
+		background-color: var(--changelog-background);
+		padding: 0px 30px 2px 30px;
+		border-radius: 4px;
+		border: 1px solid var(--menu-border-color);
+
+		height: 300px;
+		overflow-y: scroll;
+
+	}
+	
+	#changelog-wrapper::after{
+
+		box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.15);
+		content: "";
+		background-color: transparent;
+	
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		z-index: 999;
+		
+		pointer-events: none;
+
+	}
+
+	.headline {
+
+		font-size: 32px;
+		font-weight: 800;
+		line-height: 38px;
+		margin: 20px 0px 20px 0px;
+		display: block;
+
+		margin-bottom: 20px;
+
+		
+	}
+
+	.versionnumber {
+
+		font-size: 10px;
+		font-weight: 300;
+		line-height: 14px;
+
+		opacity: 60%;
+		
+		vertical-align:top;
+
+		border-top: 5px solid transparent;
+		box-sizing: border-box;
+
+		padding-left: 8px;
+		display: inline-block;
+	}
+	
+	#changelog .headline {
+
+		border-top: 16px solid var(--changelog-background);
+
+		font-size: 18px;
+		line-height: 22px;
+		margin: 0px 0 8px 0; 
+
+		display: block;
+		background-color: color-mix(in oklab, var(--menu-background), white 20%) ;
+
+		
+		position: sticky;
+		top: 0;
+
+	}
+
+	#changelog p:has(+ li) {
+
+		margin-bottom: 2px;
+
+	}
+
+    li {
+
+        list-style-type: none;
+        padding-top: 3px;
+		padding-left: 20px;
+    }
+
+	li.changelogList{
+
+		list-style-type: disc;
+		padding-top: 0;
+		text-indent: -15px;
+		padding-left: 40px
+
+	}
+
+	li.changelogList.level2{
+
+		list-style-type: circle;
+		text-indent: -18px;
+		padding-left: 58px;
+		padding-top: 0;
+
+	}
+
+	.shortcut {
+
+		display: none;
+
+	}
+
+	.explanation {
+
+		font-size: 11px;
+		line-height: 14px;
+		margin-left: 21px;
+		margin-top: -2px;
+		display: block;
+
+		font-style: italic;
+		opacity: 60%;
+
+	}
+
+	label:hover .shortcut {
+
+		display: inline;
+
+	}
+
+	.dialogBottomButtonRow {
+
+		position: absolute;
+		bottom: 20px;
+		right: 20px;
+
+	}
+
+	button{
+
+		font-size: 13px;
+
+	}
+
+	button:hover{
+
+		border: initial !important;
+		border-radius: 4px !important; 
+		padding: 2px 8px 3px 8px;
+		border-radius: inherit !important; 
+		background-color: var(--menu-hover-color);
+		color: white;
+		/* pointer-events: none; */
+
+	}
+
+	hr {
+
+		opacity: 50%;
+		margin: 0 40px;
+		mix-blend-mode: multiply;
+
+	}
+
+	ul {
+
+		margin-top: 0px;
+		margin-bottom: 0px;
+
+	}
+
+	code {
+
+		font-family: monospace;
+
+		background-color: color-mix(in oklab, var(--menu-background), black 5%) ;
+		border: 1px solid color-mix(in oklab, var(--menu-background), black 10%) ;
+		/* color: white; */
+		padding: 0px 4px 1px 4px;
+		border-radius: 3px;
+
+	}
+
+
+</style>
