@@ -29,6 +29,7 @@
 
 // iOS-only
 #import <UIKit/UIKit.h>
+@class BeatPluginHTMLViewController;
 
 #endif
 
@@ -350,11 +351,15 @@ JSExportAs(dropdownPrompt, - (NSString*)dropdownPrompt:(NSString*)prompt withInf
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 
 #pragma mark Displaying HTML content
-#if !TARGET_OS_IOS
-	JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-	JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
-    - (NSDictionary*)printInfo;
-    JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+#if TARGET_OS_OSX
+// macOS HTML views
+JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+- (NSDictionary*)printInfo;
+JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+#else
+// iOS HTML views
+JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 #endif
 
 
@@ -420,6 +425,11 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic) BeatRevisions* revisionTracking;
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
+#if TARGET_OS_IOS
+- (void)registerPluginViewController:(BeatPluginHTMLViewController*)view;
+- (void)unregisterPluginViewController:(BeatPluginHTMLViewController*)view;
+#endif
+
 - (BeatPaginationManager*)pagination;
 - (void)createPreviewAt:(NSRange)range;
 - (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;

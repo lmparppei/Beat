@@ -7,28 +7,38 @@
 
 import UIKit
 
-@objc public class BeatPluginHTMLViewController:UIViewController, BeatHTMLView, WKNavigationDelegate {
+@objc public class BeatPluginHTMLViewController:UIViewController, BeatHTMLView, BeatPluginWebViewExports, WKNavigationDelegate {
     @IBOutlet @objc public var webView:BeatPluginWebView?
     public var callback: JSValue?
     public var host: BeatPlugin?
-    
     public var displayed: Bool = false
-    var shouldShow = false
     
-    var name:String? {
+    public var name:String? {
         return host?.pluginName
     }
     
+    var shouldShow = false
+    
     public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback: JSValue?) {
-        self.webView = BeatPluginWebView.create(html: html, width: width, height: height, host: host)
         self.callback = callback
         self.host = host
+                
+        super.init(nibName: nil, bundle: nil)
         
-        super.init(nibName: "BeatPluginContainerViewController", bundle: Bundle.main)
+        self.webView = BeatPluginWebView.create(html: html, width: self.view.frame.width, height: self.view.frame.height, host: host)
+        self.webView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        if (webView != nil) {
-            self.view.addSubview(webView!)
+        if let webView = self.webView {
+            self.view.addSubview(webView)
         }
+        
+        self.modalPresentationStyle = .pageSheet
+        //self.view.frame = CGRectMake(0.0, 0.0, width, height) // Arbitrary size to fill the sheet
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        //self.view.frame.size.height = self.view.window?.screen.bounds.height ?? 800.0
     }
     
     required init?(coder: NSCoder) {
@@ -48,12 +58,16 @@ import UIKit
         
     }
     
+    @objc public func setFrame(_ rect:CGRect) {
+        // No frame setting on iOS
+    }
+    
     @objc public func setHTML(_ html:String) {
         webView?.setHTML(html)
     }
     
     /// Executes given string in the web view of this panel
-    @objc public func runJS(_ js:String, callback:JSValue?) {
+    @objc public func runJS(_ js:String, _ callback:JSValue?) {
         self.webView?.runJS(js, callback)
     }
     

@@ -812,9 +812,14 @@
 		NSString *path = [[BeatPluginManager.sharedManager pathForPlugin:_plugin.name] stringByAppendingPathComponent:filename];
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 	} else {
+#if TARGET_OS_OSX
         NSString* msg = [NSString stringWithFormat:@"Can't find bundled file '%@' – Are you sure the plugin is contained in a self-titled folder? For example: Plugin.beatPlugin/Plugin.beatPlugin", filename];
 		[self log:msg];
 		return @"";
+#else
+        NSLog(@"WARNING: asset as string is trying to find files from app bundle. Remove once done.");
+        return [self appAssetAsString:filename];
+#endif
 	}
 }
 
@@ -984,7 +989,15 @@
 {
 #if TARGET_OS_IOS
 	// Do something on iOS
-	NSLog(@"WARNING: Beat.alert missing on iOS");
+    UIViewController* vc = (UIViewController*)self.delegate;
+    UIAlertController* ac = [UIAlertController alertControllerWithTitle:title message:info preferredStyle:UIAlertControllerStyleAlert];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [ac dismissViewControllerAnimated:false completion:nil];
+    }]];
+    [vc presentViewController:ac animated:false completion:^{
+        //
+    }];
+    
 #else
 	// Send back to main thread
 	if (!NSThread.isMainThread) {
@@ -1409,9 +1422,11 @@
     BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:false callback:callback];
     [self registerPluginWindow:htmlVC];
         
-    UIViewController* documentVC = self.delegate.document;
+    UIViewController* documentVC = (UIViewController*)self.delegate;
     [documentVC presentViewController:htmlVC animated:true completion:nil];
-        
+     
+    [self.delegate registerPluginViewController:htmlVC];
+    
     return htmlVC;
 }
 
