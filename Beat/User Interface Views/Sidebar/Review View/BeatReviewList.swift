@@ -95,11 +95,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	}
 	
 	func visible() -> Bool {
-		if enclosingTabView?.tabView?.selectedTabViewItem == enclosingTabView {
-			return true
-		} else {
-			return false
-		}
+		return (enclosingTabView?.tabView?.selectedTabViewItem == enclosingTabView && self.editorDelegate?.sidebarVisible() ?? false)
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
