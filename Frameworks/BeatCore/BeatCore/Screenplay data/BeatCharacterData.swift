@@ -10,7 +10,7 @@ import Foundation
 @objc public class BeatCharacter:NSObject
 {
     @objc public var name:String
-    @objc public var aliases:Set<String>
+    @objc public var aliases:[String]
     @objc public var bio:String
     @objc public var age:String
     @objc public var gender:String = "unspecified"
@@ -46,7 +46,7 @@ import Foundation
         }
     }
     
-    @objc public init(name: String = "", aliases: Set<String> = [], bio: String = "", age: String = "", gender: String = "", highlightColor: String = "", realName: String? = nil, lines: Int = 0, scenes: Set<OutlineScene> = [] ) {
+    @objc public init(name: String = "", aliases: [String] = [], bio: String = "", age: String = "", gender: String = "", highlightColor: String = "", realName: String? = nil, lines: Int = 0, scenes: Set<OutlineScene> = [] ) {
         self.name = name
         self.aliases = aliases
         self.bio = bio
@@ -64,7 +64,7 @@ import Foundation
         let character = BeatCharacter()
         
         character.name = (dict["name"] as? String) ?? ""
-        character.aliases = (dict["aliases"] as? Set<String>) ?? []
+        character.aliases = dict["aliases"] as? [String] ?? []
         character.bio = (dict["bio"] as? String) ?? ""
         character.age = (dict["age"] as? String) ?? ""
         character.gender = (dict["gender"] as? String) ?? character.gender
@@ -91,12 +91,22 @@ import Foundation
     
     /// Gets stored character data, collects EVERY character name from screenplay, stores the number of lines and scenes for each character and returns a dictionary with names mapped to character object.
     @objc public func charactersAndLines(lines providedLines:[Line] = []) -> [String:BeatCharacter] {
-        guard let parser = self.delegate?.parser else { return [:] }
+        guard let parser = self.delegate?.parser else { print("No parser"); return [:] }
         
         let lines = (providedLines.count > 0) ? providedLines : parser.safeLines() as? [Line] ?? []
         
         // First get any stored character data and merge
         var characters = self.characters()
+        
+        // Then gather all known aliases
+        var aliases:[String:String] = [:]
+        for name in characters.keys {
+            if let character = characters[name], character.aliases.count > 0 {
+                for alias in character.aliases {
+                    aliases[alias.uppercased()] = character.name
+                }
+            }
+        }
         
         var currentScene:Line?
         
@@ -106,11 +116,15 @@ import Foundation
             
             let name = line.characterName() ?? ""
             if name.count > 0 {
-                if characters[name] == nil {
-                    characters[name] = BeatCharacter(name:name)
+                // Set real name based on alias if needed
+                let realName = (aliases[name] == nil) ? name : aliases[name]!
+                
+                // Create the character data element for non-existent characters
+                if characters[realName] == nil {
+                    characters[realName] = BeatCharacter(name:realName)
                 }
                 
-                let character = characters[name]
+                let character = characters[realName]
                 character?.lines += 1
                 
                 if currentScene != nil {
@@ -119,8 +133,7 @@ import Foundation
             }
         }
         
-        let allNames = characters.keys
-        for name in allNames {
+        for name in characters.keys {
             if let character = characters[name] {
                 if character.lines == 0 {
                     characters.removeValue(forKey: name)
