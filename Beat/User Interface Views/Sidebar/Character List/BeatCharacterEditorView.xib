@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,11 +22,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView appearanceType="darkAqua" id="Qiz-5o-a1c">
-            <rect key="frame" x="0.0" y="0.0" width="226" height="397"/>
+            <rect key="frame" x="0.0" y="0.0" width="242" height="397"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9VD-7y-Hty" customClass="BeatGenderRadioButton" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="19" y="293" width="187" height="18"/>
+                    <rect key="frame" x="19" y="293.5" width="203" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="radio" title="gender.unspecified" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="2YJ-LZ-mVc">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -40,7 +41,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="s5X-kF-CNf" customClass="BeatGenderRadioButton" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="19" y="273" width="187" height="19"/>
+                    <rect key="frame" x="19" y="273.5" width="203" height="19"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="radio" title="gender.woman" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="gO5-vN-Jem">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -55,7 +56,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H1V-OL-9gm" customClass="BeatGenderRadioButton" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="19" y="252" width="187" height="18"/>
+                    <rect key="frame" x="19" y="252.5" width="203" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="radio" title="gender.man" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="x1u-9x-GkF">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -70,7 +71,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nJZ-B1-yhM" customClass="BeatGenderRadioButton" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="19" y="232" width="187" height="18"/>
+                    <rect key="frame" x="19" y="232.5" width="203" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="radio" title="gender.other" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="iRf-Ay-XIz">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -85,7 +86,7 @@
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OHo-E7-oom">
-                    <rect key="frame" x="20" y="328" width="188" height="49"/>
+                    <rect key="frame" x="20" y="328" width="175" height="49"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" title="Name, lines, scenes" id="TiD-3b-hfO">
                         <font key="font" metaFont="system"/>
@@ -118,7 +119,7 @@
                     </userDefinedRuntimeAttributes>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lp8-S0-Fml">
-                    <rect key="frame" x="141" y="191" width="65" height="21"/>
+                    <rect key="frame" x="157" y="191" width="65" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" borderStyle="border" alignment="right" placeholderString="?" id="n9E-US-RUI">
                         <font key="font" metaFont="system"/>
@@ -130,34 +131,34 @@
                     </connections>
                 </textField>
                 <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Wns-rY-ixP">
-                    <rect key="frame" x="20" y="317" width="186" height="5"/>
+                    <rect key="frame" x="20" y="317" width="202" height="5"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </box>
                 <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fkx-oN-5qH">
-                    <rect key="frame" x="20" y="218" width="186" height="5"/>
+                    <rect key="frame" x="20" y="218" width="202" height="5"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </box>
                 <box verticalHuggingPriority="750" boxType="separator" id="tv6-KE-rLB">
-                    <rect key="frame" x="20" y="41" width="186" height="5"/>
+                    <rect key="frame" x="20" y="41" width="202" height="5"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </box>
                 <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="drD-St-sEW">
-                    <rect key="frame" x="20" y="180" width="186" height="5"/>
+                    <rect key="frame" x="20" y="180" width="202" height="5"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </box>
                 <scrollView appearanceType="darkAqua" borderType="line" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" id="RK0-hx-hkM">
-                    <rect key="frame" x="20" y="52" width="186" height="98"/>
+                    <rect key="frame" x="20" y="52" width="202" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <clipView key="contentView" drawsBackground="NO" id="xcc-Ks-SYk">
-                        <rect key="frame" x="1" y="1" width="184" height="96"/>
+                        <rect key="frame" x="1" y="1" width="200" height="96"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="byz-uh-0VA">
-                                <rect key="frame" x="0.0" y="0.0" width="184" height="96"/>
+                                <rect key="frame" x="0.0" y="0.0" width="200" height="96"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                <size key="minSize" width="184" height="96"/>
+                                <size key="minSize" width="200" height="96"/>
                                 <size key="maxSize" width="264" height="10000000"/>
                                 <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 <connections>
@@ -171,7 +172,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="AZg-Wn-3oC">
-                        <rect key="frame" x="169" y="1" width="16" height="96"/>
+                        <rect key="frame" x="185" y="1" width="16" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
@@ -209,12 +210,25 @@
                         <action selector="nextLine:" target="-2" id="UP9-ee-GlC"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" id="AR9-Dk-80O">
+                    <rect key="frame" x="187" y="350" width="42" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" bezelStyle="rounded" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w2R-DL-XpA">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <imageReference key="image" image="person.fill.badge.plus" catalog="system" symbolScale="large"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="openAliasMenu:" target="-2" id="2TF-WE-Wdl"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="-39" y="251.5"/>
+            <point key="canvasLocation" x="-31" y="251.5"/>
         </customView>
     </objects>
     <resources>
-        <image name="arrowtriangle.down.fill" catalog="system" width="13" height="13"/>
-        <image name="arrowtriangle.up.fill" catalog="system" width="13" height="13"/>
+        <image name="arrowtriangle.down.fill" catalog="system" width="14" height="13"/>
+        <image name="arrowtriangle.up.fill" catalog="system" width="14" height="13"/>
+        <image name="person.fill.badge.plus" catalog="system" width="21" height="22"/>
     </resources>
 </document>

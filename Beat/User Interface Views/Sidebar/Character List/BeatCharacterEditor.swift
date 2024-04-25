@@ -11,9 +11,14 @@ import BeatCore
 
 @objc protocol BeatCharacterListDelegate: AnyObject {
 	var editorDelegate:BeatEditorDelegate? { get }	
+	var characterData:BeatCharacterData { get }
+	
 	func editorDidClose(for character:BeatCharacter)
 	func reloadView()
 }
+
+
+// MARK: - Character editor view controller
 
 /// Character editor view controller
 @objc class BeatCharacterEditorView:NSViewController, NSTextViewDelegate, NSControlTextEditingDelegate {
@@ -24,12 +29,18 @@ import BeatCore
 	@objc @IBOutlet weak var biography:NSTextView?
 	@objc @IBOutlet weak var age:NSTextField?
 	
+	@objc @IBOutlet weak var aliasButton:NSButton?
+	@objc @IBOutlet var aliasMenu:NSMenu?
+	
 	@objc @IBOutlet weak var genderUnspecified:NSButton?
 	@objc @IBOutlet weak var genderWoman:NSButton?
 	@objc @IBOutlet weak var genderMan:NSButton?
 	@objc @IBOutlet weak var genderOther:NSButton?
 	
+	@objc var allNames:[String] = []
+	
 	@objc var changed = false
+	@objc var changesRequireReload = false
 	
 	/// Character reference: When set, object values are loaded into the view.
 	@objc weak var character:BeatCharacter? {
@@ -93,7 +104,66 @@ import BeatCore
 	@IBAction @objc func prevLine(_ sender:Any?) {
 		self.manager?.prevLine()
 	}
+	
+	// MARK: Alias menus
+	
+	@objc func createAliasMenu() -> NSMenu? {
+		guard let character else { print("No character"); return nil }
+		
+		// Populate alias list
+		if let characterData = manager?.characterData {
+			var names = characterData.charactersAndLines()
+			
+			// Remove this character's name
+			names.removeValue(forKey: character.name)
+			
+			aliasMenu = NSMenu()
+			
+			// First, add existing aliases
+			for alias in character.aliases {
+				let aliasItem = NSMenuItem(title: alias, action: #selector(selectAlias), keyEquivalent: "")
+				aliasItem.state = .on
+				aliasMenu?.addItem(aliasItem)
+			}
+			
+			// Then, all others in alphabetical order
+			for name in names.keys.sorted() {
+				let aliasItem = NSMenuItem(title: name, action: #selector(selectAlias), keyEquivalent: "")
+				aliasMenu?.addItem(aliasItem)
+			}
+		}
+		
+		return aliasMenu
+	}
+	
+	@objc func selectAlias(_ sender:NSMenuItem) {
+		guard let character = self.character else { return }
+		
+		let name = sender.title
+		
+		// If the alias exists, remove it, otherwise add it
+		if character.aliases.contains(name) {
+			character.aliases.removeObject(object: name)
+		} else {
+			character.aliases.append(name)
+		}
+		
+		manager?.saveCharacter(character, reloadView: true)
+		self.changed = true
+	}
+	
+	@IBAction func openAliasMenu(_ sender:NSButton?) {
+		guard let sender else { return }
+		let location = NSPoint(x: 0, y: sender.frame.height + 5)
+		
+		self.aliasMenu = createAliasMenu()
+		self.aliasMenu?.popUp(positioning: nil, at: location, in: sender)
+	}
+	
 }
+
+
+// MARK: - Popover manager
 
 @objc class BeatCharacterEditorPopoverManager:NSObject, NSPopoverDelegate {
 	@objc let popover: NSPopover
@@ -102,9 +172,12 @@ import BeatCore
 	weak var listDelegate: BeatCharacterListDelegate?
 	weak var editorView:BeatCharacterEditorView?
 	var character:BeatCharacter
+	var characterData:BeatCharacterData
 		
-	@objc init(editorDelegate:BeatEditorDelegate, listView:BeatCharacterListDelegate, character:BeatCharacter) {
+	@objc init(editorDelegate:BeatEditorDelegate, listView:BeatCharacterListDelegate, character:BeatCharacter, characterData:BeatCharacterData) {
 		self.character = character
+		self.characterData = characterData
+		
 		self.popover = NSPopover()
 		
 		self.delegate = editorDelegate
@@ -125,9 +198,9 @@ import BeatCore
 		if #available(macOS 10.14, *) {
 			popover.appearance = NSAppearance(named: .darkAqua)
 		}
-		
-		vc.character = self.character
+				
 		vc.manager = self
+		vc.character = self.character
 		
 		self.editorView = vc
 	}

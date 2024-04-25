@@ -244,7 +244,7 @@
 	
 	// If the character exists, show popover
 	if (character != nil) {
-		_popoverManager = [BeatCharacterEditorPopoverManager.alloc initWithEditorDelegate:self.editorDelegate listView:self character:character];
+		_popoverManager = [BeatCharacterEditorPopoverManager.alloc initWithEditorDelegate:self.editorDelegate listView:self character:character characterData:data];
 		[_popoverManager.popover showRelativeToRect:rowFrame ofView:self preferredEdge:NSMaxXEdge];
 	}
 }
