@@ -95,7 +95,7 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
@@ -383,7 +383,7 @@
                                                                                 <rect key="frame" x="0.0" y="117" width="300" height="378"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
@@ -1266,7 +1266,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
-                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
@@ -1343,7 +1343,7 @@
                                                     <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
                                                         <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
                                                                 <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>
@@ -1709,6 +1709,7 @@
                                 <viewController key="viewController" id="KSd-sk-RAR">
                                     <view key="view" translatesAutoresizingMaskIntoConstraints="NO" id="LyB-YR-3Ea" customClass="TouchTimelineView">
                                         <rect key="frame" x="0.0" y="0.0" width="685" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <connections>
                                             <outlet property="delegate" destination="-2" id="pMW-H4-giz"/>
                                         </connections>

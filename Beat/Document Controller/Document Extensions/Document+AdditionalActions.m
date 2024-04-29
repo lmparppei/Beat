@@ -40,10 +40,12 @@
 
 #pragma mark - Title page editor
 
-- (IBAction)editTitlePage:(id)sender {
+- (IBAction)editTitlePage:(id)sender
+{
 	BeatTitlePageEditor* titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];
 	
 	[self.documentWindow beginSheet:titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
+		NSLog(@"OK!");
 	}];
 }
 
