@@ -50,6 +50,10 @@
 @property (weak) IBOutlet NSButton* revisionSecond;
 @property (weak) IBOutlet NSButton* revisionThird;
 @property (weak) IBOutlet NSButton* revisionFourth;
+@property (weak) IBOutlet NSButton* revisionFifth;
+@property (weak) IBOutlet NSButton* revisionSixth;
+@property (weak) IBOutlet NSButton* revisionSeventh;
+@property (weak) IBOutlet NSButton* revisionEight;
 
 @property (weak) IBOutlet NSButton* printSections;
 @property (weak) IBOutlet NSButton* printSynopsis;
@@ -366,13 +370,12 @@ static CGFloat panelWidth;
 
 - (NSIndexSet*)printedRevisions
 {
-	// TODO: Make sense to this :----)
 	NSMutableIndexSet* revisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
-		
-	if (self.revisionFirst.state != NSOnState) [revisions removeIndex:0];
-	if (self.revisionSecond.state != NSOnState) [revisions removeIndex:1];
-	if (self.revisionThird.state != NSOnState) [revisions removeIndex:2];
-	if (self.revisionFourth.state != NSOnState) [revisions removeIndex:3];
+	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
+	
+	for (NSButton* b in revisionControls) {
+		if (b.state != NSOnState) [revisions removeIndex:b.tag];
+	}
 	
 	return revisions;
 }

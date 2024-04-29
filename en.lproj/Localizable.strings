@@ -101,6 +101,20 @@
 "color.orange" = "Orange";
 "color.magenta" = "Magenta";
 "color.purple" = "Purple";
+"color.salmon" = "Salmon";
+"color.rose" = "Rose";
+"color.goldenrod" = "Goldenrod";
+"color.buff" = "Buff";
+"color.cherry" = "Cherry";
+
+"revision.1" = "First";
+"revision.2" = "Second";
+"revision.3" = "Third";
+"revision.4" = "Fourth";
+"revision.5" = "Fifth";
+"revision.6" = "Sixth";
+"revision.7" = "Seventh";
+"revision.8" = "Eighth";
 
 "revisionMode.reviseLine" = "Mark Current Line as Revised";
 "revisionMode.reviseSelection" = "Mark Current Selection as Revised";

@@ -93,19 +93,14 @@
     
     if (generations == nil) {
         generations = @[
-//            [BeatRevisionGeneration withColor:@"blue" marker:@"*"],
-//            [BeatRevisionGeneration withColor:@"orange" marker:@"**"],
-//            [BeatRevisionGeneration withColor:@"purple" marker:@"+"],
-//            [BeatRevisionGeneration withColor:@"green" marker:@"++"]
             [BeatRevisionGeneration withLevel:0 color:@"blue" marker:@"*"],
             [BeatRevisionGeneration withLevel:1 color:@"pink" marker:@"**"],
             [BeatRevisionGeneration withLevel:2 color:@"yellow" marker:@"+"],
             [BeatRevisionGeneration withLevel:3 color:@"green" marker:@"++"],
-            [BeatRevisionGeneration withLevel:4 color:@"orange" marker:@"@"],
-            [BeatRevisionGeneration withLevel:5 color:@"goldenrod" marker:@"@@"],
-            [BeatRevisionGeneration withLevel:6 color:@"salmon" marker:@"@@"],
-            [BeatRevisionGeneration withLevel:7 color:@"cherry" marker:@"#"],
-            [BeatRevisionGeneration withLevel:8 color:@"purple" marker:@"##"],
+            [BeatRevisionGeneration withLevel:4 color:@"goldenrod" marker:@"@"],
+            [BeatRevisionGeneration withLevel:5 color:@"buff" marker:@"@@"],
+            [BeatRevisionGeneration withLevel:6 color:@"rose" marker:@"#"],
+            [BeatRevisionGeneration withLevel:7 color:@"cherry" marker:@"##"],
         ];
     }
     

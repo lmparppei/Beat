@@ -62,12 +62,19 @@ class BeatDesktopQuickSettings:NSViewController {
 		// First item is A4, second item US Letter
 		pageSizePopup?.selectItem(at: delegate.pageSize.rawValue)
 		
-		if revisionColorPopup != nil {
-			for item in revisionColorPopup!.itemArray {
-				guard let cItem = item as? BeatColorMenuItem else { continue }
+		// Remove placeholder menu items and append all generations
+		if let revisionColorPopup {
+			revisionColorPopup.removeAllItems()
+			
+			var i = 1
+			for generation in BeatRevisions.revisionGenerations() {
+				revisionColorPopup.addItem(withTitle: NSLocalizedString("revision.\(i)", comment: generation.color))
+				revisionColorPopup.lastItem?.image = BeatColors.labelImage(forColor: generation.color, size: CGSizeMake(16, 16))
 				
-				revisionColorPopup?.selectItem(at: delegate.revisionLevel)
+				i += 1
 			}
+			
+			revisionColorPopup.selectItem(at: delegate.revisionLevel)
 		}
 		
 		if delegate.mode == .ReviewMode {

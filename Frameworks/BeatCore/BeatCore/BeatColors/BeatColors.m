@@ -29,12 +29,16 @@
 			 @"red" : [BeatColors colorWithRed:239 green:0 blue:73],
 			 @"blue" : [BeatColors colorWithRed:0 green:129 blue:239],
 			 @"green": [BeatColors colorWithRed:0 green:223 blue:121],
-			 @"pink": [BeatColors colorWithRed:250 green:111 blue:193],
+			 @"pink": [BeatColors colorWithRed:254 green:131 blue:223],
 			 @"magenta": [BeatColors colorWithRed:236 green:0 blue:140],
 			 @"gray": [BeatColors colorWithRed:128 green:128 blue:128],
 			 @"grey": [BeatColors colorWithRed:128 green:128 blue:128], // for the illiterate
 			 @"purple": [BeatColors colorWithRed:181 green:32 blue:218],
-			 @"yellow": [BeatColors colorWithRed:251 green:193 blue:35],
+			 @"yellow": [BeatColors colorWithRed:251 green:200 blue:45],
+             @"goldenrod": [BeatColors colorWithRed:215 green:148 blue:15],
+             @"rose": [BeatColors colorWithRed:236 green:184 blue:152],
+             @"buff": [BeatColors colorWithRed:118 green:100 blue:86],
+             @"cherry": [BeatColors colorWithRed:236 green:90 blue:150],
 			 @"cyan": [BeatColors colorWithRed:7 green:189 blue:235],
 			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227],
 			 @"orange": [BeatColors colorWithRed:255 green:161 blue:13],
@@ -152,6 +156,37 @@
 #endif
     return result;
 }
+
+#if TARGET_OS_OSX
+
+/// Creates an image to be used with UI elements to represent colors
++ (NSImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size
+{
+    static NSMutableDictionary<NSString*, NSImage*>* labelImages;
+    if (labelImages == nil) labelImages = NSMutableDictionary.new;
+    
+    colorName = colorName.lowercaseString;
+    if (labelImages[colorName] != nil) return labelImages[colorName];
+    
+    BXColor* color = [BeatColors color:colorName];
+    CGFloat w = size.width; CGFloat h = size.height;
+    CGFloat padding = w * 0.1;
+    
+    NSImage* image = [NSImage.alloc initWithSize:CGSizeMake(w, h)];
+    
+    CGRect rect = CGRectMake(padding, padding, w - 2 * padding, h - 2 * padding);
+    NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:w / 2 yRadius:h / 2];
+    
+    [image lockFocus];
+    [color setFill];
+    [path fill];
+    [image unlockFocus];
+    
+    labelImages[colorName] = image;
+    return image;
+}
+
+#endif
 
 @end
 /*

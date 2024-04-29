@@ -97,8 +97,9 @@
 "color.magenta" = "Magenta";
 "color.purple" = "Violetti";
 "color.salmon" = "Lohi";
+"color.rose" = "Roosa";
 "color.goldenrod" = "Pajunkukka";
-"color.buff" = "Nahka";
+"color.buff" = "Tuhka";
 "color.cherry" = "Kirsikka";
 
 "contextMenu.omitScene" = "Piilota kohtaus";
@@ -204,3 +205,13 @@
 "backup.browseVersions" = "Selaa versioita...";
 
 "quickSettings.novelLineHeightMultiplier" = "Riviväli";
+
+"revision.1" = "Ensimmäinen";
+"revision.2" = "Toinen";
+"revision.3" = "Kolmas";
+"revision.4" = "Neljäs";
+"revision.5" = "Viides";
+"revision.6" = "Kuudes";
+"revision.7" = "Seitsemäs";
+"revision.8" = "Kahdeksas";
+
