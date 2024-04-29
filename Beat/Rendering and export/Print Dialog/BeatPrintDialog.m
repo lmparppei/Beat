@@ -364,16 +364,17 @@ static CGFloat panelWidth;
 	_firstPreview = NO;
 }
 
-- (NSArray*)printedRevisions
+- (NSIndexSet*)printedRevisions
 {
-	NSMutableArray *printedRevisions = NSMutableArray.new;
-	NSArray *colors = BeatRevisions.revisionColors;
-	if (self.revisionFirst.state == NSOnState) [printedRevisions addObject:colors[0]];
-	if (self.revisionSecond.state == NSOnState) [printedRevisions addObject:colors[1]];
-	if (self.revisionThird.state == NSOnState) [printedRevisions addObject:colors[2]];
-	if (self.revisionFourth.state == NSOnState) [printedRevisions addObject:colors[3]];
+	// TODO: Make sense to this :----)
+	NSMutableIndexSet* revisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
+		
+	if (self.revisionFirst.state != NSOnState) [revisions removeIndex:0];
+	if (self.revisionSecond.state != NSOnState) [revisions removeIndex:1];
+	if (self.revisionThird.state != NSOnState) [revisions removeIndex:2];
+	if (self.revisionFourth.state != NSOnState) [revisions removeIndex:3];
 	
-	return printedRevisions;
+	return revisions;
 }
 
 - (IBAction)toggleHeaderAlignment:(NSSegmentedControl*)sender

@@ -123,7 +123,7 @@
 #pragma mark - Screenplay document data
 
 @property (nonatomic) NSDictionary<NSString*, NSString*>* characterGenders;
-@property (nonatomic) NSString *revisionColor;
+@property (nonatomic) NSInteger revisionLevel;
 
 @property (nonatomic) bool printSceneNumbers;
 

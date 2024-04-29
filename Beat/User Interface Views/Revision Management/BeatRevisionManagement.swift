@@ -43,12 +43,11 @@ import BeatCore.BeatRevisions
 		
 		input.accessoryView = accessoryView
 		
-		let colors = BeatRevisions.revisionColors()
-		for color in colors {
-			dropdown.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
+		for generation in BeatRevisions.revisionGenerations() {
+			dropdown.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + generation.color))
 			
 			if let item = dropdown.itemArray.last {
-				item.image = NSImage(named: "color." + color)
+				item.image = NSImage(named: "color." + generation.color)
 			}
 		}
 				

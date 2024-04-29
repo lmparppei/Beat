@@ -182,15 +182,16 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
         if let attrStr = pageView?.attributedString,
            NSIntersectionRange(range, attrStr.range).length == range.length {
             
-            var highestRevisions:[NSValue:String] = [:]
+            var highestRevisions:[NSValue:Int] = [:]
             
             // TODO: Flip these somehow (rects vs. attrs) or something
             // Or better yet, maybe create a dictinoary with line rect as key and the highest revision there
             attrStr.enumerateAttribute(NSAttributedString.Key(rawValue: BeatRevisions.attributeKey()), in: range, using: { value, attrRange, stop in
-                guard let revision = value as? String else { return }
+                guard let revisionValue = value as? NSNumber else { return }
+                let generation = revisionValue.intValue
                 
                 // If the revision is not included in settings, just skip it.
-                if (!visibleRevisions.contains(where: { $0 == revision })) {
+                if (!visibleRevisions.contains(where: { $0 == generation })) {
                     return
                 }
                 
@@ -209,13 +210,12 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
                 for rect in rects {
                     let rectValue = NSValue(cgRect: rect)
                     if highestRevisions[rectValue] == nil {
-                        highestRevisions[rectValue] = revision
+                        highestRevisions[rectValue] = generation
                     } else {
                         // Don't draw a revision marker because there already was a higher one
-                        let highest = highestRevisions[rectValue] ?? ""
-                        if !BeatRevisions.isNewer(revision, than: highest) {
-                            continue
-                        }
+                        let highest = highestRevisions[rectValue] ?? 0
+
+                        if revision < highest { continue }
                     }
                     
                     let localY = rect.origin.y - layoutFrame.origin.y

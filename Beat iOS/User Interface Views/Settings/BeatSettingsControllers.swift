@@ -133,10 +133,7 @@ class BeatSettingsViewController:UITableViewController {
 	}
 	
 	@IBAction func selectRevisionGeneration(_ sender:UISegmentedControl) {
-		let generations = BeatRevisions.revisionGenerations()
-		let gen = generations[sender.selectedSegmentIndex]
-		
-		delegate?.revisionColor = gen.color
+		delegate?.revisionLevel = sender.selectedSegmentIndex
 	}
 	
 	@IBAction func toggleHeadingSpacing(_ sender:UISegmentedControl) {

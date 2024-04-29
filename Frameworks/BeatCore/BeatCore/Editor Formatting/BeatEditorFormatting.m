@@ -801,7 +801,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		BeatRevisionItem* revision = value;
 		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
 		
-		BXColor* color = BeatColors.colors[revision.colorName];
+        NSString* colorName = BeatRevisions.revisionGenerations[revision.generationLevel].color;
+        
+		BXColor* color = BeatColors.colors[colorName];
 		if (color == nil) return;
 		
 		[self addAttribute:NSForegroundColorAttributeName value:color range:range];

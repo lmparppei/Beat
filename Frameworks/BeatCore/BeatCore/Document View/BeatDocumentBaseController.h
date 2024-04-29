@@ -281,11 +281,13 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Revisions
 
 @property (nonatomic) IBOutlet BeatRevisions* _Nonnull revisionTracking;
-@property (nonatomic) NSString* _Nullable revisionColor;
+//@property (nonatomic) NSString* _Nullable revisionColor;
+/// Current revision level
+@property (nonatomic) NSInteger revisionLevel;
 
 - (void)bakeRevisions;
 - (NSDictionary* _Nonnull)revisedRanges;
-- (NSArray* _Nonnull)shownRevisions;
+- (NSIndexSet* _Nonnull)shownRevisions;
 
 
 #pragma mark - Reviews

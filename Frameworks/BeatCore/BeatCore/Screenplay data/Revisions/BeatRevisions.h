@@ -16,11 +16,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatRevisionDelegate
-- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
-@end
-
 @protocol BeatRevisionExports <JSExport>
+- (void)addRevision:(NSRange)range generation:(NSInteger)generation;
 - (void)addRevision:(NSRange)range color:(NSString*)color;
 - (void)removeRevision:(NSRange)range;
 - (void)setup;
@@ -28,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRevisionGeneration: NSObject
 @property (nonatomic) NSString* color;
+@property (nonatomic) NSInteger level;
 @property (nonatomic) NSString* marker;
 @end
 
@@ -37,23 +35,23 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatRevisions: NSResponder <BeatRevisionExports>
 #endif
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string;
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(NSArray*)includedRevisions;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
-+ (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines;
 
-+ (NSString*)defaultRevisionColor;
-+ (NSArray<NSString*>*)revisionColors;
+// + (NSString*)defaultRevisionColor;
+// + (NSArray<NSString*>*)revisionColors;
+/// Returns an array of the old-school legacy revision colors for converting.
++ (NSArray<NSString*>*)legacyRevisions;
+
+/// Returns an index set with every possible revision index
++ (NSIndexSet*)everyRevisionIndex;
+
 + (NSArray<BeatRevisionGeneration*>*)revisionGenerations;
-+ (NSDictionary*)revisionLevels;
 + (NSDictionary<NSString*, NSString*>*)revisionMarkers;
-+ (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
 + (NSString*)attributeKey;
 
 @property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;
-
-/// Use this as a bridge when no editor is present. Can be null.
-@property (weak) IBOutlet id<BeatRevisionDelegate> _Nullable revisionDelegate;
 
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
@@ -73,7 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commitRevisions;
 
-- (void)addRevision:(NSRange)range color:(NSString*)color;
+- (void)addRevision:(NSRange)range generation:(NSInteger)generation;
+//- (void)addRevision:(NSRange)range color:(NSString*)color;
 - (void)removeRevision:(NSRange)range;
 
 - (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen;

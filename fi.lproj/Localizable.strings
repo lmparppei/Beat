@@ -96,6 +96,10 @@
 "color.orange" = "Oranssi";
 "color.magenta" = "Magenta";
 "color.purple" = "Violetti";
+"color.salmon" = "Lohi";
+"color.goldenrod" = "Pajunkukka";
+"color.buff" = "Nahka";
+"color.cherry" = "Kirsikka";
 
 "contextMenu.omitScene" = "Piilota kohtaus";
 

@@ -290,14 +290,14 @@
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
 {
     // Store revision names and create an array for background colors
-    static NSDictionary<NSString*, NSNumber*>* revisionLevels;
-    static NSMutableDictionary* bgColors;
+    //static NSDictionary<NSString*, NSNumber*>* revisionLevels;
+    static NSMutableDictionary<NSString*,BXColor*>* bgColors;
 
     if (_textView == nil) _textView = _editorDelegate.getTextView;
     
-    if (revisionLevels == nil) {
-        bgColors = [NSMutableDictionary dictionaryWithCapacity:10];
-        revisionLevels = BeatRevisions.revisionLevels;
+    if (bgColors == nil) {
+        NSArray* revisionGenerations = BeatRevisions.revisionGenerations;
+        bgColors = [NSMutableDictionary dictionaryWithCapacity:revisionGenerations.count];
     }
     
     CGSize inset = self.inset;
@@ -387,20 +387,23 @@
                 BXRectFill(aRect);
             }
             
-            // Make note if this line has a revision
-            if (revision.colorName != nil && (revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved)) {
-                NSInteger r = revisionLevels[revision.colorName].integerValue;
-                if (r > revisionLevel) revisionLevel = r;
+            // Make note if this line has a revision which is higher than current level
+            if ((revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) && (revision.generationLevel > revisionLevel)) {
+                revisionLevel = revision.generationLevel;
             }
             
             // Draw revision backgrounds last, so the underlines go on top of other stuff.
             if (revision.type == RevisionAddition && showRevisions && rRange.length > 0) {
                 CGRect revisionRect = aRect;
                 
-                if (bgColors[revision.colorName] == nil) {
-                    bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
+                BeatRevisionGeneration* generation = BeatRevisions.revisionGenerations[revision.generationLevel];
+                NSString* generationKey = [NSString stringWithFormat:@"revision-%lu",revision.generationLevel];
+                
+                if (bgColors[generationKey] == nil) {
+                    bgColors[generationKey] = [[BeatColors color:generation.color] colorWithAlphaComponent:.3];
                 }
-                [bgColors[revision.colorName] setFill];
+                BXColor* color = bgColors[generationKey];
+                [color setFill];
                 
                 revisionRect.origin.y += revisionRect.size.height - 1.0;
                 revisionRect.size.height = 2.0;
@@ -423,8 +426,7 @@
                                      22,
                                      usedRect.size.height + 1.0);
             
-            NSString* revision = BeatRevisions.revisionColors[revisionLevel];
-            NSAttributedString* symbol = [self markerFor:revision];
+            NSAttributedString* symbol = [self markerFor:BeatRevisions.revisionGenerations[revisionLevel]];
             
             [symbol drawInRect:rect];
         }
@@ -596,11 +598,13 @@
     return path;
 }
 
--(NSAttributedString*)markerFor:(NSString*)revisionColor {
-    if (revisionColor == nil) return NSAttributedString.new;
+-(NSAttributedString*)markerFor:(BeatRevisionGeneration*)generation {
+    if (generation == nil) return NSAttributedString.new;
     
     static BXColor* markerColor;
     static NSCache* markers;
+    
+    NSString* revisionKey = [NSString stringWithFormat:@"%lu", generation.level];
     
     if (markers == nil) markers = NSCache.new;
     
@@ -616,17 +620,17 @@
         _markerStyle.minimumLineHeight = self.editorDelegate.editorLineHeight;
     }
     
-    NSAttributedString* marker = [markers objectForKey:revisionColor];
+    NSAttributedString* marker = [markers objectForKey:revisionKey];
     if (marker == nil) {
         // Draw string
-        NSString* symbol = BeatRevisions.revisionMarkers[revisionColor];
+        NSString* symbol = generation.marker;
         marker = [NSAttributedString.alloc initWithString:symbol attributes:@{
             NSFontAttributeName: self.editorDelegate.fonts.regular,
             NSForegroundColorAttributeName: markerColor,
             NSParagraphStyleAttributeName: _markerStyle
         }];
         
-        [markers setObject:marker forKey:revisionColor];
+        [markers setObject:marker forKey:revisionKey];
     }
     
     return marker;
