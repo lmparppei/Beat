@@ -18,6 +18,7 @@
 #import <BeatPagination2/BeatPagination.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatCore.h>
+#import <NaturalLanguage/NaturalLanguage.h>
 
 //#import "Beat-Swift.h"
 
@@ -709,6 +710,7 @@
         BeatPaperSize paperSize = self.settings.paperSize;
         LineType type = line.type;
         bool forcedType = false;
+        bool rightToLeft = [self hasRightToLeftText:line];
         
         if (isDualDialogue) {
             if (line.type == character) type = dualDialogueCharacter;
@@ -728,12 +730,14 @@
         
         // We'll create additional, special attributes for some rules.
         // Let's add 100 to the type to create separate keys for split-paragraph rules.
-
         if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered) && !line.isTitlePage) {
             typeKey = @(type + 100);
         } else if (!line.paragraphIn && line.beginsNewParagraph && [self.styles forLine:line].unindentFreshParagraphs) {
             typeKey = @(type + 200);
         }
+        
+        // In the same way, RTL text needs an offset for saved value keys
+        if (rightToLeft) typeKey = @(type + 300);
         
         if (line.isTitlePage) {
             // Some extra weirdness for title pages
@@ -766,37 +770,51 @@
             // Block sizing
             CGFloat blockWidth     = [self blockWidthFor:line dualDialogue:isDualDialogue];
                         
-            // Paragraph style
+            // Paragraph style -- handle indents and margins
             NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
             pStyle.headIndent               = style.marginLeft + style.indent;
             pStyle.firstLineHeadIndent      = style.marginLeft + style.firstLineIndent;
-            
+            pStyle.tailIndent = -1 * style.marginRight; // Negative value;
+
             // Check for additional rules
             if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.paragraphIn) {
                 pStyle.firstLineHeadIndent -= style.firstLineIndent;
             }
             
-            // Add additional indent for parenthetical lines
+            // Add additional indent for parenthetical lines (hard-coded for now)
             if (line.type == parenthetical) {
                 blockWidth += 7.25;
                 pStyle.headIndent += 7.25;
             }
-                        
+            
+            // Top/bottom spacing
             pStyle.paragraphSpacingBefore = style.marginTop;
-            
             pStyle.paragraphSpacing = style.marginBottom;
-            pStyle.tailIndent = -1 * style.marginRight; // Negative value;
-            
+                        
+            // Line height
             pStyle.maximumLineHeight = self.styles.page.lineHeight;
             pStyle.minimumLineHeight = self.styles.page.lineHeight;
             
+            // Add content padding where needed
             if (!isDualDialogue && !line.isTitlePage) {
-                // Add content padding where needed
                 pStyle.firstLineHeadIndent     += self.styles.page.contentPadding;
                 pStyle.headIndent              += self.styles.page.contentPadding;
             } else if (!line.isTitlePage) {
                 pStyle.firstLineHeadIndent     = style.marginLeft;
                 pStyle.headIndent              = style.marginLeft;
+            }
+            
+            // With RTL text, we need to switch the margins
+            if (rightToLeft) {
+                CGFloat fLHI = pStyle.headIndent;
+                CGFloat tI = pStyle.tailIndent;
+                
+                // Make the values negative from what they were.
+                // In LTR text, positive value means the amount from *left* side, so a positive tail indent will mean that it's how far the tail is from LEFT SIDE of the text area.
+                // Negative value means the distance from *right* max X.
+                pStyle.tailIndent = -fLHI;
+                pStyle.headIndent = -tI;
+                pStyle.firstLineHeadIndent = -tI;
             }
             
             // Create text block for non-title page elements to restrict horizontal size
@@ -815,7 +833,8 @@
             // Text alignment
             if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
             else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
-            
+            else if (rightToLeft) pStyle.alignment = NSTextAlignmentNatural;
+                        
             // Special rules for some blocks
             if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
                 pStyle.paragraphSpacingBefore = 0;
@@ -842,6 +861,30 @@
         
         return _lineTypeAttributes[paperSizeKey][typeKey];
     }
+}
+
+
+#pragma mark - Right-to-left support
+
+- (bool)hasRightToLeftText:(Line*)line
+{
+    bool rightToLeft = false;
+    
+    // Also, let's see if we need to switch to RTL writing.
+    if (@available(macOS 10.14, *)) {
+        NLLanguage lang = [NLLanguageRecognizer dominantLanguageForString:line.string];
+        if (lang == NLLanguageArabic || lang == NLLanguageUrdu || lang == NLLanguagePersian || lang == NLLanguageHebrew) {
+            rightToLeft = true;
+        }
+    }
+    
+    return rightToLeft;
+}
+
+- (NSMutableParagraphStyle*)rtlStyleFrom:(NSMutableParagraphStyle*)style
+{
+    
+    return style;
 }
 
 
