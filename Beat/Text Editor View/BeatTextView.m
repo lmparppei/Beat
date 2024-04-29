@@ -977,14 +977,15 @@ double clamp(double d, double min, double max)
 		NSAttributedString* attrStr = [self attributedStringForPasteboardFromRange:self.selectedRange];
 		
 		BeatPasteboardItem* item = [BeatPasteboardItem.alloc initWithAttrString:attrStr];
-		[pboard writeObjects:@[item, attrStr.string]];
+		[pboard writeObjects:@[item]];
 		return true;
 	}
 	
 	return [super writeSelectionToPasteboard:pboard type:type];
 }
 
-- (void)draggingEnded:(id <NSDraggingInfo>)sender {
+- (void)draggingEnded:(id <NSDraggingInfo>)sender
+{
 	NSPasteboard *pasteboard = [sender draggingPasteboard];
 	NSArray<NSPasteboardType> *types = [pasteboard types];
 	
