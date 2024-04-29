@@ -25,9 +25,13 @@
 #import <BeatCore/BeatEditorFormatting.h>
 
 #define REVISION_ATTR @"Revision"
+#define MDOERN_REVISION_ATTR @"Revisions"
+
 #define DEFAULT_COLOR @"blue"
 #define REVISION_ORDER @[@"blue", @"orange", @"purple", @"green"]
 #define REVISION_MARKERS @{ @"blue": @"*", @"orange": @"**", @"purple": @"+", @"green": @"++" }
+
+#define LEGACY_REVISIONS @[@"blue", @"orange", @"purple", @"green"]
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
@@ -96,6 +100,15 @@
     return generations;
 }
 
+/// A shorthand for returning the marker by generation.
+/// - note: If the generation level is beyond existing generations, we'll return an empty string.
++ (NSString*)markerForGeneration:(NSInteger)generation
+{
+    NSArray<BeatRevisionGeneration*>* generations = BeatRevisions.revisionGenerations;
+    if (generation < generations.count) return generations[generation].marker;
+    else return @"";
+}
+
 /// Convenience method for getting the relevant generation
 + (BeatRevisionGeneration*)generationForColor:(NSString*)color
 {
@@ -114,6 +127,7 @@
 + (NSString*)attributeKey {
 	return REVISION_ATTR;
 }
+
 /// Returns a dictionary with "color/generation" -> generation level, ie. "blue" : 0
 + (NSDictionary*)revisionLevels {
     NSMutableDictionary* levels = NSMutableDictionary.new;
@@ -131,7 +145,7 @@
 	
 	if (currentIdx > oldIdx) return YES;
 	else if (oldIdx == NSNotFound) return YES;
-	else return NO;
+	else return NO;"
 }
 
 + (void)bakeRevisionsIntoLines:(NSArray *)lines text:(NSAttributedString *)string range:(NSRange)range {

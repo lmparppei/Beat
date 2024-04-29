@@ -31,7 +31,10 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 @interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
 @property (nonatomic) RevisionType type;
 @property (nonatomic) NSString *colorName;
+
+@property (nonatomic) NSInteger generationLevel;
 @property (nonatomic) BeatRevisionGeneration* generation;
+
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color;
 + (BeatRevisionItem*)type:(RevisionType)type;
 - (instancetype)initWithType:(RevisionType)type generation:(BeatRevisionGeneration*)generation;
