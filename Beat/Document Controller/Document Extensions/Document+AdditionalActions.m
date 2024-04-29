@@ -33,7 +33,10 @@
 
 - (IBAction)showAnalysis:(id)sender {
 	BeatStatisticsPanel* statistics = [[BeatStatisticsPanel alloc] initWithParser:self.parser delegate:self];
+	self.sheetController = statistics;
+	
 	[self.documentWindow beginSheet:statistics.window completionHandler:^(NSModalResponse returnCode) {
+		self.sheetController = nil;
 	}];
 }
 
@@ -43,9 +46,10 @@
 - (IBAction)editTitlePage:(id)sender
 {
 	BeatTitlePageEditor* titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];
+	self.sheetController = titlePageEditor;
 	
 	[self.documentWindow beginSheet:titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
-		NSLog(@"OK!");
+		self.sheetController = nil;
 	}];
 }
 

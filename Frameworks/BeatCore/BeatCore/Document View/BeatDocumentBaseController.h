@@ -129,7 +129,8 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 #pragma mark - Setting getters
 
-- (bool)showRevisedTextColor;
+@property (nonatomic) bool showRevisions;
+@property (nonatomic) bool showRevisedTextColor;
 
 
 #pragma mark - Registering views
