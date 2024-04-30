@@ -993,7 +993,7 @@ static NSDictionary* patterns;
                 
                 // Next line is empty, line after that isn't - and we're not on that particular line
                 bool nextLinesAreEmpty = (nextLine.length == 0 && twoLinesOver.length == 0);
-                bool selectionOnNextLine = (nextLine.length == 0 && NSLocationInRange(selection.location, nextLine.range));
+                //bool selectionOnNextLine = (nextLine.length == 0 && NSLocationInRange(selection.location, nextLine.range));
                 bool selectionOnCurrentLine = NSLocationInRange(selection.location, line.range);
                 
                 if (!selectionOnCurrentLine && (nextLinesAreEmpty || selectionOnCurrentLine)) {

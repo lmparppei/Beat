@@ -179,7 +179,6 @@ static NSString *centeredEnd = @" <";
 /// Moves the given string in a range to another position. You can provide another string to mutate the string before moving.
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string
 {
-    _delegate.moving = YES;
     NSString *oldString = [_delegate.text substringWithRange:range];
     
     NSString *stringToMove = string;
@@ -210,8 +209,6 @@ static NSString *centeredEnd = @" <";
     
     [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
     [_delegate.undoManager setActionName:@"Move Scene"];
-    
-    _delegate.moving = NO;
 }
 
 /// Moves given range to another position

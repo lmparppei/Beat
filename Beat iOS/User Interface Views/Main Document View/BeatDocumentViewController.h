@@ -28,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
-//@property (nonatomic) Line* currentLine; // Current line has to be weak so we don't keep anything weird in memory
-@property (nonatomic) bool moving;
-
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 

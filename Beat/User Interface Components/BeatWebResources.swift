@@ -84,7 +84,13 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 
 class BeatURLMenuItem:NSMenuItem {
 	@IBInspectable var website:String = ""
+	@IBInspectable var addVersion:Bool = false
 	var url:URL? {
+		var urlString = website
+		if addVersion {
+			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+			website += "?version=" + version
+		}
 		return URL(string: website)
 	}
 }

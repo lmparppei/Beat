@@ -83,7 +83,7 @@ THE SOFTWARE.
 - (bool)isFullscreen;
 
 /// Sheet view (strong reference for avoiding weirdness)
-@property (nonatomic) NSWindowController* sheetController;
+@property (nonatomic) NSWindowController* _Nullable sheetController;
 
 
 #pragma mark - Applying settings
@@ -94,9 +94,7 @@ THE SOFTWARE.
 
 #pragma mark - Outline data
 
-@property (nonatomic) NSMutableIndexSet*  _Nullable changes;
 @property (nonatomic, readwrite) bool outlineEdit;
-@property (nonatomic) bool moving;
 
 
 #pragma mark - Plugin support

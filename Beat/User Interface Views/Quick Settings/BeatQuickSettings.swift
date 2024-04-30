@@ -118,7 +118,7 @@ class BeatDesktopQuickSettings:NSViewController {
 				delegate.showPageNumbers = !delegate.showPageNumbers
 				delegate.getTextView().needsDisplay = true
 			}),
-			BeatQuickSettingItem.newToggle("Dark Mode", initialValue: delegate.isDark().intValue, handler: { [weak self] value in
+			BeatQuickSettingItem.newToggle("Dark Mode", initialValue: delegate.isDark().intValue, handler: { value in
 				if let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate {
 					appDelegate.toggleDarkMode()
 				}

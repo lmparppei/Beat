@@ -1278,6 +1278,7 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.beat-app.fi/support-the-development/"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="addVersion" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="c0F-30-f9S"/>

@@ -41,7 +41,6 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 @end
 
 @protocol BeatTextIODelegate <BeatEditorDelegate>
-@property (nonatomic, readwrite) bool moving;
 @optional @property (nonatomic) NSUndoManager* undoManager;
 - (void)textDidChange:(NSNotification *)notification;
 - (BOOL)textView:(BXTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;

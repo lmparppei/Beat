@@ -145,7 +145,7 @@
 	
 	if (currentIdx > oldIdx) return YES;
 	else if (oldIdx == NSNotFound) return YES;
-	else return NO;"
+	else return NO;
 }
 
 + (void)bakeRevisionsIntoLines:(NSArray *)lines text:(NSAttributedString *)string range:(NSRange)range {
@@ -404,6 +404,8 @@
 			
 			// Load color if available
 			if (item.count > 2) color = item[2];
+            if (![color isKindOfClass:NSString.class]) continue;
+            
 			if (color.length == 0) color = BeatRevisions.defaultRevisionColor;
 			
 			// Ensure the revision is in range and then paint it
