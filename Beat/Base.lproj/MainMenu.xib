@@ -731,6 +731,9 @@ DQ
                                     <items>
                                         <menuItem title="Screenplay" id="G06-e0-hLT" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="stylesheet" value="Screenplay"/>
+                                            </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="selectStylesheet:" target="-1" id="BOd-3t-PK3"/>
                                             </connections>
@@ -1357,6 +1360,7 @@ DQ
                 <outlet property="pluginMenuManager" destination="c8Z-dk-uIi" id="gUa-of-xAI"/>
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
                 <outlet property="spellCheckingUtils" destination="Ibp-oA-JIB" id="dE7-Pz-M2x"/>
+                <outlet property="styleMenuManager" destination="uxG-kE-7Dz" id="ieF-dl-Dnc"/>
                 <outlet property="templateMenuProvider" destination="8f3-H4-i5J" id="UWU-Hw-hHd"/>
             </connections>
         </customObject>
@@ -1367,6 +1371,11 @@ DQ
         </customObject>
         <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
         <customObject id="8f3-H4-i5J" customClass="BeatTemplateMenuProvider" customModule="Beat" customModuleProvider="target"/>
+        <customObject id="uxG-kE-7Dz" customClass="BeatStyleMenuManager" customModule="Beat" customModuleProvider="target">
+            <connections>
+                <outlet property="styleMenu" destination="S2O-Ze-xD3" id="xSR-5D-izR"/>
+            </connections>
+        </customObject>
         <userDefaultsController representsSharedInstance="YES" id="62Y-BT-kav"/>
         <customObject id="c8Z-dk-uIi" customClass="BeatPluginMenuManager" customModule="Beat" customModuleProvider="target">
             <connections>
