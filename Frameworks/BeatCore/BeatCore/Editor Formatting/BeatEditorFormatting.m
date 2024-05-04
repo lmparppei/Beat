@@ -107,6 +107,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     LineType type = line.type;
     BeatPaperSize paperSize = self.pageSize;
     BeatStylesheet* styles = self.editorStyles;
+
     bool hasRightToLeftText = line.string.hasRightToLeftText;
 
     Line* prevLine; // We'll look up previous line ONLY IF NEEDED. It will be NULL for anything else.

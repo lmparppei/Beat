@@ -169,10 +169,20 @@
 {
     bool rightToLeft = false;
     
-    // Also, let's see if we need to switch to RTL writing.
+    /*
+    // This actual language recognizer code is BRUTALLY expensive, and can spend up to 0.05 seconds detecting language for a simple string.
     if (@available(macOS 10.14, *)) {
         NLLanguage lang = [NLLanguageRecognizer dominantLanguageForString:self];
         if (lang == NLLanguageArabic || lang == NLLanguageUrdu || lang == NLLanguagePersian || lang == NLLanguageHebrew) {
+            rightToLeft = true;
+        }
+    }
+    */
+    
+    if (self.length) {
+        NSArray *rightLeftLanguages = @[@"ar",@"he"];
+        NSString *lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage((CFStringRef)self,CFRangeMake(0,self.length)));
+        if ([rightLeftLanguages containsObject:lang]) {
             rightToLeft = true;
         }
     }
