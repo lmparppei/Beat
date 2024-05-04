@@ -708,10 +708,10 @@
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
     Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
-    RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
-    
     if (line == nil) return 0;
-    
+
+    RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
+        
     NSDictionary* attrs = [self.textStorage attributesAtIndex:charIndexes[0] effectiveRange:nil];
     if (attrs[@"BeatFolded"]) {
         NSUInteger location = charIndexes[0];

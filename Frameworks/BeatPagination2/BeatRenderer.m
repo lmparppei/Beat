@@ -710,7 +710,7 @@
         BeatPaperSize paperSize = self.settings.paperSize;
         LineType type = line.type;
         bool forcedType = false;
-        bool rightToLeft = [self hasRightToLeftText:line];
+        bool rightToLeft = line.string.hasRightToLeftText;
         
         if (isDualDialogue) {
             if (line.type == character) type = dualDialogueCharacter;
@@ -818,7 +818,7 @@
             }
             
             // Create text block for non-title page elements to restrict horizontal size
-            if (!line.isTitlePage && !isDualDialogue && !line.isTitlePage) {
+            if (!line.isTitlePage && !isDualDialogue) {
 #if TARGET_OS_OSX
                 NSTextBlock* textBlock = NSTextBlock.new;
                 [textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
@@ -831,9 +831,10 @@
             }
             
             // Text alignment
-            if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
-            else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
-            else if (rightToLeft) pStyle.alignment = NSTextAlignmentNatural;
+            if ([style.textAlign isEqualToString:@"center"]) 
+                pStyle.alignment = NSTextAlignmentCenter;
+            else if ([style.textAlign isEqualToString:@"right"] || rightToLeft) 
+                pStyle.alignment = NSTextAlignmentRight;
                         
             // Special rules for some blocks
             if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
@@ -863,29 +864,6 @@
     }
 }
 
-
-#pragma mark - Right-to-left support
-
-- (bool)hasRightToLeftText:(Line*)line
-{
-    bool rightToLeft = false;
-    
-    // Also, let's see if we need to switch to RTL writing.
-    if (@available(macOS 10.14, *)) {
-        NLLanguage lang = [NLLanguageRecognizer dominantLanguageForString:line.string];
-        if (lang == NLLanguageArabic || lang == NLLanguageUrdu || lang == NLLanguagePersian || lang == NLLanguageHebrew) {
-            rightToLeft = true;
-        }
-    }
-    
-    return rightToLeft;
-}
-
-- (NSMutableParagraphStyle*)rtlStyleFrom:(NSMutableParagraphStyle*)style
-{
-    
-    return style;
-}
 
 
 #pragma mark - Convenience methods

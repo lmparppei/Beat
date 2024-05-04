@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import NaturalLanguage
 
 public extension String {
 	/// Returns a substring with given `NSRange`

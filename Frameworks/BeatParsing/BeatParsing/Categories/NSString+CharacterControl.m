@@ -8,6 +8,7 @@
 //
 
 #import "NSString+CharacterControl.h"
+#import <NaturalLanguage/NaturalLanguage.h>
 
 @implementation NSString (CharacterControl)
 
@@ -162,6 +163,21 @@
     }
     
     return NSNotFound;
+}
+
+- (bool)hasRightToLeftText
+{
+    bool rightToLeft = false;
+    
+    // Also, let's see if we need to switch to RTL writing.
+    if (@available(macOS 10.14, *)) {
+        NLLanguage lang = [NLLanguageRecognizer dominantLanguageForString:self];
+        if (lang == NLLanguageArabic || lang == NLLanguageUrdu || lang == NLLanguagePersian || lang == NLLanguageHebrew) {
+            rightToLeft = true;
+        }
+    }
+    
+    return rightToLeft;
 }
 
 @end

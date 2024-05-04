@@ -19,5 +19,6 @@
 - (NSString*)stringByRemovingRange:(NSRange)range;
 - (NSString*)trim;
 - (NSInteger)locationOfLastOccurenceOf:(unichar)chr;
+- (bool)hasRightToLeftText;
 
 @end

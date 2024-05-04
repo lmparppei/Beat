@@ -107,7 +107,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     LineType type = line.type;
     BeatPaperSize paperSize = self.pageSize;
     BeatStylesheet* styles = self.editorStyles;
-    
+    bool hasRightToLeftText = line.string.hasRightToLeftText;
+
     Line* prevLine; // We'll look up previous line ONLY IF NEEDED. It will be NULL for anything else.
     
     // Catch forced character cue
@@ -138,6 +139,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
             type = type + 100;
         }
     }
+    
+    // RTL text lines also need to have a specific rule
+    if (hasRightToLeftText) type += 300;
     
     // We'll cache the paragraph styles when possible
     NSNumber* paperSizeKey = @(paperSize);
@@ -175,6 +179,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
 	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
+    else if (hasRightToLeftText) style.alignment = NSTextAlignmentRight;
 
 	// Indents are used as left/right margins, and indents in stylesheet are appended to that
 	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;
