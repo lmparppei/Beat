@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Document (Menus)
-- (void)setupMenuItems;
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 @end
 

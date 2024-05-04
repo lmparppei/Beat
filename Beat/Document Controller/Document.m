@@ -359,7 +359,6 @@
 	// Setup views
 	[self setupWindow];
 	[self readUserSettings];
-	[self setupMenuItems];
 	
 	// Load font set
 	[self loadFonts];
@@ -1554,8 +1553,7 @@
 - (void)cancelOperation:(id) sender
 {
 	// ESCAPE KEY pressed
-	if (self.currentTab == _previewTab) [self preview:nil];
-	else if (self.currentTab == _nativePreviewTab) [self preview:nil];
+	if (self.currentTab == _nativePreviewTab) [self preview:nil];
 	else if (self.currentTab == _cardsTab) [self toggleCards:nil];
 	else {
 		for (NSString* pluginName in self.runningPlugins.allKeys) {

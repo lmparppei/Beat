@@ -86,7 +86,7 @@ public class BeatStyles:NSObject {
     @objc public func editorStyles(for styleName:String = "") -> BeatStylesheet {
         var defaultStyle = (BeatStyles.defaultStyleName + "-editor")
 #if os(iOS)
-        // Default styles for iOS
+        // Default styles for iPhone
         if UIDevice.current.userInterfaceIdiom == .phone { defaultStyle += "-iOS" }
 #endif
         
@@ -111,8 +111,33 @@ public class BeatStyles:NSObject {
         return stylesheet
     }
     
+    
+    // MARK: User stylesheet support
+    
+    /// Returns the user stylesheet folder
+    var userStylesheetURL:URL {
+        get { return BeatPaths.appDataPath("Styles") }
+    }
+    
+    /// Returns the **URL** for a stylesheet with given name (excluding `-editor` and extension)
     func userStylesheet(name:String) -> URL? {
         let url = BeatPaths.appDataPath("Styles").appendingPathComponent(name + ".beatCSS")
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+    
+    /// A list of all available user stylesheet NAMES
+    @objc public func availableUserStylesheets() -> [String] {
+        var styles:[String] = []
+        
+        if let files = try? FileManager.default.contentsOfDirectory(at: self.userStylesheetURL, includingPropertiesForKeys: nil) {
+            for url in files as [URL] {
+                let file = url.lastPathComponent as NSString
+                if file.hasSuffix("beatCSS"), !file.contains("-editor") {
+                    styles.append(file.deletingPathExtension as String)
+                }
+            }
+        }
+        
+        return styles
     }
 }

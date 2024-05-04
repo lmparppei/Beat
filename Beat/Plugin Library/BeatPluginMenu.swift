@@ -18,7 +18,7 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	@IBOutlet var exportMenu:NSMenu?
 	@IBOutlet var importMenu:NSMenu?
 	
-	@objc func setupPluginMenus() {
+	@objc func setup() {
 		// Populate plugin menus at load (we have to do this so custom shortcuts work)
 		if (pluginMenu != nil) {
 			setupPluginMenu(pluginMenu!)

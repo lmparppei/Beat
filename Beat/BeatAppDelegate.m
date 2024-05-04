@@ -40,7 +40,9 @@
 @interface BeatAppDelegate () <BeatThemeDelegate>
 
 @property (nonatomic) IBOutlet NSMenuItem *menuManual;
-@property (nonatomic) IBOutlet BeatPluginMenuManager *pluginMenuManager; // Set main ownership to avoid leaks
+
+@property (nonatomic) IBOutlet BeatPluginMenuManager *pluginMenuManager;
+@property (nonatomic) IBOutlet BeatStyleMenuManager *styleMenuManager;
 
 @property (nonatomic) BeatNotifications *notifications;
 
@@ -92,7 +94,6 @@
 	//[NSUserDefaults.standardUserDefaults removeObjectForKey:@"AppleLanguages"];
 	
 	[self checkDarkMode];
-	
 	NSWindow.allowsAutomaticWindowTabbing = true;
 	
 	return self;
@@ -103,17 +104,7 @@
 	// Ad hoc vector
 	NSLog(@"# ADHOC RELEASE");
 
-	// Init Sparkle
-	self.userDriver = [[SPUStandardUserDriver alloc] initWithHostBundle:NSBundle.mainBundle delegate:nil];
-	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:NSBundle.mainBundle userDriver:self.userDriver delegate:nil];
-	
-	// Start updater
-	NSError *error;
-	[self.updater startUpdater:&error];
-	if (error) NSLog(@"Sparkle error: %@", error);
-	
-	// Add selector to check updates item
-	_checkForUpdatesItem.action = @selector(checkForUpdates:);
+	[self setupSparkle];
 #else
 	// App store vector
 	NSLog(@"# APP STORE RELEASE");
@@ -129,12 +120,12 @@
 	[self showLaunchScreen];
 	
 	// Populate plugin menu
-	[self.pluginMenuManager setupPluginMenus];
+	[self.pluginMenuManager setup];
+	// Populate style menu
+	[self.styleMenuManager setup];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	// if (!(NSEvent.modifierFlags & NSEventModifierFlagShift)) [self checkAutosavedFiles];
-	
 	if (@available(macOS 10.14, *)) {
 		UNUserNotificationCenter *center = UNUserNotificationCenter.currentNotificationCenter;
 		[center requestAuthorizationWithOptions:UNAuthorizationOptionBadge | UNAuthorizationOptionAlert completionHandler:^(BOOL granted, NSError * _Nullable error) {
@@ -159,8 +150,7 @@
 	[self checkVersion];
 	
 	// Add to launch count
-	NSInteger timesLaunched = [NSUserDefaults.standardUserDefaults integerForKey:@"LaunchCount"];
-	timesLaunched++;
+	NSInteger timesLaunched = [NSUserDefaults.standardUserDefaults integerForKey:@"LaunchCount"] + 1;
 	[NSUserDefaults.standardUserDefaults setInteger:timesLaunched forKey:@"LaunchCount"];
 }
 
@@ -170,6 +160,26 @@
 	[BeatDonationPlea nag];
 #endif
 }
+
+
+#pragma mark - Updates
+
+#ifdef ADHOC
+- (void)setupSparkle
+{
+	// Init Sparkle
+	self.userDriver = [[SPUStandardUserDriver alloc] initWithHostBundle:NSBundle.mainBundle delegate:nil];
+	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:NSBundle.mainBundle userDriver:self.userDriver delegate:nil];
+	
+	// Start updater
+	NSError *error;
+	[self.updater startUpdater:&error];
+	if (error) NSLog(@"Sparkle error: %@", error);
+	
+	// Add selector to check updates item
+	_checkForUpdatesItem.action = @selector(checkForUpdates:);
+}
+#endif
 
 
 #pragma mark - Donations
@@ -241,6 +251,7 @@
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
 	return NO;
 }
+
 
 #pragma mark - Autosave Recovery
 
