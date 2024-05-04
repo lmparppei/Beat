@@ -113,7 +113,6 @@ THE SOFTWARE.
 #pragma mark - Tabs
 
 @property (weak) IBOutlet NSTabViewItem* _Nullable editorTab;
-@property (weak) IBOutlet NSTabViewItem* _Nullable previewTab;
 @property (weak) IBOutlet NSTabViewItem* _Nullable cardsTab;
 @property (weak) IBOutlet NSTabViewItem* _Nullable nativePreviewTab;
 

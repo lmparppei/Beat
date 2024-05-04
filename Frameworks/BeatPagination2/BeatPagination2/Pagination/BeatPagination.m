@@ -288,7 +288,7 @@
 - (bool)paginateFromIndex:(NSInteger)index
 {
 	// Save start time
-	_startTime = [NSDate date];
+    _startTime = NSDate.date;
 	
 	// Reset queue and use cached pagination if applicable
 	_lineQueue = [NSMutableArray arrayWithArray:[self.lines subarrayWithRange:NSMakeRange(index, self.lines.count - index)]];

@@ -35,7 +35,7 @@ page {
     margin-right: 30;
     padding-left: 0;
     margin-top: 40;
-    margin-bottom: 40;
+    margin-bottom: 30;
     
     default-width-a4: 60ch;
     default-width-us: 62ch;

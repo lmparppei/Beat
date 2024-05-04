@@ -16,7 +16,6 @@
                 <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Wxg-hf-1FX"/>
                 <outlet property="cardsTab" destination="798-ya-EGc" id="HQx-jG-RjP"/>
                 <outlet property="characterBox" destination="uDe-RI-kOI" id="qFD-eS-4J2"/>
-                <outlet property="characterList" destination="QGY-eB-GWe" id="w1u-3z-HN2"/>
                 <outlet property="colorMenu" destination="Tqc-M2-IZ5" id="p8e-fo-mfZ"/>
                 <outlet property="editorTab" destination="stc-hX-uX6" id="VsM-zw-nqb"/>
                 <outlet property="formattingActions" destination="bnh-y9-2pe" id="LoR-qT-gji"/>
