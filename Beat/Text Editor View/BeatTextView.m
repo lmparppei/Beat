@@ -127,6 +127,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Setup layout manager and minimap
 	[self setupLayoutManager];
 	
+	// Does this break anything?
+	self.baseWritingDirection = NSWritingDirectionNatural;
+	
 	// Setup magnification
 	[self setupZoom];
 	
