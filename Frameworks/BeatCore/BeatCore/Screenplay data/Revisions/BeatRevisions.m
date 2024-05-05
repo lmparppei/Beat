@@ -25,12 +25,6 @@
 #import <BeatCore/BeatEditorFormatting.h>
 
 #define REVISION_ATTR @"Revision"
-#define MDOERN_REVISION_ATTR @"Revisions"
-
-#define DEFAULT_COLOR @"blue"
-#define REVISION_ORDER @[@"blue", @"orange", @"purple", @"green"]
-#define REVISION_MARKERS @{ @"blue": @"*", @"orange": @"**", @"purple": @"+", @"green": @"++" }
-
 #define LEGACY_REVISIONS @[@"blue", @"orange", @"purple", @"green"]
 
 #if !TARGET_OS_IOS
@@ -78,12 +72,6 @@
 
 #pragma mark - Class convenenience methods
 
-/// Returns the default color, which is FIRST generation
-// + (NSString*)defaultRevisionColor { return DEFAULT_COLOR; }
-
-/// Returns all the colors, in generation order
-// + (NSArray<NSString*>*)revisionColors { return REVISION_ORDER; }
-
 + (NSArray<NSString*>*)legacyRevisions { return LEGACY_REVISIONS; }
 
 /// Returns the modern revisions.
@@ -128,11 +116,6 @@
         if ([gen.color isEqualToString:color]) return gen;
     }
     return nil;
-}
-
-/// Returns the generation symbols for screenplay rendering
-+ (NSDictionary<NSString*, NSString*>*)revisionMarkers {
-    return REVISION_MARKERS;
 }
 
 /// Rertusn the attribute key used in `NSAttributedString` created by `Line` class

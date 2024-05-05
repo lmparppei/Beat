@@ -163,7 +163,7 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
         super.draw(at: actualPoint, in: context)
         
         let pageView = self.textLayoutManager?.delegate as? BeatPaginationPageView
-        let visibleRevisions = BeatRevisions.revisionColors()
+        let visibleRevisions = BeatRevisions.everyRevisionIndex()
         
         guard let container = self.textLayoutManager?.textContainer,
               let contentManager = textLayoutManager?.textContentManager
@@ -215,16 +215,15 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
                         // Don't draw a revision marker because there already was a higher one
                         let highest = highestRevisions[rectValue] ?? 0
 
-                        if revision < highest { continue }
+                        if generation < highest { continue }
                     }
                     
                     let localY = rect.origin.y - layoutFrame.origin.y
                     let revisionRect = CGRect(x: x, y: localY, width: width, height: rect.height)
                     
-                    let marker:NSString = BeatRevisions.revisionMarkers()[revision]! as NSString
-                    let font = BeatFonts.shared().regular
+                    let marker = BeatRevisions.revisionGenerations()[generation].marker as NSString
                     marker.draw(at: revisionRect.origin, withAttributes: [
-                        NSAttributedString.Key.font: font,
+                        NSAttributedString.Key.font: BeatFonts.shared().regular,
                         NSAttributedString.Key.foregroundColor: UIColor.black,
                         NSAttributedString.Key.backgroundColor: UIColor.white
                     ])

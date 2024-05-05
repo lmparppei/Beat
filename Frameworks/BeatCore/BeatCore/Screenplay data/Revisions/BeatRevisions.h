@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSIndexSet*)everyRevisionIndex;
 
 + (NSArray<BeatRevisionGeneration*>*)revisionGenerations;
-+ (NSDictionary<NSString*, NSString*>*)revisionMarkers;
 + (NSString*)attributeKey;
 
 @property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;

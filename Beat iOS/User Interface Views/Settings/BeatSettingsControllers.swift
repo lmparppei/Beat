@@ -86,6 +86,8 @@ class BeatSettingsViewController:UITableViewController {
 		
 		let lineSpacing = delegate.documentSettings.getFloat(DocSettingNovelLineHeightMultiplier)
 		self.lineHeightSwitch?.selectedSegmentIndex = (lineSpacing < 2) ? 1 : 0
+		
+		self.revisionGeneration?.selectedSegmentIndex = delegate.revisionLevel
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {
