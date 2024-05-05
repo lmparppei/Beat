@@ -510,7 +510,7 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
 		
 		let container = self.textContainers.first!
-		let revisions = pageView?.settings.revisions as? [String] ?? []
+        let revisions = pageView?.settings.revisions as? IndexSet ?? []
 		
 		if ((pageView?.isTitlePage ?? false)) {
 			return
@@ -523,7 +523,7 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
 			let markerRect = CGRectMake(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
 			
-			var highestRevision = ""
+			var highestRevision = -1
 			var range = originalRange
 			
 			// This is a fix for some specific languages. Sometimes you might have more characters in range than what are stored in text storage.
@@ -536,26 +536,29 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 				}
 			}
 			
+            // In rendered text, the revision attribute is a A NUMBER VALUE
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
 				if (obj == nil) { return }
-				let revision = obj as! String
+                guard let revisionValue = obj as? NSNumber else { return }
 				
+                let level = revisionValue.intValue
+                
 				// If the revision is not included in settings, just skip it.
-				if (!revisions.contains(where: { $0 == revision })) {
+                if !revisions.contains(level) {
+                    print("... revision not included")
 					return
 				}
-				
-				if highestRevision == "" {
-					highestRevision = revision
-				}
-				else if BeatRevisions.isNewer(revision, than: highestRevision) {
-					highestRevision = revision
+				                
+                if highestRevision < level {
+					highestRevision = level
 				}
 			})
 			
-			if highestRevision == "" { return }
+			if highestRevision == -1 { return }
 			
-			let marker:NSString = BeatRevisions.revisionMarkers()[highestRevision]! as NSString
+            let generation = BeatRevisions.revisionGenerations()[highestRevision]
+            
+            let marker:NSString = generation.marker as NSString
 			let font = BeatFonts.shared().regular
 			marker.draw(at: markerRect.origin, withAttributes: [
 				NSAttributedString.Key.font: font,

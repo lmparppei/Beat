@@ -7,17 +7,6 @@
 //
 
 #import <TargetConditionals.h>
-#if !TARGET_OS_IOS
-    #import <Cocoa/Cocoa.h>
-#else
-    #import <UIKit/UIKit.h>
-#endif
-
-#if TARGET_OS_IOS
-    #define BeatColor UIColor
-#else
-    #define BeatColor NSColor
-#endif
 
 @class BeatRevisionGeneration;
 
@@ -29,16 +18,14 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 };
 
 @interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
+
 @property (nonatomic) RevisionType type;
-@property (nonatomic) NSString *colorName;
-
 @property (nonatomic) NSInteger generationLevel;
-@property (nonatomic) BeatRevisionGeneration* generation;
 
-+ (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color;
-+ (BeatRevisionItem*)type:(RevisionType)type;
-- (instancetype)initWithType:(RevisionType)type generation:(BeatRevisionGeneration*)generation;
-- (BeatColor*)backgroundColor;
++ (BeatRevisionItem*)type:(RevisionType)type generation:(NSInteger)level;
+- (instancetype)initWithType:(RevisionType)type generation:(NSInteger)level;
+
 - (NSString*)key;
 - (NSString*)description;
+
 @end

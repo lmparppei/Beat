@@ -10,53 +10,22 @@
 #import "BeatRevisionItem.h"
 #import "BeatRevisions.h"
 
-#if !TARGET_OS_IOS
-    #import <Cocoa/Cocoa.h>
-#else
-    #import <UIKit/UIKit.h>
-#endif
-
-@interface BeatRevisionItem ()
-@property (nonatomic, weak) BeatColor *color;
-@property (nonatomic, weak) BeatColor *backgroundColor;
-@end
-
 @implementation BeatRevisionItem
 
--(instancetype)initWithType:(RevisionType)type color:(NSString*)color {
-	self = [super init];
-	if (self) {
-		_type = type;
-		
-		if (color.length) _colorName = color;
-		else _colorName = BeatRevisions.defaultRevisionColor;
-	}
-	return self;
-}
-
-/// An experimental way to do this for now
--(instancetype)initWithType:(RevisionType)type generation:(BeatRevisionGeneration*)generation
+- (instancetype)initWithType:(RevisionType)type generation:(NSInteger)level
 {
     self = [super init];
     if (self) {
         _type = type;
-        
-        if (generation.color.length) _colorName = generation.color;
-        else _colorName = BeatRevisions.defaultRevisionColor;
-        
-        _generation = generation;
+        _generationLevel = level;
     }
+    
     return self;
 }
 
-+ (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color
++ (BeatRevisionItem*)type:(RevisionType)type generation:(NSInteger)level
 {
-	return [[BeatRevisionItem alloc] initWithType:type color:color];
-}
-
-+ (BeatRevisionItem*)type:(RevisionType)type
-{
-	return [[BeatRevisionItem alloc] initWithType:type color:@""];
+    return [BeatRevisionItem.alloc initWithType:type generation:level];
 }
 
 /// Returns the key for saving
@@ -66,24 +35,12 @@
 	return @"";
 }
 
-- (BeatColor*)color {
-	if (_color) return _color;
-	if (self.colorName.length) _color = [BeatColors color:self.colorName];
-	if (!_color) _color = [BeatColors color:BeatRevisions.defaultRevisionColor];
-	return _color;
-}
-
-- (BeatColor*)backgroundColor {
-	if (_backgroundColor) return _backgroundColor;
-	_backgroundColor = [self.color colorWithAlphaComponent:0.09];
-	return _backgroundColor;
-}
 
 #pragma mark - Encoding and Copying
 
 -(void)encodeWithCoder:(NSCoder *)coder {
 	[coder encodeInteger:self.type forKey:@"type"];
-	[coder encodeObject:self.colorName forKey:@"colorName"];
+	[coder encodeInteger:self.generationLevel forKey:@"generationLevel"];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
@@ -91,20 +48,21 @@
 
 	if (self) {
 		_type = [coder decodeIntForKey:@"type"];
-		_colorName = [coder decodeObjectForKey:@"colorName"];
+        _generationLevel = [coder decodeIntForKey:@"generationLevel"];
 	}
 	
 	return self;
 
 }
 
--(id)copyWithZone:(NSZone *)zone {
-	BeatRevisionItem *newItem = [[[self class] alloc] initWithType:(RevisionType)self.type color:(NSString*)[self.colorName copyWithZone:zone]];
-	return newItem;
+-(id)copyWithZone:(NSZone *)zone
+{
+    return [BeatRevisionItem.alloc initWithType:self.type generation:self.generationLevel];
 }
 
 #pragma mark - Debug
-- (NSString*)description { return [NSString stringWithFormat:@"Revision: %@ (%@)", self.key, self.colorName]; }
+
+- (NSString*)description { return [NSString stringWithFormat:@"Revision: %@ (%lu)", self.key, self.generationLevel]; }
 
 @end
 /*

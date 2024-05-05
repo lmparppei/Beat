@@ -253,14 +253,14 @@
 			[_element addStyle:_textStyle to:range];
 		}
 		if (_revisionID) {
-			NSArray *colors = BeatRevisions.revisionColors;
+			NSArray<BeatRevisionGeneration*>* generations = BeatRevisions.revisionGenerations;
 			NSInteger index = [_revisionID integerValue];
 			
 			// 0 index in revision ID means original in Final Draft
-			// We support up to 4 revision colors here
 			if (index > 0) {
 				index--;
-				[_element addAttribute:@"Revision" value:[BeatRevisionItem type:RevisionAddition color:colors[index % 4]] range:range];
+				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:index];
+				[_element addAttribute:@"Revision" value:revision range:range];
 			}
 		}
 		

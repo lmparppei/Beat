@@ -385,7 +385,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     newLine.resolvedMacros = self.resolvedMacros.mutableCopy;
     
-    newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
+    //newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
     if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
     
     if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
@@ -1082,7 +1082,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
     
 	if (self.revisedRanges.count) {
-		for (NSString *key in _revisedRanges.allKeys) {
+		for (NSNumber* key in _revisedRanges.allKeys) {
 			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
                 if ([self rangeInStringRange:range]) {
                     [string addAttribute:@"Revision" value:key range:range];

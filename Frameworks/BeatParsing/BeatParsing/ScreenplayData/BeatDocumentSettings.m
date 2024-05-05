@@ -26,6 +26,7 @@
 NSString * const DocSettingRevisions = @"Revision";
 NSString * const DocSettingHiddenRevisions = @"Hidden Revisions";
 NSString * const DocSettingRevisionColor = @"Revision Color";
+NSString * const DocSettingRevisionLevel = @"Revision Level";
 NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";
 NSString * const DocSettingTags = @"Tags";
@@ -62,6 +63,7 @@ NSString * const DocSettingStylesheet    = @"Stylesheet";
 NSString * const DocSettingCharacterData = @"CharacterData";
 
 NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier";
+
 
 -(id)init
 {

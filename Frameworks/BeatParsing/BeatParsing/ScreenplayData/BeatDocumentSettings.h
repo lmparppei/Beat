@@ -25,6 +25,7 @@ extern NSString * const DocSettingHiddenRevisions;
 extern NSString * const DocSettingRevisedPageColor;
 extern NSString * const DocSettingColorCodePages;
 extern NSString * const DocSettingRevisionColor;
+extern NSString * const DocSettingRevisionLevel;
 extern NSString * const DocSettingRevisionMode;
 extern NSString * const DocSettingSceneNumberStart;
 extern NSString * const DocSettingTags;
@@ -55,6 +56,7 @@ extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;
 
 extern NSString * const DocSettingNovelLineHeightMultiplier;
+
 
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)toggleBool:(NSString*)key;

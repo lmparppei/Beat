@@ -37,13 +37,13 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	
 	@objc weak var editorDelegate:BeatEditorDelegate?
 	
-	var hiddenRevisions:[String] {
+	var hiddenRevisions:IndexSet {
 		guard let revisionSwitches = self.revisionSwitches else { return [] }
-		var hiddenRevisions:[String] = []
+		var hiddenRevisions = IndexSet()
 		
 		for revision in revisionSwitches {
 			if !revision.isOn {
-				hiddenRevisions.append(BeatRevisions.revisionColors()[revision.tag])
+				hiddenRevisions.insert(revision.tag)
 			}
 		}
 		
@@ -197,11 +197,10 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		if printSynopsis?.isOn ?? false { additionalTypes.insert(Int(LineType.synopse.rawValue)) }
 		settings.additionalTypes = additionalTypes
 		
-		var revisions:[String] = BeatRevisions.revisionColors()
+		var revisions:IndexSet = IndexSet(range: NSMakeRange(0, BeatRevisions.revisionGenerations().count))
+		
 		for rev in hiddenRevisions {
-			if revisions.contains(rev) {
-				revisions.removeObject(object: rev)
-			}
+			revisions.remove(rev)
 		}
 		
 		return settings

@@ -1489,12 +1489,8 @@
 
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
-	BeatColorMenuItem *item = (BeatColorMenuItem *)button.selectedItem;
-	NSString* revisionColor = item.colorKey;
-	
-	self.revisionColor = revisionColor;
+	self.revisionLevel = button.indexOfSelectedItem;
 }
-
 
 
 #pragma mark - Hiding markup

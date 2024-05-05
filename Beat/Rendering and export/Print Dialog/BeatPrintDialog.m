@@ -50,6 +50,10 @@
 @property (weak) IBOutlet NSButton* revisionSecond;
 @property (weak) IBOutlet NSButton* revisionThird;
 @property (weak) IBOutlet NSButton* revisionFourth;
+@property (weak) IBOutlet NSButton* revisionFifth;
+@property (weak) IBOutlet NSButton* revisionSixth;
+@property (weak) IBOutlet NSButton* revisionSeventh;
+@property (weak) IBOutlet NSButton* revisionEight;
 
 @property (weak) IBOutlet NSButton* printSections;
 @property (weak) IBOutlet NSButton* printSynopsis;
@@ -364,16 +368,16 @@ static CGFloat panelWidth;
 	_firstPreview = NO;
 }
 
-- (NSArray*)printedRevisions
+- (NSIndexSet*)printedRevisions
 {
-	NSMutableArray *printedRevisions = NSMutableArray.new;
-	NSArray *colors = BeatRevisions.revisionColors;
-	if (self.revisionFirst.state == NSOnState) [printedRevisions addObject:colors[0]];
-	if (self.revisionSecond.state == NSOnState) [printedRevisions addObject:colors[1]];
-	if (self.revisionThird.state == NSOnState) [printedRevisions addObject:colors[2]];
-	if (self.revisionFourth.state == NSOnState) [printedRevisions addObject:colors[3]];
+	NSMutableIndexSet* revisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
+	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	
-	return printedRevisions;
+	for (NSButton* b in revisionControls) {
+		if (b.state != NSOnState) [revisions removeIndex:b.tag];
+	}
+	
+	return revisions;
 }
 
 - (IBAction)toggleHeaderAlignment:(NSSegmentedControl*)sender

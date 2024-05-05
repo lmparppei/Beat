@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id styles;
 @property (nonatomic) BeatDocumentSettings* documentSettings;
 - (id)document; // We shouldn't need this anymore?
-- (NSArray<NSString*>*)shownRevisions;
+- (NSIndexSet*)shownRevisions;
 - (NSString*)fileNameString;
 - (BeatPaperSize)pageSize;
 @end
@@ -52,7 +52,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSString * _Nullable pageRevisionColor;
 @property (nonatomic) bool coloredPages;
 
-@property (nonatomic) NSString *header;
+@property (nonatomic) NSString* header;
 @property (nonatomic) NSInteger headerAlignment;
 
 @property (nonatomic) bool printNotes;
@@ -60,10 +60,10 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 
 @property (nonatomic) NSIndexSet* additionalTypes; // LineType enums in an index set
 
-@property (nonatomic) NSString *fileName;
+@property (nonatomic) NSString* fileName;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;
 
-@property (nonatomic) NSArray * revisions;
+@property (nonatomic) NSIndexSet* revisions;
 @property (nonatomic) BeatPaperSize paperSize;
 
 /// Styles for new pagination / export system
@@ -76,13 +76,13 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 /// Raw document settings 
 @property (nonatomic) BeatDocumentSettings* documentSettings;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate;
 

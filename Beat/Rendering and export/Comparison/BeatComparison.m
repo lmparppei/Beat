@@ -138,15 +138,10 @@
 			range = (NSRange){ range.location + startIndex, range.length };
 			
 			if (NSIntersectionRange(range, lineRange).length > 0) {
-				BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:BeatRevisions.defaultRevisionColor];
+				BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition generation:0];
 				[attrStr addAttribute:BeatRevisions.attributeKey value:revision range:range];
 			}
 		}
-		/*
-		// Mark the line as changed
-		if (changed) l.changed = YES;
-		else l.changed = NO;
-		*/
 	}
 	
 	return attrStr;

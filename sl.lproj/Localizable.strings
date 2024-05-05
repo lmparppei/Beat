@@ -204,3 +204,11 @@
 "templates.novel.title" = "Roman";
 "templates.novel.description" = "Osnovna predloga za roman";
 
+"revision.1" = "Prva";
+"revision.2" = "Druga";
+"revision.3" = "Tretja";
+"revision.4" = "Četrta";
+"revision.5" = "Peta";
+"revision.6" = "Šesta";
+"revision.7" = "Sedma";
+"revision.8" = "Osmi";

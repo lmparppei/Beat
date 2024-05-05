@@ -150,11 +150,9 @@
 			attrString = [NSMutableAttributedString.alloc initWithString:string];
 			if (_textProperties[@"revision"] != nil) {
 				NSInteger generation = [(NSString*)_textProperties[@"revision"] integerValue] - 1;
-				if (generation < 0) generation = 0;
-				if (generation >= BeatRevisions.revisionColors.count) generation = BeatRevisions.revisionColors.count - 1;
-				NSString* color = BeatRevisions.revisionColors[generation];
+				if (generation >= BeatRevisions.revisionGenerations.count) generation = BeatRevisions.revisionGenerations.count - 1;
 				
-				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition color:color];
+				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:generation];
 				[attrString addAttribute:BeatRevisions.attributeKey value:revision range:NSMakeRange(0, attrString.length)];
 			}
 		}

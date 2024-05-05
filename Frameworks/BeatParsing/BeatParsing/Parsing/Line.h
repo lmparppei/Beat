@@ -123,7 +123,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) NSString *markerDescription;
 
 @property (nonatomic, readonly) NSDictionary* ranges;
-@property (nonatomic, readonly) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
+@property (nonatomic, readonly) NSMutableDictionary <NSNumber*, NSMutableIndexSet*>* revisedRanges;
 
 @property (nonatomic) NSArray<Storybeat*>* beats;
 
@@ -480,9 +480,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// A line-wide modifier for tracking changes. No idea if it's stil in use.
 @property (nonatomic) bool changed;
 /// Ranges with revisions. Revision generation is used as the key.
-@property (nonatomic) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
-/// The highest revision generation (color) for this line.
-@property (nonatomic) NSString *revisionColor;
+@property (nonatomic) NSMutableDictionary <NSNumber*, NSMutableIndexSet*>* revisedRanges;
+/// The highest revision generation for this line.
+@property (nonatomic) NSInteger revisionGeneration;
 
 
 #pragma mark - Story beats

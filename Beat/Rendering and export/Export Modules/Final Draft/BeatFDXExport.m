@@ -190,8 +190,8 @@ static NSDictionary *fdxIds;
 				
 				if (item.type == RevisionAddition) {
 					// Add different revisions into the line
-					if (!line.revisedRanges[item.colorName]) line.revisedRanges[item.colorName] = NSMutableIndexSet.new;
-					[line.revisedRanges[item.colorName] addIndexesInRange:rangeInLine];
+					if (!line.revisedRanges[@(item.generationLevel)]) line.revisedRanges[@(item.generationLevel)] = NSMutableIndexSet.new;
+					[line.revisedRanges[@(item.generationLevel)] addIndexesInRange:rangeInLine];
 				}
 				else if (item.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:rangeInLine];
 			}
@@ -679,7 +679,8 @@ static NSDictionary *fdxIds;
 	return string;
 }
 
-- (NSString*)lineToXML:(Line*)line {
+- (NSString*)lineToXML:(Line*)line
+{
 	NSAttributedString *string = line.attributedStringForFDX;
 	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -697,11 +698,14 @@ static NSDictionary *fdxIds;
 		NSString* additionalStyles = @"";
 		
 		// Add revisions
-		NSString* revision = attrs[BeatRevisions.attributeKey];
-		if (revision.length > 0) {
+		NSNumber* revisionValue = attrs[BeatRevisions.attributeKey];
+		if (revisionValue != nil) {
 			// Get color for revision.
-			NSString *highlightColor = [BeatColors colorWith16bitHex:revision];
-			NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revision] + 1; // + 1 as arrays begin from 0
+			NSInteger level = revisionValue.integerValue;
+			BeatRevisionGeneration* generation = BeatRevisions.revisionGenerations[level];
+			
+			NSString *highlightColor = [BeatColors colorWith16bitHex:generation.color];
+			NSInteger revisionNumber = generation.level + 1; // + 1 as arrays begin from 0
 			additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
 		}
 		

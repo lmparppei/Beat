@@ -62,14 +62,19 @@ class BeatDesktopQuickSettings:NSViewController {
 		// First item is A4, second item US Letter
 		pageSizePopup?.selectItem(at: delegate.pageSize.rawValue)
 		
-		if revisionColorPopup != nil {
-			for item in revisionColorPopup!.itemArray {
-				guard let cItem = item as? BeatColorMenuItem else { continue }
+		// Remove placeholder menu items and append all generations
+		if let revisionColorPopup {
+			revisionColorPopup.removeAllItems()
+			
+			var i = 1
+			for generation in BeatRevisions.revisionGenerations() {
+				revisionColorPopup.addItem(withTitle: NSLocalizedString("revision.\(i)", comment: generation.color))
+				revisionColorPopup.lastItem?.image = BeatColors.labelImage(forColor: generation.color, size: CGSizeMake(16, 16))
 				
-				if cItem.colorKey.lowercased() == delegate.revisionColor.lowercased() {
-					revisionColorPopup?.select(item)
-				}
+				i += 1
 			}
+			
+			revisionColorPopup.selectItem(at: delegate.revisionLevel)
 		}
 		
 		if delegate.mode == .ReviewMode {
@@ -107,7 +112,7 @@ class BeatDesktopQuickSettings:NSViewController {
 	
 	func setupQuickSettings() {
 		guard let delegate = self.delegate else { return }
-		let revisions = BeatRevisions.revisionColors()
+		let revisions = BeatRevisions.revisionGenerations()
 				
 		let items = [
 			BeatQuickSettingItem.newToggle("Show Scene Numbers", key: BeatSettingShowSceneNumbers, handler: { value in
@@ -136,12 +141,12 @@ class BeatDesktopQuickSettings:NSViewController {
 				self?.delegate?.toggleRevisionMode(nil)
 			}),
 			BeatQuickSettingItem.newDropdown("Generation",
-											 items: revisions.map({ color in BeatColorMenuItem(color: color) }),
-											 value: revisions.firstIndex(of: delegate.revisionColor) ?? 0,
+											 items: revisions.map({ revision in BeatColorMenuItem(color: revision.color) }),
+											 value: delegate.revisionLevel,
 											 size: .small,
 											 handler: { [weak self] selection in
 												 let i = selection as? Int ?? 0
-												 self?.delegate?.revisionColor = revisions[i]
+												 self?.delegate?.revisionLevel = i
 											 })
 		]
 		
@@ -178,9 +183,7 @@ class BeatDesktopQuickSettings:NSViewController {
 	}
 	
 	@IBAction func selectRevisionColor(sender:NSPopUpButton) {
-		guard let item = sender.selectedItem as? BeatColorMenuItem else { return }
-		self.delegate?.revisionColor = item.colorKey
-		
+		self.delegate?.revisionLevel = sender.indexOfSelectedItem
 		self.updateSettings()
 	}
 	

@@ -715,11 +715,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     [self.documentSettings set:DocSettingRevisions as:revisions];
     
     // Save current revision color
-    [self.documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
-    
-    // Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
-    [self.documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
-    
+    [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
+        
     // Store currently running plugins (which should be saved)
     [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
         
@@ -748,17 +745,15 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Revisions
 
-- (void)setRevisionColor:(NSString *)revisionColor
+- (void)setRevisionLevel:(NSInteger)revisionLevel
 {
-    [self.documentSettings setString:DocSettingRevisionColor as:revisionColor];
-}
-- (NSString*)revisionColor
-{
-    NSString* revisionColor = [self.documentSettings getString:DocSettingRevisionColor];
-    if (revisionColor == nil) revisionColor = BeatRevisions.defaultRevisionColor;
-    return revisionColor;
+    [self.documentSettings setInt:DocSettingRevisionLevel as:revisionLevel];
 }
 
+- (NSInteger)revisionLevel
+{
+    return [self.documentSettings getInt:DocSettingRevisionLevel];
+}
 
 - (void)bakeRevisions
 {
@@ -771,13 +766,15 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     return revisions;
 }
 
-- (NSArray*)shownRevisions
+- (NSIndexSet*)shownRevisions
 {
-    NSArray<NSString*>* hiddenRevisions = [self.documentSettings get:DocSettingHiddenRevisions];
-    NSMutableArray* shownRevisions = BeatRevisions.revisionColors.mutableCopy;
+    NSArray<NSNumber*>* hiddenRevisions = [self.documentSettings get:DocSettingHiddenRevisions];
+     
+    NSMutableIndexSet* shownRevisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
     
-    if (hiddenRevisions.count > 0) {
-        [shownRevisions removeObjectsInArray:hiddenRevisions];
+    for (NSNumber* n in hiddenRevisions) {
+        if (n == nil) continue;
+        [shownRevisions removeIndex:n.integerValue];
     }
     
     return shownRevisions;

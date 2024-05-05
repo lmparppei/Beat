@@ -231,7 +231,7 @@
 		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
 	}
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.everyRevisionIndex scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
 	settings.paperSize = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
 
 	return settings;
