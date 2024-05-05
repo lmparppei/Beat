@@ -11,7 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatLocalization : NSObject
+/// Iterates through a string and replaces all instances of `#key#` with localized strings. Always falls back to English if localization is not available.
 + (NSString*)localizeString:(NSString*)string;
+/// Returns only the localized value for given string, and falls back to English if it's not available.
 + (NSString*)localizedStringForKey:(NSString*)key;
 @end
 

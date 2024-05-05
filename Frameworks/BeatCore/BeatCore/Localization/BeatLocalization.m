@@ -19,7 +19,6 @@
 
 @implementation BeatLocalization
 
-/// Iterates through a string and replaces all instances of `#key#` with localized strings.
 + (NSString*)localizeString:(NSString*)string
 {
 	NSDictionary *dictionary = [BeatLocalization dictionary];
