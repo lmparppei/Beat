@@ -516,8 +516,8 @@
         BeatRevisionGeneration* gen = generations[i];
         
         BeatRevisionGeneration* newGen = nil;
-        if (i >= genIndex && i > 0) newGen = generations[i-genIndex];
-        
+        if (i >= genIndex) newGen = generations[i-genIndex];
+                
         [self convertRevisionGeneration:gen to:newGen];
     }
 }

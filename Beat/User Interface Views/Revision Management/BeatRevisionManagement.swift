@@ -43,12 +43,17 @@ import BeatCore.BeatRevisions
 		
 		input.accessoryView = accessoryView
 		
+		var revNumber = 1
+		
 		for generation in BeatRevisions.revisionGenerations() {
-			dropdown.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + generation.color))
+			let label = BeatLocalization.localize("#revision.\(String(revNumber))# (#color.\(generation.color)#)")
+			dropdown.addItem(withTitle: label)
 			
 			if let item = dropdown.itemArray.last {
-				item.image = NSImage(named: "color." + generation.color)
+				item.image = BeatColors.labelImage(forColor: generation.color, size: CGSizeMake(12.0, 12.0))
 			}
+			
+			revNumber += 1
 		}
 				
 		input.beginSheetModal(for: delegate.documentWindow!) { response in
@@ -104,14 +109,20 @@ import BeatCore.BeatRevisions
 		// Add items
 		dropdownTo.addItem(withTitle: BeatLocalization.localizedString(forKey: "revisions.convert.remove"))
 		
+		var revNumber = 1
+		
 		for gen in generations {
 			let color = gen.color
 			
-			dropdownFrom.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
-			dropdownFrom.itemArray.last?.image = NSImage(named: "color." + color)
+			let label = BeatLocalization.localize("#revision.\(String(revNumber))# (#color.\(color)#)")
+						
+			dropdownFrom.addItem(withTitle: label)
+			dropdownFrom.itemArray.last?.image = BeatColors.labelImage(forColor: color, size: CGSizeMake(12.0, 12.0))
 			
-			dropdownTo.addItem(withTitle: BeatLocalization.localizedString(forKey: "color." + color))
-			dropdownTo.itemArray.last?.image = NSImage(named: "color." + color)
+			dropdownTo.addItem(withTitle: label)
+			dropdownTo.itemArray.last?.image = BeatColors.labelImage(forColor: color, size: CGSizeMake(12.0, 12.0))
+			
+			revNumber += 1
 		}
 
 		input.beginSheetModal(for: delegate.documentWindow!) { response in
@@ -119,7 +130,6 @@ import BeatCore.BeatRevisions
 				return
 			}
 			
-			// Downgrade each revision
 			let originalGen = BeatRevisions.revisionGenerations()[dropdownFrom.indexOfSelectedItem]
 			
 			var targetGen:BeatRevisionGeneration?
