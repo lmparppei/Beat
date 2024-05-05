@@ -573,6 +573,7 @@
 		// Revert to saved
 		BeatMenuItemWithURL *toSaved = [BeatMenuItemWithURL.alloc initWithTitle:NSLocalizedString(@"backup.revertToSaved", nil) action:@selector(revertTo:) keyEquivalent:@""];
 		toSaved.url = doc.fileURL;
+		toSaved.tag = NSNotFound;
 		[_backupMenu addItem:toSaved];
 		
 		// Browse versions
@@ -605,18 +606,18 @@
 	[input confirmBoxWithMessage:[BeatLocalization localizedStringForKey:@"backup.reverting.title"]
 							text:[BeatLocalization localizedStringForKey:@"backup.reverting.message"] forWindow:NSDocumentController.sharedDocumentController.currentDocument.windowForSheet completion:^(bool result) {
 		if (!result) return;
-		else {
-			BeatMenuItemWithURL *item = sender;
-			
-			NSError *error;
-			if (item.url == NSDocumentController.sharedDocumentController.currentDocument.fileURL) {
-				// Revert to saved
-				[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
-				return;
-			}
-			
-			if (item.url == nil) NSLog(@"ERROR, no URL found");
-			
+		
+		BeatMenuItemWithURL *item = sender;
+		if (item.url == nil) {
+			NSLog(@"ERROR, no URL found");
+			return;
+		}
+		
+		NSError *error;
+		if (item.url == NSDocumentController.sharedDocumentController.currentDocument.fileURL) {
+			// Revert to saved
+			[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
+		} else {
 			[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:item.url ofType:NSPlainTextDocumentType error:&error];
 			if (error) NSLog(@"Error: %@", error);
 		}
@@ -644,8 +645,8 @@
 	
 	// Add revert to saved
 	NSMenuItem *toSaved = [[NSMenuItem alloc] initWithTitle:@"Saved" action:@selector(revertTo:) keyEquivalent:@""];
+	toSaved.state = (!doc.isDocumentEdited) ? NSOnState : NSOffState;
 	toSaved.tag = NSNotFound;
-	if (!doc.isDocumentEdited) toSaved.state = NSOnState;
 	
 	[_revertMenu addItem:toSaved];
 	[_revertMenu addItem:NSMenuItem.separatorItem];
@@ -682,23 +683,23 @@
 	BeatModalInput *input = BeatModalInput.alloc.init;
 	[input confirmBoxWithMessage:@"Revert File" text:@"Any unsaved changes will be lost when reverting to an earlier version." forWindow:NSDocumentController.sharedDocumentController.currentDocument.windowForSheet completion:^(bool result) {
 		if (!result) return;
-		else {
-			NSMenuItem *item = sender;
-			
-			NSError *error;
-			
-			if (item.tag == NSNotFound) {
-				// Revert to saved
-				[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
-				return;
-			}
-			
-			NSArray *versions = [NSFileVersion otherVersionsOfItemAtURL:NSDocumentController.sharedDocumentController.currentDocument.fileURL];
-			NSFileVersion *version = versions[item.tag];
-			
-			[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:version.URL ofType:NSPlainTextDocumentType error:&error];
-			if (error) NSLog(@"Error: %@", error);
+		
+		NSMenuItem *item = sender;
+	
+		NSError *error;
+		
+		if (item.tag == NSNotFound) {
+			// Revert to saved
+			[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
+			return;
 		}
+		
+		NSArray *versions = [NSFileVersion otherVersionsOfItemAtURL:NSDocumentController.sharedDocumentController.currentDocument.fileURL];
+		NSFileVersion *version = versions[item.tag];
+		
+		[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:version.URL ofType:NSPlainTextDocumentType error:&error];
+		if (error) NSLog(@"Error: %@", error);
+		
 	} buttons:@[@"Revert", @"Cancel"]];
 }
 

@@ -36,7 +36,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 @property (readonly) bool sceneNumberLabelUpdateOff;
 
-@property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
 @property (readonly) CGFloat fontSize;
 @property (readonly) bool hideFountainMarkup;

@@ -128,6 +128,7 @@
 /// The range where last actual edit happened in text storage
 @property (nonatomic) NSRange lastEditedRange;
 
+@property (nonatomic) BeatEditorFormatting* initialFormatting;
 @property (nonatomic) bool disableFormatting;
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
@@ -392,40 +393,8 @@
 	[self updateSelectionObservers];
 }
 
--(void)renderDocument
+-(void)loadingComplete
 {
-	// Initialize revision tracing here, so revisions are loaded before formatting.
-	[self.revisionTracking setup];
-
-	// Begin formatting lines after load
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (self.parser.lines.count > 1000) {
-			// Show a progress bar for longer documents
-			self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
-			
-			// Dark mode
-			if (@available(macOS 10.14, *)) {
-				[self.progressPanel setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
-			}
-			
-			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
-			self.progressIndicator.indeterminate = NO;
-			
-			[self.progressPanel.contentView addSubview:self.progressIndicator];
-			
-			[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
-		}
-		
-		// Apply document formatting
-		[self applyInitialFormatting];
-	});
-}
-
--(void)loadingComplete {
-	// Close progress panel and nil the reference
-	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
-	self.progressPanel = nil;
-	
 	// Reset parser and cache attributed content after load
 	[self.parser.changedIndices removeAllIndexes];
 	self.attrTextCache = self.textView.attributedString;
@@ -454,16 +423,6 @@
 	
 	// Sidebar
 	[self restoreSidebar];
-
-	/*
-	// Setup page size
-	[self.undoManager disableUndoRegistration]; // (We'll disable undo registration here, so the doc won't appear as edited on open)
-	
-	// Uh, is this legacy from the old printing system?
-	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
-	self.printInfo = [BeatPaperSizing setSize:self.pageSize printInfo:printInfo];
-	[self.undoManager enableUndoRegistration]; // Enable undo registration and clear any changes to the document (if needed)
-	*/
 	
 	if (saved) [self updateChangeCount:NSChangeCleared];
 	
@@ -905,22 +864,14 @@
 	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
 
 	__block NSString* text = @"";
-	/*
-	if ([typeName isEqualToString:@"Final Draft"]) {
-		// FINAL DRAFT
-		__block FDXImport* import;
-		import = [FDXImport.alloc initWithData:data importNotes:true completion:^{
-			text = import.scriptAsString;
-		}];
-	} else {
-	 */
-		// Fountain
-		// Load text & remove settings block from Fountain
-		text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-		
-		NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
-		text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
-	//}
+
+	// Load text & remove settings block from Fountain
+	text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	
+	self.documentSettings = BeatDocumentSettings.new;
+	
+	NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
+	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
 
 	// Remove unwanted control characters
 	NSArray* t = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];
@@ -946,30 +897,20 @@
 
 #pragma mark - Reverting to versions
 
--(void)revertDocumentToSaved:(id)sender {
+-(void)revertDocumentToSaved:(id)sender
+{
 	if (!self.fileURL) return;
-	
-	NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
-	
-	[self readFromData:data ofType:NSPlainTextDocumentType error:nil reverting:YES];
-	[self.textView setString:self.contentBuffer];
-	[self.parser parseText:self.contentBuffer];
-	[self.formatting formatAllLines];
-	[self updateLayout];
-	
-	_revertedTo = self.fileURL;
-	
-	[self updateChangeCount:NSChangeCleared];
-	[self.undoManager removeAllActions];
+	[self readDocumentWithURL:self.fileURL typeName:@"com.kapitanFI.fountain"];
 }
 
--(BOOL)revertToContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError {
-	// Don't allow wrong document contents
-	if (![typeName isEqualToString:@"com.kapitanFI.fountain"] && ![typeName isEqualToString:NSPlainTextDocumentType] && ![typeName isEqualToString:@"Fountain script"]) {
-		NSLog(@"Error: wrong file type");
-		return NO;
-	}
-	
+-(BOOL)revertToContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
+{
+	[self readDocumentWithURL:url typeName:typeName];
+	return YES;
+}
+
+- (void)readDocumentWithURL:(NSURL*)url typeName:(NSString*)typeName
+{
 	NSData *data = [NSData dataWithContentsOfURL:url];
 	_revertedTo = url;
 	self.documentIsLoading = YES;
@@ -987,8 +928,6 @@
 	[self updateChangeCount:NSChangeCleared];
 	[self updateChangeCount:NSChangeDone];
 	[self.undoManager removeAllActions];
-	
-	return YES;
 }
 
 
@@ -1069,6 +1008,8 @@
 #pragma mark If text should change
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	NSLog(@"-> change %lu, %lu", affectedCharRange.location, affectedCharRange.length);
+	
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
 	
@@ -1347,51 +1288,91 @@
 
 #pragma mark - Formatting
 
-/// Applies the initial formatting while document is loading
--(void)applyInitialFormatting
+/// Render the newly opened document for editing
+-(void)renderDocument
 {
-	if (self.parser.lines.count == 0) {
-		// Empty document, do nothing.
-		[self loadingComplete];
-		return;
-	}
-	
-	// Start rendering
-	self.progressIndicator.maxValue =  1.0;
-	[self formatAllWithDelayFrom:0];
+	// Initialize revision tracing here, so revisions are loaded before formatting,
+	// so revised text color is drawn correctly in formatting module.
+	[self.revisionTracking setup];
 
+	// Begin formatting lines.
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		// Show a progress bar for longer documents
+		if (self.parser.lines.count > 1000) {
+			self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+			
+			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
+			self.progressIndicator.indeterminate = NO;
+			
+			[self.progressPanel.contentView addSubview:self.progressIndicator];
+			
+			[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
+		}
+		
+		// Apply document formatting
+		[self applyInitialFormatting];
+	});
 }
 
-/// Formats all lines while loading the document
-- (void)formatAllWithDelayFrom:(NSInteger)idx
+/**
+ Applies the initial formatting while document is loading. We'll create a temporary formatting object and attributed string to handle rendering off screen, and the text storage contents are put into text view after formatting is complete. This cuts the formatting time for longer documents to half.
+ */
+-(void)applyInitialFormatting
 {
-	// We split the document into chunks of 1000 lines and render them asynchronously
-	// to throttle the initial loading of document a bit
+	NSMutableAttributedString* formattedString = [NSMutableAttributedString.alloc initWithAttributedString:self.textView.attributedString];
+	
+	self.initialFormatting = [BeatEditorFormatting.alloc initWithTextStorage:formattedString];
+	self.initialFormatting.delegate = self;
+	
+	if (self.parser.lines.count > 0) {
+		// Start rendering
+		self.progressIndicator.maxValue =  1.0;
+		[self formatAllWithDelayFrom:0 formattedString:formattedString];
+	} else {
+		// Empty document, do nothing.
+		[self formattingComplete:nil];
+	}
+}
+
+/// Asynchronous formatting. Takes in an index and formats a bunch of parsed lines starting from that index, applying the formatting attributes to given attributed string. This avoids beach ball when opening a large document.
+- (void)formatAllWithDelayFrom:(NSInteger)idx formattedString:(NSMutableAttributedString*)formattedString
+{
+	NSInteger batchSize = 500;
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		Line *line;
 		NSInteger lastIndex = idx;
 		
-		[self.textStorage beginEditing];
-		for (NSInteger i = 0; i < 1000; i++) {
+		for (NSInteger i = 0; i < batchSize; i++) {
 			// After 1000 lines, hand off the process
 			if (i + idx >= self.parser.lines.count) break;
 			
 			line = self.parser.lines[i + idx];
 			lastIndex = i + idx;
-			[self.formatting formatLine:line firstTime:YES];
+			[self.initialFormatting formatLine:line firstTime:YES];
 		}
-		[self.textStorage endEditing];
 		
-		[self.progressIndicator incrementBy:1000.0 / (CGFloat)self.parser.lines.count];
+		[self.progressIndicator incrementBy:(CGFloat)batchSize / (CGFloat)self.parser.lines.count];
 		
 		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) {
 			// If the document is done formatting, complete the loading process.
-			[self loadingComplete];
+			[self formattingComplete:formattedString];
 		} else {
 			// Else render 1000 more lines
-			[self formatAllWithDelayFrom:lastIndex + 1];
+			[self formatAllWithDelayFrom:lastIndex + 1 formattedString:formattedString];
 		}
 	});
+}
+
+- (void)formattingComplete:(NSAttributedString*)formattedString;
+{
+	if (formattedString != nil) [self.textStorage setAttributedString:formattedString];
+	
+	// Close progress panel and nil the reference
+	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
+	self.progressPanel = nil;
+	
+	[self loadingComplete];
 }
 
 - (IBAction)toggleDisableFormatting:(id)sender {
