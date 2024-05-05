@@ -171,6 +171,8 @@
     
     /*
     // This actual language recognizer code is BRUTALLY expensive, and can spend up to 0.05 seconds detecting language for a simple string.
+    // CGStringTokenizer only recognizes Arabic and Hebrew, so ... oh well.
+     
     if (@available(macOS 10.14, *)) {
         NLLanguage lang = [NLLanguageRecognizer dominantLanguageForString:self];
         if (lang == NLLanguageArabic || lang == NLLanguageUrdu || lang == NLLanguagePersian || lang == NLLanguageHebrew) {
@@ -179,12 +181,10 @@
     }
     */
     
-    if (self.length) {
-        NSArray *rightLeftLanguages = @[@"ar",@"he"];
-        NSString *lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage((CFStringRef)self,CFRangeMake(0,self.length)));
-        if ([rightLeftLanguages containsObject:lang]) {
-            rightToLeft = true;
-        }
+    if (self.length > 0) {
+        NSArray *rightLeftLanguages = @[@"ar", @"he"];
+        NSString *lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage((CFStringRef)self, CFRangeMake(0, self.length)));
+        rightToLeft = [rightLeftLanguages containsObject:lang];
     }
     
     return rightToLeft;
