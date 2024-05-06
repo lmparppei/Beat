@@ -10,7 +10,7 @@
  
 # Line Object
  
- Each parsed line is represented by a `Line` object, which holds the string, formatting ranges and other metadata. 
+ Each parsed line is represented by a `Line` object, which holds the string, formatting ranges and other metadata.
  
  */
 
@@ -805,7 +805,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns TRUE if the line is *actually* centered.
 - (bool)centered {
-	if (self.string.length < 2) return NO;
+    if (self.string.length < 2) return NO;
     return ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<');
 }
 
@@ -857,49 +857,49 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 - (bool)hasBeat {
-	if ([self.string.lowercaseString containsString:@"[[beat "] ||
-		[self.string.lowercaseString containsString:@"[[beat:"] ||
+    if ([self.string.lowercaseString containsString:@"[[beat "] ||
+        [self.string.lowercaseString containsString:@"[[beat:"] ||
         [self.string.lowercaseString containsString:@"[[storyline"])
-		return YES;
-	else
-		return NO;
+        return YES;
+    else
+        return NO;
 }
 - (bool)hasBeatForStoryline:(NSString*)storyline {
-	for (Storybeat *beat in self.beats) {
-		if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return YES;
-	}
-	return NO;
+    for (Storybeat *beat in self.beats) {
+        if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return YES;
+    }
+    return NO;
 }
 
 - (NSArray<NSString*>*)storylines
 {
-	NSMutableArray *storylines = NSMutableArray.array;
-	for (Storybeat *beat in self.beats) {
-		[storylines addObject:beat.storyline];
-	}
-	return storylines;
+    NSMutableArray *storylines = NSMutableArray.array;
+    for (Storybeat *beat in self.beats) {
+        [storylines addObject:beat.storyline];
+    }
+    return storylines;
 }
 
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline
 {
-	for (Storybeat *beat in self.beats) {
-		if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return beat;
-	}
-	return nil;
+    for (Storybeat *beat in self.beats) {
+        if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return beat;
+    }
+    return nil;
 }
  
 - (NSRange)firstBeatRange {
-	__block NSRange beatRange = NSMakeRange(NSNotFound, 0);
-	
-	[self.beatRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		// Find first range
-		if (range.length > 0) {
-			beatRange = range;
-			*stop = YES;
-		}
-	}];
-	
-	return beatRange;
+    __block NSRange beatRange = NSMakeRange(NSNotFound, 0);
+    
+    [self.beatRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        // Find first range
+        if (range.length > 0) {
+            beatRange = range;
+            *stop = YES;
+        }
+    }];
+    
+    return beatRange;
 }
 
 
@@ -907,7 +907,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Parse and apply Fountain stylization inside the string contained by this line.
 - (void)resetFormatting {
-	NSUInteger length = self.string.length;
+    NSUInteger length = self.string.length;
     // Let's not do this for extremely long lines. I don't know how many symbols a unichar array can hold.
     // I guess there should be a fallback for insanely long strings, but this is a free and open source app, so if your
     // unique artwork requires 300 000 unicode symbols on a single lines, please use some other software.
@@ -951,62 +951,62 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         NSLog(@"Error when trying to reset formatting: %@", e);
         return;
     }
-	
+    
 }
 
 /// Converts an FDX-style attributed string back to Fountain
 - (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr
 {
-	// NOTE! This only works with the FDX attributed string
-	NSMutableString *result = NSMutableString.string;
-	
-	__block NSInteger pos = 0;
-	
-	[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-		NSString *string = [attrStr attributedSubstringFromRange:range].string;
-				
-		NSMutableString *open = [NSMutableString stringWithString:@""];
-		NSMutableString *close = [NSMutableString stringWithString:@""];
-		NSMutableString *openClose = [NSMutableString stringWithString:@""];
-		
-		NSSet *styles = attrs[@"Style"];
-		
-		if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
-		if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
-		if ([styles containsObject:UNDERLINE_STYLE]) [openClose appendString:UNDERLINE_PATTERN];
+    // NOTE! This only works with the FDX attributed string
+    NSMutableString *result = NSMutableString.string;
+    
+    __block NSInteger pos = 0;
+    
+    [attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        NSString *string = [attrStr attributedSubstringFromRange:range].string;
+                
+        NSMutableString *open = [NSMutableString stringWithString:@""];
+        NSMutableString *close = [NSMutableString stringWithString:@""];
+        NSMutableString *openClose = [NSMutableString stringWithString:@""];
+        
+        NSSet *styles = attrs[@"Style"];
+        
+        if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
+        if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
+        if ([styles containsObject:UNDERLINE_STYLE]) [openClose appendString:UNDERLINE_PATTERN];
         if ([styles containsObject:NOTE_STYLE]) {
             [open appendString:[NSString stringWithFormat:@"%s", NOTE_OPEN_CHAR]];
             [close appendString:[NSString stringWithFormat:@"%s", NOTE_CLOSE_CHAR]];
         }
-        				
-		[result appendString:open];
-		[result appendString:openClose];
-		[result appendString:string];
-		[result appendString:openClose];
-		[result appendString:close];
+                        
+        [result appendString:open];
+        [result appendString:openClose];
+        [result appendString:string];
+        [result appendString:openClose];
+        [result appendString:close];
 
-		pos += open.length + openClose.length + string.length + openClose.length + close.length;
-	}];
-	
-	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        pos += open.length + openClose.length + string.length + openClose.length + close.length;
+    }];
+    
+    return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
 /// Creates and stores a string with style attributes. Please don't use in editor, only for static parsing.
 /// - note N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
 - (NSAttributedString*)attrString
 {
-	if (_attrString == nil) {
-		NSAttributedString *string = [self attributedStringForFDX];
-		NSMutableAttributedString *result = NSMutableAttributedString.new;
-		
-		[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			[result appendAttributedString:[string attributedSubstringFromRange:range]];
-		}];
-		
-		_attrString = result;
-	}
-	
-	return _attrString;
+    if (_attrString == nil) {
+        NSAttributedString *string = [self attributedStringForFDX];
+        NSMutableAttributedString *result = NSMutableAttributedString.new;
+        
+        [self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [result appendAttributedString:[string attributedSubstringFromRange:range]];
+        }];
+        
+        _attrString = result;
+    }
+    
+    return _attrString;
 }
 
 - (NSAttributedString*)attributedStringForFDX
@@ -1018,58 +1018,58 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// - note N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
 - (NSAttributedString*)attributedString
 {
-	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
-		
-	// Make (forced) character names uppercase
-	if (self.type == character || self.type == dualDialogueCharacter) {
-		NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
-		if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
-	}
+    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
+        
+    // Make (forced) character names uppercase
+    if (self.type == character || self.type == dualDialogueCharacter) {
+        NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
+        if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
+    }
     
-	// Add font stylization
-	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > ITALIC_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:ITALIC_STYLE toString:string range:range];
-		}
-	}];
+    // Add font stylization
+    [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > ITALIC_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:ITALIC_STYLE toString:string range:range];
+        }
+    }];
 
-	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > BOLD_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLD_STYLE toString:string range:range];
-		}
-	}];
+    [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > BOLD_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:BOLD_STYLE toString:string range:range];
+        }
+    }];
     
-	[self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > ITALIC_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:BOLDITALIC_STYLE toString:string range:range];
-		}
-	}];
-	
-	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > UNDERLINE_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:UNDERLINE_STYLE toString:string range:range];
-		}
-	}];
-		
-	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > OMIT_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
-		}
-	}];
-	
-	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > NOTE_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addStyleAttr:NOTE_STYLE toString:string range:range];
-		}
-	}];
+    [self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > ITALIC_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:BOLDITALIC_STYLE toString:string range:range];
+        }
+    }];
+    
+    [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > UNDERLINE_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:UNDERLINE_STYLE toString:string range:range];
+        }
+    }];
+        
+    [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > OMIT_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
+        }
+    }];
+    
+    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > NOTE_PATTERN.length * 2) {
+            if ([self rangeInStringRange:range]) [self addStyleAttr:NOTE_STYLE toString:string range:range];
+        }
+    }];
 
-	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
-	}];
-		
-	[self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addStyleAttr:@"RemovalSuggestion" toString:string range:range];
-	}];
+    [self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
+    }];
+        
+    [self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if ([self rangeInStringRange:range]) [self addStyleAttr:@"RemovalSuggestion" toString:string range:range];
+    }];
         
     // Add macro attributes
     if (self.macroRanges.count > 0) {
@@ -1081,26 +1081,26 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         }
     }
     
-	if (self.revisedRanges.count) {
-		for (NSNumber* key in _revisedRanges.allKeys) {
-			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+    if (self.revisedRanges.count) {
+        for (NSNumber* key in _revisedRanges.allKeys) {
+            [_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
                 if ([self rangeInStringRange:range]) {
                     [string addAttribute:@"Revision" value:key range:range];
                 }
-			}];
-		}
-	}
+            }];
+        }
+    }
     
-	// Loop through tags and apply
-	for (NSDictionary *tag in self.tags) {
-		NSString* tagValue = tag[@"tag"];
-		if (!tagValue) continue;
-		
-		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
-		[string addAttribute:@"BeatTag" value:tagValue range:range];
-	}
-	
-	return string;
+    // Loop through tags and apply
+    for (NSDictionary *tag in self.tags) {
+        NSString* tagValue = tag[@"tag"];
+        if (!tagValue) continue;
+        
+        NSRange range = [(NSValue*)tag[@"range"] rangeValue];
+        [string addAttribute:@"BeatTag" value:tagValue range:range];
+    }
+    
+    return string;
 }
 
 /// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
@@ -1108,12 +1108,12 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 {
     if (name == nil) NSLog(@"WARNING: Null value passed to attributes");
     
-	// We are going out of range. Abort.
-	if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
-	
-	// Make a copy and enumerate attributes.
-	// Add style to the corresponding range while retaining the existing attributes, if applicable.
-	[string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+    // We are going out of range. Abort.
+    if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
+    
+    // Make a copy and enumerate attributes.
+    // Add style to the corresponding range while retaining the existing attributes, if applicable.
+    [string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         NSMutableSet* style;
         if (attrs[@"Style"] != nil) {
             // We need to make a copy of the set, otherwise we'll add to the same set of attributes as earlier, causing issues with overlapping attributes.
@@ -1123,8 +1123,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             style = [NSMutableSet.alloc initWithArray:@[name]];
         }
         
-		[string addAttribute:@"Style" value:style range:range];
-	}];
+        [string addAttribute:@"Style" value:style range:range];
+    }];
 }
 
 - (NSAttributedString*)attributedStringWithMacros
@@ -1205,24 +1205,24 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
  
  */
 - (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index {
-	NSAttributedString *string = [self attributedStringForFDX];
-	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
-	
-	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
-	}];
-	
-	NSAttributedString *first  = [NSMutableAttributedString.alloc initWithString:@""];
-	NSAttributedString *second = [NSMutableAttributedString.alloc initWithString:@""];
-	
-	// Safeguard index (this could happen to numerous reasons, extra spaces etc.)
-	if (index > attrStr.length) index = attrStr.length;
-	
-	// Put strings into the split strings
-	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
-	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
-	
-	// Remove whitespace from the beginning if needed
+    NSAttributedString *string = [self attributedStringForFDX];
+    NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
+    
+    [self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
+    }];
+    
+    NSAttributedString *first  = [NSMutableAttributedString.alloc initWithString:@""];
+    NSAttributedString *second = [NSMutableAttributedString.alloc initWithString:@""];
+    
+    // Safeguard index (this could happen to numerous reasons, extra spaces etc.)
+    if (index > attrStr.length) index = attrStr.length;
+    
+    // Put strings into the split strings
+    first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
+    if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
+    
+    // Remove whitespace from the beginning if needed
     while (second.string.length > 0) {
         if ([second.string characterAtIndex:0] == ' ') {
             second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
@@ -1232,14 +1232,14 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             break;
         }
     }
-	
-	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
-	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
-	
-	if (self.changed) {
-		retain.changed = YES;
-		split.changed = YES;
-	}
+    
+    Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
+    Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
+    
+    if (self.changed) {
+        retain.changed = YES;
+        split.changed = YES;
+    }
         
     // Set flags
     
@@ -1252,39 +1252,39 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
     // Set identity
     
-	retain.uuid = self.uuid;
-	retain.position = self.position;
-	
-	split.uuid = self.uuid;
-	split.position = self.position + retain.string.length;
-	
-	// Now we'll have to go through some extra trouble to keep the revised ranges intact.
-	if (self.revisedRanges.count) {
-		NSRange firstRange = NSMakeRange(0, index);
-		NSRange secondRange = NSMakeRange(index, split.string.length);
-		split.revisedRanges = NSMutableDictionary.new;
-		retain.revisedRanges = NSMutableDictionary.new;
-		
-		for (NSString *key in self.revisedRanges.allKeys) {
-			retain.revisedRanges[key] = NSMutableIndexSet.indexSet;
-			split.revisedRanges[key] = NSMutableIndexSet.indexSet;
-			
-			// Iterate through revised ranges, calculate intersections and add to their respective line items
-			[self.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-				NSRange firstIntersct = NSIntersectionRange(range, firstRange);
-				NSRange secondIntersct = NSIntersectionRange(range, secondRange);
-				
-				if (firstIntersct.length > 0) {
-					[retain.revisedRanges[key] addIndexesInRange:firstIntersct];
-				}
-				if (secondIntersct.length > 0) {
-					// Substract offset from the split range to get it back to zero
-					NSRange actualRange = NSMakeRange(secondIntersct.location - index, secondIntersct.length);
-					[split.revisedRanges[key] addIndexesInRange:actualRange];
-				}
-			}];
-		}
-	}
+    retain.uuid = self.uuid;
+    retain.position = self.position;
+    
+    split.uuid = self.uuid;
+    split.position = self.position + retain.string.length;
+    
+    // Now we'll have to go through some extra trouble to keep the revised ranges intact.
+    if (self.revisedRanges.count) {
+        NSRange firstRange = NSMakeRange(0, index);
+        NSRange secondRange = NSMakeRange(index, split.string.length);
+        split.revisedRanges = NSMutableDictionary.new;
+        retain.revisedRanges = NSMutableDictionary.new;
+        
+        for (NSNumber *key in self.revisedRanges.allKeys) {
+            retain.revisedRanges[key] = NSMutableIndexSet.indexSet;
+            split.revisedRanges[key] = NSMutableIndexSet.indexSet;
+            
+            // Iterate through revised ranges, calculate intersections and add to their respective line items
+            [self.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+                NSRange firstIntersct = NSIntersectionRange(range, firstRange);
+                NSRange secondIntersct = NSIntersectionRange(range, secondRange);
+                
+                if (firstIntersct.length > 0) {
+                    [retain.revisedRanges[key] addIndexesInRange:firstIntersct];
+                }
+                if (secondIntersct.length > 0) {
+                    // Substract offset from the split range to get it back to zero
+                    NSRange actualRange = NSMakeRange(secondIntersct.location - index, secondIntersct.length);
+                    [split.revisedRanges[key] addIndexesInRange:actualRange];
+                }
+            }];
+        }
+    }
     
     // Let's also split our resolved macros
     if (self.resolvedMacros.count) {
@@ -1305,8 +1305,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             }
         }
     }
-	
-	return @[ retain, split ];
+    
+    return @[ retain, split ];
 }
 
 
@@ -1335,53 +1335,53 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too. Why, I don't know.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
-	NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
-	
-	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
-	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
-	
-	for (NSInteger i = 0;;i++) {
-		if (i > lastIndex) {
-			break;
-		}
-				
-		// No range is currently inspected
-		if (rangeBegin == -1) {
-			bool match = YES;
-			for (int j = 0; j < delimLength; j++) {
-				// Check for escape character (like \*)
-				if (i > 0 && string[j + i - 1] == '\\') {
-					match = NO;
-					break;
-				}
-			
-				if (string[j+i] != startString[j]) {
-					match = NO;
-					break;
-				}
-			}
-			if (match) {
-				rangeBegin = i;
-				i += delimLength - 1;
-			}
-		// We have found a range
-		} else {
-			bool match = YES;
-			for (int j = 0; j < delimLength; j++) {
-				if (string[j+i] != endString[j]) {
-					match = NO;
-					break;
-				}
-			}
-			if (match) {
-				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
-				rangeBegin = -1;
-				i += delimLength - 1;
-			}
-		}
-	}
-		
-	return indexSet;
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    
+    NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
+    NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
+    
+    for (NSInteger i = 0;;i++) {
+        if (i > lastIndex) {
+            break;
+        }
+                
+        // No range is currently inspected
+        if (rangeBegin == -1) {
+            bool match = YES;
+            for (int j = 0; j < delimLength; j++) {
+                // Check for escape character (like \*)
+                if (i > 0 && string[j + i - 1] == '\\') {
+                    match = NO;
+                    break;
+                }
+            
+                if (string[j+i] != startString[j]) {
+                    match = NO;
+                    break;
+                }
+            }
+            if (match) {
+                rangeBegin = i;
+                i += delimLength - 1;
+            }
+        // We have found a range
+        } else {
+            bool match = YES;
+            for (int j = 0; j < delimLength; j++) {
+                if (string[j+i] != endString[j]) {
+                    match = NO;
+                    break;
+                }
+            }
+            if (match) {
+                [indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
+                rangeBegin = -1;
+                i += delimLength - 1;
+            }
+        }
+    }
+        
+    return indexSet;
 }
 
 
@@ -1389,8 +1389,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns TRUE when the line has no Fountain formatting (like **bold**)
 -(bool)noFormatting {
-	if (_boldRanges.count || _italicRanges.count || _strikeoutRanges.count || _underlinedRanges.count) return NO;
-	else return YES;
+    if (_boldRanges.count || _italicRanges.count || _strikeoutRanges.count || _underlinedRanges.count) return NO;
+    else return YES;
 }
 
 
@@ -1398,8 +1398,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 - (BOOL)matchesUUID:(NSUUID*)uuid
 {
-	if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid.UUIDString.lowercaseString]) return true;
-	else return false;
+    if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid.UUIDString.lowercaseString]) return true;
+    else return false;
 }
 
 - (BOOL)matchesUUIDString:(NSString*)uuid
@@ -1432,8 +1432,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 - (bool)rangeInStringRange:(NSRange)range {
-	if (range.location + range.length <= self.string.length) return YES;
-	else return NO;
+    if (range.location + range.length <= self.string.length) return YES;
+    else return NO;
 }
 
 /// Returns ranges with content ONLY (useful for reconstructing the string with no Fountain stylization)
@@ -1460,14 +1460,14 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns content ranges, including notes
 - (NSIndexSet*)contentRangesWithNotes {
-	// Returns content ranges WITH notes included
-	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
-	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
-	
-	NSIndexSet *formattingRanges = [self formattingRangesWithGlobalRange:NO includeNotes:NO];
-	[contentRanges removeIndexes:formattingRanges];
-	
-	return contentRanges;
+    // Returns content ranges WITH notes included
+    NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
+    [contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
+    
+    NSIndexSet *formattingRanges = [self formattingRangesWithGlobalRange:NO includeNotes:NO];
+    [contentRanges removeIndexes:formattingRanges];
+    
+    return contentRanges;
 }
 
 - (NSUInteger)numberOfPrecedingFormattingCharacters
@@ -1516,29 +1516,29 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 /// Notes are included in formatting ranges by default.
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes includeOmissions:(bool)includeOmissions
 {
-	NSMutableIndexSet *indices = NSMutableIndexSet.new;
-	NSInteger offset = 0;
-	
-	if (globalRange) offset = self.position;
-	
-	// Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
+    NSMutableIndexSet *indices = NSMutableIndexSet.new;
+    NSInteger offset = 0;
+    
+    if (globalRange) offset = self.position;
+    
+    // Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
     NSInteger precedingCharacters = self.numberOfPrecedingFormattingCharacters;
     if (precedingCharacters > 0) {
         [indices addIndexesInRange:NSMakeRange(offset, precedingCharacters)];
-	}
-	
-	// Catch dual dialogue force symbol
-	if (self.type == dualDialogueCharacter && self.string.length > 0 && [self.string characterAtIndex:self.string.length - 1] == '^') {
-		[indices addIndex:self.string.length - 1 + offset];
-	}
-	
-	// Add ranges for > and < (if needed)
-	if (self.type == centered && self.string.length >= 2) {
-		if ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<') {
-			[indices addIndex:0+offset];
-			[indices addIndex:self.string.length - 1+offset];
-		}
-	}
+    }
+    
+    // Catch dual dialogue force symbol
+    if (self.type == dualDialogueCharacter && self.string.length > 0 && [self.string characterAtIndex:self.string.length - 1] == '^') {
+        [indices addIndex:self.string.length - 1 + offset];
+    }
+    
+    // Add ranges for > and < (if needed)
+    if (self.type == centered && self.string.length >= 2) {
+        if ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<') {
+            [indices addIndex:0+offset];
+            [indices addIndex:self.string.length - 1+offset];
+        }
+    }
     
     // Title page keys will be included in formatting ranges
     if (self.isTitlePage && self.beginsTitlePageBlock && self.titlePageKey.length) {
@@ -1555,31 +1555,31 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             i++;
         }
     }
-	
-	// Escape ranges
-	[indices addIndexes:[[NSIndexSet alloc] initWithIndexSet:self.escapeRanges]];
-	
-	// Scene number range
-	if (self.sceneNumberRange.length) {
-		[indices addIndexesInRange:(NSRange){ self.sceneNumberRange.location + offset, self.sceneNumberRange.length }];
-		// Also remove the surrounding #'s
-		[indices addIndex:self.sceneNumberRange.location + offset - 1];
-		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length + offset];
-	}
-	
-	// Stylization ranges
-	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location + offset, BOLD_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
-	}];
-	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location + offset, ITALIC_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length +offset, ITALIC_PATTERN.length)];
-	}];
-	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location + offset, UNDERLINE_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
-	}];
+    
+    // Escape ranges
+    [indices addIndexes:[[NSIndexSet alloc] initWithIndexSet:self.escapeRanges]];
+    
+    // Scene number range
+    if (self.sceneNumberRange.length) {
+        [indices addIndexesInRange:(NSRange){ self.sceneNumberRange.location + offset, self.sceneNumberRange.length }];
+        // Also remove the surrounding #'s
+        [indices addIndex:self.sceneNumberRange.location + offset - 1];
+        [indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length + offset];
+    }
+    
+    // Stylization ranges
+    [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [indices addIndexesInRange:NSMakeRange(range.location + offset, BOLD_PATTERN.length)];
+        [indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
+    }];
+    [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [indices addIndexesInRange:NSMakeRange(range.location + offset, ITALIC_PATTERN.length)];
+        [indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length +offset, ITALIC_PATTERN.length)];
+    }];
+    [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [indices addIndexesInRange:NSMakeRange(range.location + offset, UNDERLINE_PATTERN.length)];
+        [indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
+    }];
     
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1593,26 +1593,26 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         }];
     }
     
-	return indices;
+    return indices;
 }
 
 - (NSRange)characterNameRange
 {
-	NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
-	
-	if (parenthesisLoc == NSNotFound) {
-		return (NSRange){ 0, self.string.length };
-	} else {
-		return (NSRange){ 0, parenthesisLoc };
-	}
+    NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
+    
+    if (parenthesisLoc == NSNotFound) {
+        return (NSRange){ 0, self.string.length };
+    } else {
+        return (NSRange){ 0, parenthesisLoc };
+    }
 }
 - (BOOL)hasExtension {
-	/// Returns  `TRUE` if the character cue has an extension
-	if (!self.isAnyCharacter) return false;
-	
-	NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
-	if (parenthesisLoc == NSNotFound) return false;
-	else return true;
+    /// Returns  `TRUE` if the character cue has an extension
+    if (!self.isAnyCharacter) return false;
+    
+    NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
+    if (parenthesisLoc == NSNotFound) return false;
+    else return true;
 }
 
 /// Ranges of emojis (o the times we live in)
@@ -1628,59 +1628,59 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Helper methods
 
 - (NSString*)trimmed {
-	return [self.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    return [self.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 }
 
 /// Joins a line into this line. Copies all stylization and offsets the formatting ranges.
 - (void)joinWithLine:(Line *)line
 {
-	if (!line) return;
-	
-	NSString *string = line.string;
-	
-	// Remove symbols for forcing elements
-	if (line.numberOfPrecedingFormattingCharacters > 0 && string.length > 0) {
-		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
-	}
-	
-	NSInteger offset = self.string.length + 1 - line.numberOfPrecedingFormattingCharacters;
-	if (line.changed) self.changed = YES;
-	
-	// Join strings
-	self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];
-	
-	// Offset and copy formatting ranges
-	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
-	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.italicRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
-	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.underlinedRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
-	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
-	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.escapeRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-	}];
+    if (!line) return;
+    
+    NSString *string = line.string;
+    
+    // Remove symbols for forcing elements
+    if (line.numberOfPrecedingFormattingCharacters > 0 && string.length > 0) {
+        string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
+    }
+    
+    NSInteger offset = self.string.length + 1 - line.numberOfPrecedingFormattingCharacters;
+    if (line.changed) self.changed = YES;
+    
+    // Join strings
+    self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];
+    
+    // Offset and copy formatting ranges
+    [line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    [line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.italicRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    [line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.underlinedRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    [line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    [line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.escapeRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    [line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
     [line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.macroRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
-	
-	// Offset and copy revised ranges
-	for (NSString* key in line.revisedRanges.allKeys) {
-		if (!self.revisedRanges) self.revisedRanges = NSMutableDictionary.dictionary;
-		if (!self.revisedRanges[key]) self.revisedRanges[key] = NSMutableIndexSet.indexSet;
-		
-		[line.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			[self.revisedRanges[key] addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-		}];
-	}
+    
+    // Offset and copy revised ranges
+    for (NSNumber* key in line.revisedRanges.allKeys) {
+        if (!self.revisedRanges) self.revisedRanges = NSMutableDictionary.dictionary;
+        if (!self.revisedRanges[key]) self.revisedRanges[key] = NSMutableIndexSet.indexSet;
+        
+        [line.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [self.revisedRanges[key] addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+        }];
+    }
     
     // Offset and copy resolved macros
     if (line.macroRanges.count > 0) {
@@ -1697,25 +1697,25 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 - (NSString*)characterName
 {
-	// This removes any extensions from character name, ie. (V.O.), (CONT'D) etc.
-	// We'll allow the method to run for lines under 4 characters, even if not parsed as character cues
-	// (update in 2022: why do we do this, past me?)
-	if ((self.type != character && self.type != dualDialogueCharacter) && self.string.length > 3) return nil;
-	
-	// Strip formatting (such as symbols for forcing element types)
-	NSString *name = self.stripFormatting;
-	if (name.length == 0) return @"";
-		
-	// Find and remove suffix
-	NSRange suffixRange = [name rangeOfString:@"("];
-	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
-	
-	// Remove dual dialogue character if needed
-	if (self.type == dualDialogueCharacter && [name characterAtIndex:name.length-1] == '^') {
-		name = [name substringToIndex:name.length - 1];
-	}
-	
-	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    // This removes any extensions from character name, ie. (V.O.), (CONT'D) etc.
+    // We'll allow the method to run for lines under 4 characters, even if not parsed as character cues
+    // (update in 2022: why do we do this, past me?)
+    if ((self.type != character && self.type != dualDialogueCharacter) && self.string.length > 3) return nil;
+    
+    // Strip formatting (such as symbols for forcing element types)
+    NSString *name = self.stripFormatting;
+    if (name.length == 0) return @"";
+        
+    // Find and remove suffix
+    NSRange suffixRange = [name rangeOfString:@"("];
+    if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
+    
+    // Remove dual dialogue character if needed
+    if (self.type == dualDialogueCharacter && [name characterAtIndex:name.length-1] == '^') {
+        name = [name substringToIndex:name.length - 1];
+    }
+    
+    return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
 - (NSString*)titlePageKey {
@@ -1751,20 +1751,20 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 -(NSDictionary*)forSerialization
 {
     NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:@{
-		@"string": (self.string.length) ? self.string.copy : @"",
-		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
-		@"position": @(self.position),
-		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
-		@"sectionDepth": @(self.sectionDepth),
-		@"textRange": @{ @"location": @(self.textRange.location), @"length": @(self.textRange.length) },
-		@"typeAsString": self.typeAsString,
-		@"omitted": @(self.omitted),
-		@"marker": (self.marker.length) ? self.marker : @"",
-		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
-		@"uuid": (self.uuid) ? self.uuid.UUIDString : @"",
+        @"string": (self.string.length) ? self.string.copy : @"",
+        @"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
+        @"position": @(self.position),
+        @"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+        @"sectionDepth": @(self.sectionDepth),
+        @"textRange": @{ @"location": @(self.textRange.location), @"length": @(self.textRange.length) },
+        @"typeAsString": self.typeAsString,
+        @"omitted": @(self.omitted),
+        @"marker": (self.marker.length) ? self.marker : @"",
+        @"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
+        @"uuid": (self.uuid) ? self.uuid.UUIDString : @"",
         @"notes": [self notesAsJSON],
         @"ranges": self.ranges
-	}];
+    }];
     
     if (self.type == synopse) {
         json[@"color"] = (self.color != nil) ? self.color : @"";
@@ -1776,44 +1776,47 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns a dictionary of ranges for plugins
 -(NSDictionary*)ranges {
-	return @{
-		@"notes": [self indexSetAsArray:self.noteRanges],
-		@"omitted": [self indexSetAsArray:self.omittedRanges],
-		@"bold": [self indexSetAsArray:self.boldRanges],
-		@"italic": [self indexSetAsArray:self.italicRanges],
-		@"underlined": [self indexSetAsArray:self.underlinedRanges],
-		@"revisions": @{
-			@"blue": (self.revisedRanges[@"blue"]) ? [self indexSetAsArray:self.revisedRanges[@"blue"]] : @[],
-			@"orange": (self.revisedRanges[@"orange"]) ? [self indexSetAsArray:self.revisedRanges[@"orange"]] : @[],
-			@"purple": (self.revisedRanges[@"purple"]) ? [self indexSetAsArray:self.revisedRanges[@"purple"]] : @[],
-			@"green": (self.revisedRanges[@"green"]) ? [self indexSetAsArray:self.revisedRanges[@"green"]] : @[]
-		}
-	};
+    // Preprocess revised ranges for JSON compatibility
+    NSMutableDictionary* revisedRanges = NSMutableDictionary.new;
+    for (NSNumber* key in self.revisedRanges.allKeys) {
+        NSIndexSet* indices = self.revisedRanges[key];
+        NSArray* indexArray = [self indexSetAsArray:indices];
+        revisedRanges[key] = indexArray;
+    }
+    
+    return @{
+        @"notes": [self indexSetAsArray:self.noteRanges],
+        @"omitted": [self indexSetAsArray:self.omittedRanges],
+        @"bold": [self indexSetAsArray:self.boldRanges],
+        @"italic": [self indexSetAsArray:self.italicRanges],
+        @"underlined": [self indexSetAsArray:self.underlinedRanges],
+        @"revisions": revisedRanges
+    };
 }
 
 -(NSArray*)indexSetAsArray:(NSIndexSet*)set {
-	NSMutableArray *array = NSMutableArray.array;
-	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > 0) {
-			[array addObject:@[ @(range.location), @(range.length) ]];
-		}
-	}];
-	
-	return array;
+    NSMutableArray *array = NSMutableArray.array;
+    [set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length > 0) {
+            [array addObject:@[ @(range.location), @(range.length) ]];
+        }
+    }];
+    
+    return array;
 }
 
 #pragma mark - Custom data
 
 - (NSDictionary*)setCustomData:(NSString*)key value:(id)value {
-	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
-	
-	if (!value)	return _customDataDictionary[key];
-	else _customDataDictionary[key] = value;
-	return nil;
+    if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
+    
+    if (!value)    return _customDataDictionary[key];
+    else _customDataDictionary[key] = value;
+    return nil;
 }
 - (id)getCustomData:(NSString*)key {
-	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
-	return _customDataDictionary[key];
+    if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
+    return _customDataDictionary[key];
 }
 
 
@@ -1830,7 +1833,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 -(NSString *)description
 {
-	return [NSString stringWithFormat:@"Line: %@  (%@ at %lu) %@", self.string, self.typeAsString, self.position, (self.nextElementIsDualDialogue) ? @"Next is dual" : @"" ];
+    return [NSString stringWithFormat:@"Line: %@  (%@ at %lu) %@", self.string, self.typeAsString, self.position, (self.nextElementIsDualDialogue) ? @"Next is dual" : @"" ];
 }
 
 #pragma mark - Copy
