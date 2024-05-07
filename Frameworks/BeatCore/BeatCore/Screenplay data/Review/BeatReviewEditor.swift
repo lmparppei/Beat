@@ -168,21 +168,18 @@ public protocol BeatReviewDelegate: AnyObject {
 
 }
 
-#if os(macOS)
-@objc class BeatReviewEditorView: NSViewController, BeatReviewDelegate, UXTextViewDelegate {
+@objc public class BeatReviewEditorViewBase:UXViewController, BeatReviewDelegate, UXTextViewDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
     @IBOutlet weak var editButton:UXButton?
-    
+
     weak var delegate:BeatReviewEditorDelegate?
     var item:BeatReviewItem
     var shown:Bool = false
     
-    let editorContentSize = CGSizeMake(200, 160)
+    var editorContentSize:CGSize { return CGSizeMake(250, 160) }
     
     var editable = false {
-        didSet {
-            updateEditorMode()
-        }
+        didSet { updateEditorMode() }
     }
     
     init(reviewItem:BeatReviewItem, delegate:BeatReviewEditorDelegate, editable:Bool) {
@@ -190,48 +187,41 @@ public protocol BeatReviewDelegate: AnyObject {
         self.delegate = delegate
         self.editable = editable
         
+        #if os(macOS)
+            let nibName = "BeatReviewEditor macOS"
+        #else
+            let nibName = "BeatReviewEditor iOS"
+        #endif
+
+        
         let bundle = Bundle(for: type(of: self))
-        super.init(nibName: "BeatReviewEditor macOS", bundle: bundle)
+        super.init(nibName: nibName, bundle: bundle)
     }
-    required init?(coder: NSCoder) {
+    
+    required public init?(coder: NSCoder) {
         self.item = BeatReviewItem(reviewString: "")
         super.init(coder: coder)
     }
+    
     deinit {
         self.textView = nil
         self.editButton = nil
     }
-
 }
 
+#if os(macOS)
+@objc class BeatReviewEditorView: BeatReviewEditorViewBase {
+}
 #elseif os(iOS)
-
-typealias BeatReviewEditorView = BeatReviewEditorViewiOS
-@objc public class BeatReviewEditorViewiOS: UIViewController, BeatReviewDelegate, UXTextViewDelegate {
-    @IBOutlet weak var textView:BeatReviewTextView?
-    @IBOutlet weak var editButton:UXButton?
+@objc public class BeatReviewEditorView: BeatReviewEditorViewBase {
+    // The iOS version requires more setup
     @IBOutlet weak var closeButton:UXButton?
-    
-    weak var delegate:BeatReviewEditorDelegate?
-    var item:BeatReviewItem
-    var shown:Bool = false
-    
-    let editorContentSize = CGSizeMake(250, 160)
-    
-    var editable = false {
-        didSet {
-            updateEditorMode()
-        }
-    }
-    
-    init(reviewItem:BeatReviewItem, delegate:BeatReviewEditorDelegate, editable:Bool) {
-        self.item = reviewItem
-        self.delegate = delegate
-        self.editable = editable
         
-        let bundle = Bundle(for: type(of: self))
-        super.init(nibName: "BeatReviewEditor iOS", bundle: bundle)
+    override var editorContentSize:CGSize { return CGSizeMake(250, 160) }
         
+    override init(reviewItem:BeatReviewItem, delegate:BeatReviewEditorDelegate, editable:Bool) {
+        super.init(reviewItem: reviewItem, delegate: delegate, editable: editable)
+
         let view = self.view as? BeatReviewEditorActualView
         view?.viewController = self
         
@@ -249,14 +239,8 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
         if UIDevice.current.userInterfaceIdiom != .phone { closeButton?.removeFromSuperview() }
     }
     
-    required init?(coder: NSCoder) {
-        self.item = BeatReviewItem(reviewString: "")
-        super.init(coder: coder)
-    }
-    
-    deinit {
-        self.textView = nil
-        self.editButton = nil
+    required public init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     public override func viewSafeAreaInsetsDidChange() {
@@ -280,7 +264,6 @@ typealias BeatReviewEditorView = BeatReviewEditorViewiOS
     public func textViewDidChange(_ textView: UITextView) {
         self.textDidChange(Notification(name: Notification.Name("")))
     }
-    
 }
 
 class BeatReviewEditorActualView:UIView {
@@ -293,7 +276,7 @@ class BeatReviewEditorActualView:UIView {
 
 #endif
 
-extension BeatReviewEditorView {
+extension BeatReviewEditorViewBase {
     override public func viewDidLoad() {
         // Set up the text view once view loads
         textView?.delegate = self
@@ -330,18 +313,38 @@ extension BeatReviewEditorView {
     /// Adjusts text view to non-editable note content
     func adjustTextViewToContent() {
         guard let textView = self.textView else { return }
-        
-        // Calculate appropriate size for the content
-        let textSize = textView.attributedString().height(containerWidth: editorContentSize.width)
         let insetHeight = textView.getInsets().height
         
+        // Calculate appropriate size for the content
+        let size = adjustedSize()
+        
         #if os(macOS)
-        let size = CGSizeMake(editorContentSize.width, 40 + textSize * 1.1 + insetHeight * 2)
+        let contentSize = CGSizeMake(size.width, size.height + 40.0 + insetHeight * 2)
         #else
-        let size = CGSizeMake(editorContentSize.width, textSize * 1.1 + insetHeight * 2 + 80)
+        // iOS needs to account for the arrow
+        let contentSize = CGSizeMake(size.width, size.height + 100.0 + insetHeight * 2)
         #endif
         
-        self.setContentSize(size)
+        self.setContentSize(contentSize)
+    }
+    
+    func adjustedSize() -> CGSize {
+        // Calculate appropriate size for the content
+        guard let textView = self.textView else { return CGSizeMake(0.0, 0.0) }
+        
+        var width = editorContentSize.width
+        var height = textView.attributedString().height(containerWidth: width)
+        
+        #if os(macOS)
+            // For longer reviews we'll want to make the width a bit bigger
+            if height > width * 1.5 {
+                if height > width * 2 { width = 500 }
+                else if height > width * 1.5 { width = 400 }
+                height = textView.attributedString().height(containerWidth: width)
+            }
+        #endif
+        
+        return CGSizeMake(width, min(height, 800.0))
     }
     
     /// Focuses the editable text view
@@ -350,7 +353,11 @@ extension BeatReviewEditorView {
                     
         #if os(macOS)
         textView?.window?.makeFirstResponder(self.textView)
-        delegate?.popover?.contentSize = self.editorContentSize
+        var contentSize = self.editorContentSize
+        let adjustedSize = self.adjustedSize()
+        
+        if adjustedSize.width > editorContentSize.width || adjustedSize.height > editorContentSize.height { contentSize = adjustedSize }
+        delegate?.popover?.contentSize = contentSize
         #else
         self.textView?.becomeFirstResponder()
         #endif

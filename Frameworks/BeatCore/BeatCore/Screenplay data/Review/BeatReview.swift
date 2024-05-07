@@ -329,6 +329,7 @@ extension BeatReview {
 	}
 	
 	func changeDone() {
+        // Look at this mess. Come on, Apple. After you've stopped using slave labour, maybe provide some outo-of-the-box compatibility between the systems.
 		#if os(macOS)
 			delegate?.updateChangeCount(.changeDone)
 		#elseif os(iOS)
