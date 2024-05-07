@@ -43,7 +43,8 @@ public extension NSAttributedString {
         var str = self.copy() as! NSAttributedString
         
         while str.length > 0 {
-            guard let chr = str.string[str.length - 1].unicodeScalars.first else { break }
+            let string = str.string
+            guard let chr = string[string.index(before: string.endIndex)].unicodeScalars.first else { break }
             
             if set.contains(chr) {
                 str = str.attributedSubstring(from: NSMakeRange(0, self.length - 1))

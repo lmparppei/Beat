@@ -68,7 +68,10 @@ public extension String {
 }
 
 public extension StringProtocol {
-	subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
+    /// - warning: __DO NOT__ use this outside of testing purposes. Doesn't work on non-latin characters and might cause a crash.
+    subscript(offset: Int) -> Character {
+        self[index(startIndex, offsetBy: offset)]
+    }
 	subscript(range: Range<Int>) -> SubSequence {
 		let startIndex = index(self.startIndex, offsetBy: range.lowerBound)
 		return self[startIndex..<index(startIndex, offsetBy: range.count)]
