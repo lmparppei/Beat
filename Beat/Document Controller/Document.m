@@ -1008,7 +1008,7 @@
 #pragma mark If text should change
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
-	NSLog(@"-> change %lu, %lu", affectedCharRange.location, affectedCharRange.length);
+	//NSLog(@"-> change %lu, %lu", affectedCharRange.location, affectedCharRange.length);
 	
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
