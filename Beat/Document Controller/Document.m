@@ -1108,7 +1108,7 @@
 - (void)textDidChange:(NSNotification *)notification
 {
 	[super textDidChange];
-		
+	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
 	
