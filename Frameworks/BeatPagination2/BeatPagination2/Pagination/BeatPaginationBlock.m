@@ -356,9 +356,15 @@
     return pageBreakData;
 }
 
-- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace
+- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
+    return [self splitParagraphWithRemainingSpace:remainingSpace line:nil];
+}
+
+- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace line:(Line*)line
 {
-	Line *line = self.lines.firstObject;
+	// If no line is set, let's use the first item
+    if (line == nil) line = self.lines.firstObject;
+    
 	NSString *str = [line stripFormattingWithSettings:self.delegate.settings];
 	NSString *retain = @"";
 
@@ -478,7 +484,7 @@
                 // We got to the end of block safely
                 [onThisPage addObjectsFromArray:safeLines];
                 [onThisPage addObject:line];
-                
+                // Flush safe lines
                 [safeLines removeAllObjects];
             } else {
                 [safeLines addObject:line];
@@ -487,7 +493,7 @@
             continue;
         }
         
-        // This line doesn't. Let's find out how to split the block.
+        // This line doesn't fit. Let's find out how to split the block.
         if (line.isAnyParenthetical) {
             if ([splittableIndices containsIndex:i]) {
                 // After a parenthetical which is NOT the second line, we'll just hop onto next page
@@ -497,6 +503,27 @@
                 // This is the first item. We'll just toss the whole block onto the next page.
                 cutoff = 1;
                 pageBreakItem = dialogueBlock.firstObject;
+            }
+            
+            // So, now we'll have to do some extra hacking. In some cases you could end up with a parenthetical or character cue that is longer than a page, which will cause an endless loop. To avoid that, we'll check the item height and force-split it if needed.
+            CGFloat h = [self heightForLine:line];
+            NSLog(@" -> bloc %f  // max pg %f", h, _delegate.maxPageHeight);
+            if ([self heightForLine:line] > _delegate.maxPageHeight - _delegate.styles.page.lineHeight * 2) {
+                // Note: splitParagraph returns ARRAYS of lines
+                NSArray* splitParenthetical = [self splitParagraphWithRemainingSpace:remainingSpace - heightBefore line:line];
+                Line* retain = ((NSArray*)splitParenthetical[0]).firstObject;
+                Line* split = ((NSArray*)splitParenthetical[1]).firstObject;
+                
+                // Something was left on this page
+                if (retain.length > 0) {
+                    [tmpThisPage addObjectsFromArray:safeLines];
+                    [tmpThisPage addObject:retain];
+                    cutoff += 1;
+                    
+                    pageBreak = splitParenthetical[2];
+                }
+                // Something was cut off to next page
+                if (split.length > 0) [tmpNextPage addObject:split];
             }
             
             break;
@@ -533,10 +560,10 @@
             break;
         }
     }
-
+    
     // We'll cut off at 0, so make page break item the first object in array
     if (cutoff == 0) pageBreakItem = self.lines.firstObject;
-        
+    
     [onThisPage addObjectsFromArray:tmpThisPage];
     [onNextPage addObjectsFromArray:tmpNextPage];
     [onNextPage addObjectsFromArray:[self.lines subarrayWithRange:NSMakeRange(cutoff, self.lines.count - cutoff)]];

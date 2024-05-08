@@ -643,35 +643,42 @@ static NSDictionary* patterns;
         if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
             
+            bool nextLineAffectedByEmptyLine = [self requiresPrecedingLineToBeEmpty:nextLine.type];
+            
+            
             if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
-                currentLine.type == section ||
-                currentLine.type == synopse ||
+                nextLine.isTitlePage ||
+                
                 currentLine.isDialogue ||
                 currentLine.isDualDialogue ||
-                currentLine.type == empty ||                // if the line became empty, it might change type of next line
-                (currentLine.type != empty && oldType == empty) ||
-                                                            
-                nextLine.isTitlePage ||
-                nextLine.isOutlineElement ||
                 nextLine.isDialogue ||
                 nextLine.isDualDialogue ||
-                nextLine.type == synopse ||
+                // Avoid dialogue weirdness
+                ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0) ||
+
+                nextLine.isOutlineElement ||
+                
+                // if the line became empty, it might change type of next line
+                nextLineAffectedByEmptyLine ||
+                (currentLine.type != oldType) ||
                 
                 // Look for unterminated omits & notes
                 nextLine.omitIn != currentLine.omitOut ||
-                ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
-                ) 
+                oldOmitOut != currentLine.omitOut
+                )
             {
                 [indices addIndex:index+1];
                 //[self correctParseInLine:index+1 indicesToDo:indices];
             }
         }
     }
-    
-    // Mark the current index as changed if needed
-    //bool noNeedToUpdate = currentLine.type == empty && oldType == empty;
-    //if (!noNeedToUpdate) [self.changedIndices addIndex:index];
+
     [self.changedIndices addIndex:index];
+}
+
+- (bool)requiresPrecedingLineToBeEmpty:(LineType)type
+{
+    return (type == heading || type == character || type == dualDialogueCharacter || type == shot);
 }
 
 
@@ -2338,8 +2345,7 @@ NSInteger previousSceneIndex = NSNotFound;
             }
             
             [l.noteRanges removeIndexesInRange:range];
-        }
-        else {
+        } else {
             [l.noteRanges addIndexesInRange:range];
             [_changedIndices addIndex:idx];
             

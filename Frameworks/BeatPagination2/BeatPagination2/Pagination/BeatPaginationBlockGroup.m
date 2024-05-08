@@ -67,8 +67,7 @@
 			space -= h;
 			idx += 1;
 			continue;
-		}
-		else {
+		} else {
 			// This block won't fit.
 			offendingBlock = block;
             
