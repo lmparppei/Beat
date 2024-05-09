@@ -506,8 +506,6 @@
             }
             
             // So, now we'll have to do some extra hacking. In some cases you could end up with a parenthetical or character cue that is longer than a page, which will cause an endless loop. To avoid that, we'll check the item height and force-split it if needed.
-            CGFloat h = [self heightForLine:line];
-            NSLog(@" -> bloc %f  // max pg %f", h, _delegate.maxPageHeight);
             if ([self heightForLine:line] > _delegate.maxPageHeight - _delegate.styles.page.lineHeight * 2) {
                 // Note: splitParagraph returns ARRAYS of lines
                 NSArray* splitParenthetical = [self splitParagraphWithRemainingSpace:remainingSpace - heightBefore line:line];
