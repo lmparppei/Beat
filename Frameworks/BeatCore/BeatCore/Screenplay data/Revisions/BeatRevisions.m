@@ -317,8 +317,6 @@
 {
 	_delegate.revisionLevel = [_delegate.documentSettings getInt:DocSettingRevisionLevel];
 
-    NSLog(@" -> loaded revision level: %lu", _delegate.revisionLevel);
-    
     // Convert legacy revision level to current system if needed
     if ([_delegate.documentSettings getString:DocSettingRevisionColor].length > 0) {
         NSString* color = [_delegate.documentSettings getString:DocSettingRevisionColor];
@@ -326,7 +324,6 @@
         if (level != NSNotFound) _delegate.revisionLevel = level;
         
         [_delegate.documentSettings remove:DocSettingRevisionColor];
-        NSLog(@"    -> loaded LEGACY revision level: %lu", _delegate.revisionLevel);
     }
 	
 	// Get revised ranges from document settings and iterate through them
