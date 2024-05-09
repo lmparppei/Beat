@@ -224,18 +224,7 @@
 #define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
-#define FONT_SIZE 12.0
 #define LINE_HEIGHT 1.1
-
-#define CHR_WIDTH 7.25
-#define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
-#define CHARACTER_INDENT_P 18 * CHR_WIDTH
-
-// DOCUMENT LAYOUT SETTINGS
-#define INITIAL_WIDTH 900
-#define INITIAL_HEIGHT 700
-
-#define NATIVE_RENDERING true
 
 @implementation Document
 
@@ -1860,6 +1849,7 @@
 	if (_autosave && self.documentEdited && self.fileURL) {
 		[self saveDocument:nil];
 	} else {
+
 		if ([NSFileManager.defaultManager fileExistsAtPath:self.autosavedContentsFileURL.path]) {
 			bool autosave = [BeatBackup backupWithDocumentURL:self.autosavedContentsFileURL name:self.fileNameString autosave:true];
 			if (!autosave) NSLog(@"AUTOSAVE ERROR");
@@ -1868,12 +1858,14 @@
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	NSString *filename = [self fileNameString];
+	NSString *filename = self.fileNameString;
+	NSString* extension = self.fileURL.pathExtension;
 	if (!filename) filename = @"Untitled";
+	if (!extension) extension = @"fountain";
 	
 	NSURL *autosavePath = [self autosavePath];
 	autosavePath = [autosavePath URLByAppendingPathComponent:filename];
-	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
+	autosavePath = [autosavePath URLByAppendingPathExtension:extension];
 	
 	return autosavePath;
 }
