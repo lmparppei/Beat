@@ -37,6 +37,11 @@ import Foundation
         return appSupportDir
     }
     
+    @objc public class func urlForTemporaryFile(name:String, pathExtension:String) -> URL {
+        let path = NSTemporaryDirectory() + "\(name).\(pathExtension)"
+        return URL(fileURLWithPath: path)
+    }
+    
     @objc public class func pathForTemporaryFile(withPrefix prefix: String) -> String {
         let uuid = UUID()
         let result = NSTemporaryDirectory() + "\(prefix)-\(uuid.uuidString)"

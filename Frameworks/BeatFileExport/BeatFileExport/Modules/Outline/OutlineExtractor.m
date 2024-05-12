@@ -7,8 +7,9 @@
 //
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "OutlineExtractor.h"
-#import "Beat-Swift.h"
+#import <BeatFileExport/BeatFileExport-Swift.h>
 
 @implementation OutlineExtractor
 
@@ -32,10 +33,10 @@
             if (lastLine && (line.type == heading || lastLine.type != line.type)) {
                 [result appendString:@"\n"];
             }
+            
             lastLine = line;
             [result appendString:line.string];
             [result appendString:@"\n"];
-            
         }
     }
     

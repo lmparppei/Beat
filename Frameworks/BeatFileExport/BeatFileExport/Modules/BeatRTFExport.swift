@@ -8,6 +8,7 @@
 
 import Foundation
 import BeatCore
+import BeatPagination2
 
 public class BeatRTFExport:NSObject {
 	public class func register(_ manager:BeatFileExportManager) {
@@ -40,7 +41,9 @@ public class BeatRTFExport:NSObject {
 				
 				let str = NSMutableAttributedString(attributedString: renderer.renderLine(line))
 				if str.length > 0, let pStyle = str.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as? NSMutableParagraphStyle {
-					pStyle.textBlocks = []
+                    #if os(macOS)
+                    pStyle.textBlocks = []
+                    #endif
 					
 					// Remove left margin
 					pStyle.firstLineHeadIndent = style.marginLeft + style.firstLineIndent

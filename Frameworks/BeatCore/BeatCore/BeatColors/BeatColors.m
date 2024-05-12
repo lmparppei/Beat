@@ -160,7 +160,7 @@
 #if TARGET_OS_OSX
 
 /// Creates an image to be used with UI elements to represent colors
-+ (NSImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size
++ (BXImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size
 {
     static NSMutableDictionary<NSString*, NSImage*>* labelImages;
     if (labelImages == nil) labelImages = NSMutableDictionary.new;
@@ -181,6 +181,35 @@
     [color setFill];
     [path fill];
     [image unlockFocus];
+    
+    labelImages[colorName] = image;
+    return image;
+}
+
+#else
+
++ (BXImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size
+{
+    static NSMutableDictionary<NSString*, BXImage*>* labelImages;
+    if (labelImages == nil) labelImages = NSMutableDictionary.new;
+    
+    colorName = colorName.lowercaseString;
+    if (labelImages[colorName] != nil) return labelImages[colorName];
+    
+    BXColor* color = [BeatColors color:colorName];
+    CGFloat w = size.width; CGFloat h = size.height;
+    CGFloat padding = w * 0.1;
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), NO, 0.0);
+    
+    CGRect rect = CGRectMake(padding, padding, w - 2 * padding, h - 2 * padding);
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:w / 2];
+    
+    [color setFill];
+    [path fill];
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
     
     labelImages[colorName] = image;
     return image;

@@ -79,16 +79,26 @@
  Because the tagging system in Beat doesn't have literal definitions other than what's in the script,
  we'll just create a definition for each of the tags, UNLESS they are the same.
  
+ I should really move all the string content to a template file.
  
  */
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatFDXExport.h"
-#import "Beat-Swift.h"
+#import <BeatFileExport/BeatFileExport-Swift.h>
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
-#define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
+//#define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
+
+#define LINES_PER_PAGE 46
+#define LINES_BEFORE_CENTER 18
+#define LINES_BEFORE_CREDIT 2
+#define LINES_BEFORE_AUTHOR 1
+#define LINES_BEFORE_SOURCE 2
+
+#define BOLD_PATTERN_LENGTH 2
+#define ITALIC_UNDERLINE_PATTERN_LENGTH 1
 
 static NSDictionary *fdxIds;
 
@@ -139,18 +149,23 @@ static NSDictionary *fdxIds;
 			@"Synopsis":	 	@{ @"number": @1, @"id": @"8e5e75c2-713b-47df-a75f-f12648b98ded" },
 			@"Cast":	 		@{ @"number": @2, @"id": @"01fc9642-84ff-4366-b37c-a3068dee57e8" },
 			@"Extras": 			@{ @"number": @3, @"id": @"028a4e2b-b507-4d09-88ab-90e3edae9071" },
-			@"Stunt": 			@{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" }, @"Stunts": @{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" },
-			@"Vehicle": 		@{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" }, @"Vehicles": @{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
-			@"Prop": 			@{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" }, @"Props": @{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
+			@"Stunt": 			@{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" }, 
+               @"Stunts":          @{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" },
+			@"Vehicle": 		@{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
+              @"Vehicles":        @{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
+			@"Prop": 			@{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
+            @"Props":           @{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
 			@"Camera": 			@{ @"number": @7, @"id": @"47b02ff1-5161-4137-b736-f36eebba7643" },
-			@"Special Effect":  @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" }, @"Special Effects": @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" },
+			@"Special Effect":  @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" }, 
+              @"Special Effects": @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" },
 			
 			@"Costume":			@{ @"number": @9, @"id": @"0726fa85-1e65-4ab8-87de-bf21d09b01f0" },
 			
 			@"Makeup": 			@{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
 			@"Makeup & hair": 	@{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
 			
-			@"Animal": 			@{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" }, @"Animals": @{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" },
+			@"Animal": 			@{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" }, 
+              @"Animals": @{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" },
 			@"Music": 			@{ @"number": @13, @"id": @"0b0b44c9-aa4b-4c40-88b1-d94472ad7a26" },
 			@"Sound": 			@{ @"number": @15, @"id": @"0ce7d308-096d-4603-8fe8-349f72cd89ff" },
 			@"Art": 			@{ @"number": @16, @"id": @"c86eae40-3b01-41c3-a7de-6859e6ec971d" },
@@ -172,30 +187,9 @@ static NSDictionary *fdxIds;
 	self.parser = [[ContinuousFountainParser alloc] initWithString:string];
 	
 	if (attrString) {
-		// Bake tags
+		// Bake tags and revisions
 		[BeatTagging bakeAllTagsInString:attrString toLines:self.parser.lines];
-		
-		// Enumerate revision ranges and bake into lines
-		[attrString enumerateAttribute:@"Revision" inRange:(NSRange){0, attrString.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			BeatRevisionItem *item = value;
-			if (item.type == RevisionNone) return;
-			
-			NSArray *lines = [self.parser linesInRange:range];
-			
-			for (Line *line in lines) {
-				if (!line.revisedRanges) line.revisedRanges = NSMutableDictionary.new;
-				if (!line.removalSuggestionRanges) line.removalSuggestionRanges = NSMutableIndexSet.indexSet;
-				
-				NSRange rangeInLine = [line globalRangeToLocal:range];
-				
-				if (item.type == RevisionAddition) {
-					// Add different revisions into the line
-					if (!line.revisedRanges[@(item.generationLevel)]) line.revisedRanges[@(item.generationLevel)] = NSMutableIndexSet.new;
-					[line.revisedRanges[@(item.generationLevel)] addIndexesInRange:rangeInLine];
-				}
-				else if (item.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:rangeInLine];
-			}
-		}];
+        [BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:attrString];
 	}
 	
 	self.paperSize = paperSize;
@@ -461,9 +455,6 @@ static NSDictionary *fdxIds;
 	}
 }
 
-#define BOLD_PATTERN_LENGTH 2
-#define ITALIC_UNDERLINE_PATTERN_LENGTH 1
-
 - (void)appendLineContents:(Line*)line
 {
 	NSString *string = [self lineToXML:line];
@@ -536,12 +527,6 @@ static NSDictionary *fdxIds;
 			return @"";
 	}
 }
-
-#define LINES_PER_PAGE 46
-#define LINES_BEFORE_CENTER 18
-#define LINES_BEFORE_CREDIT 2
-#define LINES_BEFORE_AUTHOR 1
-#define LINES_BEFORE_SOURCE 2
 
 - (void)appendTitlePage
 {

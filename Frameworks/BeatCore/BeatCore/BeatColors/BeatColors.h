@@ -6,6 +6,7 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 #import <TargetConditionals.h>
+#import <BeatCore/BeatCompatibility.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -23,7 +24,5 @@
 + (NSString*)colorWith16bitHex:(NSString*)colorName;
 + (NSString*)get16bitHex:(BXColor*)color;
 + (NSString*)cssRGBFor:(BXColor*)color;
-#if TARGET_OS_OSX
-+ (NSImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size;
-#endif
++ (BXImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size;
 @end

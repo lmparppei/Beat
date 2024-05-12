@@ -8,6 +8,7 @@
 
 
 import Foundation
+import BeatCore
 
 fileprivate var exportModules = [BeatRTFExport.self, BeatFDXExport.self, OutlineExtractor.self]
 
@@ -27,7 +28,7 @@ struct BeatFileExportHandlerInfo {
 		
 		// Register all available export modules here
 		BeatFDXExport.register(self)
-		BeatRTFExport.register(self)
+        BeatRTFExport.register(self)
 		OutlineExtractor.register(self)
 	}
 		
@@ -55,30 +56,46 @@ struct BeatFileExportHandlerInfo {
 	}
 
 	
-	/// Shows save panel and exports the file
-	@objc public func export(delegate:BeatEditorDelegate, format:String) {
+	/// Shows save panel and exports the file.
+    /// - note This method is a mess. Maybe migrate completely to the way iOS handles this: exporter module stores a temporary URL and if it's available, a save panel is shown.
+    /// - returns URL to temporary
+	@objc public func export(delegate:BeatEditorDelegate, format:String) -> URL? {
 		guard let exporter = handlerForFormat(format) else {
 			print("No handler for this format")
-			return
+			return nil
 		}
 		
+#if os(macOS)
 		let savePanel = NSSavePanel()
 		
 		savePanel.allowedFileTypes = exporter.fileTypes
 		savePanel.nameFieldStringValue = delegate.fileNameString() ?? ""
 		
+        var resultURL:URL?
+        
 		savePanel.beginSheetModal(for: delegate.documentWindow) { response in
 			guard response == .OK,
 				  let url = savePanel.url
 			else { return }
 			
 			if let data = exporter.handler(delegate) {
-				self.handleData(data, url: url)
+				resultURL = self.handleData(data, url: url)
 			}
 		}
+        
+        return resultURL
+#else
+        if let data = exporter.handler(delegate) {
+            let url = BeatPaths.urlForTemporaryFile(name: delegate.fileNameString(), pathExtension: exporter.fileTypes.first ?? "")
+            return self.handleData(data, url: url)
+        }
+        
+        return nil
+#endif
 	}
-		
-	func handleData(_ value:Any, url:URL) {
+    
+    		
+	func handleData(_ value:Any, url:URL) -> URL? {
 		if let data = value as? NSData {
 			// This is data
 			data.write(to: url, atomically: true)
@@ -86,6 +103,7 @@ struct BeatFileExportHandlerInfo {
 			// String
 			do {
 				try string.write(to: url, atomically: true, encoding: .utf8)
+                return url
 			} catch {
 				print("Could not save:", error)
 			}
@@ -94,19 +112,22 @@ struct BeatFileExportHandlerInfo {
 			if let data = value as? Data {
 				do {
 					try data.write(to: url, options: .atomic)
+                    return url
 				} catch {
 					print("ERROR", error)
 				}
 			}
 		}
+        
+        return nil
 	}
 }
 
-
-class BeatFileExportMenuItem:NSMenuItem {
-	@IBInspectable var format:String = ""
+#if os(macOS)
+@objc public class BeatFileExportMenuItem:NSMenuItem {
+	@IBInspectable public var format:String = ""
 	
-	override init(title string: String, action selector: Selector?, keyEquivalent charCode: String) {
+	override public init(title string: String, action selector: Selector?, keyEquivalent charCode: String) {
 		super.init(title: string, action: #selector(export), keyEquivalent: "")
 		self.target = BeatFileExportManager.shared
 	}
@@ -119,3 +140,4 @@ class BeatFileExportMenuItem:NSMenuItem {
 		
 	}
 }
+#endif
