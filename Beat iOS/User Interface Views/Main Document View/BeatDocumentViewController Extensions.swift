@@ -8,6 +8,7 @@
 
 import UIKit
 import BeatCore
+import BeatFileExport
 
 extension BeatDocumentViewController {
 	
@@ -34,7 +35,17 @@ extension BeatDocumentViewController {
 		
 		navigationItem.titleMenuProvider = { suggestions in
 			var items = suggestions
-			items.append(UICommand(title: "Create PDF", action: #selector(self.openExportPanel)))
+			
+			items.append(UICommand(title: "Create PDF...", action: #selector(self.openExportPanel)))
+			items.append(UIMenu(title: "Export", options: .displayInline, children: [
+				UIAction(title: "Export Final Draft File...", handler: { _ in
+					self.exportFile(type: "FDX")
+				}),
+				UIAction(title: "Export Fountain Outline...", handler: { _ in
+					self.exportFile(type: "Outline")
+				})
+			]))
+			
 			return UIMenu(children: items)
 		}
 				

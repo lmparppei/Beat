@@ -141,6 +141,13 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		//return self.dataProvider?.dataSource.snapshot().numberOfItems ?? 0
 	}
 	
+	/// Called when the editor selection moved to another scene
+	@objc func didMove(toSceneIndex index: Int) {
+		if let scene = self.editorDelegate?.parser.outline[index] as? OutlineScene {
+			self.selectScene(scene)
+		}
+	}
+	
 	@objc func update() {
 		// ? 
 	}

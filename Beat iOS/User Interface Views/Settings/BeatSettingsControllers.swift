@@ -63,11 +63,11 @@ class BeatSettingsViewController:UITableViewController {
 	@objc weak var delegate:BeatEditorDelegate?
 	
 	// Local document settings
-	@IBOutlet var revisionGeneration:UISegmentedControl?
-	@IBOutlet var revisionMode:UISwitch?
-	@IBOutlet var pageSizeSwitch:UISegmentedControl?
-	@IBOutlet var headingSpacingSwitch:UISegmentedControl?
-	@IBOutlet var lineHeightSwitch:UISegmentedControl?
+	@IBOutlet weak var revisionSelector:BeatRevisionSelector?
+	@IBOutlet weak var revisionMode:UISwitch?
+	@IBOutlet weak var pageSizeSwitch:UISegmentedControl?
+	@IBOutlet weak var headingSpacingSwitch:UISegmentedControl?
+	@IBOutlet weak var lineHeightSwitch:UISegmentedControl?
 	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
@@ -87,7 +87,10 @@ class BeatSettingsViewController:UITableViewController {
 		let lineSpacing = delegate.documentSettings.getFloat(DocSettingNovelLineHeightMultiplier)
 		self.lineHeightSwitch?.selectedSegmentIndex = (lineSpacing < 2) ? 1 : 0
 		
-		self.revisionGeneration?.selectedSegmentIndex = delegate.revisionLevel
+		print("Revision level", delegate.revisionLevel, self.revisionSelector)
+		
+		self.revisionSelector?.revisionLevel = delegate.revisionLevel
+		self.revisionSelector?.settingController = self
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {
@@ -134,8 +137,8 @@ class BeatSettingsViewController:UITableViewController {
 		delegate?.pageSize = BeatPaperSize(rawValue: sender.selectedSegmentIndex) ?? .A4
 	}
 	
-	@IBAction func selectRevisionGeneration(_ sender:UISegmentedControl) {
-		delegate?.revisionLevel = sender.selectedSegmentIndex
+	@IBAction func selectRevisionGeneration(_ sender:BeatRevisionSelector) {
+		delegate?.revisionLevel = sender.revisionLevel
 	}
 	
 	@IBAction func toggleHeadingSpacing(_ sender:UISegmentedControl) {

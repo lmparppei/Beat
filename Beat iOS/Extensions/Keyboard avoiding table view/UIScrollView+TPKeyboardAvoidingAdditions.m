@@ -25,7 +25,8 @@ static const int kStateKey;
 
 @interface TPKeyboardAvoidingState : NSObject
 @property (nonatomic, assign) UIEdgeInsets priorInset;
-@property (nonatomic, assign) UIEdgeInsets priorScrollIndicatorInsets;
+@property (nonatomic, assign) UIEdgeInsets priorHorizontalIndicatorInsets;
+@property (nonatomic, assign) UIEdgeInsets priorVerticalIndicatorInsets;
 @property (nonatomic, assign) BOOL         keyboardVisible;
 @property (nonatomic, assign) CGRect       keyboardRect;
 @property (nonatomic, assign) CGSize       priorContentSize;
@@ -70,7 +71,9 @@ static const int kStateKey;
 
     if ( !state.keyboardVisible ) {
         state.priorInset = self.contentInset;
-        state.priorScrollIndicatorInsets = self.scrollIndicatorInsets;
+		state.priorHorizontalIndicatorInsets = self.horizontalScrollIndicatorInsets;
+		state.priorVerticalIndicatorInsets = self.verticalScrollIndicatorInsets;
+
 #if TARGET_OS_IOS
         state.priorPagingEnabled = self.pagingEnabled;
 #endif
@@ -97,8 +100,44 @@ static const int kStateKey;
     // for the text view's current cursor position to be available
     dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(delay, dispatch_get_main_queue(), ^{
+		// Shrink view's inset by the keyboard's height, and scroll to show the text field/view being edited
+		[UIView animateWithDuration:0.5 animations:^{
+			
+		} completion:^(BOOL finished) {
+			if (!finished) return;
+			
+		}];
         
-        // Shrink view's inset by the keyboard's height, and scroll to show the text field/view being edited
+		// Get the keyboard animation duration and curve from the notification userInfo
+		NSTimeInterval animationDuration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
+		UIViewAnimationOptions animationCurve = [[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+		
+		[UIView animateWithDuration:animationDuration
+							  delay:0.0
+							options:animationCurve
+						 animations:^{
+			// Update UI within the animation block
+			self.contentInset = self.TPKeyboardAvoiding_contentInsetForKeyboard;
+			
+			UIView *firstResponder = [self TPKeyboardAvoiding_findFirstResponderBeneathView:self];
+			if (firstResponder) {
+				CGFloat viewableHeight = self.bounds.size.height - self.contentInset.top - self.contentInset.bottom;
+				[self setContentOffset:CGPointMake(self.contentOffset.x,
+												   [self TPKeyboardAvoiding_idealOffsetForView:firstResponder
+																		 withViewingAreaHeight:viewableHeight])
+							  animated:NO];
+			}
+			
+			self.scrollIndicatorInsets = self.contentInset;
+			[self layoutIfNeeded];
+		} completion:^(BOOL finished) {
+			// Animation completion code here, if needed
+			if (finished) {
+				// Perform any additional tasks after the animation finishes
+			}
+		}];
+		
+		/*
         [UIView beginAnimations:nil context:NULL];
         
         [UIView setAnimationDelegate:self];
@@ -124,6 +163,7 @@ static const int kStateKey;
         [self layoutIfNeeded];
         
         [UIView commitAnimations];
+		 */
     });
 }
 
@@ -157,6 +197,37 @@ static const int kStateKey;
     state.keyboardRect = CGRectZero;
     state.keyboardVisible = NO;
     
+	// Get the keyboard animation duration and curve from the notification userInfo
+	NSTimeInterval animationDuration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
+	UIViewAnimationOptions animationCurve = [[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+
+	// Perform block-based animation to restore dimensions to prior size
+	[UIView animateWithDuration:animationDuration
+						  delay:0.0
+						options:animationCurve
+					 animations:^{
+		// Update UI within the animation block
+		if ([self isKindOfClass:[TPKeyboardAvoidingScrollView class]]) {
+			self.contentSize = state.priorContentSize;
+		}
+		
+		self.contentInset = state.priorInset;
+		self.horizontalScrollIndicatorInsets = state.priorHorizontalIndicatorInsets;
+		self.verticalScrollIndicatorInsets = state.priorVerticalIndicatorInsets;
+
+	#if TARGET_OS_IOS
+		self.pagingEnabled = state.priorPagingEnabled;
+	#endif
+		
+		[self layoutIfNeeded];
+	} completion:^(BOOL finished) {
+		// Animation completion code here, if needed
+		if (finished) {
+			// Perform any additional tasks after the animation finishes
+		}
+	}];
+	
+	/*
     // Restore dimensions to prior size
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationCurve:[[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue]];
@@ -168,12 +239,15 @@ static const int kStateKey;
     }
     
     self.contentInset = state.priorInset;
-    self.scrollIndicatorInsets = state.priorScrollIndicatorInsets;
+	state.priorHorizontalIndicatorInsets = self.horizontalScrollIndicatorInsets;
+	state.priorVerticalIndicatorInsets = self.verticalScrollIndicatorInsets;
+
 #if TARGET_OS_IOS
     self.pagingEnabled = state.priorPagingEnabled;
 #endif
 	[self layoutIfNeeded];
     [UIView commitAnimations];
+	 */
 }
 
 - (void)TPKeyboardAvoiding_updateContentInset {

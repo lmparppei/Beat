@@ -21,7 +21,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	var pdfController:BeatPDFController?
 	
 	// MARK: Setting switches etc.
-	@IBOutlet var revisionSwitches:[UISwitch]?
+	@IBOutlet var revisionSwitches:[BeatCheckboxButton]?
 	@IBOutlet var paperSize:UISegmentedControl?
 	@IBOutlet var printSceneNumbers:UISwitch?
 	
@@ -42,7 +42,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		var hiddenRevisions = IndexSet()
 		
 		for revision in revisionSwitches {
-			if !revision.isOn {
+			if !revision.isChecked {
 				hiddenRevisions.insert(revision.tag)
 			}
 		}
@@ -109,11 +109,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		BeatUserDefaults.shared().save(spacing, forKey: BeatSettingSceneHeadingSpacing)
 	}
 	
-	@IBAction func toggleRevision(sender:UISwitch) {
-		saveRevisions()
-	}
-	
-	func saveRevisions() {
+	@IBAction func toggleRevision(sender:UIButton?) {
 		self.editorDelegate?.documentSettings.set(DocSettingHiddenRevisions, as: self.hiddenRevisions)
 	}
 	
@@ -134,7 +130,6 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		self.activityIndicator?.startAnimating()
 				
 		let bounds = self.previewView?.bounds ?? CGRect.zero
-		let scale = self.previewView?.scaleFactor ?? 1.0
 		
 		timer?.invalidate()
 		timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false, block: { [weak self] _ in
@@ -189,7 +184,6 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		// Then, let's adjust them according to export panel
 		settings.paperSize = BeatPaperSize(rawValue: self.paperSize?.selectedSegmentIndex ?? 0) ?? .A4
 		settings.printSceneNumbers = printSceneNumbers?.isOn ?? true
-		print(" -> print scene numbers", settings.printSceneNumbers)
 		
 		var additionalTypes = IndexSet()
 		
@@ -197,7 +191,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		if printSynopsis?.isOn ?? false { additionalTypes.insert(Int(LineType.synopse.rawValue)) }
 		settings.additionalTypes = additionalTypes
 		
-		var revisions:IndexSet = IndexSet(range: NSMakeRange(0, BeatRevisions.revisionGenerations().count))
+		var revisions:IndexSet = IndexSet(integersIn: 0..<BeatRevisions.revisionGenerations().count)
 		
 		for rev in hiddenRevisions {
 			revisions.remove(rev)
