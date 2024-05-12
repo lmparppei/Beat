@@ -21,16 +21,17 @@ import Foundation
   #endif
 #endif
 
-public extension IndexSet {
-  
-  init(range: NSRange) {
-    self.init(integersIn: range.lowerBound..<range.upperBound)
-  }
 
-  static func setForRowsInPathes(_ ips: [ IndexPath ]) -> IndexSet {
-    var set = IndexSet()
-    for ip in ips { set.insert(ip[1] /* row */) }
-    return set
-  }
-  
+public extension IndexSet {
+    
+     init(range: NSRange) {
+         self.init(integersIn: range.lowerBound..<range.upperBound)
+     }
+
+    static func setForRowsInPathes(_ ips: [ IndexPath ]) -> IndexSet {
+        var set = IndexSet()
+        for ip in ips { set.insert(ip[1] /* row */) }
+        return set
+    }
+
 }

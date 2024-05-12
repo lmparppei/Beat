@@ -431,6 +431,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E8460D771FBF12D2002CDC28 /* Debug.xcconfig */;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 			};
 			name = Debug;
 		};
@@ -438,6 +439,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E8460D7A1FBF12D2002CDC28 /* Release.xcconfig */;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 			};
 			name = Release;
 		};

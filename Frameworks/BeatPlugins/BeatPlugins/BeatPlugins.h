@@ -24,4 +24,6 @@ FOUNDATION_EXPORT const unsigned char BeatPluginsVersionString[];
 #import <BeatPlugins/BeatHTMLPrinter.h>
 #import <BeatPlugins/BeatPluginUI.h>
 #import <BeatPlugins/BeatWidgetView.h>
+#import <BeatPlugins/BeatModalAccessoryView.h>
+#import <BeatPlugins/BeatSpeak.h>
 #endif
