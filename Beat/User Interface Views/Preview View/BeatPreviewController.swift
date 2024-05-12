@@ -17,7 +17,7 @@ import AppKit
 import BeatCore.BeatEditorDelegate
 import BeatPagination2
 
-class BeatPreviewController:BeatPreviewManager {
+@objc public class BeatPreviewController:BeatPreviewManager {
 
 	var renderer:BeatRenderer?
 	
@@ -28,14 +28,14 @@ class BeatPreviewController:BeatPreviewManager {
 	
 	var changedIndices:NSMutableIndexSet = NSMutableIndexSet()
 	
-	@objc override func reload(with pagination: BeatPagination) {
+	@objc override public func reload(with pagination: BeatPagination) {
 		// We should migrate to a data source model on macOS as well, but let's just cast the view this time
 		if let previewView = self.previewView as? BeatPreviewView {
 			previewView.updatePages(pagination, settings: self.settings, controller: self)
 		}
 	}
 	
-	@objc override func scrollToRange(_ range:NSRange) {
+	@objc override public func scrollToRange(_ range:NSRange) {
 		guard let scrollView = self.scrollView,
 			  let previewView = self.previewView as? BeatPreviewView else { return }
 		
