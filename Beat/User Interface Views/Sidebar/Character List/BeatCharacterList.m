@@ -14,6 +14,8 @@
 #import "BeatPieGraph.h"
 #import "Beat-Swift.h"
 
+#define POPOVER_WIDTH 150
+
 @interface BeatLinesBarRowView : NSTableCellView
 @property (nonatomic) CGFloat barWidth;
 @property (nonatomic, weak) BeatCharacter *character;
@@ -21,8 +23,6 @@
 @end
 
 @implementation BeatLinesBarRowView
-
-#define POPOVER_WIDTH 150
 
 -(void)drawRect:(NSRect)dirtyRect {
 	[super drawRect:dirtyRect];
@@ -52,8 +52,6 @@
 	NSBezierPath *path = [[NSBezierPath alloc] init];
 	[path appendBezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
 	[path fill];
-	
-	//NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 }
 
 @end
@@ -98,8 +96,6 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    
-    // Drawing code here.
 }
 
 -(void)viewWillDraw {
@@ -171,7 +167,7 @@
 	
 	__block BeatCharacterData* characterData = [BeatCharacterData.alloc initWithDelegate:self.editorDelegate];
 	
-	// Proces in a background thread
+	// Process in a background thread
 	// (This is pretty light, but still)
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
 		// Safeguards for some rare thread issues
@@ -271,7 +267,7 @@ NSInteger previouslySelected = NSNotFound;
  tänään aloitan laulamaan
  tänään soitellen sotaan
  soitellen sotaan
- jossa ei tarvitse ketään vahingoittaa
+ jossa ketään ei tarvitse vahingoittaa
  
  jäähyväiset aseille joihin uskottiin
  jäähyväiset aseille joilla synnit sovitettiin

@@ -76,6 +76,8 @@
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
+#import <BeatFileExport/BeatFileExport.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 #import "Beat-Swift.h"
 
 #import "Document.h"
@@ -142,7 +144,6 @@
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
-@property (nonatomic, weak) IBOutlet NSMenu *colorMenu;
 
 // Right side view
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *rightSidebarConstraint;
@@ -194,7 +195,6 @@
 @property (nonatomic) NSUInteger ddParentheticalIndent;
 @property (nonatomic) NSUInteger dualDialogueIndent;
 @property (nonatomic) NSUInteger ddRight;
-
 
 // Autocompletion
 @property (nonatomic) bool isAutoCompleting;
@@ -926,33 +926,22 @@
 	self.attrTextCache = [self getAttributedText];
 	self.printDialog = [BeatPrintDialog showForPrinting:self];
 }
+
 - (IBAction)openPDFPanel:(id)sender {
 	self.attrTextCache = [self getAttributedText];
 	self.printDialog = [BeatPrintDialog showForPDF:self];
 }
+
 - (void)releasePrintDialog { _printDialog = nil; }
 
 - (void)printDialogDidFinishPreview:(void (^)(void))block {
 	block();
 }
 
-- (IBAction)exportOutline:(id)sender
-{
-	NSSavePanel *saveDialog = [NSSavePanel savePanel];
-	[saveDialog setAllowedFileTypes:@[@"fountain"]];
-	[saveDialog setNameFieldStringValue:[self.fileNameString stringByAppendingString:@" Outline"]];
-	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
-		if (result == NSModalResponseOK) {
-			NSString* outlineString = [OutlineExtractor outlineFromParse:self.parser];
-			[outlineString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
-		}
-	}];
-}
-
 - (IBAction)exportFile:(id)sender
 {
 	BeatFileExportMenuItem* menuItem = sender;
-	[BeatFileExportManager.shared exportWithDelegate:self format:menuItem.format];
+	(void)[BeatFileExportManager.shared exportWithDelegate:self format:menuItem.format];
 }
 
 
@@ -997,8 +986,6 @@
 #pragma mark If text should change
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
-	//NSLog(@"-> change %lu, %lu", affectedCharRange.location, affectedCharRange.length);
-	
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
 	
@@ -1022,7 +1009,6 @@
 	// Check for character input trouble
 	if (self.characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.characterInputForLine.position) {
 		[self cancelCharacterInput];
-		//return NO;
 		change = false;
 	}
 	
@@ -1036,8 +1022,7 @@
 	else if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !undoOperation) {
 		// Line break after character cue
 		// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
-		if (currentLine.isAnyCharacter && self.automaticContd && [self.textActions shouldAddContdIn:affectedCharRange string:replacementString])
-		{
+		if (currentLine.isAnyCharacter && self.automaticContd && [self.textActions shouldAddContdIn:affectedCharRange string:replacementString]) {
 			change = false;
 		}
 		
@@ -1181,7 +1166,6 @@
 #pragma mark Update UI with current scene
 
 /// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
-/// TODO: Register the views which need scene index update. This is a mess.
 - (void)updateUIwithCurrentScene
 {
 	OutlineScene *currentScene = self.currentScene;
@@ -1196,9 +1180,9 @@
 	}
 		
 	// Update touch bar color if needed
-	if (currentScene.color) {
+	if (currentScene.color.length > 0) {
 		NSColor* color = [BeatColors color:currentScene.color];
-		if (color != nil) [_colorPicker setColor:[BeatColors color:currentScene.color]];
+		if (color != nil) [_colorPicker setColor:color];
 	}
 		
 	[self.pluginAgent updatePluginsWithSceneIndex:sceneIndex];
@@ -1558,7 +1542,6 @@
  */
 
 #pragma  mark - Sidebar methods
-// Move all of this into a separate sidebar handler class
 
 - (BOOL)sidebarVisible
 {
@@ -1570,15 +1553,6 @@
 	return self.splitHandle.bottomOrLeftView.frame.size.width;
 }
 
-
-/*
- 
- you say: it's gonna happen soon
- well, when exactly do you mean????
- see, I've already waited too long
- and most of my life is gone
- 
- */
 
 
 #pragma mark - Sidebar
@@ -1597,41 +1571,7 @@
 
 
 
-#pragma mark - Outline/timeline context menu, including setting colors
-
-// Note from 2022: Why is this here and not in their associated classes?
-// We could just change the target of every menu item, but maybe that would be too easy.
-
-// We are using this same menu for both outline & timeline view
-- (void)menuDidClose:(NSMenu*)menu {
-	// Reset timeline selection, to be on the safe side
-	_timeline.clickedItem = nil;
-}
-
-- (void)menuNeedsUpdate:(NSMenu *)menu {
-	if (!NSThread.isMainThread) return;
-	
-	id item = nil;
-	
-	if (self.outlineView.clickedRow >= 0) {
-		item = [self.outlineView itemAtRow:self.outlineView.clickedRow];
-	}
-	else if (_timeline.clickedItem != nil) {
-		item = _timeline.clickedItem;
-	}
-	
-	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
-		// Show context menu
-		for (NSMenuItem * menuItem in menu.itemArray) {
-			menuItem.hidden = NO;
-		}
-	} else {
-		// Hide every item
-		for (NSMenuItem * menuItem in menu.itemArray) {
-			menuItem.hidden = YES;
-		}
-	}
-}
+#pragma mark - Color picker
 
 - (void)setupColorPicker {
 	for (NSTouchBarItem *item in [self.textView.touchBar templateItems]) {
@@ -1643,33 +1583,32 @@
 			picker.colorList = [[NSColorList alloc] init];
 			
 			[picker.colorList setColor:NSColor.blackColor forKey:@"none"];
-			[picker.colorList setColor:[BeatColors color:@"red"] forKey:@"red"];
-			[picker.colorList setColor:[BeatColors color:@"blue"] forKey:@"blue"];
-			[picker.colorList setColor:[BeatColors color:@"green"] forKey:@"green"];
-			[picker.colorList setColor:[BeatColors color:@"cyan"] forKey:@"cyan"];
-			[picker.colorList setColor:[BeatColors color:@"orange"] forKey:@"orange"];
-			[picker.colorList setColor:[BeatColors color:@"pink"] forKey:@"pink"];
-			[picker.colorList setColor:[BeatColors color:@"gray"] forKey:@"gray"];
-			[picker.colorList setColor:[BeatColors color:@"magenta"] forKey:@"magenta"];
+			
+			// Append Beat colors to list
+			NSArray* colors = @[@"red", @"blue", @"green", @"cyan", @"orange", @"pink", @"gray", @"magenta"];
+			for (NSString* color in colors) [picker.colorList setColor:[BeatColors color:color] forKey:color];
 		}
 	}
 }
 
-- (IBAction)pickColor:(id)sender {
+- (IBAction)pickColor:(id)sender
+{
 	NSString *pickedColor;
-	
 	for (NSString *color in BeatColors.colors) {
 		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) pickedColor = color;
 	}
 	
-	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none"; // THE HOUSE IS BLACK.
+	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) {
+		pickedColor = @"none"; // THE HOUSE IS BLACK.
+	}
 	
-	if (self.currentScene == nil) return;
-	
-	if (pickedColor != nil) [self.textActions setColor:pickedColor forScene:self.currentScene];
+	if (self.currentScene != nil && pickedColor != nil) {
+		[self.textActions setColor:pickedColor forScene:self.currentScene];
+	}
 }
 
-- (IBAction)setSceneColorForRange:(id)sender {
+- (IBAction)setSceneColorForRange:(id)sender
+{
 	// Called from text view context menu
 	BeatColorMenuItem *item = sender;
 	NSString *color = item.colorKey;
@@ -1681,24 +1620,6 @@
 		[self.textActions setColor:color forScene:scene];
 	}
 }
-
-- (IBAction)setSceneColor:(id)sender {
-	BeatColorMenuItem *item = sender;
-	NSString *colorName = item.colorKey;
-	
-	if (self.outlineView.clickedRow > -1) {
-		id selectedScene = nil;
-		selectedScene = [self.outlineView itemAtRow:self.outlineView.clickedRow];
-		
-		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
-			OutlineScene *scene = selectedScene;
-			[self.textActions setColor:colorName forScene:scene];
-		}
-		
-		_timeline.clickedItem = nil;
-	}
-}
-
 
 /*
  

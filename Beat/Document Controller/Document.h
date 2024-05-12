@@ -55,7 +55,7 @@ THE SOFTWARE.
 @class BeatTimer;
 @class BeatLockButton;
 
-@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
+@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
 
 #pragma mark - Editor flags

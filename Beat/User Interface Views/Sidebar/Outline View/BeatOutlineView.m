@@ -109,10 +109,12 @@
 {
 	self.delegate = self;
 	self.dataSource = self;
-	
+		
 	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
 	self.filteredOutline = [NSMutableArray array];
+	
+	self.menu.delegate = self;
 	
 	self.characterBox.menu.delegate = self;
 	
@@ -123,6 +125,7 @@
 	
 	// Register this view
 	[self.editorDelegate registerSceneOutlineView:self];
+
 }
 
 -(void)setup
@@ -785,12 +788,22 @@
 }
 
 
-#pragma mark - Reload characters
+#pragma mark - Menus
 
 - (void)menuWillOpen:(NSMenu *)menu
 {
-	if (menu != self.characterBox.menu) return;
-	
+	if (menu == self.characterBox.menu) [self characterMenuDidOpen:menu];
+	else if (menu == self.menu) [self outlineMenuDidOpen:menu];
+}
+
+- (void)outlineMenuDidOpen:(NSMenu*)menu
+{
+	// Ensure menu items are correctly hooked (no idea)
+	for (NSMenuItem* item in menu.itemArray) item.target = self;
+}
+
+- (void)characterMenuDidOpen:(NSMenu*)menu
+{
 	// Get previously selected character
 	NSString* selected = self.characterBox.selectedItem.title;
 	
@@ -806,7 +819,7 @@
 	for (NSString* name in names) {
 		if (name.length == 0) continue;
 		
-		[self.characterBox addItemWithTitle:name.uppercaseString];		
+		[self.characterBox addItemWithTitle:name.uppercaseString];
 	}
 	
 	if (selected.length) {
@@ -830,6 +843,15 @@
 		NSInteger pos = scene.position + scene.length;
 		[self.editorDelegate.textActions addSection:pos];
 	}
+}
+
+- (IBAction)setSceneColor:(id)sender
+{
+	if (self.clickedRow == -1 || self.clickedRow == NSNotFound) return;
+	
+	BeatColorMenuItem *item = sender;	
+	OutlineScene* selectedScene = [self itemAtRow:self.clickedRow];
+	if (selectedScene != nil) [self.editorDelegate.textActions setColor:item.colorKey forScene:selectedScene];
 }
 
 #pragma mark - Mouse tracking

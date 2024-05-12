@@ -61,9 +61,11 @@
 	}
 	return self;
 }
+
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset {
 	[self setItem:scene rect:rect reset:reset storyline:NO forceColor:nil];
 }
+
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor {
 	_representedItem = scene;
 	
@@ -295,6 +297,7 @@
 }
 
 #pragma mark - Some hover effects
+
 -(void)mouseEntered:(NSEvent *)event {
 	if (_selected) return;
 	if (self.type == TimelineScene) self.layer.opacity = 1.0;

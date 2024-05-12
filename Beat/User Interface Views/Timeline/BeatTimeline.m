@@ -716,8 +716,9 @@
 }
 
 - (void)setSceneColor:(NSString*)color for:(OutlineScene*)scene {
-	if (_selectedItems.count <= 1) [_delegate.textActions setColor:color forScene:scene];
-	else {
+	if (_selectedItems.count <= 1) {
+		[_delegate.textActions setColor:color forScene:scene];
+	} else {
 		// Multiple items selected
 		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
 		for (BeatTimelineItem* item in selected) {
