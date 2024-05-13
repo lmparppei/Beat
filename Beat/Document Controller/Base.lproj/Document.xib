@@ -64,7 +64,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1155" height="661"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -93,7 +93,7 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
@@ -341,7 +341,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                         </box>
                                                                                         <button toolTip="Show Filters" verticalHuggingPriority="750" id="vzo-na-BYD">
-                                                                                            <rect key="frame" x="268" y="6" width="27" height="25"/>
+                                                                                            <rect key="frame" x="268" y="4" width="27" height="25"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                                                                             <buttonCell key="cell" type="disclosure" bezelStyle="roundedDisclosure" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="H0u-ww-Jih">
                                                                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
@@ -352,7 +352,7 @@
                                                                                             </connections>
                                                                                         </button>
                                                                                         <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" id="wQe-ic-Dmm">
-                                                                                            <rect key="frame" x="35" y="7" width="229" height="23"/>
+                                                                                            <rect key="frame" x="38" y="5" width="226" height="23"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                                                                             <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" focusRingType="none" placeholderString="Scene Heading" usesSingleLineMode="YES" bezelStyle="round" id="8pP-ME-BEt">
                                                                                                 <font key="font" metaFont="smallSystem"/>
@@ -361,7 +361,7 @@
                                                                                             </searchFieldCell>
                                                                                         </searchField>
                                                                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g4p-k1-H9E">
-                                                                                            <rect key="frame" x="6" y="6" width="24" height="21"/>
+                                                                                            <rect key="frame" x="7" y="5" width="23" height="23"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                             <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="SettingIcon" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="WMP-DY-oN1">
                                                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -381,7 +381,7 @@
                                                                                 <rect key="frame" x="0.0" y="117" width="300" height="378"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
@@ -1264,7 +1264,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
@@ -1341,7 +1341,7 @@
                                                     <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
                                                         <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
                                                                 <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>
@@ -1730,7 +1730,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="181" y="118" width="311" height="156"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="8SB-Du-J31">
                 <rect key="frame" x="0.0" y="0.0" width="311" height="156"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -2113,12 +2113,12 @@ Gw
         <image name="CardsIcon" width="370" height="370"/>
         <image name="CardsIcon_white" width="512" height="512"/>
         <image name="Dialogue" width="512" height="512"/>
-        <image name="NSLockLockedTemplate" width="18" height="18"/>
-        <image name="NSRefreshTemplate" width="17" height="20"/>
+        <image name="NSLockLockedTemplate" width="19" height="19"/>
+        <image name="NSRefreshTemplate" width="18" height="21"/>
         <image name="NSStatusNone" width="16" height="16"/>
-        <image name="NSStopProgressFreestandingTemplate" width="19" height="19"/>
-        <image name="NSTouchBarGoDownTemplate" width="18" height="10"/>
-        <image name="NSTouchBarGoUpTemplate" width="18" height="10"/>
+        <image name="NSStopProgressFreestandingTemplate" width="20" height="20"/>
+        <image name="NSTouchBarGoDownTemplate" width="18" height="11"/>
+        <image name="NSTouchBarGoUpTemplate" width="18" height="11"/>
         <image name="Notepad" width="512" height="512"/>
         <image name="OutlineIcon_template" width="512" height="512"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
@@ -2141,8 +2141,8 @@ Gw
         <image name="color.orange" width="15" height="15"/>
         <image name="color.pink" width="15" height="15"/>
         <image name="color.red" width="15" height="15"/>
-        <image name="doc.badge.gearshape" catalog="system" width="17" height="18"/>
-        <image name="sidebar.left" catalog="system" width="19" height="14"/>
+        <image name="doc.badge.gearshape" catalog="system" width="16" height="18"/>
+        <image name="sidebar.left" catalog="system" width="18" height="14"/>
         <image name="xmark.circle.fill" catalog="system" width="15" height="15"/>
     </resources>
 </document>

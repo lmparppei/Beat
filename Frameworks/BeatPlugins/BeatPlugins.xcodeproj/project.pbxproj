@@ -64,6 +64,7 @@
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
 		B69CC6362A851FFF00124988 /* MojaveSupport.js in Resources */ = {isa = PBXBuildFile; fileRef = B69CC6352A851FFF00124988 /* MojaveSupport.js */; };
+		B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -126,6 +127,7 @@
 		B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginContainer.swift; sourceTree = "<group>"; };
 		B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginPrint.swift; sourceTree = "<group>"; };
 		B69CC6352A851FFF00124988 /* MojaveSupport.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MojaveSupport.js; sourceTree = "<group>"; };
+		B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWindowManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 		B680B75F2A6EBBFB00FCD805 /* macOS UI */ = {
 			isa = PBXGroup;
 			children = (
+				B6D708E82BF2984F0031B34E /* Plugin window manager */,
 				B67F75822B1E0B020028D009 /* Basic UI components */,
 				B680B7672A6EBBFC00FCD805 /* Widget views */,
 				B680B7632A6EBBFB00FCD805 /* HTML window */,
@@ -315,6 +318,14 @@
 				B680B75C2A6EBBE300FCD805 /* JS Modules */,
 			);
 			path = BeatPlugins;
+			sourceTree = "<group>";
+		};
+		B6D708E82BF2984F0031B34E /* Plugin window manager */ = {
+			isa = PBXGroup;
+			children = (
+				B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */,
+			);
+			path = "Plugin window manager";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -433,6 +444,7 @@
 				B680B77C2A6EBBFD00FCD805 /* BeatWidgetView.m in Sources */,
 				B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */,
 				B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */,
+				B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */,
 				B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */,
 				B67E7BAB2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift in Sources */,
 				B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */,

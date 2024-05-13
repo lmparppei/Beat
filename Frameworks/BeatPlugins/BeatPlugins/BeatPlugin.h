@@ -429,6 +429,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)registerPluginViewController:(BeatPluginHTMLViewController*)view;
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController*)view;
 #endif
+#if TARGET_OS_OSX
+@property (nonatomic) NSScrollView* scrollView;
+#endif
 
 - (BeatPaginationManager*)pagination;
 - (void)createPreviewAt:(NSRange)range;

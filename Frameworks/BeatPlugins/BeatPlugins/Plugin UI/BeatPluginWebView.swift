@@ -21,9 +21,11 @@ import WebKit
 @objc public protocol BeatHTMLView {
     @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue?)
     @objc func closePanel(_ sender:AnyObject?)
+    @objc optional func hide()
     //@objc func fetchHTMLPanelDataAndClose()
     @objc var webView:BeatPluginWebView? { get set }
     
+    var visible:Bool { get }
     var displayed:Bool { get set }
     var callback:JSValue? { get set }
     weak var host:BeatPlugin? { get set }
@@ -40,7 +42,7 @@ import WebKit
     var baseURL:URL?
     /// A temporary URL for the displayed page. Can be `nil` if we're not loading a plugin.
     var tempURL:URL?
-        
+    
     @objc
     public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
         // Create configuration for WKWebView
