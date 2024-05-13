@@ -11,6 +11,13 @@ import BeatFileExport
 
 extension BeatDocumentViewController {
 	
+	@IBAction @objc public func openExportPanel(_ sender:AnyObject?) {	
+		if let vc = self.storyboard?.instantiateViewController(withIdentifier: "ExportSettingsTable") as? BeatExportSettingController {
+			vc.editorDelegate = self
+			self.navigationController?.pushViewController(vc, animated: true)
+		}
+	}
+	
 	@objc public func exportFile(type:String) {
 		if let url = BeatFileExportManager.shared.export(delegate: self, format: type) {
 			let shareController = BeatShareSheetController(items: [url], excludedTypes: [.assignToContact, .addToReadingList, .postToFacebook, .postToVimeo, .postToTwitter, .postToWeibo, .postToFlickr, .postToTencentWeibo])

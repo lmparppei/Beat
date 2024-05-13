@@ -180,7 +180,7 @@
 	
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
-	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
+	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];	
 }
 
 -(IBAction)dismissViewController:(id)sender {
@@ -229,6 +229,7 @@
 	
 	// Init preview view
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
+	self.previewView.delegate = self;
 	[self.previewView loadViewIfNeeded];
 	
 	// Init preview controller and pagination
@@ -458,7 +459,7 @@
 
 - (bool)previewVisible
 {
-	return self.presentedViewController == self.previewView;
+	return (self.presentedViewController == self.previewView || self.navigationController.viewControllers.lastObject == self.previewView);
 }
 
 
@@ -863,16 +864,7 @@
 }
 
 
-
 #pragma mark - Printing stuff for iOS
-
-- (IBAction)openExportPanel:(id)sender {
-	//BeatExportViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportPanel"];
-	BeatExportSettingController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportSettingsTable"];
-	vc.editorDelegate = self;
-	
-	[self.navigationController pushViewController:vc animated:true];
-}
 
 - (id)documentForDelegation
 {
@@ -1025,7 +1017,6 @@
 
 - (IBAction)toggleCards:(id)sender
 {
-// if ([self.navigationController.viewControllers containsObject:<#(nonnull __kindof UIViewController *)#>])
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
 
