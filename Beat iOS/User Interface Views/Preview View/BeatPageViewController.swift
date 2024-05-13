@@ -17,7 +17,9 @@ import BeatCore
  */
 @objc public class BeatPageViewController:UIViewController, BeatPreviewPageView {
 	@IBOutlet weak var pageView:BeatPageScrollView?
-		
+	@IBOutlet weak var pageSettingsButton:UIBarButtonItem?
+	@objc public weak var delegate:BeatEditorDelegate?
+	
 	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
 		didSet {
 			self.pageView?.dataSource = dataSource
@@ -26,6 +28,41 @@ import BeatCore
 	
 	public override func viewDidLoad() {
 		self.pageView?.becomeFirstResponder()
+		
+		self.pageSettingsButton?.menu = UIMenu(title: "Export Settings", children: [
+			UIDeferredMenuElement.uncached { [weak self] completion in
+				guard let delegate = self?.delegate else { completion([]); return }
+				
+				var items:[UIMenuElement] = []
+				
+				items.append(UIAction(title: "Print Scene Numbers", state: delegate.documentSettings.getBool(DocSettingPrintSceneNumbers) ? .on : .off, handler: { _ in
+					delegate.documentSettings.toggleBool(DocSettingPrintSceneNumbers)
+					self?.delegate?.invalidatePreview()
+				}))
+				
+				let sections = UIAction(title: "Sections", state: delegate.documentSettings.getBool(DocSettingPrintSections) ? .on : .off, handler: { _ in
+					delegate.documentSettings.toggleBool(DocSettingPrintSections)
+					self?.delegate?.invalidatePreview()
+				})
+				
+				let synopses = UIAction(title: "Synopses", state: delegate.documentSettings.getBool(DocSettingPrintSynopsis) ? .on : .off) { _ in
+					delegate.documentSettings.toggleBool(DocSettingPrintSynopsis)
+					self?.delegate?.invalidatePreview()
+					self?.reload()
+				}
+				
+				let notes = UIAction(title: "Notes", state: delegate.documentSettings.getBool(DocSettingPrintNotes) ? .on : .off) { _ in
+					delegate.documentSettings.toggleBool(DocSettingPrintNotes)
+					self?.delegate?.invalidatePreview()
+					self?.reload()
+				}
+				
+				items.append(UIMenu(title: "Print invisible Elements", options: .displayInline, children: [sections, synopses, notes]))
+
+				completion(items)
+			}
+		])
+		
 	}
 	
 	public override var keyCommands: [UIKeyCommand]? {
@@ -114,7 +151,6 @@ import BeatCore
     }
 	
 	public override var keyCommands: [UIKeyCommand]? {
-		print("wut")
 		return superview?.keyCommands
 	}
 		
