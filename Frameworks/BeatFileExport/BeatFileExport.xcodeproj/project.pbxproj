@@ -10,8 +10,6 @@
 		B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C792BF0BDB600414878 /* BeatFileExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C812BF0BDDD00414878 /* BeatFDXExport.m */; };
-		B6A97C8D2BF0BDDD00414878 /* FDXInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C822BF0BDDD00414878 /* FDXInterface.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6A97C8E2BF0BDDD00414878 /* FDXInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C832BF0BDDD00414878 /* FDXInterface.m */; };
 		B6A97C8F2BF0BDDD00414878 /* OutlineExtractor.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C852BF0BDDD00414878 /* OutlineExtractor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C902BF0BDDD00414878 /* OutlineExtractor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C862BF0BDDD00414878 /* OutlineExtractor.m */; };
 		B6A97C912BF0BDDD00414878 /* BeatRTFExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C882BF0BDDD00414878 /* BeatRTFExport.swift */; };
@@ -124,7 +122,6 @@
 				B6A97C8F2BF0BDDD00414878 /* OutlineExtractor.h in Headers */,
 				B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */,
 				B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */,
-				B6A97C8D2BF0BDDD00414878 /* FDXInterface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,7 +196,6 @@
 			files = (
 				B6A97C922BF0BDDD00414878 /* BeatFileExportManager.swift in Sources */,
 				B6A97C912BF0BDDD00414878 /* BeatRTFExport.swift in Sources */,
-				B6A97C8E2BF0BDDD00414878 /* FDXInterface.m in Sources */,
 				B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */,
 				B6A97C902BF0BDDD00414878 /* OutlineExtractor.m in Sources */,
 			);

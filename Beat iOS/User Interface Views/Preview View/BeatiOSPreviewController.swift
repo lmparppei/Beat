@@ -37,7 +37,6 @@ class BeatPreviewController:BeatPreviewManager {
 			}
 		}
 		
-		
 		if pageIndex != NSNotFound {
 			// Fix page index if there's a title page
 			if pagination.hasTitlePage { pageIndex += 1 }

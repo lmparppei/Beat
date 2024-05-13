@@ -9,11 +9,7 @@
 
 /*
  
- Being modified for Beat to support FDX tagging.
- 
- We should maybe connect the actual parser parsing the document, instead of parsing the contents again.
- This way the tagging data could be read straight from the baked line elements instead of playing around
- with strange offsetting etc.
+ This is no longer used, but remains here for legacy reasons and reference.
  
  */
 
@@ -69,8 +65,6 @@
         return inDualDialogue;
     }
     
-    
-    
     //If no double dialogue is currently in action, and a dialogue should be printed, check if it is followed by double dialogue so both can be wrapped in a double dialogue
     if (!inDualDialogue && line.type == character) {
         for (NSUInteger i = index + 1; i < [lines count]; i++) {
@@ -90,8 +84,6 @@
             [result appendString:@"      <DualDialogue>\n"];
         }
     }
-    
-    
     
     //Append Open Paragraph Tag
     if (line.type == centered) {

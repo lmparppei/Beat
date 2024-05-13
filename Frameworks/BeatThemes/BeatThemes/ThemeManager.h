@@ -1,9 +1,8 @@
 //
 //  ThemeManager.h
-//  Writer / Beat
+//  Beat
 //
-//  Parts Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
-//  Copyright © 2016 Hendrik Noeller. All rights reserved.
+//  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <TargetConditionals.h>

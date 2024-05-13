@@ -125,6 +125,7 @@ import UXKit
         // Return to main thread and render stuff on screen if needed
         DispatchQueue.main.async { [weak self] in
             if (self?.delegate?.previewVisible() ?? false) || self?.renderImmediately ?? false {
+                print("!!! preview is visible, render on screen")
                 self?.renderOnScreen()
             }
         }
