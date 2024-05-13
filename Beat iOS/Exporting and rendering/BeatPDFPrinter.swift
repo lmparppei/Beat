@@ -7,11 +7,11 @@
 //
 /**
  
- This convoluted class  provides a native `UIView`-based  printing component for iOS version of Beat.
+ This convoluted class  provides a native `UIView`-based  printing component for iOS version of Beat. You need to provide export settings, and a window which owns this operation. If you specify a delegate, screenplay content will be automatically requested from there. Otherwise you need to send a `BeatScreenplay` object.
+ - Note that the pages are created asynchronously, so you need to **retain** this class when printing.
  
- You need to provide export settings, and a window which owns this operation. If you specify a delegate, screenplay content will be automatically requested from there. Otherwise you need to send a `BeatScreenplay` object.
- 
- Note that the pages are created asynchronously, so you need to **retain** this class when printing.
+ Also, as a fun side-note: Apple doesn't support creating real text PDFs from `UITextView`, so we need to somersault through a TON of weird hoops.
+ See `createPDF()` method.
  
  */
 
@@ -117,6 +117,11 @@ class BeatPDFPrinter:NSObject {
 		}
 	}
 	
+	/**
+	 Because for some fucking reason Apple doesn't let us create real PDFs from `UITextView`, we need to enumerate through TextKit 2 layout fragments and lay them down one by down in the PDF context.
+	 This results in very horrible code, and all the X/Y values have been cooked up using trial and error, and they've also been different through each iOS version I've developed this app on (15-17).
+	 This means that my clever approach is bound to break.
+	 */
 	func createPDF() -> Data {
 		let pdfMetaData = [
 			kCGPDFContextCreator: "(beat)"
@@ -130,24 +135,28 @@ class BeatPDFPrinter:NSObject {
 		
 		let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
 		
+		// Create PDF data context
 		let data = renderer.pdfData { (context) in
+			// Iterate each page view and draw the contents
 			for page in self.pageViews {
+				// I'm not sure if you need to add the page to an actual view to get it to render, but it's a trick to avoid some weird memory and drawing issues.
 				temporaryView?.addSubview(page)
 				page.setNeedsLayout()
 				page.setNeedsDisplay()
 				
 				context.beginPage()
 				
+				// Get CG context before getting to work
 				let cgContext = context.cgContext
 				
-				// Iterate through each text view on page
+				// Iterate through each text view on page (there can be multiple, on the title page for example)
 				for textView in page.textViews {
-					
+					// Make sure we're on TextKit 2
 					guard let location = textView.textLayoutManager?.documentRange.location else {
-						// This view probably uses TextKit 1, in which case all hope is lost
 						continue
 					}
 					
+					// Let's enumerate through all the layout fragments now
 					textView.textLayoutManager?.enumerateTextLayoutFragments(from: location, options: [.ensuresLayout, .estimatesSize, .ensuresExtraLineFragment], using: { fragment in
 						
 						var frame = fragment.layoutFragmentFrame
@@ -156,8 +165,9 @@ class BeatPDFPrinter:NSObject {
 						//origin.x += textView.textContainerInset.left
 						origin.y += textView.textContainerInset.top
 						
+						// This will be the *actual* frame in page coordinates. Basically it's fragment origin + text view origin.
 						var actualFrame = frame
-						actualFrame.origin.x = origin.x
+						actualFrame.origin.x += origin.x
 						actualFrame.origin.y += origin.y
 												
 						// Draw text attachment
@@ -165,6 +175,7 @@ class BeatPDFPrinter:NSObject {
 							let attachmentFrame = fragment.frameForTextAttachment(at: fragment.rangeInElement.location)
 							actualFrame.origin.y += attachmentFrame.origin.y
 							
+							// To draw the attachment in correct position in PDF context, we'll translate the context coordinates by the actual frame
 							cgContext.saveGState()
 							cgContext.translateBy(x: actualFrame.origin.x, y: actualFrame.origin.y)
 							view.layer.render(in: cgContext)
@@ -173,18 +184,19 @@ class BeatPDFPrinter:NSObject {
 							return true
 						}
 						
+						// Draw plain text content
 						if let paragraph = fragment as? BeatRenderingTextFragment {
 							// Draw Beat fragments
-							frame.origin.x = -5.0
 							paragraph.draw(at: frame.origin, origin: origin, in: cgContext)
 						} else {
-							// Draw plain fragments
+							// This is something else and shouldn't happen, but you never know.
 							fragment.draw(at: actualFrame.origin, in: cgContext)
 						}
 						return true
 					})
 				}
 				
+				// Page is done, remove it from our main view
 				page.removeFromSuperview()
 			}
 		}
