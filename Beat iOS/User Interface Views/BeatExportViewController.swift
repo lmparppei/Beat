@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 import PDFKit
 import BeatCore
 
@@ -72,6 +73,8 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		header?.text = self.editorDelegate?.documentSettings.getString(DocSettingHeader) ?? ""
 				
 		refreshPreview()
+		
+		checkPaywall()
 	}
 	
 	@IBAction func close(_ sender:Any?) {
@@ -198,6 +201,36 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		}
 		
 		return settings
+	}
+	
+	// MARK: - Paywall
+	
+	func checkPaywall() {
+		Task {
+			let unlocked = await BeatSubscriptionsManager.shared.unlocked()
+			if !unlocked {
+				showPaywall()
+			}
+		}
+	}
+	
+	var paywallVC:BeatPaywallViewController?
+	func showPaywall() {
+		let vc = BeatPaywallViewController(rootView: BeatPaywallView(dismissAction: {
+			self.paywallVC?.dismiss(animated: true)
+		})) {
+			Task {
+				let unlocked = await BeatSubscriptionsManager.shared.unlocked()
+				if !unlocked {
+					self.close(nil)
+				}
+			}
+		}
+		
+		vc.modalPresentationStyle = .formSheet
+		self.paywallVC = vc
+		
+		self.present(vc, animated: true)
 	}
 }
 

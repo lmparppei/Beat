@@ -6,18 +6,18 @@
   "products" : [
     {
       "displayPrice" : "0.99",
-      "familyShareable" : true,
-      "internalID" : "0EFD352C",
+      "familyShareable" : false,
+      "internalID" : "45496230",
       "localizations" : [
         {
-          "description" : "",
-          "displayName" : "",
+          "description" : "Own Beat forever and unlock PDF export",
+          "displayName" : "Lifetime License",
           "locale" : "en_US"
         }
       ],
-      "productID" : "sub.lifetime",
-      "referenceName" : "Lifetime Subscription",
-      "type" : "NonConsumable"
+      "productID" : "lifetimeLicense",
+      "referenceName" : "Lifetime License",
+      "type" : "Consumable"
     }
   ],
   "settings" : {
