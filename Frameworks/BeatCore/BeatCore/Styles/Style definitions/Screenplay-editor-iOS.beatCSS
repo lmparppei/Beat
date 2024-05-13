@@ -47,21 +47,21 @@ character {
     width-a4: 38ch;
     width-us: 40ch;
     
-    margin-left: 15ch;
+    margin-left: 9ch;
 }
 
 parenthetical {
     width-a4: 28ch;
     width-us: 28ch;
     
-    margin-left: 11ch;
+    margin-left: 7ch;
 }
 
 dialogue {
     width-a4: 35ch;
     width-us: 35ch;
     
-    margin-left: 7ch;
+    margin-left: 4ch;
 }
 
 section {

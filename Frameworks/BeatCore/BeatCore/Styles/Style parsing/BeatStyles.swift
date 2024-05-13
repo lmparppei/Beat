@@ -85,13 +85,17 @@ public class BeatStyles:NSObject {
     
     @objc public func editorStyles(for styleName:String = "") -> BeatStylesheet {
         var defaultStyle = (BeatStyles.defaultStyleName + "-editor")
-#if os(iOS)
-        // Default styles for iPhone
-        if UIDevice.current.userInterfaceIdiom == .phone { defaultStyle += "-iOS" }
-#endif
         
         // Make sure the name isn't just an empty string
-        let name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
+        var name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
+
+#if os(iOS)
+        // Adjust style for iPhone (if needed)
+        if UIDevice.current.userInterfaceIdiom == .phone && styleName == "Screenplay" {
+            name += "-iOS"
+        }
+#endif
+
         
         if _loadedStyles[name] != nil { return _loadedStyles[name]! }
         
