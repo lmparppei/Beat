@@ -2,8 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -18,7 +17,7 @@
             <objects>
                 <viewController modalPresentationStyle="pageSheet" id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="0fo-ii-Aj5"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -34,23 +33,23 @@
             <objects>
                 <viewController storyboardIdentifier="Beta" id="y3I-pr-yuH" customClass="BeatStartupScreenViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vvl-xu-otb">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" id="5QW-ak-vxp">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" id="G4H-mC-8h6">
-                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" id="Xi7-tX-7MF">
-                                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hC9-It-gfN">
-                                                        <rect key="frame" x="232" y="288.5" width="370" height="617"/>
+                                                        <rect key="frame" x="232" y="296.5" width="370" height="617"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Jfw-d2-hO6" customClass="BeatSuppressCheckboxButton" customModule="Beat" customModuleProvider="target">
                                                                 <rect key="frame" x="8" y="567" width="44" height="41"/>
@@ -150,11 +149,11 @@
             <objects>
                 <viewController storyboardIdentifier="DocumentViewController" extendedLayoutIncludesOpaqueBars="YES" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
                             </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
@@ -237,11 +236,15 @@
             <objects>
                 <viewController storyboardIdentifier="Preview" title="Preview" id="VDS-CY-Eht" customClass="BeatPageViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="JDo-k1-H6O">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="medium" id="cyo-S7-1ID">
+                                <rect key="frame" x="407" y="595" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" id="iqI-cQ-HrT" customClass="BeatPageScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="74" width="834" height="1120"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <viewLayoutGuide key="contentLayoutGuide" id="tnE-0j-8dx"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="G0z-pt-eIc"/>
@@ -263,6 +266,7 @@
                         <viewLayoutGuide key="safeArea" id="5jb-A6-DN2"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Preview" largeTitleDisplayMode="never" id="dR7-Av-ZNU">
                         <barButtonItem key="leftBarButtonItem" title="Page Element Settings" image="doc.badge.gearshape.fill" catalog="system" style="plain" id="fYN-6w-PuY"/>
                         <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="qiH-nG-6vi">
@@ -271,7 +275,6 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="pageSettingsButton" destination="fYN-6w-PuY" id="giw-CL-6xH"/>
                         <outlet property="pageView" destination="iqI-cQ-HrT" id="31d-iR-ihS"/>
@@ -279,22 +282,22 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2449.6402877697842" y="852.7638190954774"/>
+            <point key="canvasLocation" x="2449.6402877697842" y="852.39669421487611"/>
         </scene>
         <!--Beat Editor View Controller-->
         <scene sceneID="uc1-BM-eyz">
             <objects>
                 <viewController autoresizesArchivedViewToFullSize="NO" automaticallyAdjustsScrollViewInsets="NO" id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Hy9-v8-qGf">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -340,7 +343,7 @@
             <objects>
                 <tableViewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="16" estimatedRowHeight="16" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="350" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="separatorColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -424,7 +427,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="Settings" id="N4L-hY-9di" customClass="BeatSettingsViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="Ix4-gf-iH9">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <sections>
@@ -1308,11 +1311,11 @@
             <objects>
                 <viewController storyboardIdentifier="Cards" title="Index Card View" id="UZW-Mv-jzT" customClass="BeatPluginContainerViewController" customModule="BeatPlugins" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="XsT-vL-ctF">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1120"/>
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
@@ -1743,7 +1746,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="609" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
@@ -1754,7 +1757,7 @@
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Ufv-ha-Ec1"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUa-d2-ptJ">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Sections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUa-d2-ptJ">
                                                     <rect key="frame" x="20" y="11" width="577" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -1771,7 +1774,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="609" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
@@ -1782,7 +1785,7 @@
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Sw5-Ey-raa"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synopsis" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hzi-ti-rtG">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Synopsis" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hzi-ti-rtG">
                                                     <rect key="frame" x="20" y="11" width="577" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -1799,7 +1802,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="609" y="6" width="49" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <userDefinedRuntimeAttributes>
@@ -1810,7 +1813,7 @@
                                                         <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="0OH-TG-LKU"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jk1-en-hR5">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jk1-en-hR5">
                                                     <rect key="frame" x="20" y="11" width="577" height="21"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -2057,19 +2060,19 @@
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="quaternaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.17647058823529413" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.1764705882" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemPinkColor">
-            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiarySystemGroupedBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

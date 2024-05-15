@@ -37,7 +37,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         // Update the style of the UIDocumentBrowserViewController
         browserUserInterfaceStyle = .dark
         view.tintColor = .white
-		
+				
 		if (!welcomeScreenShown) {
 			showWelcomeScreen()
 		}

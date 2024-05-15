@@ -187,9 +187,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	style.headIndent = leftMargin + elementStyle.indent;
 	style.tailIndent = rightMargin;
     
-    static bool shownStyle = false;
-    if (!shownStyle) NSLog(@"STYLE %@", self.delegate.editorStyles.name);
-    
     // Unindent novel paragraphs
     if (elementStyle.unindentFreshParagraphs && prevLine.type != line.type) {
         style.firstLineHeadIndent -= elementStyle.firstLineIndent;

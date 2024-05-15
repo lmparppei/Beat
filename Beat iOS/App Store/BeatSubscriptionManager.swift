@@ -16,7 +16,7 @@ import Foundation
 import StoreKit
 
 fileprivate let avoidPaywall = false
-fileprivate let lifetimeLicense = "lifetimeLicense"
+fileprivate let lifetimeLicense = "license.lifetime"
 fileprivate let allProducts = [lifetimeLicense, "testing"]
 
 @MainActor
@@ -29,6 +29,8 @@ class BeatSubscriptionsManager: ObservableObject {
 	
 	private init() {
 		self.productIds = allProducts
+		// Uncomment this to remove license from use
+		UserDefaults.standard.removeObject(forKey: lifetimeLicense)
 	}
 	
 	
@@ -42,11 +44,15 @@ class BeatSubscriptionsManager: ObservableObject {
 		if unlocked { return true }
 		
 		// If not, check it using StoreKit API
-		await updatePurchasedProducts()
-				
-		productIds.forEach { productId in
-			if purchasedProductIDs.contains(productId) {
-				unlocked = true
+		unlocked = await verifyTransaction()
+		
+		if !unlocked {
+			await updatePurchasedProducts()
+			
+			productIds.forEach { productId in
+				if purchasedProductIDs.contains(productId) {
+					unlocked = true
+				}
 			}
 		}
 		
@@ -54,7 +60,7 @@ class BeatSubscriptionsManager: ObservableObject {
 		if unlocked {
 			UserDefaults.standard.setValue(unlocked, forKey: lifetimeLicense)
 		}
-		
+
 		return unlocked
 	}
 	
@@ -79,14 +85,40 @@ class BeatSubscriptionsManager: ObservableObject {
 	}
 	
 	@MainActor
-	func storedUnlockStatus() -> Bool {
-		// If a receipt is available, the app was purchased through App Store
-		// if let receiptURL = Bundle.main.appStoreReceiptURL, receiptURL.lastPathComponent != "sandboxReceipt" {
-		if let receiptURL = Bundle.main.appStoreReceiptURL {
-			print("App Store receipt", receiptURL)
-			return true
+	func verifyTransaction() async -> Bool {
+		// This code is copied straight from Apple. It's here if I want to change my business model.
+		// When setting major version to 1, paywall is activated.
+		do {
+			let shared = try await AppTransaction.shared
+			
+			if case .verified(let appTransaction) = shared {
+				// Hard-code the major version number in which the app's business model changed.
+				let newBusinessModelMajorVersion = 100
+				
+				// Get the major version number of the version the customer originally purchased.
+				let versionComponents = appTransaction.originalAppVersion.split(separator: ".")
+				let originalMajorVersion = Int(versionComponents[0]) ?? 0
+				
+				if originalMajorVersion < newBusinessModelMajorVersion {
+					// This customer purchased the app before the business model changed.
+					// Deliver content that they're entitled to based on their app purchase.
+					return true
+				} else {
+					// This customer purchased the app after the business model changed.
+					return false
+				}
+			}
+		}
+		catch {
+			print("Error in checking transaction", error)
 		}
 		
+		return false
+	}
+	
+	/// Returns `true` if we've stored the transaction
+	@MainActor
+	func storedUnlockStatus() -> Bool {
 		// In other case, we'll check the stored boolean
 		#if USE_ICLOUD_STORAGE
 		let storage = NSUbiquitousKeyValueStore.default

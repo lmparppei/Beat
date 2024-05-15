@@ -29,16 +29,29 @@ import BeatCore
 	public override func viewDidLoad() {
 		self.pageView?.becomeFirstResponder()
 		
-		self.pageSettingsButton?.menu = UIMenu(title: "Export Settings", children: [
+		self.pageSettingsButton?.menu = UIMenu(children: [
 			UIDeferredMenuElement.uncached { [weak self] completion in
 				guard let delegate = self?.delegate else { completion([]); return }
 				
 				var items:[UIMenuElement] = []
 				
-				items.append(UIAction(title: "Print Scene Numbers", state: delegate.documentSettings.getBool(DocSettingPrintSceneNumbers) ? .on : .off, handler: { _ in
+				let sceneNumbers = UIAction(title: "Scene Numbers", state: delegate.documentSettings.getBool(DocSettingPrintSceneNumbers) ? .on : .off, handler: { _ in
 					delegate.documentSettings.toggleBool(DocSettingPrintSceneNumbers)
 					self?.delegate?.invalidatePreview()
-				}))
+				})
+				
+				let boldHeadings = UIAction(title: "Bolded", state: BeatUserDefaults.shared().getBool(BeatSettingHeadingStyleBold) ? .on : .off) { _ in
+					BeatUserDefaults.shared().toggleBool(BeatSettingHeadingStyleBold)
+					self?.delegate?.reloadStyles()
+					self?.delegate?.invalidatePreview()
+				}
+				let underlinedHeadings = UIAction(title: "Underlined", state: BeatUserDefaults.shared().getBool(BeatSettingHeadingStyleUnderlined) ? .on : .off) { _ in
+					BeatUserDefaults.shared().toggleBool(BeatSettingHeadingStyleUnderlined)
+					self?.delegate?.reloadStyles()
+					self?.delegate?.invalidatePreview()
+				}
+				
+				items.append(UIMenu(title: "Heading Style", options: .displayInline, children: [sceneNumbers, boldHeadings, underlinedHeadings]))
 				
 				let sections = UIAction(title: "Sections", state: delegate.documentSettings.getBool(DocSettingPrintSections) ? .on : .off, handler: { _ in
 					delegate.documentSettings.toggleBool(DocSettingPrintSections)
@@ -110,6 +123,8 @@ import BeatCore
 @objc open class BeatPageScrollView: UIScrollView, UIScrollViewDelegate {
 	/// Data source provide the views and number of pages
     @IBOutlet public var dataSource:BeatPreviewPageViewDataSource?
+	@IBOutlet weak var activityIndicator:UIActivityIndicatorView?
+	
 	/// Container view for pages
 	var container:UIView?
 	/// Spacing between page views
@@ -164,11 +179,15 @@ import BeatCore
 	}
 		
 	public func startLoadingAnimation() {
+		self.alpha = 0.5
 		self.container?.alpha = 0.5
+		self.activityIndicator?.isHidden = false
 	}
 	
 	public func endLoadingAnimation() {
+		self.alpha = 1.0
 		self.container?.alpha = 1.0
+		self.activityIndicator?.isHidden = true
 	}
  
     override public var bounds: CGRect {

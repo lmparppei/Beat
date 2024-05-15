@@ -7,17 +7,17 @@
     {
       "displayPrice" : "0.99",
       "familyShareable" : false,
-      "internalID" : "45496230",
+      "internalID" : "2DA242A1",
       "localizations" : [
         {
-          "description" : "Own Beat forever and unlock PDF export",
+          "description" : "Unlock and own Beat for iOS forever!",
           "displayName" : "Lifetime License",
           "locale" : "en_US"
         }
       ],
-      "productID" : "lifetimeLicense",
+      "productID" : "license.lifetime",
       "referenceName" : "Lifetime License",
-      "type" : "Consumable"
+      "type" : "NonConsumable"
     }
   ],
   "settings" : {

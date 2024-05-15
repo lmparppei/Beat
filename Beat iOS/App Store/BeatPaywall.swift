@@ -58,12 +58,10 @@ struct BeatPaywallView: View {
 						}
 					}
 					
-					ProductView(id: "lifetimeLicense")
+					ProductView(id: BeatSubscriptionsManager.shared.productIds.first ?? "license.lifetime")
 						.productViewStyle(.large)
 						.storeButton(.visible, for: .redeemCode, .restorePurchases)
 						.onInAppPurchaseCompletion { product, result in
-							print("Product", product)
-							print("   RESULT:", result)
 							dismissAction()
 						}
 					
@@ -87,27 +85,5 @@ struct BeatPaywallView: View {
 				.padding()
 			}
 		}.padding()
-	
-		/*StoreView(ids: BeatSubscriptionsManager.shared.productIds) { product in
-			VStack(spacing: 10) {
-				Image("Icon-MacOS-512x512", bundle: Bundle.main)
-					.resizable()
-					.scaledToFit()
-			}.padding(10.0)
-			VStack(spacing: 10) {
-				Text("Beat is made with love and care").frame(width: 300).fixedSize().multilineTextAlignment(.center).fontWeight(.bold)
-				Text("The full desktop version is completely free now and always, but PDF export on iOS is limited to support the development.\n\nFor one single-time fee, you will own Beat for iOS forever!")
-				.multilineTextAlignment(.center).frame(minWidth: 200, maxWidth: 400).fixedSize()
-			}.padding(10.0)
-		}
-		.productViewStyle(.large)
-		.storeButton(.visible, for: .redeemCode, .restorePurchases)
-		.onInAppPurchaseCompletion { product, result in
-			
-			print("Product", product)
-			print("   RESULT:", result)
-
-			dismissAction()
-		}*/
 	}
 }
