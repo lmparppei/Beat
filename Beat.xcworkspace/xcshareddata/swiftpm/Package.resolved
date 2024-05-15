@@ -1,0 +1,24 @@
+{
+  "originHash" : "2e22e4e4bf5d5a1d6a0a979d9fdd47d3ea86c66fd4dfe584c795e87f9680b64e",
+  "pins" : [
+    {
+      "identity" : "sparkle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparkle-project/Sparkle",
+      "state" : {
+        "branch" : "2.x",
+        "revision" : "1a0b023e1c4d37302ae6401b8f9c38af0729e21d"
+      }
+    },
+    {
+      "identity" : "uxkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZeeZide/UXKit",
+      "state" : {
+        "revision" : "39e7851e92ebdfb06d06cdcab605b7372b264923",
+        "version" : "1.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}

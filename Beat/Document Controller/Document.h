@@ -54,6 +54,7 @@ THE SOFTWARE.
 @class MarginView;
 @class BeatTimer;
 @class BeatLockButton;
+@class BeatNotepad;
 
 @interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
@@ -165,6 +166,10 @@ THE SOFTWARE.
 
 /// Lock button
 @property (nonatomic, weak) IBOutlet BeatLockButton* _Nullable lockButton;
+
+/// Notepad view
+@property (nonatomic, weak) IBOutlet BeatNotepad *notepad;
+
 
 
 #pragma mark - Scrolling methods (move these elsewhere)

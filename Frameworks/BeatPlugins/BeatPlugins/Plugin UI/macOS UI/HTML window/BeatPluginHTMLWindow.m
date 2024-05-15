@@ -94,8 +94,11 @@
 }
 
 - (void)closeWindow {
-    [self.webView removeFromSuperview];
-    self.webView = nil;
+    if (!_stayInMemory) {
+        NSLog(@"DON'T STAY IN MEMORY");
+        [self.webView removeFromSuperview];
+        self.webView = nil;
+    }
 	[super close];
 }
 
@@ -133,13 +136,21 @@
 
 #pragma mark - Organizing windows
 
-/// This doesn't actually hide the window, but makes it drop behind current key window
 - (void)hide {
+    [self setIsVisible:false];
+}
+- (void)show {
+    [self setIsVisible:true];
+}
+
+/// This doesn't actually hide the window, but makes it drop behind current key window
+- (void)hideBehindOthers {
 	self.level = NSNormalWindowLevel;
 	self.orderedIndex += 1; // Hide behind new stuff, just in case
 }
+/// Tells the window to become floating-level when the document was activated
 - (void)appear {
-	self.level = NSFloatingWindowLevel;
+    self.level = NSFloatingWindowLevel;
 }
 
 

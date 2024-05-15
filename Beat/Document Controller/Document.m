@@ -151,9 +151,6 @@
 // Outline view filtering
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
 
-// Notepad
-@property (nonatomic, weak) IBOutlet BeatNotepad *notepad;
-
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
@@ -434,6 +431,8 @@
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container load];
 	}
+	
+	self.textView.editable = true;
 }
 
 -(void)awakeFromNib
@@ -1266,6 +1265,7 @@
 {
 	// Initialize revision tracing here, so revisions are loaded before formatting,
 	// so revised text color is drawn correctly in formatting module.
+	self.textView.editable = false;
 	[self.revisionTracking setup];
 
 	// Begin formatting lines.

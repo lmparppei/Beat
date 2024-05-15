@@ -8,10 +8,16 @@
 
 #import <Cocoa/Cocoa.h>
 #import <BeatCore/BeatCore.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatNotepad : NSTextView
+@protocol BeatNotepadExports <JSExport>
+@property (nonatomic) NSString* string;
+JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName);
+@end
+
+@interface BeatNotepad : NSTextView <BeatNotepadExports>
 @property (weak, nonatomic) IBOutlet id<BeatEditorDelegate> editorDelegate;
 - (void)setup;
 - (void)loadString:(NSString*)string;

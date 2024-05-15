@@ -60,7 +60,7 @@ class BeatPluginWindowManager:NSObject {
         var hidden:[BeatHTMLView] = []
         
         for window in windows {
-            if !window.visible {
+            if !window.displayed {
                 hidden.append(window)
             }
         }

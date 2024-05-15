@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString* title;
 @property (nonatomic) bool dark;
 @property (nonatomic) BOOL resizable;
+@property (nonatomic, readonly) bool visible;
+@property (nonatomic) bool stayInMemory;
+
 JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue* __nullable)callback);
 JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
 - (CGRect)getFrame;
@@ -29,6 +32,11 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (void)setRawHTML:(NSString*)html;
 - (void)close;
 - (void)focus;
+
+/// Makes the window hidden
+- (void)hide;
+/// Shows the window
+- (void)show;
 
 - (void)gangWithDocumentWindow;
 - (void)detachFromDocumentWindow;
@@ -53,13 +61,14 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 @property (nonatomic) JSValue* callback;
 @property (nonatomic) bool dark;
 @property (nonatomic) BOOL resizable;
+@property (nonatomic) bool stayInMemory;
 
 @property (nonatomic) BeatPluginWebView* _Nullable webView;
 
 - (instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host;
 - (void)closeWindow;
 - (void)setTitle:(NSString*)title;
-- (void)hide;
+- (void)hideBehindOthers;
 - (void)appear;
 - (bool)isFullScreen;
 #endif

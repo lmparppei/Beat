@@ -362,6 +362,10 @@ JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)
 JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 #endif
 
+#pragma mark Notepad
+#if TARGET_OS_OSX
+@property (weak, nonatomic, readonly) id notepad;
+#endif
 
 #pragma mark Text highlighting
 JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
@@ -431,6 +435,8 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 #endif
 #if TARGET_OS_OSX
 @property (nonatomic) NSScrollView* scrollView;
+/// Please forgive me, we are using an unknown object to deliver notepad.
+@property (nonatomic) id notepad;
 #endif
 
 - (BeatPaginationManager*)pagination;

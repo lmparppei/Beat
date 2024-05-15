@@ -15,6 +15,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatPlugins/BeatPlugins.h>
 
 #import "BeatNotepad.h"
 #import "Beat-Swift.h"
@@ -240,6 +241,33 @@
 	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
 		[self replaceCharactersInRange:NSMakeRange(self.string.length - string.length, string.length) withString:@""];
 	}];
+}
+
+- (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName
+{
+	NSRange range = NSMakeRange(position, length);
+	if (NSMaxRange(range) > self.string.length) {
+		[BeatConsole.shared logToConsole:@"ERROR: replaceRange: selection out of range" pluginName:@"notepad" context:nil];
+		return;
+	}
+	
+	NSColor* color;
+	if (colorName.length > 0) color = [BeatColors color:colorName];
+	
+	if (color == nil) color = _currentColor;
+	
+	NSAttributedString* result = [NSAttributedString.alloc initWithString:string attributes:@{
+		NSForegroundColorAttributeName: color
+	}];
+	
+	
+	if ([self shouldChangeTextInRange:range replacementString:string]) {
+		[self.textStorage beginEditing];
+		[self.textStorage replaceCharactersInRange:range withAttributedString:result];
+		[self.textStorage endEditing];
+		
+		[self didChangeText];
+	}
 }
 
 @end

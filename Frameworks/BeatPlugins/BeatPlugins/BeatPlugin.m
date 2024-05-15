@@ -1348,7 +1348,7 @@
 		if (_terminating) return;
 		
 		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-			[window hide];
+			[window hideBehindOthers];
 		}
 	}
 #endif
@@ -1388,6 +1388,9 @@
     [window makeKeyAndOrderFront:nil];
     window.delegate = self;
     window.callback = callback;
+    
+    // If no callback is provided, windows will stay in memory by default
+    if (callback == nil || [callback isNull] || [callback isUndefined]) window.stayInMemory = true;
 	
 	return window;
 }
@@ -1395,10 +1398,7 @@
 /// A plugin (HTML) window will close.
 - (void)windowWillClose:(NSNotification *)notification
 {
-	BeatPluginHTMLWindow *window = notification.object;
-	if (window == nil) return;
-    
-	[window.webView remove];
+    NSLog(@"!!! Plugin window did close");
 }
 
 /// When the plugin window is set as main window, the document will become active. (If applicable.)
@@ -1460,7 +1460,7 @@
     }
     
     // Close window and remove its reference
-    [_pluginWindows removeObject:window];
+    if (!window.stayInMemory) [_pluginWindows removeObject:window];
     [window closeWindow];
 #else
     // iOS
@@ -2138,6 +2138,16 @@
 
 - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
 	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
+}
+#endif
+
+
+#pragma mark - Notepad
+
+#if TARGET_OS_OSX
+- (id)notepad
+{
+    return self.delegate.notepad;
 }
 #endif
 
