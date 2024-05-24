@@ -10,6 +10,14 @@
  * This is useful when you want to derive another protocol from
  * UXView, but you can't ;-)
  */
+
+import CoreFoundation
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
+
 public protocol UXViewType : AnyObject {
 
   var frame  : UXRect { get set }

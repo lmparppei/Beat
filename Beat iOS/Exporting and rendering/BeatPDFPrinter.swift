@@ -159,7 +159,7 @@ class BeatPDFPrinter:NSObject {
 					// Let's enumerate through all the layout fragments now
 					textView.textLayoutManager?.enumerateTextLayoutFragments(from: location, options: [.ensuresLayout, .estimatesSize, .ensuresExtraLineFragment], using: { fragment in
 						
-						var frame = fragment.layoutFragmentFrame
+						let frame = fragment.layoutFragmentFrame
 						var origin = textView.frame.origin
 						
 						//origin.x += textView.textContainerInset.left

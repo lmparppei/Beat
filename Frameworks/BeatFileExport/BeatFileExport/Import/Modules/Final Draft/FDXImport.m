@@ -254,7 +254,6 @@
 			[_element addStyle:_textStyle to:range];
 		}
 		if (_revisionID) {
-			NSArray<BeatRevisionGeneration*>* generations = BeatRevisions.revisionGenerations;
 			NSInteger index = [_revisionID integerValue];
 			
 			// 0 index in revision ID means original in Final Draft

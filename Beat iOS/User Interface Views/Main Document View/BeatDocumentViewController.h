@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSDictionary<NSString*,NSString*>* characterGenders;
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
-- (IBAction)openExportPanel:(id)sender;
 
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
 
