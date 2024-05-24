@@ -391,9 +391,13 @@ import UXKit
 		}
 				
 		// Add the rest of the elements on left side
-		for d in self.titlePageLines {
-			let dict = d
-			
+		for dict in self.titlePageLines {
+            // Make sure we have a value and that it's not a metadata key
+            print(dict)
+            guard let key = dict.keys.first?.lowercased(), key.prefix(2) != "x-" else {
+                continue
+            }
+            
 			if let element = titlePageElement(dict.keys.first ?? "") {
 				let attrStr = NSMutableAttributedString()
 				_ = element.map { attrStr.append(renderer.renderLine($0)) }
@@ -540,14 +544,10 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
 				if (obj == nil) { return }
                 guard let revisionValue = obj as? NSNumber else { return }
-				
-                let level = revisionValue.intValue
                 
+                let level = revisionValue.intValue
 				// If the revision is not included in settings, just skip it.
-                if !revisions.contains(level) {
-                    print("... revision not included")
-					return
-				}
+                if !revisions.contains(level) { return }
 				                
                 if highestRevision < level {
 					highestRevision = level

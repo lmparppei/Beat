@@ -8,8 +8,10 @@
 
 // A class for importing legacy desktop Celtx files
 
+#import <TargetConditionals.h>
+
 #if TARGET_OS_OSX
-#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 #endif
 
 #import "CeltxImport.h"

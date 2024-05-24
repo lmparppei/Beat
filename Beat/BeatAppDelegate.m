@@ -20,7 +20,7 @@
 
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
-//#import "BeatFileImport.h"
+#import "BeatFileImport.h"
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
@@ -491,24 +491,21 @@
 
 - (IBAction)importFDX:(id)sender
 {
-	BeatFileImport *import = BeatFileImport.new;
-	[import fdx];
+	[BeatFileImport.new fdx];
 }
 - (IBAction)importCeltx:(id)sender
 {
-	BeatFileImport *import = BeatFileImport.new;
-	[import celtx];
+	[BeatFileImport.new celtx];
 }
 - (IBAction)importHighland:(id)sender
 {
-	BeatFileImport *import = BeatFileImport.new;
-	[import highland];
+	[BeatFileImport.new highland];
 }
 - (IBAction)importFadeIn:(id)sender
 {
-	BeatFileImport *import = BeatFileImport.new;
-	[import fadeIn];
+	[BeatFileImport.new fadeIn];
 }
+
 
 #pragma mark - Generic methods for opening a plain-text file
 

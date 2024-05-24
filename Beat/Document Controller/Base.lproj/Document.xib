@@ -231,7 +231,7 @@
                                                                     <rect key="frame" x="213" y="-2" width="210" height="24"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <subviews>
-                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zip-rI-oJi">
+                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zip-rI-oJi">
                                                                             <rect key="frame" x="5" y="5" width="147" height="14"/>
                                                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                             <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" alignment="center" title="Mode Indicator" id="pmw-EE-q6r">
@@ -284,7 +284,7 @@
                                                             <rect key="frame" x="15" y="15" width="160" height="36"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <subviews>
-                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
+                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
                                                                     <rect key="frame" x="40" y="11" width="122" height="14"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Document is locked" usesSingleLineMode="YES" id="aMy-cb-lJ3">
@@ -406,7 +406,7 @@
                                                                                                             <rect key="frame" x="0.0" y="4" width="300" height="14"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF">
+                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF">
                                                                                                                     <rect key="frame" x="-2" y="0.0" width="304" height="14"/>
                                                                                                                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Table View Cell" id="LeM-Df-kg2">
                                                                                                                         <font key="font" metaFont="smallSystem"/>
@@ -622,7 +622,7 @@
                                                                                                 <real value="3.4028234663852886e+38"/>
                                                                                             </customSpacing>
                                                                                         </stackView>
-                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tEa-Zf-bvu">
+                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tEa-Zf-bvu">
                                                                                             <rect key="frame" x="12" y="12" width="56" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Character" id="NLd-GN-ebP">
@@ -631,7 +631,7 @@
                                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                             </textFieldCell>
                                                                                         </textField>
-                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f5e-1x-hsg">
+                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f5e-1x-hsg">
                                                                                             <rect key="frame" x="12" y="58" width="269" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Filter Scenes" id="NAI-kd-UO5">
@@ -674,7 +674,7 @@
                                                                                                 <action selector="resetColorFilters:" target="7yW-8d-gb9" id="xjn-uV-KqD"/>
                                                                                             </connections>
                                                                                         </button>
-                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Fsz-Ri-m8r">
+                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Fsz-Ri-m8r">
                                                                                             <rect key="frame" x="12" y="37" width="33" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Color" id="pXN-uS-1oE">
@@ -754,7 +754,7 @@
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                 </scroller>
                                                                             </scrollView>
-                                                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ErX-VT-kPi">
+                                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ErX-VT-kPi">
                                                                                 <rect key="frame" x="7" y="481" width="79" height="14"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Notepad" id="4ZQ-iA-Rxf">
@@ -973,7 +973,7 @@
                                                                                                             <rect key="frame" x="14" y="0.0" width="118" height="24"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="cnI-SU-o2k">
+                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="cnI-SU-o2k">
                                                                                                                     <rect key="frame" x="1" y="3" width="116" height="17"/>
                                                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="zQk-vQ-7L3">
@@ -1005,7 +1005,7 @@
                                                                                                             <rect key="frame" x="140" y="0.0" width="131" height="24"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" preferredMaxLayoutWidth="23" id="jwi-pF-V0z">
+                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" preferredMaxLayoutWidth="23" id="jwi-pF-V0z">
                                                                                                                     <rect key="frame" x="96" y="3" width="32" height="15"/>
                                                                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                                                                                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="???" id="dxt-PX-eFi">
@@ -1044,7 +1044,7 @@
                                                                                 <rect key="frame" x="0.0" y="381" width="300" height="114"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                 <subviews>
-                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9he-GE-gJn">
+                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9he-GE-gJn">
                                                                                         <rect key="frame" x="145" y="-6" width="156" height="120"/>
                                                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Label" id="3Ma-cQ-Q5S" customClass="VerticallyCenteredTextField">
@@ -1100,7 +1100,7 @@
                                                                                                             <rect key="frame" x="17" y="0.0" width="264" height="47"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Zrv-Bt-8h0">
+                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Zrv-Bt-8h0">
                                                                                                                     <rect key="frame" x="20" y="7" width="239" height="34"/>
                                                                                                                     <constraints>
                                                                                                                         <constraint firstAttribute="height" constant="34" id="5fg-y8-zcW"/>
@@ -1152,7 +1152,7 @@
                                                                                 <rect key="frame" x="0.0" y="209" width="300" height="106"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                 <subviews>
-                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5vY-sS-P8z">
+                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5vY-sS-P8z">
                                                                                         <rect key="frame" x="-2" y="61" width="304" height="21"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Reviews" id="KZo-wr-Yqv">
@@ -1161,7 +1161,7 @@
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                     </textField>
-                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9zF-A8-Ie6">
+                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9zF-A8-Ie6">
                                                                                         <rect key="frame" x="18" y="13" width="264" height="46"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" alignment="center" title="Once you add review notes to the screenplay, you'll see them listed here" id="M5R-75-VTw">
@@ -1286,7 +1286,7 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
-                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JKs-8L-Wv0">
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JKs-8L-Wv0">
                                                             <rect key="frame" x="28" y="520" width="146" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Tagging" id="Zo3-K1-aDo">
@@ -1685,7 +1685,7 @@
                             </touchBarItem>
                             <touchBarItem id="SBD-rY-fAc">
                                 <viewController key="viewController" id="cAF-5m-zuN">
-                                    <textField key="view" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
                                         <rect key="frame" x="0.0" y="0.0" width="246" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Refresh for an anti-lateral thought" id="ebZ-HO-Ch9">
@@ -1735,7 +1735,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="311" height="156"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8tW-vH-v5y">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8tW-vH-v5y">
                         <rect key="frame" x="18" y="112" width="244" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbering" id="Cw1-Zn-mbx">
@@ -1744,7 +1744,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField focusRingType="none" verticalHuggingPriority="750" id="MmF-s9-or8">
+                    <textField verticalHuggingPriority="750" id="MmF-s9-or8">
                         <rect key="frame" x="216" y="69" width="75" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="1" drawsBackground="YES" id="dJ4-oY-Is8">
@@ -1757,7 +1757,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1nx-iz-8YJ">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1nx-iz-8YJ">
                         <rect key="frame" x="20" y="72" width="190" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Start Scene Numbers From" id="mRh-Qz-Ja7">

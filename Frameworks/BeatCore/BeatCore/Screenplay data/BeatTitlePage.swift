@@ -17,7 +17,9 @@ import BeatParsing
         super.init()
     }
     
-    func get(_ key:String, andRemove remove:Bool = false) -> [Line]? {
+    func get(_ keyName:String, andRemove remove:Bool = false) -> [Line]? {
+        let key = keyName.lowercased()
+        
         var lines:[Line] = []
 
         for i in 0..<titlePageLines.count {
