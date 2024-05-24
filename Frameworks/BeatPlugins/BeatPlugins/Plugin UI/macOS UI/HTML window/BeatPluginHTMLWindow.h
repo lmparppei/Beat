@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) bool visible;
 @property (nonatomic) bool stayInMemory;
 
+@property (nonatomic) bool disableFullScreen;
+@property (nonatomic) bool disableMaximize;
+@property (nonatomic) bool disableMinimize;
+
 JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue* __nullable)callback);
 JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
 - (CGRect)getFrame;
@@ -62,6 +66,9 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 @property (nonatomic) bool dark;
 @property (nonatomic) BOOL resizable;
 @property (nonatomic) bool stayInMemory;
+@property (nonatomic) bool disableFullScreen;
+@property (nonatomic) bool disableMaximize;
+@property (nonatomic) bool disableMinimize;
 
 @property (nonatomic) BeatPluginWebView* _Nullable webView;
 

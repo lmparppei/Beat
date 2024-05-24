@@ -109,6 +109,8 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
 
+@property (nonatomic) bool matchParentheses;
+
 
 #pragma mark - Creating the actual document file
 

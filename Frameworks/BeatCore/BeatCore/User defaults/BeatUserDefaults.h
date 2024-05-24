@@ -62,6 +62,8 @@ extern NSString* const BeatSettingFocusMode;
 extern NSString* const BeatSettingiOSShowWelcomeScreen;
 extern NSString* const BeatSettingPhoneFontSize;
 
+extern NSString* const BeatSettingDarkMode;
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 

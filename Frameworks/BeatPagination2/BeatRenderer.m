@@ -144,7 +144,7 @@
 /// Renders a single line
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
     // Page breaks are just empty lines
-    if (line.type == pageBreak) return NSAttributedString.new;
+    if (line.type == pageBreak || line == nil) return NSAttributedString.new;
     
     RenderStyle* style = [self.styles forLine:line];
     
@@ -706,6 +706,8 @@
 /// Returns attribute dictionary for given line. We are caching the styles.
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue
 {
+    if (line == nil) return @{};
+    
     @synchronized (self.lineTypeAttributes) {
         BeatPaperSize paperSize = self.settings.paperSize;
         LineType type = line.type;
@@ -870,6 +872,8 @@
 
 - (CGFloat)widthFor:(Line*)line
 {
+    if (line == nil) return 0.0;
+    
     RenderStyle* style = [self.styles forLine:line];
     CGFloat width = [style widthWithPageSize:self.settings.paperSize];
     if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
@@ -880,6 +884,8 @@
 /// This is the **full** block width, including margins
 - (CGFloat)blockWidthFor:(Line*)line dualDialogue:(bool)isDualDialogue
 {
+    if (line == nil) return 0.0;
+    
     RenderStyle* style = [self.styles forLine:line];
     CGFloat width = [style widthWithPageSize:self.settings.paperSize];
     if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];

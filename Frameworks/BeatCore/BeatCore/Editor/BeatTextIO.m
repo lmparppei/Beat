@@ -453,15 +453,16 @@ static NSString *centeredEnd = @" <";
     return NO;
 }
 
+
 /**
  Finds a matching closure for parenthesis, notes and omissions.
  This works by checking both the entered symbol and the previous symbol in text. If both match the terminator counterpart, the block is closed.
  For example: If the users enters  `*`, and the previous symbol in that range is `/`, we'll close the omission.
+ 
+ Sorry, future me, this is a mess with tons of exit points etc.
  */
-- (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
+- (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
-    if (replacementString.length > 1) return;
-    
     static NSDictionary *matches;
     if (matches == nil) matches = @{
         @"(" : @")",
@@ -482,21 +483,24 @@ static NSString *centeredEnd = @" <";
         }
     }
     
-    if (matches[match] == nil) {
-        // No match for this parenthesis
-        return;
-    }
-    else if (match.length > 1) {
-        // Check for dual symbol matches, and don't add them if the previous character doesn't match
-        if (affectedCharRange.location == 0) return;
-        
+    // No match for this parenthesis. Do nothing.
+    if (matches[match] == nil) return false;
+    
+
+    // If we are typing (and not replacing) check for dual symbol matches, and don't add them if the previous character doesn't match.
+    bool skipFirstCharacter = false;
+    if (match.length > 1 && affectedCharRange.length <= 1) {
+        if (affectedCharRange.location == 0) return false;
         unichar characterBefore = [_delegate.text characterAtIndex:affectedCharRange.location-1];
-        if (characterBefore != [match characterAtIndex:0]) return;
+        if (characterBefore != [match characterAtIndex:0]) return false;
+        
+        skipFirstCharacter = true;
     }
     
     // After this, we'll also make sure we're not adding extraneous closing brackets anywhere.
     Line* line = _delegate.currentLine;
     NSString* terminator = matches[match];
+    
     bool found = false;
     for (NSInteger i=affectedCharRange.location - line.position; i<=line.length; i++) {
         // Don't go out of range
@@ -512,11 +516,24 @@ static NSString *centeredEnd = @" <";
         }
     }
     
-    // If a terminator was not found, close the brackets.
-    if (!found) {
-        [self addString:matches[match] atIndex:affectedCharRange.location];
-        [_delegate setSelectedRange:affectedCharRange];
+    // If a terminator was found do nothing.
+    if (found) return false;
+    
+    // And if it was, close the brackets.
+        
+    // Make sure there are no line breaks
+    NSString* text = [self.delegate.text substringWithRange:affectedCharRange];
+    bool safeToAdd = ![[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet] containsString:@"\n"];
+    if (safeToAdd) {
+        NSString* open = (skipFirstCharacter) ? replacementString : match;
+        NSString* result = [NSString stringWithFormat:@"%@%@%@", open, text, matches[match]];
+        
+        [self replaceRange:affectedCharRange withString:result];
+        [_delegate setSelectedRange:NSMakeRange(affectedCharRange.location + match.length, 0)];
+        return true;
     }
+    
+    return false;
 }
 
 /// Check if we should add `CONT'D` at the the current character cue

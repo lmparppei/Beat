@@ -179,9 +179,6 @@
 // Printing
 @property (nonatomic) bool printPreview;
 
-// Some settings for edit view behaviour
-@property (nonatomic) bool matchParentheses;
-
 // View sizing
 @property (nonatomic) CGFloat documentWidth;
 @property (nonatomic) NSUInteger characterIndent;
@@ -1058,7 +1055,7 @@
 	// Single characters
 	else if (replacementString.length == 1 && !undoOperation) {
 		// Auto-close () and [[]]
-		if (self.matchParentheses) [self.textActions matchParenthesesIn:affectedCharRange string:replacementString];
+		if (self.matchParentheses) change = ![self.textActions shouldMatchParenthesesIn:affectedCharRange string:replacementString];
 	}
 	
 	// If change is true, we can safely add the string (and parse the addition)
@@ -1470,11 +1467,10 @@
 
 - (IBAction)toggleHideFountainMarkup:(id)sender {
 	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingHideFountainMarkup];
+	self.hideFountainMarkup = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHideFountainMarkup];
+	
 	[self.textView toggleHideFountainMarkup];
-	
-	self.textView.needsDisplay = true;
-	self.textView.needsLayout = true;
-	
+		
 	[self updateLayout];
 }
 

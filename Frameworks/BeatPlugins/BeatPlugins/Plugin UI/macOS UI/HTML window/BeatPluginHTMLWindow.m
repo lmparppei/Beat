@@ -71,6 +71,7 @@
     [self.webView setHTML:html];
 }
 
+
 #pragma mark - Running JS in window instance
 
 - (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
@@ -95,7 +96,6 @@
 
 - (void)closeWindow {
     if (!_stayInMemory) {
-        NSLog(@"DON'T STAY IN MEMORY");
         [self.webView removeFromSuperview];
         self.webView = nil;
     }
@@ -116,23 +116,56 @@
 	}
 }
 
-- (void)setResizable:(BOOL)resizable {
-	_resizable = resizable;
-	
-	if (resizable) {
-		self.styleMask |= NSWindowStyleMaskResizable;
-		[[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:NO];
-		[[self standardWindowButton:NSWindowZoomButton] setHidden:NO];
-	} else {
-		self.styleMask &= ~NSWindowStyleMaskResizable;
-		[[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
-		[[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
-	}
-}
-
 - (void)keyDown:(NSEvent *)event{
     return;
 }
+
+
+#pragma mark - Window sizing
+
+- (void)setResizable:(BOOL)resizable {
+    _resizable = resizable;
+    
+    if (resizable) {
+        self.styleMask |= NSWindowStyleMaskResizable;
+        [[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:NO];
+        [[self standardWindowButton:NSWindowZoomButton] setHidden:NO];
+    } else {
+        self.styleMask &= ~NSWindowStyleMaskResizable;
+        [[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
+        [[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
+    }
+}
+
+- (void)setDisableFullScreen:(bool)disableFullScreen
+{
+    _disableFullScreen = disableFullScreen;
+    
+    if (disableFullScreen) {
+        self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
+    } else {
+        self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
+    }
+}
+
+- (void)setDisableMinimize:(bool)disableMinimize
+{
+    _disableMinimize = true;
+    
+    [[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:disableMinimize];
+    if (disableMinimize) self.styleMask &= ~NSWindowStyleMaskMiniaturizable;
+    else self.styleMask |= ~NSWindowStyleMaskMiniaturizable;
+}
+
+- (void)setDisableMaximize:(bool)disableMaximize
+{
+    _disableMaximize = true;
+    
+    [[self standardWindowButton:NSWindowZoomButton] setHidden:disableMaximize];
+    if (disableMaximize) self.styleMask &= ~NSWindowStyleMaskFullScreen;
+    else self.styleMask |= ~NSWindowStyleMaskFullScreen;
+}
+
 
 #pragma mark - Organizing windows
 

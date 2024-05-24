@@ -364,7 +364,7 @@ JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)ht
 
 #pragma mark Notepad
 #if TARGET_OS_OSX
-@property (weak, nonatomic, readonly) id notepad;
+@property (nonatomic, weak, readonly) id notepad;
 #endif
 
 #pragma mark Text highlighting

@@ -168,7 +168,7 @@ THE SOFTWARE.
 @property (nonatomic, weak) IBOutlet BeatLockButton* _Nullable lockButton;
 
 /// Notepad view
-@property (nonatomic, weak) IBOutlet BeatNotepad *notepad;
+@property (nonatomic, weak) IBOutlet BeatNotepad* _Nullable notepad;
 
 
 

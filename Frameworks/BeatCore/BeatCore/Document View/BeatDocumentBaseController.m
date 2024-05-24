@@ -97,6 +97,14 @@
     [BeatUserDefaults.sharedDefaults saveBool:automaticContd forKey:BeatSettingAutomaticContd];
 }
 
+- (bool)matchParentheses
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingMatchParentheses];
+}
+- (void)setMatchParentheses:(bool)value
+{
+    [BeatUserDefaults.sharedDefaults saveBool:value forKey:BeatSettingMatchParentheses];
+}
 
 
 #pragma mark - Editor styles

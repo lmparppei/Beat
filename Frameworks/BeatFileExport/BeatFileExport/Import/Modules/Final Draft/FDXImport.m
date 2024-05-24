@@ -64,7 +64,7 @@
 
 @implementation FDXImport
 
-- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(void))callback
+- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback
 {
 	self = [super init];
 	if (self) {
@@ -86,7 +86,7 @@
 	return self;
 }
 
-- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(void))callback
+- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback
 {
 	self = [super init];
 	if (self) {
@@ -109,12 +109,12 @@
 
 }
 
-- (void)parse:(NSData*)data callback:(void(^)(void))callback
+- (void)parse:(NSData*)data callback:(void(^)(FDXImport*))callback
 {
 	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 	self.xmlParser.delegate = self;
 	if ([self.xmlParser parse]){
-		callback();
+		callback(self);
 	} else {
 		NSLog(@"ERROR: %@", self.xmlParser.parserError);
 	}
@@ -176,6 +176,7 @@
 	else if ([elementName isEqualToString:@"SceneProperties"]) {
 		// Read possible scene color
 		_element.sceneColor = attributeDict[@"Color"];
+        if ([_element.sceneColor isEqualToString:@"(null)"]) _element.sceneColor = nil;
 	}
 	
 }
@@ -302,8 +303,9 @@
 			[_element insertAtBeginning:@"."];
 		}
 		
-		if (_element.sceneColor != nil) {
-			NSString* colorString = [NSString stringWithFormat:@" [[%@]]", [FDXElement colorNameFor16bitHex:_element.sceneColor]];
+		if (_element.sceneColor != nil && ![_element.sceneColor isEqualToString:@"#000000000000"]) {
+            NSString* color = [FDXElement colorNameFor16bitHex:_element.sceneColor];
+			NSString* colorString = [NSString stringWithFormat:@" [[%@]]", color];
 			[_element append:colorString];
 		}
 	}

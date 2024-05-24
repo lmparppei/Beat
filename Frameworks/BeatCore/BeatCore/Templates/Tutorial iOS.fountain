@@ -1,9 +1,9 @@
-Title: Beat Tutorial
+Title: Beat iOS Tutorial
 Credit: Written by
 Author: Lauri-Matti Parppei
-Draft date: Version 3, 6.8.2023
+Draft date: Version 2, 18.5.2024
 Contact:
-beat@kapitan.fi
+beat@beat-app.fi
 www.beat-app.fi
 
 
@@ -61,7 +61,7 @@ INT. TUNNEL - NIGHT
 
 You can use sections and synopses (as above) to help structure your story. They won't be printed out, don't worry.
 
-Take a look at the outline view (top-left icon or ⌘D) and see how the structure is laid out! Index Card View (top-right card icon or ⌘⇧D) is a useful tool for visualizing and laying out your story beats.
+Take a look at the outline view (top-left icon or ⌘D) and see how the structure is laid out! Index Card View (found on top bar menu) is a useful tool for visualizing and laying out your story beats.
 
 
 INT./EXT. BEACH HOUSE - NIGHT
@@ -72,7 +72,7 @@ Text formatting can be done with the usual commands used in any software, (⌘B,
 
 Basically, text formatting works so that anything inside dual asterisks is **bolded** and single asterisks make it *italic*. You can also _underline_ stuff using underscores.
 
-You can also force any element when it's not recognized automatically -- take a look at the *Format* menu. Press ⌥↩ (alt-enter) to quickly force an element type. Try it now!
+You can also force any element when it's not recognized automatically. There's a menu button at the bottom of the editor view with all sorts of formatting tools.  Try it now!
 
 Text can be centered by surrounding it with > and <
 
@@ -112,9 +112,10 @@ That's about it. Edit this file and try out stuff. If you ever mess something up
 
 EXT. UNIVERSITY CLASSROOM - MORNING
 
-There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it), and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
+You can use revisions to keep track of your changes. Either toggle on *Revision Mode* from document settings, or select a range and click on the menu with asterisk (*) to mark a range as revised.
 
 [[marker You can also add markers to indicate parts that need work or attention.]]
+
 [[marker pink: This is a pink marker!]]
 
 You can find more information about the Fountain markup language at https://www.fountain.io/
@@ -124,4 +125,5 @@ You can find more information about the Fountain markup language at https://www.
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"string":"Hey there! This is a review note.","range":[4023,7]}],"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4083,9,"blue"]]}} END_BEAT */
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[3996,9,0],[4116,17,1]]},"Revision Level":0} END_BEAT */

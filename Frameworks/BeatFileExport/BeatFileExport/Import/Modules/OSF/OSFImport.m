@@ -218,7 +218,6 @@
 	}
 	else if ([elementName isEqualToString:@"para"]) {
 		NSMutableAttributedString* result = _paragraphText.mutableCopy;
-		NSLog(@"Result class: %@", result.className);
 		
 		// Add empty rows before required elements.
 		if (_scriptLines.count > 0) {

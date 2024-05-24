@@ -27,10 +27,6 @@
 /// Returns `true` when the app is running in dark mode – either simulated (10.13) or real (10.14+)
 - (bool)isDark;
 - (void)toggleDarkMode;
-/// Returns `true` when the app is forced to light mode, even though the OS is set to dark
-- (bool)isForcedLightMode;
-/// Returns `true` when the app is forced to dark mode, even though the OS is set to light
-- (bool)isForcedDarkMode;
 /// Returns `true` when the OS is set to dark mode
 - (bool)OSisDark;
 

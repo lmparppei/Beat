@@ -150,10 +150,13 @@
 
 -(NSUInteger)length
 {
-	if (!_delegate) return _length;
+	if (_delegate == nil) return _length;
+    
     @synchronized (self.delegate.lines) {
         NSArray <Line*> *lines = self.delegate.lines.copy;
+        
         NSInteger index = [lines indexOfObject:self.line];
+        if (index == NSNotFound) return 0;
         
         NSInteger length = -1;
         

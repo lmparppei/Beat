@@ -16,10 +16,11 @@
 #import <BeatCore/NSString+VersionNumber.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatPlugins/BeatPlugins.h>
+#import <BeatFileExport/BeatFileExport.h>
 
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
-#import "BeatFileImport.h"
+//#import "BeatFileImport.h"
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
@@ -77,7 +78,6 @@
 @implementation BeatAppDelegate
 
 #define DEVELOPMENT NO
-#define DARKMODE_KEY @"Dark Mode"
 #define LATEST_VERSION_KEY @"Latest Version"
 
 #pragma mark - Help
@@ -323,7 +323,7 @@
 // It's here because I'm trying to keep up support for macOS 10.13.
 
 -(void)checkDarkMode {
-	_darkMode = [NSUserDefaults.standardUserDefaults boolForKey:DARKMODE_KEY];
+	_darkMode = [BeatUserDefaults.sharedDefaults getBool:BeatSettingDarkMode];
 	
 	// If the OS is set to dark mode, we'll force it
 	if (@available(macOS 10.14, *)) {
@@ -337,24 +337,13 @@
 	}
 }
 
-- (bool)isForcedDarkMode {
-	if (![self OSisDark]) return _forceDarkMode;
-	return NO;
-}
-- (bool)isForcedLightMode {
-	if ([self OSisDark]) return _forceLightMode;
-	return NO;
-}
-
 - (bool)isDark {
 	if ([self OSisDark]) {
 		// OS in dark mode
-		if (_forceLightMode) return NO;
-		else return YES;
+		return !_forceLightMode;
 	} else {
 		// OS in light mode
-		if (_forceDarkMode) return YES;
-		else return NO;
+		return _forceDarkMode;
 	}
 }
 
@@ -385,7 +374,7 @@
 		else _forceDarkMode = NO;
 	}
 	
-	[NSUserDefaults.standardUserDefaults setBool:_darkMode forKey:DARKMODE_KEY];
+	[BeatUserDefaults.sharedDefaults saveBool:_darkMode forKey:BeatSettingDarkMode];
 	
 	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
 	for (Document* doc in openDocuments) {

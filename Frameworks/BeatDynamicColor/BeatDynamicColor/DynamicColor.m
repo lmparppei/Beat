@@ -329,7 +329,8 @@ FORWARD(localizedColorNameComponent, NSString *)
 	// Don't allow calls to this class from anywhere else than main thread
 	if (!NSThread.isMainThread) return self.lightColor;
 	
-	if (view.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) return self.darkColor;
+	if (view.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark ||
+        view.overrideUserInterfaceStyle == UIUserInterfaceStyleDark) return self.darkColor;
 	else return self.lightColor;
 }
 

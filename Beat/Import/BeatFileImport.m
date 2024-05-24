@@ -29,10 +29,7 @@
  */
 
 #import "BeatFileImport.h"
-#import "HighlandImport.h"
-#import "CeltxImport.h"
-#import "FDXImport.h"
-#import "FadeInImport.h"
+#import <BeatFileExport/BeatFileExport.h>
 
 @interface BeatFileImport ()
 @property (nonatomic) NSURL *url;
@@ -108,7 +105,7 @@
 	__block FDXImport *fdxImport;
 	
 		bool notes = (importNotes.state == NSOnState);
-		fdxImport = [FDXImport.alloc initWithURL:self.url importNotes:notes completion:^(void) {
+		fdxImport = [FDXImport.alloc initWithURL:self.url importNotes:notes completion:^(FDXImport * fdx) {
 			if (fdxImport.script.count > 0) {
 				dispatch_async(dispatch_get_main_queue(), ^(void) {
 					[self openFileWithContents:fdxImport.scriptAsString];

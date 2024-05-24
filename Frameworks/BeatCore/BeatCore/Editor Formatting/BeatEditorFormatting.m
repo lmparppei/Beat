@@ -117,7 +117,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     
     // We need to get left margin here to avoid issues with extended line types
     if (line.isTitlePage) type = titlePageUnknown;
-    RenderStyle* elementStyle = [styles forElement:[Line typeName:type]];
+    NSString* typeName = [Line typeName:type];
+    RenderStyle* elementStyle = [styles forElement:(typeName != nil) ? typeName : @"action"];
     
     // Paragraph sizing
     CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];

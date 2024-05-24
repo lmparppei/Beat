@@ -86,6 +86,7 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen";
 NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 
+NSString* const BeatSettingDarkMode                     = @"Dark Mode";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -114,6 +115,8 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 		BeatSettingAutosave: @[AUTOSAVE_KEY, @NO],
 		BeatSettingAutocomplete: @[AUTOCOMPLETE_KEY, @YES],
 		BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
+        
+        BeatSettingDarkMode: @[BeatSettingDarkMode, @NO],
 
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
@@ -123,7 +126,6 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
         BeatSettingShotStyleBold: @[BeatSettingShotStyleBold, @YES],
         BeatSettingShotStyleUnderlined: @[BeatSettingShotStyleUnderlined, @NO],
     
-        
 		BeatSettingDefaultPageSize: @[BeatSettingDefaultPageSize, @(pageSize)],
 		BeatSettingDisableFormatting: @[BeatSettingDisableFormatting, @NO],
 		BeatSettingShowMarkersInScrollbar: @[BeatSettingShowMarkersInScrollbar, @NO],

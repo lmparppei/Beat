@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension URL
+public extension URL
 {
     func withSecurityScopedAccess<R>(code: (URL) throws -> R) rethrows -> R
     {
@@ -19,4 +19,8 @@ extension URL
         }
         return try code(self)
     }
+    
+    var typeIdentifier: String? { (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier }
+    
+    var localizedName: String? { (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName }
 }

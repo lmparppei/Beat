@@ -8,7 +8,10 @@
 
 // A class for importing legacy desktop Celtx files
 
-#import <Cocoa/Cocoa.h>
+#if TARGET_OS_OSX
+#import <Foundation/Foundation.h>
+#endif
+
 #import "CeltxImport.h"
 #import "HTMLParser.h"
 #import <UnzipKit/UnzipKit.h>
@@ -24,9 +27,12 @@
 @property (nonatomic) UZKArchive *container;
 @property (nonatomic) NSMutableDictionary *scriptData;
 @property (nonatomic) NSMutableArray *scripts;
+
+#if TARGET_OS_OSX
 @property (nonatomic) NSMutableArray *currentDocument;
 @property (nonatomic) NSWindowController *dialogController;
 @property (nonatomic) NSPopUpButton *scriptSelect;
+#endif
 @end
 
 @implementation CeltxImport
@@ -50,15 +56,9 @@
 }
 
 - (void)readSingleScreenplayAt:(NSURL*)url {
-	NSLog(@"reading single...");
-	
 	NSData *data = [NSData dataWithContentsOfURL:url];
-	NSLog(@"DATA: %@", data);
-	
 	NSDictionary *screenplay = [self parseContents:data];
-	
 	self.script = screenplay[@"screenplay"];
-	NSLog(@"screenplay %@", screenplay);
 }
 
 - (void)readContainerAt:(NSURL*)url {
@@ -95,6 +95,7 @@
 }
 
 - (void)scriptSelectionDialog {
+#if TARGET_OS_OSX
 	NSWindow *dialog = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, WIDTH, 120) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
 	dialog.title = TITLE;
 	
@@ -107,8 +108,13 @@
 	
 	_dialogController = [[NSWindowController alloc] initWithWindow:dialog];
 	[NSApp runModalForWindow:_dialogController.window];
+#else
+    NSLog(@"!!! Script selection not implemented for iOS");
+#endif
+    
 }
 
+#if TARGET_OS_OSX
 - (NSTextField*)createLabel {
 	NSTextField *label = [[NSTextField alloc] initWithFrame:NSMakeRect(PADDING, 68, WIDTH - PADDING * 2, 40)];
 	label.bezeled = NO;
@@ -167,6 +173,7 @@
 	[NSApp stopModal];
 }
 
+#endif
 
 #pragma mark - Opening the container
 

@@ -349,7 +349,7 @@ static NSString *strikeoutSymbolClose = @"}}";
         NSArray* lines = (cursorLocation.length > 0) ? [self.delegate.parser linesInRange:cursorLocation] : @[[self.delegate.parser lineAtPosition:cursorLocation.location]];
         
         for (Line* line in lines) {
-            if (line.string == 0) {
+            if (line.string.length == 0) {
                 [self.delegate.textActions addString:startingSymbol atIndex:line.position];
                 [self.delegate.textActions addString:endSymbol atIndex:line.position + line.length];
                 continue;

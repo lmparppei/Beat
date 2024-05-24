@@ -1126,6 +1126,9 @@ double clamp(double d, double min, double max)
 {
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
 	[self updateMarkupVisibility];
+	
+	self.needsDisplay = true;
+	self.needsLayout = true;
 }
 
 

@@ -1781,7 +1781,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     for (NSNumber* key in self.revisedRanges.allKeys) {
         NSIndexSet* indices = self.revisedRanges[key];
         NSArray* indexArray = [self indexSetAsArray:indices];
-        revisedRanges[key] = indexArray;
+        revisedRanges[[NSString stringWithFormat:@"%lu", key.integerValue]] = indexArray;
     }
     
     return @{

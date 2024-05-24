@@ -19,10 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface FDXElement : NSObject
-@property (nonatomic) NSMutableAttributedString *text;
-@property (nonatomic) NSString *type;
-@property (nonatomic) NSString *sceneColor;
-@property (nonatomic) NSString *originalString;
+@property (nonatomic) NSMutableAttributedString* text;
+@property (nonatomic) NSString* type;
+@property (nonatomic) NSString* _Nullable sceneColor;
+@property (nonatomic) NSString* _Nullable originalString;
 + (NSString*)colorNameFor16bitHex:(NSString*)hex;
 + (FDXElement*)lineBreak;
 + (FDXElement*)withText:(NSString*)string type:(NSString*)type;

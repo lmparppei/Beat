@@ -7,6 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B62D160A2BFE2097000EFEE5 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D16082BFE2096000EFEE5 /* OSFImport.m */; };
+		B62D160D2BFE209C000EFEE5 /* FadeInImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D160C2BFE209C000EFEE5 /* FadeInImport.m */; };
+		B62D16102BFE20A2000EFEE5 /* CeltxImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D160F2BFE20A2000EFEE5 /* CeltxImport.m */; };
+		B62D16132BFE20A9000EFEE5 /* HighlandImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D16112BFE20A9000EFEE5 /* HighlandImport.m */; };
+		B62D161D2BFE20CD000EFEE5 /* HTMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D16152BFE20CC000EFEE5 /* HTMLParser.m */; };
+		B62D161E2BFE20CD000EFEE5 /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D161C2BFE20CD000EFEE5 /* GTMNSString+HTML.m */; };
+		B62D161F2BFE20CD000EFEE5 /* HTMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D16182BFE20CC000EFEE5 /* HTMLNode.m */; };
+		B62D16212BFE20DD000EFEE5 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62D16202BFE20DD000EFEE5 /* UnzipKit.framework */; };
+		B62D16242BFE20FD000EFEE5 /* OSFImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16092BFE2097000EFEE5 /* OSFImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D16252BFE2103000EFEE5 /* FadeInImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D160B2BFE209C000EFEE5 /* FadeInImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D16262BFE2107000EFEE5 /* CeltxImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D160E2BFE20A2000EFEE5 /* CeltxImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D16272BFE210E000EFEE5 /* HighlandImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16122BFE20A9000EFEE5 /* HighlandImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D16282BFE2113000EFEE5 /* GTMNSString+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D161A2BFE20CC000EFEE5 /* GTMNSString+HTML.h */; };
+		B62D16292BFE211B000EFEE5 /* GTMDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D161B2BFE20CC000EFEE5 /* GTMDefines.h */; };
+		B62D162A2BFE212B000EFEE5 /* HTMLNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16172BFE20CC000EFEE5 /* HTMLNode.h */; };
+		B62D162B2BFE2132000EFEE5 /* HTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16162BFE20CC000EFEE5 /* HTMLParser.h */; };
+		B62D16312BFE2254000EFEE5 /* FDXElement.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D162D2BFE2254000EFEE5 /* FDXElement.h */; };
+		B62D16322BFE2254000EFEE5 /* FDXElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D162E2BFE2254000EFEE5 /* FDXElement.m */; };
+		B62D16332BFE2254000EFEE5 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D162F2BFE2254000EFEE5 /* FDXImport.m */; };
+		B62D16342BFE2254000EFEE5 /* FDXImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16302BFE2254000EFEE5 /* FDXImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D16362BFE23FB000EFEE5 /* BeatFileImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */; };
 		B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C792BF0BDB600414878 /* BeatFileExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C812BF0BDDD00414878 /* BeatFDXExport.m */; };
@@ -19,6 +40,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B62D16082BFE2096000EFEE5 /* OSFImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFImport.m; sourceTree = "<group>"; };
+		B62D16092BFE2097000EFEE5 /* OSFImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSFImport.h; sourceTree = "<group>"; };
+		B62D160B2BFE209C000EFEE5 /* FadeInImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FadeInImport.h; sourceTree = "<group>"; };
+		B62D160C2BFE209C000EFEE5 /* FadeInImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FadeInImport.m; sourceTree = "<group>"; };
+		B62D160E2BFE20A2000EFEE5 /* CeltxImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeltxImport.h; sourceTree = "<group>"; };
+		B62D160F2BFE20A2000EFEE5 /* CeltxImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CeltxImport.m; sourceTree = "<group>"; };
+		B62D16112BFE20A9000EFEE5 /* HighlandImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HighlandImport.m; sourceTree = "<group>"; };
+		B62D16122BFE20A9000EFEE5 /* HighlandImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HighlandImport.h; sourceTree = "<group>"; };
+		B62D16152BFE20CC000EFEE5 /* HTMLParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HTMLParser.m; sourceTree = "<group>"; };
+		B62D16162BFE20CC000EFEE5 /* HTMLParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTMLParser.h; sourceTree = "<group>"; };
+		B62D16172BFE20CC000EFEE5 /* HTMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTMLNode.h; sourceTree = "<group>"; };
+		B62D16182BFE20CC000EFEE5 /* HTMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HTMLNode.m; sourceTree = "<group>"; };
+		B62D161A2BFE20CC000EFEE5 /* GTMNSString+HTML.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GTMNSString+HTML.h"; sourceTree = "<group>"; };
+		B62D161B2BFE20CC000EFEE5 /* GTMDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		B62D161C2BFE20CD000EFEE5 /* GTMNSString+HTML.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "GTMNSString+HTML.m"; sourceTree = "<group>"; };
+		B62D16202BFE20DD000EFEE5 /* UnzipKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62D162D2BFE2254000EFEE5 /* FDXElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXElement.h; sourceTree = "<group>"; };
+		B62D162E2BFE2254000EFEE5 /* FDXElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FDXElement.m; sourceTree = "<group>"; };
+		B62D162F2BFE2254000EFEE5 /* FDXImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
+		B62D16302BFE2254000EFEE5 /* FDXImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
+		B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFileImportManager.swift; sourceTree = "<group>"; };
 		B6A97C762BF0BDB600414878 /* BeatFileExport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatFileExport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A97C792BF0BDB600414878 /* BeatFileExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFileExport.h; sourceTree = "<group>"; };
 		B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatFDXExport.h; sourceTree = "<group>"; };
@@ -40,12 +82,113 @@
 			files = (
 				B6A97C952BF0BE4200414878 /* BeatCore.framework in Frameworks */,
 				B6A97C992BF0BE4800414878 /* BeatPagination2.framework in Frameworks */,
+				B62D16212BFE20DD000EFEE5 /* UnzipKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B62D15B82BFE2059000EFEE5 /* Export */ = {
+			isa = PBXGroup;
+			children = (
+				B6A97C8A2BF0BDDD00414878 /* BeatFileExportManager.swift */,
+				B6A97C892BF0BDDD00414878 /* Modules */,
+			);
+			path = Export;
+			sourceTree = "<group>";
+		};
+		B62D15B92BFE2066000EFEE5 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */,
+				B62D16372BFE2401000EFEE5 /* Modules */,
+				B62D16142BFE20CC000EFEE5 /* HTMLParser */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
+		B62D16142BFE20CC000EFEE5 /* HTMLParser */ = {
+			isa = PBXGroup;
+			children = (
+				B62D16192BFE20CC000EFEE5 /* NSString + HTML */,
+				B62D16162BFE20CC000EFEE5 /* HTMLParser.h */,
+				B62D16152BFE20CC000EFEE5 /* HTMLParser.m */,
+				B62D16172BFE20CC000EFEE5 /* HTMLNode.h */,
+				B62D16182BFE20CC000EFEE5 /* HTMLNode.m */,
+			);
+			path = HTMLParser;
+			sourceTree = "<group>";
+		};
+		B62D16192BFE20CC000EFEE5 /* NSString + HTML */ = {
+			isa = PBXGroup;
+			children = (
+				B62D161A2BFE20CC000EFEE5 /* GTMNSString+HTML.h */,
+				B62D161B2BFE20CC000EFEE5 /* GTMDefines.h */,
+				B62D161C2BFE20CD000EFEE5 /* GTMNSString+HTML.m */,
+			);
+			path = "NSString + HTML";
+			sourceTree = "<group>";
+		};
+		B62D162C2BFE2249000EFEE5 /* Final Draft */ = {
+			isa = PBXGroup;
+			children = (
+				B62D16302BFE2254000EFEE5 /* FDXImport.h */,
+				B62D162F2BFE2254000EFEE5 /* FDXImport.m */,
+				B62D162D2BFE2254000EFEE5 /* FDXElement.h */,
+				B62D162E2BFE2254000EFEE5 /* FDXElement.m */,
+			);
+			path = "Final Draft";
+			sourceTree = "<group>";
+		};
+		B62D16372BFE2401000EFEE5 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				B62D162C2BFE2249000EFEE5 /* Final Draft */,
+				B62D16382BFE240B000EFEE5 /* OSF */,
+				B62D16392BFE2416000EFEE5 /* Fade In */,
+				B62D163A2BFE2425000EFEE5 /* Celtx */,
+				B62D163B2BFE2430000EFEE5 /* Highland */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		B62D16382BFE240B000EFEE5 /* OSF */ = {
+			isa = PBXGroup;
+			children = (
+				B62D16092BFE2097000EFEE5 /* OSFImport.h */,
+				B62D16082BFE2096000EFEE5 /* OSFImport.m */,
+			);
+			path = OSF;
+			sourceTree = "<group>";
+		};
+		B62D16392BFE2416000EFEE5 /* Fade In */ = {
+			isa = PBXGroup;
+			children = (
+				B62D160B2BFE209C000EFEE5 /* FadeInImport.h */,
+				B62D160C2BFE209C000EFEE5 /* FadeInImport.m */,
+			);
+			path = "Fade In";
+			sourceTree = "<group>";
+		};
+		B62D163A2BFE2425000EFEE5 /* Celtx */ = {
+			isa = PBXGroup;
+			children = (
+				B62D160E2BFE20A2000EFEE5 /* CeltxImport.h */,
+				B62D160F2BFE20A2000EFEE5 /* CeltxImport.m */,
+			);
+			path = Celtx;
+			sourceTree = "<group>";
+		};
+		B62D163B2BFE2430000EFEE5 /* Highland */ = {
+			isa = PBXGroup;
+			children = (
+				B62D16122BFE20A9000EFEE5 /* HighlandImport.h */,
+				B62D16112BFE20A9000EFEE5 /* HighlandImport.m */,
+			);
+			path = Highland;
+			sourceTree = "<group>";
+		};
 		B6A97C6C2BF0BDB600414878 = {
 			isa = PBXGroup;
 			children = (
@@ -67,8 +210,8 @@
 			isa = PBXGroup;
 			children = (
 				B6A97C792BF0BDB600414878 /* BeatFileExport.h */,
-				B6A97C8A2BF0BDDD00414878 /* BeatFileExportManager.swift */,
-				B6A97C892BF0BDDD00414878 /* Modules */,
+				B62D15B92BFE2066000EFEE5 /* Import */,
+				B62D15B82BFE2059000EFEE5 /* Export */,
 			);
 			path = BeatFileExport;
 			sourceTree = "<group>";
@@ -106,6 +249,7 @@
 		B6A97C932BF0BE4200414878 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B62D16202BFE20DD000EFEE5 /* UnzipKit.framework */,
 				B6A97C982BF0BE4800414878 /* BeatPagination2.framework */,
 				B6A97C942BF0BE4200414878 /* BeatCore.framework */,
 			);
@@ -119,8 +263,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B62D162B2BFE2132000EFEE5 /* HTMLParser.h in Headers */,
+				B62D16272BFE210E000EFEE5 /* HighlandImport.h in Headers */,
+				B62D16282BFE2113000EFEE5 /* GTMNSString+HTML.h in Headers */,
+				B62D16292BFE211B000EFEE5 /* GTMDefines.h in Headers */,
 				B6A97C8F2BF0BDDD00414878 /* OutlineExtractor.h in Headers */,
+				B62D16262BFE2107000EFEE5 /* CeltxImport.h in Headers */,
+				B62D16342BFE2254000EFEE5 /* FDXImport.h in Headers */,
+				B62D162A2BFE212B000EFEE5 /* HTMLNode.h in Headers */,
 				B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */,
+				B62D16312BFE2254000EFEE5 /* FDXElement.h in Headers */,
+				B62D16242BFE20FD000EFEE5 /* OSFImport.h in Headers */,
+				B62D16252BFE2103000EFEE5 /* FadeInImport.h in Headers */,
 				B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,8 +350,18 @@
 			files = (
 				B6A97C922BF0BDDD00414878 /* BeatFileExportManager.swift in Sources */,
 				B6A97C912BF0BDDD00414878 /* BeatRTFExport.swift in Sources */,
+				B62D16332BFE2254000EFEE5 /* FDXImport.m in Sources */,
+				B62D16102BFE20A2000EFEE5 /* CeltxImport.m in Sources */,
+				B62D16362BFE23FB000EFEE5 /* BeatFileImportManager.swift in Sources */,
+				B62D161E2BFE20CD000EFEE5 /* GTMNSString+HTML.m in Sources */,
+				B62D16132BFE20A9000EFEE5 /* HighlandImport.m in Sources */,
+				B62D16322BFE2254000EFEE5 /* FDXElement.m in Sources */,
+				B62D160D2BFE209C000EFEE5 /* FadeInImport.m in Sources */,
 				B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */,
+				B62D161F2BFE20CD000EFEE5 /* HTMLNode.m in Sources */,
 				B6A97C902BF0BDDD00414878 /* OutlineExtractor.m in Sources */,
+				B62D160A2BFE2097000EFEE5 /* OSFImport.m in Sources */,
+				B62D161D2BFE20CD000EFEE5 /* HTMLParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

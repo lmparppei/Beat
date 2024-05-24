@@ -327,8 +327,9 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
         if pageIndex == 0 && hasTitlePage {
             // If we have a title page and page index is 0, we'll return a title page view
             pageView = BeatTitlePageView(titlePage: pagination.titlePage(), settings: settings)
-        } else if let page = self.pagination?.pages[actualIndex] as? BeatPaginationPage {
+        } else if let pages = self.pagination?.pages, actualIndex != NSNotFound, actualIndex < pages.count {
             // Otherwise we'll just return the actual page
+            let page = pages[actualIndex]
             pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
         }
         

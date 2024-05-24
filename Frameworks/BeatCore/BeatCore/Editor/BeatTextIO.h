@@ -77,7 +77,8 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange;
 - (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange;
-- (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
+//- (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
+- (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 
 - (void)setColor:(NSString *)color forLine:(Line *)line;
