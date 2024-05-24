@@ -34,6 +34,10 @@
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>text.plain</string>
+			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -97,6 +101,56 @@
 				<key>public.mime-type</key>
 				<array>
 					<string>text/plain</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.xml</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Final Draft</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>Beat-iOS-76x76.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.finaldraft.fdx</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fdx</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/xml</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>io.fountain</string>
+				<string>public.data</string>
+				<string>public.content</string>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Fountain script</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>fi.KAPITAN.fountain</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fountain</string>
 				</array>
 			</dict>
 		</dict>

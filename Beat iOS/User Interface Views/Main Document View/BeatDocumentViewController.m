@@ -123,6 +123,7 @@
 	self.textView.font = self.fonts.regular;
 	
 	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
+	[self.formatting refreshRevisionTextColors];
 }
 
 /// Dismisses editor view keyboard
@@ -139,6 +140,10 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
+	[self appearanceChanged:nil];
+	
+	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
+	[delegate checkDarkMode];
 	
 	if (!self.documentIsLoading) return;
 	
@@ -162,6 +167,8 @@
 	// Create text view
 	[self createTextView];
 	
+	[self updateUIColors];
+	
 	// Setup document title menu (from Swift extension)
 	[self setupTitleBar];
 	
@@ -171,9 +178,6 @@
 	// Hide sidebar
 	self.sidebarConstraint.constant = 0.0;
 	
-	self.scrollView.backgroundColor = ThemeManager.sharedManager.marginColor;
-	self.textView.backgroundColor = ThemeManager.sharedManager.backgroundColor;
-	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
 	[self setupDocument];
@@ -181,6 +185,33 @@
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];	
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	
+	if (self.documentIsLoading) {
+		// Loading is complete, show page view
+		[self.textView layoutIfNeeded];
+		
+		[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
+		[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
+		
+		// This is not a place of honor. No highly esteemed deed is commemorated here.
+		[self.textView resize];
+		[self.textView firstResize];
+		[self.textView resize];
+				
+		self.documentIsLoading = false;
+		
+		// Restore caret position
+		NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+		if (position < self.text.length) {
+			[self.textView setSelectedRange:NSMakeRange(position, 0)];
+			[self.textView scrollToRange:self.textView.selectedRange];
+		}
+	}
+	[self appearanceChanged:nil];
 }
 
 -(IBAction)dismissViewController:(id)sender {
@@ -243,6 +274,7 @@
 	//self.keyboardManager = KeyboardManager.new;
 	//self.keyboardManager.delegate = self;
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybWillShow:) name:UIKeyboardWillShowNotification object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
 	
 	// Text I/O
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
@@ -274,32 +306,6 @@
 	// Show document name
 	self.titleBar.title = self.fileNameString;
 	
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	
-	if (self.documentIsLoading) {
-		// Loading is complete, show page view
-		[self.textView layoutIfNeeded];
-		
-		[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
-		[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-		
-		// This is not a place of honor. No highly esteemed deed is commemorated here.
-		[self.textView resize];
-		[self.textView firstResize];
-		[self.textView resize];
-		
-		self.documentIsLoading = false;
-		
-		// Restore caret position
-		NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
-		if (position < self.text.length) {
-			[self.textView setSelectedRange:NSMakeRange(position, 0)];
-			[self.textView scrollToRange:self.textView.selectedRange];
-		}
-	}
 }
 
 - (IBAction)dismissDocumentViewController:(id)sender
@@ -367,8 +373,42 @@
 
 
 - (NSString*)contentForSaving {
-	NSLog(@" -> content");
 	return [self createDocumentFile];
+}
+
+
+#pragma mark - Appearance
+
+- (void)setDarkMode:(BOOL)value
+{
+	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
+	[delegate toggleDarkMode];
+}
+
+- (void)appearanceChanged:(NSNotification*)notification
+{
+	[self updateUIColors];
+}
+
+- (void)updateUIColors {
+	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
+	
+	bool isDark = delegate.isDark;
+	UIUserInterfaceStyle effectiveStyle = UITraitCollection.currentTraitCollection.userInterfaceStyle;
+	
+	self.overrideUserInterfaceStyle = 0;
+	if (isDark && effectiveStyle != UIUserInterfaceStyleDark) {
+		self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+	} else if (!isDark && effectiveStyle != UIUserInterfaceStyleLight) {
+		self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+	}
+	[self.view setNeedsDisplay];
+	
+	self.scrollView.backgroundColor = (isDark) ?  ThemeManager.sharedManager.marginColor.darkColor : ThemeManager.sharedManager.marginColor.lightColor;
+	self.textView.backgroundColor = (isDark) ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
+
+	[self.formatting refreshRevisionTextColors];
+
 }
 
 
@@ -635,6 +675,7 @@
 	}
 	
 	bool undoOrRedo = (self.undoManager.isUndoing || self.undoManager.isRedoing);
+	bool change = true;
 	
 	Line* currentLine = self.currentLine;
 	
@@ -649,32 +690,28 @@
 		}
 	}
 	
-	if (!undoOrRedo && self.selectedRange.length == 0 && currentLine != nil) {
+	if (!undoOrRedo && self.selectedRange.length == 0 && range.length == 0 && [text isEqualToString:@"\n"] && currentLine != nil) {
 		// Test if we'll add extra line breaks and exit the method
-		if (range.length == 0 && [text isEqualToString:@"\n"]) {
+		if (currentLine.isAnyCharacter && self.automaticContd) {
 			// Line break after character cue
-			if (currentLine.isAnyCharacter && self.automaticContd) {
-				// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
-				if ([self.textActions shouldAddContdIn:range string:text]) {
-					return NO;
-				}
-			} else if ([self.textActions shouldAddLineBreaks:currentLine range:range]) {
-				return NO;
-			}
+			// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
+			if ([self.textActions shouldAddContdIn:range string:text]) change = NO;
+		} else {
+			change = ![self.textActions shouldAddLineBreaks:currentLine range:range];
 		}
 	}
-	else if (self.matchParentheses) {
+	else if (self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
 		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-		[self.textActions matchParenthesesIn:range string:text];
+		change = NO;
 	}
 	else if ([self.textActions shouldJumpOverParentheses:text range:range]) {
 		// Jump over already-typed parentheses and other closures
-		return false;
+		change = NO;
 	}
 		
-	self.lastChangedRange = (NSRange){ range.location, text.length };
+	if (change) self.lastChangedRange = (NSRange){ range.location, text.length };
 	
-	return true;
+	return change;
 }
 
 

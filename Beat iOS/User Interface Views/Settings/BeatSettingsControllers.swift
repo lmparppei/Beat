@@ -68,6 +68,7 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var pageSizeSwitch:UISegmentedControl?
 	@IBOutlet weak var headingSpacingSwitch:UISegmentedControl?
 	@IBOutlet weak var lineHeightSwitch:UISegmentedControl?
+	@IBOutlet weak var darkModeSwitch:UISegmentedControl?
 	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
@@ -87,10 +88,20 @@ class BeatSettingsViewController:UITableViewController {
 		let lineSpacing = delegate.documentSettings.getFloat(DocSettingNovelLineHeightMultiplier)
 		self.lineHeightSwitch?.selectedSegmentIndex = (lineSpacing < 2) ? 1 : 0
 		
-		print("Revision level", delegate.revisionLevel, self.revisionSelector)
-		
 		self.revisionSelector?.revisionLevel = delegate.revisionLevel
 		self.revisionSelector?.settingController = self
+		
+		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
+			let dark = appDelegate.isDark()
+			print("Dark", dark)
+			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
+		}
+	}
+	
+	@IBAction func toggleDarkMode(_ sender:UISegmentedControl) {
+		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
+			appDelegate.toggleDarkMode()
+		}
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {

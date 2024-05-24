@@ -8,14 +8,22 @@
 
 import UIKit
 
+enum BeatForcedAppearance {
+	case none
+	case light
+	case dark
+}
+
 @main
 class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+	func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+		return true
+	}
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         return true
     }
 
@@ -58,6 +66,94 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+	
+	// MARK: - Dark mode stuff
+	/*
+	fileprivate var forcedAppearance:BeatForcedAppearance = .none
+	var darkMode = BeatUserDefaults.shared().getBool(BeatSettingDarkMode)
 
+	func checkDarkMode() {
+		darkMode = BeatUserDefaults.shared().getBool(BeatSettingDarkMode)
+		
+		if darkMode && UITraitCollection.current.userInterfaceStyle != .dark {
+			forcedAppearance = .light
+		} else {
+			darkMode && UITr
+		}
+	}
+	 */
+	
+	var darkMode = false
+	var forcedAppearance:BeatForcedAppearance = .none
+	
+	@objc func checkDarkMode() {
+		self.darkMode = BeatUserDefaults.shared().getBool(BeatSettingDarkMode)
+		
+		if UITraitCollection.current.userInterfaceStyle == .dark, !darkMode {
+			forcedAppearance = .light
+		} else if UITraitCollection.current.userInterfaceStyle == .light, darkMode {
+			forcedAppearance = .dark
+		} else {
+			forcedAppearance = .none
+		}
+	}
+	
+	@objc func isDark() -> Bool {
+		checkDarkMode()
+		
+		let systemAppearance = UITraitCollection.current.userInterfaceStyle
+		
+		if forcedAppearance == .none {
+			return systemAppearance == .dark
+		} else if forcedAppearance == .light, systemAppearance == .dark {
+			return false
+		} else if forcedAppearance == .dark, systemAppearance == .light {
+			return true
+		}
+		
+		return false
+	}
+	
+	@objc func toggleDarkMode() {
+		darkMode = !darkMode
+		
+		let systemAppearance = UITraitCollection.current.userInterfaceStyle
+		
+		if systemAppearance == .dark {
+			forcedAppearance = (!darkMode) ? .light : .none
+		}
+		else {
+			forcedAppearance = (darkMode) ? .dark : .none
+		}
+		
+		BeatUserDefaults.shared().save(darkMode, forKey: BeatSettingDarkMode)
+		
+		NotificationCenter.default.post(name: NSNotification.Name("Appearance changed"), object: nil)
+	}
+	
+	/*
+	 - (void)toggleDarkMode {
+		 _darkMode = ![self isDark];
+		 
+		 // OS is in dark mode, so we need to force the light mode
+		 if ([self OSisDark]) {
+			 if (!_darkMode) _forceLightMode = YES;
+			 else _forceLightMode = NO;
+		 }
+		 // And vice versa
+		 else if (![self OSisDark]) {
+			 if (_darkMode) _forceDarkMode = YES;
+			 else _forceDarkMode = NO;
+		 }
+		 
+		 [BeatUserDefaults.sharedDefaults saveBool:_darkMode forKey:BeatSettingDarkMode];
+		 
+		 NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
+		 for (Document* doc in openDocuments) {
+			 [doc updateUIColors];
+		 }
+	 }
+	 */
 }
+	 
 

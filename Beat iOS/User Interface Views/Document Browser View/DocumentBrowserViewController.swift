@@ -8,7 +8,8 @@
 
 import UIKit
 import UniformTypeIdentifiers
-
+import BeatCore
+import BeatFileExport
 
 class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocumentBrowserViewControllerDelegate {
     var welcomeScreenShown = false
@@ -18,8 +19,14 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	}
 	
 	required init?(coder: NSCoder) {
-		let uti = UTType(filenameExtension: "fountain")
-		let contentTypes = (uti != nil) ? [uti!] : nil
+		var contentTypes:[UTType]? = []
+		
+		if let fountainUTI = UTType(filenameExtension: "fountain") { contentTypes?.append(fountainUTI) }
+		if let fdxUTI = UTType(filenameExtension: "fdx") { contentTypes?.append(fdxUTI) }
+		
+		if contentTypes?.count == 0 {
+			contentTypes = nil
+		}
 		
 		super.init(forOpening: contentTypes)
 	}
@@ -124,6 +131,35 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: - Document Presentation
     
     func presentDocument(at documentURL: URL) {
+		if documentURL.pathExtension != "fountain" && 
+			(documentURL.typeIdentifier != "com.kapitan.fi" && documentURL.typeIdentifier != "io.fountain") {
+			// Import
+			importFile(at: documentURL)
+			return
+		}
+		
+		presentFountain(at: documentURL)
+    }
+	
+	func importFile(at documentURL:URL) {
+		let alert = UIAlertController(title: "Import File", message: "You are importing a non-Fountain screenplay. A new, converted file will be created alongside the original document, which will remain untouched.\n\nDo you want to continue?", preferredStyle: .alert)
+		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+			BeatFileImportManager.importDocument(at: documentURL) { url in
+				guard let url else {
+					return
+				}
+				
+				self.importDocument(at: url, nextToDocumentAt: documentURL, mode: .copy) { url, error in
+					if let url { self.presentDocument(at: url) }
+				}
+			}
+		}))
+		alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+		
+		self.present(alert, animated: true)
+	}
+	
+	func presentFountain(at documentURL:URL) {
 		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
 		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! BeatDocumentViewController
 		
@@ -135,7 +171,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 			navigationController.modalPresentationStyle = .fullScreen
 			self.present(navigationController, animated: true, completion: nil)
 		}
-    }
+	}
 	
 	// MARK: - Beta notification
 }
