@@ -261,6 +261,14 @@ FORWARD(localizedColorNameComponent, NSString *)
 		return color;
 }
 
+- (NSString*)cssRGB
+{
+    NSColor* color = self.effectiveColor;
+    NSString* result = @"";
+    result = [NSString stringWithFormat:@"rgb(%f, %f, %f)", color.redComponent * 255, color.greenComponent * 255, color.blueComponent * 255];
+
+    return result;
+}
 
 @end
 
@@ -440,6 +448,17 @@ UIColor *(^convertColorToRGBSpace)(UIColor*) = ^(UIColor *color) {
 		return color;
 	} else
 		return color;
+}
+
+- (NSString*)cssRGB
+{
+    NSString* result = @"";
+
+    CGFloat red; CGFloat green; CGFloat blue;
+    [self.effectiveColor getRed:&red green:&green blue:&blue alpha:nil];
+    result = [NSString stringWithFormat:@"rgb(%f, %f, %f)", red * 255, green * 255, blue * 255];
+
+    return result;
 }
 
 @end

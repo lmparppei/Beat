@@ -50,7 +50,6 @@
 #endif
 
 #pragma mark File Loading
-
 + (ThemeManager*)sharedManager
 {
     static ThemeManager* sharedManager;

@@ -1,5 +1,10 @@
 
 #import <TargetConditionals.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+
+@protocol DynamicColorExports <JSExport>
+- (NSString*_Nullable)cssRGB;
+@end
 
 #if TARGET_OS_OSX
 
@@ -10,7 +15,7 @@
 - (bool)isDark;
 @end
 
-@interface DynamicColor : NSColor <NSCopying>
+@interface DynamicColor : NSColor <NSCopying, DynamicColorExports>
 @property (nonatomic, strong, nonnull) NSColor *lightColor;
 @property (nonatomic, strong, nullable) NSColor *darkColor;
 
@@ -21,6 +26,7 @@
 
 - (BOOL)isEqualToColor:(DynamicColor *_Nonnull)otherColor;
 - (NSArray*_Nonnull)valuesAsRGB;
+- (NSString*_Nullable)cssRGB;
 
 @end
 
@@ -29,7 +35,7 @@
 // iOS implementation
 #include <UIKit/UIKit.h>
 
-@interface DynamicColor : UIColor
+@interface DynamicColor : UIColor <DynamicColorExports>
 @property (nonatomic, strong, nonnull) UIColor *lightColor;
 @property (nonatomic, strong, nullable) UIColor *darkColor;
 
@@ -40,6 +46,7 @@
 - (BOOL)isEqualToColor:(DynamicColor * _Nonnull)otherColor;
 - (NSArray*_Nonnull)valuesAsRGB;
 - (UIColor *_Nonnull)effectiveColorFor:(UIView* _Nullable)view;
+- (NSString*_Nullable)cssRGB;
 
 @end
 

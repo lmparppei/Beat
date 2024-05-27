@@ -1,0 +1,161 @@
+/*
+
+Statistics
+© Lauri-Matti Parppei
+
+Type: Internal
+
+*/
+
+let locations = {
+    interior: 0,
+    exterior: 0,
+    other: 0
+}
+
+let TODs = {}
+
+let words = 0
+let glyphs = 0
+
+let avgLength = [0,0]
+let longestScene = [0,0]
+
+let genders = {}
+let characters = []
+
+let characterData = Beat.characterData()
+let charactersAndLines = characterData.allCharactersAndLines()
+
+let lines = []
+let scenes = []
+let json = ""
+
+createReport()
+createJSON()
+
+let colors = {
+    other: Beat.theme.genderOtherColor.cssRGB(),
+    woman: Beat.theme.genderWomanColor.cssRGB(),
+    man: Beat.theme.genderManColor.cssRGB()
+}
+
+let ui =  Beat.appAssetAsString("BeatStatisticsUI.html")
+// Localize
+ui = Beat.localize(ui)
+// Replace placeholders
+ui = ui.replaceAll("%colorOther%", colors.other)
+       .replaceAll("%colorWoman%", colors.woman)
+       .replaceAll("%colorMan%", colors.man)
+       .replaceAll("%defaultData%", json)
+
+let panel = Beat.htmlPanel(ui, 800, 600, () => {
+    Beat.end()
+})
+
+//panel.runJS("refresh(" + json + ")")
+
+function createReport() {
+    calculateAverageLength()
+    const lines = Beat.lines()
+
+    for (let i=0; i<lines.length; i++) {
+        let line = lines[i]
+        if (line.isInvisible()) continue;
+
+        let string = line.stripFormatting()
+
+        if (line.string.length > 0) {
+            glyphs += string.length
+            words += string.split(" ").length
+        }
+
+        if (line.type == Beat.type.heading) {
+            string = string.toUpperCase()
+
+            let p = string.lastIndexOf("- ")
+            if (p >= 0) {
+                let tod = string.substr(p+2).trim()
+                if (tod.length > 0) {
+                    if (TODs[tod] == null) TODs[tod] = 0;
+                    TODs[tod]++
+                }
+            }
+
+            let firstSpace = string.indexOf(" ")
+            if (firstSpace >= 0) {
+                let prefix = string.substr(0, firstSpace)
+                if (prefix.indexOf("INT") >= 0 || prefix.indexOf("I.") >= 0) locations.interior++;
+                else if (prefix.indexOf("EXT") >= 0 || prefix.indexOf("E.") >= 0) locations.exterior++;
+                else locations.other++;
+            }
+        }
+    }
+}
+
+function createJSON() {
+    let charactersToLines = {}
+    for (const [name, character] of Object.entries(charactersAndLines)) {
+        charactersToLines[name] = character.lines
+        genders[name] = character.gender
+    }
+
+    json = JSON.stringify({
+        genders: genders,
+        characters: charactersToLines,
+        locations: locations,
+        tods: TODs,
+        statistics: {
+            words: words,
+            glyphs: glyphs,
+            scenes: Beat.scenes().length,
+            avgLength: {
+                pages: avgLength[0],
+                eights: avgLength[1]
+            },
+            longestScene: {
+                pages: longestScene[0],
+                eights: longestScene[1]
+            }
+        },
+    })
+}
+
+function calculateAverageLength() {
+    let totalLength = 0.0
+    let longest = 0.0
+    let scenes = Beat.scenes()
+
+    let pagination = Beat.currentPagination()
+
+    for (const scene of scenes) {
+        let length = pagination.heightForScene(scene)
+
+        if (length > 0) totalLength += length;
+        if (length > longest) longest = length;
+    }
+
+    let average = totalLength / scenes.length
+    let averagePages = Math.floor(average)
+    let averageEights = average - averagePages
+
+    let lngPages = Math.floor(longest)
+    let lgnEights = longest - lngPages
+
+    avgLength = [averagePages, averageEights]
+    longestScene = [lngPages, lgnEights]
+}
+
+Beat.custom = {
+
+    setGender(name, gender) {
+        let character = charactersAndLines[name.toUpperCase()]
+        if (character == null) return;
+
+        character.gender = (gender != "unspecified") ? gender : ""
+
+        characterData.saveCharacter(character)
+    }
+
+}
+
