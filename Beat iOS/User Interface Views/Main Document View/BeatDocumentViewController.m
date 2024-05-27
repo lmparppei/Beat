@@ -140,12 +140,13 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
+	
+	if (!self.documentIsLoading) return;
+	
 	[self appearanceChanged:nil];
 	
 	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
 	[delegate checkDarkMode];
-	
-	if (!self.documentIsLoading) return;
 	
 	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
 	
@@ -201,7 +202,7 @@
 		[self.textView resize];
 		[self.textView firstResize];
 		[self.textView resize];
-				
+		
 		self.documentIsLoading = false;
 		
 		// Restore caret position
@@ -210,8 +211,9 @@
 			[self.textView setSelectedRange:NSMakeRange(position, 0)];
 			[self.textView scrollToRange:self.textView.selectedRange];
 		}
+
+		[self appearanceChanged:nil];
 	}
-	[self appearanceChanged:nil];
 }
 
 -(IBAction)dismissViewController:(id)sender {
@@ -406,9 +408,9 @@
 	
 	self.scrollView.backgroundColor = (isDark) ?  ThemeManager.sharedManager.marginColor.darkColor : ThemeManager.sharedManager.marginColor.lightColor;
 	self.textView.backgroundColor = (isDark) ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
-
+	
 	[self.formatting refreshRevisionTextColors];
-
+	
 }
 
 
@@ -653,7 +655,7 @@
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
 	
 	if (!self.documentIsLoading) [self updateChangeCount:UIDocumentChangeDone];
-
+	
 	[self.textView resize];
 	
 	// We should update selection here
@@ -708,7 +710,7 @@
 		// Jump over already-typed parentheses and other closures
 		change = NO;
 	}
-		
+	
 	if (change) self.lastChangedRange = (NSRange){ range.location, text.length };
 	
 	return change;
@@ -1056,7 +1058,5 @@
 {
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
-
-
 
 @end
