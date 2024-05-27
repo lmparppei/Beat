@@ -62,6 +62,11 @@ extension BeatDocumentViewController {
 				}),
 			]),
 			UIMenu(options: .displayInline, children: [
+				UIAction(title: "Screenplay statistics", handler: { (_) in
+					self.pluginAgent.runPlugin(withName: "BeatStatistics")
+				})
+			]),
+			UIMenu(options: .displayInline, children: [
 				UIAction(title: "All Settings...", image: UIImage(systemName: "gear"), handler: { (_) in
 					self.openSettings(self)
 				})
