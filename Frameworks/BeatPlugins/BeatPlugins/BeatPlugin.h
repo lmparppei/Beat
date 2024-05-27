@@ -24,6 +24,7 @@
 // macOS-only
 #import <Cocoa/Cocoa.h>
 #import <BeatPlugins/BeatPluginHTMLWindow.h>
+@class BeatPluginHTMLPanel;
 
 #else
 
@@ -146,7 +147,6 @@ JSExportAs(setRawDocumentSetting, - (void)setRawDocumentSetting:(NSString*)setti
 /// Sets a document setting, prefixed by plugin name, so you won't mess up settings for other plugins.
 JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName setting:(id)value);
 
-
 #pragma mark User settings
 /// Sets a user default (`key`, `value`)
 JSExportAs(setUserDefault, - (void)setUserDefault:(NSString*)settingName setting:(id)value);
@@ -189,7 +189,8 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (void)newDocument:(NSString*)string;
 /// Creates a new `Document` object without actually opening the window
 - (id)newDocumentObject:(NSString*)string;
-
+/// Returns the (shared) theme manager
+@property (nonatomic, weak) id theme;
 
 /// Current screen dimensions
 - (NSArray*)screen;
@@ -330,12 +331,18 @@ JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValu
 JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len);
 
 
+#pragma mark Character data
+/// Returns character data object
+- (BeatCharacterData*)characterData;
+
+
 #pragma mark Text I/O
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(id)scene);
+
 
 #pragma mark Modal windows
 /// Displays a simple modal alert box
@@ -350,17 +357,20 @@ JSExportAs(dropdownPrompt, - (NSString*)dropdownPrompt:(NSString*)prompt withInf
 /// Displays a modal with given settings. Consult the wiki for correct dictionary keys and values.
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 
+
 #pragma mark Displaying HTML content
 #if TARGET_OS_OSX
 // macOS HTML views
-JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+JSExportAs(htmlPanel, - (BeatPluginHTMLPanel*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
 JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 - (NSDictionary*)printInfo;
 JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 #else
 // iOS HTML views
-JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+JSExportAs(htmlPanel, - (BeatPluginHTMLViewController*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton);
 #endif
+
 
 #pragma mark Notepad
 #if TARGET_OS_OSX
@@ -389,6 +399,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
     - (id)document;
     - (void)setZoomLevel:(CGFloat)zoomLevel;
 #endif
+
 @end
 
 
@@ -434,7 +445,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController*)view;
 #endif
 #if TARGET_OS_OSX
-@property (nonatomic) NSScrollView* scrollView;
 /// Please forgive me, we are using an unknown object to deliver notepad.
 @property (nonatomic) id notepad;
 #endif

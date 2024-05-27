@@ -17,8 +17,13 @@ import UIKit
 #endif
 import WebKit
 
+@objc public protocol BeatPluginWebViewExports:JSExport {
+    func setHTML(_ html:String)
+    func runJS(_ js:String, _ callback:JSValue?)
+}
+
 /// A protocol which hsa the basic methods for interacting with both the window and its HTML content.
-@objc public protocol BeatHTMLView {
+@objc public protocol BeatHTMLView:BeatPluginWebViewExports {
     @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue?)
     @objc func closePanel(_ sender:AnyObject?)
     @objc optional func hide()
@@ -28,11 +33,6 @@ import WebKit
     var displayed:Bool { get set }
     var callback:JSValue? { get set }
     weak var host:BeatPlugin? { get set }
-}
-
-@objc protocol BeatPluginWebViewExports:JSExport {
-    func setHTML(_ html:String)
-    func runJS(_ js:String, _ callback:JSValue?)
 }
 
 @objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports, WKNavigationDelegate {
@@ -96,7 +96,7 @@ import WebKit
     /// Evaluates JavaScript in the view and runs callback
     public func runJS(_ js:String, _ callback:JSValue?) {
         self.evaluateJavaScript(js) { returnValue, error in
-            if error != nil { return }
+            if error != nil { print("Error:", error ?? ""); return }
              
             if let c = callback {
                 if !c.isUndefined {

@@ -15,6 +15,7 @@
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatLayoutManager.h>
 #import <BeatCore/BeatFonts.h>
+#import <BeatThemes/BeatThemes.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
@@ -951,5 +952,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 
+#pragma mark - Theme manager
+
+/// This is a hack to return the theme manager to plugins
+- (id)themeManager {  return ThemeManager.sharedManager; }
 
 @end

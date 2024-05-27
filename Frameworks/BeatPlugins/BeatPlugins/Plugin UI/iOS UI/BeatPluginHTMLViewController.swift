@@ -33,12 +33,10 @@ import UIKit
         }
         
         self.modalPresentationStyle = .pageSheet
-        //self.view.frame = CGRectMake(0.0, 0.0, width, height) // Arbitrary size to fill the sheet
     }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //self.view.frame.size.height = self.view.window?.screen.bounds.height ?? 800.0
     }
     
     required init?(coder: NSCoder) {

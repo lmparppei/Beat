@@ -524,7 +524,8 @@ static BeatPluginManager *sharedManager;
 		if ([typeString isEqualToString:@"export"]) type = ExportPlugin;
 		else if ([typeString isEqualToString:@"import"]) type = ImportPlugin;
 		else if ([typeString isEqualToString:@"standalone"]) type = StandalonePlugin;
-		
+        else if ([typeString isEqualToString:@"internal"]) type = InternalPlugin;
+        
 		pluginInfo.type = type;
 	}
 	

@@ -84,6 +84,7 @@
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
+
 #pragma mark - Core functionality
 
 @property (nonatomic, readonly) bool documentIsLoading;
@@ -99,6 +100,9 @@
 @property (nonatomic, readonly) bool disableFormatting;
 #endif
 
+- (id)themeManager;
+/// Updates editor views asynchronously (where applicable)
+- (void)updateEditorViewsInBackground;
 
 #pragma mark - Application data and file access
 

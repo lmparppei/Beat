@@ -86,6 +86,7 @@
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) BeatPluginHTMLPanel* htmlPanel;
 #else
+@property (nonatomic) id<BeatHTMLView> htmlPanel;
 @property (nonatomic) UIWindow *sheet;
 @property (nonatomic) id widgetView;
 #endif
@@ -150,6 +151,7 @@
         
     [_context setObject:self forKeyedSubscript:@"Beat"];
 }
+
 
 #pragma mark - Helpers
 
@@ -251,7 +253,7 @@
 	[self.context evaluateScript:pluginString];
 	
 	// Kill it if the plugin is not resident
-	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView && !self.container) {
+	if (!self.sheet && self.htmlPanel == nil && !self.resident && self.pluginWindows.count < 1 && !self.widgetView && !self.container) {
 		[self end];
 	}
 }
@@ -1264,61 +1266,6 @@
 	return timer;
 }
 
-#pragma mark - HTML panel magic
-
-/*
- 
- These two should be merged at some point
- 
- */
-
-- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
-{
-#if !TARGET_OS_IOS
-	if (_delegate.documentWindow.attachedSheet) return;
-
-    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:html width:width height:height + 35.0 host:self cancelButton:cancelButton callback:callback];
-    self.htmlPanel = panel;
-    
-    [self makeResident];
-    
-    [self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
-        self.htmlPanel = nil;
-	}];
-#endif
-}
-
-- (void)receiveDataFromHTMLPanel:(NSString*)json
-{
-	// This method actually closes the HTML panel.
-	// It is called by sending a message to the script parser via webkit message handler,
-	// so this works asynchronously. Keep in mind.
-#if !TARGET_OS_IOS
-	if ([json isEqualToString:@"(null)"]) json = @"";
-	
-	if (self.htmlPanel.callback != nil) {
-		NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-		NSError *error;
-		NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-		
-        JSValue* callback = self.htmlPanel.callback;
-        
-        if (!error) {
-            [self.htmlPanel closePanel:nil];
-			[self runCallback:callback withArguments:@[jsonData]];
-		} else {
-            [self.htmlPanel closePanel:nil];
-			[self reportError:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
-		}
-		
-        self.htmlPanel.callback = nil;
-	} else {
-		// If there was no callback, it marks the end of the script
-        [self.htmlPanel closePanel:nil];
-		_context = nil;
-	}
-#endif
-}
 
 #pragma mark - Window management
 
@@ -1417,16 +1364,14 @@
 #else
 
 /// Returns a HTML view controller for iOS. Width and height are disregarded.
-- (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+- (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton
 {
-    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:false callback:callback];
+    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:cancelButton callback:callback];
     [self registerPluginWindow:htmlVC];
         
     UIViewController* documentVC = (UIViewController*)self.delegate;
     [documentVC presentViewController:htmlVC animated:true completion:nil];
      
-    [self.delegate registerPluginViewController:htmlVC];
-    
     return htmlVC;
 }
 
@@ -1440,6 +1385,9 @@
     }
     
     [_pluginWindows addObject:window];
+#if TARGET_OS_IOS
+    [self.delegate registerPluginViewController:window];
+#endif
 }
 
 /// Reliably closes a plugin window
@@ -1474,7 +1422,82 @@
     
     [vc closePanel:nil];
 #endif
+}
 
+
+#pragma mark - HTML panel
+/**
+ 
+ This is a complete mess. Please rewrite sometime soon.
+ TODO: Rewrite HTML panel logic and move most of it to another class / category
+ 
+ */
+
+#if TARGET_OS_OSX
+- (BeatPluginHTMLPanel*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
+{
+    if (_delegate.documentWindow.attachedSheet) return nil;
+    
+    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:html width:width height:height + 35.0 host:self cancelButton:cancelButton callback:callback];
+    self.htmlPanel = panel;
+    
+    [self makeResident];
+    
+    [self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
+        self.htmlPanel = nil;
+    }];
+    
+    return panel;
+}
+#else
+- (BeatPluginHTMLViewController*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
+{
+    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:cancelButton callback:callback];
+    
+    UIBarButtonItem* button = [UIBarButtonItem.alloc initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(receiveDataFromHTMLPanel:)];
+    htmlVC.navigationItem.rightBarButtonItems = @[button];
+    
+    UINavigationController* nc = [UINavigationController.alloc initWithRootViewController:htmlVC];
+
+    UIViewController* documentVC = (UIViewController*)self.delegate;
+    [documentVC presentViewController:nc animated:true completion:nil];
+    
+    self.htmlPanel = htmlVC;
+    return htmlVC;
+}
+#endif
+
+- (void)receiveDataFromHTMLPanel:(NSString*)json
+{
+    if (![json isKindOfClass:NSString.class]) json = @"{}";
+    
+    // This method closes the HTML panel and fetches the results using WebKit message handlers.
+    // It is called by sending a message to the script parser via webkit message handler, so this works asynchronously.
+    if ([json isEqualToString:@"(null)"]) json = @"{}";
+    
+    if (self.htmlPanel.callback != nil) {
+        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        
+        JSValue* callback = self.htmlPanel.callback;
+        id arguments = @[];
+        
+        if (!error) {
+            arguments = @[jsonData];
+        } else {
+            [self reportError:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
+        }
+        
+        [self.htmlPanel closePanel:nil];
+        [self runCallback:callback withArguments:arguments];
+        
+        self.htmlPanel.callback = nil;
+    } else {
+        // If there was no callback, it marks the end of the script
+        [self.htmlPanel closePanel:nil];
+        [self end];
+    }
 }
 
 #pragma mark - Tagging interface
@@ -1950,6 +1973,14 @@
 }
 
 
+#pragma mark - Character data
+
+- (BeatCharacterData*)characterData
+{
+    return [BeatCharacterData.alloc initWithDelegate:self.delegate];
+}
+
+
 #pragma mark - Formatting
 
 - (void)reformat:(Line *)line {
@@ -2150,6 +2181,11 @@
     return self.delegate.notepad;
 }
 #endif
+
+
+#pragma mark - Theme manager
+
+- (id)theme { return self.delegate.themeManager; }
 
 
 #pragma mark - Cross-platform compatibility checks

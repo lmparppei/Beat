@@ -13,6 +13,7 @@ import UIKit
 import WebKit
 
 @objc public class BeatPluginHTMLPanel: NSPanel, BeatHTMLView {
+        
     @objc public var displayed: Bool = true
     @objc public var callback:JSValue?
     @objc public var webView:BeatPluginWebView?
@@ -102,7 +103,11 @@ import WebKit
     }
     
     /// Executes given string in the web view of this panel
-    @objc public func runJS(_ js:String, callback:JSValue) {
+    @objc public func runJS(_ js:String, _ callback:JSValue?) {
         self.webView?.runJS(js, callback)
+    }
+    
+    @objc public func setHTML(_ html: String) {
+        self.webView?.setHTML(html)
     }
 }

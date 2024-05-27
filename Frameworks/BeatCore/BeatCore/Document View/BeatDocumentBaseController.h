@@ -111,6 +111,8 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 @property (nonatomic) bool matchParentheses;
 
+- (id _Nonnull)themeManager;
+
 
 #pragma mark - Creating the actual document file
 

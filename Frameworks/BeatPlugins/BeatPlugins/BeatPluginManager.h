@@ -15,7 +15,8 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 	ToolPlugin = 0,
 	ImportPlugin,
 	ExportPlugin,
-	StandalonePlugin
+	StandalonePlugin,
+    InternalPlugin
 };
 
 @interface BeatPluginInfo : NSObject

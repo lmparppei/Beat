@@ -7,6 +7,7 @@
 //
 #import <TargetConditionals.h>
 #import <BeatCore/BeatCompatibility.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -15,6 +16,9 @@
 	#import <Cocoa/Cocoa.h>
 	#define BXColor NSColor
 #endif
+
+@protocol BeatColorsExports <JSExport>
+@end
 
 @interface BeatColors : NSObject
 
