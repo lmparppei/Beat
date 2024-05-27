@@ -11,23 +11,33 @@ import BeatCore
 @objcMembers
 public class BeatFileImportManager: NSObject {
     
-    public class func importDocument(at url:URL, completion: @escaping ((URL?) -> Void)) {
+    public var waiting = false
+    
+    public func importDocument(at url:URL, completion: @escaping ((URL?) -> Void)) {
+        waiting = false
+        
+        guard url.startAccessingSecurityScopedResource() else {
+            completion(nil)
+            return
+        }
+        
         let fileName = url.lastPathComponent.replacingOccurrences(of: "." + url.pathExtension, with: "") + " (imported)"
         
         let tempURL = BeatPaths.urlForTemporaryFile(name: fileName, pathExtension: "fountain")
         
         // FDX import needs some special rules, because we are parsing XML asynchronously
         if url.pathExtension == "fdx" || url.typeIdentifier == "com.finaldraft.fdx" {
+            waiting = true
             importFDX(at: url, tempURL: tempURL) { resultURL in
                 completion(resultURL)
             }
         }
         
         // TODO: Add other file format here as well
-        completion(nil)
+        if !waiting { completion(nil) }
     }
     
-    public class func importFDX(at url:URL, tempURL:URL, completion: @escaping ((URL?) -> Void)) {
+    public func importFDX(at url:URL, tempURL:URL, completion: @escaping ((URL?) -> Void)) {
         _ = FDXImport(url: url, importNotes: true, completion: { fdx in
             if let script = fdx?.script, script.count > 0 {
                 do {

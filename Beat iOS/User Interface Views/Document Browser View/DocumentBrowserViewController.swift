@@ -141,21 +141,34 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		presentFountain(at: documentURL)
     }
 	
+	var importManager:BeatFileImportManager?
 	func importFile(at documentURL:URL) {
 		let alert = UIAlertController(title: "Import File", message: "You are importing a non-Fountain screenplay. A new, converted file will be created alongside the original document, which will remain untouched.\n\nDo you want to continue?", preferredStyle: .alert)
 		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-			BeatFileImportManager.importDocument(at: documentURL) { url in
+			self.importManager = BeatFileImportManager()
+			
+			self.importManager?.importDocument(at: documentURL) { url in
 				guard let url else {
+					self.importError()
 					return
 				}
 				
 				self.importDocument(at: url, nextToDocumentAt: documentURL, mode: .copy) { url, error in
-					if let url { self.presentDocument(at: url) }
+					if let url {
+						self.presentDocument(at: url)
+						documentURL.stopAccessingSecurityScopedResource()
+					}
 				}
 			}
 		}))
 		alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 		
+		self.present(alert, animated: true)
+	}
+	
+	func importError() {
+		let alert = UIAlertController(title: "Import Error", message: "Something went wrong when importing the file. This can happen with documents in iCloud, so first try moving the file to your local device.\n\nIf the problem persists, contact the developer at beat@beat-app.fi.", preferredStyle: .alert)
+		alert.addAction(UIAlertAction(title: "OK", style: .default))
 		self.present(alert, animated: true)
 	}
 	

@@ -74,15 +74,25 @@
 
 		// Thank you, RIPtutorial
 		// Fetch xml data
+#if TARGET_OS_OSX
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSLog(@"Data: %@", data);
+            NSLog(@" -> error %@", error);
 			[self parse:data callback:callback];
 		}];
 			
 		[task resume];
-		
+#else
+        NSError* error;
+        NSString* string = [NSString.alloc initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
+        NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+        NSLog(@" -> %@, %@", error, url);
+        [self parse:data callback:callback];
+#endif
 	}
+    
 	return self;
 }
 
@@ -113,6 +123,7 @@
 {
 	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 	self.xmlParser.delegate = self;
+        
 	if ([self.xmlParser parse]){
 		callback(self);
 	} else {
