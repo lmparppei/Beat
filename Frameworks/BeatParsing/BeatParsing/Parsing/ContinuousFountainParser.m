@@ -948,7 +948,7 @@ static NSDictionary* patterns;
     
     
     // Title page
-    if (previousLine == nil || previousLine.isTitlePage) {
+    if ((previousLine == nil || previousLine.isTitlePage) && !line.string.containsOnlyUppercase) {
         LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
         if (titlePageType != NSNotFound) return titlePageType;
     }
@@ -965,7 +965,7 @@ static NSDictionary* patterns;
         }
     }
     // Transitions
-    else if (line.length > 2 && line.lastCharacter == ':' && line.visibleContentIsUppercase && previousIsEmpty) {
+    else if (line.length > 3 && [[line.string substringFromIndex:line.length-3] isEqualToString:@"TO:"] && line.visibleContentIsUppercase && previousIsEmpty) {
         // Check for Transitions
         return transitionLine;
     }

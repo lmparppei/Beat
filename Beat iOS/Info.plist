@@ -113,7 +113,7 @@
 			<string>Final Draft</string>
 			<key>UTTypeIconFiles</key>
 			<array>
-				<string>Beat-iOS-76x76.png</string>
+				<string>Beat-FDX.png</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>com.finaldraft.fdx</string>

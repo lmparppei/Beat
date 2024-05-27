@@ -58,11 +58,12 @@
 "gender.man.plural" = "Men";
 "gender.unspecified.plural" = "Unspecified";
 
-"statistics.lines" = "Lines";
-"statistics.scenes" = "Scenes";
-
 "lock.clickToUnlock" = "Click to unlock";
 "lock.documentLocked" = "Document is locked";
+
+
+"statistics.lines" = "Lines";
+"statistics.scenes" = "Scenes";
 
 "statisticsPanel.title" = "Screenplay Statistics";
 "statisticsPanel.averageSceneLength" = "Average scene length";

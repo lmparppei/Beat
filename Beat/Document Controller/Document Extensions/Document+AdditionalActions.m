@@ -29,18 +29,6 @@
 }
 
 
-#pragma mark - Analysis
-
-- (IBAction)showAnalysis:(id)sender {
-	BeatStatisticsPanel* statistics = [[BeatStatisticsPanel alloc] initWithParser:self.parser delegate:self];
-	self.sheetController = statistics;
-	
-	[self.documentWindow beginSheet:statistics.window completionHandler:^(NSModalResponse returnCode) {
-		self.sheetController = nil;
-	}];
-}
-
-
 #pragma mark - Title page editor
 
 - (IBAction)editTitlePage:(id)sender

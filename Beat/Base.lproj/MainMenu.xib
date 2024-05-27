@@ -2,7 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -1180,10 +1180,14 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="T42-tx-tAb">
                         <items>
-                            <menuItem title="Screenplay Statistics" id="TCn-De-Kk7">
+                            <menuItem title="Screenplay Statistics" id="TCn-De-Kk7" customClass="BeatPluginMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="pluginName" value="BeatStatistics"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="internalPlugin" value="YES"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
+                                    <action selector="runPlugin:" target="-1" id="0mw-No-s7L"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Set Timer..." keyEquivalent="t" id="ite-qD-YVS">

@@ -44,6 +44,8 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 			return self.importMenu
 		case .ExportPlugin:
 			return self.exportMenu
+		case .InternalPlugin:
+			return nil
 		default:
 			return self.pluginMenu
 		}
@@ -75,7 +77,8 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 	@objc func clearMenu(_ menu:NSMenu) {
 		let menuItems = Array(menu.items)
 		for item in menuItems {
-			if item is BeatPluginMenuItem {
+			// Don't remove menu items for internal plugins
+			if let pluginItem = item as? BeatPluginMenuItem, !pluginItem.internalPlugin {
 				menu.removeItem(item)
 			}
 		}
@@ -97,7 +100,7 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 			
 			let plugin = pluginManager.pluginInfo(for: pluginName)
 			
-			if menuForType(plugin.type) != parentMenu {
+			if menuForType(plugin.type) != parentMenu || plugin.type == .InternalPlugin {
 				continue
 			}
 			
@@ -142,8 +145,9 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 }
 
 class BeatPluginMenuItem:NSMenuItem {
-	@objc var pluginName:String = ""
-
+	@IBInspectable @objc var pluginName:String = ""
+	@IBInspectable @objc var internalPlugin:Bool = false
+	
 	var type:BeatPluginType = BeatPluginType.ToolPlugin
 	
 	@objc convenience init(title string: String, pluginName:String, type:BeatPluginType) {

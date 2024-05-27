@@ -7,7 +7,20 @@
 
 import Foundation
 
-@objc public class BeatCharacter:NSObject
+@objc public protocol BeatCharacterExports:JSExport {
+    @objc var name:String { get set }
+    @objc var aliases:[String] { get set }
+    @objc var bio:String { get set }
+    @objc var age:String { get set }
+    @objc var gender:String { get set }
+    
+    @objc var lines:Int { get }
+    @objc var scenes:NSMutableSet { get }
+    
+    @objc var dictionary:[String:Any] { get }
+}
+
+@objc public class BeatCharacter:NSObject, BeatCharacterExports
 {
     @objc public var name:String
     @objc public var aliases:[String]
@@ -24,7 +37,7 @@ import Foundation
     @objc public var lines:Int = 0
     @objc public var scenes:NSMutableSet = NSMutableSet()
     
-    var dictionary:[String:Any] {
+    public var dictionary:[String:Any] {
         get {
             // Return empty dict if no real data was set
             if aliases.count == 0 && age.count == 0 && (gender.count == 0 || gender == "unspecified") && realName == nil && highlightColor.count == 0 {
@@ -75,7 +88,14 @@ import Foundation
     }
 }
 
-@objc public class BeatCharacterData:NSObject {
+@objc public protocol BeatCharacterDataExports:JSExport {
+    @objc func allCharactersAndLines() -> [String:BeatCharacter]
+    @objc func characters() -> [String:BeatCharacter]
+    @objc func saveCharacter(_ character:BeatCharacter)
+    @objc var characterData:[String:[String:Any]]? { get }
+}
+
+@objc public class BeatCharacterData:NSObject, BeatCharacterDataExports {
     weak var delegate:BeatEditorDelegate?
     
     /// Set to true if you want to avoid updating the data on every change
@@ -87,6 +107,11 @@ import Foundation
         
         // Let's convert legacy values right at init
         convertGendersToNewModelIfNeeded()
+    }
+    
+    /// Alias for `charactersAndLines` for more sensible JS export
+    @objc public func allCharactersAndLines() -> [String:BeatCharacter] {
+        return charactersAndLines()
     }
     
     /// Gets stored character data, collects EVERY character name from screenplay, stores the number of lines and scenes for each character and returns a dictionary with names mapped to character object.
@@ -209,9 +234,15 @@ import Foundation
         
         // Save data to document settings
         self.delegate?.documentSettings.set(DocSettingCharacterData, as: dict)
+        #if os(macOS)
+        self.delegate?.updateChangeCount(.changeDone)
+        #endif
+        
+        // Make sure the views reflect changes
+        self.delegate?.updateEditorViewsInBackground()
     }
     
-    var characterData:[String:[String:Any]]? {
+    public var characterData:[String:[String:Any]]? {
         return self.delegate?.documentSettings.get(DocSettingCharacterData) as? [String:[String:Any]]
     }
             

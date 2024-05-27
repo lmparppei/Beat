@@ -41,7 +41,6 @@ THE SOFTWARE.
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
 #import "BeatOutlineView.h"
-#import "BeatStatisticsPanel.h"
 
 
 @class BeatReview;

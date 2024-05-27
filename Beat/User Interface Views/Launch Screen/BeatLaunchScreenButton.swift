@@ -161,7 +161,11 @@ class BeatLaunchScreenButton: NSButtonCell {
 	
 	override func mouseEntered(with event: NSEvent) {
 		self.controlView!.superview!.performWithEffectiveAppearanceAsDrawingAppearance {
-			self.controlView?.layer?.animate(color: NSColor.windowBackgroundColor.withAlphaComponent(0.6).cgColor, keyPath: "backgroundColor", duration: 0.05)
+			if self.controlView?.layer?.backgroundColor == nil {
+				self.controlView?.layer?.backgroundColor = NSColor.clear.cgColor
+			}
+			
+			self.controlView?.layer?.animate(color: NSColor.darkGray.withAlphaComponent(0.6).cgColor, keyPath: "backgroundColor", duration: 0.05)
 		}
 	}
 	
