@@ -964,30 +964,30 @@ static NSDictionary* patterns;
             return dualDialogueCharacter;
         }
     }
-    // Transitions
-    else if (line.length > 3 && [[line.string substringFromIndex:line.length-3] isEqualToString:@"TO:"] && line.visibleContentIsUppercase && previousIsEmpty) {
-        // Check for Transitions
-        return transitionLine;
-    }
     else if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
-        // Handle items which require an empty line before them (and we're not forcing character input)
         
+        // Check for transitions first
+        if (line.visibleContentIsUppercase && previousIsEmpty) {
+            NSString* transition = [line.string substringFromIndex:line.length - 3];
+            if ([transition isEqualToString:@"TO:"] || [transition isEqualToString:@"IN:"]) return transitionLine;
+        }
+
+        // Handle items which require an empty line before them (and we're not forcing character input)
         NSString* firstChars = [line.string substringToIndex:3].lowercaseString;
         
         // Heading
         if ([firstChars isEqualToString:@"int"] ||
             [firstChars isEqualToString:@"ext"] ||
             [firstChars isEqualToString:@"est"] ||
-            [firstChars isEqualToString:@"i/e"]) {
+            [firstChars isEqualToString:@"i/e"] ||
+            [firstChars isEqualToString:@"e/i"]) {
             
             // If it's just under 4 characters, return heading
-            if (line.length > 3) {
-                // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
-                unichar nextChar = [line.string characterAtIndex:3];
-                if (nextChar == '.' || nextChar == ' ' || nextChar == '/')  return heading;
-            } else {
-                return heading;
-            }
+            if (line.length < 4) return heading;
+            
+            // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
+            unichar nextChar = [line.string characterAtIndex:3];
+            if (nextChar == '.' || nextChar == ' ' || nextChar == '/') return heading;
         }
         
         // Character
@@ -1003,7 +1003,7 @@ static NSDictionary* patterns;
                 //bool selectionOnNextLine = (nextLine.length == 0 && NSLocationInRange(selection.location, nextLine.range));
                 bool selectionOnCurrentLine = NSLocationInRange(selection.location, line.range);
                 
-                if (!selectionOnCurrentLine && (nextLinesAreEmpty || selectionOnCurrentLine)) {
+                if (!selectionOnCurrentLine && nextLinesAreEmpty) {
                     return action;
                 }
             }

@@ -41,6 +41,7 @@
 @class BeatEditorFormatting;
 @class BeatPluginAgent;
 @class BeatFonts;
+@class BeatTagging;
 
 /**
  Protocol for editor views which need to be updated in some cases
@@ -101,8 +102,7 @@
 #endif
 
 - (id)themeManager;
-/// Updates editor views asynchronously (where applicable)
-- (void)updateEditorViewsInBackground;
+
 
 #pragma mark - Application data and file access
 
@@ -175,6 +175,11 @@
 @property (nonatomic, readonly) bool showRevisions;
 @property (nonatomic, readonly) bool showRevisedTextColor;
 @property (nonatomic, readonly) bool showTags;
+
+
+#pragma mark - Tagging
+
+@property (nonatomic, readonly) BeatTagging* tagging;
 
 
 #pragma mark - Editor text view values
@@ -304,6 +309,7 @@
 - (void)handleTabPress;
 - (void)registerEditorView:(id<BeatEditorView>)view;
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
+/// Updates editor views asynchronously (where applicable)
 - (void)updateEditorViewsInBackground;
 
 - (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer;

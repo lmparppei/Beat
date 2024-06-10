@@ -371,6 +371,7 @@
 {
     return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbers];
 }
+
 - (void)setShowSceneNumberLabels:(bool)showSceneNumberLabels
 {
     [BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];

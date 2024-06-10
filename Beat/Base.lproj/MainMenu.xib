@@ -972,6 +972,12 @@ DQ
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Tag Editor" hidden="YES" id="y8D-eW-ydD">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showTagEditor:" target="-1" id="qz3-g0-ukZ"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Review Mode" id="dmq-UY-1zc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
