@@ -95,4 +95,19 @@
 	}];
 }
 
+
+#pragma mark - Tag editor
+
+- (IBAction)showTagEditor:(id)sender
+{
+	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"BeatTagEditor" bundle:NSBundle.mainBundle];
+	NSWindowController* wc = [storyboard instantiateControllerWithIdentifier:@"TagEditorWindow"];
+	
+	BeatTagEditor* vc = (BeatTagEditor*)wc.contentViewController;
+	vc.delegate = self;
+	
+	[wc showWindow:wc.window];
+	[vc reload];
+}
+
 @end

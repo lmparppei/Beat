@@ -231,3 +231,14 @@
 "backup.browseVersions" = "Browse versions...";
 
 "quickSettings.novelLineHeightMultiplier" = "Line Spacing";
+
+"tag.cast" = "Cast";
+"tag.prop" = "Prop";
+"tag.costume" = "Costume";
+"tag.makeup" = "Makeup";
+"tag.vfx" = "VFX";
+"tag.sfx" = "Special effects";
+"tag.music" = "Music";
+"tag.animal" = "Animal";
+"tag.extras" = "Extras";
+"tag.vehicle" = "Vehicle";

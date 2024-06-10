@@ -92,12 +92,35 @@
 	return @"BeatTag";
 }
 
-+ (NSArray*)tags {
-	return @[@"Cast", @"Prop", @"Costume", @"Makeup", @"VFX", @"Animal", @"Extras", @"Vehicle"];
++ (NSDictionary*)tagKeys
+{
+    static NSDictionary* tagKeys;
+    if (tagKeys == nil) tagKeys = @{
+        @(CharacterTag): @"cast",
+        @(PropTag): @"prop",
+        @(VFXTag): @"vfx",
+        @(SpecialEffectTag): @"sfx",
+        @(AnimalTag): @"animal",
+        @(ExtraTag): @"extras",
+        @(VehicleTag): @"vehicle",
+        @(CostumeTag): @"costume",
+        @(MakeupTag): @"makeup",
+        @(MusicTag): @"music"
+    };
+    
+    return tagKeys;
 }
+
+/// All available tag categories. It's a hard-coded array to retain the order.
++ (NSArray*)categories {
+    static NSArray* categories;
+    if (categories == nil) categories = @[@"cast", @"prop", @"vfx", @"sfx", @"animal", @"extras", @"vehicle", @"costume", @"makeup", @"music" ];
+    return categories;
+}
+
 + (NSArray*)styledTags {
-	NSArray *tags = BeatTagging.tags;
-	NSMutableArray *styledTags = [NSMutableArray array];
+	NSArray *tags = BeatTagging.categories;
+    NSMutableArray *styledTags = NSMutableArray.new;
 	
 	// Add menu item to remove current tag
 	[styledTags addObject:[[NSAttributedString alloc] initWithString:@"× None"]];
@@ -108,13 +131,18 @@
 	
 	return styledTags;
 }
-+ (NSAttributedString*)styledTagFor:(NSString*)tag {
+
++ (NSAttributedString*)styledTagFor:(NSString*)tag
+{
 	TagColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
 	
-	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", tag]];
+    NSString* localizedTag = [BeatLocalization localizedStringForKey:[NSString stringWithFormat:@"tag.%@", tag]];
+    
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", localizedTag]];
 	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
 	return string;
 }
+
 + (NSAttributedString*)styledListTagFor:(NSString*)tag color:(TagColor*)textColor {
 	TagColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
 	
@@ -129,19 +157,20 @@
 	[string addAttribute:@"TagTitle" value:@"Yes" range:(NSRange){0, string.length - 1}];
 	return string;
 }
+
 + (NSDictionary*)tagColors
 {
 	return @{
-		@"Cast": [BeatColors color:@"cyan"],
-		@"Prop": [BeatColors color:@"orange"],
-		@"Costume": [BeatColors color:@"pink"],
-		@"Makeup": [BeatColors color:@"green"],
-		@"VFX": [BeatColors color:@"purple"],
-		@"Animal": [BeatColors color:@"yellow"],
-		@"Extras": [BeatColors color:@"magenta"],
-		@"Vehicle": [BeatColors color:@"teal"],
-		@"Special Effect": [BeatColors color:@"brown"],
-		@"Generic": [BeatColors color:@"gray"]
+		@"cast": [BeatColors color:@"cyan"],
+		@"prop": [BeatColors color:@"orange"],
+		@"costume": [BeatColors color:@"pink"],
+		@"makeup": [BeatColors color:@"green"],
+		@"vfx": [BeatColors color:@"purple"],
+		@"animal": [BeatColors color:@"yellow"],
+		@"extras": [BeatColors color:@"magenta"],
+		@"vehicle": [BeatColors color:@"teal"],
+		@"sfx": [BeatColors color:@"brown"],
+		@"generic": [BeatColors color:@"gray"]
 	};
 }
 
@@ -152,7 +181,7 @@
 	if ([tag isEqualToString:@"cast"]) return CharacterTag;
 	else if ([tag isEqualToString:@"prop"]) return PropTag;
 	else if ([tag isEqualToString:@"vfx"]) return VFXTag;
-	else if ([tag isEqualToString:@"special effect"]) return SpecialEffectTag;
+	else if ([tag isEqualToString:@"sfx"]) return SpecialEffectTag;
 	else if ([tag isEqualToString:@"animal"]) return AnimalTag;
 	else if ([tag isEqualToString:@"extras"]) return ExtraTag;
 	else if ([tag isEqualToString:@"vehicle"]) return VehicleTag;
@@ -162,21 +191,13 @@
 	else if ([tag isEqualToString:@"none"]) return NoTag;
 	else { return GenericTag; }
 }
+
 + (NSString*)keyFor:(BeatTagType)tag
 {
-	if (tag == CharacterTag) return @"Cast";
-	else if (tag == PropTag) return @"Prop";
-	else if (tag == VFXTag) return @"VFX";
-	else if (tag == SpecialEffectTag) return @"Special Effect";
-	else if (tag == AnimalTag) return @"Animal";
-	else if (tag == ExtraTag) return @"Extras";
-	else if (tag == VehicleTag) return @"Vehicle";
-	else if (tag == CostumeTag) return @"Costume";
-	else if (tag == MakeupTag) return @"Makeup";
-	else if (tag == MusicTag) return @"Music";
-	else if (tag == NoTag) return @"";
-	else return @"Generic";
+    NSString* key = BeatTagging.tagKeys[@(tag)];
+    return (key != nil) ? key : @"generic";
 }
+
 + (TagColor*)colorFor:(BeatTagType)tag {
 	NSDictionary *colors = [self tagColors];
 	TagColor *color = [colors valueForKey:[self keyFor:tag]];
@@ -184,14 +205,16 @@
 	
 	return color;
 }
-+ (NSString*)hexForKey:(NSString*)key {
+
++ (NSString*)hexForKey:(NSString*)key
+{
 	TagColor *color = [self tagColors][key];
 	return [BeatColors get16bitHex:color];
 }
 
 + (NSDictionary*)tagDictionary {
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-	NSArray *tags = [BeatTagging tags];
+	NSArray *tags = BeatTagging.categories;
 	
 	for (NSString* tag in tags) {
 		[dict setValue:[NSMutableArray array] forKey:tag];
@@ -201,7 +224,7 @@
 }
 + (NSMutableDictionary*)tagDictionaryWithDictionaries {
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-	NSArray *tags = [BeatTagging tags];
+	NSArray *tags = BeatTagging.categories;
 	
 	for (NSString* tag in tags) {
 		[dict setValue:[NSMutableDictionary dictionary] forKey:tag];
@@ -210,7 +233,8 @@
 	return dict;
 }
 
-- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions {	
+- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions
+{
 	self.tagDefinitions = NSMutableArray.new;
 	for (NSDictionary *dict in definitions) {
 		TagDefinition *def = [[TagDefinition alloc] initWithName:dict[@"name"] type:[BeatTagging tagFor:dict[@"type"]] identifier:dict[@"id"]];
@@ -235,27 +259,16 @@
 	}
 }
 
+/**
+ This bakes the tag items in text view string into given set of lines. The lines then retain the references to the tag items, which we carry on to FDX export. It's a class method for some reason.
+ */
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines
 {
-	/*
-	 
-	 This bakes the tag items into lines. The lines then retain the references to the tag items,
-	 which we carry on to FDX export.
-	 
-	 */
-
 	for (Line *line in lines) {
-		if (line.range.length == 0 || line.string.length == 0) continue;
+		if (line.length == 0) continue;
 		
-		line.tags = [NSMutableArray array];
+        line.tags = NSMutableArray.new;
 
-		/*
-		// Somehow bake characters automatically
-		if (line.type == character) {
-
-		}
-		 */
-		
 		// Local string from the attributed content using line range
 		if (line.range.location >= textViewString.length) break;
 		NSAttributedString *string = [textViewString attributedSubstringFromRange:line.textRange];
@@ -290,7 +303,30 @@
 	return tags;
 }
 
-- (NSDictionary*)sortedTagsInRange:(NSRange)searchRange {
+- (NSArray<TagDefinition*>*)tagsWithTypeName:(NSString*)type
+{
+    NSMutableArray<TagDefinition*>* tags = NSMutableArray.new;
+    NSAttributedString *string = _delegate.attributedString;
+    
+    [string enumerateAttribute:BeatTagging.attributeKey inRange:NSMakeRange(0, string.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatTag *tag = (BeatTag*)value;
+        
+        if (![tag.key isEqualToString:type] || tag.definition == nil) return;
+        if (![tags containsObject:tag.definition]) [tags addObject:tag.definition];
+    }];
+    
+    return tags;
+}
+
+- (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)sortedTags
+{
+    return [self sortedTagsInRange:NSMakeRange(0, self.delegate.text.length)];
+}
+
+- (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)sortedTagsInRange:(NSRange)searchRange
+{
+    NSArray* lines = [self.delegate.parser linesInRange:searchRange];
+    
 	NSDictionary *tags = [BeatTagging tagDictionary];
     NSAttributedString *string = _delegate.attributedString;
 	
@@ -306,29 +342,65 @@
 			if (![tagDefinitions containsObject:tag.definition]) [tagDefinitions addObject:tag.definition];
 		}
 	}];
-	
+    
+    for (Line* line in lines) {
+        if (!line.isAnyCharacter) continue;
+        
+        NSString* characterName = line.characterName.uppercaseString;
+        BeatTag* tag = [self addTag:characterName type:CharacterTag];
+        if (![tags[@"cast"] containsObject:tag.definition]) [tags[@"cast"] addObject:tag.definition];
+    }
+    
 	return tags;
 }
 
-- (NSDictionary*)tagsForScene:(OutlineScene*)scene {
-	[self.delegate.parser updateOutline];
-	
-	NSDictionary *tags = [self sortedTagsInRange:scene.range];
-	NSArray *lines = [self.delegate.parser linesForScene:scene];
-	
-	NSMutableArray *castTags = tags[@"Cast"];
-	
-	for (Line* line in lines) {
-		if (line.type == character) {
-			NSString *name = line.characterName.uppercaseString;
-			BeatTag *characterTag = [self addTag:name type:CharacterTag];
-			
-			if (![castTags containsObject:characterTag.definition]) [castTags addObject:characterTag.definition];
-		}
-	}
-	
-	return tags;
+- (NSArray<TagDefinition*>*)tagsInRange:(NSRange)searchRange {
+    NSArray* lines = [self.delegate.parser linesInRange:searchRange];
+    
+    NSMutableArray<TagDefinition*>* tags = NSMutableArray.new;
+    NSAttributedString *string = _delegate.attributedString;
+    
+    [string enumerateAttribute:BeatTagging.attributeKey inRange:searchRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatTag *tag = (BeatTag*)value;
+        
+        if (tag.type == NoTag) return;
+        tag.range = range;
+        
+        // Add definition to array if it's not present yet
+        if (tag.definition) {
+            if (![tags containsObject:tag.definition]) [tags addObject:tag.definition];
+        }
+    }];
+    
+    for (Line* line in lines) {
+        if (!line.isAnyCharacter) continue;
+        
+        NSString* characterName = line.characterName.uppercaseString;
+        BeatTag* tag = [self addTag:characterName type:CharacterTag];
+        if (![tags containsObject:tag.definition]) [tags addObject:tag.definition];
+    }
+    
+    return tags;
 }
+
+- (NSDictionary*)tagsForScene:(OutlineScene*)scene
+{
+	[self.delegate.parser updateOutline];
+    return [self sortedTagsInRange:scene.range];
+}
+
+- (NSArray<OutlineScene*>*)scenesForTagDefinition:(TagDefinition*)tag
+{
+    NSMutableArray<OutlineScene*>* scenes = NSMutableArray.new;
+    
+    for (OutlineScene* scene in self.delegate.parser.scenes) {
+        NSArray* tags = [self tagsInRange:scene.range];
+        if ([tags containsObject:tag]) [scenes addObject:scene];
+    }
+    
+    return scenes;
+}
+
 - (NSDictionary*)tagsByType {
 	// This could be used to attach tags to corresponding IDs
 	NSDictionary *tags = [BeatTagging tagDictionary];
@@ -469,7 +541,8 @@
 	return [uuid UUIDString].lowercaseString;
 }
 
-- (TagDefinition*)searchForTag:(NSString*)string type:(BeatTagType)type {
+- (TagDefinition*)searchForTag:(NSString*)string type:(BeatTagType)type
+{
 	string = [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
 	for (TagDefinition *tag in _tagDefinitions) {
@@ -478,7 +551,10 @@
 	
 	return nil;
 }
-- (NSArray<TagDefinition*>*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type {
+
+/// Returns an array of tags that fit both the search string and type. It uses Levenshtein algorithm, so results include things that *somehow* contain the string.
+- (NSArray<TagDefinition*>*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type
+{
 	NSMutableArray *matches = [NSMutableArray array];
 	
 	string = [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -504,28 +580,32 @@
 	
 	return matchStrings;
 }
-- (bool)tagExists:(NSString*)string type:(BeatTagType)type {
-	if ([self searchForTag:string type:type] != nil) return YES; else return NO;
+
+- (bool)tagExists:(NSString*)string type:(BeatTagType)type
+{
+    return ([self searchForTag:string type:type] != nil);
 }
 
-- (NSArray*)getTags {
-	// Returns an array for saving the tags
-	NSMutableArray *tagsToSave = [NSMutableArray array];
-	NSArray *tags = [self allTags];
-	
-	for (BeatTag* tag in tags) {
-		[tagsToSave addObject:@{
-			@"range": @[ @(tag.range.location), @(tag.range.length) ],
-			@"type": tag.key,
-			@"definition": tag.defId
-		}];
-	}
-		
-	return tagsToSave;
+/// Returns an array for saving the tags as JSON. This is a misleading name and should be fixed.
+- (NSArray*)getTags
+{
+    NSMutableArray *tagsToSave = NSMutableArray.new;
+    NSArray *tags = [self allTags];
+    
+    for (BeatTag* tag in tags) {
+        [tagsToSave addObject:@{
+            @"range": @[ @(tag.range.location), @(tag.range.length) ],
+            @"type": tag.key,
+            @"definition": tag.defId
+        }];
+    }
+    
+    return tagsToSave;
 }
-- (NSArray*)getDefinitions {
-	// Returns dictionary values for used definitions
-	
+
+/// Returns dictionary values for used definitions
+- (NSArray*)getDefinitions
+{
 	NSArray *allTags = [self allTags];
 	NSMutableArray *defs = [NSMutableArray array];
 	
@@ -681,25 +761,10 @@
 }
 
 - (void)updateTaggingData {
-	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
-	//[self.taggingTextView.textStorage setAttributedString:[self displayTagsForScene:self.delegate.currentScene]];
+    NSAttributedString* tagInfo = [self displayTagsForScene:self.delegate.currentScene];
+    [self.tagTextView.textStorage setAttributedString:tagInfo];
 }
 
-- (void)open {
-	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
-//	[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
-//	[_sideViewCostraint setConstant:180];
-}
-
-- (void)close {
-	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
-//	if (_sideViewCostraint.constant != 0) {
-//		[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
-//		[_sideViewCostraint setConstant:0];
-		
-//		[_delegate toggleMode:TaggingMode];
-//	}
-}
 
 #pragma mark - Editor actions
 
@@ -708,7 +773,7 @@
 }
 
 - (IBAction)closeTagging:(id)sender {
-	[self close];
+    [_delegate toggleMode:EditMode];
 }
 
 

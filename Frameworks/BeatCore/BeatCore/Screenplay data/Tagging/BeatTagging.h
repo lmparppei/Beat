@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 };
 
 @class BeatTagging;
+@class TagDefinition;
 
 @protocol BeatTaggingDelegate <BeatEditorDelegate>
 // Do we need some special stuff here?
@@ -56,16 +57,17 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 
 @interface BeatTagging : NSObject
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
+@property (weak) IBOutlet BXTextView* tagTextView;
 #if !TARGET_OS_IOS
-//@property (weak) IBOutlet BeatTagView* taggingTextView;
 //@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 #endif
 
 + (NSString*)attributeKey;
-+ (NSArray*)tags;
++ (NSArray*)categories;
 + (BeatTagType)tagFor:(NSString*)tag;
 //+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;
 + (NSArray*)styledTags;
++ (NSAttributedString*)styledTagFor:(NSString*)tag;
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
 + (NSDictionary*)tagColors;
 + (TagColor*)colorFor:(BeatTagType)tag;
@@ -78,6 +80,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
+- (NSArray<TagDefinition*>*)tagsWithTypeName:(NSString*)type;
 - (void)bakeTags;
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
 - (NSArray*)getDefinitions;
@@ -85,16 +88,15 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;
 - (NSArray*)getTags;
 - (NSArray*)allTags;
+- (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)sortedTags;
 - (bool)tagExists:(NSString*)string type:(BeatTagType)type;
 - (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type;
 - (id)definitionWithName:(NSString*)name type:(BeatTagType)type;
+- (NSArray<OutlineScene*>*)scenesForTagDefinition:(TagDefinition*)tag;
 
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;
 - (void)tagRange:(NSRange)range withDefinition:(id)definition;
 - (void)updateTaggingData;
-
-- (void)open;
-- (void)close;
 
 @end

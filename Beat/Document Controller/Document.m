@@ -674,9 +674,6 @@
 /// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
 - (void)updateEditorMode
 {
-	if (_mode == TaggingMode) [self.tagging open];
-	else [self.tagging close];
-	
 	_modeIndicator.hidden = (_mode == EditMode);
 	
 	// Show mode indicator
@@ -1871,11 +1868,21 @@
 
 - (IBAction)toggleTagging:(id)sender
 {
-	if (_mode == TaggingMode) _mode = EditMode;
-	else _mode = TaggingMode;
+	_mode = (_mode == TaggingMode) ? EditMode : TaggingMode;
+	
+	if (_mode == TaggingMode) {
+		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		//[_sideViewCostraint setConstant:180];
+	} else {
+		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		//self.sideViewCostraint setConstant:0;
+				
+		[self toggleMode:TaggingMode];
+	}
 	
 	[self updateEditorMode];
 }
+
 
 
 #pragma mark - Widgets

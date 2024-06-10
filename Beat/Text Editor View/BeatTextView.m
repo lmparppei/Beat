@@ -1101,8 +1101,7 @@ double clamp(double d, double min, double max)
 /// Updates the markup based on caret position.
 -(void)updateMarkupVisibility
 {
-	if (!_editorDelegate.hideFountainMarkup || _editorDelegate.documentIsLoading) return;
-	if (!self.string.length) return;
+	if (!_editorDelegate.hideFountainMarkup || _editorDelegate.documentIsLoading || self.string.length == 0) return;
 	
 	Line* line = self.editorDelegate.currentLine;
 	static Line* prevLine;

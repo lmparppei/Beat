@@ -1504,7 +1504,7 @@
 
 - (NSArray*)availableTags
 {
-	return [BeatTagging tags];
+	return [BeatTagging categories];
 }
 - (NSDictionary*)tagsForScene:(OutlineScene *)scene
 {

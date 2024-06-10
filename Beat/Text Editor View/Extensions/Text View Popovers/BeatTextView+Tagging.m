@@ -74,11 +74,10 @@
 {
 	NSString* tagName;
 	
+	// First item is "CREATE A NEW TAG", while items after that are existing tags.
 	if (index == 0) {
-		// First item CREATES A NEW TAG
 		tagName = [self.textStorage.string substringWithRange:self.selectedRange];
 	} else {
-		// This was selected from the list of existing tags
 		tagName = string;
 	}
 	
@@ -88,7 +87,7 @@
 		// Definition was selected
 		[self.tagging tagRange:self.selectedRange withDefinition:definition];
 	} else {
-		// No existing definition selected
+		// Create new
 		[self.tagging tagRange:self.selectedRange withType:type];
 	}
 	
