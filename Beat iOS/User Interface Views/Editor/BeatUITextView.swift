@@ -430,8 +430,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
 			scrollSize.height += 12.0
 			self.enclosingScrollView.contentSize = scrollSize
-		}
-		
+		}	
 	}
 	
 	

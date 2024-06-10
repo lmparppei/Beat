@@ -276,6 +276,7 @@
 	//self.keyboardManager = KeyboardManager.new;
 	//self.keyboardManager.delegate = self;
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybWillShow:) name:UIKeyboardWillShowNotification object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
 	
 	// Text I/O
@@ -961,11 +962,10 @@
 /// Fuck me, sorry for this
 - (void)keybWillShow:(NSNotification*)notification
 {
-	NSDictionary * info = notification.userInfo;
-	NSValue* endFrame = info[UIKeyboardFrameEndUserInfoKey];
-	NSNumber* rate = info[UIKeyboardAnimationDurationUserInfoKey];
+	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
+	NSNumber* rate = notification.userInfo[UIKeyboardAnimationDurationUserInfoKey];
 	
-	if (info == nil || endFrame == nil || rate == nil) return;
+	if (endFrame == nil || rate == nil) return;
 	
 	CGRect currentKeyboard = endFrame.CGRectValue;
 	CGRect convertedFrame = [self.view convertRect:currentKeyboard fromView:nil];
@@ -995,7 +995,6 @@
 		}
 	}
 	
-	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
 		self.outlineView.contentInset = insets;
@@ -1006,9 +1005,29 @@
 	}];
 }
 
--(void)keyboardWillHide {
+-(void)keyboardWillHide
+{
 	self.outlineView.contentInset = UIEdgeInsetsZero;
 	self.scrollView.contentInset = UIEdgeInsetsZero;
+}
+
+- (void)keybDidShow:(NSNotification*)notification
+{
+	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
+
+	// This is a hack to fix weird scrolling bugs on iPhone. Let's make sure the content size is adjusted correctly when keyboard has been shown.
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone && endFrame != nil) {
+		UIEdgeInsets insets = self.textView.contentInset;
+		
+		CGRect currentKeyboard = endFrame.CGRectValue;
+		CGRect convertedFrame = [self.view convertRect:currentKeyboard fromView:nil];
+		
+		if (insets.bottom < convertedFrame.size.height) {
+			insets.bottom = convertedFrame.size.height;
+			self.textView.contentInset = insets;
+			[self.textView scrollRangeToVisible:self.textView.selectedRange];
+		}
+	}
 }
 
 
