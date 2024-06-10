@@ -520,20 +520,21 @@ static NSString *centeredEnd = @" <";
     if (found) return false;
     
     // And if it was, close the brackets.
-        
-    // Make sure there are no line breaks
+    // First make sure there are no line breaks
     NSString* text = [self.delegate.text substringWithRange:affectedCharRange];
     bool safeToAdd = ![[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet] containsString:@"\n"];
+    
     if (safeToAdd) {
         NSString* open = (skipFirstCharacter) ? replacementString : match;
         NSString* result = [NSString stringWithFormat:@"%@%@%@", open, text, matches[match]];
-        
         [self replaceRange:affectedCharRange withString:result];
-        [_delegate setSelectedRange:NSMakeRange(affectedCharRange.location + match.length, 0)];
-        return true;
+        
+        // For longer chunks, we'll add the whole delimiter length to position, and when typing letters one by one, it's enough to adjust by one character
+        NSInteger l = (affectedCharRange.length > 0) ? match.length : 1;
+        [_delegate setSelectedRange:NSMakeRange(affectedCharRange.location + l, 0)];
     }
     
-    return false;
+    return safeToAdd;
 }
 
 /// Check if we should add `CONT'D` at the the current character cue
