@@ -7,6 +7,7 @@
 //
 
 #import "Document+AdditionalActions.h"
+#import "Document+WindowManagement.h"
 #import "ThemeEditor.h"
 #import "BeatModalInput.h"
 #import "Beat-Swift.h"
@@ -100,14 +101,8 @@
 
 - (IBAction)showTagEditor:(id)sender
 {
-	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"BeatTagEditor" bundle:NSBundle.mainBundle];
-	NSWindowController* wc = [storyboard instantiateControllerWithIdentifier:@"TagEditorWindow"];
-	
-	BeatTagEditor* vc = (BeatTagEditor*)wc.contentViewController;
-	vc.delegate = self;
-	
-	[wc showWindow:wc.window];
-	[vc reload];
+	[BeatTagEditor openTagEditorWithDelegate:self];
 }
+
 
 @end

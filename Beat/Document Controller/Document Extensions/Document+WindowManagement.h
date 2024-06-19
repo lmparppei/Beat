@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Document (WindowManagement) <NSWindowDelegate>
-
+- (void)registerWindow:(NSWindow*)window owner:(id)owner;
 @end
 
 NS_ASSUME_NONNULL_END

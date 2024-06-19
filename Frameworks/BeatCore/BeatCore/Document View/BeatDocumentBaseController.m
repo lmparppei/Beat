@@ -252,6 +252,9 @@
     
     // Update any running plugins
     [(id<BeatPluginAgentInstance>)self.pluginAgent updatePlugins:self.lastChangedRange];
+    
+    // Update any listeners
+    for (BeatChangeListener listener in self.changeListeners.allValues) listener(self.lastChangedRange);
 }
 
 
@@ -950,6 +953,23 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)documentWasSaved
 {
     NSLog(@"documentWasSaved: Override in OS-specific implementation");
+}
+
+
+#pragma mark - Listeners
+
+- (void)addChangeListener:(void(^)(NSRange))listener owner:(id)owner
+{
+    if (_changeListeners == nil) _changeListeners = NSMutableDictionary.new;
+    
+    NSValue* obj = [NSValue valueWithNonretainedObject:owner];
+    _changeListeners[obj] = listener;
+}
+
+- (void)removeChangeListenersFor:(id)owner
+{
+    NSValue* obj = [NSValue valueWithNonretainedObject:owner];
+    _changeListeners[owner] = nil;
 }
 
 

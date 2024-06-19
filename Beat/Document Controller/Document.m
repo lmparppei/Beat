@@ -106,8 +106,9 @@
 
 @interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
-// Window
+// Windows
 @property (weak) NSWindow *documentWindow;
+
 
 // Cached
 @property (atomic) NSData* dataCache;
@@ -241,7 +242,11 @@
 	
 	// Unload all plugins
 	[self.pluginAgent unloadPlugins];
-		
+	
+	// Close all assisting windows
+	for (NSWindow* window in self.assistingWindows.allValues) [window close];
+	self.assistingWindows = nil;
+	
 	// This stuff is here to fix some strange memory issues.
 	// Most of these might be unnecessary, but I'm unfamiliar with both ARC & manual memory management. Better safe than sorry.
 	[self.previewController.timer invalidate];

@@ -317,6 +317,13 @@ NS_ASSUME_NONNULL_END
 - (void)setPropertyValue:(NSString * _Nonnull)key value:(id _Nonnull)value;
 
 
+#pragma mark - Listeners
+
+@property (nonatomic) NSMutableDictionary<NSValue*, void(^)(NSRange)>* _Nullable changeListeners;
+- (void)addChangeListener:(void(^_Nonnull)(NSRange))listener owner:(id _Nonnull)owner;
+- (void)removeChangeListenersFor:(id _Nonnull)owner;
+
+
 #pragma mark - Styles
 
 @property (nonatomic) BeatStylesheet* _Nonnull styles;

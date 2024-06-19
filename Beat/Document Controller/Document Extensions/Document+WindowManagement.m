@@ -10,6 +10,19 @@
 
 @implementation Document (WindowManagement)
 
+#pragma mark - Registering assisting windows
+
+- (void)registerWindow:(NSWindow*)window owner:(id)owner
+{
+	if (self.assistingWindows == nil) self.assistingWindows = NSMutableDictionary.new;
+	
+	NSValue* object = [NSValue valueWithNonretainedObject:owner];
+	self.assistingWindows[object] = window;
+}
+
+
+#pragma mark -
+
 -(void)windowWillBeginSheet:(NSNotification *)notification {
 	if (self.documentIsLoading) return;
 	
@@ -23,7 +36,8 @@
 	[self showPluginWindowsForCurrentDocument];
 }
 
-- (void)windowDidBecomeMain:(NSNotification *)notification {
+- (void)windowDidBecomeMain:(NSNotification *)notification
+{
 	// Show all plugin windows associated with the current document
 	[self showPluginWindowsForCurrentDocument];
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document changed" object:self];
@@ -32,6 +46,7 @@
 		[self.currentKeyWindow makeKeyAndOrderFront:nil];
 	}
 }
+
 -(void)windowDidBecomeKey:(NSNotification *)notification {
 	self.currentKeyWindow = nil;
 	// Show all plugin windows associated with the current document
@@ -39,6 +54,7 @@
 		[self showPluginWindowsForCurrentDocument];
 	}
 }
+
 -(void)windowDidResignKey:(NSNotification *)notification {
 	if (self.documentIsLoading) return;
 	

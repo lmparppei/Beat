@@ -169,6 +169,8 @@ THE SOFTWARE.
 /// Notepad view
 @property (nonatomic, weak) IBOutlet BeatNotepad* _Nullable notepad;
 
+/// Assisting windows
+@property (nonatomic) NSMutableDictionary<NSValue*,NSWindow*>* _Nullable assistingWindows;
 
 
 #pragma mark - Scrolling methods (move these elsewhere)

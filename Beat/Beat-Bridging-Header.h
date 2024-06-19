@@ -21,6 +21,7 @@
 
 #import "Document.h"
 #import "Document+ThemesAndAppearance.h"
+#import "Document+WindowManagement.h"
 #import "Document+Menus.h"
 
 #import "BeatNotepad.h"
