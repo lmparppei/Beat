@@ -132,9 +132,8 @@
 	[self.textView endEditing:true];
 }
 
-- (NSUndoManager *)undoManager {
-	return self.textView.undoManager;
-}
+/// Returns the undo manager from **text view**
+- (NSUndoManager *)undoManager { return self.textView.undoManager; }
 
 /// NOTE: You need to call `loadDocument` before actually presenting the view
 - (void)viewDidLoad
@@ -185,7 +184,7 @@
 	
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
-	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];	
+	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -211,7 +210,7 @@
 			[self.textView setSelectedRange:NSMakeRange(position, 0)];
 			[self.textView scrollToRange:self.textView.selectedRange];
 		}
-
+		
 		[self appearanceChanged:nil];
 	}
 }
@@ -718,6 +717,7 @@
 }
 
 
+
 #pragma mark - Text input delegate
 
 - (void)selectionDidChange:(id<UITextInput>)textInput
@@ -899,7 +899,7 @@
 	[self.textView setTypingAttributes:self.typingAttributes];
 }
 
-- (void)lineWasRemoved:(Line *)line { 
+- (void)lineWasRemoved:(Line *)line {
 	
 }
 
@@ -1014,7 +1014,7 @@
 - (void)keybDidShow:(NSNotification*)notification
 {
 	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
-
+	
 	// This is a hack to fix weird scrolling bugs on iPhone. Let's make sure the content size is adjusted correctly when keyboard has been shown.
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone && endFrame != nil) {
 		UIEdgeInsets insets = self.textView.contentInset;
@@ -1077,5 +1077,19 @@
 {
 	[self performSegueWithIdentifier:@"Cards" sender:nil];
 }
+
+
+#pragma mark - Registering view controllers
+
+- (void)registerPluginViewController:(BeatPluginHTMLViewController *)view {
+	//
+}
+
+
+- (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view {
+	//
+}
+
+
 
 @end

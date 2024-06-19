@@ -49,6 +49,7 @@
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6743BF82B31A0BC0081041C /* TemplateCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6743BF72B31A0BC0081041C /* TemplateCollectionViewController.swift */; };
+		B67512302C2333DF00F57CEF /* BeatUITextView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675122F2C2333DF00F57CEF /* BeatUITextView+Layout.swift */; };
 		B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */; };
 		B682C25B2B30FAB50027511A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B682C25A2B30FAB50027511A /* Localizable.strings */; };
 		B686BD232B33AF0E0074FC67 /* BeatUserDefaultButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */; };
@@ -234,6 +235,7 @@
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
 		B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6743BF72B31A0BC0081041C /* TemplateCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateCollectionViewController.swift; sourceTree = "<group>"; };
+		B675122F2C2333DF00F57CEF /* BeatUITextView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatUITextView+Layout.swift"; sourceTree = "<group>"; };
 		B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatEditorSplitView.swift; sourceTree = "<group>"; };
 		B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B682C25A2B30FAB50027511A /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = "Beat iOS/Localizable.strings"; sourceTree = "<group>"; };
@@ -511,6 +513,7 @@
 			children = (
 				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B675122F2C2333DF00F57CEF /* BeatUITextView+Layout.swift */,
 				B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */,
 				B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */,
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
@@ -980,6 +983,7 @@
 				B602872A2BF123B8009C573A /* BeatSubscriptionManager.swift in Sources */,
 				B622801C2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift in Sources */,
 				B6DEA4822BC45A3900F15208 /* TPKeyboardAvoidingTableView.m in Sources */,
+				B67512302C2333DF00F57CEF /* BeatUITextView+Layout.swift in Sources */,
 				B602872C2BF12C2A009C573A /* BeatPaywall.swift in Sources */,
 				B6DEA4832BC45A3900F15208 /* TPKeyboardAvoidingCollectionView.m in Sources */,
 				B6DEA4842BC45A3900F15208 /* TPKeyboardAvoidingScrollView.m in Sources */,
