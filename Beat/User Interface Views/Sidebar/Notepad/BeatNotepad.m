@@ -16,6 +16,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatPlugins/BeatPlugins.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #import "BeatNotepad.h"
 #import "Beat-Swift.h"
@@ -37,6 +38,7 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonMagenta;
 @property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) BeatMarkdownTextStorageDelegate* mdDelegate;
+@property (nonatomic) NSMutableArray* observers;
 
 @end
 @implementation BeatNotepad
@@ -132,10 +134,17 @@
 	[self.textStorage setAttributedString:[self coloredRanges:string]];
 }
 
--(void)didChangeText {
+-(void)didChangeText
+{
 	// Save contents into document settings
 	[self saveToDocument];
 	[super didChangeText];
+	[self notifyTextChange];
+}
+
+- (void)notifyTextChange
+{
+	for (id<BeatTextChangeObserver>observer in self.observers) [observer observedTextDidChange:self];
 }
 
 - (NSAttributedString*)coloredRanges:(NSString*)fullString
@@ -269,6 +278,21 @@
 		[self didChangeText];
 	}
 }
+
+
+#pragma mark - Make observable for plugins
+
+- (void)addTextChangeObserver:(id<BeatTextChangeObserver>)observer
+{
+	if (_observers == nil) _observers = NSMutableArray.new;
+	[self.observers addObject:observer];
+}
+
+- (void)removeTextChangeObserver:(id<BeatTextChangeObserver>)observer
+{
+	[self.observers removeObject:observer];
+}
+
 
 @end
 /*

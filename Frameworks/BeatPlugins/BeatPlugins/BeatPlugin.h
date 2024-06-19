@@ -182,6 +182,8 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (void)onDocumentSaved:(JSValue*)updateMethod;
 - (void)onEscape:(JSValue*)updateMethod;
 
+- (void)onNotepadChange:(JSValue*)updateMethod;
+
 
 #pragma mark General editor and app access
 /// Creates a new document with given string

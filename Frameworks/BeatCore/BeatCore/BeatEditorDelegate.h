@@ -13,18 +13,12 @@
  
  */
 
+#import <BeatCore/BeatCompatibility.h>
+#import __OS_KIT
+
 #import <TargetConditionals.h>
 #import <BeatCore/BeatEditorMode.h>
 #import <BeatCore/BeatDocumentDelegate.h>
-#import <BeatCore/BeatCompatibility.h>
-
-#if TARGET_OS_IOS
-    #import <UIKit/UIKit.h>
-
-#else
-    #import <Cocoa/Cocoa.h>
-#endif
-
 #import <BeatParsing/BeatParsing.h>
 
 #if TARGET_OS_OSX
@@ -32,6 +26,8 @@
 #else
 @class BeatUITextView;
 #endif
+
+typedef void (^BeatChangeListener)(NSRange);
 
 @class NSLayoutManager;
 @class NSTextStorage;
@@ -327,15 +323,27 @@
 - (bool)sidebarVisible;
 
 
+#pragma mark - Listeners
+
+- (void)addChangeListener:(void(^)(NSRange))listener owner:(id)owner;
+- (void)removeChangeListenersFor:(id)owner;
+
+
 @optional
 
+/// Switches to main editor view
 - (void)returnToEditor;
+/// Focuses the text editor
 - (void)focusEditor;
+/// Displays index cards
 - (IBAction)toggleCards:(id)sender;
 
+/// Jump to next scene
 - (IBAction)nextScene:(id)sender;
+/// Jump to previous scene
 - (IBAction)previousScene:(id)sender;
 
+/// iOS method for renaming the document
 - (void)renameDocumentTo:(NSString *)newName completion:(void (^)(NSError *))completion;
 
 @end

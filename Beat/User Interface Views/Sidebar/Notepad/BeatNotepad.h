@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName);
 @end
 
-@interface BeatNotepad : NSTextView <BeatNotepadExports>
+@interface BeatNotepad : NSTextView <BeatNotepadExports, BeatTextChangeObservable>
 @property (weak, nonatomic) IBOutlet id<BeatEditorDelegate> editorDelegate;
 - (void)setup;
 - (void)loadString:(NSString*)string;

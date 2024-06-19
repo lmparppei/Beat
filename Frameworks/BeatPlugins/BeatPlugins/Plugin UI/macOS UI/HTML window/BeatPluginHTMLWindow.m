@@ -44,8 +44,7 @@
 
 /// Returns `true` when window is in full screen mode
 - (bool)isFullScreen {
-	if ((self.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen) return true;
-	else return false;
+    return ((self.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 /// Toggles between full screen mode
@@ -87,18 +86,27 @@
 	}
 }
 
+- (void)call:(JSValue*)val
+{
+    NSString* js = [NSString stringWithFormat:@"(%@)()", val.toString];
+    [self.webView evaluateJavaScript:js completionHandler:nil];
+}
 
 #pragma mark - Window interactions
 
+/// Rather than actually closing the window, we're sending a message to host to close the window. I'm not sure why, we could handle running the callback here, but whatever.
 - (void)close {
 	[self.host closePluginWindow:self];
 }
 
+/// The actual method to forcibly close the window
 - (void)closeWindow {
     if (!_stayInMemory) {
         [self.webView removeFromSuperview];
+        [self.webView purge];
         self.webView = nil;
     }
+    
 	[super close];
 }
 

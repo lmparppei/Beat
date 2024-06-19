@@ -20,6 +20,8 @@
 
     #define is_Mobile (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
 
+    #define __OS_KIT <UIKit/UIKit.h>
+
 #else
 
     #define BXColor NSColor
@@ -32,5 +34,7 @@
     #define BXWindow NSWindow
     #define BXPrintInfo NSPrintInfo
     #define BXImage NSImage
+
+    #define __OS_KIT <AppKit/AppKit.h>
 
 #endif

@@ -64,6 +64,7 @@
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
 		B69CC6362A851FFF00124988 /* MojaveSupport.js in Resources */ = {isa = PBXBuildFile; fileRef = B69CC6352A851FFF00124988 /* MojaveSupport.js */; };
+		B6BC404C2C18C7A80055DBCE /* BeatTextChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */; };
 		B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -127,6 +128,7 @@
 		B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginContainer.swift; sourceTree = "<group>"; };
 		B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginPrint.swift; sourceTree = "<group>"; };
 		B69CC6352A851FFF00124988 /* MojaveSupport.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MojaveSupport.js; sourceTree = "<group>"; };
+		B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTextChangeObserver.swift; sourceTree = "<group>"; };
 		B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWindowManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -304,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				B692D1002A6EBB9400574D72 /* BeatPlugins.h */,
+				B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */,
 				B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */,
 				B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */,
 				B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */,
@@ -450,6 +453,7 @@
 				B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */,
 				B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */,
 				B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */,
+				B6BC404C2C18C7A80055DBCE /* BeatTextChangeObserver.swift in Sources */,
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
 				B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */,
 				B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */,

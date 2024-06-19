@@ -20,6 +20,7 @@
 
 #import "BeatPlugin.h"
 #import <BeatPagination2/BeatPagination2.h>
+#import <BeatCore/BeatCore-Swift.h>
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatPlugins/BeatPluginAgent.h>
 #import <PDFKit/PDFKit.h>
@@ -46,7 +47,7 @@
 #if TARGET_OS_IOS
 @interface BeatPlugin ()
 #else
-@interface BeatPlugin () <NSWindowDelegate, PluginWindowHost>
+@interface BeatPlugin () <NSWindowDelegate, PluginWindowHost, BeatTextChangeObserver>
 #endif
 
 @property (nonatomic) JSVirtualMachine *vm;
@@ -69,6 +70,7 @@
 @property (nonatomic, nullable) JSValue* documentDidBecomeMainMethod;
 @property (nonatomic, nullable) JSValue* updatePreviewMethod;
 @property (nonatomic, nullable) JSValue* escapeMethod;
+@property (nonatomic, nullable) JSValue* notepadChangeMethod;
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
@@ -78,6 +80,8 @@
 @property (nonatomic) NSDictionary *type;
 
 @property (nonatomic) NSURL* pluginURL; // URL for a container
+
+@property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
 
 #if !TARGET_OS_IOS
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
@@ -93,7 +97,7 @@
 
 @end
 
-@implementation BeatPlugin
+@implementation BeatPlugin 
 
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate
 {
@@ -257,6 +261,7 @@
 		[self end];
 	}
 }
+
 /// Runs a JavaScript string in this context
 - (JSValue*)call:(NSString*)script
 {
@@ -299,6 +304,8 @@
     }
     
     for (BeatPluginHTMLWindow *window in _pluginWindows) {
+        // At this point we'll forcibly clear all windows
+        window.stayInMemory = false;
         [window closeWindow];
     }
 #endif
@@ -343,6 +350,9 @@
 	// Remove widget
 	if (self.widgetView != nil) [self.widgetView remove];
 #endif
+    
+    // Clear observers
+    [self clearObservables];
 	
 	self.plugin = nil;
     self.pluginData = nil;
@@ -355,7 +365,7 @@
     self.updateOutlineMethod = nil;
     self.updatePreviewMethod = nil;
     self.updateSelectionMethod = nil;
-	
+        
     // Remove from the list of running plugins
 	if (_resident) [_delegate.pluginAgent deregisterPlugin:self];
 }
@@ -390,6 +400,9 @@
 
 
 #pragma mark - Resident plugin listeners
+
+// This mess needs an update.
+// Make a custom class for listeners, so they can be disabled with changing a property rather than using the endless amounts of booleans (which we're currently doing)
 
 /** Creates a listener for changes in editor text.
  - note:When text is changed, selection will change, too. Avoid creating infinite loops by listening to both changes.
@@ -457,8 +470,40 @@
 	[self makeResident];
 }
 - (void)escapePressed {
-	if (!_escapeMethod || [_escapeMethod isNull]) return;
-	[_escapeMethod callWithArguments:nil];
+	if (_escapeMethod && !_escapeMethod.isNull) [_escapeMethod callWithArguments:nil];
+}
+
+- (void)onNotepadChange:(JSValue*)updateMethod {
+    [self addObservedTextView:(id<BeatTextChangeObservable>)self.delegate.notepad method:updateMethod];
+}
+
+- (void)updateListener:(JSValue*)listener {
+    if (listener && !listener.isNull) [listener callWithArguments:nil];
+}
+
+/// This is the modern way to observe text changes in *any* objects
+- (void)addObservedTextView:(id<BeatTextChangeObservable>)object method:(JSValue*)method
+{
+    if (_observedTextViews == nil) _observedTextViews = NSMutableDictionary.new;
+    NSValue* val = [NSValue valueWithNonretainedObject:object];
+    _observedTextViews[val] = method;
+    [object addTextChangeObserver:self];
+}
+
+- (void)observedTextDidChange:(id<BeatTextChangeObservable>)object
+{
+    [self.observedTextViews[[NSValue valueWithNonretainedObject:object]] callWithArguments:nil];
+}
+
+- (void)clearObservables
+{
+    for (NSValue* val in _observedTextViews.allKeys) {
+        id<BeatTextChangeObservable> object = val.nonretainedObjectValue;
+        [object removeTextChangeObserver:self];
+    }
+    
+    [_observedTextViews removeAllObjects];
+    _observedTextViews = nil;
 }
 
 
@@ -1275,20 +1320,25 @@
 	{
 		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
 	}
+
 	/// Window no longer moves aside its document window.
 	- (void)detachFromDocumentWindow:(NSWindow*)window
 	{
 		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
 	}
+
 	/// Show all plugin windows.
 	- (void)showAllWindows
 	{
 		if (_terminating) return;
 		
 		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-			[window appear];
+            // If the window was already set as full screen, let's not make it appear,
+            // because the content size can get wrong on macOS Sonoma
+            if (!window.isFullScreen) [window appear];
 		}
 	}
+
 	/// All plugin windows become normal level windows, so they no longer float above the document window.
 	- (void)hideAllWindows
 	{
@@ -1345,7 +1395,7 @@
 /// A plugin (HTML) window will close.
 - (void)windowWillClose:(NSNotification *)notification
 {
-    NSLog(@"!!! Plugin window did close");
+    // ?
 }
 
 /// When the plugin window is set as main window, the document will become active. (If applicable.)
@@ -1500,12 +1550,14 @@
     }
 }
 
+
 #pragma mark - Tagging interface
 
 - (NSArray*)availableTags
 {
 	return [BeatTagging categories];
 }
+
 - (NSDictionary*)tagsForScene:(OutlineScene *)scene
 {
 	return [self.delegate.tagging tagsForScene:scene];
@@ -2185,6 +2237,7 @@
 
 #pragma mark - Theme manager
 
+@synthesize theme;
 - (id)theme { return self.delegate.themeManager; }
 
 
@@ -2209,6 +2262,7 @@
 - (bool)macOS {
 	return !self.iOS;
 }
+
 
 
 @end

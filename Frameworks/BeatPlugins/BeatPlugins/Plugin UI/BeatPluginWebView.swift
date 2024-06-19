@@ -85,6 +85,10 @@ import WebKit
     
     /// On deinit, we'll remove the temporary HTML file
     deinit {
+        purge()
+    }
+
+    @objc public func purge() {
         guard let url = self.tempURL else { return }
         do {
             try FileManager.default.removeItem(at: url)
@@ -92,7 +96,7 @@ import WebKit
             print("Temporary file couldn't be removed")
         }
     }
-
+    
     /// Evaluates JavaScript in the view and runs callback
     public func runJS(_ js:String, _ callback:JSValue?) {
         self.evaluateJavaScript(js) { returnValue, error in
