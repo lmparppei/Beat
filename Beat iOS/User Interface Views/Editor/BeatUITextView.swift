@@ -9,6 +9,7 @@
 import UIKit
 import BeatCore
 import BeatParsing
+import EasyPeasy
 
 @objc protocol BeatTextEditorDelegate:BeatEditorDelegate {
 	@objc var revisionTracking:BeatRevisions { get }
@@ -23,13 +24,15 @@ import BeatParsing
 	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
 }
 
-class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate, InputAssistantViewDelegate {
-
-	//@IBInspectable var documentWidth:CGFloat = 640
+@objc class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate {
+	
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
 	@IBOutlet weak var enclosingScrollView:BeatScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
+	/// Modifier flags are set during key press events and cleared afterwards. This helps with macOS class interop.
+	@objc public var modifierFlags:UIKeyModifierFlags = []
+	/// The input assistant view on top of keyboard
 	@objc public var assistantView:InputAssistantView?
 	
 	@objc public var floatingCursor = false
@@ -69,7 +72,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		// Create the text view and connect the container + layout manager
 		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
 		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
-				
+		
 		// Set up the container views
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
@@ -84,7 +87,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		textView.inputDelegate = editorDelegate as? UITextInputDelegate
 		
 		textView.setup()
-				
+		
 		return textView
 	}
 	
@@ -100,7 +103,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	required init?(coder: NSCoder) {
 		customLayoutManager = BeatLayoutManager()
 		super.init(coder: coder)
-
+		
 		self.textStorage.removeLayoutManager(self.textStorage.layoutManagers.first!)
 		
 		customLayoutManager.addTextContainer(self.textContainer)
@@ -142,7 +145,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		self.smartQuotesType = .no
 		self.smartInsertDeleteType = .no
 		self.keyboardAppearance = .dark
-				
+		
 		resizePaper()
 		resize()
 		
@@ -173,6 +176,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 			self.maximumZoomScale = 2.0
 			self.minimumZoomScale = 1.0
 		}
+		
+		//self.easy.layout(Top(0), Left(0), Right(0), Width(self.frame.size.width))
 	}
 	
 	
@@ -214,35 +219,6 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		isUpdatingLayout = false
 	}
 	
-
-	// MARK: - Mobile sizing
-	
-	var mobileScale:CGFloat {
-		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
-		return 1.1 + CGFloat(scale) * 0.15
-		
-	}
-	
-	@objc public func updateMobileScale() {
-		self.zoomScale = mobileScale
-	}
-	
-	func mobileViewResize() {
-		let documentWidth = self.documentWidth
-		self.textContainer.size.width = documentWidth
-		
-		let factor = 1 / self.zoomScale
-		let scaledFrame = self.frame.width * factor
-		
-		var insets = self.insets
-		
-		if (documentWidth < scaledFrame) {
-			insets.left = ((self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2) * factor
-		}
-		
-		self.textContainerInset = insets
-	}
-	
 	
 	// MARK: - Scroll to range
 	
@@ -253,19 +229,19 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	func scroll(to range: NSRange) {
 		self.scroll(to:range, animated: true)
 	}
-			
+	
 	func scroll(to range: NSRange, animated:Bool = true) {
 		if mobileMode {
 			super.scrollRangeToVisible(range)
 			return
 		}
-
+		
 		// Current bounds
 		let bounds = self.enclosingScrollView.bounds
 		
 		// The *actually* visible frame (why won't iOS give this automatically?)
 		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.enclosingScrollView.adjustedContentInset.bottom - self.enclosingScrollView.contentInset.bottom)
-				
+		
 		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
 		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
@@ -274,12 +250,12 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		selectionRect.origin.y += self.textContainerInset.top
 		
 		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
-
+		
 		// If the rect is not visible, scroll to that range
 		if CGRectIntersection(scaledRect, visible).height < 16.0 {
 			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
 		}
-
+		
 	}
 	
 	override func scrollRangeToVisible(_ range: NSRange) {
@@ -301,7 +277,7 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		self.scroll(to: range)
 	}
 	
-
+	
 	// MARK: - Dialogue input
 	
 	func shouldCancelCharacterInput() -> Bool {
@@ -342,8 +318,8 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 		editorDelegate.setTypeAndFormat(line, type: .empty)
 	}
-		
-
+	
+	
 	// MARK: - Rects for ranges
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
@@ -379,14 +355,14 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 		
 		super.touchesMoved(touches, with: event)
 	}
-
+	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
 			}
 		}
-				
+		
 		super.touchesEnded(touches, with: event)
 	}
 	
@@ -404,135 +380,22 @@ class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate,
 	
 	override func endFloatingCursor() {
 		super.endFloatingCursor()
-
+		
 		floatingCursor = false
 		
 		if self.selectedRangeBeforeTouch != self.selectedRange {
 			self.editorDelegate?.textViewDidEndSelection(self, selectedRange: self.selectedRange)
 		}
 	}
-	
-	// MARK: - Update assisting views
-	
-	@objc func updateAssistingViews () {
-		guard let editorDelegate = self.editorDelegate
-		else { return }
-		
-		if (editorDelegate.currentLine().isAnyParenthetical()) {
-			self.autocapitalizationType = .none
-		} else {
-			self.autocapitalizationType = .sentences
-		}
-		
-		assistantView?.reloadData()
-	}
-	
-	
-	// MARK: - Menu
-	
-	override func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
-		var originalActions = suggestedActions
-		var actions:[UIMenuElement] = []
-		
-		for m in suggestedActions {
-			guard let menu = m as? UIMenu else { continue }
-			
-			if menu.identifier == .standardEdit ||
-				menu.identifier == .replace ||
-				menu.identifier == .find
-			{
-				actions.append(menu)
-				originalActions.removeObject(object: menu)
-			}
-		}
-		
-		guard let line = editorDelegate?.currentLine() else { return UIMenu(children: actions) }
-		
-		if line.isAnyDialogue() || line.type == .action {
-			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
-				UIAction(image: UIImage(named: "button_bold")) { _ in
-					self.editorDelegate?.formattingActions.makeBold(nil)
-				},
-				UIAction(image: UIImage(named: "button_italic")) { _ in
-					self.editorDelegate?.formattingActions.makeItalic(nil)
-				},
-				UIAction(image: UIImage(systemName: "underline")) { _ in
-					self.editorDelegate?.formattingActions.makeUnderlined(nil)
-				}
-			])
-			
-			actions.append(formatMenu)
-		}
-		
-		if self.selectedRange.length > 0 {
-			let revisionMenu = UIMenu(subtitle: "Revisions", image: UIImage(systemName: "asterisk"), options: [], children: [
-				UIAction(title: "Mark As Revised") { _ in
-					self.editorDelegate?.revisionTracking.markerAction(.addition)
-				},
-				UIMenu(options: [.destructive, .displayInline], children: [
-					UIAction(title: "Clear Revisions") { _ in
-						self.editorDelegate?.revisionTracking.markerAction(.none)
-					}
-				])
-			])
-			
-			actions.append(revisionMenu)
-		}
-		
-		let textIO = editorDelegate?.textActions
-		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
-			UIAction(title: "Omit Scene") { _ in
-				self.editorDelegate?.formattingActions.omitScene(nil)
-			},
-			UIAction(title: "Make Non-Numbered") { _ in
-				self.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
-			},
-			UIAction(image: UIImage(named:"color.red")) { _ in
-				textIO?.setColor("red", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.blue")) { _ in
-				textIO?.setColor("blue", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.green")) { _ in
-				textIO?.setColor("green", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.pink")) { _ in
-				textIO?.setColor("pink", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.brown")) { _ in
-				textIO?.setColor("brown", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.cyan")) { _ in
-				textIO?.setColor("cyan", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.orange")) { _ in
-				textIO?.setColor("orange", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.magenta")) { _ in
-				textIO?.setColor("magenta", for: self.editorDelegate?.currentScene)
-			}
-		])
-		
-		actions.append(sceneMenu)
-				
-		// Add remaining actions from original menu
-		actions.append(contentsOf: originalActions)
-		
-		let menu = UIMenu(children: actions)
-		
-		return menu
-	}
-		
 }
-
-
+	
 // MARK: - Scroll view delegation
 
 extension BeatUITextView: UIScrollViewDelegate {
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return pageView
 	}
-	
+		
 	func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		//
 	}
@@ -540,20 +403,23 @@ extension BeatUITextView: UIScrollViewDelegate {
 	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
 		var x = (scrollView.frame.width - pageView.frame.width) / 2
 		if (x < 0) { x = 0; }
-		
-		var frame = pageView!.frame
+				
+		var frame = pageView.frame
 		frame.origin.x = x
 		
 		var zoom = scrollView.zoomScale
 		
+		// Page view will always be at least the height of the screen
 		if (frame.height < scrollView.frame.height) {
 			let factor = frame.height / scrollView.frame.height
 			zoom = scrollView.zoomScale / factor
 		}
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
-			self.pageView.frame = frame
+			self.pageView.frame.origin.x = frame.origin.x
+			
 			self.enclosingScrollView.zoomScale = zoom
+			self.resizeScrollViewContent()
 		} completion: { _ in
 			
 		}
@@ -566,18 +432,21 @@ extension BeatUITextView: UIScrollViewDelegate {
 			editorDelegate?.handleTabPress()
 			return
 		}
-		else if key.keyCode == .keyboardDeleteOrBackspace {
+		if key.keyCode == .keyboardReturnOrEnter, key.modifierFlags == .shift {
+			self.modifierFlags = key.modifierFlags
+		} else if key.keyCode == .keyboardDeleteOrBackspace, self.shouldCancelCharacterInput() {
 			// Check if we should cancel character input
-			if self.shouldCancelCharacterInput() {
-				self.cancelCharacterInput()
-				return
-			}
+			self.cancelCharacterInput()
+			return
 		}
 		
 		super.pressesBegan(presses, with: event)
 	}
 	
 	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+		// Reset modifier flags first
+		self.modifierFlags = []
+		
 		guard let key = presses.first?.key else { return }
 
 		switch key.keyCode {
@@ -755,20 +624,7 @@ extension BeatUITextView {
 	@objc func redo() {
 		self.editorDelegate?.undoManager.redo()
 	}
-		
-	
-	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
-		guard let editorDelegate = self.editorDelegate, suggestion.count > 0 else { return }
-		
-		if suggestion[0] == "(" && editorDelegate.currentLine().isAnyCharacter() {
-			// This is a character extension
-			editorDelegate.textActions.addCueExtension(suggestion, on: editorDelegate.currentLine())
-		} else {
-			// This is something else
-			let r = NSMakeRange(editorDelegate.currentLine().position, editorDelegate.currentLine().length)
-			editorDelegate.replace(r, with: suggestion)
-		}
-	}
+
 }
 
 // MARK: - Mobile keyboard manager

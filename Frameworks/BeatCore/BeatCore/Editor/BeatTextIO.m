@@ -397,7 +397,10 @@ static NSString *centeredEnd = @" <";
 #if TARGET_OS_OSX
     // On macOS, pressing shift will avoid adding an extra line break
     shiftPressed = (NSEvent.modifierFlags & NSEventModifierFlagShift);
+#else
+    shiftPressed = self.delegate.inputModifierFlags & UIKeyModifierShift;
 #endif
+    
     
     if (currentLine.string.length > 0 && !shiftPressed) {
         // Add double breaks for outline element lines

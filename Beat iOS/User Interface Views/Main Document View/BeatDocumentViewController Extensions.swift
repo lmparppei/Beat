@@ -160,8 +160,24 @@ extension BeatDocumentViewController {
 		button?.removeFromSuperview()
 		pluginViewButtons.removeValue(forKey: viewController)
 	}
+}
+
+@objc public extension BeatDocumentViewController {
+	
+	@IBAction func nextScene(_ sender:Any!) {
+		if let line = self.parser.nextOutlineItem(of: .heading, from: self.selectedRange().location) {
+			self.scroll(to: line)
+		}
+	}
+	
+	@IBAction func previousScene(_ sender:Any!) {
+		if let line = self.parser.previousOutlineItem(of: .heading, from: self.selectedRange().location) {
+			self.scroll(to: line)
+		}
+	}
 	
 }
+
 
 @objc public extension UIViewController {
 	@objc func embed(_ viewController:UIViewController, inView view:UIView){
@@ -174,4 +190,3 @@ extension BeatDocumentViewController {
 		viewController.didMove(toParent: self)
 	}
 }
-

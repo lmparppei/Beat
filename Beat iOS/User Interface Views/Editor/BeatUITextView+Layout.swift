@@ -23,6 +23,8 @@ extension BeatUITextView {
 	/// Called when setting up the view and adjusting paper size
 	@objc func resizePaper() {
 		var frame = pageView.frame
+		frame.origin.x = 0.0
+		frame.origin.y = 0.0
 		frame.size.height = textContainer.size.height
 		frame.size.width = self.documentWidth + textContainerInset.left + textContainerInset.right + BeatUITextView.linePadding()
 		
@@ -78,17 +80,13 @@ extension BeatUITextView {
 		// iOS frame sizes tend to be off by ~0.000001, so we'll have to round everything to ensure we're not doing anything unnecessary.
 		if preciseRound(frame.origin.x, precision: .tenths) != preciseRound(pageView.frame.origin.x, precision: .tenths) { pageView.frame.origin.x = frame.origin.x }
 		if preciseRound(frame.width, precision: .tenths) != preciseRound(pageView.frame.width, precision: .tenths) { pageView.frame.size.width = frame.width }
-		if preciseRound(frame.height, precision: .tenths) != preciseRound(pageView.frame.height, precision: .tenths) { pageView.frame.size.height = frame.height }
-				
+//		if preciseRound(frame.height, precision: .tenths) != preciseRound(pageView.frame.height, precision: .tenths) { pageView.frame.size.height = frame.height }
+
 		// Check if we should resize text view frame or not.
-		var textViewFrame = self.frame
-		
-		if width != floor(self.frame.width) || height != floor(self.frame.height) {
-			textViewFrame.origin.x = 0.0
-			textViewFrame.size.width = width
-			textViewFrame.size.height = height
-			self.frame = textViewFrame
-		}
+		// Note that the self here is important (don't get confused with page view frame)
+		if floor(self.frame.origin.x) != 0.0 { self.frame.origin.x = 0.0 }
+		if width != floor(self.frame.width) { self.frame.size.width = width }
+		if height != floor(self.frame.height) { self.frame.size.height = height }
 	}
 	
 	@objc func firstResize() {
@@ -102,6 +100,12 @@ extension BeatUITextView {
 		
 		self.frame.size = newSize
 		self.enclosingScrollView.contentSize = CGSize(width: contentSize.width + inset.left + inset.right, height: contentSize.height + inset.top + inset.bottom)
+		
+		// Calculate initial page view size
+		let width = floor(self.documentWidth + self.insets.left + self.insets.right)
+		let zoom = enclosingScrollView.zoomScale
+		self.pageView.frame.origin.x = 0.0
+		self.pageView.frame.size.width = width * zoom
 	}
 	
 	@objc func resizeScrollViewContent() {
@@ -138,7 +142,36 @@ extension BeatUITextView {
 		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
 			scrollSize.height += 12.0
 			self.enclosingScrollView.contentSize = scrollSize
-		}
+		}	
 	}
+
+	
+	// MARK: - Mobile sizing
+	
+	var mobileScale:CGFloat {
+		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
+		return 1.1 + CGFloat(scale) * 0.15
 		
+	}
+	
+	@objc public func updateMobileScale() {
+		self.zoomScale = mobileScale
+	}
+	
+	func mobileViewResize() {
+		let documentWidth = self.documentWidth
+		self.textContainer.size.width = documentWidth
+		
+		let factor = 1 / self.zoomScale
+		let scaledFrame = self.frame.width * factor
+		
+		var insets = self.insets
+		
+		if (documentWidth < scaledFrame) {
+			insets.left = ((self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2) * factor
+		}
+		
+		self.textContainerInset = insets
+	}
+	
 }

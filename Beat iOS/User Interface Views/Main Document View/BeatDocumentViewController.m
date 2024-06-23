@@ -142,7 +142,7 @@
 	
 	if (!self.documentIsLoading) return;
 	
-	[self appearanceChanged:nil];
+	//[self appearanceChanged:nil];
 	
 	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
 	[delegate checkDarkMode];
@@ -181,51 +181,44 @@
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
 	[self setupDocument];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+	// Do nothing more if we're not loading the document
+	if (!self.documentIsLoading) return;
 	
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
 	
-	if (self.documentIsLoading) {
-		// Loading is complete, show page view
-		[self.textView layoutIfNeeded];
+	// Loading is complete, show page view
+	[self.textView layoutIfNeeded];
+	
+	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
+	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
 		
-		[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
-		[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-		
-		// This is not a place of honor. No highly esteemed deed is commemorated here.
-		[self.textView resize];
-		[self.textView firstResize];
-		[self.textView resize];
-		
-		self.documentIsLoading = false;
-		
-		// Restore caret position
-		NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
-		if (position < self.text.length) {
-			[self.textView setSelectedRange:NSMakeRange(position, 0)];
-			[self.textView scrollToRange:self.textView.selectedRange];
-		}
-		
-		[self appearanceChanged:nil];
-	}
+	// This is not a place of honor. No highly esteemed deed is commemorated here.
+	[self.textView firstResize];
+	[self.textView resize];
+	[self restoreCaret];
+	
+	self.documentIsLoading = false;
+	
+	//[self appearanceChanged:nil];
 }
 
--(IBAction)dismissViewController:(id)sender {
+-(IBAction)dismissViewController:(id)sender
+{
 	[self unloadViews];
 }
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback
 {
 	[self.document openWithCompletionHandler:^(BOOL success) {
-		if (!success) {
-			// Do something
-			return;
-		}
+		// Do something here maybe
+		if (!success) return;
 		
 		self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
 		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.document.rawText];
@@ -238,9 +231,12 @@
 		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
 		formatting.delegate = self;
 		
-		for (Line* line in self.parser.lines) { @autoreleasepool {
-			[formatting formatLine:line firstTime:true];
-		} }
+		// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
+		for (Line* line in self.parser.lines) {
+			@autoreleasepool {
+				[formatting formatLine:line firstTime:true];
+			}
+		}
 		[self.parser.changedIndices removeAllIndexes];
 		
 		callback();
@@ -266,14 +262,12 @@
 	
 	// Init preview controller and pagination
 	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
-	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
 	
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
 	
 	// Keyboard manager
-	//self.keyboardManager = KeyboardManager.new;
-	//self.keyboardManager.delegate = self;
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybWillShow:) name:UIKeyboardWillShowNotification object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
@@ -286,7 +280,6 @@
 	[self.textView setFindInteractionEnabled:true];
 	
 	// Don't ask
-	[self.textView resize];
 	[self.textView firstResize];
 	[self.textView resize];
 	
@@ -331,17 +324,15 @@
 
 - (void)ensureLayout
 {
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	[self.textView setNeedsDisplay];
 	[self.textView setNeedsLayout];
 }
 
-
 - (void)updateLayout {
 	[self ensureLayout];
 }
-
 
 
 #pragma mark - Text view
@@ -353,6 +344,19 @@
 	return self.editorStyles.page.lineHeight;
 }
 
+- (UIKeyModifierFlags)inputModifierFlags {
+	return self.textView.modifierFlags;
+}
+
+- (void)restoreCaret
+{
+	// Restore caret position from settings
+	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+	if (position < self.text.length) {
+		[self.textView setSelectedRange:NSMakeRange(position, 0)];
+		[self.textView scrollToRange:self.textView.selectedRange];
+	}
+}
 
 #pragma mark - Application data and file access
 

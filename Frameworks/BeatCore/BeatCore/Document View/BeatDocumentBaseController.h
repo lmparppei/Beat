@@ -208,6 +208,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 /// Focuses the editor window and text view
 - (void)focusEditor;
 
+
 #pragma mark - Text getters and caches
 
 /// Content buffer keeps the text until the text view is initialized
@@ -281,6 +282,7 @@ NS_ASSUME_NONNULL_END
 - (void)invalidatePreviewAt:(NSInteger)index;
 - (void)createPreviewAt:(NSRange)range;
 - (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
+
 
 #pragma mark - Revisions
 
