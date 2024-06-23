@@ -92,7 +92,7 @@ typedef void (^BeatChangeListener)(NSRange);
 - (BXTextView*)getTextView;
 - (CGFloat)editorLineHeight;
 
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool disableFormatting;
 #endif
@@ -228,9 +228,11 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
 
+#if TARGET_OS_OSX
 /// Check if the editor tab is visible on macOS
-#if !TARGET_OS_IOS
 - (bool)editorTabVisible;
+#else
+@property (nonatomic) UIKeyModifierFlags inputModifierFlags;
 #endif
 
 
