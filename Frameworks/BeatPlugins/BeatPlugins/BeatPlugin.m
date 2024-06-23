@@ -45,7 +45,7 @@
 #import <objc/runtime.h>
 
 #if TARGET_OS_IOS
-@interface BeatPlugin ()
+@interface BeatPlugin () <BeatTextChangeObserver>
 #else
 @interface BeatPlugin () <NSWindowDelegate, PluginWindowHost, BeatTextChangeObserver>
 #endif
@@ -474,7 +474,9 @@
 }
 
 - (void)onNotepadChange:(JSValue*)updateMethod {
+#if TARGET_OS_OSX
     [self addObservedTextView:(id<BeatTextChangeObservable>)self.delegate.notepad method:updateMethod];
+#endif
 }
 
 - (void)updateListener:(JSValue*)listener {
