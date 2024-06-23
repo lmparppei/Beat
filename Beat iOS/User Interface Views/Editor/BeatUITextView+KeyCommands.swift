@@ -9,14 +9,17 @@
 import UIKit
 
 extension BeatUITextView {
-	
 	override var keyCommands: [UIKeyCommand]? {
 		return [
 			UIKeyCommand(action: #selector(makeBold), input: "b", modifierFlags: [.command], discoverabilityTitle: "Bold"),
 			UIKeyCommand(action: #selector(makeItalic), input: "i", modifierFlags: [.command], discoverabilityTitle: "Italic"),
 			UIKeyCommand(action: #selector(makeUnderlined), input: "u", modifierFlags: [.command], discoverabilityTitle: "Underline"),
-			UIKeyCommand(action: #selector(makeOmitted), input: "e", modifierFlags: [.command, .shift], discoverabilityTitle: "Omit")
+			UIKeyCommand(action: #selector(makeOmitted), input: "e", modifierFlags: [.command, .shift], discoverabilityTitle: "Omit"),
+			UIKeyCommand(action: #selector(prevScene), input: UIKeyCommand.inputUpArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Previous Scene"),
+			UIKeyCommand(action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Next Scene")
 		]
+		
+		
 	}
 	
 	@objc func makeBold() {
@@ -31,7 +34,16 @@ extension BeatUITextView {
 		self.editorDelegate?.formattingActions.makeUnderlined(self)
 	}
 	
-	@objc func makeOmitted () {
+	@objc func makeOmitted() {
 		self.editorDelegate?.formattingActions.makeOmitted(self)
 	}
+	
+	@objc func nextScene() {
+		self.editorDelegate?.nextScene?(self)
+	}
+	
+	@objc func prevScene() {
+		self.editorDelegate?.previousScene?(self)
+	}
+	
 }
