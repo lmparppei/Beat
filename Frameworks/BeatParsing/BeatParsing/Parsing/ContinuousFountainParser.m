@@ -948,7 +948,7 @@ static NSDictionary* patterns;
     
     
     // Title page
-    if ((previousLine == nil || previousLine.isTitlePage) && !line.string.containsOnlyUppercase) {
+    if ((previousLine == nil || previousLine.isTitlePage) && !(line.string.containsOnlyUppercase && previousLine == nil)) {
         LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
         if (titlePageType != NSNotFound) return titlePageType;
     }
