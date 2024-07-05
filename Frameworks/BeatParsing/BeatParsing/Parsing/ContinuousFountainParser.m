@@ -332,7 +332,6 @@ static NSDictionary* patterns;
         !NSLocationInRange(_delegate.selectedRange.location, line.range) &&
         line.numberOfPrecedingFormattingCharacters == 0
         ) {
-        
         line.type = action;
         [self.changedIndices addIndex:i];
         [_delegate applyFormatChanges];
@@ -635,7 +634,7 @@ static NSDictionary* patterns;
         
     // Correct orphaned dialogue if needed
     [self correctOrphanedDialogueAt:index];
-    
+        
     //If there is a next element, check if it might need a reparse because of a change in type or omit out
     if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
         currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
@@ -645,22 +644,17 @@ static NSDictionary* patterns;
             
             bool nextLineAffectedByEmptyLine = [self requiresPrecedingLineToBeEmpty:nextLine.type];
             
-            
-            if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
+            if (currentLine.type != oldType ||
+                currentLine.isTitlePage ||					// if line is a title page, parse next line too
                 nextLine.isTitlePage ||
                 
-                currentLine.isDialogue ||
-                currentLine.isDualDialogue ||
-                nextLine.isDialogue ||
-                nextLine.isDualDialogue ||
                 // Avoid dialogue weirdness
-                ((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0) ||
+                (currentLine.isAnySortOfDialogue && nextLine.string.length > 0 && !currentLine.isAnySortOfDialogue) ||
 
                 nextLine.isOutlineElement ||
                 
                 // if the line became empty, it might change type of next line
-                nextLineAffectedByEmptyLine ||
-                (currentLine.type != oldType) ||
+                (currentLine.type == empty && (nextLineAffectedByEmptyLine || nextLine.length > 0)) ||
                 
                 // Look for unterminated omits & notes
                 nextLine.omitIn != currentLine.omitOut ||
