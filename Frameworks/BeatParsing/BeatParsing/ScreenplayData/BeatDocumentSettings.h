@@ -10,15 +10,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatEditorDelegate;
+@protocol BeatDocumentSettingDelegate
+- (void)addToChangeCount;
+@end
 
 @interface BeatDocumentSettings : NSObject
+-(id)initWithDelegate:(id<BeatDocumentSettingDelegate>)delegate;
+
 + (NSDictionary*)defaultValues;
 + (NSDictionary*)defaultValue:(NSString*)key;
 - (NSDictionary*)defaultValues;
 
+@property (nonatomic, weak) id<BeatDocumentSettingDelegate> delegate;
 @property (atomic) NSMutableDictionary *settings;
-@property (weak) id<BeatEditorDelegate> delegate;
 
 extern NSString * const DocSettingRevisions;
 extern NSString * const DocSettingHiddenRevisions;

@@ -18,9 +18,6 @@
 #define JSON_MARKER @"\n\n/* If you're seeing this, you can remove the following stuff - BEAT:"
 #define JSON_MARKER_END @"END_BEAT */"
 
-@interface BeatDocumentSettings ()
-@end
-
 @implementation BeatDocumentSettings
 
 NSString * const DocSettingRevisions = @"Revision";
@@ -69,9 +66,19 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 {
 	self = [super init];
 	if (self) {
-		_settings = [NSMutableDictionary dictionary];
+        _settings = NSMutableDictionary.new;
 	}
 	return self;
+}
+
+-(id)initWithDelegate:(id<BeatDocumentSettingDelegate>)delegate
+{
+    self = [super init];
+    if (self) {
+        _settings = NSMutableDictionary.new;
+        _delegate = delegate;
+    }
+    return self;
 }
 
 + (NSDictionary*)defaultValues
@@ -112,18 +119,22 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 - (void)setInt:(NSString*)key as:(NSInteger)value
 {
 	[_settings setValue:@(value) forKey:key];
+    [_delegate addToChangeCount];
 }
 - (void)setFloat:(NSString*)key as:(CGFloat)value
 {
 	[_settings setValue:[NSNumber numberWithFloat:value] forKey:key];
+    [_delegate addToChangeCount];
 }
 - (void)setString:(NSString*)key as:(NSString*)value
 {
 	[_settings setValue:value forKey:key];
+    [_delegate addToChangeCount];
 }
 - (void)set:(NSString*)key as:(id)value
 {
 	[_settings setValue:value forKey:key];
+    [_delegate addToChangeCount];
 }
 
 - (bool)has:(NSString*)key {
