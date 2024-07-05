@@ -17,7 +17,6 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPagination2/BeatPagination.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
-#import <BeatCore/BeatCore.h>
 #import <NaturalLanguage/NaturalLanguage.h>
 
 //#import "Beat-Swift.h"
@@ -51,7 +50,7 @@
 
 - (BeatExportSettings*)settings
 {
-    if (self.pagination != nil) return self.pagination.settings;
+    if (self.pagination != nil) return ((BeatPaginationManager*)self.pagination).settings;
     else return _settings;
 }
 

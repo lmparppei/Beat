@@ -7,9 +7,9 @@
 //
 
 #import <TargetConditionals.h>
-
 #import <Foundation/Foundation.h>
 #import <BeatPagination2/BeatPagination.h>
+#import <BeatCore/BeatCore.h>
 
 @class BeatPaginationManager;
 @class BeatPaginationPage;
@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRenderer : NSObject
 @property (nonatomic) BeatExportSettings* settings;
-@property (nonatomic, weak) BeatPaginationManager* pagination;
+//@property (nonatomic) BeatPaginationManager* pagination;
+@property (nonatomic) id pagination;
 
 - (instancetype)initWithSettings:(BeatExportSettings*)settings;
 

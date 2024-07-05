@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <BeatCore/BeatCore.h>
 
 #import <BeatPagination2/BeatPaginationPage.h>
 #import <BeatPagination2/BeatPaginationBlock.h>
