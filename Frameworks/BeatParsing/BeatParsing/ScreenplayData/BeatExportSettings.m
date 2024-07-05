@@ -13,22 +13,22 @@
 @implementation BeatExportSettings
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:nil scene:@"" coloredPages:NO revisedPageColor:@""];
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:nil scene:@"" coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
 }
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:@"" coloredPages:NO revisedPageColor:@""];
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:@"" coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
 }
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:scene coloredPages:NO revisedPageColor:@""];
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:scene coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
 }
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisions:revisions scene:nil coloredPages:coloredPages revisedPageColor:revisedPagecolor];
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisions:revisions scene:nil coloredPages:coloredPages revisedPageColor:revisedPagecolor hidePageNumbers:false];
 }
 
--(instancetype)initWithOperation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPageColor {
+-(instancetype)initWithOperation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPageColor hidePageNumbers:(bool)hidePageNumbers {
 	self = [super init];
 	
 	if (self) {
@@ -36,12 +36,14 @@
 		_operation = operation;
 		_header = (header.length) ? header.copy : @"";
 		_printSceneNumbers = printSceneNumbers;
-            
+        
         _revisions = revisions.copy;
 		_printNotes = printNotes;
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor.copy;
 		_paperSize = NSNotFound;
+        
+        _hidePageNumbers = hidePageNumbers;
         
         if (revisions == nil) revisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1024)];
         
@@ -53,7 +55,8 @@
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
     return [BeatExportSettings.alloc initWithOperation:operation delegate:delegate];
 }
-- (BeatExportSettings*)initWithOperation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
+- (BeatExportSettings*)initWithOperation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate
+{
     self = super.init;
     
     if (self) {
@@ -71,6 +74,7 @@
         _headerAlignment = [delegate.documentSettings getInt:DocSettingHeaderAlignment];
         
         _printSceneNumbers = delegate.printSceneNumbers;
+        _hidePageNumbers = delegate.hidePageNumbers;
         _revisions = delegate.shownRevisions;
         
         _coloredPages = false;

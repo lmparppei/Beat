@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatExportSettingDelegate
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool hidePageNumbers;
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) id styles;
 @property (nonatomic) BeatDocumentSettings* documentSettings;
@@ -57,6 +58,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool hidePageNumbers;
 
 @property (nonatomic) NSIndexSet* additionalTypes; // LineType enums in an index set
 
