@@ -86,9 +86,15 @@
 	}
 }
 
-- (void)call:(JSValue*)val
+- (void)call:(JSValue*)val arguments:(NSArray*)arguments
 {
-    NSString* js = [NSString stringWithFormat:@"(%@)()", val.toString];
+    NSString* args = @"";
+    for (id a in arguments) {
+        if (a != arguments.firstObject) args = [args stringByAppendingString:@", "];
+        args = [args stringByAppendingFormat:@"%@", a];
+    }
+    
+    NSString* js = [NSString stringWithFormat:@"(%@)(%@)", val.toString, args];
     [self.webView evaluateJavaScript:js completionHandler:nil];
 }
 

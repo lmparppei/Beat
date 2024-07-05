@@ -29,7 +29,7 @@ JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue* __nullable)call
 JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
 
 /// Runs given code in the window (any code is converted to a string)
-- (void)call:(JSValue*)val;
+JSExportAs(call, - (void)call:(JSValue*)val arguments:(NSArray<JSValue*>*)arguments);
 
 - (CGRect)getFrame;
 - (CGRect)getWindowFrame;
