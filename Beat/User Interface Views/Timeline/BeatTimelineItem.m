@@ -346,7 +346,6 @@
 	}
 	
 	[menu addItemWithTitle:[BeatLocalization localizedStringForKey:@"storyline.add"] action:@selector(newStoryline) keyEquivalent:@""];
-
 	
 	return menu;
 }

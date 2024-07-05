@@ -12,7 +12,7 @@
 #define MIN_SCALE 1.0
 #define MAX_SCALE 10.0
 
-@interface HorizontalPinchView ()
+@interface HorizontalPinchView () <NSGestureRecognizerDelegate>
 @property CGFloat magnificationDelta;
 @property (nonatomic) NSMagnificationGestureRecognizer *recognizer;
 @property IBOutlet NSSlider *magnificationSlider;
@@ -24,11 +24,16 @@
 -(void)awakeFromNib {
 	_horizontalMagnification = 1.0;
 	_magnificationDelta = 1.0;
+	
 	_recognizer = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
+	[self addGestureRecognizer:_recognizer];
+	
 	self.translatesAutoresizingMaskIntoConstraints = NO;
 	
-	[self addGestureRecognizer:_recognizer];
+	self.hasVerticalScroller = NO;
+	self.hasHorizontalScroller = NO;
 }
+
 -(IBAction)zoom:(id)sender {
 	// Zoom using slider. Centers on the selected scene.
 	
@@ -58,15 +63,18 @@
 	// Scroll back into view
 	CGFloat zoomXscaled = newWidth * locationNormalized;
 	CGFloat x = zoomXscaled - locationInView;
+	
 	NSRect bounds = self.contentView.bounds;
 	bounds.origin.x = x;
 	self.contentView.bounds = bounds;
 }
 
--(void)pinch:(NSEvent*)event {
-	// Zoom using pinch gesture
-	
-	if (self.recognizer.state == NSGestureRecognizerStateBegan) _magnificationDelta = self.horizontalMagnification;
+/// Zoom using pinch gesture
+-(void)pinch:(NSEvent*)event
+{
+	// Reset magnification delta
+	if (self.recognizer.state == NSGestureRecognizerStateBegan)
+		_magnificationDelta = self.horizontalMagnification;
 	
 	// Zoom in more aggressively when we're closer
 	CGFloat magFactor = ((_magnificationDelta + event.magnification) * self.documentView.frame.size.width) / self.frame.size.width;
@@ -80,18 +88,20 @@
 	[self updateSlider];
 }
 
-- (void)scrollWheel:(NSEvent *)event {
+-(void)touch:(NSEvent *)event {
+	NSLog(@"Swipe: %@", event);
+}
+
+- (void)scrollWheel:(NSEvent *)event
+{
 	[super scrollWheel:event];
 	
 	// Zoom in only when alt is pressed
 	if (NSEvent.modifierFlags == NSEventModifierFlagOption) {
 		CGFloat amount = .15;
 		
-		if (event.deltaY > 0) {
-			self.horizontalMagnification += amount;
-		} else {
-			self.horizontalMagnification -= amount;
-		}
+		if (event.deltaY > 0) self.horizontalMagnification += amount;
+		else self.horizontalMagnification -= amount;
 		
 		NSPoint locationInScrollview = [self convertPoint:event.locationInWindow toView:_timeline];
 		CGFloat normalized = locationInScrollview.x / self.documentView.frame.size.width;
@@ -101,15 +111,17 @@
 		[self updateSlider];
 	}
 }
-- (void)scaleInto:(CGFloat)locationInView normalized:(CGFloat)normalized {
+
+- (void)scaleInto:(CGFloat)locationInView normalized:(CGFloat)normalized
+{
 	CGFloat originalWidth = self.frame.size.width;
 	CGFloat minScale = MIN_SCALE;
 	CGFloat maxScale = MAX_SCALE;
 	
 	self.horizontalMagnification = MIN(self.horizontalMagnification, maxScale);
 	self.horizontalMagnification = MAX(self.horizontalMagnification, minScale);
-	
-	CGFloat newWidth = originalWidth * self.horizontalMagnification;
+		
+	CGFloat newWidth = originalWidth * self.horizontalMagnification;	
 	self.documentView.frame = NSMakeRect(0, 0, newWidth, self.documentView.frame.size.height);
 	
 	CGFloat pinchXScaled = newWidth * normalized;
@@ -119,12 +131,10 @@
 	bounds.origin.x = x;
 	self.contentView.bounds = bounds;
 }
-- (void)updateSlider {
-	[_magnificationSlider setFloatValue:self.horizontalMagnification * 100];
-}
 
-- (void)drawRect:(NSRect)dirtyRect {
-	[super drawRect:dirtyRect];
+- (void)updateSlider
+{
+	[_magnificationSlider setFloatValue:self.horizontalMagnification * 100];
 }
 
 @end

@@ -74,15 +74,12 @@
 @implementation BeatTimeline
 
 - (void)setup {
-	//self.enclosingScrollView.hasHorizontalScroller = NO;
-	//[self hide];
 }
+
 
 - (void)awakeFromNib {
 	// Register this view to be updated
 	[_delegate registerSceneOutlineView:self];
-	
-	self.enclosingScrollView.hasHorizontalScroller = NO;
 	
 	// No item selected
 	_clickedItem = nil;
@@ -139,6 +136,18 @@
 	[self updateStorylineLabels];
 	
 	[self hide];
+}
+
+- (void)scrollWheel:(NSEvent *)event
+{
+	// For some reason we need to do this on macOS Sonoma. No
+	CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
+
+	if ([self mouse:p inRect:self.bounds]) {
+		[self.enclosingScrollView scrollWheel:event];
+		return;
+	}
+	[super scrollWheel:event];
 }
 
 - (void)refreshWithDelay {
@@ -350,14 +359,16 @@
 	// Move playhead to the selected position + disable core animation
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-	[self scrollToScene:_delegate.currentScene];
+	[self moveToScene:_delegate.currentScene scroll:false];
 	[CATransaction commit];
 }
 
--(void)setFrame:(NSRect)frame {
+-(void)setFrame:(NSRect)frame
+{
 	CGFloat magnification = [(HorizontalPinchView*)self.enclosingScrollView horizontalMagnification];
 	CGFloat newWidth = self.enclosingScrollView.frame.size.width * magnification;
 	frame.size.width = newWidth;
+	frame.size.height = self.enclosingScrollView.frame.size.height - 2.0;
 	
 	[super setFrame:frame];
 }
@@ -373,19 +384,19 @@
 /// Called by the editor to tell we moved to this scene
 - (void)didMoveToSceneIndex:(NSInteger)index
 {
-	[self scrollToSceneIndex:index];
+	[self moveToSceneIndex:index scroll:true];
 }
 
-- (void)scrollToScene:(OutlineScene*)scene
+- (void)moveToScene:(OutlineScene*)scene scroll:(bool)scroll
 {
 	NSUInteger i = [self.delegate.parser.outline indexOfObject:scene];
-	[self scrollToSceneIndex:i];
+	[self moveToSceneIndex:i scroll:scroll];
 }
 
-- (void)scrollToSceneIndex:(NSInteger)index
+- (void)moveToSceneIndex:(NSInteger)index scroll:(bool)scroll
 {
 	[self deselectAll];
-	
+
 	CGRect selectionRect = CGRectMake(0, 0, 0, 0);
 	
 	BeatTimelineItem* selectedItem;
@@ -416,15 +427,17 @@
 		selectionRect.origin.x += selectedItem.frame.size.width * relativePos;
 	}
 
-	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	
 	// If the scene is not in view, scroll it into center
-	if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
-		bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
-		
-		[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
+	if (scroll) {
+		NSRect bounds = self.enclosingScrollView.contentView.bounds;
+		if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
+			bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
+			
+			[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
+		}
 	}
-	
+	 
 	[self movePlayhead:selectionRect];
 	[self updateLayer];
 }
@@ -644,12 +657,14 @@
 	[self desiredHeight];
 
 	self.enclosingScrollView.hasHorizontalScroller = YES;
-	[self setNeedsLayout:YES];
+	
+	self.needsLayout = YES;
 	self.visible = YES;
 	
 	[self reload];
-	[self scrollToScene:_delegate.currentScene];
+	[self moveToScene:_delegate.currentScene scroll:true];
 }
+
 - (void)hide {
 	self.containerView.hidden = true;
 	self.enclosingScrollView.hasHorizontalScroller = NO;
@@ -659,7 +674,8 @@
 	self.visible = NO;
 }
 
-- (void)desiredHeight {
+- (void)desiredHeight
+{
 	CGFloat height = DEFAULT_HEIGHT;
 	
 	if (_visibleStorylines.count > 0) {
@@ -673,18 +689,16 @@
 	[self setNeedsDisplay:YES];
 }
 
-- (CGFloat)timelineHeight {
+- (CGFloat)timelineHeight
+{
 	return _originalHeight;
 }
 
 
-#pragma mark - Color controls
-
-
-
 #pragma mark - Delegate methods
 
-- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene
+{
 	if (_selectedItems.count <= 1) [_delegate.textActions addStoryline:storyline to:scene];
 	else {
 		// Multiple items selected
@@ -694,7 +708,9 @@
 		}
 	}
 }
-- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
+
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene
+{
 	if (_selectedItems.count <= 1) [_delegate.textActions removeStoryline:storyline from:scene];
 	else {
 		// Multiple items selected
@@ -705,7 +721,8 @@
 	}
 }
 
-- (void)newStorylineFor:(OutlineScene*)scene item:(id)item {
+- (void)newStorylineFor:(OutlineScene*)scene item:(id)item
+{
 	if (self.storylinePopover.isShown) [self.storylinePopover close];
 	
 	BeatTimelineItem *sceneItem = item;
@@ -715,7 +732,8 @@
 	[self.window makeFirstResponder:self.storylineField];
 }
 
-- (void)setSceneColor:(NSString*)color for:(OutlineScene*)scene {
+- (void)setSceneColor:(NSString*)color for:(OutlineScene*)scene
+{
 	if (_selectedItems.count <= 1) {
 		[_delegate.textActions setColor:color forScene:scene];
 	} else {
