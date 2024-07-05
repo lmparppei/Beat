@@ -608,9 +608,9 @@
 	}
 	
 	// If this is not a touch event, scroll to content
-	if (self.textView.floatingCursor) return;
-	
-	[self textViewDidEndSelection:textView selectedRange:textView.selectedRange];
+	if (!self.textView.floatingCursor) {
+		[self textViewDidEndSelection:textView selectedRange:textView.selectedRange];
+	}
 }
 
 /// Called when touch event *actually* changed the selection
@@ -618,8 +618,7 @@
 {
 	// Let's not do any of this stuff if we're processing an edit. For some reason selection end is posted *before* text change. :--)
 	if (!_processingEdit) {
-		[self.textView scrollRangeToVisible:textView.selectedRange];
-		
+		if (self.selectedRange.length == 0) [self.textView scrollRangeToVisible:NSMakeRange(NSMaxRange(textView.selectedRange), 0)];
 		[self updateSelection];
 	}
 	
@@ -651,7 +650,7 @@
 -(void)textViewDidChange:(UITextView *)textView
 {
 	[super textDidChange];
-	
+
 	// If this was an undo operation, scroll to where the alteration was made
 	if (self.undoManager.isUndoing) [self.textView scrollRangeToVisible:self.lastChangedRange];
 	
@@ -719,7 +718,6 @@
 	
 	return change;
 }
-
 
 
 #pragma mark - Text input delegate
@@ -817,10 +815,16 @@
 
 #pragma mark Editor text view helpers
 
-- (void)updateChangeCount:(BXChangeType)change {
+- (void)updateChangeCount:(BXChangeType)change
+{
 	[self.document updateChangeCount:change];
 }
 
+/// Marks the document as changed
+- (void)addToChangeCount
+{
+	[self.document updateChangeCount:BXChangeDone];
+}
 
 
 #pragma mark - Scrolling

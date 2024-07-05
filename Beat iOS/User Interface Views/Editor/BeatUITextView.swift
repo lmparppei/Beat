@@ -181,7 +181,6 @@ import EasyPeasy
 	}
 	
 	
-	
 	// MARK: - Document view width
 	
 	@objc var documentWidth:CGFloat {
@@ -276,7 +275,7 @@ import EasyPeasy
 		self.selectedRange = NSMakeRange(NSMaxRange(range), 0)
 		self.scroll(to: range)
 	}
-	
+
 	
 	// MARK: - Dialogue input
 	
@@ -357,6 +356,7 @@ import EasyPeasy
 	}
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+		// Convert to enclosing scroll view coordinate
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
@@ -369,7 +369,6 @@ import EasyPeasy
 	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
 		super.touchesCancelled(touches, with: event)
 	}
-	
 	
 	override func beginFloatingCursor(at point: CGPoint) {
 		super.beginFloatingCursor(at: point)
@@ -387,8 +386,11 @@ import EasyPeasy
 			self.editorDelegate?.textViewDidEndSelection(self, selectedRange: self.selectedRange)
 		}
 	}
-}
 	
+}
+
+
+
 // MARK: - Scroll view delegation
 
 extension BeatUITextView: UIScrollViewDelegate {
@@ -457,28 +459,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 			super.pressesEnded(presses, with: event)
 		}
 	}
-}
-
-// Specify the decimal place to round to using an enum
-public enum RoundingPrecision {
-	case ones
-	case tenths
-	case hundredths
-}
-
-// Round to the specific decimal place
-public func preciseRound(
-	_ value: Double,
-	precision: RoundingPrecision = .ones) -> Double
-{
-	switch precision {
-	case .ones:
-		return round(value)
-	case .tenths:
-		return round(value * 10) / 10.0
-	case .hundredths:
-		return round(value * 100) / 100.0
-	}
+	
 }
 
 
@@ -489,8 +470,12 @@ extension BeatUITextView:UIGestureRecognizerDelegate {
 		if gestureRecognizer is UIPinchGestureRecognizer, mobileMode {
 			return false // Disable pinch zoom
 		}
-		
+
 		return true
+	}
+	
+	private func adjustTouchPoint(_ point: CGPoint) -> CGPoint {
+		return CGPoint(x: point.x / zoomScale, y: point.y / zoomScale)
 	}
 }
 
@@ -653,30 +638,4 @@ extension BeatUITextView:KeyboardManagerDelegate {
 		self.endEditing(true)
 	}
 }
-
-// MARK: - Assisting views
-
-class BeatPageView:UIView {
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		
-		layer.shadowRadius = 3.0
-		layer.shadowColor = UIColor.black.cgColor
-		layer.shadowOpacity = 0.2
-		layer.shadowOffset = .zero
-	}
-}
-
-class BeatScrollView: UIScrollView {
-	@objc public var manualScroll = false
-	
-	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
-		super.scrollRectToVisible(rect, animated: animated)
-	}
-	
-	@objc public func safelyScrollRectToVisible(_ rect: CGRect, animated: Bool) {
-		super.scrollRectToVisible(rect, animated: animated)
-	}
-}
-
 

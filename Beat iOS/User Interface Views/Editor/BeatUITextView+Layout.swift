@@ -150,7 +150,7 @@ extension BeatUITextView {
 	
 	var mobileScale:CGFloat {
 		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
-		return 1.1 + CGFloat(scale) * 0.15
+		return 1 + CGFloat(scale) * 0.25
 		
 	}
 	

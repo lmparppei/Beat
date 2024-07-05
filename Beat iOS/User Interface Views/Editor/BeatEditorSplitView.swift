@@ -120,7 +120,7 @@ class BeatSidebarViewController:UITableViewController {
  was me
  and somehow we made a truce
  
- no matter how fragile the pace may be
+ no matter how fragile the peace may be
  i'm savouring
  every moment.
  
