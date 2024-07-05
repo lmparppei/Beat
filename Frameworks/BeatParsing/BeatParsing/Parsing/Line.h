@@ -135,6 +135,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)isDialogue;
 - (bool)isDualDialogue;
 - (bool)isDialogueElement;
+- (bool)isAnySortOfDialogue;
 - (bool)isDualDialogueElement;
 - (bool)isOutlineElement;
 - (bool)effectivelyEmpty;
@@ -523,6 +524,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isTitlePage;
 /// returns `true` when the line is non-printed
 - (bool)isInvisible;
+/// Returns `true` for any sort of dialogue, no matter if single or dual, cue or dialogue/parenthetical
+- (bool)isAnySortOfDialogue;
 /// returns `true` for character cues too
 - (bool)isDialogue;
 /// returns `true` for elements other than a character cue
