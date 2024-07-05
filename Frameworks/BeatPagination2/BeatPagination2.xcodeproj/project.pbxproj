@@ -96,8 +96,8 @@
 		B663A69B29F1C3940036FE6B /* BeatPagination2 */ = {
 			isa = PBXGroup;
 			children = (
-				B663A6A329F1C3A10036FE6B /* Pagination */,
 				B663A69C29F1C3940036FE6B /* BeatPagination2.h */,
+				B663A6A329F1C3A10036FE6B /* Pagination */,
 			);
 			path = BeatPagination2;
 			sourceTree = "<group>";

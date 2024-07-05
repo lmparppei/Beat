@@ -21,11 +21,9 @@
 - (TYPE)METHOD { [CLASS METHOD]; }
 
 @interface BeatDocumentBaseController() <ContinuousFountainParserDelegate>
-
 @end
 
 @implementation BeatDocumentBaseController
-
 
 #pragma mark - Identity
 
@@ -45,6 +43,17 @@
 - (nonnull NSString *)fileNameString {
     NSLog(@"fileNameString: Override in OS-specific implementation");
     return @"";
+}
+
+/// Marks the document as changed
+- (void)addToChangeCount
+{
+#if TARGET_OS_OSX
+    [self updateChangeCount:BXChangeDone];
+#else
+    NSLog(@"!!! Implement addToChangeCount on iOS");
+#endif
+
 }
 
 
@@ -105,6 +114,11 @@
 - (void)setMatchParentheses:(bool)value
 {
     [BeatUserDefaults.sharedDefaults saveBool:value forKey:BeatSettingMatchParentheses];
+}
+
+- (bool)hidePageNumbers
+{
+    return false;
 }
 
 
@@ -227,8 +241,8 @@
 - (void)textDidChange
 {
     if (self.documentIsLoading) return;
-    
-    // Begin from top if no last changed range was set
+ 
+        // Begin from top if no last changed range was set
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
 
     // Update formatting
@@ -969,7 +983,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)removeChangeListenersFor:(id)owner
 {
     NSValue* obj = [NSValue valueWithNonretainedObject:owner];
-    _changeListeners[owner] = nil;
+    _changeListeners[obj] = nil;
 }
 
 

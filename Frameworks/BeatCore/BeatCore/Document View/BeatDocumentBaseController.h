@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 #if TARGET_OS_OSX
 // macOS
-@interface BeatDocumentBaseController:NSDocument <DocumentExports, BeatExportSettingDelegate>
+@interface BeatDocumentBaseController:NSDocument <DocumentExports, BeatExportSettingDelegate, BeatDocumentSettingDelegate>
 #else
 // iOS
 @interface BeatDocumentBaseController:UIViewController
@@ -207,6 +207,9 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 /// Focuses the editor window and text view
 - (void)focusEditor;
+
+/// Marks the document as changed
+- (void)addToChangeCount;
 
 
 #pragma mark - Text getters and caches

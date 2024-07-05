@@ -13,10 +13,12 @@
     #define textViewNeedsDisplay setNeedsDisplay
 
     #define BXFont UIFont
-    #define BXChangeType UIDocumentChangeKind
     #define BXWindow UIWindow
     #define BXPrintInfo UIPrintInfo
     #define BXImage UIImage
+
+    #define BXChangeType UIDocumentChangeKind
+    #define BXChangeDone UIDocumentChangeDone
 
     #define is_Mobile (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
 
@@ -30,10 +32,13 @@
     #define textViewNeedsDisplay setNeedsDisplay:true
 
     #define BXFont NSFont
-    #define BXChangeType NSDocumentChangeType
+    
     #define BXWindow NSWindow
     #define BXPrintInfo NSPrintInfo
     #define BXImage NSImage
+
+    #define BXChangeType NSDocumentChangeType
+    #define BXChangeDone NSChangeDone
 
     #define __OS_KIT <AppKit/AppKit.h>
 

@@ -316,7 +316,8 @@
 	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
 }
 
-- (void)windowControllerDidLoadNib:(NSWindowController *)aController {
+- (void)windowControllerDidLoadNib:(NSWindowController *)aController
+{
 	// Hide the welcome screen
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
 	
@@ -340,7 +341,7 @@
 	self.formatting.delegate = self;
 	
 	// Initialize document settings if needed
-	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
+	if (!self.documentSettings) self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
 	
 	// Initialize theme
 	[self loadSelectedTheme:false];

@@ -522,6 +522,8 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments;
 
+- (void)addToChangeCount;
+
 /// Custom error handler
 -(void)replaceErrorHandler:(void (^)(JSValue* exception))block;
 

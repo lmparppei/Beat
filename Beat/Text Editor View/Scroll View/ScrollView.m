@@ -191,13 +191,15 @@ CGFloat _originalZoomLevel;
 	[textView adjustZoomLevel:_originalZoomLevel + event.magnification * .25];
 }
 
-
 double clampf(double d, double min, double max) {
 	const double t = d < min ? min : d;
 	return t > max ? max : t;
 }
 
-
+- (void)scrollClipView:(NSClipView *)clipView toPoint:(NSPoint)point
+{
+	[super scrollClipView:clipView toPoint:point];
+}
 
 @end
 /*

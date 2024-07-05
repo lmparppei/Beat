@@ -1337,7 +1337,7 @@
                                         <customView hidden="YES" appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="ddk-kT-A2G" userLabel="Bottom View">
                                             <rect key="frame" x="0.0" y="0.0" width="1155" height="120"/>
                                             <subviews>
-                                                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="0.0" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="QR8-n6-ttq" customClass="HorizontalPinchView">
+                                                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="0.0" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="QR8-n6-ttq" customClass="HorizontalPinchView">
                                                     <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
                                                         <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
@@ -1365,12 +1365,12 @@
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="95" id="Sog-Rc-GyL"/>
                                                     </constraints>
-                                                    <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PaI-Yw-G48">
-                                                        <rect key="frame" x="0.0" y="79" width="1155" height="16"/>
+                                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PaI-Yw-G48">
+                                                        <rect key="frame" x="-100" y="-100" width="1155" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="K8S-86-kEW">
-                                                        <rect key="frame" x="-100" y="-100" width="16" height="118"/>
+                                                        <rect key="frame" x="-100" y="-100" width="16" height="95"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <connections>
