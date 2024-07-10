@@ -11,8 +11,6 @@
  This class handles formatting the screenplay in editor view.
  It is also one of the oldest and messiest parts of the whole app. A full rewrite is direly needed.
  
- TODO: Make this OS-agnostic.
- 
  */
 
 #import <BeatCore/BeatRevisions.h>
@@ -172,11 +170,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         BXFont* font = [self fontFamilyForLine:line];
         lineHeight = font.pointSize;
     }
+    // Scale if needed
+    lineHeight *= self.delegate.fonts.scale;
     
     style.minimumLineHeight = lineHeight;
     style.maximumLineHeight = lineHeight;
+    
     style.lineHeightMultiple = (elementStyle.lineHeightMultiplier > 0) ? elementStyle.lineHeightMultiplier : styles.page.lineHeightMultiplier;
-
+    style.lineHeightMultiple *= self.delegate.fonts.scale; // We need to multiply *multiplier* on mobile mode... sigh.
     	
 	// Alignment
 	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
@@ -198,11 +199,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (type == titlePageSubField) {
 		style.firstLineHeadIndent = leftMargin * 1.25;
 		style.headIndent = leftMargin * 1.25;
-	}
-	else if (type == subSection) {
+	} else if (type == subSection) {
 		style.paragraphSpacingBefore = styles.page.lineHeight;
-	}
-	else if (type == section) {
+	} else if (type == section) {
 		style.paragraphSpacingBefore = styles.page.lineHeight * 1.5;
 	}
     
@@ -298,12 +297,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 /// Formats one line of screenplay.
-/// - note We're using `NSMutableAttributedString` in place of text storage to support ahead-of-time rendering.
+/// - note To support ahead-of-time rendering, we are using `NSMutableAttributedString` in place of  `NSTextStorage`, even when referring to the actual text storage (which is basically just a mutable attributed string subclass)
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 { @autoreleasepool {
 	// SAFETY MEASURES:
-	if (line == nil) return; // Don't do anything if the line is null
-	if (_textStorage == nil && line.position + line.string.length > _delegate.text.length) return; // Don't go out of range when attached to an editor
+    // Don't do anything if the line is null or we don't have a text storage, and don't go out of range when attached to an editor
+	if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
+        return;
 
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -342,22 +342,29 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		forceFont = true;
 		newAttributes[BeatRepresentedLineKey] = line;
 	}
-		
-    // Create paragraph style
-	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
-    
-    // Add to attributes if needed
-	if (![attributes[NSParagraphStyleAttributeName] _equalTo:paragraphStyle]) {
-		newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
-	}
-    
+		    
     // Foreground color
 	if (attributes[NSForegroundColorAttributeName] == nil) {
 		newAttributes[NSForegroundColorAttributeName] = themeManager.textColor;
 	}
     
-	// Do nothing for already formatted empty lines (except remove the background)
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && 
+    // Do nothing else if formatting is disabled
+    if (self.delegate.disableFormatting) {
+        newAttributes[NSParagraphStyleAttributeName] = NSParagraphStyle.new;
+        [textStorage addAttributes:newAttributes range:fullRange];
+        if (!alreadyEditing) [textStorage endEditing];
+        return;
+    }
+    
+    // Create paragraph style
+    NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
+    // Add to attributes if needed
+    if (![attributes[NSParagraphStyleAttributeName] _equalTo:paragraphStyle]) {
+        newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+    }
+    
+	// Do nothing for already formatted empty lines (except update the represented line)
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 &&
         line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		[_delegate.getTextView setTypingAttributes:attributes];
 		
@@ -365,15 +372,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		if (newAttributes[BeatRepresentedLineKey]) {
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:fullRange];
 		}
-		
 		if (!alreadyEditing) [textStorage endEditing];
 		
 		return;
 	}
-	
+    
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
-    	
+    
 	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
 		// Do some extra checks for dual dialogue
@@ -444,9 +450,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
     
     // Apply formatting
-    if (newAttributes.count) {
-        [textStorage addAttributes:newAttributes range:attrRange];
-    }
+    if (newAttributes.count) [textStorage addAttributes:newAttributes range:attrRange];
     
     // Apply inline formatting
 	[self applyInlineFormatting:line reset:forceFont textStorage:textStorage];
