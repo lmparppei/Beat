@@ -155,11 +155,7 @@
 {
     _disableFullScreen = disableFullScreen;
     
-    if (disableFullScreen) {
-        self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
-    } else {
-        self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
-    }
+    self.collectionBehavior = (disableFullScreen) ? NSWindowCollectionBehaviorFullScreenAuxiliary : NSWindowCollectionBehaviorFullScreenPrimary;
 }
 
 - (void)setDisableMinimize:(bool)disableMinimize
@@ -201,11 +197,12 @@
 }
 
 
-#pragma mark - Window and sceren frame sizes
+#pragma mark - Window and screen frame sizes
 
 - (CGRect)getFrame {
 	return self.frame;
 }
+
 - (CGRect)getWindowFrame {
 	return self.frame;
 }
@@ -214,9 +211,7 @@
 	@try {
 		NSRect frame = (NSRect){ x, y, width, height };
 		[self setFrame:frame display:YES];
-		
-	}
-	@catch (NSException* error) {
+	} @catch (NSException* error) {
 		[self.host log:@"Error setting frame. Use .setFrame(x, y, width, height), not .setFrame(frame)"];
 	}
 }

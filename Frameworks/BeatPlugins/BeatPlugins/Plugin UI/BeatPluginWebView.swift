@@ -47,7 +47,7 @@ import WebKit
         // Create configuration for WKWebView
         let config = WKWebViewConfiguration()
         config.mediaTypesRequiringUserActionForPlayback = []
-
+        
         // Message handlers
         if #available(macOS 11.0, iOS 15.0, *) {
             config.userContentController.addScriptMessageHandler(host, contentWorld: .page, name: "callAndWait")

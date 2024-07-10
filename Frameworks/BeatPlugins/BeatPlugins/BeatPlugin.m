@@ -2265,7 +2265,10 @@
 	return !self.iOS;
 }
 
-
+- (void)addToChangeCount
+{
+    [self.delegate updateChangeCount:BXChangeDone];
+}
 
 @end
 /*

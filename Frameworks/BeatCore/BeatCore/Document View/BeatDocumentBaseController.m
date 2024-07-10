@@ -853,10 +853,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     }
     
     self.fonts = [BeatFonts forType:type mobile:false];
-    
-#if TARGET_OS_IOS
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) self.fonts = [BeatFonts forType:type mobile:true];
-#endif
 }
 
 /// Reloads fonts and reformats whole document if needed.
