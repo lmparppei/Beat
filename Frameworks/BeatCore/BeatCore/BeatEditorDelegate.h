@@ -87,6 +87,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic, readonly) bool documentIsLoading;
 @property (atomic, readonly) NSAttributedString *attrTextCache;
 @property (nonatomic, readonly) NSUndoManager *undoManager;
+@property (nonatomic, readonly) bool disableFormatting;
 
 /// Returns the actual text view for either macOS or iOS.
 - (BXTextView*)getTextView;
@@ -94,7 +95,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #if TARGET_OS_OSX
 @property (weak, readonly) BXWindow* documentWindow;
-@property (nonatomic, readonly) bool disableFormatting;
 #endif
 
 - (id)themeManager;
@@ -188,6 +188,7 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark Editor text view helpers
 
 - (void)updateChangeCount:(BXChangeType)change;
+- (void)addToChangeCount;
 - (bool)caretAtEnd;
 - (void)scrollToLine:(Line*)line;
 - (void)scrollToRange:(NSRange)range;

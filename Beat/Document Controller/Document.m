@@ -1348,9 +1348,15 @@
 	[self loadingComplete];
 }
 
-- (IBAction)toggleDisableFormatting:(id)sender {
-	_disableFormatting = !_disableFormatting;
-	[self.formatting formatAllLines];
+- (IBAction)toggleDisableFormatting:(id)sender
+{
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingDisableFormatting];
+	[self.formatting forceFormatChangesInRange:NSMakeRange(0, self.text.length)];
+}
+
+- (bool)disableFormatting
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingDisableFormatting];
 }
 
 

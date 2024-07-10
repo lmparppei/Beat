@@ -1174,6 +1174,7 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="disableFormatting"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleDisableFormatting:" target="-1" id="KSj-os-foW"/>
