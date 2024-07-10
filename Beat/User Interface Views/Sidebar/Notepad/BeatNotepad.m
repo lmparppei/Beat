@@ -5,10 +5,12 @@
 //  Created by Lauri-Matti Parppei on 21.10.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
- Notepad content format:
+ Saved notepad content format:
  <beatColorName>text</beatColorName>
+ 
+ Notepad uses `BeatMarkdownTextStorage` which has a *very* bare-bones markdown parser and automatically stylizes text.
  
  */
 
@@ -87,64 +89,28 @@
 	if (notes.length > 0) [self loadString:notes];
 }
 
-- (void)setColor:(NSString*)colorName
-{
-	self.currentColorName = colorName;
-	
-	if ([colorName isEqualToString:@"default"]) {
-		self.currentColor = self.defaultColor;
-	} else {
-		self.currentColor = [BeatColors color:colorName];
-	}
-}
-
 - (void)drawRect:(NSRect)dirtyRect {
-    [super drawRect:dirtyRect];
+	[super drawRect:dirtyRect];
 }
 
--(IBAction)setInputColor:(id)sender {
-	ColorCheckbox *box = sender;
-	[self setColor:box.colorName];
-	
-	for (ColorCheckbox *button in _buttons) {
-		if ([button.colorName isEqualToString:_currentColorName]) button.state = NSOnState;
-		else button.state = NSControlStateValueOff;
+- (void)scrollWheel:(NSEvent *)event
+{
+	// For some reason we need to do this on macOS Sonoma.
+	// No events are registered in the scroll view when another scroll view is earlier in responder chain in this window. No idea.
+	CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
+
+	if ([self mouse:p inRect:self.bounds]) {
+		[self.enclosingScrollView scrollWheel:event];
+		return;
 	}
-	
-	if (self.selectedRange.length) {
-		// If a range was selected when color was changed, save it to document
-		NSRange range = self.selectedRange;
-		NSAttributedString *attrStr = [self.attributedString attributedSubstringFromRange:range];
-		[self.textStorage addAttribute:NSForegroundColorAttributeName value:_currentColor range:range];
-		
-		[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-			[self.textStorage replaceCharactersInRange:range withAttributedString:attrStr];
-		}];
-		[self saveToDocument];
-	}
-	
-	[self setTypingAttributes:@{
-		NSForegroundColorAttributeName: _currentColor
-	}];
-	
-	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
+	[super scrollWheel:event];
 }
+
+
+#pragma mark - Loading and storing text
 
 -(void)loadString:(NSString*)string {
 	[self.textStorage setAttributedString:[self coloredRanges:string]];
-}
-
--(void)didChangeText
-{
-	// Save contents into document settings
-	[self saveToDocument];
-	[super didChangeText];
-	[self notifyTextChange];
-}
-
-- (void)notifyTextChange
-{
-	for (id<BeatTextChangeObserver>observer in self.observers) [observer observedTextDidChange:self];
 }
 
 - (NSAttributedString*)coloredRanges:(NSString*)fullString
@@ -198,11 +164,13 @@
 	return result;
 }
 
-- (void)saveToDocument {
+- (void)saveToDocument
+{
 	[self.editorDelegate.documentSettings set:@"Notes" as:[self stringForSaving]];
 }
 
-- (NSString*)stringForSaving {
+- (NSString*)stringForSaving
+{
 	NSMutableString *result = [NSMutableString.alloc initWithString:@""];
 	
 	[self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -231,25 +199,21 @@
 	return result;
 }
 
-/// Cuts a piece of text from editor to notepad
-- (IBAction)cutToNotepad:(id)sender
+
+
+#pragma mark - Text events and I/O
+
+-(void)didChangeText
 {
-	NSRange range = self.editorDelegate.selectedRange;
-	NSString* string = [self.editorDelegate.text substringWithRange:range];
-	
-	// Add line breaks if needed
-	if (self.text.length > 1 && [self.text characterAtIndex:self.text.length - 1] != '\n') {
-		string = [NSString stringWithFormat:@"\n\n%@", string];
-	}
-	
-	[self replaceCharactersInRange:NSMakeRange(self.string.length, 0) withString:string];
-	[self didChangeText];
-	
-	[self.editorDelegate replaceRange:range withString:@""];
-	
-	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-		[self replaceCharactersInRange:NSMakeRange(self.string.length - string.length, string.length) withString:@""];
-	}];
+	// Save contents into document settings
+	[self saveToDocument];
+	[super didChangeText];
+	[self notifyTextChange];
+}
+
+- (void)notifyTextChange
+{
+	for (id<BeatTextChangeObserver>observer in self.observers) [observer observedTextDidChange:self];
 }
 
 - (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName
@@ -277,6 +241,72 @@
 		
 		[self didChangeText];
 	}
+}
+
+
+#pragma mark - UI actions
+
+-(IBAction)setInputColor:(id)sender
+{
+	ColorCheckbox *box = sender;
+	[self setColor:box.colorName];
+	
+	for (ColorCheckbox *button in _buttons) {
+		if ([button.colorName isEqualToString:_currentColorName]) button.state = NSOnState;
+		else button.state = NSControlStateValueOff;
+	}
+	
+	if (self.selectedRange.length) {
+		// If a range was selected when color was changed, save it to document
+		NSRange range = self.selectedRange;
+		NSAttributedString *attrStr = [self.attributedString attributedSubstringFromRange:range];
+		[self.textStorage addAttribute:NSForegroundColorAttributeName value:_currentColor range:range];
+		
+		[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+			[self.textStorage replaceCharactersInRange:range withAttributedString:attrStr];
+		}];
+		[self saveToDocument];
+	}
+	
+	[self setTypingAttributes:@{
+		NSForegroundColorAttributeName: _currentColor
+	}];
+	
+	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
+}
+
+/// Sets the current input color
+- (void)setColor:(NSString*)colorName
+{
+	self.currentColorName = colorName;
+	
+	if ([colorName isEqualToString:@"default"]) {
+		self.currentColor = self.defaultColor;
+	} else {
+		self.currentColor = [BeatColors color:colorName];
+	}
+}
+
+
+/// Cuts a piece of text from editor to notepad
+- (IBAction)cutToNotepad:(id)sender
+{
+	NSRange range = self.editorDelegate.selectedRange;
+	NSString* string = [self.editorDelegate.text substringWithRange:range];
+	
+	// Add line breaks if needed
+	if (self.text.length > 1 && [self.text characterAtIndex:self.text.length - 1] != '\n') {
+		string = [NSString stringWithFormat:@"\n\n%@", string];
+	}
+	
+	[self replaceCharactersInRange:NSMakeRange(self.string.length, 0) withString:string];
+	[self didChangeText];
+	
+	[self.editorDelegate replaceRange:range withString:@""];
+	
+	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+		[self replaceCharactersInRange:NSMakeRange(self.string.length - string.length, string.length) withString:@""];
+	}];
 }
 
 

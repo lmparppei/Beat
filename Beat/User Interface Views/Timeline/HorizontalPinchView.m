@@ -21,7 +21,8 @@
 
 @implementation HorizontalPinchView
 
--(void)awakeFromNib {
+-(void)awakeFromNib
+{
 	_horizontalMagnification = 1.0;
 	_magnificationDelta = 1.0;
 	
@@ -34,7 +35,8 @@
 	self.hasHorizontalScroller = NO;
 }
 
--(IBAction)zoom:(id)sender {
+-(IBAction)zoom:(id)sender
+{
 	// Zoom using slider. Centers on the selected scene.
 	
 	CGFloat zoom = [(NSSlider*)sender floatValue];
@@ -86,10 +88,6 @@
 	
 	[self scaleInto:locationInView.x normalized:normalized];
 	[self updateSlider];
-}
-
--(void)touch:(NSEvent *)event {
-	NSLog(@"Swipe: %@", event);
 }
 
 - (void)scrollWheel:(NSEvent *)event
