@@ -148,16 +148,20 @@ extension BeatUITextView {
 	
 	// MARK: - Mobile sizing
 	
+	/*
 	var mobileScale:CGFloat {
 		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
 		return 1 + CGFloat(scale) * 0.25
 		
 	}
+	 */
 	
 	@objc public func updateMobileScale() {
-		self.zoomScale = mobileScale
+		//self.zoomScale = mobileScale
+		self.editorDelegate?.loadFonts()
+		self.editorDelegate?.formatting.formatAllLines()
 	}
-	
+	 
 	func mobileViewResize() {
 		let documentWidth = self.documentWidth
 		self.textContainer.size.width = documentWidth

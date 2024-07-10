@@ -22,6 +22,8 @@ import EasyPeasy
 	@objc var dismissKeyboardButton:UIBarButtonItem? { get }
 	
 	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
+	
+	func loadFonts()
 }
 
 @objc class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate {

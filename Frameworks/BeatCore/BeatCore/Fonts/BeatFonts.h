@@ -58,12 +58,14 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 @property (nonatomic) BXFont* synopsisFont;
 @property (nonatomic) BXFont* sectionFont;
 
+@property (nonatomic) CGFloat scale;
+
 + (BeatFonts*)forType:(BeatFontType)type;
 + (BeatFonts*)forType:(BeatFontType)type mobile:(bool)mobile;
 + (BeatFonts*)sharedFonts;
-+ (BeatFonts*)sharedMobileFonts;
 + (BeatFonts*)sharedSansSerifFonts;
 + (BeatFonts*)sharedVariableFonts;
++ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale;
 + (CGFloat)characterWidth;
 
 - (BXFont*)withSize:(CGFloat)size;
@@ -72,6 +74,7 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 + (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
 
 - (BXFont*)sectionFontWithSize:(CGFloat)size;
+
 @end
 
 NS_ASSUME_NONNULL_END

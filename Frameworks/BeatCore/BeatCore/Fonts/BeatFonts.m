@@ -26,8 +26,7 @@
 {
     BeatFonts* fonts;
     
-    if (type == BeatFontTypeFixed && mobile) fonts = BeatFonts.sharedFonts;
-    else if (type == BeatFontTypeFixed) fonts = BeatFonts.sharedFonts;
+    if (type == BeatFontTypeFixed) fonts = BeatFonts.sharedFonts;
     else if (type == BeatFontTypeFixedSansSerif) fonts = BeatFonts.sharedSansSerifFonts;
     else if (type == BeatFontTypeVariableSerif) fonts = BeatFonts.sharedVariableFonts;
     else if (type == BeatFontTypeVariableSansSerif) fonts = BeatFonts.sharedVariableSansSerifFonts;
@@ -36,7 +35,8 @@
     return fonts;
 }
 
-+ (BeatFonts*)sharedFonts {
++ (BeatFonts*)sharedFonts
+{
     static dispatch_once_t once;
     static BeatFonts* sharedInstance;
     dispatch_once(&once, ^{
@@ -44,13 +44,17 @@
     });
     return sharedInstance;
 }
-+ (BeatFonts*)sharedMobileFonts {
-    static dispatch_once_t once;
-    static BeatFonts* sharedMobileInstance;
-    dispatch_once(&once, ^{
-        sharedMobileInstance = [[self alloc] initWithFontType:BeatFontTypeFixed size:14.0];
-    });
-    return sharedMobileInstance;
+
++ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale
+{
+    static NSMutableDictionary<NSNumber*, BeatFonts*>* scaledFonts;
+    if (scaledFonts == nil) scaledFonts = NSMutableDictionary.new;
+    
+    if (scaledFonts[@(scale)] == nil) {
+        scaledFonts[@(scale)] = [[self alloc] initWithFontType:BeatFontTypeFixed size:12.0 scale:scale];
+    }
+    
+    return scaledFonts[@(scale)];
 }
 
 + (BeatFonts*)sharedSansSerifFonts {
@@ -82,27 +86,29 @@
 
 - (instancetype)initWithFontType:(BeatFontType)type
 {
-    return [self initWithFontType:type size:12.0];
+    return [self initWithFontType:type size:12.0 scale:1.0];
 }
 
-- (instancetype)initWithFontType:(BeatFontType)type size:(CGFloat)size
+- (instancetype)initWithFontType:(BeatFontType)type size:(CGFloat)size scale:(CGFloat)scale
 {
     self = [super init];
     
     if (self) {
-        self.size = size;
+        self.size = size * scale;
         
         // Set these first. Families can override them if needed.
         self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:_size - 1.0]];
-        self.sectionFont = [BXFont boldSystemFontOfSize:17.0];
+        self.sectionFont = [BXFont boldSystemFontOfSize:17.0 * scale];
         
         if (type == BeatFontTypeFixed) [self loadSerifFont];
         else if (type == BeatFontTypeFixedSansSerif) [self loadSansSerifFont];
         else if (type == BeatFontTypeVariableSerif) [self loadVariableFont];
         else if (type == BeatFontTypeVariableSansSerif) [self loadVariableSansSerifFont];
-                
+        
         self.emojis = [BXFont fontWithName:@"Noto Emoji" size:_size];
         if (_emojis == nil) self.emojis = [BXFont fontWithName:@"NotoEmoji" size:_size]; // Fix for Mojave
+        
+        self.scale = scale;
     }
     
     return self;

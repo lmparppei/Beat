@@ -25,7 +25,7 @@
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
-@property (nonatomic, readonly) bool disableFormatting;
+@property (nonatomic) bool disableFormatting;
 
 @property (nonatomic) bool processingEdit;
 
@@ -237,10 +237,23 @@
 				[formatting formatLine:line firstTime:true];
 			}
 		}
+		
 		[self.parser.changedIndices removeAllIndexes];
 		
 		callback();
 	}];
+}
+
+- (void)loadFonts
+{
+	[super loadFonts];
+
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
+		CGFloat scale = ((zoom + 4) / 10 ) + 1.0;
+		self.fonts = [BeatFonts sharedFontsWithScale:scale];
+	}
+
 }
 
 - (void)setupDocument
