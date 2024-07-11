@@ -454,6 +454,76 @@
 			remoteGlobalIDString = B6B85FB82A224E3000C7713A;
 			remoteInfo = BeatQuickLook;
 		};
+		C035011A2C407C1000C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501162C407C1000C67D69 /* BeatPagination2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B663A69929F1C3940036FE6B;
+			remoteInfo = BeatPagination2;
+		};
+		C03501202C407C6300C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C035011C2C407C6300C67D69 /* BeatParsing.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B6B37E8328F018A100657F5F;
+			remoteInfo = BeatParsing;
+		};
+		C03501262C407D3800C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501222C407D3800C67D69 /* BeatCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B633C1B5298C5F750011449D;
+			remoteInfo = BeatCore;
+		};
+		C035012E2C407D5F00C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501282C407D5F00C67D69 /* UXKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E8A9B2361FBB318800C1063B;
+			remoteInfo = "UXKit-AppKit";
+		};
+		C03501302C407D5F00C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501282C407D5F00C67D69 /* UXKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E8A9B2801FBB351D00C1063B;
+			remoteInfo = "UXKit-UIKit";
+		};
+		C03501362C407D9300C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501322C407D9300C67D69 /* BeatThemes.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B686FFDF2971C05500789C8D;
+			remoteInfo = BeatThemes;
+		};
+		C035013C2C407DDE00C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501382C407DDE00C67D69 /* BeatDynamicColor.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B66716AC2971CDC2005B8C55;
+			remoteInfo = BeatDynamicColor;
+		};
+		C03501422C407E2500C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C035013E2C407E2500C67D69 /* BeatPlugins.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B692D0FD2A6EBB9400574D72;
+			remoteInfo = BeatPlugins;
+		};
+		C03501482C407E5900C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C03501442C407E5900C67D69 /* UnzipKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B680B7DF2A6EC72E00FCD805;
+			remoteInfo = UnzipKit;
+		};
+		C035014E2C407E9900C67D69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C035014A2C407E9900C67D69 /* BeatFileExport.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B6A97C762BF0BDB600414878;
+			remoteInfo = BeatFileExport;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -875,6 +945,15 @@
 		B6FF82CF27EB1D1900D32A2F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		B6FF82D127EB1D2500D32A2F /* OSLog.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OSLog.framework; path = System/Library/Frameworks/OSLog.framework; sourceTree = SDKROOT; };
 		B6FF82D327EB1D4E00D32A2F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		C03501162C407C1000C67D69 /* BeatPagination2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatPagination2.xcodeproj; path = Frameworks/BeatPagination2/BeatPagination2.xcodeproj; sourceTree = "<group>"; };
+		C035011C2C407C6300C67D69 /* BeatParsing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatParsing.xcodeproj; path = Frameworks/BeatParsing/BeatParsing.xcodeproj; sourceTree = "<group>"; };
+		C03501222C407D3800C67D69 /* BeatCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatCore.xcodeproj; path = Frameworks/BeatCore/BeatCore.xcodeproj; sourceTree = "<group>"; };
+		C03501282C407D5F00C67D69 /* UXKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UXKit.xcodeproj; path = Frameworks/UXKit/UXKit.xcodeproj; sourceTree = "<group>"; };
+		C03501322C407D9300C67D69 /* BeatThemes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatThemes.xcodeproj; path = Frameworks/BeatThemes/BeatThemes.xcodeproj; sourceTree = "<group>"; };
+		C03501382C407DDE00C67D69 /* BeatDynamicColor.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatDynamicColor.xcodeproj; path = Frameworks/BeatDynamicColor/BeatDynamicColor.xcodeproj; sourceTree = "<group>"; };
+		C035013E2C407E2500C67D69 /* BeatPlugins.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatPlugins.xcodeproj; path = Frameworks/BeatPlugins/BeatPlugins.xcodeproj; sourceTree = "<group>"; };
+		C03501442C407E5900C67D69 /* UnzipKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnzipKit.xcodeproj; path = Frameworks/UnzipKit/UnzipKit.xcodeproj; sourceTree = "<group>"; };
+		C035014A2C407E9900C67D69 /* BeatFileExport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BeatFileExport.xcodeproj; path = Frameworks/BeatFileExport/BeatFileExport.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -939,6 +1018,15 @@
 		B138B56A19E1C973000489C4 = {
 			isa = PBXGroup;
 			children = (
+				C035014A2C407E9900C67D69 /* BeatFileExport.xcodeproj */,
+				C03501442C407E5900C67D69 /* UnzipKit.xcodeproj */,
+				C035013E2C407E2500C67D69 /* BeatPlugins.xcodeproj */,
+				C03501382C407DDE00C67D69 /* BeatDynamicColor.xcodeproj */,
+				C03501322C407D9300C67D69 /* BeatThemes.xcodeproj */,
+				C03501282C407D5F00C67D69 /* UXKit.xcodeproj */,
+				C03501222C407D3800C67D69 /* BeatCore.xcodeproj */,
+				C035011C2C407C6300C67D69 /* BeatParsing.xcodeproj */,
+				C03501162C407C1000C67D69 /* BeatPagination2.xcodeproj */,
 				B6EA73862B15E119001D43BB /* Distributions */,
 				B6763E4E27820CCF00284907 /* Localizable.strings */,
 				B66682FE262369DD006473B9 /* TODO */,
@@ -1858,6 +1946,79 @@
 			path = "Browser Window";
 			sourceTree = "<group>";
 		};
+		C03501172C407C1000C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C035011B2C407C1000C67D69 /* BeatPagination2.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C035011D2C407C6300C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C03501212C407C6300C67D69 /* BeatParsing.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C03501232C407D3800C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C03501272C407D3800C67D69 /* BeatCore.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C03501292C407D5F00C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C035012F2C407D5F00C67D69 /* libUXKit-AppKit.a */,
+				C03501312C407D5F00C67D69 /* libUXKit-UIKit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C03501332C407D9300C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C03501372C407D9300C67D69 /* BeatThemes.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C03501392C407DDE00C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C035013D2C407DDE00C67D69 /* BeatDynamicColor.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C035013F2C407E2500C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C03501432C407E2500C67D69 /* BeatPlugins.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C03501452C407E5900C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C03501492C407E5900C67D69 /* UnzipKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C035014B2C407E9900C67D69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C035014F2C407E9900C67D69 /* BeatFileExport.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1974,6 +2135,44 @@
 			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C03501232C407D3800C67D69 /* Products */;
+					ProjectRef = C03501222C407D3800C67D69 /* BeatCore.xcodeproj */;
+				},
+				{
+					ProductGroup = C03501392C407DDE00C67D69 /* Products */;
+					ProjectRef = C03501382C407DDE00C67D69 /* BeatDynamicColor.xcodeproj */;
+				},
+				{
+					ProductGroup = C035014B2C407E9900C67D69 /* Products */;
+					ProjectRef = C035014A2C407E9900C67D69 /* BeatFileExport.xcodeproj */;
+				},
+				{
+					ProductGroup = C03501172C407C1000C67D69 /* Products */;
+					ProjectRef = C03501162C407C1000C67D69 /* BeatPagination2.xcodeproj */;
+				},
+				{
+					ProductGroup = C035011D2C407C6300C67D69 /* Products */;
+					ProjectRef = C035011C2C407C6300C67D69 /* BeatParsing.xcodeproj */;
+				},
+				{
+					ProductGroup = C035013F2C407E2500C67D69 /* Products */;
+					ProjectRef = C035013E2C407E2500C67D69 /* BeatPlugins.xcodeproj */;
+				},
+				{
+					ProductGroup = C03501332C407D9300C67D69 /* Products */;
+					ProjectRef = C03501322C407D9300C67D69 /* BeatThemes.xcodeproj */;
+				},
+				{
+					ProductGroup = C03501452C407E5900C67D69 /* Products */;
+					ProjectRef = C03501442C407E5900C67D69 /* UnzipKit.xcodeproj */;
+				},
+				{
+					ProductGroup = C03501292C407D5F00C67D69 /* Products */;
+					ProjectRef = C03501282C407D5F00C67D69 /* UXKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B138B57219E1C973000489C4 /* Beat Ad Hoc */,
@@ -1982,6 +2181,79 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C035011B2C407C1000C67D69 /* BeatPagination2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatPagination2.framework;
+			remoteRef = C035011A2C407C1000C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501212C407C6300C67D69 /* BeatParsing.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatParsing.framework;
+			remoteRef = C03501202C407C6300C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501272C407D3800C67D69 /* BeatCore.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatCore.framework;
+			remoteRef = C03501262C407D3800C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C035012F2C407D5F00C67D69 /* libUXKit-AppKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libUXKit-AppKit.a";
+			remoteRef = C035012E2C407D5F00C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501312C407D5F00C67D69 /* libUXKit-UIKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libUXKit-UIKit.a";
+			remoteRef = C03501302C407D5F00C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501372C407D9300C67D69 /* BeatThemes.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatThemes.framework;
+			remoteRef = C03501362C407D9300C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C035013D2C407DDE00C67D69 /* BeatDynamicColor.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatDynamicColor.framework;
+			remoteRef = C035013C2C407DDE00C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501432C407E2500C67D69 /* BeatPlugins.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatPlugins.framework;
+			remoteRef = C03501422C407E2500C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C03501492C407E5900C67D69 /* UnzipKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = UnzipKit.framework;
+			remoteRef = C03501482C407E5900C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C035014F2C407E9900C67D69 /* BeatFileExport.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BeatFileExport.framework;
+			remoteRef = C035014E2C407E9900C67D69 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		B138B57119E1C973000489C4 /* Resources */ = {
@@ -2725,7 +2997,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 133361;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DEVELOPMENT_TEAM = P75XS4P6ZM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2750,7 +3022,7 @@
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
-				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat;
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "Beat Ad Hoc";
 				PROVISIONING_PROFILE = "";
@@ -2775,7 +3047,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 133361;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DEVELOPMENT_TEAM = P75XS4P6ZM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2800,7 +3072,7 @@
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
-				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat;
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE = "";
@@ -2915,7 +3187,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 133301;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DEVELOPMENT_TEAM = P75XS4P6ZM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2931,7 +3203,7 @@
 				MARKETING_VERSION = 1.998.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2958,7 +3230,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 133301;
-				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DEVELOPMENT_TEAM = P75XS4P6ZM;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2973,7 +3245,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.998.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
