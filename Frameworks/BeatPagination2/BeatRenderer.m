@@ -174,13 +174,13 @@
         NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
         pStyle = pStyle.mutableCopy;
         pStyle.paragraphSpacingBefore = 0.0;
-        [attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, attributedString.length)];
-        
+
         // If this is a SPLIT ELEMENT and rules say so, we'll remove its indentation.
         if (line.unsafeForPageBreak && !style.indentSplitElements && line.paragraphIn) {
             pStyle.headIndent             -= style.indent;
             pStyle.firstLineHeadIndent     -= style.firstLineIndent;
         }
+        [attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, attributedString.length)];        
     }
     
     [attributedString.copy enumerateAttributesInRange:NSMakeRange(0,attributedString.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
