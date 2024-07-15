@@ -7,3 +7,5 @@ Pro/
 Pods/
 build/XCBuildData
 build/
+*~.xib
+

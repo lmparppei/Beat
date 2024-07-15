@@ -1,0 +1,76 @@
+/*
+
+ Manuscript Editor Stylesheet for Beat.
+ This is not actual CSS, just uses similar markup.
+
+ Changing values without knowing what you are doing can very
+ well cause a crash. Dread lightly.
+ 
+ "Class" names use .typeName identifieres, not .typeAsString names.
+ 
+ © Lauri-Matti Parppei 2021-2024
+
+*/
+
+document {
+    disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
+    additional-settings: [ManuscriptLineHeightMultiplier];
+    reformat-following-paragraph-after-type-change: true;
+    disable-automatic-paragraphs: false;
+}
+
+page {
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 60;
+    margin-top: 40;
+    margin-bottom: 60;
+    
+    default-width-a4: 60ch;
+    default-width-us: 62ch;
+    
+    line-height: 16;
+        
+    content-padding: 7ch;
+ 
+    margin-left-a4: 0;
+    margin-left-us: 0;
+    
+    font-type: fixed;
+}
+
+heading {
+    text-align: center;
+    scene-number: false;
+}
+
+section {
+    text-align: center;
+    italic: true;
+    fontSize: 18;
+}
+
+action, dialogue, character, parenthetical {
+    margin-left-a4: 0;
+    margin-left-us: 0;
+    
+    indent-split-elements: false;
+    unindent-fresh-paragraphs: true;
+}
+
+action {
+    first-line-indent: 5ch;
+}
+
+centered {
+    text-align: center;
+}
+
+lyrics {
+    text-align: center;
+}
+
+titlePageUnknown {
+    margin-left: 10ch;
+}
+

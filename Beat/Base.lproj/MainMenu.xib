@@ -747,6 +747,15 @@ DQ
                                                 <action selector="selectStylesheet:" target="-1" id="KUq-qZ-prr"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Manuscript" id="rEQ-wd-Uvh" userLabel="Manuscript" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="stylesheet" value="Manuscript"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="selectStylesheet:" target="-1" id="MVx-Oe-Ib2"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

@@ -113,6 +113,8 @@
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
 		B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */; };
+		C0529ED42C4495EC00AB0C28 /* Manuscript-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = C0529ED22C4495EC00AB0C28 /* Manuscript-editor.beatCSS */; };
+		C0529ED52C4495EC00AB0C28 /* Manuscript.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = C0529ED32C4495EC00AB0C28 /* Manuscript.beatCSS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -221,6 +223,8 @@
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
 		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
 		B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStorageExtensions.swift; sourceTree = "<group>"; };
+		C0529ED22C4495EC00AB0C28 /* Manuscript-editor.beatCSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Manuscript-editor.beatCSS"; sourceTree = "<group>"; };
+		C0529ED32C4495EC00AB0C28 /* Manuscript.beatCSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Manuscript.beatCSS; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -456,6 +460,8 @@
 		B6D15A5E2AF978FE00DAB66D /* Style definitions */ = {
 			isa = PBXGroup;
 			children = (
+				C0529ED22C4495EC00AB0C28 /* Manuscript-editor.beatCSS */,
+				C0529ED32C4495EC00AB0C28 /* Manuscript.beatCSS */,
 				B6D15A5F2AF9790900DAB66D /* Styles.beatCSS */,
 				B6D15A612AF9790900DAB66D /* Screenplay.beatCSS */,
 				B6D15A602AF9790900DAB66D /* Screenplay-editor.beatCSS */,
@@ -635,7 +641,9 @@
 				B682C2662B30FBD60027511A /* Comic Book Template.fountain in Resources */,
 				B682C2692B30FBD60027511A /* Tutorial.fountain in Resources */,
 				B676DD282BA87AB100F7DBDA /* Novel.fountain in Resources */,
+				C0529ED42C4495EC00AB0C28 /* Manuscript-editor.beatCSS in Resources */,
 				B68C0F6B299D8A4F0031AE6B /* BeatReviewEditor macOS.xib in Resources */,
+				C0529ED52C4495EC00AB0C28 /* Manuscript.beatCSS in Resources */,
 				B6D15A682AF9790A00DAB66D /* Novel-editor.beatCSS in Resources */,
 				B676DD262BA8772000F7DBDA /* Novel Tutorial.fountain in Resources */,
 				B682C2642B30FB800027511A /* One Page Synopsis.fountain in Resources */,

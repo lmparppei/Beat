@@ -60,6 +60,7 @@ NSString * const DocSettingStylesheet    = @"Stylesheet";
 NSString * const DocSettingCharacterData = @"CharacterData";
 
 NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier";
+NSString * const DocSettingMScriptLineHeightMultiplier = @"manuscriptLineHeightMultiplier";
 
 
 -(id)init
@@ -89,6 +90,7 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
     defaultValues = @{
         DocSettingStylesheet: @"Screenplay",
         DocSettingNovelLineHeightMultiplier: @(2.0),
+        DocSettingMScriptLineHeightMultiplier: @(2.0),
         DocSettingHeaderAlignment: @(1),
         DocSettingPrintSceneNumbers: @(true)
     };
