@@ -1,6 +1,9 @@
 /*
 
  Manuscript Stylesheet for Beat.
+ 
+ This code was copied from Novel.beatCSS
+ 
  This is not actual CSS, just uses a similar markup.
 
  Changing values without knowing what you are doing can very
@@ -8,7 +11,7 @@
  
  "Class" names are internal type names as strings, not .typeAsString names.
  
- © Lauri-Matti Parppei 2021-2022
+ © Mark Stavar 2024
 
 */
 
@@ -53,8 +56,6 @@ page {
     first-page-with-number: 1;
 }
 
-
-
 heading {
     margin-top: 1l;
     content: #;
@@ -71,7 +72,7 @@ section {
     italic: true;
     fontSize: 12;
     
-    begins-page: true;
+    begins-page: false;
     trim: true;
     
 }

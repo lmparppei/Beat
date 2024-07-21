@@ -1,6 +1,9 @@
 /*
 
  Manuscript Editor Stylesheet for Beat.
+ 
+ This code was copied from Novel-editor.beatCSS
+ 
  This is not actual CSS, just uses similar markup.
 
  Changing values without knowing what you are doing can very
@@ -8,7 +11,7 @@
  
  "Class" names use .typeName identifieres, not .typeAsString names.
  
- © Lauri-Matti Parppei 2021-2024
+ © Mark Stavar 2024
 
 */
 
