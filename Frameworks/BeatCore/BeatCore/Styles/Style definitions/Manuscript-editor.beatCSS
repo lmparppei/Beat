@@ -53,7 +53,7 @@ section {
     fontSize: 18;
 }
 
-action, dialogue, character, parenthetical {
+action, lyrics {
     margin-left-a4: 0;
     margin-left-us: 0;
     

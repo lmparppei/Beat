@@ -1,18 +1,14 @@
 
-Title:  Manuscript Tutorial
-
-Credit: by
-Author: (beat)
-Draft date: 2024/3/18
-Contact: beat@beat-app.fi
-
 #Manuscript Tutorial
 
 > For Beat <
 
 ##How to Write a Manuscript in Beat
 
-This is a Manuscript template for Beat. Manuscript mode functions similarly to novel mode.
+This is a Manuscript template for Beat. Manuscript mode functions similarly to novel mode. The primary differences are:
+
+ - it uses a fixed-width font in both editor and preview mode
+ - sections do not force page breaks in preview mode
 
 Consecutive paragraphs are indented, while paragraphs with one empty line between them begin a new block. By default, pressing return adds two line breaks. To add just one line break, press **shift-return**. You can make return add a single line break by toggling *Format → Automatic Paragraph Breaks* on/off.
 

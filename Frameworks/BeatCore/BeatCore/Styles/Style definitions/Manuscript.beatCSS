@@ -20,7 +20,7 @@ pagination {
 }
 
 document {
-    visible-elements: [section];
+    visible-elements: [section, lyrics];
     disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
 }
 
@@ -64,7 +64,7 @@ heading {
 }
 
 section {
-    margin-top: 18l;
+    margin-top: 3l;
     forced-margin: true;
 
     text-align: center;
@@ -72,12 +72,13 @@ section {
     italic: true;
     fontSize: 12;
     
-    begins-page: false;
+    if sectionDepth == 1 then begins-page: true;
+    
     trim: true;
     
 }
 
-action, dialogue, character, parenthetical {
+action {
     margin-left-a4: 0;
     margin-left-us: 0;
     
@@ -85,9 +86,7 @@ action, dialogue, character, parenthetical {
     
     indent-split-elements: false;
     unindent-fresh-paragraphs: false;
-}
 
-action {
     first-line-indent: 5ch;
 }
 
