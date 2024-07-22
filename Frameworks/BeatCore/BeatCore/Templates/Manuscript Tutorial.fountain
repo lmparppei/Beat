@@ -1,5 +1,6 @@
 
 Title:  Manuscript Tutorial
+
 Credit: by
 Author: (beat)
 Draft date: 2024/3/18
@@ -9,12 +10,10 @@ Contact: beat@beat-app.fi
 
 > For Beat <
 
-##How to Write a Novel in Beat
 ##How to Write a Manuscript in Beat
 
 This is a Manuscript template for Beat. Manuscript mode functions similarly to novel mode.
 
-This is a novel template for Beat. Novel mode functions similarly to screenplay mode: if your text looks like a novel, it becomes novel.
 Consecutive paragraphs are indented, while paragraphs with one empty line between them begin a new block. By default, pressing return adds two line breaks. To add just one line break, press **shift-return**. You can make return add a single line break by toggling *Format → Automatic Paragraph Breaks* on/off.
 
 .Scene markers
@@ -23,6 +22,7 @@ Take a look at the heading in *Preview Mode*. A scene (prefixed by a dot) adds #
 ###Subheadings
 
 In manuscript mode, sections are visible elements, not just structure helpers.
+Top-level section (#) is pretty big, and always begins a new page. You can use it to separate larger acts. Second-level sections (##) begin a new page, but are a tad smaller, formatted like your usual chapter headings in manuscripts. Third-level sections (###) and below are subheadings, and won't create a new page. 
 
 ##{{serial chapter}}. Advanced: Fun With Macros 
 
