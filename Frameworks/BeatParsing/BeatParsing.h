@@ -12,6 +12,7 @@
 #import <BeatParsing/ContinuousFountainParser.h>
 #import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
+#import <BeatParsing/ContinuousFountainParser+Omissions.h>
 
 #import <BeatParsing/Line.h>
 #import <BeatParsing/OutlineScene.h>
