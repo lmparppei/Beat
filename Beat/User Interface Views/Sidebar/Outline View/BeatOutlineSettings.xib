@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="RXj-KG-dus">
-            <rect key="frame" x="0.0" y="0.0" width="172" height="184"/>
+            <rect key="frame" x="0.0" y="0.0" width="172" height="207"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fur-Wc-dZK" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
@@ -97,8 +97,8 @@
                         <action selector="toggleWithSender:" target="-2" id="vak-3P-nlZ"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pU6-5v-Dd1">
-                    <rect key="frame" x="18" y="148" width="136" height="16"/>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pU6-5v-Dd1">
+                    <rect key="frame" x="18" y="171" width="136" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Outline Settings" id="1Nm-tA-7c0">
                         <font key="font" metaFont="systemBold"/>
@@ -109,8 +109,23 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings"/>
                     </userDefinedRuntimeAttributes>
                 </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2oZ-7I-jju" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                    <rect key="frame" x="18" y="146" width="125" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Scene Headings" bezelStyle="regularSquare" imagePosition="left" inset="2" id="eR6-i4-gp2">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings.headings"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="showHeadingsInOutline"/>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="toggleWithSender:" target="-2" id="KmZ-39-GLZ"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="-66" y="4"/>
+            <point key="canvasLocation" x="-66" y="15.5"/>
         </customView>
     </objects>
 </document>
