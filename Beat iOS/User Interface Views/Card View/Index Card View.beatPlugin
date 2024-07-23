@@ -35,15 +35,18 @@ if (Beat.container != undefined) {
 // Templates for cards and elements
 let templates = {
 	scene: new Template("<div class='item card {{color}} {{selected}} {{isOmitted}}' color='{{color}}' uuid='{{uuid}}' position='{{range.location}}' length='{{range.length}}'><div class='card-content'>\
-			<div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div><div class='title'>{{ stringForDisplay }}</div></div>\
-				<div class='card-container'>\
-					{{ synopsisList }}\
-					{{ noteList }}\
-					<div class='content'>{{ text }}</div>\
+			<div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div>\
+				<div class='title'>{{ stringForDisplay }}</div></div>\
+					<div class='card-container'>\
+						{{ synopsisList }}\
+						{{ noteList }}\
+						<div class='content'>{{ text }}</div>\
+					</div>\
+					<div class='editButton'>✎</div>\
+					<div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
 				</div>\
-				<div class='editButton'>✎</div>\
-				<div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
-			</div></div>"),
+				<div class='addScene'></div>\
+			</div>"),
 
 	synopsisList: new Template("<div class='synopsis'><ul>{{ synopsisList }}</ul></div>"),
 	synopsisItem: new Template("<li class='synopsis-item {{ color }}' uuid='{{uuid}}' sceneUuid='{{sceneUuid}}'>{{ stringForDisplay }}</li>"),
@@ -386,7 +389,21 @@ Beat.custom = {
 				stringToMove = Beat.getText().substring(position, position + length)
 			}
 		}
+		
+		// Make sure there's a line break
+		if (position > 0) {
+			let lineBeforeTarget = Beat.lineAtPosition(position-1)
+			let lineAtTarget = Beat.lineAtPosition(position)
 
+			if (lineAtTarget.length > 0 || lineAtTarget.length > 0) {
+				stringToMove = "\n\n" + stringToMove
+			}
+		}
+		// Make sure the string has a line break at end
+		if (stringToMove.charAt(stringToMove.length - 1) != "\n") {
+			stringToMove += "\n\n"
+		}
+		
 		// Disable listeners for a second
 		Beat.onSelectionChangeDisabled = true
 		Beat.onTextChangeDisabled = true
@@ -462,6 +479,33 @@ Beat.custom = {
 		else if (l.type == Beat.type.heading) string = "\n\n" + string;
 		
 		Beat.addString(string, position)
+	},
+	
+	addScene: (uuid, text) => {
+		let scene = null
+		for (const s of Beat.outline()) {
+			if (s.line.uuidString() == uuid) {
+				scene = s
+				break
+			}
+		}
+		if (scene == null) return;
+		
+		// Get full range
+		let endPosition = scene.position + scene.length
+		
+		// Check that the scene has a valid prefix, if not, add . to force a heading
+		let prefix = text.substr(0, 3).toLowerCase()
+		let allowed = ["int", "ext", "i/e", "e/i", "i./", "e./"]
+		if (allowed.indexOf(prefix) != 0) text = "." + text;
+		
+		// Make sure the line is empty, if not, add preceding line breaks
+		let line = Beat.lineAtPosition(endPosition)
+		if (line.length > 0) text = "\n\n" + text;
+		
+		text += "\n\n"
+		
+		Beat.addString(text, endPosition)
 	}
 }
 
