@@ -218,8 +218,89 @@ static NSString *centeredEnd = @" <";
     [self moveStringFrom:range to:position actualString:stringToMove];
 }
 
+- (void)moveScene:(OutlineScene*)scene from:(NSInteger)from to:(NSInteger)to
+{
+    OutlineScene* target = (to < _delegate.parser.outline.count) ? _delegate.parser.outline[to] : nil;
+    OutlineScene* nextScene = (from < _delegate.parser.outline.count - 1) ? _delegate.parser.outline[from+1] : nil;
+    
+    NSRange range = scene.range;
+    bool closeOmit = false, closeOmitInString = false, openOmit = false, movedMidOmission = false;
+    
+    if (scene.omitted) {
+        // Let's make note if we're breaking a longer omission
+        if (nextScene.omitted) openOmit = true;
+        
+        NSInteger p = [_delegate.parser findSceneOmissionStartFor:scene];
+        if (p == NSNotFound) {
+            closeOmit = true;
+        } else {
+            range.length += range.location - p;
+            range.location = p;
+        }
+    } else if (nextScene.omitted) {
+        // If *next scene* is omitted (but current isn't) let's find out where the omission starts.
+        NSInteger p = [_delegate.parser findOmissionStartFrom:nextScene.position];
+        NSRange gapRange = NSMakeRange(p, nextScene.position - p);
+        NSString* gap = [[_delegate.text substringWithRange:gapRange] stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    
+        if ([gap isEqualToString:@"/*"]) {
+            // This omit is just for the next scene. Remove the gap from range.
+            range.length -= NSMaxRange(range) - p;
+        } else {
+            // For some reason the user began omission mid-scene. Omit next scene and close omission in this scene.
+            openOmit = true;
+            closeOmitInString = true;
+        }
+    }
+    
+    if (target.omitted) {
+        movedMidOmission = true;
+    }
+
+    NSString* string = [_delegate.text substringWithRange:range];
+    if (string.length == 0) return;
+    
+    // Create the replacement string for the scene according to omissions
+    NSString* replace = @"";
+    if (closeOmit) {
+        replace = @"*/\n\n";
+        string = [@"/*\n" stringByAppendingString:string];
+        if (![string containsString:@"*/"]) string = [string stringByAppendingString:@"\n*/"];
+    }
+    if (openOmit) {
+        replace = [replace stringByAppendingString:@"\n/*\n"];
+    }
+    if (closeOmitInString) {
+        string = [string stringByAppendingString:@"*/"];
+    }
+    if (movedMidOmission && !scene.omitted) {
+        string = [NSString stringWithFormat:@"*/\n\n%@/*", string];
+    }
+        
+    // Replace scene range
+    [self replaceRange:range withString:replace];
+    NSInteger targetPosition = 0;
+    
+    if (target == nil) {
+        // Add at the end
+        Line* lastLine = _delegate.parser.lines.lastObject;
+        // Add a line break if needed
+        if (lastLine.length > 0) string = [@"\n\n" stringByAppendingString:string];
+        
+        targetPosition = _delegate.text.length;
+    } else {
+        if ([string characterAtIndex:string.length-1] != '\n') {
+            string = [string stringByAppendingString:@"\n\n"];
+        }
+        
+        targetPosition = target.position;
+    }
+    
+    [self addString:string atIndex:targetPosition];
+}
+
 /// Moves a whole scene from given position to another.
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to
+- (void)__moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to
 {
     // FOLLOWING CODE IS A MESS. Dread lightly.
     // Thanks for the heads up, past me, but I'll just dive right in
