@@ -58,6 +58,8 @@
 		B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F6328F0285D00657F5F /* BeatExportSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */; };
+		B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D1E5112C456D020014D16B /* ContinuousFountainParser+Omissions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -114,6 +116,8 @@
 		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
 		B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BadControlCharacters.h"; sourceTree = "<group>"; };
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
+		B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Omissions.h"; sourceTree = "<group>"; };
+		B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Omissions.m"; sourceTree = "<group>"; };
 		B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -171,6 +175,8 @@
 				B62F043B2B7E20C000920E50 /* Experiments */,
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
+				B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */,
+				B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */,
 				B6B144B42B5DCD240030A6B2 /* ContinuousFountainParser+Outline.h */,
 				B6B144B52B5DCD240030A6B2 /* ContinuousFountainParser+Outline.m */,
 				B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */,
@@ -268,6 +274,7 @@
 				B6B37F6028F027EA00657F5F /* BeatScreenplay.h in Headers */,
 				B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */,
 				B6B37F5428F0279700657F5F /* NSDictionary+Values.h in Headers */,
+				B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */,
 				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
@@ -381,6 +388,7 @@
 				B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */,
 				B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */,
 				B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */,
+				B6D1E5112C456D020014D16B /* ContinuousFountainParser+Omissions.m in Sources */,
 				B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

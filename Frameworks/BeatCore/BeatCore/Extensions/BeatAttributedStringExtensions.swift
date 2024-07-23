@@ -9,6 +9,8 @@
 import Foundation
 import UXKit
 
+// MARK: - Convenience methods
+
 public extension NSAttributedString {
 	@objc func height(containerWidth: CGFloat) -> CGFloat {
 		let rect = self.boundingRect(with: CGSize.init(width: containerWidth, height: CGFloat.greatestFiniteMagnitude),
@@ -57,12 +59,17 @@ public extension NSAttributedString {
     }
 }
 
+
+// MARK: - Recognize emojis
+
 extension CharacterSet {
     func containsUnicodeScalars(of character: Character) -> Bool {
         return character.unicodeScalars.allSatisfy(contains(_:))
     }
 }
 
+
+// MARK: - A block system for quick attributed string creation
 
 @objc public enum AttributedBlockType: Int {
     case text
@@ -158,9 +165,9 @@ extension CharacterSet {
         let range = NSRange(location: location, length: length)
         return attributedSubstring(from: range)
     }
-    
-    
 }
+
+
 
 
 #if os(macOS)
