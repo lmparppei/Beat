@@ -66,6 +66,20 @@
 			<key>target</key>
 			<string>iOS</string>
 		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Manuscript Tutorial.fountain</string>
+			<key>product</key>
+			<string>Manuscript Tutorial.fountain</string>
+			<key>title</key>
+			<string>templates.manuscript-tutorial.title</string>
+			<key>description</key>
+			<string>templates.manuscript-tutorial.description</string>
+			<key>icon</key>
+			<string>doc.text</string>
+			<key>target</key>
+			<string>macOS</string>
+		</dict>
 	</array>
 	<key>Templates</key>
 	<array>
@@ -108,6 +122,18 @@
 			<string>templates.novel.description</string>
 			<key>icon</key>
 			<string>book.fill</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>Manuscript.fountain</string>
+			<key>title</key>
+			<string>templates.manuscript.title</string>
+			<key>description</key>
+			<string>templates.manuscript.description</string>
+			<key>icon</key>
+			<string>doc.text</string>
+			<key>target</key>
+			<string>macOS</string>
 		</dict>
 	</array>
 </dict>

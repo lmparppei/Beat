@@ -180,6 +180,12 @@
 "templates.novel.title" = "Novel";
 "templates.novel.description" = "Bare-bones novel template";
 
+"templates.manuscript-tutorial.title" = "Manuscript Tutorial";
+"templates.manuscript-tutorial.description" = "Get started with manuscripts in Beat";
+
+"templates.manuscript.title" = "Manuscript";
+"templates.manuscript.description" = "Bare-bones manuscript template";
+
 
 /* Selection / information */
 

@@ -1,0 +1,35 @@
+
+#Manuscript Tutorial
+
+> For Beat <
+
+##How to Write a Manuscript in Beat
+
+This is a Manuscript template for Beat. Manuscript mode functions similarly to novel mode. The primary differences are:
+
+ - it uses a fixed-width font in both editor and preview mode
+ - sections do not force page breaks in preview mode
+
+Consecutive paragraphs are indented, while paragraphs with one empty line between them begin a new block. By default, pressing return adds two line breaks. To add just one line break, press **shift-return**. You can make return add a single line break by toggling *Format → Automatic Paragraph Breaks* on/off.
+
+.Scene markers
+
+Take a look at the heading in *Preview Mode*. A scene (prefixed by a dot) adds # between paragraphs, but you can still see the scene heading text in the outline view. This can help structure your story.
+###Subheadings
+
+In manuscript mode, sections are visible elements, not just structure helpers.
+Top-level section (#) is pretty big, and always begins a new page. You can use it to separate larger acts. Second-level sections (##) begin a new page, but are a tad smaller, formatted like your usual chapter headings in manuscripts. Third-level sections (###) and below are subheadings, and won't create a new page. 
+
+##{{serial chapter}}. Advanced: Fun With Macros 
+
+If you want to add an automatically incremented chapter number, macros make it very easy. Use curly brackets, keyword *serial* and a single-word macro name, for example: {{serial macroName}}. Now, every time you mention *macroName* in curly brackets in your text, the number will be one higher. Look: {{macroName}}, {{macroName}}, {{macroName}}!
+Try it out yourself. You can see the result in preview mode. Beat manual (under *Help* menu) has a comprehensive tutorial about using macros.
+
+##{{chapter}}. That's All
+
+Everyone has at least one idea for a novel.
+A proven method for writing a novel is to begin with a one-page synopsis, then start writing. First detail your character's actions, followed by how they feel, and after that, some loose associations – repeated ad nauseam.
+
+
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[],"Window Width":1059,"Caret Position":2494,"Heading UUIDs":[{"string":"#Manuscript Tutorial","uuid":"3FAE6BDF-D875-45D8-93F7-D0ACDC11BE83"},{"string":"##How to Write a Manuscript in Beat","uuid":"F29E9781-49B5-409F-9894-02EC717D43D7"},{"string":".Scene markers","uuid":"11818014-BE09-4A4A-B85C-CFF49856DEA7"},{"string":"###Subheadings","uuid":"F7C247EF-D51B-4917-A88A-1632460D33B4"},{"string":"##{{serial chapter}}. Advanced: Fun With Macros ","uuid":"E0128CD6-03DB-4F63-8EA4-C6295EC51823"},{"string":"##{{chapter}}. That's All","uuid":"7E5CC0DC-C7A1-48A3-B623-5341542E94BD"}],"Stylesheet":"Manuscript","Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[]},"Active Plugins":[],"Revision Level":0,"Window Height":1007} END_BEAT */
