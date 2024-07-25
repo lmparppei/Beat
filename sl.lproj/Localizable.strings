@@ -212,3 +212,11 @@
 "revision.6" = "Šesta";
 "revision.7" = "Sedma";
 "revision.8" = "Osmi";
+
+"outline.settings" = "Nastavitve orisa";
+"outline.settings.synopses" = "Sinopsisi";
+"outline.settings.headings" = "Naslovi";
+"outline.settings.sceneNumbers" = "Številke";
+"outline.settings.notes" = "Opombe";
+"outline.settings.markers" = "Oznake";
+"outline.settings.snapshots" = "Prikaži posnetke";

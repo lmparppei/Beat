@@ -81,6 +81,8 @@ body {
 
 	position: relative;
 	background: transparent !important;
+	
+	transition: all 0.3s;
 }
 
 .editButton {
@@ -195,8 +197,9 @@ body {
 	width: 100%;
 	background: transparent;
 	color: #fff;
-	margin: 1em 0 0.5em 0;
-	padding-top: .2em;
+	margin: 0;
+	padding-top: 1.2em;
+	padding-bottom: 0.5em;
 }
 .section h2 {
 	font-family: "Helvetica Neue", Helvetica, sans-serif;
@@ -205,17 +208,17 @@ body {
 }
 .section[depth="1"] h2 {
 	font-size: 2.25em;
-	margin: .8em 0 0 0;
+	padding-top: .8em,
 }
 .section[depth="2"] {
-	margin-top: .4em;
+	padding-top: .4em;
 }
 .section[depth="2"] h2 {
 	font-size: 1.6em;
 }
 
 .section[depth="3"] {
-	margin-top: .8em;
+	padding-top: .8em;
 	padding-left: 2em;
 }
 .section[depth="3"] h2 {
@@ -330,6 +333,40 @@ ul {
 	border-bottom:  solid 1px #bbb;
 }
 */
+
+.addScene {
+	position: absolute;
+	right: 2px; top: -4px; bottom: 3px;
+	width: 5px;
+	border-radius: 2px;
+	opacity: 0;
+	background: var(--blue);
+}
+.addScene:hover {
+	opacity: 1;
+}
+.addScene::after {
+	content: "+";
+	border-radius: 50%;
+	
+	width: 20px;
+	height: 20px;
+	
+	position: absolute;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	
+	top: calc(50% - 10px);
+	left: -8px;
+	
+	color: white;
+	background: var(--blue);
+	
+	z-index: 9999;
+}
 
 li.red { color: var(--red) !important; } 
 li.blue { color: var(--blue) !important; }

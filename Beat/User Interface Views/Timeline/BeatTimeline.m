@@ -142,11 +142,12 @@
 {
 	// For some reason we need to do this on macOS Sonoma.
 	// No events are registered in the scroll view when another scroll view is earlier in responder chain in this window. No idea.
-	CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
-
-	if ([self mouse:p inRect:self.bounds]) {
-		[self.enclosingScrollView scrollWheel:event];
-		return;
+	if (@available(macOS 14.0, *)) {
+		CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
+		if ([self mouse:p inRect:self.bounds]) {
+			[self.enclosingScrollView scrollWheel:event];
+			return;
+		}
 	}
 	[super scrollWheel:event];
 }
