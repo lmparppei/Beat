@@ -45,6 +45,7 @@ extern NSString * const BeatSettingNovelLineSpacing;
 
 extern NSString * const BeatSettingContinuousSpellChecking;
 
+extern NSString * const BeatSettingShowHeadingsInOutline;
 extern NSString * const BeatSettingShowSynopsisInOutline;
 extern NSString * const BeatSettingShowSceneNumbersInOutline;
 extern NSString * const BeatSettingShowNotesInOutline;

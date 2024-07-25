@@ -324,6 +324,23 @@
 
 #pragma mark - Setting getters
 
+- (OutlineItemOptions)options
+{
+	OutlineItemOptions options = 0;
+	if (self.showHeadings) options |= OutlineItemIncludeHeading;
+	if (self.showSynopsis) options |= OutlineItemIncludeSynopsis;
+	if (self.showNotes) options |= OutlineItemIncludeNotes;
+	if (self.showSceneNumbers) options |= OutlineItemIncludeSceneNumber;
+	if (self.showMarkers) options |= OutlineItemIncludeMarkers;
+	if (((id<BeatDarknessDelegate>)NSApp.delegate).isDark) options |= OutlineItemDarkMode;
+	
+	return options;
+}
+
+- (bool)showHeadings
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowHeadingsInOutline];
+}
 - (bool)showSynopsis
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSynopsisInOutline];
@@ -361,7 +378,8 @@
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	
 	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
+	
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
 	
 	view.outlineView = self;
 	view.editorDelegate = self.editorDelegate;
@@ -545,13 +563,12 @@
 		if (scene) {
 			to = [self.outline indexOfObject:scene];
 			position = scene.position;
-		}
-		else {
-			if (targetItem != nil) {
-				// Dropped at the end of a section
-				OutlineScene* parent = targetScene.parent;
+		} else {
+			// Dropped at the end of a section. Look at this terniary hell.
+			if (targetScene != nil) {
+				OutlineScene* parent = (targetScene.parent != nil) ? targetScene.parent : targetScene;
 				to = [self.outline indexOfObject:(parent.children.count > 0) ? parent.children.lastObject : targetScene] + 1;
-				position = parent.children.lastObject.position + parent.children.lastObject.length;
+				position = NSMaxRange(parent.children.lastObject.range);
 			} else {
 				to = self.outline.count;
 				position = self.editorDelegate.text.length;

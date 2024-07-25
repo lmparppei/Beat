@@ -75,6 +75,7 @@
 "export.printSynopsis" = "Synopsis";
 "export.printNotes" = "Anteckningar";
 "export.printSceneNumbers" = "Scennummer";
+"outline.settings.headings" = "Scenrubriker";
 
 /* (No Comment) */
 "force.action" = "Scenbeskrivning";

@@ -197,6 +197,7 @@
 "outline.settings.notes" = "Muistiinpanot";
 "outline.settings.markers" = "Merkit";
 "outline.settings.snapshots" = "Vilkaisukuvat";
+"outline.settings.headings" = "Kohtausotsikot";
 
 "character.editor.age" = "Ikä";
 "character.editor.biography" = "Kuvaus";

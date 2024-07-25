@@ -219,6 +219,7 @@
 
 "outline.settings" = "Outline Settings";
 "outline.settings.synopses" = "Synopses";
+"outline.settings.headings" = "Scene Headings";
 "outline.settings.sceneNumbers" = "Scene Numbers";
 "outline.settings.notes" = "Notes";
 "outline.settings.markers" = "Markers";
