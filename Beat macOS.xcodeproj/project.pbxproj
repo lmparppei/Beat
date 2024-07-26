@@ -3022,7 +3022,7 @@
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.Beat;
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "Beat Ad Hoc";
 				PROVISIONING_PROFILE = "";
@@ -3072,7 +3072,7 @@
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.Beat;
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = Beat;
 				PROVISIONING_PROFILE = "";
@@ -3203,7 +3203,7 @@
 				MARKETING_VERSION = 1.998.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat.BeatQuickLook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -3245,7 +3245,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.998.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gaffa.Beat.BeatQuickLook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
