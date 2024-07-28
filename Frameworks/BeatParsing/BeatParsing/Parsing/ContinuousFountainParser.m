@@ -214,13 +214,13 @@ static NSDictionary* patterns;
 
 - (void)parseText:(NSString*)text
 {
-    _lines = NSMutableArray.new;
-    
     if (text == nil) text = @"";
     text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]; // Replace MS Word/Windows line breaks with macOS ones
     
     // Split the text by line breaks
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
+    _lines = [NSMutableArray arrayWithCapacity:lines.count];
+
     
     NSUInteger position = 0; // To track at which position every line begins
     
@@ -238,7 +238,7 @@ static NSDictionary* patterns;
             previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
             if (previousLine.type == character) previousLine.type = action;
         }
-                
+        
         position += rawLine.length + 1; // +1 for newline character
         previousLine = line;
     }
@@ -2162,7 +2162,6 @@ NSInteger previousSceneIndex = NSNotFound;
 - (void)parseNotesFor:(Line*)line at:(NSInteger)lineIndex oldType:(LineType)oldType
 {
     // TODO: Make some fucking sense to this
-    
     // This was probably a part of a note block. Let's parse the whole block instead of this single line.
     if (line.noteIn && line.noteOut && line.noteRanges.count == line.length) {
         NSInteger pos;
