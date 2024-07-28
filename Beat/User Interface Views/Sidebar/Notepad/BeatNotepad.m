@@ -217,6 +217,7 @@
 
 - (void)notifyTextChange
 {
+	if (_observerDisabled) return;
 	for (id<BeatTextChangeObserver>observer in self.observers) [observer observedTextDidChange:self];
 }
 
@@ -230,7 +231,6 @@
 	
 	NSColor* color;
 	if (colorName.length > 0) color = [BeatColors color:colorName];
-	
 	if (color == nil) color = _currentColor;
 	
 	NSAttributedString* result = [NSAttributedString.alloc initWithString:string attributes:@{
@@ -247,6 +247,11 @@
 	}
 }
 
+- (void)setSelectedRange:(NSRange)selectedRange
+{
+	if (NSMaxRange(selectedRange) > self.text.length) return;
+	[super setSelectedRange:selectedRange];
+}
 
 #pragma mark - UI actions
 
