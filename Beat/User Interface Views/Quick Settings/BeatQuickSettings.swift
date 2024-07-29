@@ -95,7 +95,8 @@ class BeatDesktopQuickSettings:NSViewController {
 		container.addView(BeatQuickSettingSeparator.newSeparator())
 		
 		for setting in settings {
-			if setting == "novelLineHeightMultiplier" {
+			if setting == "novelLineHeightMultiplier" ||
+				setting == "manuscriptLineHeightMultiplier" {
 				let item = self.segmentedSetting(setting: setting)
 				container.addView(item)
 			}

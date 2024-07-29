@@ -1,0 +1,136 @@
+/*
+
+ Manuscript Stylesheet for Beat.
+ 
+ This code was copied from Novel.beatCSS
+ 
+ This is not actual CSS, just uses a similar markup.
+
+ Changing values without knowing what you are doing can very
+ well cause a crash. Dread lightly.
+ 
+ "Class" names are internal type names as strings, not .typeAsString names.
+ 
+ © Mark Stavar 2024
+
+*/
+
+pagination {
+    skip heading after section;
+}
+
+document {
+    visible-elements: [section, lyrics];
+    disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
+}
+
+titlePage {
+    margin-top: 40;
+    margin-bottom: 65;
+    margin-left: 40;
+    margin-right: 40;
+    
+    line-height: 12;
+}
+
+page {
+    margin-left: 25;
+    margin-right: 25;
+    padding-left: 0;
+    margin-top: 40;
+    margin-bottom: 30;
+    
+    default-width-a4: 60ch;
+    default-width-us: 62ch;
+    
+    line-height: 13;
+    line-height-multiplier: documentSetting(manuscriptLineHeightMultiplier);
+    
+    content-padding: 7ch;
+ 
+    margin-left-a4: 0;
+    margin-left-us: 0;
+    
+    font-type: fixed;
+    
+    first-page-with-number: 1;
+}
+
+heading {
+    margin-top: 1l;
+    content: #;
+    text-align: center;
+    scene-number: false;
+}
+
+section {
+    margin-top: 3l;
+    forced-margin: true;
+
+    text-align: center;
+    bold: true;
+    italic: true;
+    fontSize: 12;
+    
+    if sectionDepth == 1 then begins-page: true;
+    
+    trim: true;
+    
+}
+
+action {
+    margin-left-a4: 0;
+    margin-left-us: 0;
+    
+    margin-top: 0l;
+    
+    indent-split-elements: false;
+    unindent-fresh-paragraphs: false;
+
+    first-line-indent: 5ch;
+}
+
+centered {
+    margin-top: 1l;
+    text-align: center;
+}
+
+lyrics {
+    margin-top: 1l;
+    text-align: center;
+    italic: true;
+}
+
+pageBreak {
+    text-align: center;
+}
+
+
+titlePageTitle {
+    margin-top: 26l;
+    margin-bottom: 2l;
+    text-align: center;
+    font-size: 30;
+}
+titlePageAuthor {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageCredit {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageSource {
+    margin-top: 1l;
+    text-align: center;
+}
+titlePageContact {
+    text-align: left;
+}
+titlePageDraftDate {
+    margin-top: 1l;
+    text-align: right;
+}
+titlePageUnknown {
+    margin-top: 1l;
+}
