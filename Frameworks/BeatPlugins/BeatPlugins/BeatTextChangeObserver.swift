@@ -8,6 +8,7 @@
 import Foundation
 
 @objc public protocol BeatTextChangeObservable {
+    var observerDisabled:Bool { get }
     func notifyTextChange()
     func addTextChangeObserver(_ observer:BeatTextChangeObserver)
     func removeTextChangeObserver(_ observer:BeatTextChangeObserver)
