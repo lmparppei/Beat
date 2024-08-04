@@ -24,7 +24,7 @@ import WebKit
 
 /// A protocol which hsa the basic methods for interacting with both the window and its HTML content.
 @objc public protocol BeatHTMLView:BeatPluginWebViewExports {
-    @objc init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue?)
+    @objc init(html: String, headers: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool, callback:JSValue?)
     @objc func closePanel(_ sender:AnyObject?)
     @objc optional func hide()
     //@objc func fetchHTMLPanelDataAndClose()
@@ -41,9 +41,11 @@ import WebKit
     var baseURL:URL?
     /// A temporary URL for the displayed page. Can be `nil` if we're not loading a plugin.
     var tempURL:URL?
+    /// Additional headers
+    var additionalHeaders = ""
     
     @objc
-    public class func create(html:String, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
+    public class func create(html:Dictionary<String, String>, width:CGFloat, height:CGFloat, host:BeatPlugin) -> BeatPluginWebView {
         // Create configuration for WKWebView
         let config = WKWebViewConfiguration()
         config.mediaTypesRequiringUserActionForPlayback = []
@@ -73,10 +75,14 @@ import WebKit
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #endif
         
+        let content = html["content"] ?? ""
+        let headers = html["headers"] ?? ""
+        
         webView.host = host
         webView.baseURL = (host.pluginURL != nil) ? host.pluginURL : nil
+        webView.additionalHeaders = headers
         
-        webView.setHTML(html)
+        webView.setHTML(content)
         webView.navigationDelegate = webView
         
         return webView
@@ -128,7 +134,7 @@ import WebKit
     /// Sets the HTML string and loads the template, which includes Beat code injections.
     @objc public func setHTML(_ html:String) {
         // Load template
-        let template = BeatPluginHTMLTemplate.html(content: html)
+        let template = BeatPluginHTMLTemplate.html(content: html, headers: self.additionalHeaders)
         
         var loadedURL = false
         if let baseURL = self.baseURL {

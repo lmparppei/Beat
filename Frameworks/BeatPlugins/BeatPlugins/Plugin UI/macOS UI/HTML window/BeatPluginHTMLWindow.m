@@ -15,7 +15,8 @@
 
 @implementation BeatPluginHTMLWindow
 
--(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatPlugin*)host {
+-(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height headers:(NSString*)headers host:(BeatPlugin*)host
+{
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
@@ -32,7 +33,9 @@
 	self.releasedWhenClosed = NO;
 	
 	self.title = host.pluginName;
-    _webView = [BeatPluginWebView createWithHtml:html width:width height:height host:(BeatPlugin*)self.host];
+    
+    NSDictionary* content = @{ @"content":(html) ? html : @"", @"headers":(headers) ? headers : @"" };
+    _webView = [BeatPluginWebView createWithHtml:content width:width height:height host:(BeatPlugin*)self.host];
 
 	[self.contentView addSubview:_webView];
 	

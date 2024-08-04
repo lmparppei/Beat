@@ -19,7 +19,7 @@ import WebKit
     @objc public var webView:BeatPluginWebView?
     @objc public weak var host:BeatPlugin?
     
-    @objc required public init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue?) {
+    @objc required public init(html: String, headers:String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback:JSValue?) {
         self.callback = callback
         self.host = host
         
@@ -31,7 +31,7 @@ import WebKit
         if height <= 0 { adjustedHeight = 400 }
         if height > 800 { adjustedHeight = 1000 }
                 
-        let webView = BeatPluginWebView.create(html: html, width: width, height: height, host: host)
+        let webView = BeatPluginWebView.create(html: ["content": html, "headers": headers], width: width, height: height, host: host)
         webView.frame = NSRect(x: 0, y: 35, width: adjustedWidth, height: adjustedHeight)
         self.webView = webView
         

@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 
-@property (nonatomic) NSDictionary<NSString*,NSString*>* characterGenders;
-
 - (void)loadDocumentWithCallback:(void (^)(void))callback;
 
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;

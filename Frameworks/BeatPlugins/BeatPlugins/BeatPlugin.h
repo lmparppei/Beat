@@ -364,13 +364,13 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 #if TARGET_OS_OSX
 // macOS HTML views
 JSExportAs(htmlPanel, - (BeatPluginHTMLPanel*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 - (NSDictionary*)printInfo;
 JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 #else
 // iOS HTML views
-JSExportAs(htmlPanel, - (BeatPluginHTMLViewController*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-JSExportAs(htmlWindow, - (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton);
+JSExportAs(htmlPanel, - (BeatPluginHTMLViewController*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+- (BeatPluginHTMLViewController*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton;
 #endif
 
 

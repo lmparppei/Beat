@@ -86,237 +86,6 @@
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="ncb-yG-bCM" userLabel="Top view">
                                             <rect key="frame" x="0.0" y="120" width="1155" height="541"/>
                                             <subviews>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Sy0-kF-Tby" customClass="MarginView">
-                                                    <rect key="frame" x="300" y="0.0" width="675" height="541"/>
-                                                    <subviews>
-                                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA" customClass="ScrollView">
-                                                            <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                            <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
-                                                                <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
-                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                        <size key="minSize" width="675" height="541"/>
-                                                                        <size key="maxSize" width="2035" height="10000000"/>
-                                                                        <attributedString key="textStorage">
-                                                                            <fragment content="TEXT">
-                                                                                <attributes>
-                                                                                    <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                                                    <font key="NSFont" size="12" name="CourierNewPSMT"/>
-                                                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineHeightMultiple="1" tighteningFactorForTruncation="0.0"/>
-                                                                                </attributes>
-                                                                            </fragment>
-                                                                        </attributedString>
-                                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <connections>
-                                                                            <outlet property="contextMenu" destination="DrH-zx-R7H" id="9LD-s8-Oqi"/>
-                                                                            <outlet property="delegate" destination="-2" id="lmD-aH-hkQ"/>
-                                                                            <outlet property="editorDelegate" destination="-2" id="5q0-if-Gmg"/>
-                                                                            <outlet property="tagging" destination="IRq-m7-MkJ" id="7jd-sG-2Hg"/>
-                                                                            <outlet property="touchBar" destination="FXM-lH-N3d" id="ibZ-0X-rds"/>
-                                                                        </connections>
-                                                                    </textView>
-                                                                </subviews>
-                                                                <connections>
-                                                                    <outlet property="editorDelegate" destination="-2" id="R0N-aQ-vnD"/>
-                                                                </connections>
-                                                            </clipView>
-                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="LxF-lQ-YYW">
-                                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                            </scroller>
-                                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NLv-wd-O2O" customClass="BeatMarkerScroller">
-                                                                <rect key="frame" x="677" y="0.0" width="16" height="516"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <connections>
-                                                                    <outlet property="editorDelegate" destination="-2" id="zj6-Nk-pZL"/>
-                                                                </connections>
-                                                            </scroller>
-                                                            <connections>
-                                                                <outlet property="buttonView" destination="MJt-fS-Zk9" id="Ymd-Hv-bWE"/>
-                                                                <outlet property="editorDelegate" destination="-2" id="2Ox-rh-327"/>
-                                                                <outlet property="timerView" destination="hjj-OY-sw5" id="MrE-Zu-lSD"/>
-                                                            </connections>
-                                                        </scrollView>
-                                                        <customView hidden="YES" id="hjj-OY-sw5" customClass="BeatTimerView">
-                                                            <rect key="frame" x="620" y="15" width="30" height="30"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                                            <connections>
-                                                                <outlet property="delegate" destination="rsQ-wl-KkE" id="Tuc-ez-Ph4"/>
-                                                                <outlet property="parentView" destination="Mky-48-wwA" id="Jsm-RL-H5c"/>
-                                                            </connections>
-                                                        </customView>
-                                                        <customView wantsLayer="YES" id="MJt-fS-Zk9" userLabel="Button View">
-                                                            <rect key="frame" x="15" y="509" width="640" height="20"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                            <subviews>
-                                                                <button toolTip="Quick Settings" allowsExpansionToolTips="YES" id="piN-SW-wNh" userLabel="Quick Settings Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="615" y="0.0" width="25" height="20"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="SettingIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="yVk-AR-Glo">
-                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                    <accessibility description="Show Print Preview"/>
-                                                                    <connections>
-                                                                        <action selector="showQuickSettings:" target="-2" id="LeI-4b-zvh"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="583" y="0.0" width="25" height="20"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <accessibility description="Show Index Cards"/>
-                                                                    <connections>
-                                                                        <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6aa-Mu-dRU">
-                                                                    <rect key="frame" x="760" y="-2" width="0.0" height="0.0"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                                </stackView>
-                                                                <button toolTip="Toggle Sidebar" allowsExpansionToolTips="YES" id="ULq-c1-qrj" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="0.0" y="-2.5" width="22" height="25"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="sidebar.left" catalog="system" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
-                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                    <accessibility description="Outline view"/>
-                                                                    <connections>
-                                                                        <action selector="toggleSidebarView:" target="-2" id="HaT-7J-qLQ"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button toolTip="Toggle Timeline" allowsExpansionToolTips="YES" id="SU7-uh-HJD" userLabel="Timeline Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="33" y="0.0" width="26" height="20"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="3LY-u6-Jq0">
-                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                    <accessibility description="Show Timeline"/>
-                                                                    <connections>
-                                                                        <action selector="toggleTimeline:" target="pm8-b1-sOe" id="nEZ-uu-241"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button toolTip="Go to scene..." allowsExpansionToolTips="YES" id="L0v-T6-wwt" userLabel="Timeline Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="72" y="0.0" width="18" height="20"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="Search" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="pLs-bo-IGr">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <accessibility description="Go to scene..."/>
-                                                                    <connections>
-                                                                        <action selector="goToScene:" target="-2" id="KZS-3c-k8V"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <customView hidden="YES" appearanceType="darkAqua" id="pf2-1r-P3e" customClass="BeatModeDisplay" customModule="Beat" customModuleProvider="target">
-                                                                    <rect key="frame" x="213" y="-2" width="210" height="24"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <subviews>
-                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zip-rI-oJi">
-                                                                            <rect key="frame" x="5" y="5" width="147" height="14"/>
-                                                                            <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                            <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" alignment="center" title="Mode Indicator" id="pmw-EE-q6r">
-                                                                                <font key="font" metaFont="smallSystem"/>
-                                                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                            </textFieldCell>
-                                                                        </textField>
-                                                                        <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="VrF-1f-6qb">
-                                                                            <rect key="frame" x="152" y="2" width="5" height="20"/>
-                                                                        </box>
-                                                                        <button verticalHuggingPriority="750" id="dRS-5f-0gk">
-                                                                            <rect key="frame" x="154" y="2" width="56" height="20"/>
-                                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                            <buttonCell key="cell" type="bevel" title="Exit" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="cfc-Bs-BT3">
-                                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                <font key="font" metaFont="miniSystem"/>
-                                                                            </buttonCell>
-                                                                            <connections>
-                                                                                <action selector="closeModeWithSender:" target="pf2-1r-P3e" id="BsF-kJ-miS"/>
-                                                                            </connections>
-                                                                        </button>
-                                                                    </subviews>
-                                                                    <constraints>
-                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="bottom" secondItem="dRS-5f-0gk" secondAttribute="bottom" id="aLc-R8-UwO"/>
-                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="centerY" secondItem="dRS-5f-0gk" secondAttribute="centerY" id="ceN-Tt-SNw"/>
-                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="leading" secondItem="dRS-5f-0gk" secondAttribute="leading" id="gHz-lk-mSZ"/>
-                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="leading" secondItem="zip-rI-oJi" secondAttribute="trailing" constant="4" id="rq5-xH-zKP"/>
-                                                                    </constraints>
-                                                                    <connections>
-                                                                        <outlet property="editorDelegate" destination="-2" id="yaM-3w-fCW"/>
-                                                                        <outlet property="title" destination="zip-rI-oJi" id="qw4-fp-es2"/>
-                                                                    </connections>
-                                                                </customView>
-                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="551" y="0.0" width="24" height="20"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <accessibility description="Show Print Preview"/>
-                                                                    <connections>
-                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
-                                                                    </connections>
-                                                                </button>
-                                                            </subviews>
-                                                        </customView>
-                                                        <customView hidden="YES" appearanceType="darkAqua" id="ftJ-Zm-jkE" customClass="BeatLockButton">
-                                                            <rect key="frame" x="15" y="15" width="160" height="36"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <subviews>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
-                                                                    <rect key="frame" x="40" y="11" width="122" height="14"/>
-                                                                    <autoresizingMask key="autoresizingMask"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Document is locked" usesSingleLineMode="YES" id="aMy-cb-lJ3">
-                                                                        <font key="font" metaFont="smallSystem"/>
-                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                </textField>
-                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="afZ-Mw-gsE">
-                                                                    <rect key="frame" x="3" y="4" width="30" height="30"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSLockLockedTemplate" id="pVq-ze-Jbh"/>
-                                                                    <color key="contentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                </imageView>
-                                                            </subviews>
-                                                            <connections>
-                                                                <outlet property="image" destination="afZ-Mw-gsE" id="Tp1-dC-YLt"/>
-                                                                <outlet property="label" destination="jtj-qF-qHB" id="RdZ-DN-aFN"/>
-                                                                <outlet property="target" destination="-2" id="DiJ-pn-7FW"/>
-                                                            </connections>
-                                                        </customView>
-                                                    </subviews>
-                                                    <constraints>
-                                                        <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="6ht-pW-tB8"/>
-                                                        <constraint firstItem="Mky-48-wwA" firstAttribute="leading" secondItem="Sy0-kF-Tby" secondAttribute="leading" id="G9P-ym-C1T"/>
-                                                        <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" id="Rri-nf-aFA"/>
-                                                        <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="VFm-hQ-O9D"/>
-                                                    </constraints>
-                                                    <connections>
-                                                        <outlet property="editor" destination="-2" id="JTG-Zr-Zsx"/>
-                                                    </connections>
-                                                </customView>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view" customClass="BeatAutomaticAppearanceView" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
                                                     <subviews>
@@ -406,7 +175,7 @@
                                                                                                             <rect key="frame" x="0.0" y="4" width="300" height="14"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF">
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF">
                                                                                                                     <rect key="frame" x="-2" y="0.0" width="304" height="14"/>
                                                                                                                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Table View Cell" id="LeM-Df-kg2">
                                                                                                                         <font key="font" metaFont="smallSystem"/>
@@ -622,7 +391,7 @@
                                                                                                 <real value="3.4028234663852886e+38"/>
                                                                                             </customSpacing>
                                                                                         </stackView>
-                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tEa-Zf-bvu">
+                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tEa-Zf-bvu">
                                                                                             <rect key="frame" x="12" y="12" width="56" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Character" id="NLd-GN-ebP">
@@ -631,7 +400,7 @@
                                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                             </textFieldCell>
                                                                                         </textField>
-                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f5e-1x-hsg">
+                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f5e-1x-hsg">
                                                                                             <rect key="frame" x="12" y="58" width="269" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Filter Scenes" id="NAI-kd-UO5">
@@ -674,7 +443,7 @@
                                                                                                 <action selector="resetColorFilters:" target="7yW-8d-gb9" id="xjn-uV-KqD"/>
                                                                                             </connections>
                                                                                         </button>
-                                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Fsz-Ri-m8r">
+                                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Fsz-Ri-m8r">
                                                                                             <rect key="frame" x="12" y="37" width="33" height="14"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Color" id="pXN-uS-1oE">
@@ -754,7 +523,7 @@
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                 </scroller>
                                                                             </scrollView>
-                                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ErX-VT-kPi">
+                                                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ErX-VT-kPi">
                                                                                 <rect key="frame" x="7" y="481" width="79" height="14"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Notepad" id="4ZQ-iA-Rxf">
@@ -973,7 +742,7 @@
                                                                                                             <rect key="frame" x="14" y="0.0" width="118" height="24"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="cnI-SU-o2k">
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="cnI-SU-o2k">
                                                                                                                     <rect key="frame" x="1" y="3" width="116" height="17"/>
                                                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="zQk-vQ-7L3">
@@ -1005,7 +774,7 @@
                                                                                                             <rect key="frame" x="140" y="0.0" width="131" height="24"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" preferredMaxLayoutWidth="23" id="jwi-pF-V0z">
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" preferredMaxLayoutWidth="23" id="jwi-pF-V0z">
                                                                                                                     <rect key="frame" x="96" y="3" width="32" height="15"/>
                                                                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                                                                                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="right" title="???" id="dxt-PX-eFi">
@@ -1044,7 +813,7 @@
                                                                                 <rect key="frame" x="0.0" y="381" width="300" height="114"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                 <subviews>
-                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9he-GE-gJn">
+                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9he-GE-gJn">
                                                                                         <rect key="frame" x="145" y="-6" width="156" height="120"/>
                                                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Label" id="3Ma-cQ-Q5S" customClass="VerticallyCenteredTextField">
@@ -1100,7 +869,7 @@
                                                                                                             <rect key="frame" x="17" y="0.0" width="264" height="47"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Zrv-Bt-8h0">
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Zrv-Bt-8h0">
                                                                                                                     <rect key="frame" x="20" y="7" width="239" height="34"/>
                                                                                                                     <constraints>
                                                                                                                         <constraint firstAttribute="height" constant="34" id="5fg-y8-zcW"/>
@@ -1152,7 +921,7 @@
                                                                                 <rect key="frame" x="0.0" y="209" width="300" height="106"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                 <subviews>
-                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5vY-sS-P8z">
+                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5vY-sS-P8z">
                                                                                         <rect key="frame" x="-2" y="61" width="304" height="21"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Reviews" id="KZo-wr-Yqv">
@@ -1161,7 +930,7 @@
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                     </textField>
-                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9zF-A8-Ie6">
+                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9zF-A8-Ie6">
                                                                                         <rect key="frame" x="18" y="13" width="264" height="46"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                         <textFieldCell key="cell" alignment="center" title="Once you add review notes to the screenplay, you'll see them listed here" id="M5R-75-VTw">
@@ -1244,6 +1013,237 @@
                                                         <constraint firstItem="12z-5Q-ToD" firstAttribute="trailing" secondItem="O3A-UT-VXf" secondAttribute="trailing" id="kpD-tf-Pb4"/>
                                                     </constraints>
                                                 </customView>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Sy0-kF-Tby" customClass="MarginView">
+                                                    <rect key="frame" x="300" y="0.0" width="675" height="541"/>
+                                                    <subviews>
+                                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA" customClass="ScrollView">
+                                                            <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
+                                                            <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
+                                                                <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <subviews>
+                                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
+                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        <size key="minSize" width="675" height="541"/>
+                                                                        <size key="maxSize" width="2035" height="10000000"/>
+                                                                        <attributedString key="textStorage">
+                                                                            <fragment content="TEXT">
+                                                                                <attributes>
+                                                                                    <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <font key="NSFont" size="12" name="CourierNewPSMT"/>
+                                                                                    <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineHeightMultiple="1" tighteningFactorForTruncation="0.0"/>
+                                                                                </attributes>
+                                                                            </fragment>
+                                                                        </attributedString>
+                                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                        <connections>
+                                                                            <outlet property="contextMenu" destination="DrH-zx-R7H" id="9LD-s8-Oqi"/>
+                                                                            <outlet property="delegate" destination="-2" id="lmD-aH-hkQ"/>
+                                                                            <outlet property="editorDelegate" destination="-2" id="5q0-if-Gmg"/>
+                                                                            <outlet property="tagging" destination="IRq-m7-MkJ" id="7jd-sG-2Hg"/>
+                                                                            <outlet property="touchBar" destination="FXM-lH-N3d" id="ibZ-0X-rds"/>
+                                                                        </connections>
+                                                                    </textView>
+                                                                </subviews>
+                                                                <connections>
+                                                                    <outlet property="editorDelegate" destination="-2" id="R0N-aQ-vnD"/>
+                                                                </connections>
+                                                            </clipView>
+                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="LxF-lQ-YYW">
+                                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                            </scroller>
+                                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NLv-wd-O2O" customClass="BeatMarkerScroller">
+                                                                <rect key="frame" x="677" y="0.0" width="16" height="516"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <connections>
+                                                                    <outlet property="editorDelegate" destination="-2" id="zj6-Nk-pZL"/>
+                                                                </connections>
+                                                            </scroller>
+                                                            <connections>
+                                                                <outlet property="buttonView" destination="MJt-fS-Zk9" id="Ymd-Hv-bWE"/>
+                                                                <outlet property="editorDelegate" destination="-2" id="2Ox-rh-327"/>
+                                                                <outlet property="timerView" destination="hjj-OY-sw5" id="MrE-Zu-lSD"/>
+                                                            </connections>
+                                                        </scrollView>
+                                                        <customView hidden="YES" id="hjj-OY-sw5" customClass="BeatTimerView">
+                                                            <rect key="frame" x="620" y="15" width="30" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="rsQ-wl-KkE" id="Tuc-ez-Ph4"/>
+                                                                <outlet property="parentView" destination="Mky-48-wwA" id="Jsm-RL-H5c"/>
+                                                            </connections>
+                                                        </customView>
+                                                        <customView wantsLayer="YES" id="MJt-fS-Zk9" userLabel="Button View">
+                                                            <rect key="frame" x="15" y="509" width="640" height="20"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                            <subviews>
+                                                                <button toolTip="Quick Settings" allowsExpansionToolTips="YES" id="piN-SW-wNh" userLabel="Quick Settings Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="615" y="0.0" width="25" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="SettingIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="yVk-AR-Glo">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <accessibility description="Show Print Preview"/>
+                                                                    <connections>
+                                                                        <action selector="showQuickSettings:" target="-2" id="LeI-4b-zvh"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="583" y="0.0" width="25" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Index Cards"/>
+                                                                    <connections>
+                                                                        <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6aa-Mu-dRU">
+                                                                    <rect key="frame" x="760" y="-2" width="0.0" height="0.0"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                </stackView>
+                                                                <button toolTip="Toggle Sidebar" allowsExpansionToolTips="YES" id="ULq-c1-qrj" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="0.0" y="-2.5" width="22" height="25"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="sidebar.left" catalog="system" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <accessibility description="Outline view"/>
+                                                                    <connections>
+                                                                        <action selector="toggleSidebarView:" target="-2" id="HaT-7J-qLQ"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Toggle Timeline" allowsExpansionToolTips="YES" id="SU7-uh-HJD" userLabel="Timeline Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="33" y="0.0" width="26" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="3LY-u6-Jq0">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <accessibility description="Show Timeline"/>
+                                                                    <connections>
+                                                                        <action selector="toggleTimeline:" target="pm8-b1-sOe" id="nEZ-uu-241"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Go to scene..." allowsExpansionToolTips="YES" id="L0v-T6-wwt" userLabel="Timeline Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="72" y="0.0" width="18" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="Search" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="pLs-bo-IGr">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Go to scene..."/>
+                                                                    <connections>
+                                                                        <action selector="goToScene:" target="-2" id="KZS-3c-k8V"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <customView hidden="YES" appearanceType="darkAqua" id="pf2-1r-P3e" customClass="BeatModeDisplay" customModule="Beat" customModuleProvider="target">
+                                                                    <rect key="frame" x="213" y="-2" width="210" height="24"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <subviews>
+                                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="zip-rI-oJi">
+                                                                            <rect key="frame" x="5" y="5" width="147" height="14"/>
+                                                                            <autoresizingMask key="autoresizingMask" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                            <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" alignment="center" title="Mode Indicator" id="pmw-EE-q6r">
+                                                                                <font key="font" metaFont="smallSystem"/>
+                                                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                        </textField>
+                                                                        <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="VrF-1f-6qb">
+                                                                            <rect key="frame" x="152" y="2" width="5" height="20"/>
+                                                                        </box>
+                                                                        <button verticalHuggingPriority="750" id="dRS-5f-0gk">
+                                                                            <rect key="frame" x="154" y="2" width="56" height="20"/>
+                                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                            <buttonCell key="cell" type="bevel" title="Exit" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="cfc-Bs-BT3">
+                                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                                <font key="font" metaFont="miniSystem"/>
+                                                                            </buttonCell>
+                                                                            <connections>
+                                                                                <action selector="closeModeWithSender:" target="pf2-1r-P3e" id="BsF-kJ-miS"/>
+                                                                            </connections>
+                                                                        </button>
+                                                                    </subviews>
+                                                                    <constraints>
+                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="bottom" secondItem="dRS-5f-0gk" secondAttribute="bottom" id="aLc-R8-UwO"/>
+                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="centerY" secondItem="dRS-5f-0gk" secondAttribute="centerY" id="ceN-Tt-SNw"/>
+                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="leading" secondItem="dRS-5f-0gk" secondAttribute="leading" id="gHz-lk-mSZ"/>
+                                                                        <constraint firstItem="VrF-1f-6qb" firstAttribute="leading" secondItem="zip-rI-oJi" secondAttribute="trailing" constant="4" id="rq5-xH-zKP"/>
+                                                                    </constraints>
+                                                                    <connections>
+                                                                        <outlet property="editorDelegate" destination="-2" id="yaM-3w-fCW"/>
+                                                                        <outlet property="title" destination="zip-rI-oJi" id="qw4-fp-es2"/>
+                                                                    </connections>
+                                                                </customView>
+                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="551" y="0.0" width="24" height="20"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Print Preview"/>
+                                                                    <connections>
+                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
+                                                                    </connections>
+                                                                </button>
+                                                            </subviews>
+                                                        </customView>
+                                                        <customView hidden="YES" appearanceType="darkAqua" id="ftJ-Zm-jkE" customClass="BeatLockButton">
+                                                            <rect key="frame" x="15" y="15" width="160" height="36"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <subviews>
+                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
+                                                                    <rect key="frame" x="40" y="11" width="122" height="14"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Document is locked" usesSingleLineMode="YES" id="aMy-cb-lJ3">
+                                                                        <font key="font" metaFont="smallSystem"/>
+                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                </textField>
+                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="afZ-Mw-gsE">
+                                                                    <rect key="frame" x="3" y="4" width="30" height="30"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSLockLockedTemplate" id="pVq-ze-Jbh"/>
+                                                                    <color key="contentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </imageView>
+                                                            </subviews>
+                                                            <connections>
+                                                                <outlet property="image" destination="afZ-Mw-gsE" id="Tp1-dC-YLt"/>
+                                                                <outlet property="label" destination="jtj-qF-qHB" id="RdZ-DN-aFN"/>
+                                                                <outlet property="target" destination="-2" id="DiJ-pn-7FW"/>
+                                                            </connections>
+                                                        </customView>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="6ht-pW-tB8"/>
+                                                        <constraint firstItem="Mky-48-wwA" firstAttribute="leading" secondItem="Sy0-kF-Tby" secondAttribute="leading" id="G9P-ym-C1T"/>
+                                                        <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" id="Rri-nf-aFA"/>
+                                                        <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="VFm-hQ-O9D"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <outlet property="editor" destination="-2" id="JTG-Zr-Zsx"/>
+                                                    </connections>
+                                                </customView>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lKQ-7H-w5w" customClass="TKSplitHandle">
                                                     <rect key="frame" x="300" y="0.0" width="10" height="541"/>
                                                     <constraints>
@@ -1286,7 +1286,7 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
-                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JKs-8L-Wv0">
+                                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JKs-8L-Wv0">
                                                             <rect key="frame" x="28" y="520" width="146" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Tagging" id="Zo3-K1-aDo">
@@ -1685,7 +1685,7 @@
                             </touchBarItem>
                             <touchBarItem id="SBD-rY-fAc">
                                 <viewController key="viewController" id="cAF-5m-zuN">
-                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
+                                    <textField key="view" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
                                         <rect key="frame" x="0.0" y="0.0" width="246" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Refresh for an anti-lateral thought" id="ebZ-HO-Ch9">
@@ -1735,7 +1735,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="311" height="156"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8tW-vH-v5y">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8tW-vH-v5y">
                         <rect key="frame" x="18" y="112" width="244" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbering" id="Cw1-Zn-mbx">
@@ -1744,7 +1744,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="MmF-s9-or8">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="MmF-s9-or8">
                         <rect key="frame" x="216" y="69" width="75" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="1" drawsBackground="YES" id="dJ4-oY-Is8">
@@ -1757,7 +1757,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1nx-iz-8YJ">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1nx-iz-8YJ">
                         <rect key="frame" x="20" y="72" width="190" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Start Scene Numbers From" id="mRh-Qz-Ja7">

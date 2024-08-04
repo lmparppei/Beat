@@ -14,7 +14,7 @@
 
 document {
     disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
-    additional-settings: [novelLineHeightMultiplier];
+    additional-settings: [novelLineHeightMultiplier, novelContentAlignment];
     reformat-following-paragraph-after-type-change: true;
     disable-automatic-paragraphs: true;
 }

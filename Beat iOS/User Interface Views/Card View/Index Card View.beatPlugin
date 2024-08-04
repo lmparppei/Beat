@@ -9,17 +9,15 @@ New Outline
 require("MojaveSupport")
 require("Template")
 
-let json
-let window 
-let timer
+let modes = { ios: 1, window: 2, container: 3 }
+
+let json, window, timer
 let updated = false
 let processing = false
 let process = "" // Process UUID to avoid race conditions
 
 // Currently selected range, because we can't ask for that in background. Remember to update this when creating HTML.
 let selectedRange = { location: 0, length: 0 }
-
-let modes = { ios: 1, window: 2, container: 3 }
 
 if (Beat.container != undefined) mode = modes.container;
 else if (Beat.iOS()) mode = modes.ios;
@@ -74,33 +72,33 @@ let html = (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
 // Get files from inside the app bundle
 let css = Beat.appAssetAsString("BeatCardsUI.css")
 let ui = Beat.appAssetAsString("BeatCardsUI.html")
-let js = Beat.appAssetAsString("dragula.js")
+// We're using a modified version of Sortable 
+let js = "<script>" + Beat.appAssetAsString("Sortable.js") + "</script>"
 
 let additionalCSS = ""
-
 if (Beat.iOS()) {
 	additionalCSS = "#print, #zoom { display: none; }"
 }
 
-let current = ""
-if (Beat.currentScene != null) current = Beat.currentScene.line.uuidString()
+let current = (Beat.currentScene != null) ? Beat.currentScene.line.uuidString() : null
 
 // Create UI
-ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{dragula}}", js).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current)
+ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current)
+
+let fullHTML = [ui, js]
 
 // Create window.
 // We'll choose the appropriate view to use as the HTML view.
 // On iOS, it'll be a HTML panel, on macOS it's either a window (for the detached view) or the container (for the static view)
 if (mode == modes.ios) {
-	window = Beat.htmlPanel(ui, 900, 600, function () { Beat.end(); })
-}
-else if (mode == modes.window) {
-	window = Beat.htmlWindow(ui, 900, 600, function () { Beat.end(); })
-}
-else if (mode == modes.container) {
+	window = Beat.htmlPanel(fullHTML, 900, 600, function () { Beat.end(); })
+} else if (mode == modes.window) {
+	window = Beat.htmlWindow(fullHTML, 900, 600, function () { Beat.end(); })
+} else if (mode == modes.container) {
 	// This plugin is running *inside a plugin container*, so we'll get the HTML view from the container
 	window = Beat.container
-
+	
+	window.additionalHeaders = js
 	window.setHTML(ui)
 }
 
@@ -138,7 +136,7 @@ Beat.onSelectionChange((selection) => {
 	}
 
 	let uuid = currentScene.line?.uuidString()
-
+	
 	window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
 })
 
@@ -166,7 +164,7 @@ function refreshHTML() {
 		let htmlString = JSON.stringify(html)
 		
 		Beat.sync(() => {
-			window.runJS('load(' + htmlString + ')')
+			window.runJS(`load(${htmlString})`)
 			updated = true
 		})
 		processing = false
@@ -391,13 +389,9 @@ Beat.custom = {
 		}
 		
 		// Make sure there's a line break
-		if (position > 0) {
+		if (position > 1) {
 			let lineBeforeTarget = Beat.lineAtPosition(position-1)
-			let lineAtTarget = Beat.lineAtPosition(position)
-
-			if (lineAtTarget.length > 0 || lineAtTarget.length > 0) {
-				stringToMove = "\n\n" + stringToMove
-			}
+			if (lineBeforeTarget.length > 0) stringToMove = "\n\n" + stringToMove
 		}
 		// Make sure the string has a line break at end
 		if (stringToMove.charAt(stringToMove.length - 1) != "\n") {

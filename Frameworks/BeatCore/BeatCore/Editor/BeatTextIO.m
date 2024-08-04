@@ -299,97 +299,18 @@ static NSString *centeredEnd = @" <";
     [self addString:string atIndex:targetPosition];
 }
 
-/// Moves a whole scene from given position to another.
-- (void)__moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to
+- (void)moveScenesInRange:(NSRange)range to:(NSInteger)position
 {
-    // FOLLOWING CODE IS A MESS. Dread lightly.
-    // Thanks for the heads up, past me, but I'll just dive right in
+    if (range.length == 0 || NSMaxRange(range) > self.delegate.text.length) return;
     
-    // NOTE FROM BEAT 1.1 r4:
-    // The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
+    NSString* string = [self.delegate.text substringWithRange:range];
     
-    // On to the very dangerous stuff :-) fuck me :----)
-    NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
-    NSString *string = [_delegate.text substringWithRange:range];
-    
-    NSInteger omissionStartsAt = NSNotFound;
-    NSInteger omissionEndsAt = NSNotFound;
-    
-    if (sceneToMove.omitted) {
-        // We need to find out where the omission begins & ends
-        NSInteger idx = [_delegate.parser.lines indexOfObject:sceneToMove.line];
-        if (idx == NSNotFound) return; // Shouldn't happen
-        
-        if (idx > 0) {
-            // Look for start of omission, but break when encountering an outline item
-            for (NSInteger i = idx - 1; i >= 0; i++) {
-                Line *prevLine = _delegate.parser.lines[i];
-                if (prevLine.isOutlineElement) break;
-                else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
-                    omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
-                    break;
-                }
-            }
-            
-            // Look for end of omission
-            for (NSInteger i = idx + 1; i < _delegate.parser.lines.count; i++) {
-                Line *nextLine = _delegate.parser.lines[i];
-                if (nextLine.type == heading || nextLine.type == section) break;
-                else if (nextLine.omitIn && [nextLine.string rangeOfString:@"*/"].location != NSNotFound) {
-                    omissionEndsAt = nextLine.position + [nextLine.string rangeOfString:@"*/"].location + 2;
-                }
-            }
-        }
-        
-        
-        // Recreate range to represent the actual range with omission symbols
-        // (if applicable)
-        NSInteger loc = (omissionStartsAt == NSNotFound) ? sceneToMove.position : omissionStartsAt;
-        NSInteger len = (omissionEndsAt == NSNotFound) ? (sceneToMove.position + sceneToMove.length) - loc : omissionEndsAt - loc;
-        
-        range = (NSRange){ loc, len };
-        
-        string = [_delegate.text substringWithRange:range];
-        
-        // Add omission markup if needed
-        if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
-        if (omissionEndsAt == NSNotFound) string = [string stringByAppendingString:@"\n*/\n\n"];
-        
-        // Normal omitted blocks end with */, so add some line breaks if needed
-        if ([[string substringFromIndex:string.length - 2] isEqualToString:@"*/"]) string = [string stringByAppendingString:@"\n\n"];
-    }
-    
-    // Create a new outline before trusting it
-    NSArray *outline = self.delegate.parser.outline;
-    
-    // When an item is dropped at the end, its target index will be +1 from the last item
-    bool moveToEnd = false;
-    if (to >= outline.count) {
-        to = outline.count - 1;
-        moveToEnd = true;
-    }
-    
-    // Scene before which this scene will be moved, if not moved to the end
-    OutlineScene *sceneAfter;
-    if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
-    
-    NSInteger position = (!moveToEnd) ? sceneAfter.position : _delegate.text.length;
-    
-    // Add some line breaks if needed
-    if (position != 0) {
-        Line * lineAtPosition = [_delegate.parser lineAtPosition:position - 1];
-        if (lineAtPosition.type != empty) {
-            [self addString:@"\n\n" atIndex:position skipAutomaticLineBreaks:true];
-            position += 2;
-        }
-    }
-    
+    Line* lastLine = [self.delegate.parser lineAtPosition:NSMaxRange(range)];
+    // Add line breaks if needed
+    if (lastLine.type == section && [string characterAtIndex:string.length-1] != '\n') [string stringByAppendingString:@"\n"];
+    else if (lastLine.type != empty || lastLine.length > 0) string = [string stringByAppendingString:@"\n"];
+
     [self moveStringFrom:range to:position actualString:string];
-    
-    // If needed, add extra line breaks at end
-    if (string.length > 0 && [string characterAtIndex:string.length - 1] != '\n') {
-        [self addString:@"\n\n" atIndex:position+string.length skipAutomaticLineBreaks:true];
-    }
 }
 
 /// Removes text on the given line in its LOCAL range instead of global range.

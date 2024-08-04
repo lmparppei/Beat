@@ -8,7 +8,7 @@
 import Foundation
 
 class BeatPluginHTMLTemplate:NSObject {
-    class func html(content html:String) -> String {
+    class func html(content html:String, headers:String = "") -> String {
         // Load template
 
         let bundle = Bundle(for: Self.self)
@@ -24,6 +24,7 @@ class BeatPluginHTMLTemplate:NSObject {
         // Add the HTML to template and load the HTML in web view
         template = template.replacingOccurrences(of: "{{font-url}}", with: fontURL)
         template = template.replacingOccurrences(of: "{{polyfill}}", with: polyfill)
+        template = template.replacingOccurrences(of: "{{headers}}", with: headers)
         template = template.replacingOccurrences(of: "<!-- CONTENT -->", with: html)
         
         return template

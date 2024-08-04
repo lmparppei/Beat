@@ -53,8 +53,6 @@ page {
     first-page-with-number: 1;
 }
 
-
-
 heading {
     margin-top: 1l;
     content: #;
@@ -89,6 +87,8 @@ action, dialogue, character, parenthetical {
     
     indent-split-elements: false;
     unindent-fresh-paragraphs: true;
+    
+    text-align: documentSetting(novelContentAlignment);
 }
 
 action {

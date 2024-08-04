@@ -836,6 +836,8 @@
                 pStyle.alignment = NSTextAlignmentCenter;
             else if ([style.textAlign isEqualToString:@"right"] || rightToLeft) 
                 pStyle.alignment = NSTextAlignmentRight;
+            else if ([style.textAlign isEqualToString:@"justify"])
+                pStyle.alignment = NSTextAlignmentJustified;
                         
             // Special rules for some blocks
             if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {

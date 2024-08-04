@@ -372,11 +372,8 @@
 }
 
 
-// FOR VIEW-BASED OUTLINE. Very slow.
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-	
 	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
 	
 	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
@@ -585,17 +582,17 @@
 		scenesInSection = [scenesInSection arrayByAddingObjectsFromArray:[self.editorDelegate.parser scenesInSection:_draggedScene]];
 		
 		NSInteger location = scenesInSection.firstObject.position;
-		NSInteger length = scenesInSection.lastObject.position + scenesInSection.lastObject.length - location;
-		NSRange sectionRange = (NSRange){ location, length };
-		
-		[self.editorDelegate moveStringFrom:sectionRange to:position actualString:[self.editorDelegate.text substringWithRange:sectionRange]];
-		return YES;
+		NSInteger length = NSMaxRange(scenesInSection.lastObject.range) - location;
+		NSRange sectionRange = NSMakeRange(location, length);
+				
+		[self.editorDelegate.textActions moveScenesInRange:sectionRange to:position];
+	} else {
+		// Move a single scene
+		self.editorDelegate.outlineEdit = YES;
+		[self.editorDelegate.textActions moveScene:_draggedScene from:from to:to];
+		self.editorDelegate.outlineEdit = NO;
 	}
 	
-	// Move a single scene
-	self.editorDelegate.outlineEdit = YES;
-	[self.editorDelegate moveScene:_draggedScene from:from to:to];
-	self.editorDelegate.outlineEdit = NO;
 	return YES;
 }
 

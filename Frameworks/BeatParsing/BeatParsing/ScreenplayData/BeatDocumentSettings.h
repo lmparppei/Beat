@@ -60,7 +60,7 @@ extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;
 
 extern NSString * const DocSettingNovelLineHeightMultiplier;
-
+extern NSString * const DocSettingContentAlignment;
 
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)toggleBool:(NSString*)key;

@@ -64,11 +64,10 @@
         
         _operation = operation;
         _document = delegate.document;
-        
-        _styles = delegate.styles;
-        
         _documentSettings = delegate.documentSettings;
         
+        _styles = delegate.styles;
+                
         NSString* header = [delegate.documentSettings getString:DocSettingHeader];
         _header = (header) ? header : @"";
         _headerAlignment = [delegate.documentSettings getInt:DocSettingHeaderAlignment];

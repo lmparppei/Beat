@@ -232,6 +232,7 @@
 "backup.browseVersions" = "Browse versions...";
 
 "quickSettings.novelLineHeightMultiplier" = "Line Spacing";
+"quickSettings.novelContentAlignment" = "Alignment";
 
 "tag.cast" = "Cast";
 "tag.prop" = "Prop";

@@ -48,7 +48,8 @@ NSString * const DocSettingActivePlugins = @"Active Plugins";
 
 NSString * const DocSettingPageSize = @"Page Size";
 
-NSString * const DocSettingCharacterGenders = @"CharacterGenders";
+NSString * const DocSettingCharacterGenders = @"CharacterGenders"; // Backwards compatibility
+NSString * const DocSettingCharacterData = @"CharacterData";
 
 NSString * const DocSettingPrintSceneNumbers = @"Print Scene Numbers";
 NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
@@ -57,10 +58,8 @@ NSString * const DocSettingPrintNotes    = @"Print Notes";
 
 NSString * const DocSettingStylesheet    = @"Stylesheet";
 
-NSString * const DocSettingCharacterData = @"CharacterData";
-
-NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier";
-
+NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier"; // Why isn't this key in line with the others?
+NSString * const DocSettingContentAlignment = @"novelContentAlignment";
 
 -(id)init
 {
@@ -90,7 +89,8 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
         DocSettingStylesheet: @"Screenplay",
         DocSettingNovelLineHeightMultiplier: @(2.0),
         DocSettingHeaderAlignment: @(1),
-        DocSettingPrintSceneNumbers: @(true)
+        DocSettingPrintSceneNumbers: @(true),
+        DocSettingContentAlignment: @""
     };
     
     return defaultValues;
@@ -220,7 +220,7 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 		NSError *error;
 		
 		NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:&error];
-		
+        
 		if (!error) {
 			_settings = [NSMutableDictionary dictionaryWithDictionary:settings];
 		

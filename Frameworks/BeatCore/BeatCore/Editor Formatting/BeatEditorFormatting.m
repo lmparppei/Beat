@@ -216,18 +216,22 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Formatting shorthands
 
-/// Forces reformatting of each line
+/// Forces reformatting of each line.
+/// TODO: Move the cool initial formatting block here and make it OS-agnostic.
 - (void)formatAllLines
 {
-    // Reset sizing
+    // Reset sizings
     self.paragraphStyles = NSMutableDictionary.new;
-    
-    // Format all lines
+
+    // Linear formatting
+    self.paragraphStyles = NSMutableDictionary.new;
     for (Line* line in self.parser.lines) {
-        line.formattedAs = -1; // Force font change
-        @autoreleasepool { [self formatLine:line]; }
+        @autoreleasepool {
+            line.formattedAs = -1; // Force font change
+            [self formatLine:line];
+        }
     }
-    
+
     [self.parser.changedIndices removeAllIndexes];
     [self.delegate ensureLayout];
 }

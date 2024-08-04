@@ -48,6 +48,8 @@
 /// Marks the document as changed
 - (void)addToChangeCount
 {
+    if (self.documentIsLoading) return;
+    
 #if TARGET_OS_OSX
     [self updateChangeCount:BXChangeDone];
 #else
@@ -650,13 +652,9 @@
 
 - (void)setText:(NSString *)text
 {
-    if (!self.textView) {
-        // View is not ready yet, set text to buffer
-        self.contentBuffer = text;
-    } else {
-        // Set text on screen
-        [self.textView setText:text];
-    }
+    // If view is not ready yet, set text to buffer
+    if (self.textView == nil) self.contentBuffer = text;
+    else [self.textView setText:text];
 }
 
 #pragma mark - Text cache

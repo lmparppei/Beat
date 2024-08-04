@@ -203,10 +203,8 @@ public final class CssParser {
             let documentSettings = settings?.documentSettings ?? BeatDocumentSettings()
             var v:Any? = documentSettings.get(key)
             
-            if v == nil {
-                // Try to get default value
-                v = documentSettings.defaultValues()[key]
-            }
+            // Try to get default value if it wasn't applied already
+            if v == nil { v = documentSettings.defaultValues()[key] }
             
             return v
         }) {

@@ -85,7 +85,7 @@ class BeatDesktopQuickSettings:NSViewController {
 		}
 	}
 	
-	/// This currently only supports *one* setting, but it's built this way to be open to adustments
+	/// This currently only supports *two* settings, but it's built this way to be open to adustments. At some point we can control these via BeatCSS.
 	func addAdditionalSettings() {
 		guard let settings = self.delegate?.editorStyles.document.additionalSettings,
 			  let container = self.additionalSettings
@@ -95,10 +95,36 @@ class BeatDesktopQuickSettings:NSViewController {
 		container.addView(BeatQuickSettingSeparator.newSeparator())
 		
 		for setting in settings {
+			var item:NSView?
+			
 			if setting == "novelLineHeightMultiplier" {
-				let item = self.segmentedSetting(setting: setting)
-				container.addView(item)
+				item = self.segmentedSetting(setting: setting, segments: ["2.0", "1.5"], values: [2.0, 1.5], validation: { value in
+					let v = value as? Float ?? 2.0
+					return (v < 2.0) ? 1 : 0
+				}) { [weak self] value, actualValue in
+					self?.delegate?.documentSettings.set(setting, as: actualValue ?? 2.0)
+					self?.delegate?.reloadStyles()
+				}
+				
+			} else if setting == "novelContentAlignment" {
+				var icons:[NSImage] = []
+				
+				if #available(macOS 11.0, *) {
+					if let leftIcon = NSImage(systemSymbolName: "text.alignleft", accessibilityDescription: "Left align"), let justifyIcon = NSImage(systemSymbolName: "text.justifyleft", accessibilityDescription: "Justify") {
+						icons = [leftIcon, justifyIcon]
+					}
+				}
+				
+				item = self.segmentedSetting(setting: setting, segments: ["", ""], icons: icons, values: ["", "justify"], validation: { value in
+					let v = value as? String ?? ""
+					return (v == "justify") ? 1 : 0
+				}) { [weak self] value, actualValue in
+					self?.delegate?.documentSettings.set(setting, as: actualValue ?? "")
+					self?.delegate?.reloadStyles()
+				}
 			}
+			
+			if let settingItem = item { container.addView(settingItem) }
 		}
 		
 		container.updateSize()
@@ -115,15 +141,15 @@ class BeatDesktopQuickSettings:NSViewController {
 		let revisions = BeatRevisions.revisionGenerations()
 				
 		let items = [
-			BeatQuickSettingItem.newToggle("Show Scene Numbers", key: BeatSettingShowSceneNumbers, handler: { value in
+			BeatQuickSettingItem.newToggle("Show Scene Numbers", key: BeatSettingShowSceneNumbers, handler: { value, _ in
 				delegate.showSceneNumberLabels = !delegate.showSceneNumberLabels
 				delegate.getTextView().needsDisplay = true
 			}),
-			BeatQuickSettingItem.newToggle("Show Page Numbers", key: BeatSettingShowPageNumbers, handler: { value in
+			BeatQuickSettingItem.newToggle("Show Page Numbers", key: BeatSettingShowPageNumbers, handler: { value, _ in
 				delegate.showPageNumbers = !delegate.showPageNumbers
 				delegate.getTextView().needsDisplay = true
 			}),
-			BeatQuickSettingItem.newToggle("Dark Mode", initialValue: delegate.isDark().intValue, handler: { value in
+			BeatQuickSettingItem.newToggle("Dark Mode", initialValue: delegate.isDark().intValue, handler: { value, _ in
 				if let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate {
 					appDelegate.toggleDarkMode()
 				}
@@ -133,18 +159,18 @@ class BeatDesktopQuickSettings:NSViewController {
 											 items: [NSMenuItem(title: "A4", action: nil, keyEquivalent: ""),
 													 NSMenuItem(title: "US Letter", action: nil, keyEquivalent: "")],
 											 value: delegate.pageSize.rawValue,
-											 handler: { [weak self] selection in
+											 handler: { [weak self] selection, _ in
 												 self?.delegate?.pageSize = BeatPaperSize(rawValue: selection as? Int ?? 0) ?? .A4
 											 }),
 			BeatQuickSettingSeparator.newSeparator(),
-			BeatQuickSettingItem.newToggle("Revision Mode", initialValue: delegate.revisionMode.intValue, handler: { [weak self] value in
+			BeatQuickSettingItem.newToggle("Revision Mode", initialValue: delegate.revisionMode.intValue, handler: { [weak self] value, _ in
 				self?.delegate?.toggleRevisionMode(nil)
 			}),
 			BeatQuickSettingItem.newDropdown("Generation",
 											 items: revisions.map({ revision in BeatColorMenuItem(color: revision.color) }),
 											 value: delegate.revisionLevel,
 											 size: .small,
-											 handler: { [weak self] selection in
+											 handler: { [weak self] selection, _ in
 												 let i = selection as? Int ?? 0
 												 self?.delegate?.revisionLevel = i
 											 })
@@ -197,16 +223,12 @@ class BeatDesktopQuickSettings:NSViewController {
 // MARK: - Additional setting getters and setters
 
 extension BeatDesktopQuickSettings {
-	func segmentedSetting(setting:String) -> NSView {
-		let value = delegate?.documentSettings.getFloat(setting) ?? 2.0
+	func segmentedSetting(setting:String, segments:[String], icons:[NSImage] = [], values:[Any], validation:(Any?) -> Int, handler:@escaping (Any, Any?) -> Void) -> NSView {
+		let value = delegate?.documentSettings.get(setting)
 		let label = NSLocalizedString("quickSettings." + setting, comment: "")
+		let selected = validation(value)
 		
-		let item = BeatQuickSettingItem.newSegment(label, segments: ["2", "1.5"], value: (value < 2.0) ? 1 : 0) { [weak self] value in
-			guard let selected = value as? Int else { return }
-			let lineHeight = (selected == 0) ? 2.0 : 1.5
-			self?.delegate?.documentSettings.setFloat(setting, as:lineHeight)
-			self?.delegate?.reloadStyles()
-		}
+		let item = BeatQuickSettingItem.newSegment(label, segments: segments, icons: icons, values:values, value: selected, handler: handler)
 		
 		return item
 	}
@@ -255,14 +277,16 @@ class BeatStackView:NSView {
 
 class BeatQuickSettingItem:NSView {
 	var type:BeatQuickSettingViewType = .none
-	var handler:((Any) -> Void)?
-	
+	var handler:((Any, Any?) -> Void)?
 	var control:Any?
+	
+	var segmentedValues:[Any] = []
+	
 	override var isFlipped: Bool { return true }
 	
 	static var defaultWidth = 172.0
 	
-	init(frame frameRect: NSRect, type:BeatQuickSettingViewType = .none, handler:((Any) -> Void)? = nil) {
+	init(frame frameRect: NSRect, type:BeatQuickSettingViewType = .none, handler:((Any, Any?) -> Void)? = nil) {
 		self.handler = handler
 		self.type = type
 		super.init(frame: frameRect)
@@ -272,7 +296,7 @@ class BeatQuickSettingItem:NSView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	class func newToggle(_ text:String, key:String = "", documentSetting:Bool = false, initialValue:Int = -1, handler:@escaping (Any) -> Void) -> NSView {
+	class func newToggle(_ text:String, key:String = "", documentSetting:Bool = false, initialValue:Int = -1, handler:@escaping (Any, Any?) -> Void) -> NSView {
 		let item = BeatQuickSettingItem(frame: NSMakeRect(0.0, 0.0, BeatQuickSettingItem.defaultWidth, 22.0), type: .toggle, handler: handler)
 		
 		let button = ITSwitch(frame: NSMakeRect(padding, 0.0, 35.0, 22.0), settingKey: key, documentSetting: documentSetting)
@@ -293,7 +317,7 @@ class BeatQuickSettingItem:NSView {
 		return item
 	}
 	
-	class func newDropdown(_ text:String, items:[NSMenuItem], value:Int, size:NSControl.ControlSize = .regular, handler:@escaping (Any) -> Void) -> NSView {
+	class func newDropdown(_ text:String, items:[NSMenuItem], value:Int, size:NSControl.ControlSize = .regular, handler:@escaping (Any, Any?) -> Void) -> NSView {
 		
 		let popup = NSPopUpButton(frame: NSMakeRect(90.0, 0.0, 115.0, 22.0))
 		popup.controlSize = size
@@ -319,7 +343,7 @@ class BeatQuickSettingItem:NSView {
 		return item
 	}
 	
-	class func newSegment(_ text:String, segments:[String], value:Int, handler:@escaping (Any) -> Void) -> NSView {
+	class func newSegment(_ text:String, segments:[String], icons:[NSImage] = [], values:[Any], value:Int, handler:@escaping (Any, Any?) -> Void) -> NSView {
 		let item = BeatQuickSettingItem(frame: NSMakeRect(0.0, 0.0, BeatQuickSettingItem.defaultWidth, 22.0), type: .segment, handler: handler)
 		
 		let segmentedControl = NSSegmentedControl(frame: NSMakeRect(90.0, 0.0, 90.0, 22.0))
@@ -330,13 +354,16 @@ class BeatQuickSettingItem:NSView {
 		segmentedControl.action = #selector(runAction)
 		segmentedControl.sendAction(on: .leftMouseUp)
 		
+		item.segmentedValues = values
 		item.control = segmentedControl
 		item.addSubview(segmentedControl)
 		
 		for i in 0..<segments.count {
 			segmentedControl.setLabel(segments[i], forSegment: i)
+			if (i < icons.count) {
+				segmentedControl.setImage(icons[i], forSegment: i)
+			}
 		}
-		
 		
 		let label = NSTextField(labelWithString: text)
 		label.frame.origin = CGPoint(x: padding, y: (item.frame.height - label.frame.height) / 2)
@@ -349,17 +376,19 @@ class BeatQuickSettingItem:NSView {
 	
 	@IBAction func runAction(_ sender:BeatQuickSettingItem) {
 		var value:Any?
-				
+		var actualValue:Any?
+		
 		if type == .toggle, let button = control as? ITSwitch {
 			value = button.checked
 		} else if type == .dropdown, let popup = control as? NSPopUpButton, let selected = popup.selectedItem {
 			value = popup.itemArray.firstIndex(of: selected)
 		} else if type == .segment, let segment = control as? NSSegmentedControl {
 			value = segment.selectedSegment
+			actualValue = segmentedValues[segment.selectedSegment]
 		}
 		
-		if let handler = self.handler, value != nil {
-			handler(value!)
+		if let handler = self.handler, let v = value {
+			handler(v, actualValue)
 		}
 	}
 	

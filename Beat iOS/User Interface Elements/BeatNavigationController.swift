@@ -15,25 +15,21 @@ final class BeatNavigationController: UINavigationController {
 	
 	override init(rootViewController: UIViewController) {
 		super.init(rootViewController: rootViewController)
-		print("INIT")
 		delegate = self
 	}
 	
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
 		super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-		print("INIT")
 		delegate = self
 	}
 
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
-		print("INIT")
 		delegate = self
 	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		print("DID LOAD")
 		// This needs to be in here, not in init
 		interactivePopGestureRecognizer?.delegate = self
 	}
@@ -47,7 +43,6 @@ final class BeatNavigationController: UINavigationController {
 	
 	override func pushViewController(_ viewController: UIViewController, animated: Bool) {
 		duringPushAnimation = true
-		print("... push view controller")
 		super.pushViewController(viewController, animated: animated)
 	}
 	
@@ -62,7 +57,6 @@ final class BeatNavigationController: UINavigationController {
 extension BeatNavigationController: UINavigationControllerDelegate {
 	
 	func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-		print("did show")
 		guard let swipeNavigationController = navigationController as? BeatNavigationController else { return }
 		
 		swipeNavigationController.duringPushAnimation = false
@@ -75,7 +69,6 @@ extension BeatNavigationController: UINavigationControllerDelegate {
 extension BeatNavigationController: UIGestureRecognizerDelegate {
 	
 	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-		print("Asking for gesture?")
 		guard gestureRecognizer == interactivePopGestureRecognizer else {
 			return true // default value
 		}

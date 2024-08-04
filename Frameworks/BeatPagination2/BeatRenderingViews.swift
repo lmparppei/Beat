@@ -393,7 +393,6 @@ import UXKit
 		// Add the rest of the elements on left side
 		for dict in self.titlePageLines {
             // Make sure we have a value and that it's not a metadata key
-            print(dict)
             guard let key = dict.keys.first?.lowercased(), key.prefix(2) != "x-" else {
                 continue
             }
@@ -502,7 +501,6 @@ import UXKit
 		self.titlePageLines = titlePageContent
 		createTitlePage()
 	}
-	
 }
 
 // MARK: - Custom layout manager for text views in rendered page view
@@ -542,10 +540,10 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 			
             // In rendered text, the revision attribute is a A NUMBER VALUE
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
-				if (obj == nil) { return }
-                guard let revisionValue = obj as? NSNumber else { return }
+                guard obj != nil, let revisionValue = obj as? NSNumber else { return }
                 
                 let level = revisionValue.intValue
+
 				// If the revision is not included in settings, just skip it.
                 if !revisions.contains(level) { return }
 				                

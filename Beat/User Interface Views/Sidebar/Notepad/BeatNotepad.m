@@ -111,6 +111,14 @@
 
 #pragma mark - Loading and storing text
 
+- (void)setString:(NSString *)string
+{
+	[super setString:string];
+	[self saveToDocument];
+	
+	if (!_editorDelegate.documentIsLoading) [_editorDelegate addToChangeCount];
+}
+
 -(void)loadString:(NSString*)string
 {
 	[self.textStorage setAttributedString:[self coloredRanges:string]];

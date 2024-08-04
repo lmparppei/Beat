@@ -1769,9 +1769,6 @@ static NSDictionary* patterns;
 
 #pragma mark - Line position lookup and convenience methods
 
-// Cached line for lookup
-NSUInteger prevLineAtLocationIndex = 0;
-
 /// Returns line at given POSITION, not index.
 - (Line*)lineAtIndex:(NSInteger)position
 {
@@ -1781,20 +1778,21 @@ NSUInteger prevLineAtLocationIndex = 0;
 /**
  Returns the index in lines array for given line. This method might be called multiple times, so we'll cache the result.
  This is a *very* small optimization, we're talking about `0.000001` vs `0.000007`. It's many times faster, but doesn't actually have too big of an effect.
+ Note that whenever changes are made, `previousLineIndex` should maybe be set as `NSNotFound`. Currently it's not.
  */
-NSInteger previousIndex = NSNotFound;
+NSInteger previousLineIndex = NSNotFound;
 - (NSUInteger)indexOfLine:(Line*)line
 {
     NSArray *lines = self.safeLines;
     
-	if (previousIndex < lines.count && previousIndex >= 0) {
-		if (line == (Line*)lines[previousIndex]) {
-			return previousIndex;
+	if (previousLineIndex < lines.count && previousLineIndex >= 0) {
+		if (line == (Line*)lines[previousLineIndex]) {
+			return previousLineIndex;
 		}
 	}
     
 	NSInteger index = [lines indexOfObject:line];
-	previousIndex = index;
+	previousLineIndex = index;
 
     return index;
 }
@@ -1932,8 +1930,10 @@ NSInteger previousSceneIndex = NSNotFound;
 	return nil;
 }
 
-/// Rerturns the line object at given position
-/// (btw, why aren't we using the other method?)
+/// Cached line for location lookup. Needs a better name.
+NSUInteger prevLineAtLocationIndex = 0;
+
+/// Returns the line object at given position (btw, why aren't we using the other method?)
 - (Line*)lineAtPosition:(NSInteger)position
 {
 	// Let's check the cached line first
@@ -1945,11 +1945,9 @@ NSInteger previousSceneIndex = NSNotFound;
 	// Quick lookup for first object
 	if (position == 0) return lines.firstObject;
 	
-	// We'll use a circular lookup here.
-	// It's HIGHLY possible that we are not just randomly looking for lines,
-	// but that we're looking for close neighbours in a for loop.
-	// That's why we'll either loop the array forward or backward to avoid
-	// unnecessary looping from beginning, which soon becomes very inefficient.
+	// We'll use a circular lookup here. It's HIGHLY possible that we are not just randomly looking for lines,
+	// but that we're looking for close neighbours in a for loop. That's why we'll either loop the array forward
+    // or backward to avoid unnecessary looping from beginning, which soon becomes very inefficient.
 	
 	NSUInteger cachedIndex;
 	

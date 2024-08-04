@@ -100,9 +100,6 @@ THE SOFTWARE.
 #pragma mark - Plugin support
 
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
-/// Returns gender JSON from document settings.
-@property (nonatomic) NSDictionary<NSString*, NSString*>* _Nullable characterGenders;
-
 
 
 #pragma mark - Window controls

@@ -83,8 +83,7 @@ import UXKit
     
     override init() {
         super.init()
-        
-        customInit()
+        //customInit()
     }
     
     @objc public init(delegate:BeatPreviewManagerDelegate, previewView:BeatPreviewPageView) {
@@ -92,18 +91,19 @@ import UXKit
         self.previewView = previewView
         super.init()
         
-        customInit()
+        setup()
     }
     
-    func customInit() {
+    @objc public func setup() {
         // Create renderer and pagination manager
         self.renderer = BeatRenderer(settings: settings)
         self.pagination = BeatPaginationManager(settings: settings, delegate: self, renderer: self.renderer, livePagination: true)
         self.pagination?.editorDelegate = self.delegate
     }
     
-    
     override open func awakeFromNib() {
+        super.awakeFromNib()
+        
         self.pagination?.editorDelegate = self.delegate
         // NOTE: This does nothing on macOS
         self.previewView?.dataSource = self

@@ -19,13 +19,14 @@ import UIKit
     
     var shouldShow = false
     
-    public required init(html: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback: JSValue?) {
+    public required init(html: String, headers: String, width: CGFloat, height: CGFloat, host: BeatPlugin, cancelButton: Bool = false, callback: JSValue?) {
         self.callback = callback
         self.host = host
                 
         super.init(nibName: nil, bundle: nil)
         
-        self.webView = BeatPluginWebView.create(html: html, width: self.view.frame.width, height: self.view.frame.height, host: host)
+        let content = ["content": html, "headers": headers]
+        self.webView = BeatPluginWebView.create(html: content, width: self.view.frame.width, height: self.view.frame.height, host: host)
         self.webView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         if let webView = self.webView {

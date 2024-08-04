@@ -138,9 +138,6 @@
 @property (nonatomic) bool headingStyleBold;
 @property (nonatomic) bool headingStyleUnderline;
 
-// Views
-//@property (nonatomic) NSMutableArray<BeatPluginContainerView*>* registeredPluginContainers;
-
 // Sidebar & Outline view
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
@@ -304,7 +301,7 @@
 		[self close];
 	} else {
 		[super restoreDocumentWindowWithIdentifier:identifier state:state completionHandler:completionHandler];
-		[self updateChangeCount:NSChangeDone];
+		if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
 	}
 }
 
@@ -328,9 +325,11 @@
 	}
 	
 	[super windowControllerDidLoadNib:aController];
+	
+	[self.previewController setup];
 		
 	_documentWindow = aController.window;
-	_documentWindow.delegate = self; // The conformance is provided by Swift, don't worry
+	_documentWindow.delegate = self; // The conformance is provided by Swift, don't worry, future me
 	
 	// Setup plugins
 	self.runningPlugins = NSMutableDictionary.new;
@@ -366,12 +365,14 @@
 	self.textView.alphaValue = 0;
 	if (self.contentBuffer) {
 		self.text = self.contentBuffer;
-		[self setText:self.contentBuffer];
 	} else {
 		self.contentBuffer = @"";
-		[self setText:@""];
+		self.text = @"";
 	}
 		
+	// Set up revision tracking before preview is created and lines are rendered on screen
+	[self.revisionTracking setup];
+	
 	// Paginate the whole document at load
 	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
 		
@@ -394,10 +395,7 @@
 
 	// Setup text IO
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
-	
-	// Document loading has ended. This has to be done after reviews and tagging are loaded.
-	self.documentIsLoading = NO;
-			
+				
 	// Init autosave
 	[self initAutosave];
 	
@@ -406,15 +404,10 @@
 	
 	// Notepad
 	[self.notepad setup];
-	
-	// If this a recovered autosave, the file might be changed when it opens, so let's save this info
-	bool saved = (self.hasUnautosavedChanges) ? NO : YES;
-	
+		
 	// Sidebar
 	[self restoreSidebar];
-	
-	if (saved) [self updateChangeCount:NSChangeCleared];
-	
+		
 	// Reveal text view
 	[self.textView.animator setAlphaValue:1.0];
 	
@@ -429,13 +422,18 @@
 	
 	// Reload editor views in background
 	[self updateEditorViewsInBackground];
-	
+		
 	// Load plugin containers
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container load];
 	}
 	
+	// Document loading has ended. This has to be done after reviews and tagging are loaded.
+	self.documentIsLoading = NO;
+
 	self.textView.editable = true;
+	//if (saved) NSLog(@"Saved"); else NSLog(@"NOT saved");
+	//if (saved) [self updateChangeCount:NSChangeCleared];
 }
 
 -(void)awakeFromNib
@@ -856,7 +854,7 @@
 	// Load text & remove settings block from Fountain
 	text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
 	
-	self.documentSettings = BeatDocumentSettings.new;
+	self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
 	
 	NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
 	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
@@ -1263,10 +1261,7 @@
 /// Render the newly opened document for editing
 -(void)renderDocument
 {
-	// Initialize revision tracing here, so revisions are loaded before formatting,
-	// so revised text color is drawn correctly in formatting module.
 	self.textView.editable = false;
-	[self.revisionTracking setup];
 
 	// Begin formatting lines.
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -1686,16 +1681,6 @@
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
-}
-
-
-#pragma mark - Character gender getter
-
-/// Quick access to gender list.
-- (NSDictionary<NSString*, NSString*>*)characterGenders
-{
-	NSDictionary * genders = [self.documentSettings get:DocSettingCharacterGenders];
-	return (genders != nil) ? genders : @{};
 }
 
 

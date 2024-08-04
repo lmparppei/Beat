@@ -5,67 +5,6 @@
 			{{iOS-css}}
 		</style>
 		<script>
-			let scroller = {
-				interval: 10,
-				step: 10,
-				zone: 100,
-				enabled: false, // Add an 'enabled' property to the object
-
-				start: () => {
-					disableScroll()
-					
-					scroller.enabled = true;
-					document.addEventListener('mousemove', scroller.mouseMove);
-					scroller.tick();
-				},
-
-				stop: () => {
-					enableScroll()
-					
-					scroller.enabled = false;
-					document.removeEventListener('mousemove', scroller.mouseMove);
-				},
-
-				mouseMove: (e) => {
-					scroller.clientY = e.clientY;
-				},
-
-				tick: () => {
-					if (!scroller.enabled) return;
-
-					let direction = 0;
-					if (scroller.clientY) {
-						let dst = window.pageYOffset || document.documentElement.scrollTop;
-						if (scroller.clientY < scroller.zone && dst > 0)
-							direction = -1;
-						else {
-							let dh = document.documentElement.scrollHeight;
-							let wh = window.innerHeight;
-							if (scroller.clientY > wh - scroller.zone && dst < dh - wh - 1)
-								direction = 1;
-						}
-					}
-
-					//window.scrollBy(0, scroller.step * direction);
-					//setTimeout(scroller.tick, scroller.interval);
-				},
-			};
-			
-			var wheelOpt = { passive: false }
-			function disableScroll() {
-				window.addEventListener('touchmove', preventDefault, wheelOpt);
-			}
-			function preventDefault(e) {
-				e.preventDefault();
-			}
-			function enableScroll() {
-				window.removeEventListener('touchmove', preventDefault, wheelOpt);
-			}
-
-			{{dragula}}
-			
-		</script>
-		<script>
 			let modes = {
 				ios: 1,
 				window: 2,
@@ -74,6 +13,8 @@
 
 			const mode = {{mode}}
 			const iOS = {{iOS}}
+			
+			let sortable
 
 			let colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta']
 			let colorName = ['#color.none#', '#color.red#', '#color.blue#', '#color.green#', '#color.pink#', '#color.brown#', '#color.cyan#', '#color.orange#', '#color.magenta#'];
@@ -119,29 +60,37 @@
 				}
 			}
 			
-			let drake;
 			function initDragDrop () {
-				// Init dragula
-				drake = dragula({
-					direction: 'horizontal',
-					revertOnSpill: true,
+				let dragContainer = document.querySelector(".dragContainer")
+				
+				sortable = new Sortable(dragContainer, {
+					animation: 200,
+					direction: "horizontal",
+					filter: ".section",
+					
+					swapThreshold: 0.8,
+					delayOnTouchOnly: true,
+					delay: 300,
+					touchStartThreshold: 5,
+					supportPointer: false,
+					
+					easing: "cubic-bezier(1, 0, 0, 1)",
+					ghostClass: "sortable-ghost",
+					
+					onEnd: function (evt) {
+						if (evt.newIndex == evt.oldIndex) return;
+						
+						let item = evt.item
+						let items = evt.from.children
 
-					invalid: function (el, handle) {
-						return el.classList.contains("section")
+						let sceneUUID = item.getAttribute("uuid")
+
+						let sibling = items[evt.newIndex + 1]
+						let siblingUUID = sibling?.getAttribute("uuid") ?? ""
+
+						Beat.call(`Beat.custom.moveScene("${sceneUUID}", "${siblingUUID}")`)
 					},
-					slideFactorX: 2.0,
-					slideFactorY: 2.0
 				})
-				.on('cancel', scroller.stop)
-				.on('drag', scroller.start)
-				.on('drop', function (el, target, source, sibling) {
-					let siblingUUID = sibling?.getAttribute("uuid") ?? ""
-					let sceneUUID = el.getAttribute("uuid")
-
-					Beat.call("Beat.custom.moveScene('" + sceneUUID + "', '" + siblingUUID + "')")
-				});
-			
-				drake.containers = [document.querySelector(".dragContainer")]
 			}
 
 			function filter(element) {
@@ -334,7 +283,6 @@
 	</head>
 	<body class='zoomLevel-1'>
 		<div id='menu'>
-			<!-- <button onclick='restart()'>Restart</button> -->
 			<button id='print' class='ui' onclick="print()">⎙ #cardView.print#</button>
 
 			<div id='filters'>
@@ -359,24 +307,34 @@
 			
 			function load(html) {
 				var scrollPos = document.body.scrollTop
+
 				container.innerHTML = html.replaceAll("\\\"", "\"")
 				updateCardMenus()
 				initDragDrop()
 				
 				document.body.scrollTop = scrollPos
+
 			}
 
 			// Updates
 			function updateCardMenus() {
 				let cards = document.querySelectorAll(".card")
+				let touching = false
+
+				document.body.ontouchmove = () => {
+					touching = true
+				}
 				
 				cards.forEach((card) => {
 					let uuid = card.getAttribute("uuid")
 
 					// Tap for iOS
 					card.ontouchend = () => {
-						scrollToLine(uuid);
-						Beat.call("Beat.custom.returnToEditor()");
+						if (!touching) {
+							scrollToLine(uuid);
+							Beat.call("Beat.custom.returnToEditor()");
+						}
+						touching = false
 					}
 					
 					// Update click
@@ -492,7 +450,7 @@
 
 			// Initial setup
 			updateCardMenus()
-			if (!iOS) initDragDrop();
+			initDragDrop()
 			
 			let currentScene = "{{current}}"
 			updateSelection(currentScene, true, true);

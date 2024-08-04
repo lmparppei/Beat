@@ -1369,19 +1369,44 @@
     });
 }
 
+- (NSDictionary*)htmlObjectFromValue:(JSValue*)htmlContent
+{
+    NSMutableDictionary<NSString*, NSString*>* html = NSMutableDictionary.new;
+    
+    if (htmlContent.isString) {
+        html[@"content"] = htmlContent.toString;
+    } else if (htmlContent.isArray && htmlContent.toArray.count > 0) {
+        NSArray* components = htmlContent.toArray;
+        html[@"content"] = components[0];
+        if (components.count > 1) html[@"headers"] = components[1];
+    } else if (htmlContent.isObject) {
+        [html setDictionary:htmlContent.toDictionary];
+    }
+    
+    return html;
+}
+
 #if TARGET_OS_OSX
 
-- (BeatPluginHTMLWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+/**
+ @param htmlContent The actual content in the window. It's wrapped in a HTML template, so no headers are needed. If you want to provide additional headers, this value can either be an array ([content, headers]) or an object ({ html: "...", headers: "<script></script>" })
+ */
+- (BeatPluginHTMLWindow*)htmlWindow:(JSValue*)htmlContent width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
 	// This is a floating window, so the plugin has to be resident
 	_resident = YES;
 	
+    NSDictionary* html = [self htmlObjectFromValue:htmlContent];
+    
+    NSString* content = html[@"content"];
+    NSString* headers = html[@"headers"];
+    
 	if (width <= 0) width = 500;
 	if (width > 1000) width = 1000;
 	if (height <= 0) height = 300;
 	if (height > 800) height = 800;
 	
-	BeatPluginHTMLWindow *window = [BeatPluginHTMLWindow.alloc initWithHTML:html width:width height:height host:self];
+    BeatPluginHTMLWindow *window = [BeatPluginHTMLWindow.alloc initWithHTML:content width:width height:height headers:headers host:self];
     [self registerPluginWindow:window];
     
     [window makeKeyAndOrderFront:nil];
@@ -1416,9 +1441,14 @@
 #else
 
 /// Returns a HTML view controller for iOS. Width and height are disregarded.
-- (BeatPluginHTMLViewController*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton
+- (BeatPluginHTMLViewController*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton
 {
-    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:cancelButton callback:callback];
+    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
+    
+    NSString* content = htmlContent[@"content"];
+    NSString* headers = htmlContent[@"headers"];
+    
+    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:(content) ? content : @"" headers:(headers) ? headers : @""  width:width height:height host:self cancelButton:cancelButton callback:callback];
     [self registerPluginWindow:htmlVC];
         
     UIViewController* documentVC = (UIViewController*)self.delegate;
@@ -1486,11 +1516,15 @@
  */
 
 #if TARGET_OS_OSX
-- (BeatPluginHTMLPanel*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
+- (BeatPluginHTMLPanel*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
     if (_delegate.documentWindow.attachedSheet) return nil;
     
-    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:html width:width height:height + 35.0 host:self cancelButton:cancelButton callback:callback];
+    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
+    NSString* content = htmlContent[@"content"];
+    NSString* headers = htmlContent[@"headers"];
+    
+    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:content headers:(headers) ? headers : @"" width:width height:height host:self cancelButton:cancelButton callback:callback];
     self.htmlPanel = panel;
     
     [self makeResident];
@@ -1502,9 +1536,13 @@
     return panel;
 }
 #else
-- (BeatPluginHTMLViewController*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
+- (BeatPluginHTMLViewController*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
-    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:html width:width height:height host:self cancelButton:cancelButton callback:callback];
+    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
+    NSString* content = htmlContent[@"content"];
+    NSString* headers = htmlContent[@"headers"];
+    
+    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:content headers:headers width:width height:height host:self cancelButton:cancelButton callback:callback];
     
     UIBarButtonItem* button = [UIBarButtonItem.alloc initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(receiveDataFromHTMLPanel:)];
     htmlVC.navigationItem.rightBarButtonItems = @[button];
@@ -1554,42 +1592,35 @@
 
 
 #pragma mark - Tagging interface
+// TODO: Just return the tagging object and move all exports there
 
-- (NSArray*)availableTags
-{
-	return [BeatTagging categories];
-}
-
-- (NSDictionary*)tagsForScene:(OutlineScene *)scene
-{
-	return [self.delegate.tagging tagsForScene:scene];
-}
+- (NSArray*)availableTags { return [BeatTagging categories]; }
+- (NSDictionary*)tagsForScene:(OutlineScene *)scene { return [self.delegate.tagging tagsForScene:scene]; }
 
 
 #pragma mark - Pagination interface
 
-- (id)paginator:(NSArray*)lines
-{
-	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate];
-}
+/// Legacy compatibility
+- (id)paginator:(NSArray*)lines { return self.pagination; }
 
-
-#pragma mark - New pagination interface
-
+/// Returns a new pagination object
 - (BeatPaginationManager*)pagination
 {
 	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate];
 }
 
+/// Returns the current pagination for document
 - (BeatPaginationManager*)currentPagination
 {
 	return self.delegate.pagination;
 }
 
+/// Forces the creation of a new pagination at given index
 - (void)createPreviewAt:(NSInteger)location {
 	[self.delegate createPreviewAt:NSMakeRange(location, 0) sync:true];
 }
 
+/// Full reset for preview, which includes both paginating the whole document and rebuilding the layout. Can have a performance hit.
 - (void)resetPreview
 {
 	[self.delegate resetPreview];
@@ -1695,14 +1726,14 @@
 
 - (void)nextTab
 {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectNextTab:nil];
 #endif
 }
 - (void)previousTab
 {
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectPreviousTab:nil];
 #endif
@@ -1758,7 +1789,8 @@
 
 /// Calls Objective C methods.
 /// @note Do **NOT** use this if you don't know what you are doing.
-- (id)objc_call:(NSString*)methodName args:(NSArray*)arguments {
+- (id)objc_call:(NSString*)methodName args:(NSArray*)arguments
+{
 	Class class = [self.delegate class];
 	
 	SEL selector = NSSelectorFromString(methodName);
@@ -1835,26 +1867,10 @@
 	return [self.delegate.parser linesForScene:(OutlineScene*)sceneId];
 }
 
-- (NSArray*)scenes
-{
-	return self.delegate.parser.scenes;
-}
-
-- (NSArray*)outline
-{
-    return (self.delegate.parser.outline) ? self.delegate.parser.outline : @[];
-}
-
-- (Line*)lineAtPosition:(NSInteger)index
-{
-	return [_delegate.parser lineAtPosition:index];
-}
-
-- (OutlineScene*)sceneAtPosition:(NSInteger)index
-{
-    return [_delegate.parser sceneAtPosition:index];
-}
-
+- (NSArray*)scenes { return self.delegate.parser.scenes; }
+- (NSArray*)outline { return (self.delegate.parser.outline) ? self.delegate.parser.outline : @[]; }
+- (Line*)lineAtPosition:(NSInteger)index { return [_delegate.parser lineAtPosition:index]; }
+- (OutlineScene*)sceneAtPosition:(NSInteger)index { return [_delegate.parser sceneAtPosition:index]; }
 - (NSDictionary*)type
 {
 	if (!_type) _type = Line.typeDictionary;
@@ -1877,9 +1893,9 @@
 {
 	NSArray<OutlineScene*>* outline = self.delegate.parser.outline.copy;
 	NSMutableArray *scenesToSerialize = [NSMutableArray arrayWithCapacity:outline.count];
-	
-	// This is very efficient, but I can't figure out how to fix memory management issues
-	 /*
+	    
+/*
+ // This is very efficient, but I can't figure out how to fix memory management issues. Would probably require a full copy of the parser.
 	NSMutableDictionary<NSNumber*, NSDictionary*>* items = NSMutableDictionary.new;
 	
 	// Multi-threaded JSON process
@@ -1887,21 +1903,22 @@
 	dispatch_apply((size_t)outline.count, queue, ^(size_t index) {
 		if (outline[index] == nil) return;
 		NSDictionary* json = outline[index].forSerialization;
-         @synchronized (items) {
+         @synchronized (self.delegate.parser.outline) {
             items[@(index)] = json;
          }
 	});
 
+    // Turn the dictionary into a normal array
 	for (NSInteger i=0; i<items.count; i++) {
 		NSNumber* idx = @(i);
 		if (items[idx] != nil) [scenesToSerialize addObject:items[@(i)]];
 	}
-	*/
-	
+*/
+
 	for (OutlineScene* scene in outline) {
 		[scenesToSerialize addObject:scene.forSerialization];
 	}
-	
+     
 	NSError *error;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:0 error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -1948,28 +1965,6 @@
 	[self.delegate.parser updateOutline];
 }
 
-- (void)newDocument:(NSString*)string
-{
-#if TARGET_OS_OSX
-    // This fixes a rare and weird NSResponder issue. Forward this call to the actual document, no questions asked.
-    if (![string isKindOfClass:NSString.class]) [self.delegate.document newDocument:nil];
-    
-    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
-	if (string.length) [delegate newDocumentWithContents:string];
-	else [NSDocumentController.sharedDocumentController newDocument:nil];
-#endif
-}
-
-- (id)newDocumentObject:(NSString*)string
-{
-#if !TARGET_OS_IOS
-    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
-	if (string.length) return [delegate newDocumentWithContents:string];
-	else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
-#endif
-    return nil;
-}
-
 - (Line*)currentLine {
 	return _delegate.currentLine;
 }
@@ -2005,6 +2000,36 @@
 }
 
 
+#pragma mark - Document
+
+/// Creates a new document. macOS-only for now.
+- (void)newDocument:(NSString*)string
+{
+#if TARGET_OS_OSX
+    // This fixes a rare and weird NSResponder issue. Forward this call to the actual document, no questions asked.
+    if (![string isKindOfClass:NSString.class]) {
+        [self.delegate.document newDocument:nil];
+        return;
+    }
+    
+    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
+    if (string.length) [delegate newDocumentWithContents:string];
+    else [NSDocumentController.sharedDocumentController newDocument:nil];
+#endif
+}
+
+/// Creates a new *document object* if you want to access that document after creating it.
+- (id)newDocumentObject:(NSString*)string
+{
+#if !TARGET_OS_IOS
+    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
+    if (string.length) return [delegate newDocumentWithContents:string];
+    else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
+#endif
+    return nil;
+}
+
+
 #pragma mark - Document Settings
 
 // Plugin-specific document settings (prefixed by plugin name)
@@ -2037,10 +2062,14 @@
 
 #pragma mark - Formatting
 
-- (void)reformat:(Line *)line {
+/// Reformats given line in editor.
+- (void)reformat:(Line *)line
+{
 	if (line) [_delegate.formatting formatLine:line];
 }
-- (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
+/// Reformats all lines in given range.
+- (void)reformatRange:(NSInteger)loc len:(NSInteger)len
+{
 	[_delegate.formatting forceFormatChangesInRange:(NSRange){ loc, len }];
 #if !TARGET_OS_IOS
     // Remove temporary attributes

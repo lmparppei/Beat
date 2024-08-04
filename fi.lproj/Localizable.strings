@@ -206,6 +206,7 @@
 "backup.browseVersions" = "Selaa versioita...";
 
 "quickSettings.novelLineHeightMultiplier" = "Riviväli";
+"quickSettings.novelContentAlignment" = "Asettelu";
 
 "revision.1" = "Ensimmäinen";
 "revision.2" = "Toinen";

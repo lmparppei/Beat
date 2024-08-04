@@ -73,7 +73,6 @@
 		B696BC422A74200D0078BA79 /* BeatCardsUI.css in Resources */ = {isa = PBXBuildFile; fileRef = B696BC402A741FA70078BA79 /* BeatCardsUI.css */; };
 		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
 		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
-		B696BC472A7426750078BA79 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B696BC462A7426750078BA79 /* dragula.js */; };
 		B69CE5CB2BA1D87800EF02F2 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */; };
 		B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */; };
 		B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */; };
@@ -105,6 +104,7 @@
 		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
 		B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
+		B6D4F0032C58E01000A8884E /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = B6D4F0022C58E01000A8884E /* Sortable.js */; };
 		B6DEA4812BC45A3900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
 		B6DEA4822BC45A3900F15208 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */; };
 		B6DEA4832BC45A3900F15208 /* TPKeyboardAvoidingCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA4802BC45A2900F15208 /* TPKeyboardAvoidingCollectionView.m */; };
@@ -114,6 +114,7 @@
 		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
 		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
+		B6FD3DD82C56BBDE00028EC7 /* UIView+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */; };
 		B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */; };
 		B6FDCF4B2BD4414900A6C9B6 /* addelements.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF282BD4414900A6C9B6 /* addelements.html */; };
 		B6FDCF4C2BD4414900A6C9B6 /* changelog in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF292BD4414900A6C9B6 /* changelog */; };
@@ -266,7 +267,6 @@
 		B696BC3F2A741FA70078BA79 /* BeatCardsPrint.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsPrint.css; sourceTree = "<group>"; };
 		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
-		B696BC462A7426750078BA79 /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
 		B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStartupScreenViewController.swift; sourceTree = "<group>"; };
 		B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSuppressCheckboxButton.swift; sourceTree = "<group>"; };
@@ -300,6 +300,7 @@
 		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D4F0022C58E01000A8884E /* Sortable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sortable.js; sourceTree = "<group>"; };
 		B6DEA4792BC45A2800F15208 /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
 		B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
 		B6DEA47B2BC45A2800F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
@@ -313,6 +314,7 @@
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
 		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
 		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
+		B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Scaling.swift"; sourceTree = "<group>"; };
 		B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; path = Test.beatPlugin; sourceTree = "<group>"; };
 		B6FDCF282BD4414900A6C9B6 /* addelements.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = addelements.html; sourceTree = "<group>"; };
 		B6FDCF292BD4414900A6C9B6 /* changelog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changelog; sourceTree = "<group>"; };
@@ -469,9 +471,9 @@
 				B696BC3F2A741FA70078BA79 /* BeatCardsPrint.css */,
 				B696BC402A741FA70078BA79 /* BeatCardsUI.css */,
 				B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */,
+				B6D4F0022C58E01000A8884E /* Sortable.js */,
 				B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */,
 				B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */,
-				B696BC462A7426750078BA79 /* dragula.js */,
 			);
 			path = "Card View";
 			sourceTree = "<group>";
@@ -494,6 +496,7 @@
 				B6B61BB529F970A20098D94D /* UITextView+UX.m */,
 				B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */,
 				B61F44DA2C38339D00A10DF3 /* Maths.swift */,
+				B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -903,6 +906,7 @@
 				B6FDCF602BD4414A00A6C9B6 /* printOutlineCSS.css in Resources */,
 				B696BC412A74200D0078BA79 /* BeatCardsPrint.css in Resources */,
 				B6FDCF562BD4414900A6C9B6 /* globals.html in Resources */,
+				B6D4F0032C58E01000A8884E /* Sortable.js in Resources */,
 				B6423B992C01108500373C34 /* Beat-FDX.png in Resources */,
 				B6FDCF682BD4414A00A6C9B6 /* textDumpWindow.html in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
@@ -956,7 +960,6 @@
 				B62D16402BFE3596000EFEE5 /* Beat-iOS-76x76.png in Resources */,
 				B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */,
 				B6FDCF4C2BD4414900A6C9B6 /* changelog in Resources */,
-				B696BC472A7426750078BA79 /* dragula.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -995,6 +998,7 @@
 				B61F44D72C3832DD00A10DF3 /* BeatScrollView.swift in Sources */,
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
 				B6A97CA52BF0C62B00414878 /* BeatDocumentViewController+Export.swift in Sources */,
+				B6FD3DD82C56BBDE00028EC7 /* UIView+Scaling.swift in Sources */,
 				B63AB3C92A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift in Sources */,
 				B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */,
 				B6DEA4812BC45A3900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
@@ -1254,7 +1258,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 52;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1279,7 +1283,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.8;
+				MARKETING_VERSION = 0.1.10;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1315,7 +1319,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1335,7 +1339,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.8;
+				MARKETING_VERSION = 0.1.10;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;

@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class BeatPluginWebView;
+@class BeatPlugin;
 
 @protocol BeatHTMLPanelExports <JSExport>
 @property (nonatomic) NSString* title;
@@ -75,8 +76,7 @@ JSExportAs(call, - (void)call:(JSValue*)val arguments:(NSArray<JSValue*>*)argume
 @property (nonatomic) bool disableMinimize;
 
 @property (nonatomic) BeatPluginWebView* _Nullable webView;
-
-- (instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host;
+-(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height headers:(NSString*)headers host:(BeatPlugin*)host;
 - (void)closeWindow;
 - (void)setTitle:(NSString*)title;
 - (void)hideBehindOthers;

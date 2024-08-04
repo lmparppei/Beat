@@ -83,7 +83,7 @@
 	self.webview.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
 	
 	[self showWindow:self.window];
-	[self.window makeKeyAndOrderFront:self.window];
+	[self.window makeKeyAndOrderFront:nil];
 }
 
 - (void)close {

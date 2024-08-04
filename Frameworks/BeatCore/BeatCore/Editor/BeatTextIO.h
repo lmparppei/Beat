@@ -60,6 +60,7 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)removeRange:(NSRange)range;
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string;
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position;
+- (void)moveScenesInRange:(NSRange)range to:(NSInteger)position;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
 

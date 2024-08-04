@@ -256,7 +256,6 @@
 		B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
 		B68B6098260B849300463AD8 /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69EF5522465AA2000C5B78C /* CardPrintCSS.css */; };
-		B68B609B260B849300463AD8 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B68B60A0260B849300463AD8 /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */; };
 		B68B60A2260B849300463AD8 /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */; };
 		B68B60A3260B849300463AD8 /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
@@ -285,7 +284,6 @@
 		B698DCDB2A4B8BB000D8C5C4 /* BeatQuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B698DCD92A4B8BB000D8C5C4 /* BeatQuickSettings.swift */; };
 		B698DCE02A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B698DCE32A4B969E00D8C5C4 /* BeatQuickSettings.xib */; };
 		B698DCE12A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = B698DCE32A4B969E00D8C5C4 /* BeatQuickSettings.xib */; };
-		B69A929C2319609100FE6A3E /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B69C74DC2773D6350022D9D5 /* BeatLaunchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C74DB2773D6350022D9D5 /* BeatLaunchButton.m */; };
 		B69C74DD2773D6350022D9D5 /* BeatLaunchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C74DB2773D6350022D9D5 /* BeatLaunchButton.m */; };
 		B69C74E12773D9CA0022D9D5 /* NSImage+ProportionalScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C74E02773D9CA0022D9D5 /* NSImage+ProportionalScaling.m */; };
@@ -399,6 +397,10 @@
 		B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */; };
 		B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
 		B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
+		B6EE9B2B2C57DECF00834243 /* Sortable.min.js in Resources */ = {isa = PBXBuildFile; fileRef = B6EE9B2A2C57DECF00834243 /* Sortable.min.js */; };
+		B6EE9B2C2C57DECF00834243 /* Sortable.min.js in Resources */ = {isa = PBXBuildFile; fileRef = B6EE9B2A2C57DECF00834243 /* Sortable.min.js */; };
+		B6EE9B2E2C58435F00834243 /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = B6EE9B2D2C58435F00834243 /* Sortable.js */; };
+		B6EE9B2F2C58435F00834243 /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = B6EE9B2D2C58435F00834243 /* Sortable.js */; };
 		B6F31174274BF70400D0840D /* BeatPluginLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F31172274BF70400D0840D /* BeatPluginLibrary.m */; };
 		B6F31175274BF70400D0840D /* BeatPluginLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F31172274BF70400D0840D /* BeatPluginLibrary.m */; };
 		B6F31176274BF70400D0840D /* BeatPluginLibrary.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6F31173274BF70400D0840D /* BeatPluginLibrary.xib */; };
@@ -757,7 +759,6 @@
 		B698DCE52A4B96A100D8C5C4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
 		B698DCE72A4B96A300D8C5C4 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatQuickSettings.strings; sourceTree = "<group>"; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = "../../../../Beat iOS/User Interface Views/Card View/dragula.js"; sourceTree = "<group>"; };
 		B69C74DA2773D6350022D9D5 /* BeatLaunchButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLaunchButton.h; sourceTree = "<group>"; };
 		B69C74DB2773D6350022D9D5 /* BeatLaunchButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLaunchButton.m; sourceTree = "<group>"; };
 		B69C74DF2773D9CA0022D9D5 /* NSImage+ProportionalScaling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSImage+ProportionalScaling.h"; sourceTree = "<group>"; };
@@ -843,6 +844,8 @@
 		B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagButton.m; sourceTree = "<group>"; };
 		B6EAEDBB267A686800BBD2A2 /* Index Card Window.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "Index Card Window.beatPlugin"; sourceTree = "<group>"; };
 		B6EAEDBF267A687900BBD2A2 /* CardWindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = CardWindow.html; sourceTree = "<group>"; };
+		B6EE9B2A2C57DECF00834243 /* Sortable.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Sortable.min.js; sourceTree = "<group>"; };
+		B6EE9B2D2C58435F00834243 /* Sortable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = Sortable.js; path = "../../../../Beat iOS/User Interface Views/Card View/Sortable.js"; sourceTree = "<group>"; };
 		B6F31171274BF70400D0840D /* BeatPluginLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginLibrary.h; sourceTree = "<group>"; };
 		B6F31172274BF70400D0840D /* BeatPluginLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginLibrary.m; sourceTree = "<group>"; };
 		B6F31173274BF70400D0840D /* BeatPluginLibrary.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatPluginLibrary.xib; sourceTree = "<group>"; };
@@ -1567,7 +1570,8 @@
 				B696BC382A73BBE70078BA79 /* BeatCardsPrint.css */,
 				B696BC252A7150F50078BA79 /* BeatCardsUI.css */,
 				B696BC222A7150F50078BA79 /* BeatCardsUI.html */,
-				B69A929B2319609100FE6A3E /* dragula.js */,
+				B6EE9B2A2C57DECF00834243 /* Sortable.min.js */,
+				B6EE9B2D2C58435F00834243 /* Sortable.js */,
 				B696BC242A7150F50078BA79 /* Index Card View.beatPlugin */,
 			);
 			path = Plugin;
@@ -1998,13 +2002,13 @@
 				B60A9F432977EEE400916FAA /* ThemeEditor.xib in Resources */,
 				B62BA4C92BBBEEDA0055FE1A /* Document.xib in Resources */,
 				B6E0E1012AC5BCBC00948752 /* BeatPreviewSettings.xib in Resources */,
+				B6EE9B2E2C58435F00834243 /* Sortable.js in Resources */,
 				B6BC40442C0E4F270055DBCE /* BeatTagEditor.storyboard in Resources */,
 				B6763E8B2782317600284907 /* BeatEpisodePrinter.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */,
 				B6EA73852B15330D001D43BB /* Release notes.md in Resources */,
-				B69A929C2319609100FE6A3E /* dragula.js in Resources */,
 				B65BB7422B0B5E0200145FCE /* DowngradeRevisions.xib in Resources */,
 				B6D37F832A2A254B0069C515 /* Launch Screen.storyboard in Resources */,
 				B607519128CB27A700F4E68F /* BeatSceneHeadingSearch.xib in Resources */,
@@ -2016,6 +2020,7 @@
 				B606FDC22817F09C00D89CD6 /* BeatPrintDialog.xib in Resources */,
 				B6763E5A2782295E00284907 /* Localizable.strings in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
+				B6EE9B2C2C57DECF00834243 /* Sortable.min.js in Resources */,
 				B696BC2E2A7151D40078BA79 /* BeatCardsUI.html in Resources */,
 				B617656E2BA5A1C600F18417 /* BeatOutlineSettings.xib in Resources */,
 				B6C7024F295DFF5C00920D82 /* Courier Prime Italic.ttf in Resources */,
@@ -2056,6 +2061,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B68B608D260B849300463AD8 /* InfoPlist.strings in Resources */,
+				B6EE9B2F2C58435F00834243 /* Sortable.js in Resources */,
 				B619C5072B70404B0000C840 /* BeatFindPanel.xib in Resources */,
 				B6E38948270DDE120067DD0C /* printview.png in Resources */,
 				B6AE236D2BA235300020FBCE /* Credits.pdf in Resources */,
@@ -2075,7 +2081,6 @@
 				B6C7024E295DFF5C00920D82 /* Courier Prime Bold.ttf in Resources */,
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
 				B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */,
-				B68B609B260B849300463AD8 /* dragula.js in Resources */,
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B67C2CEA2A2D152D00B88B0F /* NotoEmoji.ttf in Resources */,
 				B6AA48492B0657DF0047EB65 /* cards.jpg in Resources */,
@@ -2095,6 +2100,7 @@
 				B62F5548283C0E0B00A986CA /* Images.xcassets in Resources */,
 				B6D37F842A2A254B0069C515 /* Launch Screen.storyboard in Resources */,
 				B6FA28D02C046D390047E498 /* BeatStatisticsUI.html in Resources */,
+				B6EE9B2B2C57DECF00834243 /* Sortable.min.js in Resources */,
 				B6C70252295DFF5C00920D82 /* Courier Prime Bold Italic.ttf in Resources */,
 				B698DCE12A4B969E00D8C5C4 /* BeatQuickSettings.xib in Resources */,
 				B68B60AF260B849300463AD8 /* Courier Prime Sans.ttf in Resources */,
@@ -2723,7 +2729,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133361;
+				CURRENT_PROJECT_VERSION = 133370;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2746,7 +2752,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.999.14;
+				MARKETING_VERSION = 1.999.19;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
@@ -2773,7 +2779,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133361;
+				CURRENT_PROJECT_VERSION = 133370;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2796,7 +2802,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.999.14;
+				MARKETING_VERSION = 1.999.19;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
@@ -2823,7 +2829,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133368;
+				CURRENT_PROJECT_VERSION = 133371;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2867,7 +2873,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133368;
+				CURRENT_PROJECT_VERSION = 133371;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
