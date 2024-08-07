@@ -545,8 +545,8 @@
 	
 	if (index == NSNotFound || index < 0) {
 		// Dropped directly into a section
-		OutlineScene *lastInSection = ((OutlineScene*)targetItem).parent.children.lastObject;
-		
+		OutlineScene *lastInSection = targetScene.siblings.lastObject;
+				
 		if (lastInSection != nil) {
 			// There were items in the section
 			position = lastInSection.position + lastInSection.length;

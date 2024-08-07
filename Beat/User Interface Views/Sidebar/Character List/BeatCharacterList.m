@@ -104,11 +104,7 @@
 }
 
 -(bool)visible {
-	if (_masterTabView.selectedTabViewItem.view == self.enclosingScrollView.superview) {
-		return YES;
-	} else {
-		return NO;
-	}
+	return (_masterTabView.selectedTabViewItem.view == self.enclosingScrollView.superview);
 }
 
 

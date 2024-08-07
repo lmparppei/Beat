@@ -266,6 +266,8 @@
 		B68B60BA260B849300463AD8 /* Outlining.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3A2549AEDD00201BC9 /* Outlining.fountain */; };
 		B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D6260BA8D600463AD8 /* beat_manual.html */; };
 		B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D6260BA8D600463AD8 /* beat_manual.html */; };
+		B68D9CCE2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68D9CCD2C6294D100FCC9BE /* NSView+Visibility.swift */; };
+		B68D9CCF2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68D9CCD2C6294D100FCC9BE /* NSView+Visibility.swift */; };
 		B68E17B42790A7C30038945F /* BeatColorMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E17B32790A7C30038945F /* BeatColorMenuItem.m */; };
 		B68E17B52790A7C30038945F /* BeatColorMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E17B32790A7C30038945F /* BeatColorMenuItem.m */; };
 		B692D0ED2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */; };
@@ -746,6 +748,7 @@
 		B68B60D6260BA8D600463AD8 /* beat_manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = beat_manual.html; sourceTree = "<group>"; };
 		B68B60EA260BA90300463AD8 /* Beat APPSTORE Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Beat APPSTORE Info.plist"; sourceTree = "<group>"; };
 		B68B60EF260BA93500463AD8 /* Beat Appstore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat Appstore.entitlements"; sourceTree = "<group>"; };
+		B68D9CCD2C6294D100FCC9BE /* NSView+Visibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Visibility.swift"; sourceTree = "<group>"; };
 		B68E17B22790A7C30038945F /* BeatColorMenuItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatColorMenuItem.h; sourceTree = "<group>"; };
 		B68E17B32790A7C30038945F /* BeatColorMenuItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatColorMenuItem.m; sourceTree = "<group>"; };
 		B692D0EC2A6E7CAA00574D72 /* BeatPluginLibraryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginLibraryDataSource.swift; sourceTree = "<group>"; };
@@ -1615,6 +1618,7 @@
 				B61765392BA59EB200F18417 /* NSArray+Additions.m */,
 				B669E03D29238AC400891DD1 /* BeatFontExtensions.swift */,
 				B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */,
+				B68D9CCD2C6294D100FCC9BE /* NSView+Visibility.swift */,
 			);
 			path = "Extensions and Categories";
 			sourceTree = "<group>";
@@ -2200,6 +2204,7 @@
 				B617653D2BA59EB200F18417 /* NSArray+Additions.m in Sources */,
 				B61765562BA59F3700F18417 /* RoundedButton.m in Sources */,
 				B617653F2BA59EB200F18417 /* TKSplitHandle.m in Sources */,
+				B68D9CCE2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */,
 				B617658A2BA5A2AB00F18417 /* BeatTimer.m in Sources */,
 				B6F3117A274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */,
@@ -2328,6 +2333,7 @@
 				B617653E2BA59EB200F18417 /* NSArray+Additions.m in Sources */,
 				B61765572BA59F3700F18417 /* RoundedButton.m in Sources */,
 				B61765402BA59EB200F18417 /* TKSplitHandle.m in Sources */,
+				B68D9CCF2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */,
 				B617658B2BA5A2AB00F18417 /* BeatTimer.m in Sources */,
 				B6F3117B274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */,
@@ -2829,7 +2835,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133371;
+				CURRENT_PROJECT_VERSION = 133373;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2848,7 +2854,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.999.19;
+				MARKETING_VERSION = 1.999.20;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2873,7 +2879,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133371;
+				CURRENT_PROJECT_VERSION = 133373;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -2893,7 +2899,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.999.19;
+				MARKETING_VERSION = 1.999.20;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

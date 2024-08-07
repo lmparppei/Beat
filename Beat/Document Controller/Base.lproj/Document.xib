@@ -150,7 +150,7 @@
                                                                                 <rect key="frame" x="0.0" y="117" width="300" height="378"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
@@ -478,7 +478,7 @@
                                                                         </constraints>
                                                                     </view>
                                                                 </tabViewItem>
-                                                                <tabViewItem label="Notepad" identifier="" id="ELh-pn-Go0" userLabel="Notepad">
+                                                                <tabViewItem label="Notepad" identifier="" id="ELh-pn-Go0" userLabel="Notepad" customClass="BeatSidebarTabView">
                                                                     <view key="view" id="QH1-9r-pYV">
                                                                         <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -488,7 +488,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
@@ -509,6 +509,7 @@
                                                                                                 <outlet property="buttonPink" destination="q78-8X-yMN" id="cFF-fR-AfN"/>
                                                                                                 <outlet property="buttonRed" destination="Q2i-eR-tlO" id="i1Z-Bf-Fxh"/>
                                                                                                 <outlet property="editorDelegate" destination="-2" id="PIT-3v-J4l"/>
+                                                                                                <outlet property="parentTabView" destination="O3A-UT-VXf" id="mBr-A0-7pn"/>
                                                                                             </connections>
                                                                                         </textView>
                                                                                     </subviews>
@@ -706,6 +707,9 @@
                                                                             </stackView>
                                                                         </subviews>
                                                                     </view>
+                                                                    <connections>
+                                                                        <outlet property="reloadableView" destination="717-An-Uvy" id="B2X-e7-pSx"/>
+                                                                    </connections>
                                                                 </tabViewItem>
                                                                 <tabViewItem label="Item 2" identifier="" id="TEo-XN-bNc" userLabel="Characters" customClass="BeatSidebarTabView">
                                                                     <view key="view" id="q9C-xF-Hxt">
@@ -717,7 +721,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="mfV-6r-KJe">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="384"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="systemDefault" viewBased="YES" id="QGY-eB-GWe" customClass="BeatCharacterList">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="384"/>
@@ -1020,7 +1024,7 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
@@ -1264,7 +1268,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
@@ -1341,7 +1345,7 @@
                                                     <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
                                                         <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
                                                                 <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>
