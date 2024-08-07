@@ -1176,7 +1176,8 @@ double clamp(double d, double min, double max)
 	[BeatUserDefaults.sharedDefaults saveBool:(self.continuousSpellCheckingEnabled) forKey:BeatSettingContinuousSpellChecking];
 }
 
-- (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
+- (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount
+{
 	// Do nothing when autocompletion list is visible
 	if (self.popoverController.isShown) return;
 	
@@ -1185,18 +1186,26 @@ double clamp(double d, double min, double max)
 	
 	// Avoid capitalizing parentheticals
 	if (line.isAnyParenthetical) {
-		NSMutableArray<NSTextCheckingResult*> *newResults;
-		NSString *textToChange = [self.textStorage.string substringWithRange:range].uppercaseString;
+		NSMutableArray<NSTextCheckingResult*> *fixedResults;
+		NSString *textToChange = [self.textStorage.string substringWithRange:range];
 		
 		for (NSTextCheckingResult *result in results) {
-			// If the result type is NOT correction and the replacement IS NOT EQUAL to the original string, save for case,
-			// add the result. Otherwise we'll just skip it.
-			if (!(result.resultType == NSTextCheckingTypeCorrection && [textToChange isEqualToString:result.replacementString.uppercaseString])) {
-				[newResults addObject:result];
+			NSTextCheckingType type = result.resultType;
+			if (type != NSTextCheckingTypeOrthography) {
+				// Make sure the replacement string is not just trying to capitalize our parenthetical.
+				NSString* toReplace = [textToChange substringWithRange:result.range].uppercaseString;
+				NSString* replacement = result.replacementString.uppercaseString;
+				if (![toReplace isEqualToString:replacement] && result.resultType == NSTextCheckingTypeCorrection) {
+					[fixedResults addObject:result];
+				}
+			} else {
+				[fixedResults addObject:result];
 			}
 		}
+		
+		newResults = fixedResults;
 	}
-	
+		
 	[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 }
 

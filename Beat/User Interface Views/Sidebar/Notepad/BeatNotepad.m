@@ -24,9 +24,11 @@
 #import "Beat-Swift.h"
 #import "ColorCheckbox.h"
 
-@interface BeatNotepad ()
+@interface BeatNotepad () <BeatEditorView>
 @property (nonatomic) NSString *currentColorName;
 @property (nonatomic) NSColor *currentColor;
+
+@property (nonatomic) IBOutlet NSTabView* parentTabView;
 
 @property (nonatomic) NSArray<ColorCheckbox*> *buttons;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonDefault;
@@ -85,6 +87,8 @@
 
 - (void)setup
 {
+	[self.editorDelegate registerEditorView:self];
+	
 	NSString* notes = [self.editorDelegate.documentSettings getString:@"Notes"];
 	if (notes.length > 0) [self loadString:notes];
 }
@@ -98,13 +102,16 @@
 	// For some reason we need to do this on macOS Sonoma.
 	// No events are registered in the scroll view when another scroll view is earlier in responder chain in this window. No idea.
 	if (@available(macOS 14.0, *)) {
-		CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
-		
-		if ([self mouse:p inRect:self.bounds]) {
-			[self.enclosingScrollView scrollWheel:event];
-			return;
+		if (self.drawnOnScreen) {
+			CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
+			
+			if ([self mouse:p inRect:self.bounds] && self.visibleRect.size.width > 0.0) {
+				[self.enclosingScrollView scrollWheel:event];
+				return;
+			}
 		}
 	}
+	
 	[super scrollWheel:event];
 }
 
@@ -340,6 +347,23 @@
 	[self.observers removeObject:observer];
 }
 
+
+#pragma mark - Editor view conformance
+
+- (void)reloadInBackground
+{
+	//[self reloadView];
+}
+- (void)reloadView
+{
+	// This is a hack to satisfy weird responder issues in macOS Sonoma (see scroll wheel events)
+	//self.hidden = !self.visible;
+}
+
+-(bool)visible
+{
+	return (_parentTabView.selectedTabViewItem.view == self.enclosingScrollView.superview);
+}
 
 @end
 /*
