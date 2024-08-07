@@ -16,7 +16,7 @@
     #define BeatHostDocument NSDocument
 #endif
 
-#import "BeatPaperSizing.h"
+#import <BeatParsing/BeatPaperSizing.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

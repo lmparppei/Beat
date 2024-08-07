@@ -27,4 +27,8 @@
 #import <BeatParsing/NSCharacterSet+BadControlCharacters.h>
 #import <BeatParsing/NSString+EMOEmoji.h>
 
+#import <BeatParsing/NSDictionary+Values.h>
+#import <BeatParsing/NSIndexSet+Subset.h>
+#import <BeatParsing/NSMutableIndexSet+Lowest.h>
+
 #endif /* BeatParsing_h */

@@ -6,7 +6,7 @@
 //
 
 #import <BeatParsing/ContinuousFountainParser.h>
-#import "OutlineChanges.h"
+#import <BeatParsing/OutlineChanges.h>
 
 @interface ContinuousFountainParser (Outline)
 
