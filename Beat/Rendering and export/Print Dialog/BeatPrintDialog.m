@@ -19,6 +19,7 @@
  
  */
 
+#import <BeatCore/BeatCore-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
@@ -110,6 +111,13 @@ static CGFloat panelWidth;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSections]) _printSections.state = NSOnState;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis]) _printSynopsis.state = NSOnState;
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes.state = NSOnState;
+	
+	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
+	NSIndexSet* hiddenRevisions = [NSIndexSet fromArray:[self.documentDelegate.documentSettings get:DocSettingHiddenRevisions]];
+	
+	for (NSButton* b in revisionControls) {
+		b.state = ([hiddenRevisions containsIndex:b.tag]) ? NSOffState : NSOnState;
+	}
 	
 	BeatExportSettings* settings = self.exportSettings;
 	
@@ -341,6 +349,7 @@ static CGFloat panelWidth;
 
 - (IBAction)toggleRevision:(id)sender
 {
+	[self.documentDelegate.documentSettings set:DocSettingHiddenRevisions as:self.hiddenRevisions];
 	[self loadPreview];
 }
 
@@ -366,6 +375,18 @@ static CGFloat panelWidth;
 	[_pdfView setDocument:doc];
 	
 	_firstPreview = NO;
+}
+
+- (NSArray<NSNumber*>*)hiddenRevisions
+{
+	NSMutableIndexSet* hiddenIndices = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
+	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
+	
+	for (NSButton* b in revisionControls) {
+		if (b.state == NSOnState) [hiddenIndices removeIndex:b.tag];
+	}
+	
+	return hiddenIndices.toArray;
 }
 
 - (NSIndexSet*)printedRevisions
