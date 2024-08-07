@@ -59,6 +59,8 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - iOS weirdness fix
 
+/// Restores caret position after changing something in the text view.
+/// @note Does nothing on macOS.
 - (void)restorePositionForChangeAt:(NSInteger)index length:(NSInteger)length originalRange:(NSRange)range {
 #if TARGET_OS_IOS
     // We'll only do this on iOS
@@ -73,7 +75,6 @@ static NSString *centeredEnd = @" <";
         
         self.delegate.selectedRange = newSelection;
     }
-    
 #endif
 }
 
@@ -105,7 +106,6 @@ static NSString *centeredEnd = @" <";
         [self.textView setSelectedTextRange:oldRange];
         
         [textView replaceRange:textRange withText:string];
-        
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
@@ -253,9 +253,7 @@ static NSString *centeredEnd = @" <";
         }
     }
     
-    if (target.omitted) {
-        movedMidOmission = true;
-    }
+    if (target.omitted) movedMidOmission = true;
 
     NSString* string = [_delegate.text substringWithRange:range];
     if (string.length == 0) return;
@@ -490,7 +488,6 @@ static NSString *centeredEnd = @" <";
     
     // No match for this parenthesis. Do nothing.
     if (matches[match] == nil) return false;
-    
 
     // If we are typing (and not replacing) check for dual symbol matches, and don't add them if the previous character doesn't match.
     bool skipFirstCharacter = false;
@@ -561,16 +558,21 @@ static NSString *centeredEnd = @" <";
         // Stop at headings
         if (prevLine.type == heading) break;
         
-        if (prevLine.type == character) {
+        if (prevLine.isAnyCharacter) {
             // Stop if the previous character is not the current one
             if (![prevLine.characterName isEqualToString:charName]) break;
             
             // This is the character. Put in CONT'D and a line break and return NO
             NSString *contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
-            NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
+            NSString *contdString = [NSString stringWithFormat:@" (%@)", contd];
             
             if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
-                [self addString:contdString atIndex:currentLine.position + currentLine.length];
+                NSString* result = currentLine.string;
+                // Remove dual dialogue symbol and add it back if needed
+                if (currentLine.type == dualDialogueCharacter) result = [result stringByReplacingOccurrencesOfString:@"^" withString:@""];
+                result = [result stringByAppendingFormat:@"%@%@\n", contdString, (currentLine.type == dualDialogueCharacter) ? @"^" : @""];
+                
+                [self replaceRange:currentLine.textRange withString:result];
                 return YES;
             }
         }
@@ -631,20 +633,17 @@ static NSString *centeredEnd = @" <";
 
 - (void)addSection:(NSInteger)position
 {
-    NSString *string = @"# ";
-    [self addNewParagraph:string at:position];
+    [self addNewParagraph:@"# " at:position];
 }
 
 - (void)addSynopsis:(NSInteger)position
 {
-    NSString *string = @"= ";
-    [self addNewParagraph:string at:position];
+    [self addNewParagraph:@"= " at:position];
 }
 
 - (void)addShot:(NSInteger)position
 {
-    NSString *string = @"!! ";
-    [self addNewParagraph:string at:position];
+    [self addNewParagraph:@"!! " at:position];
 }
 
 
@@ -831,16 +830,7 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Force element types
 
-- (void)forceLineType:(LineType)lineType
-{
-    if (lineType == action) [self forceLineType:action range:self.delegate.selectedRange];
-    else if (lineType == heading) [self forceLineType:heading range:self.delegate.selectedRange];
-    else if (lineType == character) [self forceLineType:character range:self.delegate.selectedRange];
-    else if (lineType == lyrics) [self forceLineType:lyrics range:self.delegate.selectedRange];
-    else if (lineType == transitionLine) [self forceLineType:transitionLine range:self.delegate.selectedRange];
-}
-
-- (NSString*)forcedSymbolFor:(LineType)lineType
+- (NSDictionary*)forceSymbols
 {
     static NSDictionary<NSNumber*,NSString*>* symbols;
     if (symbols == nil) symbols = @{
@@ -850,67 +840,24 @@ static NSString *centeredEnd = @" <";
         @(lyrics): forceLyricsSymbol,
         @(transitionLine): forceTransitionLineSymbol
     };
-    
-    return symbols[@(lineType)];
+    return symbols;
+}
+
+- (void)forceLineType:(LineType)lineType
+{
+    [self forceLineType:lineType range:self.delegate.selectedRange];
 }
 
 - (void)forceLineType:(LineType)type range:(NSRange)cursorLocation
 {
-    NSString* symbol = [self forcedSymbolFor:type];
+    Line* currentLine = self.delegate.currentLine;
+    if (currentLine == nil) return;
     
-    //Find the index of the first symbol of the line
-    NSUInteger indexOfLineBeginning = cursorLocation.location;
-    while (true) {
-        if (indexOfLineBeginning == 0) {
-            break;
-        }
-        NSString *characterBefore = [_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
-        if ([characterBefore isEqualToString:@"\n"]) {
-            break;
-        }
-        
-        indexOfLineBeginning--;
-    }
+    NSString* symbol = self.forceSymbols[@(type)];
     
-    NSRange firstCharacterRange;
-    
-    // If the cursor resides in an empty line
-    // (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
-    // The range for the first charater in line needs to be an empty string
-    
-    if (indexOfLineBeginning == _delegate.text.length) {
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-    } else if ([[_delegate.text substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-    } else {
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 1);
-    }
-    NSString *firstCharacter = [_delegate.text substringWithRange:firstCharacterRange];
-    
-    // If the line is already forced to the desired type, remove the force
-    if ([firstCharacter isEqualToString:symbol]) {
-        [_delegate.textActions replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
-    } else {
-        // If the line is not forced to the desired type, check if it is forced to be something else
-        BOOL otherForce = NO;
-        
-        NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forceTransitionLineSymbol];
-        
-        for (NSString *otherSymbol in allForceSymbols) {
-            if (otherSymbol != symbol && [firstCharacter isEqualToString:otherSymbol]) {
-                otherForce = YES;
-                break;
-            }
-        }
-        
-        //If the line is forced to be something else, replace that force with the new force
-        //If not, insert the new character before the first one
-        if (otherForce) {
-            [_delegate.textActions replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
-        } else {
-            [_delegate.textActions addString:symbol atIndex:firstCharacterRange.location];
-        }
-    }
+    // Remove or change current symbol
+    NSRange forcedRange = NSMakeRange(currentLine.position, currentLine.numberOfPrecedingFormattingCharacters);
+    [self replaceRange:forcedRange withString:symbol];
 }
 
 @end
