@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "Line.h"
-#import "OutlineScene.h"
-#import "BeatDocumentSettings.h"
-#import "BeatExportSettings.h"
-#import "BeatScreenplay.h"
-#import "OutlineChanges.h"
+#import <BeatParsing/Line.h>
+#import <BeatParsing/OutlineScene.h>
+#import <BeatParsing/BeatDocumentSettings.h>
+#import <BeatParsing/BeatExportSettings.h>
+#import <BeatParsing/BeatScreenplay.h>
+#import <BeatParsing/OutlineChanges.h>
 
 @class OutlineScene;
 

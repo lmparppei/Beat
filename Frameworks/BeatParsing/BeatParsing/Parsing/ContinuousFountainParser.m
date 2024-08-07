@@ -73,6 +73,8 @@
 
 @property (nonatomic) bool macrosNeedUpdate;
 
+@property (nonatomic) bool firstTime;
+
 @end
 
 @implementation ContinuousFountainParser
@@ -220,27 +222,29 @@ static NSDictionary* patterns;
     // Split the text by line breaks
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
     _lines = [NSMutableArray arrayWithCapacity:lines.count];
-
+    _firstTime = true;
     
     NSUInteger position = 0; // To track at which position every line begins
     
     Line *previousLine;
     
     for (NSString *rawLine in lines) {
-        NSInteger index = _lines.count;
-        Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
-        [self.lines addObject:line]; //Add to lines array
-        
-        [self parseTypeAndFormattingForLine:line atIndex:index];
-        
-        // Quick fix for mistaking an ALL CAPS action for a character cue
-        if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
-            previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
-            if (previousLine.type == character) previousLine.type = action;
+        @autoreleasepool {
+            NSInteger index = _lines.count;
+            Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
+            [self.lines addObject:line]; //Add to lines array
+            
+            [self parseTypeAndFormattingForLine:line atIndex:index];
+            
+            // Quick fix for mistaking an ALL CAPS action for a character cue
+            if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
+                previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
+                if (previousLine.type == character) previousLine.type = action;
+            }
+            
+            position += rawLine.length + 1; // +1 for newline character
+            previousLine = line;
         }
-        
-        position += rawLine.length + 1; // +1 for newline character
-        previousLine = line;
     }
     
     // Reset outline changes
@@ -252,6 +256,8 @@ static NSDictionary* patterns;
     
     // Set identifiers (if applicable)
     [self setIdentifiersForOutlineElements:[self.documentSettings get:DocSettingHeadingUUIDs]];
+    
+    _firstTime = false;
 }
 
 // This sets EVERY INDICE as changed.
@@ -755,7 +761,7 @@ static NSDictionary* patterns;
 /// Parses line type and formatting ranges for current line. This method also takes care of handling possible disabled types.
 /// @note Type and formatting are parsed by iterating through character arrays. Using regexes would be much easier, but also about 10 times more costly in CPU time.
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
-{
+{ @autoreleasepool {
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
     
@@ -816,7 +822,7 @@ static NSDictionary* patterns;
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
                                            line:line];
-
+    
     line.macroRanges = [self rangesInChars:charArray
                                   ofLength:length
                                    between:MACRO_OPEN_CHAR
@@ -855,7 +861,7 @@ static NSDictionary* patterns;
             else line.titleRange = NSMakeRange(0, 0);
         }
     }
-}
+} }
 
 /// Parses the line type for given line. It *has* to know its line index.
 /// TODO: This bunch of spaghetti should be refactored and split into smaller functions.
@@ -2168,6 +2174,8 @@ NSUInteger prevLineAtLocationIndex = 0;
         return;
     }
     
+    NSDate* d = NSDate.new;
+    
     // Reset note status
     [line.noteRanges removeAllIndexes];
     line.noteData = NSMutableArray.new;
@@ -2210,7 +2218,7 @@ NSUInteger prevLineAtLocationIndex = 0;
     if (noteRange.location != NSNotFound && lineIndex != _lines.count-1) {
         line.noteOut = true;
     }
-    
+        
     // Get previous line for later
     Line* prevLine = (lineIndex > 0) ? _lines[lineIndex - 1] : nil;
     
@@ -2218,15 +2226,13 @@ NSUInteger prevLineAtLocationIndex = 0;
     if (line.noteIn || line.noteOut) {
         [self parseNoteBlocksFrom:lineIndex];
     }
-    else if ((oldType == empty || line.type == empty || prevLine.noteOut) && lineIndex < self.lines.count ) {
+    else if (!_firstTime && (oldType == empty || line.type == empty || prevLine.noteOut) && lineIndex < self.lines.count ) {
         // If the line has changed type, let's try to find out if this line creates or cancels an existing note block.
-        // Don't check this when parsing for the first time.
+        // This isn't checked when parsing for the first time.
         NSInteger positionInLine;
         NSInteger i = [self findNoteBlockStartIndexFor:line at:lineIndex positionInLine:&positionInLine];
         
-        if (i == NSNotFound) return;
-
-        [self parseNoteOutFrom:i positionInLine:positionInLine];
+        if (i != NSNotFound) [self parseNoteOutFrom:i positionInLine:positionInLine];
     }
 }
 
