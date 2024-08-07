@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "Storybeat.h"
-#import "BeatNoteData.h"
+#import <BeatParsing/Storybeat.h>
+#import <BeatParsing/BeatNoteData.h>
 
 /// Line type enum
 /// @note Some types are only used in static parsing and/or exporting, such as `more` and `dualDialogueMore`. `BeatFormatting` class also introduces supplementary types for internal use.

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Line.h"
+#import <BeatParsing/Line.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @class OutlineScene;
@@ -20,6 +20,7 @@
 
 @property (nonatomic, readonly) Line * line;
 @property (nonatomic, readonly) OutlineScene * parent;
+@property (nonatomic, readonly) NSArray<OutlineScene*>* siblings;
 @property (nonatomic, readonly) LineType type;
 
 @property (strong, nonatomic, readonly) NSString * string;
@@ -62,6 +63,8 @@
 @property (nonatomic, weak) Line* line;
 /// The `section` which contains this scene
 @property (nonatomic, weak) OutlineScene* parent;
+/// Convenience method for `.parent.children`
+@property (nonatomic, readonly) NSArray<OutlineScene*>* siblings;
 /// How deep in the hierarchy is this outline element (`0` is top-level)
 @property (nonatomic) NSInteger sectionDepth;
 /// `true` if this scene is wrapped in `/* */`

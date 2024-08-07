@@ -259,6 +259,14 @@
 }
 
 
+#pragma mark - Ownership
+
+/// Convenience method for `.parent.children`
+- (NSArray*)siblings
+{
+    return self.parent.children;
+}
+
 
 #pragma mark - Synthesized properties
 
