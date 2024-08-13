@@ -1,0 +1,105 @@
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0hH-er-0kR"; */
+"0hH-er-0kR.title" = "取消";
+
+/* Class = "NSTextFieldCell"; title = "Scene Number"; ObjectID = "2l8-ae-CH8"; */
+"2l8-ae-CH8.title" = "场景编号";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis Text"; ObjectID = "7vv-ql-pEx"; */
+"7vv-ql-pEx.title" = "概述文字";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "8db-n5-9bh"; */
+"8db-n5-9bh.label" = "编辑器";
+
+/* Class = "NSTextFieldCell"; title = "Paper"; ObjectID = "B8Z-S8-DXC"; */
+"B8Z-S8-DXC.title" = "纸张";
+
+/* Class = "NSTextFieldCell"; title = "Background"; ObjectID = "BS2-mF-IoS"; */
+"BS2-mF-IoS.title" = "背景";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "DDr-T3-GTD"; */
+"DDr-T3-GTD.title" = "暗色";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "DI5-MO-BfR"; */
+"DI5-MO-BfR.title" = "亮色";
+
+/* Class = "NSWindow"; title = "Customize Colors"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "自定义颜色";
+
+/* Class = "NSTextFieldCell"; title = "Genders"; ObjectID = "Ghh-a5-XuU"; */
+"Ghh-a5-XuU.title" = "性别";
+
+/* Class = "NSTextFieldCell"; title = "Text"; ObjectID = "KtE-ZB-M0o"; */
+"KtE-ZB-M0o.title" = "文本";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "MhL-0X-jUG"; */
+"MhL-0X-jUG.title" = "页码";
+
+/* Class = "NSTextFieldCell"; title = "Scene"; ObjectID = "NFp-0j-8TG"; */
+"NFp-0j-8TG.title" = "场景";
+
+/* Class = "NSTextFieldCell"; title = "Section Text"; ObjectID = "QCU-q7-Dab"; */
+"QCU-q7-Dab.title" = "章节文本";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "TbH-8k-B7K"; */
+"TbH-8k-B7K.title" = "暗色";
+
+/* Class = "NSTextFieldCell"; title = "Customize Colours"; ObjectID = "W10-WX-mev"; */
+"W10-WX-mev.title" = "自定义颜色";
+
+/* Class = "NSTextFieldCell"; title = "Unspec."; ObjectID = "Whr-tU-Und"; */
+"Whr-tU-Und.title" = "未知";
+
+/* Class = "NSTextFieldCell"; title = "Highlight"; ObjectID = "ZgE-Rl-TTE"; */
+"ZgE-Rl-TTE.title" = "高亮";
+
+/* Class = "NSButtonCell"; title = "Save"; ObjectID = "aZc-lr-r9i"; */
+"aZc-lr-r9i.title" = "保存";
+
+/* Class = "NSTextFieldCell"; title = "Section"; ObjectID = "cTA-xN-AxG"; */
+"cTA-xN-AxG.title" = "章节";
+
+/* Class = "NSTextFieldCell"; title = "Woman"; ObjectID = "e7b-TI-SvW"; */
+"e7b-TI-SvW.title" = "女";
+
+/* Class = "NSTextFieldCell"; title = "Other"; ObjectID = "eoU-fi-QOQ"; */
+"eoU-fi-QOQ.title" = "其它";
+
+/* Class = "NSTextFieldCell"; title = "Note: Some changes may require reopening documents"; ObjectID = "j5y-Wf-te4"; */
+"j5y-Wf-te4.title" = "注意：某些更改可能需要重新打开文档";
+
+/* Class = "NSTextFieldCell"; title = "Man"; ObjectID = "jaw-Da-IBj"; */
+"jaw-Da-IBj.title" = "男";
+
+/* Class = "NSTextFieldCell"; title = "Margin"; ObjectID = "jiK-x1-9Kb"; */
+"jiK-x1-9Kb.title" = "边距";
+
+/* Class = "NSTabViewItem"; label = "Sidebar"; ObjectID = "jya-PU-GI5"; */
+"jya-PU-GI5.label" = "侧边栏";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "lFB-D9-I3Z"; */
+"lFB-D9-I3Z.title" = "亮色";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis"; ObjectID = "mKl-Sz-vq1"; */
+"mKl-Sz-vq1.title" = "概述";
+
+/* Class = "NSButtonCell"; title = "Reset to Default"; ObjectID = "neE-Mb-Rip"; */
+"neE-Mb-Rip.title" = "重置到默认";
+
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "omc-Qp-Wls"; */
+"omc-Qp-Wls.title" = "注释";
+
+/* Class = "NSTextFieldCell"; title = "Invisible Text"; ObjectID = "pol-nH-YUx"; */
+"pol-nH-YUx.title" = "不可见文本";
+
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "r3S-jp-Pwd"; */
+"r3S-jp-Pwd.title" = "注释";
+
+/* Class = "NSTextFieldCell"; title = "Omitted Scene"; ObjectID = "rMb-4q-N2D"; */
+"rMb-4q-N2D.title" = "省略的场景";
+
+/* Class = "NSTextFieldCell"; title = "Selection"; ObjectID = "vMr-Yo-A4o"; */
+"vMr-Yo-A4o.title" = "选中项";
+
+/* Class = "NSTextFieldCell"; title = "Caret"; ObjectID = "zHa-4e-Vuo"; */
+"zHa-4e-Vuo.title" = "符号";

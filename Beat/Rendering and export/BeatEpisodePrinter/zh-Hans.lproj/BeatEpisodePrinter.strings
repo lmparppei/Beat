@@ -1,0 +1,51 @@
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "1Is-Bl-rL9"; */
+"1Is-Bl-rL9.placeholderString" = "修订, 版本, ...";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "2Bh-O5-Oxn"; */
+"2Bh-O5-Oxn.title" = "绿色";
+
+/* Class = "NSTextFieldCell"; title = "Drag & drop or select episodes on the list to print or export them all at once"; ObjectID = "Aqq-zf-yJ2"; */
+"Aqq-zf-yJ2.title" = "拖放或从列表中选择剧本，以一次性打印或导出所有剧本";
+
+/* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "Atu-PM-dGd"; */
+"Atu-PM-dGd.title" = "包含标题";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "BIV-mZ-62a"; */
+"BIV-mZ-62a.title" = "为修订页面着色";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "DmN-tZ-Tpy"; */
+"DmN-tZ-Tpy.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "EFX-sj-v43"; */
+"EFX-sj-v43.title" = "美国信纸";
+
+/* Class = "NSTextFieldCell"; title = "Print Episodes"; ObjectID = "PcO-zY-RPh"; */
+"PcO-zY-RPh.title" = "打印剧本";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "Q5H-ek-O4w"; */
+"Q5H-ek-O4w.title" = "红色";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "QM5-Ek-2Bv"; */
+"QM5-Ek-2Bv.title" = "表格视图";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "U6J-Oq-wzB"; */
+"U6J-Oq-wzB.title" = "文本框";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "Uju-KM-S5e"; */
+"Uju-KM-S5e.title" = "橙色";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "bQK-wT-qQj"; */
+"bQK-wT-qQj.title" = "纸张大小";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "iUS-rk-GG1"; */
+"iUS-rk-GG1.title" = "取消";
+
+/* Class = "NSButtonCell"; title = "Export"; ObjectID = "lEy-FZ-CzA"; */
+"lEy-FZ-CzA.title" = "导出";
+
+/* Class = "NSWindow"; title = "Print Episodes"; ObjectID = "pUI-V4-DPE"; */
+"pUI-V4-DPE.title" = "打印剧本";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "znR-bf-oyK"; */
+"znR-bf-oyK.title" = "青色";

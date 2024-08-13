@@ -1,0 +1,288 @@
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "2UR-53-QPX"; */
+"2UR-53-QPX.title" = "青色";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "2lb-aO-myG"; */
+"2lb-aO-myG.title" = "红色";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "3Ma-cQ-Q5S"; */
+"3Ma-cQ-Q5S.title" = "标签";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "3zP-Qf-Nxg"; */
+"3zP-Qf-Nxg.title" = "取消";
+
+/* Class = "NSTextFieldCell"; title = "Notepad"; ObjectID = "4ZQ-iA-Rxf"; */
+"4ZQ-iA-Rxf.title" = "记事本";
+
+/* Class = "NSMenuItem"; title = "Clear Revisions"; ObjectID = "6SY-H3-Ej1"; */
+"6SY-H3-Ej1.title" = "清除修订";
+
+/* Class = "NSTabViewItem"; label = "Cards"; ObjectID = "798-ya-EGc"; */
+"798-ya-EGc.label" = "卡片";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "8n7-A7-WU4"; */
+"8n7-A7-WU4.title" = "绿色";
+
+/* Class = "NSSearchFieldCell"; placeholderString = "Scene Heading"; ObjectID = "8pP-ME-BEt"; */
+"8pP-ME-BEt.placeholderString" = "场景标题";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "8rC-im-g9Q"; */
+"8rC-im-g9Q.title" = "粉色";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "8rU-6s-EUe"; */
+"8rU-6s-EUe.title" = "褐色";
+
+/* Class = "NSMenuItem"; title = "Collapse All"; ObjectID = "9Hu-ZZ-R2Y"; */
+"9Hu-ZZ-R2Y.title" = "全部折叠";
+
+/* Class = "NSMenuItem"; title = "Track Storyline"; ObjectID = "9RQ-zI-QP5"; */
+"9RQ-zI-QP5.title" = "追踪故事线";
+
+/* Class = "NSMenuItem"; title = "Omit Scene"; ObjectID = "ANY-cT-k2w"; */
+"ANY-cT-k2w.title" = "省略场景";
+
+/* Class = "NSMenuItem"; title = "Color"; ObjectID = "Afp-fN-Tl7"; */
+"Afp-fN-Tl7.title" = "颜色";
+
+/* Class = "NSMenuItem"; title = "Mark as Revised"; ObjectID = "BqD-vz-DpD"; */
+"BqD-vz-DpD.title" = "标记为已修订";
+
+/* Class = "NSTextFieldCell"; title = "Scene Numbering"; ObjectID = "Cw1-Zn-mbx"; */
+"Cw1-Zn-mbx.title" = "场景编号";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "D3I-np-42U"; */
+"D3I-np-42U.title" = "红色";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibExternalAccessibilityDescription" = "显示打印预览";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibShadowedToolTip" = "显示打印预览";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "DSO-Sl-dKH"; */
+"DSO-Sl-dKH.title" = "文本框";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "DTa-fe-iE0"; */
+"DTa-fe-iE0.title" = "文本框";
+
+/* Class = "NSTabViewItem"; label = "Notepad"; ObjectID = "ELh-pn-Go0"; */
+"ELh-pn-Go0.label" = "记事本";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "EzC-hd-0ex"; */
+"EzC-hd-0ex.title" = "蓝色";
+
+/* Class = "NSButtonCell"; title = "OK"; ObjectID = "FCG-mm-dLY"; */
+"FCG-mm-dLY.title" = "确定";
+
+/* Class = "NSPopoverTouchBarItem"; collapsedRepresentationLabel = "💡"; ObjectID = "GmR-Ks-GH7"; */
+"GmR-Ks-GH7.collapsedRepresentationLabel" = "💡";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "IUI-JC-aZs"; */
+"IUI-JC-aZs.title" = "窗口";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "IfA-Gs-aGd"; */
+"IfA-Gs-aGd.title" = "棕色";
+
+/* Class = "NSMenuItem"; title = "Move to Notepad"; ObjectID = "K3n-Te-7ny"; */
+"K3n-Te-7ny.title" = "移动到笔记本";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "KUg-Bv-fNP"; */
+"KUg-Bv-fNP.title" = "品红色";
+
+/* Class = "NSTextFieldCell"; title = "No Reviews"; ObjectID = "KZo-wr-Yqv"; */
+"KZo-wr-Yqv.title" = "没有审阅";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Go to scene..."; ObjectID = "L0v-T6-wwt"; */
+"L0v-T6-wwt.ibExternalAccessibilityDescription" = "前往场景...";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Go to scene..."; ObjectID = "L0v-T6-wwt"; */
+"L0v-T6-wwt.ibShadowedToolTip" = "前往场景...";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "L4N-og-10d"; */
+"L4N-og-10d.label" = "项目 3";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "LeM-Df-kg2"; */
+"LeM-Df-kg2.title" = "表格视图单元格";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "LgM-Xa-gig"; */
+"LgM-Xa-gig.title" = "无";
+
+/* Class = "NSTextFieldCell"; title = "Once you add review notes to the screenplay, you'll see them listed here"; ObjectID = "M5R-75-VTw"; */
+"M5R-75-VTw.title" = "一旦您将审阅笔记添加到剧本中，它们将显示在这里。";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "N2F-gE-zqw"; */
+"N2F-gE-zqw.title" = "无";
+
+/* Class = "NSTextFieldCell"; title = "Filter Scenes"; ObjectID = "NAI-kd-UO5"; */
+"NAI-kd-UO5.title" = "筛选场景";
+
+/* Class = "NSTextFieldCell"; title = "Character"; ObjectID = "NLd-GN-ebP"; */
+"NLd-GN-ebP.title" = "角色";
+
+/* Class = "NSTabViewItem"; label = "Outline"; ObjectID = "O5H-I2-RI4"; */
+"O5H-I2-RI4.label" = "大纲";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "PtV-0l-a6v"; */
+"PtV-0l-a6v.title" = "橙色";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "S2S-kO-ppA"; */
+"S2S-kO-ppA.title" = "橙色";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibExternalAccessibilityDescription" = "显示时间线";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibShadowedToolTip" = "打开/关闭时间线";
+
+/* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "TEo-XN-bNc"; */
+"TEo-XN-bNc.label" = "项目 2";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Outline view"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibExternalAccessibilityDescription" = "大纲视图";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Sidebar"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibShadowedToolTip" = "打开/关闭侧边栏";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "Uq4-Ad-AU8"; */
+"Uq4-Ad-AU8.title" = "棕色";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "X1d-1b-z0n"; */
+"X1d-1b-z0n.title" = "无";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[0] = "Outline"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[0]" = "大纲";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[1] = "Notepad"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[1]" = "记事本";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[2] = "Characters and Dialogue"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[2]" = "人物和对话";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
+"Y9s-uT-czv.title" = "绿色";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "Ypu-rU-vo4"; */
+"Ypu-rU-vo4.title" = "文本框";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibExternalAccessibilityDescription" = "显示索引卡";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibShadowedToolTip" = "显示索引卡";
+
+/* Class = "NSTextFieldCell"; title = "Tagging"; ObjectID = "Zo3-K1-aDo"; */
+"Zo3-K1-aDo.title" = "标记标签";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "Zu3-Fk-iUY"; */
+"Zu3-Fk-iUY.title" = "粉色";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "aEe-qy-xc9"; */
+"aEe-qy-xc9.title" = "青色";
+
+/* Class = "NSTextFieldCell"; title = "Document is locked"; ObjectID = "aMy-cb-lJ3"; */
+"aMy-cb-lJ3.title" = "文档处于锁定状态";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "bJU-Vk-ZPT"; */
+"bJU-Vk-ZPT.title" = "蓝色";
+
+/* Class = "NSMenu"; title = "Scene Color"; ObjectID = "cAg-Ag-Ivb"; */
+"cAg-Ag-Ivb.title" = "场景颜色";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "cGw-JR-l1k"; */
+"cGw-JR-l1k.title" = "粉色";
+
+/* Class = "NSButtonCell"; title = "Exit"; ObjectID = "cfc-Bs-BT3"; */
+"cfc-Bs-BT3.title" = "退出";
+
+/* Class = "NSTextFieldCell"; placeholderString = "1"; ObjectID = "dJ4-oY-Is8"; */
+"dJ4-oY-Is8.placeholderString" = "1";
+
+/* Class = "NSTextFieldCell"; title = "???"; ObjectID = "dxt-PX-eFi"; */
+"dxt-PX-eFi.title" = "???";
+
+/* Class = "NSTextFieldCell"; title = "Refresh for an anti-lateral thought"; ObjectID = "ebZ-HO-Ch9"; */
+"ebZ-HO-Ch9.title" = "刷新以获得反向思维";
+
+/* Class = "NSMenuItem"; title = "Add Section"; ObjectID = "fAX-F7-N9t"; */
+"fAX-F7-N9t.title" = "添加章节";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "fE1-Z4-bDc"; */
+"fE1-Z4-bDc.title" = "青色";
+
+/* Class = "NSTextFieldCell"; title = "Start Scene Numbers From"; ObjectID = "mRh-Qz-Ja7"; */
+"mRh-Qz-Ja7.title" = "场景编号起始于 ";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "ndy-dL-efa"; */
+"ndy-dL-efa.title" = "红色";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "o1x-nn-5KN"; */
+"o1x-nn-5KN.label" = "项目 3";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "oH2-ys-rL1"; */
+"oH2-ys-rL1.label" = "项目 3";
+
+/* Class = "NSTextFieldCell"; title = "Color"; ObjectID = "pXN-uS-1oE"; */
+"pXN-uS-1oE.title" = "颜色";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibExternalAccessibilityDescription" = "显示打印预览";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Quick Settings"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibShadowedToolTip" = "快速设置";
+
+/* Class = "NSTextFieldCell"; title = "Mode Indicator"; ObjectID = "pmw-EE-q6r"; */
+"pmw-EE-q6r.title" = "模式指示";
+
+/* Class = "NSMenuItem"; title = "Expand All"; ObjectID = "ps4-nn-ia5"; */
+"ps4-nn-ia5.title" = "展开全部";
+
+/* Class = "NSMenuItem"; title = "Mark for Removal"; ObjectID = "qyR-1a-dcy"; */
+"qyR-1a-dcy.title" = "标记为删除";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "sdd-NC-jo7"; */
+"sdd-NC-jo7.title" = "框";
+
+/* Class = "NSTabViewItem"; label = "Text"; ObjectID = "stc-hX-uX6"; */
+"stc-hX-uX6.label" = "文本";
+
+/* Class = "NSMenuItem"; title = "Show Word / Page Count"; ObjectID = "syr-XT-LEZ"; */
+"syr-XT-LEZ.title" = "显示字数/页数";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "tLV-bS-9E1"; */
+"tLV-bS-9E1.title" = "绿色";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Printout Settings"; ObjectID = "u0f-Cg-wvv"; */
+"u0f-Cg-wvv.ibShadowedToolTip" = "打印设置";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "uIu-iR-xUP"; */
+"uIu-iR-xUP.title" = "品红";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "uq9-i5-BtV"; */
+"uq9-i5-BtV.title" = "橙色";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Filters"; ObjectID = "vzo-na-BYD"; */
+"vzo-na-BYD.ibShadowedToolTip" = "显示筛选";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "xOd-HO-29H"; */
+"xOd-HO-29H.title" = "窗口";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xYu-On-Cas"; */
+"xYu-On-Cas.title" = "品红";
+
+/* Class = "NSMenuItem"; title = "Scene Color"; ObjectID = "xjT-UK-F6b"; */
+"xjT-UK-F6b.title" = "场景颜色";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "xmV-DE-c1g"; */
+"xmV-DE-c1g.title" = "蓝色";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "ysj-J5-Omg"; */
+"ysj-J5-Omg.title" = "表格视图";
+
+/* Class = "NSMenuItem"; title = "Review Selection"; ObjectID = "z15-hg-1Mt"; */
+"z15-hg-1Mt.title" = "审阅选择部分";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "zQk-vQ-7L3"; */
+"zQk-vQ-7L3.title" = "表格视图";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "zgD-aV-dKT"; */
+"zgD-aV-dKT.title" = "文本框";
