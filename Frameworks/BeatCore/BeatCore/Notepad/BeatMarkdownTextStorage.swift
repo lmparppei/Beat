@@ -12,8 +12,9 @@
  */
 
 import Foundation
+import UXKit
 
-class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
+@objc public class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 	
 	enum BeatMarkdownLineType {
 		case normal
@@ -27,13 +28,15 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 		var range:NSRange { return NSMakeRange(position, length + 1) }
 	}
 	
-	@objc weak var textStorage:NSTextStorage?
+	@objc public weak var textStorage:NSTextStorage?
 	
+
 	var stylization:[String:Any] = [
-		"*": [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12.0).italics()],
-		"**": [NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12.0).bold()],
+		"*": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: 12.0).italics()],
+		"**": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: 12.0).bold()],
 		"_": [NSAttributedString.Key.underlineStyle: 1]
 	]
+
 	
 	var lines:[BeatMdLine] {
 		guard let textStorage = self.textStorage else { return [] }
@@ -51,14 +54,14 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 		return mdLines
 	}
 	
-	func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
+	public func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
 		if editedMask != .editedAttributes {
 			// Update highlights in edited range
 			self.updateHighlights(range: editedRange)
 		}
 	}
 	
-	func updateHighlights(range:NSRange) {
+	public func updateHighlights(range:NSRange) {
 		for line in self.lines {
 			if NSIntersectionRange(range, line.range).length > 0 || NSLocationInRange(range.location, line.range) {
 				parse(line.range)
@@ -66,7 +69,7 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 		}
 	}
 	
-	func parse(_ range:NSRange) {
+	public func parse(_ range:NSRange) {
 		guard let textStorage = self.textStorage else { return }
 		
 		var r = range
@@ -122,15 +125,14 @@ class BeatMarkdownTextStorageDelegate:NSObject, NSTextStorageDelegate {
 	func parseLineType(_ string:String) -> BeatMarkdownLineType {
 		if string.count == 0 {
 			return .normal
-		}
-		else if string[0] == "#" {
+		} else if string[0] == "#" {
 			return .heading
 		}
 		
 		return .normal
 	}
 	
-	func parseInlineStyles(string:String, markdown:String) -> NSIndexSet {
+	public func parseInlineStyles(string:String, markdown:String) -> NSIndexSet {
 		let indices = NSMutableIndexSet()
 		let lim = string.count - markdown.count + 1
 		
