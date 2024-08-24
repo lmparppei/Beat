@@ -6,14 +6,24 @@
 //
 
 #import <TargetConditionals.h>
+#import <BeatCore/BeatCompatibility.h>
 
-
-#if !TARGET_OS_IOS
-#define BXTextView NSTextView
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
+#else
+#import <UIKit/UIKit.h>
+#endif
 
-@interface NSTextView (UX)
+@interface BXTextView (UX)
+#if TARGET_OS_OSX
 @property (nonatomic) NSString* text;
+@property (nonatomic) NSAttributedString* attributedText;
+#else
+@property (nonatomic) NSString* string;
+@property (nonatomic) NSAttributedString* attributedString;
+- (void)didChangeText;
+- (UITextRange*)textRangeFrom:(NSRange)range;
+#endif
 @end
 
-#endif
+

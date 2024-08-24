@@ -54,6 +54,8 @@ typedef enum {
 
 - (void)forceFormatChangesInRange:(NSRange)range;
 
+- (void)formatAllAsynchronously;
+
 @end
 
 NS_ASSUME_NONNULL_END

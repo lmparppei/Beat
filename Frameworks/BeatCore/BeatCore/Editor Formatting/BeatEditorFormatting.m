@@ -223,8 +223,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Reset sizings
     self.paragraphStyles = NSMutableDictionary.new;
 
-    // Linear formatting
-    self.paragraphStyles = NSMutableDictionary.new;
     for (Line* line in self.parser.lines) {
         @autoreleasepool {
             line.formattedAs = -1; // Force font change
@@ -234,6 +232,36 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
     [self.parser.changedIndices removeAllIndexes];
     [self.delegate ensureLayout];
+}
+
+/// Reformats all lines asynchronously
+- (void)formatAllAsynchronously
+{
+    // Reset sizings
+    self.paragraphStyles = NSMutableDictionary.new;
+    [self processBatchFrom:0 batch:100];
+}
+
+- (void)processBatchFrom:(NSInteger)location batch:(NSInteger)batchSize
+{
+    if (location >= self.delegate.parser.lines.count) return;
+
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        [self formatLinesWithBatch:NSMakeRange(location, batchSize)];
+        [self processBatchFrom:location+batchSize batch:batchSize];
+    });
+}
+
+- (void)formatLinesWithBatch:(NSRange)range
+{
+    for (NSInteger i=0; i<range.length; i++) {
+        NSInteger idx = range.location + i;
+        if (idx >= self.delegate.parser.lines.count) break;
+        
+        Line* l = self.delegate.parser.lines[idx];
+        l.formattedAs = -1;
+        [self formatLine:l];
+    }
 }
 
 /// Reapplies all paragraph styles

@@ -95,12 +95,14 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	
 	/// Forces the creation of a new document. Assumes that BeatCore has a file called `New Document.fountain`.
 	public func newDocument() {
+		// TODO: This name should come from a string catalogue.
 		guard let url = Bundle(for: BeatTemplates.self).url(forResource: "New Document", withExtension: "fountain") else { return }
 		
 		importAndPresentTemplate(url)
 	}
     
-    // MARK: UIDocumentBrowserViewControllerDelegate
+    
+	// MARK: - UIDocumentBrowserViewControllerDelegate
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
 		let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -125,6 +127,9 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
 		let alert = UIAlertController(title: "Error Opening Document", message: "Something went wrong when opening the file. Send a screenshot of this message to the developer:\n\(error.debugDescription)" , preferredStyle: .alert)
+		
+		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in alert.dismiss(animated: true) }))
+
 		self.present(alert, animated: true)
     }
     	

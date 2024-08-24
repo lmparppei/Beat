@@ -157,9 +157,13 @@ extension BeatUITextView {
 	 */
 	
 	@objc public func updateMobileScale() {
-		//self.zoomScale = mobileScale
-		self.editorDelegate?.loadFonts()
-		self.editorDelegate?.formatting.formatAllLines()
+		guard let editorDelegate else { return }
+		
+		editorDelegate.loadFonts()
+		if !editorDelegate.documentIsLoading {
+			// Format lines with a delay
+			editorDelegate.formatting.formatAllAsynchronously()
+		}
 	}
 	 
 	func mobileViewResize() {
