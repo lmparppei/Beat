@@ -65,6 +65,13 @@ public extension String {
 		}
 		return updatedString
 	}
+    
+    func slice(from: String, to: String) -> String? {
+        guard let rangeFrom = range(of: from)?.upperBound else { return nil }
+        guard let rangeTo = self[rangeFrom...].range(of: to)?.lowerBound else { return nil }
+        return String(self[rangeFrom..<rangeTo])
+    }
+
 }
 
 public extension StringProtocol {
@@ -83,12 +90,4 @@ public extension StringProtocol {
 	subscript(range: PartialRangeFrom<Int>) -> SubSequence { self[index(startIndex, offsetBy: range.lowerBound)...] }
 	subscript(range: PartialRangeThrough<Int>) -> SubSequence { self[...index(startIndex, offsetBy: range.upperBound)] }
 	subscript(range: PartialRangeUpTo<Int>) -> SubSequence { self[..<index(startIndex, offsetBy: range.upperBound)] }
-}
-
-public extension StringProtocol {
-    func slice(from: String, to: String) -> String? {
-        guard let rangeFrom = range(of: from)?.upperBound else { return nil }
-        guard let rangeTo = self[rangeFrom...].range(of: to)?.lowerBound else { return nil }
-        return String(self[rangeFrom..<rangeTo])
-    }
 }
