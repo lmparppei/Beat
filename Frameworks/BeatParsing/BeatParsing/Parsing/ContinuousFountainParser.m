@@ -736,10 +736,10 @@ static NSDictionary* patterns;
     }
 }
 
+/// TODO: Move this to line object maybe?
 - (void)resolveMacrosOn:(Line*)line parser:(BeatMacroParser*)macroParser
 {
     NSDictionary* macros = line.macros;
-    
     line.resolvedMacros = NSMutableDictionary.new;
     
     NSArray<NSValue*>* keys = [macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {

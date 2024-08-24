@@ -371,7 +371,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 - (Line*)clone {
     Line* newLine = [Line withString:self.string type:self.type];
-    newLine.representedLine = self; // For live pagination, refers to the line in PARSER
+    newLine.representedLine = self;
     newLine.uuid = self.uuid;
     newLine.position = self.position;
     
@@ -385,23 +385,23 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     newLine.resolvedMacros = self.resolvedMacros.mutableCopy;
     
-    //newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
-    if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
+    if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy;
     
-    if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
-    if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
-    if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
-    if (self.noteRanges.count) newLine.noteRanges = self.noteRanges.mutableCopy;
-    if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
-    if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
-    if (self.sceneNumberRange.length) newLine.sceneNumberRange = self.sceneNumberRange;
-    if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
-    if (self.removalSuggestionRanges.count) newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
-    if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
-    if (self.macroRanges) newLine.macroRanges = self.macroRanges.mutableCopy;
+    // Not sure why these are guarded.
+    newLine.italicRanges = self.italicRanges.mutableCopy;
+    newLine.boldRanges = self.boldRanges.mutableCopy;
+    newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
+    newLine.noteRanges = self.noteRanges.mutableCopy;
+    newLine.omittedRanges = self.omittedRanges.mutableCopy;
+    newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
+    newLine.sceneNumberRange = self.sceneNumberRange;
+    newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
+    newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
+    newLine.escapeRanges = self.escapeRanges.mutableCopy;
+    newLine.macroRanges = self.macroRanges.mutableCopy;
     
-    if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
-    if (self.color) newLine.color = [NSString stringWithString:self.color];
+    newLine.sceneNumber = self.sceneNumber.copy;
+    newLine.color = self.color.copy;
     
     newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
     
@@ -412,7 +412,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 /// Returns the index of this line in the parser.
 /// @warning VERY slow, this should be fixed to conform with the new, circular search methods.
-- (NSUInteger)index {
+- (NSUInteger)index
+{
     if (!self.parser) return NSNotFound;
     return [self.parser.lines indexOfObject:self];
 }
@@ -420,7 +421,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - String methods
 
-- (NSString*)stringForDisplay {
+- (NSString*)stringForDisplay
+{
+    // Wow. This is pretty hacky. If the line is not omitted, we'll return the normal stripped and trimmed string, but otherwise we'll create a clone and remove the omissions.
     if (!self.omitted) {
         return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     } else {
@@ -430,30 +433,30 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
 }
 
-/// @warning Legacy method. Use `line.stripFormatting`
-- (NSString*)textContent {
-    return self.stripFormatting;
-}
+/// @warning Legacy method for plugin compatibility. Use `line.stripFormatting`
+- (NSString*)textContent { return self.stripFormatting; }
 
 /// Returns the last character as `unichar`
-- (unichar)lastCharacter {
+- (unichar)lastCharacter
+{
     if (_string.length > 0) return [_string characterAtIndex:self.length - 1];
     else return 0; // 0 is error in this case
 }
 
-/// Returns `true` if the stored original content is equal to current string
-- (bool)matchesOriginal {
+/// Returns `true` if the stored original content is equal to current string. Original is stored when the object is first initialized.
+- (bool)matchesOriginal
+{
     return [self.string isEqualToString:self.originalString];
 }
 
 #pragma mark - Strip formatting
 
 /// Strip any Fountain formatting from the line
-/// // Strip any Fountain formatting from the line
 - (NSString*)stripFormatting
 {
     return [self stripFormattingWithSettings:nil];
 }
+
 - (NSString*)stripFormattingWithSettings:(BeatExportSettings*)settings
 {
     NSMutableIndexSet *contentRanges = self.contentRanges.mutableCopy;
@@ -763,13 +766,13 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         noteContent = noteString;
     }
     
-    if (noteContent != nil) {
-        // For notes with a prefix, we need to check that the note isn't bleeding out.
-        if (NSMaxRange(noteRange) == self.length && self.noteOut) return nil;
-        else return @[ [NSValue valueWithRange:noteRange], noteContent ];
-    } else {
-        return nil;
+    NSArray* result = nil;
+    // For notes with a prefix, we need to check that the note isn't bleeding out.
+    if (noteContent != nil && NSMaxRange(noteRange) == self.length && self.noteOut) {
+        result = @[ [NSValue valueWithRange:noteRange], noteContent ];
     }
+    
+    return result;
 }
 
 - (id)noteContentsWithRanges:(bool)withRanges {
@@ -850,21 +853,22 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     return beats.allObjects;
 }
+
 - (NSMutableIndexSet *)beatRanges
 {
     if (_beatRanges == nil) [self beats];
     return _beatRanges;
 }
 
-- (bool)hasBeat {
-    if ([self.string.lowercaseString containsString:@"[[beat "] ||
-        [self.string.lowercaseString containsString:@"[[beat:"] ||
-        [self.string.lowercaseString containsString:@"[[storyline"])
-        return YES;
-    else
-        return NO;
+- (bool)hasBeat
+{
+    return ([self.string.lowercaseString containsString:@"[[beat "] ||
+            [self.string.lowercaseString containsString:@"[[beat:"] ||
+            [self.string.lowercaseString containsString:@"[[storyline"]);
 }
-- (bool)hasBeatForStoryline:(NSString*)storyline {
+
+- (bool)hasBeatForStoryline:(NSString*)storyline
+{
     for (Storybeat *beat in self.beats) {
         if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return YES;
     }
@@ -888,7 +892,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return nil;
 }
  
-- (NSRange)firstBeatRange {
+- (NSRange)firstBeatRange
+{
     __block NSRange beatRange = NSMakeRange(NSNotFound, 0);
     
     [self.beatRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -906,7 +911,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 #pragma mark - Formatting & attribution
 
 /// Parse and apply Fountain stylization inside the string contained by this line.
-- (void)resetFormatting {
+- (void)resetFormatting
+{
     NSUInteger length = self.string.length;
     // Let's not do this for extremely long lines. I don't know how many symbols a unichar array can hold.
     // I guess there should be a fallback for insanely long strings, but this is a free and open source app, so if your
@@ -992,6 +998,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 }
 
 /// Creates and stores a string with style attributes. Please don't use in editor, only for static parsing.
+/// TODO: This is an extremely bad getter name. Why? 
 /// - note N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
 - (NSAttributedString*)attrString
 {

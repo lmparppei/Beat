@@ -363,7 +363,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 #pragma mark Displaying HTML content
 #if TARGET_OS_OSX
 // macOS HTML views
-JSExportAs(htmlPanel, - (BeatPluginHTMLPanel*)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
+JSExportAs(htmlPanel, - (BeatPluginHTMLPanel*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
 JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 - (NSDictionary*)printInfo;
 JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
@@ -376,7 +376,7 @@ JSExportAs(htmlPanel, - (BeatPluginHTMLViewController*)htmlPanel:(JSValue*)html 
 
 #pragma mark Notepad
 #if TARGET_OS_OSX
-@property (nonatomic, weak, readonly) id notepad;
+@property (nonatomic, weak, readonly) BeatNotepad* notepad;
 #endif
 
 #pragma mark Text highlighting
@@ -436,19 +436,15 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) Line* currentLine;
-
 @property (nonatomic, readonly) OutlineScene *currentScene;
 
+@property (nonatomic, weak) BeatNotepad* notepad;
 @property (nonatomic) BeatRevisions* revisionTracking;
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
 #if TARGET_OS_IOS
 - (void)registerPluginViewController:(BeatPluginHTMLViewController*)view;
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController*)view;
-#endif
-#if TARGET_OS_OSX
-/// Please forgive me, we are using an unknown object to deliver notepad.
-@property (nonatomic) id notepad;
 #endif
 
 - (BeatPaginationManager*)pagination;

@@ -253,7 +253,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSString*)stripFormattingWithSettings:(BeatExportSettings*)settings;
 /// Returns a string with all of the note ranges removed.
 - (NSString*)stripNotes;
-/// Returns line string content with no formatting, but doesn't return an empty string if the line is omitted in the screenplay.
+/// Returns line string content with no formatting to be displayed in UI elements. 
 - (NSString*)stringForDisplay;
 /// Returns a trimmed string
 - (NSString*)trimmed;
@@ -274,7 +274,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 /// Unique identifier for this line (temporary clones of this line in paginated content will hold the same ID)
 @property (atomic) NSUUID *uuid;
-/// The line in editor/parser from which this one was copied from, can be nil
+/// The line in editor/parser from which this one was copied from, can be `nil`
 @property (nonatomic, weak) Line *representedLine;
 /// String representation of the UUID
 - (NSString*)uuidString;
@@ -298,7 +298,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// All story beats in this line
 @property (nonatomic) NSArray<Storybeat*>* beats;
 /// Tags in this line (once they are baked into lines before export to FDX)
-@property (nonatomic) NSMutableArray *tags;
+@property (nonatomic) NSMutableArray<NSDictionary*>* tags;
 /// Lines can hold any sort of custom data when needed. Used by plugins.
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
 
