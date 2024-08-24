@@ -53,7 +53,7 @@ THE SOFTWARE.
 @class MarginView;
 @class BeatTimer;
 @class BeatLockButton;
-@class BeatNotepad;
+@class BeatNotepadView;
 
 @interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
@@ -165,6 +165,8 @@ THE SOFTWARE.
 
 /// Notepad view
 @property (nonatomic, weak) IBOutlet BeatNotepad* _Nullable notepad;
+
+@property (nonatomic) NSMutableArray<NSWindowController*>* _Nullable additionalPanels;
 
 /// Assisting windows
 @property (nonatomic) NSMutableDictionary<NSValue*,NSWindow*>* _Nullable assistingWindows;

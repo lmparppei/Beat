@@ -98,7 +98,6 @@
 #import "BeatLockButton.h"
 #import "BeatColorMenuItem.h"
 #import "BeatSegmentedControl.h"
-#import "BeatNotepad.h"
 #import "BeatPrintDialog.h"
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
@@ -193,9 +192,6 @@
 
 // Touch bar
 @property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
-
-// Parser
-//@property (strong, nonatomic) ContinuousFountainParser* parser;
 
 /// Tagging view on the right side of the screen
 @property (weak) IBOutlet NSTextView *tagTextView;
