@@ -28,6 +28,7 @@
 		B62D16332BFE2254000EFEE5 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D162F2BFE2254000EFEE5 /* FDXImport.m */; };
 		B62D16342BFE2254000EFEE5 /* FDXImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16302BFE2254000EFEE5 /* FDXImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62D16362BFE23FB000EFEE5 /* BeatFileImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */; };
+		B692E2E42C7A1EDA0009833F /* Final Draft Template.xml in Resources */ = {isa = PBXBuildFile; fileRef = B692E2E32C7A1EDA0009833F /* Final Draft Template.xml */; };
 		B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C792BF0BDB600414878 /* BeatFileExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A97C812BF0BDDD00414878 /* BeatFDXExport.m */; };
@@ -61,6 +62,7 @@
 		B62D162F2BFE2254000EFEE5 /* FDXImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
 		B62D16302BFE2254000EFEE5 /* FDXImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
 		B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFileImportManager.swift; sourceTree = "<group>"; };
+		B692E2E32C7A1EDA0009833F /* Final Draft Template.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Final Draft Template.xml"; sourceTree = "<group>"; };
 		B6A97C762BF0BDB600414878 /* BeatFileExport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatFileExport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A97C792BF0BDB600414878 /* BeatFileExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFileExport.h; sourceTree = "<group>"; };
 		B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatFDXExport.h; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				B6A97C812BF0BDDD00414878 /* BeatFDXExport.m */,
 				B6A97C822BF0BDDD00414878 /* FDXInterface.h */,
 				B6A97C832BF0BDDD00414878 /* FDXInterface.m */,
+				B692E2E32C7A1EDA0009833F /* Final Draft Template.xml */,
 			);
 			path = "Final Draft";
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B692E2E42C7A1EDA0009833F /* Final Draft Template.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
