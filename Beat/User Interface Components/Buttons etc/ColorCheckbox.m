@@ -40,7 +40,8 @@ static CGFloat size = 12;
 	layer.fillColor = [_itemColor colorWithAlphaComponent:0.5].CGColor;
 	self.layer = layer;
 	 */
-	_itemColor = [BeatColors color:self.colorName];
+	NSColor* color = [BeatColors color:self.colorName];
+	_itemColor = (color != nil) ? color : NSColor.whiteColor;
 }
 
 -(void)mouseUp:(NSEvent *)event {
