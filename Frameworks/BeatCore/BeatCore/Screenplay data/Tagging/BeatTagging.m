@@ -44,6 +44,7 @@
 #import "NSString+Levenshtein.h"
 #import "BeatColors.h"
 
+#define BXTagOrder @[ @"cast", @"prop", @"vfx", @"sfx", @"animal", @"extras", @"vehicle", @"costume", @"makeup", @"music" ]
 
 #define UIFontSize 11.0
 
@@ -57,9 +58,8 @@
 @end
 
 @interface BeatTagging ()
-@property (nonatomic) NSMutableArray *tagDefinitions;
+@property (nonatomic) NSMutableArray<TagDefinition*> *tagDefinitions;
 @property (nonatomic) OutlineScene *lastScene;
-
 @end
 
 @implementation BeatTagging
@@ -92,7 +92,7 @@
 	return @"BeatTag";
 }
 
-+ (NSDictionary*)tagKeys
++ (NSDictionary<NSNumber*,NSString*>*)tagKeys
 {
     static NSDictionary* tagKeys;
     if (tagKeys == nil) tagKeys = @{
@@ -111,14 +111,34 @@
     return tagKeys;
 }
 
-/// All available tag categories. It's a hard-coded array to retain the order.
-+ (NSArray*)categories {
++ (NSDictionary<NSNumber*, NSString*>*)tagIcons
+{
+    static NSDictionary* tagIcons;
+    if (tagIcons == nil) tagIcons = @{
+        @(CharacterTag): @"person.fill",
+        @(PropTag): @"gym.bag.fill",
+        @(VFXTag): @"fx",
+        @(SpecialEffectTag): @"flame",
+        @(AnimalTag): @"dog.fill",
+        @(ExtraTag): @"person.3",
+        @(VehicleTag): @"bicycle",
+        @(CostumeTag): @"tshirt.fill",
+        @(MakeupTag): @"theatermask.and.paintbrush.fill",
+        @(MusicTag): @"music.note"
+    };
+    return tagIcons;
+}
+
+/// All available tag categories as string
++ (NSArray<NSString*>*)categories
+{
     static NSArray* categories;
-    if (categories == nil) categories = @[@"cast", @"prop", @"vfx", @"sfx", @"animal", @"extras", @"vehicle", @"costume", @"makeup", @"music" ];
+    if (categories == nil) categories = BXTagOrder;
     return categories;
 }
 
-+ (NSArray*)styledTags {
++ (NSArray*)styledTags
+{
 	NSArray *tags = BeatTagging.categories;
     NSMutableArray *styledTags = NSMutableArray.new;
 	
@@ -130,6 +150,17 @@
 	}
 	
 	return styledTags;
+}
+
++ (NSString*)localizedTagNameOnType:(BeatTagType)type
+{
+    NSString* tag = [BeatTagging keyFor:type];
+    return [BeatTagging localizedTagNameFor:tag];
+}
+
++ (NSString*)localizedTagNameFor:(NSString*)tag
+{
+    return [BeatLocalization localizedStringForKey:[NSString stringWithFormat:@"tag.%@", tag]];
 }
 
 + (NSAttributedString*)styledTagFor:(NSString*)tag
@@ -173,6 +204,7 @@
 		@"generic": [BeatColors color:@"gray"]
 	};
 }
+
 
 + (BeatTagType)tagFor:(NSString*)tag
 {
@@ -233,7 +265,7 @@
 	return dict;
 }
 
-- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions
+- (void)loadTags:(NSArray<NSDictionary*>*)tags definitions:(NSArray*)definitions
 {
 	self.tagDefinitions = NSMutableArray.new;
 	for (NSDictionary *dict in definitions) {
@@ -624,8 +656,9 @@
 	
 	return defsToSave;
 }
-+ (NSArray*)definitionsForTags:(NSArray*)tags {
-	NSMutableArray *defs = [NSMutableArray array];
++ (NSMutableArray<TagDefinition*>*)definitionsForTags:(NSArray<BeatTag*>*)tags
+{
+    NSMutableArray<TagDefinition*>* defs = NSMutableArray.new;
 	
 	for (BeatTag *tag in tags) {
 		if (![defs containsObject:tag.definition]) [defs addObject:tag.definition];
@@ -752,7 +785,8 @@
 	
 }
 
-- (void)saveTags {
+- (void)saveTags
+{
 	NSArray *tags = [self getTags];
 	NSArray *definitions = [self getDefinitions];
 	
@@ -760,10 +794,12 @@
 	[_delegate.documentSettings set:DocSettingTagDefinitions as:definitions];
 }
 
-- (void)updateTaggingData {
+- (void)updateTaggingData 
+{
     NSAttributedString* tagInfo = [self displayTagsForScene:self.delegate.currentScene];
     [self.tagTextView.textStorage setAttributedString:tagInfo];
 }
+
 
 
 #pragma mark - Editor actions
@@ -775,7 +811,5 @@
 - (IBAction)closeTagging:(id)sender {
     [_delegate toggleMode:EditMode];
 }
-
-
 
 @end

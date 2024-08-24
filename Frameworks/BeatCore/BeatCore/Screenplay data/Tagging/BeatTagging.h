@@ -48,7 +48,6 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 // Do we need some special stuff here?
 @end
 
-
 @interface TagSearchResult : NSObject
 @property (nonatomic) NSString *string;
 @property (nonatomic) CGFloat distance;
@@ -58,23 +57,37 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @interface BeatTagging : NSObject
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
 @property (weak) IBOutlet BXTextView* tagTextView;
-#if !TARGET_OS_IOS
-//@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
-#endif
 
 + (NSString*)attributeKey;
-+ (NSArray*)categories;
+/// All available tag categories. It's a hard-coded array to retain the order.
++ (NSArray<NSString*>*)categories;
 + (BeatTagType)tagFor:(NSString*)tag;
-//+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;
-+ (NSArray*)styledTags;
+/// Returns an array of all tag types as localized strings and a colored circle
++ (NSArray<NSAttributedString*>*)styledTags;
+/// Returns localized tag type name and a colored circle
 + (NSAttributedString*)styledTagFor:(NSString*)tag;
+/// Bake tags to line elements
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
-+ (NSDictionary*)tagColors;
+/// Dictionary of colors associated with tags (string key)
++ (NSDictionary<NSString*, BXColor*>*)tagColors;
+/// Returns the color for given tag type
 + (TagColor*)colorFor:(BeatTagType)tag;
+/// Returns the key name (string) for given tag type
 + (NSString*)keyFor:(BeatTagType)tag;
-+ (NSArray*)definitionsForTags:(NSArray*)tags;
+/// Returns the definitions for all tags in an array
++ (NSMutableArray<TagDefinition*>*)definitionsForTags:(NSArray<BeatTag*>*)tags;
+/// Creates a new UUID and returns it as string
 + (NSString*)newId;
+/// ...
 + (NSString*)hexForKey:(NSString*)key;
+/// Returns SF Symbol names for given tags
++ (NSDictionary<NSNumber*, NSString*>*)tagIcons;
+/// Keys are raw integer values as `NSNumber`, values are their keys.
++ (NSDictionary<NSNumber*,NSString*>*)tagKeys;
+/// Returns localized tag name for string key
++ (NSString*)localizedTagNameFor:(NSString*)tag;
+/// Returns localized tag name for type
++ (NSString*)localizedTagNameForType:(BeatTagType)type;
 
 - (void)setup;
 
