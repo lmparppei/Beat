@@ -29,4 +29,5 @@
 + (NSString*)get16bitHex:(BXColor*)color;
 + (NSString*)cssRGBFor:(BXColor*)color;
 + (BXImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size;
++ (BXImage*)labelImageForColorValue:(BXColor*)color size:(CGSize)size;
 @end

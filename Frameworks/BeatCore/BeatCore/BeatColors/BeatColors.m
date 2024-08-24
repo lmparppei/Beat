@@ -159,16 +159,20 @@
 
 #if TARGET_OS_OSX
 
-/// Creates an image to be used with UI elements to represent colors
 + (BXImage*)labelImageForColor:(NSString*)colorName size:(CGSize)size
 {
-    static NSMutableDictionary<NSString*, NSImage*>* labelImages;
+    BXColor* color = [BeatColors color:colorName.lowercaseString];
+    return [BeatColors labelImageForColorValue:color size:size];
+}
+
+/// Creates an image to be used with UI elements to represent colors
++ (BXImage*)labelImageForColorValue:(BXColor*)color size:(CGSize)size
+{
+    static NSMutableDictionary<BXColor*, NSImage*>* labelImages;
     if (labelImages == nil) labelImages = NSMutableDictionary.new;
     
-    colorName = colorName.lowercaseString;
-    if (labelImages[colorName] != nil) return labelImages[colorName];
+    if (labelImages[color] != nil) return labelImages[color];
     
-    BXColor* color = [BeatColors color:colorName];
     CGFloat w = size.width; CGFloat h = size.height;
     CGFloat padding = w * 0.1;
     
@@ -182,7 +186,7 @@
     [path fill];
     [image unlockFocus];
     
-    labelImages[colorName] = image;
+    labelImages[color] = image;
     return image;
 }
 
