@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<FinalDraft DocumentType="Script" Template="No" Version="1">
+    <Content>
+        %%CONTENT%%
+    </Content>
+    %%TITLE_PAGE%%
+    <Revisions ActiveSet="1" Location="7.75" RevisionsShown="Active" ShowAllMarks="No" ShowAllSets="No">
+        %%REVISIONS%%
+    </Revisions>
+    <TagData>
+        <TagCategories>
+            %%TAG_CATEGORIES%%
+        </TagCategories>
+        <TagDefinitions>
+            %%TAG_DEFINITIONS%%
+        </TagDefinitions>
+        <Tags>
+            %%TAGS%%
+        </Tags>
+    </TagData>
+    <PageLayout BackgroundColor="#FFFFFFFFFFFF" BottomMargin="45" BreakDialogueAndActionAtSentences="Yes" DocumentLeading="Normal" FooterMargin="36" ForegroundColor="#000000000000" HeaderMargin="29" InvisiblesColor="#808080808080" TopMargin="0" UsesSmartQuotes="Yes">
+        <PageSize Height="%%PAGE_HEIGHT%%" Width="%%PAGE_WIDTH%%"/>
+    </PageLayout>
+    <ElementSettings Type="Lyrics">
+        <FontSpec  Style="Italic"/>
+        <ParagraphSpec Alignment="Center"/>
+        <Behavior PaginateAs="Action" ReturnKey="Action" />
+    </ElementSettings>
+    <ScriptNotes>
+        %%SCRIPT_NOTES%%
+    </ScriptNotes>
+</FinalDraft>

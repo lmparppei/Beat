@@ -49,6 +49,8 @@ ui = ui.replaceAll("%colorOther%", colors.other)
        .replaceAll("%colorMan%", colors.man)
        .replaceAll("%defaultData%", json)
 
+Beat.log("PANEL OPEN")
+
 let panel = Beat.htmlPanel(ui, 800, 600, () => {
     Beat.end()
 })

@@ -89,7 +89,6 @@
 #import <BeatFileExport/BeatFileExport-Swift.h>
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
-//#define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
 
 #define LINES_PER_PAGE 46
 #define LINES_BEFORE_CENTER 18
@@ -104,7 +103,7 @@ static NSDictionary *fdxIds;
 
 @interface BeatFDXExport ()
 @property (nonatomic) ContinuousFountainParser *parser;
-@property (nonatomic) NSMutableString *result;
+@property (nonatomic) NSString *result;
 @property (nonatomic) NSArray *preprocessedLines;
 
 @property (nonatomic) NSMutableDictionary *tagData;
@@ -121,6 +120,10 @@ static NSDictionary *fdxIds;
 @property (nonatomic) NSInteger dualDialogueCueCount;
 
 @property (nonatomic) BeatPaperSize paperSize;
+
+@property (nonatomic) NSInteger characterIndex;
+
+@property (nonatomic) NSMutableDictionary<NSValue*, BeatNoteData*>* notes;
 
 @end
 
@@ -207,8 +210,10 @@ static NSDictionary *fdxIds;
 	return self;
 }
 
-- (NSString*)createCategories {
-	NSMutableString *c = [NSMutableString string];
+- (NSString*)createCategories
+{
+    // TODO: Use some sort of template engine here
+	NSMutableString *c = NSMutableString.new;
 	[c appendString:format(@"      <TagCategory Color=\"#000000000000\" Id=\"8e5e75c2-713b-47df-a75f-f12648b98ded\" Name=\"Synopsis\" Number=\"1\" Style=\"Bold\"/>")];
 	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"01fc9642-84ff-4366-b37c-a3068dee57e8\" Name=\"Cast Members\" Number=\"2\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Cast"])];
 	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"028a4e2b-b507-4d09-88ab-90e3edae9071\" Name=\"Background Actors\" Number=\"3\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Extras"])];
@@ -242,98 +247,100 @@ static NSDictionary *fdxIds;
 	return c;
 }
 
-- (NSString*)fdxString {
+- (NSString*)fdxString
+{
 	return self.result;
 }
 
-- (NSString*)createFDX {
+- (NSString*)createFDX
+{
 	return [self createFDXwithRevisions:NO tags:NO];
 }
-- (NSString*)createFDXwithRevisions:(bool)includeRevisions tags:(bool)includeTags {
 
+- (NSString*)createFDXwithRevisions:(bool)includeRevisions tags:(bool)includeTags
+{
 	if (self.parser.lines.count == 0) return @"";
-
-	_result = [@"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
-			   @"<FinalDraft DocumentType=\"Script\" Template=\"No\" Version=\"1\">\n"
-			   @"\n"
-			   @"  <Content>\n" mutableCopy];
-	
+    
+    NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"Final Draft Template" withExtension:@"xml"];
+    NSString* template = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
+    
+    _preprocessedLines = [self preprocessLines];
 	_inDualDialogue = NO;
-	
-	_preprocessedLines = [self preprocessLines];
-	
-	for (int i = 0; i < _preprocessedLines.count; i++) {
-		[self appendLineAtIndex:i];
-		//inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue tags:tags];
-	}
-	
-	[_result appendString:@"  </Content>\n"];
-	
-	[self appendTitlePage];
-	[self appendElementStyles];
-	[self appendPageLayout];
-	
-	// Tagging data
-	[_result appendString:@"  <TagData>\n"];
-	[_result appendString:@"    <TagCategories>\n"];
-	[_result appendString:[self createCategories]];
-	[_result appendString:@"    </TagCategories>\n"];
-	[_result appendString:@"    <TagDefinitions>\n"];
-	[_result appendString:_tagDefinitionsStr];
-	[_result appendString:@"    </TagDefinitions>\n"];
-	[_result appendString:@"    <Tags>\n"];
-	[_result appendString:_tagsStr];
-	[_result appendString:@"    </Tags>\n"];
-	[_result appendString:@"  </TagData>\n"];
+	    
+    NSString* titlePage = self.titlePage;
+    CGSize pageSize = self.FDXPageSize;
 
-	// Revision data
-	[_result appendString:@"	<Revisions ActiveSet=\"1\" Location=\"7.75\" RevisionsShown=\"Active\" ShowAllMarks=\"No\" ShowAllSets=\"No\">\n"];
-	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"1\" Mark=\"*\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"blue"])];
-	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"2\" Mark=\"**\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"orange"])];
-	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"3\" Mark=\"+\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"purple"])];
-	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"4\" Mark=\"++\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"green"])];
-	[_result appendString:@"	</Revisions>\n"];
-	/*
-	<Revisions ActiveSet="1" Location="7.75" RevisionMode="No" RevisionsShown="Active" ShowAllMarks="No" ShowAllSets="No" ShowPageColor="No">
-	  <Revision Color="#FFFF7E7E7979" FullRevision="No" ID="1" Mark="*" Name="First Revision" PageColor="#FFFFFFFFFFFF" Style=""/>
-	 */
-	
-	[_result appendString:@"</FinalDraft>\n"];
-	
+    NSMutableString* content = NSMutableString.new;
+	for (int i = 0; i < _preprocessedLines.count; i++) {
+		[content appendString:[self lineToFDXAtIndex:i]];
+	}
+		    
+    // Notes
+    NSMutableString* scriptNotes = NSMutableString.new;
+    for (NSValue* r in self.notes.allKeys) {
+        BeatNoteData* note = self.notes[r];
+        NSRange range = r.rangeValue;
+        NSString* color = [BeatColors colorWith16bitHex:@"yellow"];
+        if (note.color.length > 0) color = [BeatColors colorWith16bitHex:note.color];
+        
+        [scriptNotes appendFormat:@"    <ScriptNote Range='%lu,%lu' Color='#%@'>\n", range.location, range.length + range.location, color];
+        [scriptNotes appendFormat:@"      <Paragraph><Text>%@</Text></Paragraph>\n", note.content];
+        [scriptNotes appendFormat:@"    </ScriptNote>\n"];
+    }
+    
+    NSMutableString* revisions = NSMutableString.new;
+    for (NSInteger i=0; i<BeatRevisions.revisionGenerations.count; i++) {
+        BeatRevisionGeneration* gen = BeatRevisions.revisionGenerations[i];
+        NSString* revName = [NSString stringWithFormat:@"revision.%lu", i];
+        NSString* revision = format(@"        <Revision Color=\"#%@\" FullRevision=\"No\" ID=\"%lu\" Mark=\"%@\" Name=\"%@\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n",
+                                    [BeatColors colorWith16bitHex:gen.color],
+                                    i+1,
+                                    gen.marker,
+                                    NSLocalizedString(revName, "Revision name")
+                             );
+        [revisions appendString:revision];
+    }
+    
+    template = [template stringByReplacingOccurrencesOfString:@"%%CONTENT%%" withString:content];
+    template = [template stringByReplacingOccurrencesOfString:@"%%TITLE_PAGE%%" withString:titlePage];
+    template = [template stringByReplacingOccurrencesOfString:@"%%TAG_CATEGORIES%%" withString:self.createCategories];
+    template = [template stringByReplacingOccurrencesOfString:@"%%TAG_DEFINITIONS%%" withString:self.tagDefinitionsStr];
+    template = [template stringByReplacingOccurrencesOfString:@"%%TAGS%%" withString:self.tagsStr];
+    template = [template stringByReplacingOccurrencesOfString:@"%%SCRIPT_NOTES%%" withString:scriptNotes];
+    template = [template stringByReplacingOccurrencesOfString:@"%%PAGE_WIDTH%%" withString:[NSString stringWithFormat:@"%f", pageSize.width]];
+    template = [template stringByReplacingOccurrencesOfString:@"%%PAGE_HEIGHT%%" withString:[NSString stringWithFormat:@"%f", pageSize.height]];
+    
+    _result = template;
 	return _result;
 }
 
-- (void)appendPageLayout {
-	[_result appendString:@"  <PageLayout BackgroundColor=\"#FFFFFFFFFFFF\" BottomMargin=\"45\" BreakDialogueAndActionAtSentences=\"Yes\" DocumentLeading=\"Normal\" FooterMargin=\"36\" ForegroundColor=\"#000000000000\" HeaderMargin=\"29\" InvisiblesColor=\"#808080808080\" TopMargin=\"0\" UsesSmartQuotes=\"Yes\">"];
-	
-	// Add correct paper size
-	if (self.paperSize == BeatA4) [_result appendString:@"    <PageSize Height=\"11.70\" Width=\"8.30\"/>"];
-	else [_result appendString:@"    <PageSize Height=\"11.00\" Width=\"8.50\"/>"];
-	
-	[_result appendString:@"  </PageLayout>"];
+- (CGSize)FDXPageSize
+{
+    CGSize size = (self.paperSize == BeatA4) ? CGSizeMake(11.70, 8.30) : CGSizeMake(11.0, 8.50);
+    return size;
 }
 
-- (NSArray*)preprocessLines {
-	NSMutableArray *lines = [NSMutableArray array];
+- (NSArray*)preprocessLines
+{
+    NSMutableArray<Line*>* lines = NSMutableArray.new;
 	
 	Line *previousLine;
 	for (Line* line in self.parser.lines) {
 		// Fix a weird bug
-		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
-		
+		if (line.type == empty && line.string.length > 0 && !line.string.containsOnlyWhitespace) line.type = action;
+		        
 		// Skip omited lines
-		if (line.omitted) {
+		if (line.omitted && !line.note) {
 			if (line.type == empty) previousLine = line;
 			continue;
 		}
 
-		if (((line.type == action && previousLine.type == action) ||
-			(line.type == lyrics && previousLine.type == lyrics)) &&
-			(previousLine.length > 0 && previousLine.type == action)) {
-			[previousLine joinWithLine:line];
-			continue;
-		}
-		
+        bool sameAsPreviousType = line.type == previousLine.type && previousLine.length > 0;
+        if (sameAsPreviousType && (line.type == action || line.type == lyrics)) {
+            [previousLine joinWithLine:line];
+            continue;
+        }
+        
 		// Mark dual dialogue
 		if (line.type == dualDialogueCharacter) {
 			NSInteger i = lines.count - 1;
@@ -357,30 +364,35 @@ static NSDictionary *fdxIds;
 	return  lines;
 }
 
-- (void)appendLineAtIndex:(NSUInteger)index
+- (NSString*)lineToFDXAtIndex:(NSUInteger)index
 {
+    NSMutableString* result = NSMutableString.new;
 	NSArray *lines = self.preprocessedLines;
 	Line* line = lines[index];
 		
 	NSString* paragraphType = [self typeAsFDXString:line.type];
-	if (paragraphType.length == 0) {
-		//Ignore if no type is available
-		return;
-	}
+    if (paragraphType.length == 0) return @""; // Ignore this line if no FDX type is available
+    
 	// Add section depth for outline elements
 	if (line.type == section) {
 		paragraphType = format(@"%@ %lu", paragraphType, line.sectionDepth);
 	}
 	
+    // Adjust current character index in FDX.
+    NSString *attrStr = line.stripFormatting;
+    self.characterIndex += attrStr.length;
+
+    // Note content
+    [self collectScriptNotesOn:line];
+    
 	NSMutableArray<NSString*>* additionalTags = NSMutableArray.new;
 	NSMutableArray<NSString*>* paragraphStyles = NSMutableArray.new;
 	[paragraphStyles addObject:[NSString stringWithFormat:@"Type=\"%@\"", paragraphType]];
 	
 	// Create dual dialogue block.
-	// This is a mess, fix ASAP.
 	if (line.type == character && line.nextElementIsDualDialogue && !_inDualDialogue) {
-		[_result appendString:@"    <Paragraph>\n"];
-		[_result appendString:@"      <DualDialogue>\n"];
+		[result appendString:@"    <Paragraph>\n"];
+		[result appendString:@"      <DualDialogue>\n"];
 		
 		_inDualDialogue = YES;
 		_dualDialogueCueCount = 1;
@@ -391,18 +403,12 @@ static NSDictionary *fdxIds;
 	else if (_inDualDialogue && line.type == character) {
 		_inDualDialogue = NO;
 		_dualDialogueCueCount = 0;
-		[_result appendString:@"      </DualDialogue>\n"];
-		[_result appendString:@"    </Paragraph>\n"];
+		[result appendString:@"      </DualDialogue>\n"];
+		[result appendString:@"    </Paragraph>\n"];
 	}
 	
-	// Append special styles for some elements
-	if (line.type == centered) {
-		[paragraphStyles addObject: @"Alignment=\"Centered\""];
-	}
-	else if (line.type == heading) {
-		// Strip possible scene number
-		//if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
-		
+	// Handle scene headings
+	if (line.type == heading) {
 		[paragraphStyles addObject:[NSString stringWithFormat:@"Number=\"%@\"", line.sceneNumber]];
 		
 		if (line.color) {
@@ -413,61 +419,47 @@ static NSDictionary *fdxIds;
 			}
 		}
 	}
+    // Handle any other types
+    else if (line.type == centered) {
+        [paragraphStyles addObject: @"Alignment=\"Centered\""];
+    }
 		
-	[_result appendFormat:@"    <Paragraph %@>\n", [paragraphStyles componentsJoinedByString:@" "]];
-	for (NSString* additionalTag in additionalTags) {
-		[_result appendString:additionalTag];
-	}
-	
-	//Append content
-	[self appendLineContents:line];
-	
-	//Apend close paragraph
-	[_result appendString:@"    </Paragraph>\n"];
-	
+    // Actual XML content
+    NSString *string = [self lineToXML:line];
+    
+    // Add full paragraph
+	[result appendFormat:@"    <Paragraph %@>\n\
+            %@\
+            %@\
+        </Paragraph>",
+        [paragraphStyles componentsJoinedByString:@" "],
+        [additionalTags componentsJoinedByString:@""],
+        (string.length > 0) ? string : @""
+    ];
+		
 	// If a double dialogue is currently in action, check wether it needs to be closed after this
 	// This is a duct-tape fix, this has to be cleaned up ASAP.
 	if (_inDualDialogue) {
-		
-		if (index < lines.count - 1) {
-			//If the following line doesn't have anything to do with dialogue, end double dialogue
-			Line* nextLine = lines[index+1];
-			if (nextLine.type != empty &&
-				nextLine.type != character &&
-				nextLine.type != parenthetical &&
-				nextLine.type != dialogue &&
-				nextLine.type != dualDialogueCharacter &&
-				nextLine.type != dualDialogueParenthetical &
-				nextLine.type != dualDialogue &&
-				nextLine.string.length > 0) {
-				_inDualDialogue = NO;
-				[_result appendString:@"      </DualDialogue>\n"];
-				[_result appendString:@"    </Paragraph>\n"];
-			}
-		}
+        Line* nextLine = (index < lines.count - 1) ? lines[index+1] : nil;
+        
+        // If the following line doesn't have anything to do with dialogue or is nil (we're at the end of document), end double dialogue
+		if ((nextLine.type != empty && !nextLine.isAnySortOfDialogue && nextLine.length > 0) || nextLine == nil) {
+            _inDualDialogue = NO;
+            [result appendString:@"      </DualDialogue>\n"];
+            [result appendString:@"    </Paragraph>\n"];
+        }
 	}
 	
-	if (line == _preprocessedLines.lastObject && _inDualDialogue) {
-		//If the line is the last line, it's also time to close the dual dialogue tag
-		_inDualDialogue = NO;
-		[_result appendString:@"      </DualDialogue>\n"];
-		[_result appendString:@"    </Paragraph>\n"];
-	}
-}
-
-- (void)appendLineContents:(Line*)line
-{
-	NSString *string = [self lineToXML:line];
-	if (string.length) [_result appendString:string];
+    return result;
 }
 
 - (void)escapeString:(NSMutableString*)string
 {
-	[string replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:NSLiteralSearch range:NSMakeRange(0, [string length])];
-	[string replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
-	[string replaceOccurrencesOfString:@"'"  withString:@"&#x27;" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
-	[string replaceOccurrencesOfString:@">"  withString:@"&gt;"   options:NSLiteralSearch range:NSMakeRange(0, [string length])];
-	[string replaceOccurrencesOfString:@"<"  withString:@"&lt;"   options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	[string replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:NSLiteralSearch range:NSMakeRange(0, string.length)];
+	[string replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:NSLiteralSearch range:NSMakeRange(0, string.length)];
+	[string replaceOccurrencesOfString:@"'"  withString:@"&#x27;" options:NSLiteralSearch range:NSMakeRange(0, string.length)];
+	[string replaceOccurrencesOfString:@">"  withString:@"&gt;"   options:NSLiteralSearch range:NSMakeRange(0, string.length)];
+	[string replaceOccurrencesOfString:@"<"  withString:@"&lt;"   options:NSLiteralSearch range:NSMakeRange(0, string.length)];
 }
 
 - (NSString*)typeAsFDXString:(LineType)type
@@ -528,14 +520,13 @@ static NSDictionary *fdxIds;
 	}
 }
 
-- (void)appendTitlePage
+- (NSString*)titlePage
 {
 	/*
-	 
-	 Rewrite this to support the new static Title Page parsing
-	 
+	 TODO: Rewrite this to support the new static Title Page parsing.
 	 */
 	
+    NSMutableString* result = NSMutableString.new;
 	bool hasTitlePage = NO;
 	
 	Line* firstLine = _parser.lines[0];
@@ -548,7 +539,7 @@ static NSDictionary *fdxIds;
 		hasTitlePage = YES;
 	}
 	
-	if (!hasTitlePage) return;
+	if (!hasTitlePage) return @"";
 	
 	NSMutableString* title = [[self stringByRemovingKey:@"title:" fromString:[self firstStringForLineType:titlePageTitle]] mutableCopy];
 	NSMutableString* credit = [[self stringByRemovingKey:@"credit:" fromString:[self firstStringForLineType:titlePageCredit]] mutableCopy];
@@ -564,81 +555,72 @@ static NSDictionary *fdxIds;
 	[self escapeString:draftDate];
 	[self escapeString:contact];
 	
-	[_result appendString:@"  <TitlePage>\n"];
-	[_result appendString:@"    <Content>\n"];
+	[result appendString:@"  <TitlePage>\n"];
+	[result appendString:@"    <Content>\n"];
 	
 	NSUInteger lineCount = 0;
 	
 	for (int i = 0; i < LINES_BEFORE_CENTER; i++) {
-		[self appendTitlePageLineWithString:@"" center:NO];
+		[result appendString:[self titlePageLineWithString:@"" center:NO]];
 		lineCount++;
 	}
 	
 	if (title) {
-		[self appendTitlePageLineWithString:title center:YES];
+        [result appendString:[self titlePageLineWithString:title center:YES]];
 		lineCount++;
 	}
 	
 	if (credit) {
 		for (int i = 0; i < LINES_BEFORE_CREDIT; i++) {
-			[self appendTitlePageLineWithString:@"" center:YES];
+            [result appendString:[self titlePageLineWithString:@"" center:YES]];
 			lineCount++;
 		}
-		[self appendTitlePageLineWithString:credit center:YES];
+        [result appendString:[self titlePageLineWithString:credit center:YES]];
 	}
 	
 	if (author) {
 		for (int i = 0; i < LINES_BEFORE_AUTHOR; i++) {
-			[self appendTitlePageLineWithString:@"" center:YES];
+            [result appendString:[self titlePageLineWithString:@"" center:YES]];
 			lineCount++;
 		}
-		[self appendTitlePageLineWithString:author center:YES];
+        [result appendString:[self titlePageLineWithString:author center:YES]];
 	}
 	
 	if (source) {
 		for (int i = 0; i < LINES_BEFORE_SOURCE; i++) {
-			[self appendTitlePageLineWithString:@"" center:YES];
+            [result appendString:[self titlePageLineWithString:@"" center:YES]];
 			lineCount++;
 		}
-		[self appendTitlePageLineWithString:source center:YES];
+        [result appendString:[self titlePageLineWithString:source center:YES]];
 	}
 	
 	while (lineCount < LINES_PER_PAGE - 2) {
-		[self appendTitlePageLineWithString:@"" center:NO];
+        [result appendString:[self titlePageLineWithString:@"" center:NO]];
 		lineCount++;
 	}
 	
 	if (draftDate) {
-		[self appendTitlePageLineWithString:draftDate center:NO];
+        [result appendString:[self titlePageLineWithString:draftDate center:NO]];
 	}
 	
 	if (contact) {
-		[self appendTitlePageLineWithString:contact center:NO];
+        [result appendString:[self titlePageLineWithString:contact center:NO]];
 	}
 	
-	[_result appendString:@"    </Content>\n"];
-	[_result appendString:@"  </TitlePage>\n"];
+	[result appendString:@"    </Content>\n"];
+	[result appendString:@"  </TitlePage>\n"];
+    
+    return result;
 }
 
-- (void)appendTitlePageLineWithString:(NSString*)string center:(bool)center
+- (NSString*)titlePageLineWithString:(NSString*)string center:(bool)center
 {
-	if (center) {
-		[_result appendString:@"      <Paragraph Alignment=\"Center\">\n"];
-	} else {
-		[_result appendString:@"      <Paragraph>\n"];
-	}
-	
-	[_result appendFormat:@"        <Text>%@</Text>\n", string];
-	[_result appendString:@"      </Paragraph>\n"];
-}
-
-- (void)appendElementStyles {
-	[_result appendString:@"\
-	<ElementSettings Type=\"Lyrics\">\n\
-		<FontSpec  Style=\"Italic\"/>\
-		<ParagraphSpec Alignment=\"Center\"/>\n\
-		<Behavior PaginateAs=\"Action\" ReturnKey=\"Action\" />\n\
-	 </ElementSettings>"];
+    return [NSString stringWithFormat:@"      <Paragraph%@>\n"
+                                       "        <Text>%@</Text>\n"
+                                       "      </Paragraph>\n",
+            (center) ? @" Alignment=\"Center\"" : @"",
+            string
+    ];
 }
 
 - (NSString*)firstStringForLineType:(LineType)type
@@ -772,10 +754,21 @@ static NSDictionary *fdxIds;
 	}
 }
 
-- (NSString*)createId {
-	NSUUID *uuid = [NSUUID UUID];
-	return [uuid UUIDString];
+/// Collects
+- (void)collectScriptNotesOn:(Line *)line
+{
+    if (line.noteRanges.count == 0) return;
+    if (_notes == nil) _notes = NSMutableDictionary.new;
+    
+    for (BeatNoteData* note in line.noteData) {
+        if (note.type != NoteTypeNormal) continue;
+        
+        NSRange noteRange = NSMakeRange((self.characterIndex > 0) ? self.characterIndex-1 : 0, 1);
+        NSValue* noteValue = [NSValue valueWithRange:noteRange];
+        self.notes[noteValue] = note;
+    }
 }
+
 
 @end
 /*
