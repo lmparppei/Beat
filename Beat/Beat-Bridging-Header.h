@@ -24,7 +24,7 @@
 #import "Document+WindowManagement.h"
 #import "Document+Menus.h"
 
-#import "BeatNotepad.h"
+#import "BeatNotepadView.h"
 #import "BeatPrintDialog.h"
 #import "BeatTextView.h"
 #import "BeatBrowserView.h"
