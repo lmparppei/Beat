@@ -83,6 +83,8 @@
 		B68C0F6E299D8D300031AE6B /* libUXKit-AppKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6C299D8D300031AE6B /* libUXKit-AppKit.a */; platformFilters = (macos, ); };
 		B68C0F6F299D8D300031AE6B /* libUXKit-UIKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6D299D8D300031AE6B /* libUXKit-UIKit.a */; platformFilter = ios; };
 		B68D9CD12C64007C00FCC9BE /* NSIndexSet+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68D9CD02C64007C00FCC9BE /* NSIndexSet+Array.swift */; };
+		B692E2E02C73CAE10009833F /* BeatTagReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692E2DF2C73CAE10009833F /* BeatTagReport.swift */; };
+		B692E2E22C73CD2E0009833F /* BeatCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */; };
 		B6974C202A2F1FDF00FA977A /* BeatDocumentDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */; };
 		B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB829F9C3620098D94D /* BeatEditorFormattingActions.m */; };
@@ -111,6 +113,10 @@
 		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
+		B6F59D3E2C6E7D3600AB8FAE /* BeatNotepad.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */; };
+		B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6F59D412C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */; };
+		B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */; };
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
 		B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */; };
@@ -194,6 +200,8 @@
 		B68C0F6C299D8D300031AE6B /* libUXKit-AppKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-AppKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B68C0F6D299D8D300031AE6B /* libUXKit-UIKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libUXKit-UIKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B68D9CD02C64007C00FCC9BE /* NSIndexSet+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSIndexSet+Array.swift"; sourceTree = "<group>"; };
+		B692E2DF2C73CAE10009833F /* BeatTagReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTagReport.swift; sourceTree = "<group>"; };
+		B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCompatibility.swift; sourceTree = "<group>"; };
 		B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentDelegate.h; sourceTree = "<group>"; };
 		B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatScreenplayElements.swift; sourceTree = "<group>"; };
 		B6B61BB729F9C3610098D94D /* BeatEditorFormattingActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormattingActions.h; sourceTree = "<group>"; };
@@ -220,6 +228,10 @@
 		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
 		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotepad.h; sourceTree = "<group>"; };
+		B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotepad.m; sourceTree = "<group>"; };
+		B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMarkdownTextStorage.swift; sourceTree = "<group>"; };
+		B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontExtensions.swift; sourceTree = "<group>"; };
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
 		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
 		B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStorageExtensions.swift; sourceTree = "<group>"; };
@@ -289,6 +301,7 @@
 				B6D32029298EBEDA003DA45D /* Extensions */,
 				B682C2622B30FB4A0027511A /* Templates */,
 				B676DD292BA8AC5C00F7DBDA /* Data representations */,
+				B6F59D3B2C6E7CF700AB8FAE /* Notepad */,
 				B681D58F29A37DBD00DF16CA /* BeatDocument.h */,
 				B681D59029A37DBD00DF16CA /* BeatDocument.m */,
 				B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */,
@@ -490,6 +503,7 @@
 				B6D3201D298EBE2B003DA45D /* BeatTag.m */,
 				B6D3201E298EBE2B003DA45D /* BeatTagItem.h */,
 				B6D3201F298EBE2B003DA45D /* BeatTagItem.m */,
+				B692E2DF2C73CAE10009833F /* BeatTagReport.swift */,
 			);
 			path = Tagging;
 			sourceTree = "<group>";
@@ -497,6 +511,7 @@
 		B6D32029298EBEDA003DA45D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */,
 				B63BE8422B5B33F1003814A5 /* Synchronized.swift */,
 				B68D9CD02C64007C00FCC9BE /* NSIndexSet+Array.swift */,
 				B680B7D12A6EC67700FCD805 /* NSString+VersionNumber.h */,
@@ -515,8 +530,19 @@
 				B680B7C42A6EC31600FCD805 /* NSTextView+UX.h */,
 				B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */,
 				B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */,
+				B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B6F59D3B2C6E7CF700AB8FAE /* Notepad */ = {
+			isa = PBXGroup;
+			children = (
+				B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */,
+				B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */,
+				B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */,
+			);
+			path = Notepad;
 			sourceTree = "<group>";
 		};
 		B6FE02B42BAA3D58001DF833 /* Document View */ = {
@@ -567,6 +593,7 @@
 				B68C0F66299D845A0031AE6B /* BeatAttributedStringExtensions.swift in Headers */,
 				B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
+				B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */,
 				B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */,
 				B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */,
 				B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */,
@@ -662,7 +689,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B67E7BCA2AEF0FCE00977F7D /* BeatPaths.swift in Sources */,
+				B6F59D3E2C6E7D3600AB8FAE /* BeatNotepad.m in Sources */,
 				B68C0F5C299D821A0031AE6B /* BeatReview.swift in Sources */,
+				B6F59D412C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift in Sources */,
 				B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */,
 				B65BB73C2B0A96DE00145FCE /* NSBezierPath+UX.swift in Sources */,
 				B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */,
@@ -683,6 +712,7 @@
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */,
+				B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */,
 				B6D15A322AF96C0A00DAB66D /* BeatEditorFormatting.m in Sources */,
 				B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
@@ -692,9 +722,11 @@
 				B6B85FAF2A223EAE00C7713A /* BeatDocument.m in Sources */,
 				B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
+				B692E2E02C73CAE10009833F /* BeatTagReport.swift in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B68D9CD12C64007C00FCC9BE /* NSIndexSet+Array.swift in Sources */,
 				B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */,
+				B692E2E22C73CD2E0009833F /* BeatCompatibility.swift in Sources */,
 				B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */,
 				B6D15A732AF9793500DAB66D /* BeatStyles.swift in Sources */,
 				B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */,

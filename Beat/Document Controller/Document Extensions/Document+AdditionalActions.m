@@ -101,7 +101,9 @@
 
 - (IBAction)showTagEditor:(id)sender
 {
-	[BeatTagEditor openTagEditorWithDelegate:self];
+	NSWindowController* wc = [BeatTagManager openTagEditorWithDelegate:self];
+	self.additionalPanels = NSMutableArray.new;
+	[self.additionalPanels addObject:wc];
 }
 
 

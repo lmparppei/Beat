@@ -1,6 +1,15 @@
 {
-  "originHash" : "2e22e4e4bf5d5a1d6a0a979d9fdd47d3ea86c66fd4dfe584c795e87f9680b64e",
+  "originHash" : "5c3d28ec237f521ea53dad0a17d8efe60465f3957c3633ade0a9527fcb1750ba",
   "pins" : [
+    {
+      "identity" : "easypeasy",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nakiostudio/EasyPeasy",
+      "state" : {
+        "revision" : "b0028f63d47bcb32e37d8abb9cc5d5a781742a4e",
+        "version" : "1.10.0"
+      }
+    },
     {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",
