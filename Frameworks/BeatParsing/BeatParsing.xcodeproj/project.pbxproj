@@ -14,7 +14,7 @@
 		B63BE8412B5B1A14003814A5 /* BeatLineTypeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */; };
 		B64E43882AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */; };
 		B64E438A2ACAA05B003B947F /* BeatMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E43892ACAA05B003B947F /* BeatMacros.swift */; };
-		B64E438C2ACAA33D003B947F /* BeatStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E438B2ACAA33D003B947F /* BeatStringExtensions.swift */; };
+		B64E438C2ACAA33D003B947F /* BeatParsingStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */; };
 		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
 		B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */ = {isa = PBXBuildFile; fileRef = B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -70,7 +70,7 @@
 		B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLineTypeSet.swift; sourceTree = "<group>"; };
 		B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSIndexSet+ReplaceRange.swift"; sourceTree = "<group>"; };
 		B64E43892ACAA05B003B947F /* BeatMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMacros.swift; sourceTree = "<group>"; };
-		B64E438B2ACAA33D003B947F /* BeatStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStringExtensions.swift; sourceTree = "<group>"; };
+		B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParsingStringExtensions.swift; sourceTree = "<group>"; };
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
 		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
 		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
@@ -252,7 +252,7 @@
 				B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */,
 				B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */,
 				B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */,
-				B64E438B2ACAA33D003B947F /* BeatStringExtensions.swift */,
+				B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */,
 				B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */,
 			);
 			path = Categories;
@@ -362,7 +362,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B64E438C2ACAA33D003B947F /* BeatStringExtensions.swift in Sources */,
+				B64E438C2ACAA33D003B947F /* BeatParsingStringExtensions.swift in Sources */,
 				B6B37F1828F01A8700657F5F /* Line.m in Sources */,
 				B694016C2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m in Sources */,
 				B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */,
