@@ -104,7 +104,7 @@
     
     // Page breaks have 0 height
     if (line.type == pageBreak) return 0.0;
-    
+        
     // If this is a *dual dialogue column*, we'll need to convert the style.
     LineType type = line.type;
     if (self.dualDialogueElement) {
@@ -118,6 +118,11 @@
     // Get render style
     RenderStyle *style = [self.delegate.styles forLine:line];
     CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
+    
+    // Empty character cues have 0 height + margin
+    if (line.isAnyCharacter && line.string.trim.length == 1 && line.numberOfPrecedingFormattingCharacters == 1) {
+        return topMargin;
+    }
     
 	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;

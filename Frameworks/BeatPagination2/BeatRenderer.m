@@ -141,14 +141,22 @@
 }
 
 /// Renders a single line
-- (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
-    // Page breaks are just empty lines
-    if (line.type == pageBreak || line == nil) return NSAttributedString.new;
+- (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage
+{
+    // Some elements won't be rendered
+    if (line.type == pageBreak || line == nil) {
+        return NSAttributedString.new;
+    }
     
     RenderStyle* style = [self.styles forLine:line];
     
     // Create attributed string with attributes for current style
     NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
+    
+    // Support for empty character cues
+    if (line.isAnyCharacter && line.string.trim.length == 1 && line.numberOfPrecedingFormattingCharacters == 1) {
+        return [self emptyCharacterCueWith:attrs];
+    }
     
     NSMutableAttributedString* lineAttrStr = [line attributedStringForOutputWith:self.settings].mutableCopy;
     
@@ -403,6 +411,19 @@
 }
 #endif
 
+/// Returns an empty character cue with zero height.
+/// - note This is a total hack, and might not work in the future. 
+- (NSAttributedString * _Nonnull)emptyCharacterCueWith:(NSDictionary *)attrs
+{
+    NSMutableDictionary* a = attrs.mutableCopy;
+    NSMutableParagraphStyle* s = ((NSParagraphStyle*)a[NSParagraphStyleAttributeName]).mutableCopy;
+    s.lineHeightMultiple = 0.0; s.maximumLineHeight = 0.0; s.minimumLineHeight = 0.0; s.lineSpacing = 0.0;
+    
+    a[NSParagraphStyleAttributeName] = s;
+    a[NSFontAttributeName] = [BXFont systemFontOfSize:0.00000000001];
+    
+    return [NSAttributedString.alloc initWithString:@"\n" attributes:a];
+}
 
 #if TARGET_OS_OSX
 /// Render a block with left/right columns. This block will know the contents of both columns.
