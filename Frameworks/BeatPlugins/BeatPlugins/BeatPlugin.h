@@ -249,6 +249,13 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 /// Write a string to file in given path. You can't access files unless they are in the container or user explicitly selected them using a save dialog.
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
 
+#pragma mark - Document utilities
+
+/// Returns the plain-text file content used to save current screenplay (including settings block etc.)
+- (NSString*)createDocumentFile;
+/// Returns the plain-text file content used to save current screenplay (including settings block etc.) with additional `BeatDocumentSettings` block
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
+
 #if !TARGET_OS_IOS
     /// Displays an open dialog
     JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
