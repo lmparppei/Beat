@@ -106,6 +106,8 @@
 		B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
 		B623D15A29391F3400B5F0CA /* BeatPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B623D15929391F3400B5F0CA /* BeatPreviewController.swift */; };
 		B623D15B29391F3400B5F0CA /* BeatPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B623D15929391F3400B5F0CA /* BeatPreviewController.swift */; };
+		B6273EED2C84AD5B0025B87F /* Document+TextEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273EEC2C84AD5B0025B87F /* Document+TextEvents.m */; };
+		B6273EEE2C84AD5B0025B87F /* Document+TextEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = B6273EEC2C84AD5B0025B87F /* Document+TextEvents.m */; };
 		B62A616D284C16790068F139 /* BeatBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A616C284C16790068F139 /* BeatBackup.swift */; };
 		B62A616E284C16790068F139 /* BeatBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A616C284C16790068F139 /* BeatBackup.swift */; };
 		B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
@@ -611,6 +613,8 @@
 		B623BD472549AFDA00201BC9 /* B_256_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = B_256_logo.png; sourceTree = "<group>"; };
 		B623BD4D2549B06500201BC9 /* DocumentIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DocumentIcon.icns; sourceTree = "<group>"; };
 		B623D15929391F3400B5F0CA /* BeatPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewController.swift; sourceTree = "<group>"; };
+		B6273EEB2C84AD5B0025B87F /* Document+TextEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Document+TextEvents.h"; sourceTree = "<group>"; };
+		B6273EEC2C84AD5B0025B87F /* Document+TextEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Document+TextEvents.m"; sourceTree = "<group>"; };
 		B629DBB1259CE3230007EA4E /* About Plugins.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "About Plugins.md"; sourceTree = "<group>"; };
 		B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Gather Scenes by Color.beatPlugin"; sourceTree = "<group>"; };
 		B62A616C284C16790068F139 /* BeatBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatBackup.swift; sourceTree = "<group>"; };
@@ -1335,6 +1339,8 @@
 				B63FB5622BD9B2FA00948B8C /* Document+Sidebar.m */,
 				B63FB5652BDA406A00948B8C /* Document+Lock.h */,
 				B63FB5662BDA406A00948B8C /* Document+Lock.m */,
+				B6273EEB2C84AD5B0025B87F /* Document+TextEvents.h */,
+				B6273EEC2C84AD5B0025B87F /* Document+TextEvents.m */,
 			);
 			path = "Document Extensions";
 			sourceTree = "<group>";
@@ -2191,6 +2197,7 @@
 				B61443DB280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B61765812BA5A26100F18417 /* BeatTimeline.m in Sources */,
 				B6F4850C2B3C34E1003548DC /* BeatTextFolding.swift in Sources */,
+				B6273EED2C84AD5B0025B87F /* Document+TextEvents.m in Sources */,
 				B66CC4A92BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */,
 				B61765542BA59F3700F18417 /* FlatButton.swift in Sources */,
 				B637EE152A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
@@ -2321,6 +2328,7 @@
 				B61443DC280EE6E8007219AA /* BeatModeDisplay.swift in Sources */,
 				B61765822BA5A26100F18417 /* BeatTimeline.m in Sources */,
 				B6F4850D2B3C34E1003548DC /* BeatTextFolding.swift in Sources */,
+				B6273EEE2C84AD5B0025B87F /* Document+TextEvents.m in Sources */,
 				B66CC4AA2BBD7DDA002F6841 /* BeatEditorNotificationManager.swift in Sources */,
 				B61765552BA59F3700F18417 /* FlatButton.swift in Sources */,
 				B637EE162A4AC58100F4E7AA /* BeatThemeColorWell.swift in Sources */,
