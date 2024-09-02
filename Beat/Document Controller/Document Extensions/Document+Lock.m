@@ -8,6 +8,7 @@
 
 #import "Document+Lock.h"
 #import "BeatLockButton.h"
+#import "BeatTextView.h"
 
 @implementation Document (Lock)
 

@@ -7,8 +7,83 @@
 //
 
 #import "Document+WindowManagement.h"
+#import "Document+ThemesAndAppearance.h"
+#import "BeatTextView.h"
+
+#define MIN_WINDOW_HEIGHT 400
+#define MIN_OUTLINE_WIDTH 270
 
 @implementation Document (WindowManagement)
+
+- (void)setupWindow
+{
+	[self updateUIColors];
+	
+	self.tagTextView.enclosingScrollView.hasHorizontalScroller = false;
+	self.tagTextView.enclosingScrollView.hasVerticalScroller = false;
+	
+	self.rightSidebarConstraint.constant = 0;
+	
+	// Split view
+	self.splitHandle.bottomOrLeftMinSize = MIN_OUTLINE_WIDTH;
+	self.splitHandle.delegate = self;
+	[self.splitHandle collapseBottomOrLeftView];
+	
+	// Set minimum window size
+	[self setMinimumWindowSize];
+	
+	// Recall window position for saved documents
+	if (![self.fileNameString isEqualToString:@"Untitled"]) self.documentWindow.frameAutosaveName = self.fileNameString;
+	
+	NSRect screen = self.documentWindow.screen.frame;
+	NSPoint origin = self.documentWindow.frame.origin;
+	NSSize size = NSMakeSize([self.documentSettings getFloat:DocSettingWindowWidth], [self.documentSettings getFloat:DocSettingWindowHeight]);
+	
+	CGFloat preferredWidth = self.textView.documentWidth * self.textView.zoomLevel + 200;
+	
+	if (size.width < 1) {
+		// Default size for new windows
+		size.width = preferredWidth;
+		origin.x = (screen.size.width - size.width) / 2;
+	} else if (size.width < self.documentWindow.minSize.width || origin.x > screen.size.width || origin.x < 0) {
+		// This window had a size saved. Let's make sure it stays inside screen bounds or is larger than minimum size.
+		size.width = self.documentWindow.minSize.width;
+		origin.x = (screen.size.width - size.width) / 2;
+	}
+	
+	if (size.height < MIN_WINDOW_HEIGHT || origin.y + size.height > screen.size.height) {
+		size.height = MAX(MIN_WINDOW_HEIGHT, screen.size.height - 100.0);
+		origin.y = (screen.size.height - size.height) / 2;
+	}
+	
+	NSRect newFrame = NSMakeRect(origin.x, origin.y, size.width, size.height);
+	[self.documentWindow setFrame:newFrame display:YES];
+}
+
+- (void)setMinimumWindowSize
+{
+	CGFloat width = (self.textView.textContainer.size.width - (2 * BeatTextView.linePadding)) * self.magnification + 30;
+	if (self.sidebarVisible) width += self.outlineView.frame.size.width;
+
+	// Clamp the value. I can't use max methods.
+	if (width > self.documentWindow.screen.frame.size.width) width = self.documentWindow.screen.frame.size.width;
+	
+	[self.documentWindow setMinSize:NSMakeSize(width, MIN_WINDOW_HEIGHT)];
+}
+
+
+#pragma mark - Managing views
+
+/// Restores sidebar status on launch
+- (void)restoreSidebar
+{
+	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
+		self.sidebarVisible = YES;
+		[self.splitHandle restoreBottomOrLeftView];
+		self.splitHandle.mainConstraint.constant = MAX([self.documentSettings getInt:DocSettingSidebarWidth], MIN_OUTLINE_WIDTH);
+	}
+}
+
 
 #pragma mark - Registering assisting windows
 

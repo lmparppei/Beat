@@ -719,13 +719,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings
 {
-    
-    // Save tagged ranges
-    // [self saveTags];
-    
     // For async saving & thread safety, make a copy of the lines array
     NSAttributedString *attrStr = self.getAttributedText;
-    NSString *content = self.parser.screenplayForSaving;
+    NSString* content = self.parser.screenplayForSaving;
+    NSString* actualText = self.text;
+    
+    // Make sure data is intact
+    if (actualText.length != content.length) {
+        NSLog(@"🆘 Editor and parser are out of sync. We'll use the editor text.");
+        content = actualText;
+    }
+    
     if (content == nil) {
         NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
         @throw NSInternalInconsistencyException;

@@ -71,6 +71,9 @@
  
 */
 
+#define AUTOSAVE_INTERVAL 10.0
+#define AUTOSAVE_INPLACE_INTERVAL 60.0
+
 #import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
@@ -88,6 +91,7 @@
 #import "Document+ThemesAndAppearance.h"
 #import "Document+Sidebar.h"
 #import "Document+Lock.h"
+#import "Document+TextEvents.h"
 
 #import "ScrollView.h"
 #import "BeatAppDelegate.h"
@@ -120,15 +124,9 @@
 @property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
 @property (nonatomic) NSPopover *quickSettingsPopover;
 
-// Text view
-@property (weak, nonatomic) IBOutlet BeatTextView *textView;
-
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) NSMutableArray *recentCharacters;
-
-/// The range where last actual edit happened in text storage
-@property (nonatomic) NSRange lastEditedRange;
 
 @property (nonatomic) BeatEditorFormatting* initialFormatting;
 @property (nonatomic) bool disableFormatting;
@@ -141,9 +139,6 @@
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
-
-// Right side view
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *rightSidebarConstraint;
 
 // Outline view filtering
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
@@ -165,9 +160,6 @@
 @property (weak) IBOutlet NSTouchBar *touchBar;
 @property (weak) IBOutlet NSTouchBar *timelineBar;
 @property (weak) IBOutlet TouchTimelineView *touchbarTimeline;
-
-// Scene number labels
-@property (nonatomic) bool sceneNumberLabelUpdateOff;
 
 // Scene number settings
 @property (weak) IBOutlet NSPanel *sceneNumberingPanel;
@@ -193,9 +185,6 @@
 // Touch bar
 @property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
 
-/// Tagging view on the right side of the screen
-@property (weak) IBOutlet NSTextView *tagTextView;
-
 /// When loading longer documents, we need to show a progress panel
 @property (nonatomic) NSPanel* progressPanel;
 /// The indicator for above panel
@@ -206,14 +195,9 @@
 
 @end
 
-#define MIN_WINDOW_HEIGHT 400
-#define MIN_OUTLINE_WIDTH 270
 
-#define AUTOSAVE_INTERVAL 10.0
-#define AUTOSAVE_INPLACE_INTERVAL 60.0
-
-#define LINE_HEIGHT 1.1
-
+// WARNING
+#pragma clang diagnostic ignored "-Wprotocol"
 @implementation Document
 
 @dynamic textView;
@@ -534,50 +518,6 @@
 	prev.nextResponder = originalResponder;
 }
 
-- (void)setupWindow {
-	[self updateUIColors];
-	
-	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
-	
-	self.rightSidebarConstraint.constant = 0;
-	
-	// Split view
-	_splitHandle.bottomOrLeftMinSize = MIN_OUTLINE_WIDTH;
-	_splitHandle.delegate = self;
-	[_splitHandle collapseBottomOrLeftView];
-	
-	// Set minimum window size
-	[self setMinimumWindowSize];
-	
-	// Recall window position for saved documents
-	if (![self.fileNameString isEqualToString:@"Untitled"]) _documentWindow.frameAutosaveName = self.fileNameString;
-	
-	NSRect screen = _documentWindow.screen.frame;
-	NSPoint origin =_documentWindow.frame.origin;
-	NSSize size = NSMakeSize([self.documentSettings getFloat:DocSettingWindowWidth], [self.documentSettings getFloat:DocSettingWindowHeight]);
-	
-	CGFloat preferredWidth = self.textView.documentWidth * self.textView.zoomLevel + 200;
-	
-	if (size.width < 1) {
-		// Default size for new windows
-		size.width = preferredWidth;
-		origin.x = (screen.size.width - size.width) / 2;
-	} else if (size.width < self.documentWindow.minSize.width || origin.x > screen.size.width || origin.x < 0) {
-		// This window had a size saved. Let's make sure it stays inside screen bounds or is larger than minimum size.
-		size.width = self.documentWindow.minSize.width;
-		origin.x = (screen.size.width - size.width) / 2;
-	}
-	
-	if (size.height < MIN_WINDOW_HEIGHT || origin.y + size.height > screen.size.height) {
-		size.height = MAX(MIN_WINDOW_HEIGHT, screen.size.height - 100.0);
-		origin.y = (screen.size.height - size.height) / 2;
-	}
-	
-	NSRect newFrame = NSMakeRect(origin.x, origin.y, size.width, size.height);
-	[_documentWindow setFrame:newFrame display:YES];
-}
-
 -(void)setupLayout
 {
 	// Apply layout
@@ -645,28 +585,7 @@
 	[self ensureLayout];
 }
 
-- (void)setMinimumWindowSize
-{
-	CGFloat width = (self.textView.textContainer.size.width - (2 * BeatTextView.linePadding)) * self.magnification + 30;
-	if (self.sidebarVisible) width += _outlineView.frame.size.width;
-
-	// Clamp the value. I can't use max methods.
-	if (width > self.documentWindow.screen.frame.size.width) width = self.documentWindow.screen.frame.size.width;
-	
-	[self.documentWindow setMinSize:NSMakeSize(width, MIN_WINDOW_HEIGHT)];
-}
-
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
-
-/// Restores sidebar status on launch
-- (void)restoreSidebar
-{
-	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
-		self.sidebarVisible = YES;
-		[_splitHandle restoreBottomOrLeftView];
-		_splitHandle.mainConstraint.constant = MAX([self.documentSettings getInt:DocSettingSidebarWidth], MIN_OUTLINE_WIDTH);
-	}
-}
 
 
 #pragma mark - Update Editor View by Mode
@@ -974,103 +893,8 @@
 }
 
 
-# pragma mark - Text events
-
-#pragma mark If text should change
-- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
-{
-	// Don't allow editing the script while tagging
-	if (_mode != EditMode || self.contentLocked) return NO;
-	
-	Line* currentLine = self.currentLine;
-	
-	bool change = true;
-	bool undoOperation = self.undoManager.isRedoing || self.undoManager.isUndoing;
-	
-	// This shouldn't be here :-)
-	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
-		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
-	}
-		
-	// Don't allow certain symbols
-	if (replacementString.length == 1) {
-		unichar c = [replacementString characterAtIndex:0];
-		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
-	}
-	
-	
-	// Check for character input trouble
-	if (self.characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.characterInputForLine.position) {
-		[self cancelCharacterInput];
-		change = false;
-	}
-	
-	// Don't repeat ) or ]
-	else if ([self.textActions shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
-		!self.undoManager.redoing && !self.undoManager.undoing) {
-		change = false;
-	}
-	
-	// Handle new line breaks (when actually typed)
-	else if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !undoOperation) {
-		// Line break after character cue
-		// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
-		if (currentLine.isAnyCharacter && self.automaticContd && [self.textActions shouldAddContdIn:affectedCharRange string:replacementString]) {
-			change = false;
-		}
-		
-		// When on a parenthetical, don't split it when pressing enter, but move downwards to next dialogue block element
-		// Note: This logic is a bit faulty. We should probably just move on next line regardless of next character
-		else if (currentLine.isAnyParenthetical && self.selectedRange.length == 0) {
-			if (self.text.length >= affectedCharRange.location + 1) {
-				unichar chr = [self.text characterAtIndex:affectedCharRange.location];
-				if (chr == ')') {
-					NSInteger lineIndex = [self.lines indexOfObject:currentLine];
-					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
-					if (lineIndex < self.lines.count) [self.formatting formatLine:self.lines[lineIndex]];
-					
-					[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
-					change = false;
-				}
-			}
-		}
-		// Process line break after a forced character input
-		else if (self.characterInput && self.characterInputForLine && NSMaxRange(self.characterInputForLine.textRange) <= self.text.length) {
-			// If the cue is empty, reset it
-			if (self.characterInputForLine.string.length == 0) {
-				[self setTypeAndFormat:self.characterInputForLine type:empty];
-			} else {
-				self.characterInputForLine.forcedCharacterCue = YES;
-			}
-		}
-		// Handle automatic line breaks
-		else if ([self.textActions shouldAddLineBreaks:currentLine range:affectedCharRange]) {
-			change = false;
-		}
-	}
-	
-	// Single characters
-	else if (replacementString.length == 1 && !undoOperation) {
-		// Auto-close () and [[]]
-		if (self.matchParentheses) change = ![self.textActions shouldMatchParenthesesIn:affectedCharRange string:replacementString];
-	}
-	
-	// If change is true, we can safely add the string (and parse the addition)
-	if (change) {
-		// Make the replacement string uppercase in parser
-		if (self.characterInput) replacementString = replacementString.uppercaseString;
-		
-		// Parse changes so far
-		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-		
-		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	}
-	
-	return change;
-}
-
-
-#pragma mark Text did change
+#pragma mark - Text did change
+// Other text events are in a category
 
 - (void)textDidChange:(NSNotification *)notification
 {
@@ -1089,76 +913,25 @@
 	
 	// Finally, reset last changed range
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
-}
-
--(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
-{
-	if (self.documentIsLoading) return;
 	
-	if (editedMask & NSTextStorageEditedCharacters) {
-		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
-		
-		// Register changes. Because macOS Sonoma somehow changed attribute handling, we need to _queue_ those changes and
-		// then release them when text has changed
-		if (_revisionMode && self.lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
-			[self.revisionTracking queueRegisteringChangesInRange:NSMakeRange(editedRange.location, editedRange.length) delta:delta];
-		}
+	// Let's check if we should change typing attributes...
+	/*
+	if (self.textView.selectedRange.length == 0 && self.currentLine.type == dialogue) {
+		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+		pStyle.firstLineHeadIndent = 300.0;
+		[self.textView setTypingAttributes:@{
+			NSParagraphStyleAttributeName: pStyle
+		}];
+		[self.textView.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(self.selectedRange.location-1, 1)];
+	} else {
+		self.textView.typingAttributes = @{};
 	}
-}
-
-- (void)textViewDidChangeSelection:(NSNotification *)notification
-{
-	// If we are just opening the document, do nothing
-	if (self.documentIsLoading) return;
-	
-	// Reset forced character input
-	if (self.characterInputForLine != self.currentLine && self.characterInput) {
-		self.characterInput = NO;
-		if (self.characterInputForLine.string.length == 0) {
-			[self setTypeAndFormat:self.characterInputForLine type:empty];
-			self.characterInputForLine = nil;
-		}
-	}
-	
-	// Correct parsing for character cues (we need to move this to parser somehow)
-	Line *previouslySelectedLine = self.previouslySelectedLine;
-	__weak static Line *previousCue;
-	
-	if (previouslySelectedLine.isAnyCharacter) {
-		previousCue = previouslySelectedLine;
-	}
-	if (previouslySelectedLine != self.currentLine && previousCue.isAnyCharacter) {
-		[self.parser ensureDialogueParsingFor:previousCue];
-	}
-	
-	// Update hidden Fountain markup
-	[self.textView updateMarkupVisibility];
-		
-	// Scroll to view if needed
-	if (self.selectedRange.length == 0) {
-		[self.textView scrollRangeToVisible:self.selectedRange];
-	}
-	
-	// Notify observers
-	[self updateSelectionObservers];
-	
-	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		// Update all views which are affected by the caret position
-		[self updateUIwithCurrentScene];
-		
-		// Update tag view
-		if (self.mode == TaggingMode) [self.tagging updateTaggingData];
-		
-		// Update running plugins
-		[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
-	});
+	 */
 }
 
 
 #pragma mark Update UI with current scene
 
-/// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
 - (void)updateUIwithCurrentScene
 {
 	OutlineScene *currentScene = self.currentScene;
@@ -1230,25 +1003,6 @@
 	if (self.characterInput) return;
 	
 	[self.formattingActions addCue];
-}
-
-- (void)cancelCharacterInput {
-	// TODO: Move this to text view
-	self.characterInput = NO;
-	self.characterInputForLine = nil;
-	
-	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
-	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	[attributes setValue:self.fonts.regular forKey:NSFontAttributeName];
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[paragraphStyle setFirstLineHeadIndent:0];
-	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	
-	[self.textView setTypingAttributes:attributes];
-	self.textView.needsDisplay = YES;
-	self.textView.needsLayout = YES;
-	
-	[self setTypeAndFormat:self.characterInputForLine type:empty];
 }
 
 

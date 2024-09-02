@@ -106,5 +106,4 @@
 	[self.additionalPanels addObject:wc];
 }
 
-
 @end

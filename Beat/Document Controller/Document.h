@@ -41,6 +41,7 @@ THE SOFTWARE.
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
 #import "BeatOutlineView.h"
+#import "BeatTextView.h"
 
 
 @class BeatReview;
@@ -54,8 +55,9 @@ THE SOFTWARE.
 @class BeatTimer;
 @class BeatLockButton;
 @class BeatNotepadView;
+@class BeatOnOffMenuItem;
 
-@interface Document : BeatDocumentBaseController <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
+@interface Document : BeatDocumentBaseController <BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
 
 #pragma mark - Editor flags
@@ -80,10 +82,16 @@ THE SOFTWARE.
 /// For versioning support. This is probably not used right now.
 @property (nonatomic) NSURL* _Nullable revertedTo;
 
+/// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
+- (void)updateUIwithCurrentScene;
+
 - (bool)isFullscreen;
 
 /// Sheet view (strong reference for avoiding weirdness)
 @property (nonatomic) NSWindowController* _Nullable sheetController;
+
+/// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
+- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem;
 
 
 #pragma mark - Applying settings
@@ -135,12 +143,20 @@ THE SOFTWARE.
 
 #pragma mark - Views
 
+/// Main text view
+@property (weak, nonatomic) IBOutlet BeatTextView* _Nullable textView;
+
 /// Scroll view which holds the text view
 @property (weak, nonatomic) IBOutlet ScrollView* _Nullable textScrollView;
 /// View which draws the "margins" and the fake "paper" behind editor.
 @property (weak, nonatomic) IBOutlet MarginView* _Nullable marginView;
 /// Bottom timeline view
 @property (weak) IBOutlet BeatTimeline* _Nullable timeline;
+
+/// Right side view constraint
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint* _Nullable rightSidebarConstraint;
+/// Tagging view on the right side of the screen
+@property (weak) IBOutlet NSTextView* _Nullable tagTextView;
 
 /// The __main__ tab view (holds the main editor/preview/card views)
 @property (weak) IBOutlet NSTabView* _Nullable tabView;
@@ -195,5 +211,12 @@ THE SOFTWARE.
 
 /// Some menu items to validate. This should be removed at some point.
 @property (nonatomic) NSArray* _Nullable itemsToValidate;
+
+
+#pragma mark - Other values
+
+/// The range where last actual edit happened in text storage
+@property (nonatomic) NSRange lastEditedRange;
+
 
 @end
