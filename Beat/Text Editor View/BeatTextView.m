@@ -208,6 +208,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.textStorage setFont:_editorDelegate.fonts.regular];
 		
 	self.layoutManager.allowsNonContiguousLayout = YES;
+	NSSpellChecker.sharedSpellChecker.automaticallyIdentifiesLanguages = true;
 	
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	paragraphStyle.maximumLineHeight = self.editorDelegate.editorStyles.page.lineHeight;

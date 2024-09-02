@@ -220,3 +220,6 @@
 "outline.settings.notes" = "Opombe";
 "outline.settings.markers" = "Oznake";
 "outline.settings.snapshots" = "Prikaži posnetke";
+
+"spelling.ignoreDialogue.title" = "Prezri preverjanje črkovanja v pogovorih";
+"spelling.ignoreDialogue.text" = "Morda boste morali znova odpreti dokument, da bodo spremembe začele veljati.";

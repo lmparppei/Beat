@@ -244,3 +244,7 @@
 "tag.animal" = "Animal";
 "tag.extras" = "Extras";
 "tag.vehicle" = "Vehicle";
+
+"spelling.ignoreDialogue.title" = "Ignore Spell Checking in Dialogue";
+"spelling.ignoreDialogue.text" = "You might need to reopen the document for the changes to take effect.";
+

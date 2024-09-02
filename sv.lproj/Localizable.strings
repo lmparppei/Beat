@@ -406,3 +406,6 @@
 "backup.browseVersions" = "Visa versioner...";
 
 "quickSettings.novelLineHeightMultiplier" = "Mellanrum";
+
+"spelling.ignoreDialogue.title" = "Ignorera stavning för dialoger";
+"spelling.ignoreDialogue.text" = "Du kan behöva öppna dokumentet igen för att ändringarna ska träda i kraft.";

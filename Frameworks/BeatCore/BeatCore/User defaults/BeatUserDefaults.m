@@ -76,7 +76,9 @@ NSString* const BeatSettingShowSnapshotsInOutline       = @"showSnapshotsInOutli
 NSString* const BeatSettingFocusMode                    = @"focusMode";
 
 NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
+
 NSString* const BeatSettingContinuousSpellChecking      = @"continuousSpellChecking";
+NSString* const BeatSettingIgnoreSpellCheckingInDialogue = @"ignoreSpellCheckingInDialogue";
 
 NSString* const BeatSettingOutlineSectionFontSize       = @"outlineSectionFontSize";
 NSString* const BeatSettingOutlineSceneFontSize         = @"outlineSceneFontSize";
@@ -149,6 +151,7 @@ NSString* const BeatSettingDarkMode                     = @"Dark Mode";
         BeatSettingShowSnapshotsInOutline: @[BeatSettingShowSnapshotsInOutline, @YES],
         
         BeatSettingContinuousSpellChecking: @[BeatSettingContinuousSpellChecking, @YES],
+        BeatSettingIgnoreSpellCheckingInDialogue: @[BeatSettingIgnoreSpellCheckingInDialogue, @NO],
         
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
         

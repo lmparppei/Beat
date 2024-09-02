@@ -217,3 +217,5 @@
 "revision.7" = "Seitsemäs";
 "revision.8" = "Kahdeksas";
 
+"spelling.ignoreDialogue.title" = "Ohita oikeinkirjoitus dialogissa";
+"spelling.ignoreDialogue.text" = "Saatat joutua avaamaan käsikirjoituksen uudelleen, jotta muutokset tulevat voimaan.";

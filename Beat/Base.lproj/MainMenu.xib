@@ -485,6 +485,17 @@
                                                 <action selector="toggleAutomaticSpellingCorrection:" target="-1" id="Yq1-Bh-6hN"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="BOj-Jm-iwK"/>
+                                        <menuItem title="Ignore Spell Checking for Dialogue" id="Hsr-QV-0FD" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="ignoreSpellCheckingInDialogue"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleIgnoreDialogueSpelling:" target="-1" id="rxs-4s-uLI"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
