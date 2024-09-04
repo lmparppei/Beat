@@ -505,6 +505,10 @@
 {
 	[BeatFileImport.new fadeIn];
 }
+- (IBAction)importTrelby:(id)sender
+{
+	[BeatFileImport.new trelby];
+}
 
 
 #pragma mark - Generic methods for opening a plain-text file

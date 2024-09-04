@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)celtx;
 - (void)highland;
 - (void)fadeIn;
+- (void)trelby;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -20,3 +20,4 @@ FOUNDATION_EXPORT const unsigned char BeatFileExportVersionString[];
 #import <BeatFileExport/FDXImport.h>
 #import <BeatFileExport/FadeInImport.h>
 #import <BeatFileExport/OSFImport.h>
+#import <BeatFileExport/TrelbyImport.h>

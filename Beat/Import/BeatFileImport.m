@@ -136,6 +136,13 @@
 	}];
 }
 
+- (void)trelby {
+	[self openDialogForFormat:@"trelby" completion:^{
+		TrelbyImport* import = [TrelbyImport.alloc initWithURL:self.url];
+		if (import.script) [self openFileWithContents:import.script];
+	}];
+}
+
 - (void)openFileWithContents:(NSString*)string {
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
 	NSError *error;

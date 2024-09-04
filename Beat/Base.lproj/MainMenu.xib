@@ -196,6 +196,12 @@
                                                 <action selector="importFadeIn:" target="vEX-2F-hcj" id="6C8-ah-Gva"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Import Trelby..." id="4CS-CD-bRv">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="importTrelby:" target="-1" id="bpk-R0-KpU"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
