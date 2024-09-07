@@ -989,7 +989,7 @@ DQ
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Tag Editor" hidden="YES" id="y8D-eW-ydD">
+                            <menuItem title="Tag Manager" hidden="YES" id="y8D-eW-ydD">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showTagEditor:" target="-1" id="qz3-g0-ukZ"/>
@@ -1195,6 +1195,16 @@ DQ
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleDisableFormatting:" target="-1" id="KSj-os-foW"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Line Type" id="YK2-x5-vM1" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="lineTypeView"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="toggleSetting:" target="-1" id="bBu-fx-JZf"/>
                                 </connections>
                             </menuItem>
                         </items>
