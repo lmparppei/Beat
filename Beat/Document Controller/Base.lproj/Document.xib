@@ -1237,6 +1237,25 @@
                                                                 <outlet property="target" destination="-2" id="DiJ-pn-7FW"/>
                                                             </connections>
                                                         </customView>
+                                                        <customView id="tWr-dr-bij" customClass="BeatLineTypeView" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="262" y="21" width="150" height="24"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <subviews>
+                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ihj-dv-Nq4">
+                                                                    <rect key="frame" x="-2" y="7" width="154" height="11"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                                    <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Line type display" id="olz-bR-9Tn">
+                                                                        <font key="font" metaFont="miniSystem"/>
+                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                </textField>
+                                                            </subviews>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="-2" id="Pdr-19-428"/>
+                                                                <outlet property="label" destination="Ihj-dv-Nq4" id="orL-78-X5H"/>
+                                                            </connections>
+                                                        </customView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="6ht-pW-tB8"/>
@@ -1474,7 +1493,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
@@ -1525,7 +1544,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="showPreviewOptions:" target="-2" id="lsD-fA-epF"/>
+                                                <action selector="showPreviewOptionsWithSender:" target="wZv-WF-8R7" id="pCt-WE-pmU"/>
                                             </connections>
                                         </button>
                                     </subviews>
