@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerWindow:(NSWindow*)window owner:(id)owner;
 /// Restores sidebar status on launch
 - (void)restoreSidebar;
+/// Moves to another main window tab view (ie. another editor view)
+- (void)showTab:(NSTabViewItem*)tab;
 
 @end
 

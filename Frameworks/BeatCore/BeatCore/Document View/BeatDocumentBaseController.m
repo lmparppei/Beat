@@ -907,7 +907,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     }
 }
 
-
 /// Registers an observer which checks when selection changes
 - (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer
 {

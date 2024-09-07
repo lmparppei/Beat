@@ -250,6 +250,8 @@ NS_ASSUME_NONNULL_END
 
 @property (nonatomic) BeatFonts* _Nonnull fonts;
 @property (nonatomic) bool useSansSerif;
+@property (nonatomic) bool hideFountainMarkup;
+
 /// Loads the current fonts defined by stylesheet.
 - (void)loadFonts;
 /// Reloads fonts and performs reformatting if needed.

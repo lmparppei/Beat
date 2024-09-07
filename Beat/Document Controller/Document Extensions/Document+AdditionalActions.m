@@ -30,6 +30,104 @@
 }
 
 
+#pragma mark - Card view
+
+- (IBAction)toggleCards: (id)sender {
+	if (self.currentTab != self.cardsTab) {
+		[self showTab:self.cardsTab];
+	} else {
+		// Reload outline + timeline (in case there were any changes in outline while in card view)
+		[self updateOutlineViews];
+		[self returnToEditor];
+	}
+}
+
+
+#pragma mark - Review mode
+
+- (IBAction)toggleReview:(id)sender
+{
+	if (self.mode == ReviewMode) self.mode = EditMode;
+	else self.mode = ReviewMode;
+}
+
+- (IBAction)reviewSelectedRange:(id)sender
+{
+	if (self.selectedRange.length == 0) return;
+	[self.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
+}
+
+
+#pragma mark - Tagging Mode
+
+- (IBAction)toggleTagging:(id)sender
+{
+	self.mode = (self.mode == TaggingMode) ? EditMode : TaggingMode;
+	
+	if (self.mode == TaggingMode) {
+		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		//[_sideViewCostraint setConstant:180];
+	} else {
+		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		//self.sideViewCostraint setConstant:0;
+				
+		[self toggleMode:TaggingMode];
+	}
+	
+	[self updateEditorMode];
+}
+
+
+
+#pragma mark - Selecting fonts
+
+- (IBAction)selectSerif:(id)sender
+{
+	NSMenuItem* item = sender;
+	[BeatUserDefaults.sharedDefaults saveBool:(item.state == NSOnState) forKey:BeatSettingUseSansSerif];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc reloadFonts];
+	}
+}
+
+- (IBAction)selectSansSerif:(id)sender
+{
+	NSMenuItem* item = sender;
+	bool sansSerif = (item.state != NSOnState);
+
+	[BeatUserDefaults.sharedDefaults saveBool:sansSerif forKey:BeatSettingUseSansSerif];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc reloadFonts];
+	}
+}
+
+
+#pragma mark - Pagination manager methods
+
+- (IBAction)togglePageNumbers:(id)sender
+{
+	self.showPageNumbers = !self.showPageNumbers;
+	
+	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
+	[self.previewController resetPreview];
+	
+	self.textView.needsDisplay = true;
+}
+
+#pragma mark - Hiding markup
+
+- (IBAction)toggleHideFountainMarkup:(id)sender {
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingHideFountainMarkup];
+	self.hideFountainMarkup = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHideFountainMarkup];
+	
+	[self.textView toggleHideFountainMarkup];
+		
+	[self updateLayout];
+}
+
+
 #pragma mark - Title page editor
 
 - (IBAction)editTitlePage:(id)sender
@@ -105,5 +203,42 @@
 	self.additionalPanels = NSMutableArray.new;
 	[self.additionalPanels addObject:wc];
 }
+
+
+#pragma mark - Formatting
+
+- (IBAction)toggleDisableFormatting:(id)sender
+{
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingDisableFormatting];
+	[self.formatting forceFormatChangesInRange:NSMakeRange(0, self.text.length)];
+}
+
+
+#pragma mark - Zooming
+
+- (IBAction)zoomIn:(id)sender {
+	if (self.currentTab == self.editorTab) {
+		[self.textView zoom:YES];
+	} else if (self.currentTab == self.nativePreviewTab) {
+		self.previewController.scrollView.magnification += .05;
+	}
+}
+- (IBAction)zoomOut:(id)sender {
+	if (self.currentTab == self.editorTab) {
+		[self.textView zoom:NO];
+	} else if (self.currentTab == self.nativePreviewTab) {
+		self.previewController.scrollView.magnification -= .05;
+	}
+}
+
+- (IBAction)resetZoom:(id)sender
+{
+	if (self.currentTab == self.editorTab) {
+		[self.textView resetZoom];
+	} else if (self.currentTab == self.nativePreviewTab) {
+		self.previewController.scrollView.magnification = 1.0;
+	}
+}
+
 
 @end

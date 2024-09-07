@@ -248,3 +248,27 @@
 "spelling.ignoreDialogue.title" = "Ignore Spell Checking in Dialogue";
 "spelling.ignoreDialogue.text" = "You might need to reopen the document for the changes to take effect.";
 
+"type.empty" = "Empty";
+"type.section" = "Section";
+"type.synopsis" = "Synopsis";
+"type.titlePageTitle" = "Title";
+"type.titlePageAuthor" = "Author";
+"type.titlePageCredit" = "Credit";
+"type.titlePageSource" = "Source";
+"type.titlePageContact" = "Contact Info";
+"type.titlePageDraftDate" = "Draft Date";
+"type.titlePageUnknown" = "Title Page";
+"type.heading" = "Scene Heading";
+"type.action" = "Action";
+"type.character" = "Character Cue";
+"type.parenthetical" = "Parenthetical";
+"type.dialogue" = "Dialogue";
+"type.dualDialogueCharacter" = "Dual Dialogue Cue";
+"type.dualDialogue" = "Dual Dialogue";
+"type.dualDialogueParenthetical" = "Dual Dialogue Parenthetical";
+"type.transition" = "Transition";
+"type.lyrics" = "Lyrics";
+"type.pageBreak" = "Page Break";
+"type.centered" = "Centered";
+"type.shot" = "Shot / Mini Slug";
+"type.multiple" = "(Multiple lines)";

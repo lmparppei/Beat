@@ -90,6 +90,8 @@ NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen
 NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 
 NSString* const BeatSettingDarkMode                     = @"Dark Mode";
+NSString* const BeatSettingLineTypeView                 = @"lineTypeView";
+
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -163,7 +165,9 @@ NSString* const BeatSettingDarkMode                     = @"Dark Mode";
         
         BeatSettingiOSShowWelcomeScreen: @[BeatSettingiOSShowWelcomeScreen, @YES],
         
-        BeatSettingPhoneFontSize: @[BeatSettingPhoneFontSize, @(1)]
+        BeatSettingPhoneFontSize: @[BeatSettingPhoneFontSize, @(1)],
+        
+        BeatSettingLineTypeView: @[BeatSettingLineTypeView, @NO]
 	};
 }
 

@@ -72,6 +72,22 @@
 }
 
 
+#pragma mark - Tabs
+
+/// Move to another editor view
+- (void)showTab:(NSTabViewItem*)tab
+{
+	[self.tabView selectTabViewItem:tab];
+	[tab.view.subviews.firstObject becomeFirstResponder];
+	
+	// Update containers in tabs
+	for (id<BeatPluginContainer> view in self.registeredPluginContainers) {
+		if (![tab.view.subviews containsObject:(NSView*)view]) [view containerViewDidHide];
+	}
+}
+
+
+
 #pragma mark - Managing views
 
 /// Restores sidebar status on launch

@@ -20,6 +20,7 @@ import BeatPagination2
 @objc public class BeatPreviewController:BeatPreviewManager {
 
 	var renderer:BeatRenderer?
+	var optionsPopover:NSPopover?
 	
 	@IBOutlet weak var scrollView:CenteringScrollView?
 	

@@ -92,6 +92,7 @@
 #import "Document+Sidebar.h"
 #import "Document+Lock.h"
 #import "Document+TextEvents.h"
+#import "Document+SceneColorPicker.h"
 
 #import "ScrollView.h"
 #import "BeatAppDelegate.h"
@@ -107,7 +108,7 @@
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 
-@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, NSPopoverDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
 // Windows
 @property (weak) NSWindow *documentWindow;
@@ -120,11 +121,7 @@
 // Autosave
 @property (weak) NSTimer *autosaveTimer;
 
-// Quick settings
-@property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
-@property (nonatomic) NSPopover *quickSettingsPopover;
 
-@property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) NSMutableArray *recentCharacters;
 
@@ -181,9 +178,6 @@
 
 // Autocompletion
 @property (nonatomic) bool isAutoCompleting;
-
-// Touch bar
-@property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
 
 /// When loading longer documents, we need to show a progress panel
 @property (nonatomic) NSPanel* progressPanel;
@@ -502,7 +496,8 @@
 #pragma mark - Window setup
 
 /// Sets up the custom responder chain
-- (void)setupResponderChain {
+- (void)setupResponderChain
+{
 	// Our desired responder chain, add more custom responders when needed
 	NSArray *chain = @[_formattingActions, self.revisionTracking, self.notepad, self.timeline];
 	
@@ -535,6 +530,11 @@
 
 # pragma mark - Window interactions
 
+- (NSString *)windowNibName
+{
+	return @"Document";
+}
+
 /// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
 - (NSTabViewItem*)currentTab
 {
@@ -543,18 +543,6 @@
 
 /// Returns `true` when the editor view is visible
 - (bool)editorTabVisible { return (self.currentTab == _editorTab); }
-
-/// Move to another editor view
-- (void)showTab:(NSTabViewItem*)tab
-{
-	[self.tabView selectTabViewItem:tab];
-	[tab.view.subviews.firstObject becomeFirstResponder];
-	
-	// Update containers in tabs
-	for (id<BeatPluginContainer> view in self.registeredPluginContainers) {
-		if (![tab.view.subviews containsObject:(NSView*)view]) [view containerViewDidHide];
-	}
-}
 
 /// Returns `true` if the document window is full screen
 - (bool)isFullscreen
@@ -588,9 +576,21 @@
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
 
 
-#pragma mark - Update Editor View by Mode
+#pragma mark - Editor modes
 
-/// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
+-(void)toggleMode:(BeatEditorMode)mode
+{
+	if (_mode != mode) _mode = EditMode;
+	else _mode = mode;
+	[self updateEditorMode];
+}
+
+-(void)setMode:(BeatEditorMode)mode
+{
+	_mode = mode;
+	[self updateEditorMode];
+}
+
 - (void)updateEditorMode
 {
 	_modeIndicator.hidden = (_mode == EditMode);
@@ -610,67 +610,12 @@
 }
 
 
+#pragma mark - Layout
 
-#pragma mark - Quick Settings Popover
+- (CGFloat)magnification { return self.textView.zoomLevel; }
 
-- (IBAction)showQuickSettings:(NSButton*)sender
+- (void)setSplitHandleMinSize:(CGFloat)value
 {
-	if (sender == nil) return;
-	
-	NSPopover* popover = NSPopover.new;
-	BeatDesktopQuickSettings* settings = BeatDesktopQuickSettings.new;
-	settings.delegate = self;
-	
-	popover.contentViewController = settings;
-	popover.behavior = NSPopoverBehaviorTransient;
-	[popover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSRectEdgeMaxY];
-	
-	popover.delegate = self;
-	
-	_quickSettingsPopover = popover;
-}
-
-- (void)popoverWillClose:(NSNotification *)notification
-{
-	if (notification.object == _quickSettingsPopover) {
-		_quickSettingsButton.state = NSOffState;
-		_quickSettingsPopover = nil;
-	}
-}
-
-
-#pragma mark - Zooming & layout
-
-- (IBAction)zoomIn:(id)sender {
-	if (self.currentTab == _editorTab) {
-		[self.textView zoom:YES];
-	} else if (self.currentTab == _nativePreviewTab) {
-		self.previewController.scrollView.magnification += .05;
-	}
-}
-- (IBAction)zoomOut:(id)sender {
-	if (self.currentTab == _editorTab) {
-		[self.textView zoom:NO];
-	} else if (self.currentTab == _nativePreviewTab) {
-		self.previewController.scrollView.magnification -= .05;
-	}
-}
-
-- (IBAction)resetZoom:(id)sender
-{
-	if (self.currentTab == _editorTab) {
-		[self.textView resetZoom];
-	} else if (self.currentTab == _nativePreviewTab) {
-		self.previewController.scrollView.magnification = 1.0;
-	}
-}
-
-- (CGFloat)magnification
-{
-	return self.textView.zoomLevel;
-}
-
-- (void)setSplitHandleMinSize:(CGFloat)value {
 	self.splitHandle.topOrRightMinSize = value;
 }
 
@@ -687,41 +632,7 @@
 }
 
 
-
-/*
- 
- Man up / Sit down / Chin up / Pipe down
- Socks up /  Don't cry /  Drink up / Just lie
- Grow some balls he said /  Grow some balls
- 
- I'm a real boy, boy, and I cry
- I love myself and I want to try
- 
- This is why you never
- see your father cry.
- 
- */
-
-
-#pragma mark - Window & data handling
-
-// I have no idea what these are or do.
-- (NSString *)windowNibName {
-	return @"Document";
-}
-
-- (void)documentWasSaved
-{
-	if (self.runningPlugins.count) {
-		for (NSString *pluginName in self.runningPlugins.allKeys) {
-			// Don't save the console instance
-			if ([pluginName isEqualTo:@"Console"]) continue;
-			
-			BeatPlugin *plugin = self.runningPlugins[pluginName];
-			[plugin documentWasSaved];
-		}
-	}
-}
+#pragma mark - Loading data
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
 	// This method can crash the app in some instances, so I've tried to solve the issue
@@ -785,6 +696,16 @@
 }
 
 
+#pragma mark - Document was saved
+
+- (void)documentWasSaved
+{
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin documentWasSaved];
+	}
+}
+
 /*
  
  But if the while I think on thee,
@@ -793,7 +714,6 @@
  and sorrows end.
  
  */
-
 
 
 #pragma mark - Reverting to versions
@@ -890,6 +810,9 @@
 	else [BeatUserDefaults.sharedDefaults toggleBool:menuItem.settingKey];
 	
 	[self ensureLayout];
+	
+	// This notification should be the preferred way of updating any views etc. in the future
+	[NSNotificationCenter.defaultCenter postNotification:[NSNotification.alloc initWithName:@"SettingToggled" object:nil userInfo:nil]];
 }
 
 
@@ -935,9 +858,7 @@
 - (void)updateUIwithCurrentScene
 {
 	OutlineScene *currentScene = self.currentScene;
-	__block NSInteger sceneIndex = [self.parser.outline indexOfObject:currentScene];
-	
-	// Do nothing if no index found
+	NSInteger sceneIndex = [self.parser.outline indexOfObject:currentScene];
 	if (sceneIndex == NSNotFound) return;
 	
 	// Update any registered outline views
@@ -1093,12 +1014,6 @@
 	[self loadingComplete];
 }
 
-- (IBAction)toggleDisableFormatting:(id)sender
-{
-	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingDisableFormatting];
-	[self.formatting forceFormatChangesInRange:NSMakeRange(0, self.text.length)];
-}
-
 - (bool)disableFormatting
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingDisableFormatting];
@@ -1125,26 +1040,6 @@
 	self.textView.font = self.fonts.regular;
 }
 
-- (IBAction)selectSerif:(id)sender {
-	NSMenuItem* item = sender;
-	[BeatUserDefaults.sharedDefaults saveBool:(item.state == NSOnState) forKey:BeatSettingUseSansSerif];
-	
-	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc reloadFonts];
-	}
-}
-
-- (IBAction)selectSansSerif:(id)sender {
-	NSMenuItem* item = sender;
-	bool sansSerif = (item.state != NSOnState);
-
-	[BeatUserDefaults.sharedDefaults saveBool:sansSerif forKey:BeatSettingUseSansSerif];
-	
-	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		[doc reloadFonts];
-	}
-}
-
 
 #pragma mark - Select stylesheet
 
@@ -1153,80 +1048,6 @@
 	[self setStylesheetAndReformat:sender.stylesheet];
 }
 
-
-#pragma mark - Revision Tracking
-
-// UI side
-
--(IBAction)toggleShowRevisions:(id)sender
-{
-	// Save user default
-	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowRevisions];
-
-	// Refresh layout + settings
-	self.textView.needsLayout = true;
-	self.textView.needsDisplay = true;
-}
-
--(IBAction)toggleShowRevisedTextColor:(id)sender
-{
-	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowRevisedTextColor];
-	[self.formatting refreshRevisionTextColorsInRange:NSMakeRange(0, self.text.length)];
-}
-
--(IBAction)toggleRevisionMode:(id)sender {
-	_revisionMode = !_revisionMode;
-	
-	// Save document setting
-	[self.documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
-}
-- (IBAction)markAddition:(id)sender
-{
-	if (self.contentLocked) return;
-	
-	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-	[self.revisionTracking markerAction:RevisionAddition];
-	[self.formatting refreshRevisionTextColorsInRange:range];
-}
-- (IBAction)markRemoval:(id)sender
-{
-	if (self.contentLocked) return;
-	
-	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-	[self.revisionTracking markerAction:RevisionRemovalSuggestion];
-	[self.formatting formatLinesInRange:range];
-}
-- (IBAction)clearMarkings:(id)sender
-{
-	// Remove markers
-	if (self.contentLocked) return;
-	
-	NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
-	[self.revisionTracking markerAction:RevisionNone];
-	[self.formatting refreshRevisionTextColorsInRange:range];
-}
-
-- (IBAction)commitRevisions:(id)sender {
-	[self.revisionTracking commitRevisions];
-	[self.formatting refreshRevisionTextColors];
-}
-
-- (IBAction)selectRevisionColor:(id)sender {
-	NSPopUpButton *button = sender;
-	self.revisionLevel = button.indexOfSelectedItem;
-}
-
-
-#pragma mark - Hiding markup
-
-- (IBAction)toggleHideFountainMarkup:(id)sender {
-	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingHideFountainMarkup];
-	self.hideFountainMarkup = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHideFountainMarkup];
-	
-	[self.textView toggleHideFountainMarkup];
-		
-	[self updateLayout];
-}
 
 
 #pragma mark - Return to editor from any subview
@@ -1248,14 +1069,15 @@
 		[self returnToEditor];
 	}
 }
+
 - (BOOL)previewVisible { return (self.currentTab == _nativePreviewTab); }
 
 - (void)cancelOperation:(id) sender
 {
 	// ESCAPE KEY pressed
-	if (self.currentTab == _nativePreviewTab) [self preview:nil];
-	else if (self.currentTab == _cardsTab) [self toggleCards:nil];
-	else {
+	if (self.currentTab == _nativePreviewTab || self.currentTab == _cardsTab) {
+		[self returnToEditor];
+	} else {
 		for (NSString* pluginName in self.runningPlugins.allKeys) {
 			BeatPlugin* plugin = self.runningPlugins[pluginName];
 			[plugin escapePressed];
@@ -1263,19 +1085,6 @@
 	}
 }
 
-/// TODO: Move this to preview view
-- (IBAction)showPreviewOptions:(id)sender
-{
-	NSButton* button = (NSButton*)sender;
-	
-	self.previewOptionsPopover = NSPopover.new;
-	BeatPreviewOptions* previewOptions = BeatPreviewOptions.new;
-	previewOptions.editorDelegate = self;
-	
-	self.previewOptionsPopover.contentViewController = previewOptions;
-	self.previewOptionsPopover.behavior = NSPopoverBehaviorTransient;
-	[self.previewOptionsPopover showRelativeToRect:button.bounds ofView:sender preferredEdge:NSRectEdgeMaxY];
-}
 
 /*
  
@@ -1320,57 +1129,6 @@
 }
 
 
-
-#pragma mark - Color picker
-
-- (void)setupColorPicker {
-	for (NSTouchBarItem *item in [self.textView.touchBar templateItems]) {
-		if ([item.className isEqualTo:@"NSColorPickerTouchBarItem"]) {
-			NSColorPickerTouchBarItem *picker = (NSColorPickerTouchBarItem*)item;
-			
-			_colorPicker = picker;
-			picker.showsAlpha = NO;
-			picker.colorList = [[NSColorList alloc] init];
-			
-			[picker.colorList setColor:NSColor.blackColor forKey:@"none"];
-			
-			// Append Beat colors to list
-			NSArray* colors = @[@"red", @"blue", @"green", @"cyan", @"orange", @"pink", @"gray", @"magenta"];
-			for (NSString* color in colors) [picker.colorList setColor:[BeatColors color:color] forKey:color];
-		}
-	}
-}
-
-- (IBAction)pickColor:(id)sender
-{
-	NSString *pickedColor;
-	for (NSString *color in BeatColors.colors) {
-		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) pickedColor = color;
-	}
-	
-	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) {
-		pickedColor = @"none"; // THE HOUSE IS BLACK.
-	}
-	
-	if (self.currentScene != nil && pickedColor != nil) {
-		[self.textActions setColor:pickedColor forScene:self.currentScene];
-	}
-}
-
-- (IBAction)setSceneColorForRange:(id)sender
-{
-	// Called from text view context menu
-	BeatColorMenuItem *item = sender;
-	NSString *color = item.colorKey;
-	
-	NSRange range = self.selectedRange;
-	NSArray *scenes = [self.parser scenesInRange:range];
-		
-	for (OutlineScene* scene in scenes) {
-		[self.textActions setColor:color forScene:scene];
-	}
-}
-
 /*
  
  I'm very good with plants
@@ -1380,30 +1138,8 @@
  */
 
 
-#pragma mark - Card view
-
-- (IBAction)toggleCards: (id)sender {
-	if (self.currentTab != _cardsTab) {
-		[self showTab:_cardsTab];
-	} else {
-		// Reload outline + timeline (in case there were any changes in outline while in card view)
-		[self refreshAllOutlineViews];
-		[self returnToEditor];
-	}
-}
-
-#pragma mark - Refresh any outline views
-
-- (void)refreshAllOutlineViews
-{
-	for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
-		[view reloadView];
-	}
-}
-
 
 #pragma mark - Scene numbering
-// TODO: What the actual hell is this stuff
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
@@ -1431,19 +1167,6 @@
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
-}
-
-
-#pragma mark - Pagination manager methods
-
-- (IBAction)togglePageNumbers:(id)sender
-{
-	self.showPageNumbers = !self.showPageNumbers;
-	
-	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
-	[self.previewController resetPreview];
-	
-	self.textView.needsDisplay = true;
 }
 
 
@@ -1583,55 +1306,6 @@
 }
 
 
-#pragma mark - Review Mode
-
-- (IBAction)toggleReview:(id)sender
-{
-	if (_mode == ReviewMode) self.mode = EditMode;
-	else self.mode = ReviewMode;
-}
-
--(void)toggleMode:(BeatEditorMode)mode
-{
-	if (_mode != mode) _mode = EditMode;
-	else _mode = mode;
-	[self updateEditorMode];
-}
-
--(void)setMode:(BeatEditorMode)mode
-{
-	_mode = mode;
-	[self updateEditorMode];
-}
-
-- (IBAction)reviewSelectedRange:(id)sender
-{
-	if (self.selectedRange.length == 0) return;
-	[self.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
-}
-
-
-#pragma mark - Tagging Mode
-
-- (IBAction)toggleTagging:(id)sender
-{
-	_mode = (_mode == TaggingMode) ? EditMode : TaggingMode;
-	
-	if (_mode == TaggingMode) {
-		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		//[_sideViewCostraint setConstant:180];
-	} else {
-		[self.tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		//self.sideViewCostraint setConstant:0;
-				
-		[self toggleMode:TaggingMode];
-	}
-	
-	[self updateEditorMode];
-}
-
-
-
 #pragma mark - Widgets
 
 - (void)addWidget:(id)widget {
@@ -1688,7 +1362,6 @@
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
 	[self selectAndScrollTo:range];
 }
-
 
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {

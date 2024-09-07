@@ -78,6 +78,8 @@ THE SOFTWARE.
 
 /// Current editor mode flag. Changing this should change the editor behavior as well.
 @property (nonatomic) BeatEditorMode mode;
+/// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
+- (void)updateEditorMode;
 
 /// For versioning support. This is probably not used right now.
 @property (nonatomic) NSURL* _Nullable revertedTo;
@@ -91,7 +93,7 @@ THE SOFTWARE.
 @property (nonatomic) NSWindowController* _Nullable sheetController;
 
 /// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
-- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem;
+- (IBAction)toggleSetting:(BeatOnOffMenuItem* _Nonnull)menuItem;
 
 
 #pragma mark - Applying settings
@@ -186,6 +188,14 @@ THE SOFTWARE.
 
 /// Assisting windows
 @property (nonatomic) NSMutableDictionary<NSValue*,NSWindow*>* _Nullable assistingWindows;
+
+@property (nonatomic, weak) IBOutlet NSButton* _Nullable quickSettingsButton;
+@property (nonatomic) NSPopover* _Nullable quickSettingsPopover;
+
+
+#pragma mark - Touch bar
+
+@property (nonatomic) NSColorPickerTouchBarItem* _Nullable colorPicker;
 
 
 #pragma mark - Scrolling methods (move these elsewhere)
