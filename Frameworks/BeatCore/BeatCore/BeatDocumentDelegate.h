@@ -32,12 +32,6 @@
 @property (nonatomic, readonly) BeatExportSettings* _Nonnull exportSettings;
 
 
-#pragma mark - Style getters
-
-@property (nonatomic, readonly) bool headingStyleBold;
-@property (nonatomic, readonly) bool headingStyleUnderline;
-
-
 @end
 
 #endif /* BeatDocumentDelegate_h */

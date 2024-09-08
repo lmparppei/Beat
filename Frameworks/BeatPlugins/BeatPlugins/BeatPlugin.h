@@ -424,7 +424,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
 
 /// Returns the file name without extension
-- (NSString*)displayName;
+- (NSString*)fileNameString;
 
 /// Adds a widget view
 - (void)addWidget:(id)widget;

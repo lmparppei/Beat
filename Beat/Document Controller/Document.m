@@ -57,8 +57,7 @@
  Finland
  2019-2021
  
- 
- 
+
  = = = = = = = = = = = = = = = = = = = = = = = =
  
  I plant my hands in the garden soil—
@@ -113,79 +112,30 @@
 // Windows
 @property (weak) NSWindow *documentWindow;
 
-
-// Cached
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
 
-// Autosave
-@property (weak) NSTimer *autosaveTimer;
-
-
-@property (nonatomic) NSDictionary *postEditAction;
-@property (nonatomic) NSMutableArray *recentCharacters;
+@property (nonatomic) bool disableFormatting;
 
 @property (nonatomic) BeatEditorFormatting* initialFormatting;
-@property (nonatomic) bool disableFormatting;
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
-
-@property (nonatomic) bool headingStyleBold;
-@property (nonatomic) bool headingStyleUnderline;
-
-// Sidebar & Outline view
-@property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
-@property (nonatomic) NSMutableArray *outlineClosedSections;
-
-// Outline view filtering
-@property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
-
 @property (nonatomic) BeatPrintDialog *printDialog;
-
-// Print preview
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
-@property (nonatomic) NSPopover* previewOptionsPopover;
-
-// Card view
-@property (nonatomic) bool cardsVisible;
-
-// Mode display
 @property (weak) IBOutlet BeatModeDisplay *modeIndicator;
+@property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
 
-// Timeline view
-@property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
+@property (weak) NSTimer *autosaveTimer;
+
 @property (weak) IBOutlet NSTouchBar *touchBar;
-@property (weak) IBOutlet NSTouchBar *timelineBar;
-@property (weak) IBOutlet TouchTimelineView *touchbarTimeline;
 
-// Scene number settings
 @property (weak) IBOutlet NSPanel *sceneNumberingPanel;
 @property (weak) IBOutlet NSTextField *sceneNumberStartInput;
 
-// Printing
-@property (nonatomic) bool printPreview;
-
-// View sizing
-@property (nonatomic) CGFloat documentWidth;
-@property (nonatomic) NSUInteger characterIndent;
-@property (nonatomic) NSUInteger parentheticalIndent;
-@property (nonatomic) NSUInteger dialogueIndent;
-@property (nonatomic) NSUInteger dialogueIndentRight;
-@property (nonatomic) NSUInteger ddCharacterIndent;
-@property (nonatomic) NSUInteger ddParentheticalIndent;
-@property (nonatomic) NSUInteger dualDialogueIndent;
-@property (nonatomic) NSUInteger ddRight;
-
-// Autocompletion
-@property (nonatomic) bool isAutoCompleting;
-
 /// When loading longer documents, we need to show a progress panel
 @property (nonatomic) NSPanel* progressPanel;
+
 /// The indicator for above panel
 @property (nonatomic) NSProgressIndicator *progressIndicator;
-
-/// A collection of all sorts of formatting-related `IBAction`s. A cross-platform class.
-@property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
 
 @end
 
@@ -372,7 +322,7 @@
 				
 	// Init autosave
 	[self initAutosave];
-	
+		
 	// Lock status
 	if ([self.documentSettings getBool:DocSettingLocked]) [self lock];
 	
@@ -406,8 +356,6 @@
 	self.documentIsLoading = NO;
 
 	self.textView.editable = true;
-	//if (saved) NSLog(@"Saved"); else NSLog(@"NOT saved");
-	//if (saved) [self updateChangeCount:NSChangeCleared];
 }
 
 -(void)awakeFromNib
@@ -425,17 +373,13 @@
 
 - (NSString *)displayName
 {
-	if (!self.fileURL) return @"Untitled";
-	return self.fileURL.URLByDeletingPathExtension.lastPathComponent;
+	return (self.fileURL == nil) ? @"Untitled" : self.fileURL.URLByDeletingPathExtension.lastPathComponent;
 }
 
 - (NSString*)fileNameString
 {
-	NSString* fileName = [self lastComponentOfFileName];
-	NSUInteger lastDotIndex = [fileName rangeOfString:@"." options:NSBackwardsSearch].location;
-	if (lastDotIndex != NSNotFound) fileName = [fileName substringToIndex:lastDotIndex];
-	
-	return fileName;
+	NSString* fileName = self.lastComponentOfFileName;
+	return fileName.stringByDeletingPathExtension;
 }
 
 	
@@ -837,8 +781,7 @@
 	// Finally, reset last changed range
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
 	
-	// Let's check if we should change typing attributes...
-	/*
+/*
 	if (self.textView.selectedRange.length == 0 && self.currentLine.type == dialogue) {
 		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 		pStyle.firstLineHeadIndent = 300.0;
@@ -849,7 +792,7 @@
 	} else {
 		self.textView.typingAttributes = @{};
 	}
-	 */
+ */
 }
 
 
@@ -1182,9 +1125,7 @@
 #pragma mark - Autosave
 
 /*
- 
  Beat has *three* kinds of autosave: autosave vault, saving in place and automatic macOS autosave.
-  
  */
 
 - (BOOL)autosave
@@ -1192,13 +1133,9 @@
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutosave];
 }
 
-+ (BOOL)autosavesInPlace {
-	return NO;
-}
++ (BOOL)autosavesInPlace { return NO; }
 
-+ (BOOL)autosavesDrafts {
-	return YES;
-}
++ (BOOL)autosavesDrafts { return YES; }
 
 + (BOOL)preservesVersions {
 	// Versions are only supported from 12.0+ because of a strange bug in older macOSs
@@ -1222,9 +1159,8 @@
 - (NSURL *)mostRecentlySavedFileURL;
 {
 	// Before the user chooses where to place a new document, it has an autosaved URL only
-	// On 10.6-, autosaves save newer versions of the document *separate* from the original doc
 	NSURL *result = [self autosavedContentsFileURL];
-	if (!result) result = [self fileURL];
+	if (result == nil) result = [self fileURL];
 	return result;
 }
 
