@@ -768,7 +768,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     NSArray* result = nil;
     // For notes with a prefix, we need to check that the note isn't bleeding out.
-    if (noteContent != nil && NSMaxRange(noteRange) == self.length && self.noteOut) {
+    if (noteContent != nil && NSMaxRange(noteRange) == self.length && !self.noteOut) {
         result = @[ [NSValue valueWithRange:noteRange], noteContent ];
     }
     
