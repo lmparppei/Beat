@@ -45,16 +45,20 @@
     return sharedInstance;
 }
 
-+ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale
+/// Creates a set of fonts with given scale, stored in a two-dimensional array (type -> scale)
++ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale type:(BeatFontType)type
 {
-    static NSMutableDictionary<NSNumber*, BeatFonts*>* scaledFonts;
+    static NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, BeatFonts*>*>* scaledFonts;
     if (scaledFonts == nil) scaledFonts = NSMutableDictionary.new;
     
-    if (scaledFonts[@(scale)] == nil) {
-        scaledFonts[@(scale)] = [[self alloc] initWithFontType:BeatFontTypeFixed size:12.0 scale:scale];
+    if (scaledFonts[@(type)] == nil) scaledFonts[@(type)] = NSMutableDictionary.new;
+    NSMutableDictionary* scaledFontSet = scaledFonts[@(type)];
+    
+    if (scaledFontSet[@(scale)] == nil) {
+        scaledFontSet[@(scale)] = [[self alloc] initWithFontType:type size:12.0 scale:scale];
     }
     
-    return scaledFonts[@(scale)];
+    return scaledFonts[@(type)][@(scale)];
 }
 
 + (BeatFonts*)sharedSansSerifFonts {

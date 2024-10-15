@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 + (BeatFonts*)sharedFonts;
 + (BeatFonts*)sharedSansSerifFonts;
 + (BeatFonts*)sharedVariableFonts;
-+ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale;
++ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale type:(BeatFontType)type;
 + (CGFloat)characterWidth;
 
 - (BXFont*)withSize:(CGFloat)size;
