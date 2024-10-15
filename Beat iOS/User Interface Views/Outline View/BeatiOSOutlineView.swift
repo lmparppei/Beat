@@ -10,6 +10,7 @@
 import Foundation
 
 class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
+	@objc public var aboutToShow = false
 	
 	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	//var dataProvider:BeatOutlineDataProvider?
@@ -94,7 +95,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	}
 	
 	@objc public func reload() {
-		guard self.visible(), self.hasUncommittedUpdates == false else { return }
+		guard (self.visible() || aboutToShow), self.hasUncommittedUpdates == false else { return }
 		
 		// Stop scrolling, just in case
 		// self.setContentOffset(self.contentOffset, animated: false)
@@ -107,6 +108,8 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		
 		// Diffable alternative
 		// self.dataProvider?.update()
+		
+		aboutToShow = false
 	}
 		
 	func visible() -> Bool {
