@@ -6,6 +6,7 @@
 //  Copyright © 2024 Lauri-Matti Parppei. All rights reserved.
 //
 
+
 import UIKit
 import SwiftUI
 import StoreKit
@@ -87,3 +88,4 @@ struct BeatPaywallView: View {
 		}.padding()
 	}
 }
+
