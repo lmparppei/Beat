@@ -160,11 +160,9 @@
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
-	if (self.documentIsLoading) return;
-	
+	if (self.documentIsLoading || notification.object == NSApp.mainWindow || NSApp.mainWindow == nil) return;
 	// When window resigns it main status, we'll have to hide possible floating windows
-	NSWindow *mainWindow = NSApp.mainWindow;
-	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:mainWindow];
+	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:NSApp.mainWindow];
 }
 
 - (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
@@ -173,7 +171,8 @@
 		[self.runningPlugins[pluginName] documentDidResignMain];
 	}
 	
-	if (!mainWindow.isMainWindow && self.runningPlugins.count > 0) {
+	// If the new main window didn't become key, let's order it front to avoid plugin windows from earlier document floating above it.
+	if (!mainWindow.isMainWindow && mainWindow != self.documentWindow && self.runningPlugins.count > 0) {
 		[mainWindow makeKeyAndOrderFront:nil];
 	}
 }

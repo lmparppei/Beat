@@ -191,14 +191,14 @@
 		alert.informativeText = [BeatLocalization localizedStringForKey:@"spelling.ignoreDialogue.text"];
 		[alert addButtonWithTitle:@"OK"];
 		
-		NSModalResponse result = [alert runModal];
+		[alert runModal];
 		if (alert.suppressionButton.state == NSOnState) {
 			[BeatUserDefaults.sharedDefaults setSuppressed:@"ignoreDialogueSpelling" value:YES];
 		}
 	}
 }
 
-
+/*
 - (NSInteger)textView:(NSTextView *)textView shouldSetSpellingState:(NSInteger)value range:(NSRange)affectedCharRange
 {
 	if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingIgnoreSpellCheckingInDialogue]) {
@@ -208,7 +208,7 @@
 	
 	return 1;
 }
-
+*/
 
 #pragma mark - Character input
 

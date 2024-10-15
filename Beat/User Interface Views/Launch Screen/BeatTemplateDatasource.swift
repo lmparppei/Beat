@@ -27,8 +27,8 @@ public class BeatTemplateDataSource:NSObject, NSOutlineViewDataSource, NSOutline
 	public func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { return false }
 	
 	public func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-		let view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TemplateView"), owner: self) as! BeatTemplateCell
-		guard let template = item as? BeatTemplateFile else {
+		guard let view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("TemplateView"), owner: self) as? BeatTemplateCell,
+			  let template = item as? BeatTemplateFile else {
 			return nil
 		}
 		view.load(template: template)

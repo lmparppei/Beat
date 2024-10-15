@@ -232,6 +232,9 @@
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController {
 	[super windowControllerWillLoadNib:windowController];
 
+	// Initialize document settings if needed
+	if (!self.documentSettings) self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
+	
 	// Initialize parser
 	self.documentIsLoading = YES;
 	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
@@ -263,10 +266,7 @@
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
-	// Initialize document settings if needed
-	if (!self.documentSettings) self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
-	
-	// Initialize theme
+		// Initialize theme
 	[self loadSelectedTheme:false];
 	
 	// Setup views
@@ -686,7 +686,7 @@
 	
 	self.textView.alphaValue = 0.0;
 	[self setText:self.contentBuffer];
-	
+		
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
 	[self renderDocument];
 	
@@ -990,7 +990,6 @@
 {
 	[self setStylesheetAndReformat:sender.stylesheet];
 }
-
 
 
 #pragma mark - Return to editor from any subview

@@ -131,7 +131,8 @@
 
 #pragma mark - Outline View delegation
 
--(NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+-(NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
 	NSInteger index = [self.pluginManager.availablePluginNames indexOfObject:(NSString*)item];
 	
 	NSString *name = self.pluginManager.availablePluginNames[index];

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -491,8 +491,8 @@
                                                 <action selector="toggleAutomaticSpellingCorrection:" target="-1" id="Yq1-Bh-6hN"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="BOj-Jm-iwK"/>
-                                        <menuItem title="Ignore Spell Checking for Dialogue" id="Hsr-QV-0FD" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
+                                        <menuItem isSeparatorItem="YES" hidden="YES" id="BOj-Jm-iwK"/>
+                                        <menuItem title="Ignore Spell Checking for Dialogue" hidden="YES" id="Hsr-QV-0FD" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
