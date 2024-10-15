@@ -150,6 +150,14 @@
 - (void)paginationFinished
 {
     _running = false;
+    
+    // Update page numbers
+    NSInteger pageNumber = self.settings.firstPageNumber;
+    for (BeatPaginationPage* page in self.pages) {
+        page.pageNumber = pageNumber;
+        pageNumber += 1;
+    }
+    
     [self.delegate paginationFinished:self];
 }
 
@@ -164,10 +172,9 @@
     
     NSMutableDictionary<NSValue*,NSArray<NSNumber*>*>* pageBreaks = NSMutableDictionary.new;
     
-    NSInteger pageNumber = 0;
+    //NSInteger pageNumber = 0;
     
     for (BeatPaginationPage* page in self.pages) {
-        pageNumber += 1;
         
         BeatPageBreak* pageBreak = page.pageBreak;
         NSInteger position = pageBreak.element.position + pageBreak.index;
@@ -182,7 +189,7 @@
         // Store the local position of character
         NSUInteger localIndex = position - pageBreak.element.position;
         NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
-        pageBreaks[key] = @[@(pageNumber), @(localIndex)];
+        pageBreaks[key] = @[@(page.pageNumber), @(localIndex)];
     }
     
     return pageBreaks;
@@ -590,6 +597,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 - (NSInteger)findPageIndexInRange:(NSRange)lineRange pages:(NSArray<BeatPaginationPage*>*)pages
 {
+    // A hacky fix for a weird bug which only happens in novel mode. No idea.
+    // if (pages.count == 1) return 0;
+    
     NSMapTable* uuids = self.uuids;
     
     NSInteger idx = NSNotFound;
@@ -732,76 +742,75 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 
 - (CGFloat)heightForRange:(NSRange)range
 {
-    NSInteger pageIndex = [self findPageIndexInRange:range pages:self.pages];
- 
-    if (pageIndex == NSNotFound) {
-        NSLog(@"⚠️ heightForRange: Page not found: range %lu, %lu", range.location, range.length);
-        return 0.0;
-    }
-	
-    // Find the page + block index.
-    // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
-    
-    BeatPaginationPage* page;
-    NSInteger blockIndex = NSNotFound;
+    @synchronized (self.pages) {
+        NSInteger pageIndex = [self findPageIndexInRange:range pages:self.pages];
         
-    for (NSInteger i=pageIndex; i<self.pages.count; i++) {
-        page = self.pages[pageIndex];
-        blockIndex = [page nearestBlockIndexForRange:(NSRange){ range.location, 0 }];
-        if (blockIndex != NSNotFound) {
-            pageIndex = i;
-            break;
+        if (pageIndex == NSNotFound) {
+            NSLog(@"⚠️ heightForRange: Page not found: range %lu, %lu", range.location, range.length);
+            return 0.0;
         }
-    }
-
-    if (blockIndex == NSNotFound || page == nil) {
-        return 0.0;
-    }
-    
-	CGFloat height = 0.0;
-    
-    bool hasBegunNewPage = false;
-    CGFloat previousRemainingSpace = 0.0;
-    
-	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
-		BeatPaginationPage* page = self.pages[i];
-        // Make sure we have transferred the ownership correctly
-        page.delegate = self;
         
-		for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
-			BeatPaginationBlock* block = page.blocks[j];
+        // Find the page + block index.
+        // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
+        
+        BeatPaginationPage* page;
+        NSInteger blockIndex = NSNotFound;
+        
+        for (NSInteger i=pageIndex; i<self.pages.count; i++) {
+            page = self.pages[pageIndex];
+            blockIndex = [page nearestBlockIndexForRange:(NSRange){ range.location, 0 }];
+            if (blockIndex != NSNotFound) {
+                pageIndex = i;
+                break;
+            }
+        }
+        
+        if (blockIndex == NSNotFound || page == nil) return 0.0;
+        
+        bool hasBegunNewPage = false;
+        CGFloat height = 0.0;
+        CGFloat previousRemainingSpace = 0.0;
+        
+        for (NSInteger i = pageIndex; i < self.pages.count; i++) {
+            BeatPaginationPage* page = self.pages[i];
+            // Make sure we have transferred the ownership correctly
+            page.delegate = self;
             
-            Line* firstLine = block.lines.firstObject;
-            
-            if (firstLine.position < NSMaxRange(range)) {
-                // Check if there was a page break in-between the scene, and add the height to the scene
-                if (hasBegunNewPage) {
-                    hasBegunNewPage = false;
-                    height += previousRemainingSpace;
-                    previousRemainingSpace = 0.0;
-                }
-
-                if (j == page.blocks.count - 1) {
-                    // Last block on page, we'll make a note that this we might need to include remaining space in the height.
-                    previousRemainingSpace = page.remainingSpace;
-                    hasBegunNewPage = true;
-                }
+            for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
+                BeatPaginationBlock* block = page.blocks[j];
                 
-                // No height for page break items
-                if (block.type == pageBreak) continue;
-				
-                height += block.height;
-                if (j == 0) height -= block.topMargin; // Remove top margin for first block
-
-            } else {
-				// Out of given range, stop
-				return height;
-			}
-		}
-		blockIndex = 0;
-	}
-
-    return height;
+                Line* firstLine = block.lines.firstObject;
+                
+                if (firstLine.position < NSMaxRange(range)) {
+                    // Check if there was a page break in-between the scene, and add the height to the scene
+                    if (hasBegunNewPage) {
+                        hasBegunNewPage = false;
+                        height += previousRemainingSpace;
+                        previousRemainingSpace = 0.0;
+                    }
+                    
+                    if (j == page.blocks.count - 1) {
+                        // Last block on page, we'll make a note that this we might need to include remaining space in the height.
+                        previousRemainingSpace = page.remainingSpace;
+                        hasBegunNewPage = true;
+                    }
+                    
+                    // No height for page break items
+                    if (block.type == pageBreak) continue;
+                    
+                    height += block.height;
+                    if (j == 0) height -= block.topMargin; // Remove top margin for first block
+                    
+                } else {
+                    // Out of given range, stop
+                    return height;
+                }
+            }
+            blockIndex = 0;
+        }
+        
+        return height;
+    }
 }
 
 

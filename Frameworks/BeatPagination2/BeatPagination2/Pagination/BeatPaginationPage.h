@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGFloat maxHeight;
 @property (nonatomic, readonly) CGFloat remainingSpace;
 @property (nonatomic, readonly) NSArray<Line*>* lines;
+
+@property (nonatomic, readonly) NSInteger pageNumber;
 @property (nonatomic, readonly) NSString* customPageNumber;
 
 -(NSRange)representedRange;
@@ -40,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableArray<BeatPaginationBlock*>* blocks;
 @property (nonatomic) CGFloat maxHeight;
 @property (nonatomic) CGFloat remainingSpace;
+@property (nonatomic) NSInteger pageNumber;
 @property (nonatomic) NSString* customPageNumber;
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;

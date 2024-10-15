@@ -247,16 +247,18 @@ import BeatCore
         }
 		
         // If the pagination was successful, let's make it the latest finished pagination
-		if pagination.success {
-			self.finishedPagination = pagination
-			self.delegate?.paginationDidFinish(pagination)
-		}
-		
-        // Move on to the next pagination operation in queue
-		if let lastOperation = operationQueue.last {
-			runPagination(pagination: lastOperation)
-		}
-	}
+        synchronized(self) {
+            if pagination.success {
+                self.finishedPagination = pagination
+                self.delegate?.paginationDidFinish(pagination)
+            }
+            
+            // Move on to the next pagination operation in queue
+            if let lastOperation = operationQueue.last {
+                runPagination(pagination: lastOperation)
+            }
+        }
+    }
 	
 	
 	

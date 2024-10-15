@@ -519,17 +519,11 @@
 
 #pragma mark - Page number block
 
-- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages
-{
-    NSInteger index = [pages indexOfObject:page];
-    if (index == NSNotFound) index = pages.count;
-    
-    return [self pageNumberBlockForPageNumber:index + 1];
-}
-
 #if TARGET_OS_OSX
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page
 {
+    NSInteger pageNumber = page.pageNumber;
+    
     // We might skip first page number (in screenplay mode)
     NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
     
@@ -629,8 +623,9 @@
     return pageNumberBlock;
 }
 #else
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page
 {
+    NSInteger pageNumber = page.pageNumber;
     NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.", pageNumber] : @"";
     
     // We'll use A4 size for both page sizes
@@ -853,12 +848,7 @@
             }
             
             // Text alignment
-            if ([style.textAlign isEqualToString:@"center"]) 
-                pStyle.alignment = NSTextAlignmentCenter;
-            else if ([style.textAlign isEqualToString:@"right"] || rightToLeft) 
-                pStyle.alignment = NSTextAlignmentRight;
-            else if ([style.textAlign isEqualToString:@"justify"])
-                pStyle.alignment = NSTextAlignmentJustified;
+            pStyle.alignment = style.textAlignment;
                         
             // Special rules for some blocks
             if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {

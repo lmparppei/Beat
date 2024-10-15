@@ -41,8 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage;
 - (NSAttributedString*)renderLine:(Line*)line;
 
-- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages;
-- (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber;
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page;
 
 - (CGFloat)blockWidthFor:(Line*)line dualDialogue:(bool)isDualDialogue;
 @end

@@ -65,10 +65,7 @@
     }
     
     // Create page number header
-    NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
-    if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
-    
-    NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1]];
+    NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPage:self]];
     
     NSMutableAttributedString* renderedString;
     
