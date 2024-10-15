@@ -102,7 +102,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - Application data and file access
 
-- (NSUUID*)uuid;
 - (NSString*)fileNameString;
 - (bool)isDark;
 - (void)showLockStatus;

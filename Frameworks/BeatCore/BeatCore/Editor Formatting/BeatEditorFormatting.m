@@ -178,11 +178,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     
     style.lineHeightMultiple = (elementStyle.lineHeightMultiplier > 0) ? elementStyle.lineHeightMultiplier : styles.page.lineHeightMultiplier;
     style.lineHeightMultiple *= self.delegate.fonts.scale; // We need to multiply *multiplier* on mobile mode... sigh.
-    	
-	// Alignment
-	if ([elementStyle.textAlign isEqualToString:@"center"]) style.alignment = NSTextAlignmentCenter;
-	else if ([elementStyle.textAlign isEqualToString:@"right"]) style.alignment = NSTextAlignmentRight;
-    // else if (hasRightToLeftText) style.alignment = NSTextAlignmentRight;
+    style.alignment = elementStyle.textAlignment;
 
 	// Indents are used as left/right margins, and indents in stylesheet are appended to that
 	style.firstLineHeadIndent = leftMargin + elementStyle.firstLineIndent;

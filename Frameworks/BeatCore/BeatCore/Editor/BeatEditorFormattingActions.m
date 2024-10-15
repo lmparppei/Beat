@@ -334,7 +334,7 @@ static NSString *strikeoutSymbolClose = @"}}";
     // Looking at this in 2023... oh my. TODO: Fix this at some point.
     
 	// Don't go out of range
-	if (cursorLocation.location  + cursorLocation.length > _delegate.text.length) return;
+    if (NSMaxRange(cursorLocation) > _delegate.text.length) return;
 	
 	// Check if the selected text is already formated in the specified way
 	NSString *selectedString = [_delegate.text substringWithRange:cursorLocation];

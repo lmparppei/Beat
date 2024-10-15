@@ -71,7 +71,7 @@
         }
          
         // Skip line if it's a macro and has no results
-        if (l.macroRanges.count == l.length && l.resolvedMacros.count == 0) {
+        if (l.macroRanges.count > 0 && l.macroRanges.count == l.length && l.resolvedMacros.count == 0) {
             [preprocessedLines removeLastObject];
             l.type = empty;
             precedingLine = l;

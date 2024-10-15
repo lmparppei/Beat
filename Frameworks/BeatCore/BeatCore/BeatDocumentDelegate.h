@@ -4,6 +4,11 @@
 //
 //  Created by Lauri-Matti Parppei on 6.6.2023.
 //
+/**
+ 
+ Please move a ton of stuff from `BeatEditorDelegate` to here so we can have a lighter version of the delegate.
+ 
+ */
 
 #import <BeatParsing/BeatParsing.h>
 
@@ -24,7 +29,7 @@
 @property (nonatomic, readonly) BeatDocumentSettings* _Nonnull documentSettings;
 
 - (NSString* _Nonnull)text;
-
+- (NSUUID* _Nonnull)uuid;
 
 #pragma mark - Export options
 

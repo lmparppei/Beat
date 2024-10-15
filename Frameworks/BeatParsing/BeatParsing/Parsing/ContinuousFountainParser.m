@@ -294,7 +294,8 @@ static NSDictionary* patterns;
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
-    if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
+    // This is for avoiding crashes when plugin developers are doing weird things.
+    if (range.location == NSNotFound) return;
     
     _lastEditedLine = nil;
     _editedRange = range;
@@ -591,7 +592,7 @@ static NSDictionary* patterns;
     bool lastToParse = (indices.count == 1);
     
     Line* currentLine = self.lines[index];
-    
+        
     // Remove index as done from array if in array
     if (indices.count) {
         NSUInteger lowestToDo = indices.lowestIndex;
@@ -772,8 +773,7 @@ static NSDictionary* patterns;
     
     // Make sure we didn't receive a disabled type
     if ([self.delegate.disabledTypes containsIndex:(NSUInteger)line.type]) {
-        if (line.length > 0) line.type = action;
-        else line.type = empty;
+        line.type = (line.length > 0) ? action : empty;
     }
     
     NSUInteger length = line.string.length;
@@ -1196,7 +1196,7 @@ static NSDictionary* patterns;
     line.marker = (markerColor.length > 0) ? markerColor.lowercaseString : @"default";
     line.markerDescription = [markerContent stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     line.markerRange = range;
-    
+        
     return markerColor;
 }
 
@@ -2173,9 +2173,7 @@ NSUInteger prevLineAtLocationIndex = 0;
         [self parseNoteBlocksFrom:i];
         return;
     }
-    
-    NSDate* d = NSDate.new;
-    
+        
     // Reset note status
     [line.noteRanges removeAllIndexes];
     line.noteData = NSMutableArray.new;

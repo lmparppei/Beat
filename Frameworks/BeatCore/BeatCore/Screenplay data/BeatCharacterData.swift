@@ -116,7 +116,7 @@ import Foundation
     
     /// Gets stored character data, collects EVERY character name from screenplay, stores the number of lines and scenes for each character and returns a dictionary with names mapped to character object.
     @objc public func charactersAndLines(lines providedLines:[Line] = []) -> [String:BeatCharacter] {
-        guard let parser = self.delegate?.parser else { print("No parser"); return [:] }
+        guard let parser = self.delegate?.parser else { return [:] }
         
         let lines = (providedLines.count > 0) ? providedLines : parser.safeLines() as? [Line] ?? []
         

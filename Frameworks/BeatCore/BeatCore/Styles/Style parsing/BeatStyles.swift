@@ -34,7 +34,8 @@ public class BeatStyles:NSObject {
     var _stylesheets:[String:URL]?
     /// Currently loaded styles
     private var _loadedStyles:[String:BeatStylesheet] = [:]
-
+    private var _documentEditorStyles:[UUID:[String:BeatStylesheet]] = [:]
+    
     /// Returns stylesheet dictionary with `name: url`
     var stylesheets:[String:URL] {
         // Return cached sheet names
@@ -83,21 +84,26 @@ public class BeatStyles:NSObject {
         return stylesheet
     }
     
-    @objc public func editorStyles(for styleName:String = "") -> BeatStylesheet {
+    @objc public func editorStyles(for styleName:String = "", delegate:BeatDocumentDelegate? = nil) -> BeatStylesheet {
         let defaultStyle = (BeatStyles.defaultStyleName + "-editor")
         
         // Make sure the name isn't just an empty string
         var name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
-
+        
 #if os(iOS)
         // Adjust style for iPhone (if needed)
         if UIDevice.current.userInterfaceIdiom == .phone && styleName == "Screenplay" {
             name += "-iOS"
         }
 #endif
-
         
-        if _loadedStyles[name] != nil { return _loadedStyles[name]! }
+        let uuid:UUID? = delegate?.uuid()
+        
+        if let loadedStyle = _loadedStyles[name], uuid == nil {
+            return loadedStyle
+        } else if let uuid, let documentStyle = _documentEditorStyles[uuid]?[name] {
+            return documentStyle
+        }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
         var url:URL? = stylesheets[name]
@@ -109,8 +115,14 @@ public class BeatStyles:NSObject {
             url = stylesheets[defaultStyle]!
         }
         
-        let stylesheet = BeatStylesheet(url: url!, name: name)
-        _loadedStyles[name] = stylesheet
+        let stylesheet = BeatStylesheet(url: url!, name: name, settings: delegate?.exportSettings)
+        
+        if let uuid {
+            if _documentEditorStyles[uuid] == nil { _documentEditorStyles[uuid] = [:] }
+            _documentEditorStyles[uuid]?[name] = stylesheet
+        } else {
+            _loadedStyles[name] = stylesheet
+        }
          
         return stylesheet
     }

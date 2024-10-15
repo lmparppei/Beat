@@ -225,8 +225,10 @@
         
         if (item.type != RevisionNone) {
             NSMutableArray *values = ranges[item.key];
-            
             NSArray *lastItem = values.lastObject;
+            
+            if (lastItem.count < 3) return;
+            
             NSInteger lastLoc = [(NSNumber*)lastItem[0] integerValue];
             NSInteger lastLen = [(NSNumber*)lastItem[1] integerValue];
             NSInteger lastGeneration = [(NSNumber*)lastItem[2] integerValue];
@@ -341,6 +343,12 @@
 {
     NSTextStorage *textStorage = self.delegate.textStorage;
     
+    // Clamp the range if needed
+    if (NSMaxRange(fullRange) > textStorage.length) {
+        fullRange.length = textStorage.length - NSMaxRange(fullRange);
+        if (fullRange.length <= 0) return;
+    }
+    
     __block NSRange currentRange = NSMakeRange(NSNotFound, 0);
     __block BeatRevisionItem* previousRevision;
     
@@ -358,13 +366,13 @@
             previousRevision = nil;
         }
         
-        if (revision == nil) return;
-        
-        if (previousRevision == nil) {
-            currentRange = range;
-            previousRevision = revision;
-        } else {
-            currentRange.length += range.length;
+        if (revision != nil) {
+            if (previousRevision == nil) {
+                currentRange = range;
+                previousRevision = revision;
+            } else {
+                currentRange.length += range.length;
+            }
         }
     }];
     

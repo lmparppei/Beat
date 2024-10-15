@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B621D1BD2A803E7100D072E6 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B621D1BC2A803E7100D072E6 /* BeatDynamicColor.framework */; };
+		B666AB362CAB374700AF6523 /* Themes 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = B666AB352CAB374600AF6523 /* Themes 2.plist */; };
 		B667168E2971C0F2005B8C55 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66716872971C0F2005B8C55 /* BeatTheme.swift */; };
 		B66716922971C0F2005B8C55 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B667168B2971C0F2005B8C55 /* ThemeManager.m */; };
 		B66716932971C0F2005B8C55 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B667168C2971C0F2005B8C55 /* Themes.plist */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		B621D1BC2A803E7100D072E6 /* BeatDynamicColor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDynamicColor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B666AB352CAB374600AF6523 /* Themes 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Themes 2.plist"; sourceTree = "<group>"; };
 		B66716872971C0F2005B8C55 /* BeatTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatTheme.swift; sourceTree = "<group>"; };
 		B667168B2971C0F2005B8C55 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeManager.m; sourceTree = "<group>"; };
 		B667168C2971C0F2005B8C55 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Themes.plist; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				B667168D2971C0F2005B8C55 /* ThemeManager.h */,
 				B667168B2971C0F2005B8C55 /* ThemeManager.m */,
 				B667168C2971C0F2005B8C55 /* Themes.plist */,
+				B666AB352CAB374600AF6523 /* Themes 2.plist */,
 				B66716872971C0F2005B8C55 /* BeatTheme.swift */,
 				B686FFE22971C05500789C8D /* BeatThemes.h */,
 			);
@@ -155,6 +158,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B666AB362CAB374700AF6523 /* Themes 2.plist in Resources */,
 				B66716932971C0F2005B8C55 /* Themes.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

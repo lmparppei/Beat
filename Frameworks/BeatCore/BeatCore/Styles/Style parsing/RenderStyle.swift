@@ -98,6 +98,18 @@ struct PaginationRule {
     @objc public var uppercase:Bool = false
     
     @objc public var textAlign:String = "left"
+    @objc public var textAlignment:NSTextAlignment {
+        switch textAlign {
+        case "right":
+            return .right
+        case "center":
+            return .center
+        case "justify":
+            return .justified
+        default:
+            return .left
+        }
+    }
     
     @objc public var visible = true
     

@@ -14,5 +14,5 @@ typealias BXImage = NSImage
 #else
 typealias BXFont = UIFont
 typealias BXColor = UIColor
-typealias BXColor = UIImage
+typealias BXImage = UIImage
 #endif
