@@ -341,6 +341,9 @@ NS_ASSUME_NONNULL_END
 - (CGFloat)editorLineHeight;
 - (CGFloat)lineHeight;
 
+/// Only sets the stylesheet. Does NOT reload or reformat anything.
+- (void)setStylesheet:(NSString* _Nonnull)name;
+/// Set stylesheet and refresh everything.
 - (void)setStylesheetAndReformat:(NSString * _Nonnull)name;
 
 @end

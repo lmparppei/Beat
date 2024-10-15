@@ -128,7 +128,7 @@
 
 - (BeatStylesheet *)editorStyles
 {
-    BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet]];
+    BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet] delegate:self];
     return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
 }
 - (BeatStylesheet *)styles
@@ -159,15 +159,19 @@
     // NOTE: This might need to be called in OS-specific implementation as well.
 }
 
-/// Set stylesheet and refresh everything
-- (void)setStylesheetAndReformat:(NSString*)name
+- (void)setStylesheet:(NSString*)name
 {
     // Check that this sheet exists
     BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.documentSettings getString:DocSettingStylesheet]];
     if (styles == nil) name = @"";
     
-    //
+    // Store the new stylesheet
     [self.documentSettings setString:DocSettingStylesheet as:name];
+}
+
+- (void)setStylesheetAndReformat:(NSString*)name
+{
+    [self setStylesheet:name];
     
     // Re-read all styles, just in case
     [self reloadFonts];
@@ -797,13 +801,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (NSIndexSet*)shownRevisions
 {
-    NSArray<NSNumber*>* hiddenRevisions = [self.documentSettings get:DocSettingHiddenRevisions];
-     
     NSMutableIndexSet* shownRevisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
+    NSArray<NSNumber*>* hiddenRevisions = [self.documentSettings get:DocSettingHiddenRevisions];
     
-    for (NSNumber* n in hiddenRevisions) {
-        if (n == nil) continue;
-        [shownRevisions removeIndex:n.integerValue];
+    if (hiddenRevisions != nil && hiddenRevisions.count > 0) {
+        for (NSNumber* n in hiddenRevisions) {
+            if (n == nil) continue;
+            [shownRevisions removeIndex:n.integerValue];
+        }
     }
     
     return shownRevisions;
@@ -812,12 +817,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Fonts
 
+/// N.B. Phones will have a hand-tailored set of mobile-sized fonts, which is why we're calling this. iPad and desktop versions use default fonts, but on iPhones, `_fonts` won't be `nil`.
 - (BeatFonts*)fonts
 {
     if (_fonts == nil) return BeatFonts.sharedFonts;
     else return _fonts;
 }
-
 
 - (bool)useSansSerif
 {
