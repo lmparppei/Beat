@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Editor flags
 @property (nonatomic) bool revisionMode;
 @property (nonatomic) BeatEditorMode mode;
-@property (nonatomic, readonly) bool hideFountainMarkup;
 
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;

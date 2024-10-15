@@ -23,6 +23,8 @@ import EasyPeasy
 	
 	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
 	
+	@objc var committingCharacterCue:Bool { get }
+	
 	func loadFonts()
 }
 
@@ -287,20 +289,25 @@ import EasyPeasy
 		else { return true }
 		
 		/// We'll return `true` when current line is empty (what is this)
-		if editorDelegate.characterInput && line.string.count == 0 {
-			return true
-		} else {
-			return false
-		}
+		return (editorDelegate.characterInput && line.string.count == 0)
 	}
 	
 	@objc func cancelCharacterInput() {
 		guard let editorDelegate = self.editorDelegate else { return }
-		
+
 		let line = editorDelegate.characterInputForLine
+
+		var shouldCancel = true
+		
+		if editorDelegate.characterInputForLine != nil, editorDelegate.currentLine().position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
+			shouldCancel = false
+		}
 		
 		editorDelegate.characterInput = false
 		editorDelegate.characterInputForLine = nil
+		
+		// Uh... well, yeah.
+		if !shouldCancel { return }
 		
 		let paragraphStyle = NSMutableParagraphStyle()
 		paragraphStyle.firstLineHeadIndent = 0.0

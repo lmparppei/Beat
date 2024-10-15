@@ -26,17 +26,18 @@ import BeatParsing
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 		
-		let scene = delegate.parser.outline[indexPath.row] as! OutlineScene
-		let string = OutlineViewItem.withScene(scene,
-											   currentScene: OutlineScene(),
-											   sceneNumber: BeatUserDefaults().getBool(BeatSettingShowSceneNumbersInOutline),
-											   synopsis: BeatUserDefaults().getBool(BeatSettingShowSynopsisInOutline),
-											   notes: BeatUserDefaults().getBool(BeatSettingShowNotesInOutline),
-											   markers: BeatUserDefaults().getBool(BeatSettingShowMarkersInOutline),
-											   isDark: true)
-		
-		cell.representedScene = scene
-		cell.textLabel?.attributedText = string
+		if let scene = delegate.parser.outline[indexPath.row] as? OutlineScene {
+			let string = OutlineViewItem.withScene(scene,
+												   currentScene: OutlineScene(),
+												   sceneNumber: BeatUserDefaults().getBool(BeatSettingShowSceneNumbersInOutline),
+												   synopsis: BeatUserDefaults().getBool(BeatSettingShowSynopsisInOutline),
+												   notes: BeatUserDefaults().getBool(BeatSettingShowNotesInOutline),
+												   markers: BeatUserDefaults().getBool(BeatSettingShowMarkersInOutline),
+												   isDark: true)
+			
+			cell.representedScene = scene
+			cell.textLabel?.attributedText = string
+		}
 		
 		return cell
 	}
@@ -52,7 +53,6 @@ import BeatParsing
 	weak var tableView:UITableView?
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		print("Number of rows asked?")
 		return self.latestSnapshot?.numberOfItems ?? 0
 	}
 		
@@ -63,8 +63,6 @@ import BeatParsing
 		self.dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
 			let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 			cell.editor = delegate
-			
-			print("      • \(indexPath.section) / \(indexPath.row)")
 			
 			let scene = delegate.parser.outline[indexPath.row] as! OutlineScene
 			let string = OutlineViewItem.withScene(scene,

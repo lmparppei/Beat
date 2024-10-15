@@ -74,7 +74,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 				
 		refreshPreview()
 		
-		checkPaywall()
+		//checkPaywall()
 	}
 	
 	@IBAction func close(_ sender:Any?) {
@@ -204,7 +204,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	}
 	
 	// MARK: - Paywall
-	
+	/*
 	func checkPaywall() {
 		Task {
 			let unlocked = await BeatSubscriptionsManager.shared.unlocked()
@@ -232,6 +232,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		
 		self.present(vc, animated: true)
 	}
+	*/
 }
 
 

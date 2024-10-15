@@ -48,8 +48,6 @@
 
 @property (nonatomic) BeatOutlineDataProvider* outlineProvider;
 
-@property (nonatomic) bool hideFountainMarkup;
-
 @property (nonatomic) NSMutableAttributedString* formattedTextBuffer;
 
 @property (nonatomic, weak) NSDictionary* typingAttributes;
@@ -207,6 +205,7 @@
 	self.documentIsLoading = false;
 	
 	//[self appearanceChanged:nil];
+	[self displayPatchNotesIfNeeded];
 }
 
 -(IBAction)dismissViewController:(id)sender
@@ -244,16 +243,27 @@
 	}];
 }
 
+- (void)setStylesheetAndReformat:(NSString *)name
+{
+	// We'll set the stylesheet twice to load fonts correctly. Sorry.
+	[self setStylesheet:name];
+	[self loadFonts];
+	[super setStylesheetAndReformat:name];
+}
+
 - (void)loadFonts
 {
 	[super loadFonts];
 
+	// Phones require a specific set of fonts scaled by user setting
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+		bool variableSize = self.editorStyles.variableFont;
+		BeatFontType type = (variableSize) ? BeatFontTypeVariableSerif : BeatFontTypeFixed;
+		
 		CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
 		CGFloat scale = ((zoom + 4) / 10 ) + 1.0;
-		self.fonts = [BeatFonts sharedFontsWithScale:scale];
+		self.fonts = [BeatFonts sharedFontsWithScale:scale type:type];
 	}
-
 }
 
 - (void)setupDocument
@@ -479,7 +489,10 @@
 		}
 	}
 	
-	if (shown) [self.outlineView reloadInBackground];
+	if (shown) {
+		self.outlineView.aboutToShow = true;
+		[self.outlineView reloadInBackground];
+	}
 }
 
 - (bool)sidebarVisible
