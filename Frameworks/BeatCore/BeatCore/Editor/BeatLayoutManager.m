@@ -248,29 +248,32 @@
             
             if (globalIndex != cRange.location && globalIndex != NSMaxRange(cRange)) {
                 // Page break happens mid-element. Let's draw a bezier curve here.
-                CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(glyphIndex,1) inTextContainer:self.textContainers.firstObject];
-                
-                BXBezierPath* lbPath = BXBezierPath.new;
-                
-                CGFloat baseline = r.origin.y + inset.height + actualRect.size.height;
-                
-                [lbPath moveToPoint:CGPointMake(0, baseline)];
-                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
-                [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, r.origin.y + inset.height)];
-                [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(r) + inset.width * 2, r.origin.y + inset.height)];
-                
-                [pageBreakColor setStroke];
-                [lbPath stroke];
-                
+                [self drawMidElementPageSeparatorAtIndex:glyphIndex rect:r inset:inset color:pageBreakColor];
             } else {
-                // Draw page separator
+                // Draw normal page separator
                 CGRect separatorRect = CGRectMake(inset.width + r.origin.x, inset.height + r.origin.y, r.size.width, 1.0);
-                
                 [pageBreakColor setFill];
                 BXRectFill(separatorRect);
             }
         }
     }
+}
+
+- (void)drawMidElementPageSeparatorAtIndex:(NSInteger)glyphIndex rect:(CGRect)rect inset:(CGSize)inset color:(BXColor*)pageBreakColor
+{
+    CGRect actualRect = [self boundingRectForGlyphRange:NSMakeRange(glyphIndex,1) inTextContainer:self.textContainers.firstObject];
+    
+    BXBezierPath* lbPath = BXBezierPath.new;
+    
+    CGFloat baseline = rect.origin.y + inset.height + actualRect.size.height;
+    
+    [lbPath moveToPoint:CGPointMake(0, baseline)];
+    [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, baseline)];
+    [lbPath addLineToPoint:CGPointMake(inset.width + actualRect.origin.x, rect.origin.y + inset.height)];
+    [lbPath addLineToPoint:CGPointMake(CGRectGetMaxX(rect) + inset.width * 2, rect.origin.y + inset.height)];
+    
+    [pageBreakColor setStroke];
+    [lbPath stroke];
 }
 
 - (NSMutableParagraphStyle*)pageNumberStyle
