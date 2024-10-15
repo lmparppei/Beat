@@ -94,12 +94,12 @@ import UXKit
 			
 			if level > 4 { level = 4 }
 			let size = 20 - 2 * CGFloat(level)
-			let newFont = NSFont.boldSystemFont(ofSize: size)
+			let newFont = BXFont.boldSystemFont(ofSize: size)
 
 			newAttrs[NSAttributedString.Key.font] = newFont
 		} else {
 			// Something else
-			newAttrs[NSAttributedString.Key.font] = NSFont.systemFont(ofSize: 12.0)
+			newAttrs[NSAttributedString.Key.font] = BXFont.systemFont(ofSize: 12.0)
 		}
 		
 		// Reset underline
