@@ -69,6 +69,7 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var headingSpacingSwitch:UISegmentedControl?
 	@IBOutlet weak var lineHeightSwitch:UISegmentedControl?
 	@IBOutlet weak var darkModeSwitch:UISegmentedControl?
+	@IBOutlet weak var stylesheetSwitch:BeatSegmentedStylesheetControl?
 	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
@@ -91,9 +92,19 @@ class BeatSettingsViewController:UITableViewController {
 		self.revisionSelector?.revisionLevel = delegate.revisionLevel
 		self.revisionSelector?.settingController = self
 		
+		if let stylesheet = self.delegate?.styles.name,
+		   let availableStyles = stylesheetSwitch?.stylesheets.split(separator: ",") {
+			for i in 0..<availableStyles.count {
+				let style = availableStyles[i]
+				if String(style).lowercased() == stylesheet.lowercased() {
+					stylesheetSwitch?.selectedSegmentIndex = i
+				}
+			}
+		}
+		
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
 			let dark = appDelegate.isDark()
-			print("Dark", dark)
+
 			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
 		}
 	}
@@ -130,6 +141,12 @@ class BeatSettingsViewController:UITableViewController {
 		if button.reloadOutline {
 			// ?
 		}
+	}
+	
+	@IBAction func toggleStylesheet(_ sender:BeatSegmentedStylesheetControl) {
+		let styles = sender.stylesheets.split(separator: ",")
+		let stylesheetName = String(styles[sender.selectedSegmentIndex])
+		self.delegate?.setStylesheetAndReformat(stylesheetName)
 	}
 	
 	@IBAction func toggleLineSpacing(_ sender:BeatUserSettingSegmentedControl) {
