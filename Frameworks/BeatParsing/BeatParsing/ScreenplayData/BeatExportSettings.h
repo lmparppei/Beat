@@ -78,6 +78,8 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 /// Raw document settings 
 @property (nonatomic) BeatDocumentSettings* documentSettings;
 
+@property (nonatomic) NSInteger firstPageNumber;
+
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions;

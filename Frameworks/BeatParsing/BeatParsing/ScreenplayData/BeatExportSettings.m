@@ -48,6 +48,7 @@
         if (revisions == nil) revisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1024)];
         
         _headerAlignment = 1;
+        _firstPageNumber = 1;
 	}
 	return self;
 }
@@ -82,6 +83,8 @@
         _paperSize = delegate.pageSize;
                 
         _fileName = delegate.fileNameString;
+        
+        _firstPageNumber = [delegate.documentSettings getInt:DocSettingFirstPageNumber];
         
         // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings
         id<BeatExportStyleProvider> styles = self.styles;
