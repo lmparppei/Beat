@@ -60,6 +60,7 @@ action, dialogue, character, parenthetical {
 
 action {
     first-line-indent: 3ch;
+    text-align: documentSetting(novelContentAlignment);
 }
 
 centered {
