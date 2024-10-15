@@ -61,6 +61,8 @@ NSString * const DocSettingStylesheet    = @"Stylesheet";
 NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultiplier"; // Why isn't this key in line with the others?
 NSString * const DocSettingContentAlignment = @"novelContentAlignment";
 
+NSString * const DocSettingFirstPageNumber = @"firstPageNumber";
+
 -(id)init
 {
 	self = [super init];
@@ -90,16 +92,15 @@ NSString * const DocSettingContentAlignment = @"novelContentAlignment";
         DocSettingNovelLineHeightMultiplier: @(2.0),
         DocSettingHeaderAlignment: @(1),
         DocSettingPrintSceneNumbers: @(true),
-        DocSettingContentAlignment: @""
+        DocSettingContentAlignment: @"",
+        DocSettingFirstPageNumber: @(1)
     };
     
     return defaultValues;
 }
-/// This is an alias for `+ defaultValues` because of some weird Swift compatibility issues
-- (NSDictionary*)defaultValues
-{
-    return BeatDocumentSettings.defaultValues;
-}
+
+/// An alias for `+ defaultValues` because of some weird Swift compatibility issues
+- (NSDictionary*)defaultValues { return BeatDocumentSettings.defaultValues; }
 
 + (NSDictionary*)defaultValue:(NSString*)key
 {

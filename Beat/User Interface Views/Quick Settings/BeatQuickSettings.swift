@@ -121,6 +121,7 @@ class BeatDesktopQuickSettings:NSViewController {
 				}) { [weak self] value, actualValue in
 					self?.delegate?.documentSettings.set(setting, as: actualValue ?? "")
 					self?.delegate?.reloadStyles()
+					self?.delegate?.formatting.formatAllAsynchronously()
 				}
 			}
 			
