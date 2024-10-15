@@ -266,7 +266,10 @@ static BeatPluginManager *sharedManager;
 	self.availablePlugins = NSMutableDictionary.new;
 	
 	for (NSString *pluginName in self.plugins.allKeys) {
-		[_availablePlugins setValue:[self pluginInfoFor:pluginName] forKey:pluginName];
+        BeatPluginInfo* info = [self pluginInfoFor:pluginName];
+        if (info.type == InternalPlugin) continue;
+        
+		[_availablePlugins setValue:info forKey:pluginName];
 	}
 }
 
@@ -453,6 +456,7 @@ static BeatPluginManager *sharedManager;
 }
 
 /// Returns plugin info – name, version, copyright etc.
+/// @param plugin Plugin name
 - (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin
 {
 	// Info for LOCAL (installed) plugins

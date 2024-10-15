@@ -49,6 +49,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @end
 
 @interface BeatPluginManager : NSObject
+/// Keys are plugin names values are plugin info instances. `[pluginName: <BeatPluginInfo>]`
 @property (nonatomic) NSMutableDictionary<NSString*, id> * availablePlugins;
 @property (nonatomic) NSURL *pluginURL;
 
