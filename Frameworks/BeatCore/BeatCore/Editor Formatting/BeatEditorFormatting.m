@@ -379,6 +379,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Do nothing else if formatting is disabled
     if (self.delegate.disableFormatting) {
         newAttributes[NSParagraphStyleAttributeName] = NSParagraphStyle.new;
+        newAttributes[NSFontAttributeName] = self.fonts.regular;
         [textStorage addAttributes:newAttributes range:fullRange];
         if (!alreadyEditing) [textStorage endEditing];
         return;
