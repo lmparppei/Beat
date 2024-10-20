@@ -36,10 +36,10 @@
 @implementation ThemeManager
 
 #define VERSION_KEY @"version"
-#define SELECTED_THEME_KEY @"selectedTheme"
 #define THEMES_KEY @"themes"
 #define USER_THEME_FILE @"Custom Colors.plist"
 
+#define LOADED_KEY @"loadedTheme"
 #define DEFAULT_KEY @"Default"
 #define CUSTOM_KEY @"Custom"
 
@@ -86,7 +86,7 @@
 /// Load both bundled default theme file, as well as the one customized by user.
 - (NSDictionary*)loadThemeFile
 {
-	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
+	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:self.bundlePlistFilePath];
     
 #if !TARGET_OS_IOS
 	NSDictionary *customPlist = [self loadCustomTheme];
@@ -121,7 +121,8 @@
 }
 
 /// Returns the default theme
--(BeatTheme*)defaultTheme {
+-(BeatTheme*)defaultTheme
+{
     BeatTheme* theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
     return theme;
 }
@@ -130,19 +131,26 @@
 #pragma mark - Reading themes
 
 /// Resets current theme to the default one
--(void)resetToDefault {
+-(void)resetToDefault
+{
     _theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 }
 
+/// Reverts the theme to its saved state. A more semantic alias of `reloadTheme`.
+- (void)revertToSaved
+{
+    [self reloadTheme];
+}
 
-/// Reverts the theme to its saved state
-- (void)revertToSaved {
+- (void)reloadTheme
+{
     [self loadThemes];
     [self readTheme];
     [self loadThemeForAllDocuments];
 }
 
--(BeatTheme*)dictionaryToTheme:(NSDictionary*)values {
+-(BeatTheme*)dictionaryToTheme:(NSDictionary*)values
+{
 	BeatTheme* theme = BeatTheme.new;
     
 	NSDictionary *lightTheme = values[@"Light"];
@@ -175,8 +183,11 @@
 /// Reads the default theme
 -(void)readTheme
 {
-    // Check if we have a custom theme saved
-    NSDictionary* themeDict = _themes[@"Custom"];
+    // Check if we have a default theme selected, OR a custom theme saved. This is a bit convoluted.
+    NSString* loadedTheme = [NSUserDefaults.standardUserDefaults stringForKey:LOADED_KEY];
+    if (loadedTheme.length == 0) loadedTheme = CUSTOM_KEY;
+    
+    NSDictionary* themeDict = _themes[loadedTheme];
     [self readTheme:themeDict];
 }
 
@@ -184,7 +195,8 @@
  Reads a single, preprocessed theme.
  - Note: Adding new, customizable values to themes could result in null value problems. We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
  */
--(void)readTheme:(NSDictionary*)themeDict {
+-(void)readTheme:(NSDictionary*)themeDict
+{
 	// First load DEFAULT theme into memory
     _theme = self.defaultTheme;
 	
@@ -202,6 +214,10 @@
     }
 }
 
++ (NSString*)loadedThemeKey
+{
+    return LOADED_KEY;
+}
 
 #pragma mark - Saving themes
 

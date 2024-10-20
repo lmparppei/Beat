@@ -62,6 +62,7 @@
 @property (nonatomic) BeatTheme* theme;
 
 + (ThemeManager*)sharedManager;
++ (NSString*)loadedThemeKey;
 
 /// Returns the default theme.
 - (BeatTheme*)defaultTheme;
@@ -77,6 +78,8 @@
 - (void)resetToDefault;
 /// Saves the current theme in user directory.
 - (void)saveTheme;
+/// Reloads current theme from saved plist
+- (void)reloadTheme;
 
 //Access the current theme
 - (BeatTheme*) theme;
