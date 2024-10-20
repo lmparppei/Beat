@@ -419,7 +419,8 @@
 	[self updateUIColors];
 }
 
-- (void)updateUIColors {
+- (void)updateUIColors
+{
 	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
 	
 	bool isDark = delegate.isDark;
