@@ -41,6 +41,7 @@ class PatchNotesViewController: UIViewController {
 	// Set up the UI
 	private func setupUI() {
 		view.addSubview(webView)
+		view.backgroundColor = .systemBackground
 		
 		let dismissButton = UIButton(type: .system)
 		dismissButton.setTitle("Dismiss", for: .normal)
