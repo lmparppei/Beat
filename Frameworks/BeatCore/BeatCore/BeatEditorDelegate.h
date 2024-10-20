@@ -98,6 +98,7 @@ typedef void (^BeatChangeListener)(NSRange);
 #endif
 
 - (id)themeManager;
+- (void)updateUIColors;
 
 
 #pragma mark - Application data and file access
