@@ -227,15 +227,18 @@
             NSMutableArray *values = ranges[item.key];
             NSArray *lastItem = values.lastObject;
             
-            if (lastItem.count < 3) return;
+            NSRange lastRange = NSMakeRange(NSNotFound, 0);
+            NSInteger lastGeneration = NSNotFound;
             
-            NSInteger lastLoc = [(NSNumber*)lastItem[0] integerValue];
-            NSInteger lastLen = [(NSNumber*)lastItem[1] integerValue];
-            NSInteger lastGeneration = [(NSNumber*)lastItem[2] integerValue];
+            if (lastItem.count == 3)  {
+                lastRange.location = [(NSNumber*)lastItem[0] integerValue];
+                lastRange.length = [(NSNumber*)lastItem[1] integerValue];
+                lastGeneration = [(NSNumber*)lastItem[2] integerValue];
+            }
             
-            if (lastLoc + lastLen == range.location && lastGeneration == item.generationLevel) {
+            if (NSMaxRange(lastRange) == range.location && lastGeneration == item.generationLevel) {
                 // This is a continuation of the last range
-                values[values.count-1] = @[@(lastLoc), @(lastLen + range.length), @(item.generationLevel)];
+                values[values.count-1] = @[@(lastRange.location), @(lastRange.length + range.length), @(item.generationLevel)];
             } else {
                 // This is a new range
                 [values addObject:@[@(range.location), @(range.length), @(item.generationLevel)]];
@@ -327,7 +330,7 @@
         
         [_delegate.documentSettings remove:DocSettingRevisionColor];
     }
-	
+    
 	// Get revised ranges from document settings and iterate through them
 	NSDictionary *revisions = [_delegate.documentSettings get:DocSettingRevisions];
 	
