@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BeatThemes
 
 extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 	@IBAction func openSettings(_ sender:AnyObject) {
@@ -70,6 +71,7 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var lineHeightSwitch:UISegmentedControl?
 	@IBOutlet weak var darkModeSwitch:UISegmentedControl?
 	@IBOutlet weak var stylesheetSwitch:BeatSegmentedStylesheetControl?
+	@IBOutlet weak var highContrastSwitch:UISwitch?
 	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
@@ -92,6 +94,9 @@ class BeatSettingsViewController:UITableViewController {
 		self.revisionSelector?.revisionLevel = delegate.revisionLevel
 		self.revisionSelector?.settingController = self
 		
+		let highContrast = UserDefaults.standard.string(forKey: ThemeManager.loadedThemeKey()) ?? ""
+		self.highContrastSwitch?.setOn(highContrast.count > 0 , animated: false)
+		
 		if let stylesheet = self.delegate?.styles.name,
 		   let availableStyles = stylesheetSwitch?.stylesheets.split(separator: ",") {
 			for i in 0..<availableStyles.count {
@@ -103,8 +108,6 @@ class BeatSettingsViewController:UITableViewController {
 		}
 		
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
-			let dark = appDelegate.isDark()
-
 			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
 		}
 	}
@@ -209,6 +212,25 @@ class BeatSettingsViewController:UITableViewController {
 		
 		guard let textView = self.delegate?.getTextView() as? BeatUITextView else { return }
 		textView.updateMobileScale()
+	}
+	
+	@IBAction func toggleColouredRevisionText(_ sender:BeatUserSettingSwitch) {
+		self.toggleSetting(sender)
+		self.delegate?.formatting.refreshRevisionTextColors()
+	}
+	
+	@IBAction func toggleHighContrast(_ sender:UISwitch?) {
+		guard let sender else { return }
+		
+		if sender.isOn {
+			UserDefaults.standard.set("High Contrast", forKey: ThemeManager.loadedThemeKey())
+		} else {
+			UserDefaults.standard.removeObject(forKey: ThemeManager.loadedThemeKey())
+		}
+		
+		ThemeManager.shared().reloadTheme()
+		self.delegate?.updateUIColors()
+		self.delegate?.formatting.formatAllLines()
 	}
 }
 
