@@ -184,7 +184,8 @@ NSString * const DocSettingFirstPageNumber = @"firstPageNumber";
 }
 
 
-- (NSString*)getSettingsString {
+- (NSString*)getSettingsString
+{
 	return [self getSettingsStringWithAdditionalSettings:@{}];
 }
 
