@@ -468,6 +468,26 @@ We see the silhouette of {{city}} in the distance through a window.
 				<pre>1, 2, 3</pre>
 				<p>Serial macros are very useful when numbering comic book panels, for example. The starting value can be anything, as long as its an integer. You can omit the <code>serial</code> keyword after the first instance.</p>
 				<p>If you'd like to define the number before it occurs for the first time and still start at 1, you can put <code>{{ serial varName = 0}}</code> in an omitted boneyard block.</p>
+				
+				<h2>Panel</h2>
+				<p><code>{{panel}}</code> is a global serial number for comic book panels which automatically gets back to zero after a top-level section. It's very similar to <code>{{serial}}</code> but it's an automatic and global singular value, so you can't have multiple panel variables.</p>
+				<pre>.PANEL {{panel}}
+.PANEL {{panel}}
+
+<b># New section</b>
+
+.PANEL {{panel}}
+</pre>
+				<p>Result:</p>
+				<pre>PANEL 1
+					
+PANEL 2
+
+<b>New Section</b>
+
+PANEL 1</pre>
+				<p>You can also redefine panel number at any time by using <code>{{panel = 100}}</code>, which sets the counter to any given number. Note that it will be zeroed again once a top-level section is encountered.</p>
+				
 			</section>
 
 			<section id='fountain-syntax'> 
@@ -518,7 +538,7 @@ Scott exasperatedly throws down the card on the table and picks up the phone, hi
 
 				<p>Here are a regular scene heading with a scene number, a forced scene heading, and an action element that starts with an ellipsis:</p>
 
-				<pre><b>EXT. BRICK'S POOL - DAY <span class='fSymbol'>#.16--b#</span></b></pre>
+				<pre><b>EXT. BRICK'S POOL - DAY <span class='fSymbol'>#.16--b#</span></b>
 
 Steel, in the middle of a heated phone call:
 
@@ -529,7 +549,7 @@ No, everybody we've put away!
 (pause)
 Point Blank Sniper?
 
-.SNIPER SCOPE POV
+<b>.SNIPER SCOPE POV</b>
 
 ...from what seems like only INCHES AWAY. _Steel's face FILLS the *Leupold Mark 4* scope_.</pre>
 
@@ -635,7 +655,7 @@ Brick and Steel regard one another.  A job well done.
 				</p>
 
 				<h2>Page Breaks</h2>
-				<p>Page breaks are indicated by a line containing three or more consecutive equals signs <code>=</code>. Page breaks are useful for television scripts, where act breaks are explicitly labeled, and for creating "vanity" first pages, which may feature quotations or prologue text.</p>
+				<p>Page breaks are indicated by a line containing three or more consecutive equals signs, <code>===</code>. Page breaks are useful for television scripts, where act breaks are explicitly labeled, and for creating "vanity" first pages, which may feature quotations or prologue text.</p>
 
 				<pre>The General Lee flies through the air. FREEZE FRAME.
 

@@ -6,8 +6,10 @@
 //
 /**
  
- This is used to parse macros in Fountain content.
+ This is used to parse macros in Fountain content at preprocessing phase.
  Macros are specified as ``{{macro}}``. `Line` objects know the raw ranges of macro content, and will also deliver a list of actual macro strings to this parser.
+ 
+ The code has been cooked up in a day or two, so it's not the cleanest approach, but works :------)
  
  There are three types of macros: `string`, `serial` (which can be `series` for compatibility with Highland) and `date`.
  String macros require a definition, whereas serials start at `1 ` by default:
@@ -24,6 +26,10 @@
  Outputs the current date.
  Usage: `{{ date dd.mm.YY }}` or just `{{ date }}` (defaults to current locale)
  
+ __Panel macro__
+ Reset after highest-level section.
+ Usage: `{{panel}}`
+ 
  */
 
 import Foundation
@@ -32,9 +38,11 @@ import Foundation
     enum Operation {
         case print, assign
     }
-        
+    
     var macros: [String: BeatMacro] = [:]
-    let typeNames = ["string", "serial", "series", "number", "date"]
+    var panel = BeatMacro(name: "panel", type: .panel, value: 0)
+    
+    let typeNames = ["string", "serial", "series", "number", "date", "panel"]
     
     
     /// Resolves the given macro content and returns the resulting value. `{{` and `}}` are removed automatically, so you can also provide a generic macro for weird tricks, not just the macro range from a line.
@@ -78,16 +86,18 @@ import Foundation
         // Don't let empty macro names through
         if varName == "" { print("Invalid macro"); return nil; }
         
-        // Dates don't work as other macros
-        if varName == "date" {
-            typeName = "date"
+        // Dates and panels don't work as other macros
+        if varName == "date" || varName == "panel" {
+            typeName = varName
             varName = ""
         }
         
         var varType = BeatMacro.typeName(for: typeName)
         let macro:BeatMacro
         
-        if varType != .date {
+        if typeName == "panel" {
+            macro = panel
+        } else if varType != .date {
             // If the macro doesn't exist, create it
             if macros[varName] == nil {
                 macros[varName] = BeatMacro(name: varName, type: varType, value: nil)
@@ -123,6 +133,9 @@ import Foundation
             if macro.type == .serial {
                 // serial numbers are incremented every time we encounter them
                 macro.incrementValue(subValue: subValue)
+            } else if macro.type == .panel {
+                // panels are also constantly incremented
+                macro.incrementValue()
             }
         }
         
@@ -144,10 +157,14 @@ import Foundation
             
         }
     }
+    
+    @objc public func resetPanel() {
+        self.panel.value = 0
+    }
 }
 
 @objc enum MacroType:Int {
-    case string, serial, number, date
+    case string, serial, number, date, panel
 }
 
 
@@ -203,6 +220,8 @@ class BeatMacro {
             return .number
         case "date":
             return .date
+        case "panel":
+            return .number
         default:
             return .string
         }
