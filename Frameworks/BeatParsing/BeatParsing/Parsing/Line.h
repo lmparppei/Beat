@@ -174,6 +174,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @protocol LineDelegate <NSObject>
 @property (readonly) NSMutableArray *lines;
 @property (nonatomic) NSMutableIndexSet *changedIndices;
+- (NSUInteger)indexOfLine:(Line*)line;
+- (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines;
 - (NSArray<Line*>*)linesForScene:(OutlineScene*)outline;
 @end
 

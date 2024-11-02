@@ -60,7 +60,7 @@
 			if (self.text.length >= affectedCharRange.location + 1) {
 				unichar chr = [self.text characterAtIndex:affectedCharRange.location];
 				if (chr == ')') {
-					NSInteger lineIndex = [self.lines indexOfObject:currentLine];
+					NSInteger lineIndex = [self.parser indexOfLine:currentLine];
 					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
 					if (lineIndex < self.lines.count) [self.formatting formatLine:self.lines[lineIndex]];
 					

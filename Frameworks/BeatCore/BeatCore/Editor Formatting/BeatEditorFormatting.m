@@ -458,7 +458,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (!firstTime && line.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		Line* previousLine;
 		
-		NSInteger lineIndex = [self.parser.lines indexOfObject:line];
+        NSInteger lineIndex = [self.parser indexOfLine:line];
 		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [self.parser.lines objectAtIndex:lineIndex - 1];
 		
 		// Keep dialogue input after any dialogue elements

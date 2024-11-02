@@ -415,7 +415,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 - (NSUInteger)index
 {
     if (!self.parser) return NSNotFound;
-    return [self.parser.lines indexOfObject:self];
+    return [self.parser indexOfLine:self];
 }
 
 

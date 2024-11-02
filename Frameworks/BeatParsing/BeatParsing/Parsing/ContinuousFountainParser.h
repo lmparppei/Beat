@@ -93,7 +93,11 @@
 /// Title page elements as a complicated array
 @property (nonatomic) NSMutableArray<NSMutableDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;
+/// Calculated property, checks if title page lines are present
 @property (nonatomic) bool hasTitlePage;
+/// Set `true` when a first-time parse is in process
+@property (nonatomic) bool firstTime;
+
 
 /// For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
@@ -158,6 +162,8 @@
 
 /// Returns the index of given line. Uses cached results, so it's much more performant than using `indexOfObject:]`.
 - (NSUInteger)indexOfLine:(Line*)line;
+/// Returns the index of given line in the given array of of lines. Always use this instead of `indexOfObject:` for performance reasons.
+- (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines;
 /// Returns the index of given scene. Uses cached results, so it's more performant than using `indexOfObject:]`.
 - (NSUInteger)indexOfScene:(OutlineScene*)scene;
 /// Returns the line at given position
@@ -195,8 +201,5 @@
 
 /// Get the line with this UUID
 - (Line*)lineWithUUID:(NSString*)uuid;
-
-/// Checks if the given line is visible in print, and if not. returns its closest printed sibling.
-- (Line*)closestPrintableLineFor:(Line*)line;
 
 @end

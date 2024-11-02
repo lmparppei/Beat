@@ -155,7 +155,7 @@
     @synchronized (self.delegate.lines) {
         NSArray <Line*> *lines = self.delegate.lines.copy;
         
-        NSInteger index = [lines indexOfObject:self.line];
+        NSInteger index = [self.delegate indexOfLine:self.line];
         if (index == NSNotFound) return 0;
         
         NSInteger length = -1;
@@ -170,6 +170,7 @@
             }
         }
         
+        // No length set - this is probably the last object in outline, so let's assume it takes up the rest of the document.
         if (length == -1) {
             return NSMaxRange(lines.lastObject.textRange) - self.position;
         }
