@@ -115,3 +115,12 @@ titlePageUnknown {
 pageBreak {
     text-align: center;
 }
+
+section {
+    font: userSetting(sectionFontType);
+    fontSize: userSetting(sectionFontSize);
+    bold: true;
+    
+    if sectionDepth > 2 then fontSize: 12;
+    if sectionDepth > 1 then fontSize: userSetting(sectionFontSize) - 2;
+}

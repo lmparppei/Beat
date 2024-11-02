@@ -56,12 +56,11 @@ heading {
 section {
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: true;
-    
-    font: system;
-    fontSize: 18;
+    font: userSetting(sectionFontType);
+    fontSize: userSetting(sectionFontSize);
     
     if sectionDepth > 2 then fontSize: 12;
-    if sectionDepth > 1 then fontSize: 15;
+    if sectionDepth > 1 then fontSize: userSetting(sectionFontSize) - 2;
     
     trim: true;
 }
@@ -72,6 +71,7 @@ synopsis {
     color: darkGray;
     
     font: system;
+    font: userSetting(synopsisFontType);
     
     trim: true;
 }
