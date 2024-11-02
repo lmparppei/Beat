@@ -35,7 +35,6 @@
 
 @implementation ThemeManager
 
-#define VERSION_KEY @"version"
 #define THEMES_KEY @"themes"
 #define USER_THEME_FILE @"Custom Colors.plist"
 
@@ -221,7 +220,8 @@
 
 #pragma mark - Saving themes
 
--(void)saveTheme {
+-(void)saveTheme
+{
 #if !TARGET_OS_IOS
 	BeatTheme* defaultTheme = [self defaultTheme];
 	BeatTheme* customTheme = BeatTheme.new;
@@ -270,7 +270,8 @@
 #endif
 }
 
-- (DynamicColor*)dynamicColorFromColor:(BXColor*)color {
+- (DynamicColor*)dynamicColorFromColor:(BXColor*)color
+{
 	return [[DynamicColor new] initWithLightColor:color darkColor:color];
 }
 
