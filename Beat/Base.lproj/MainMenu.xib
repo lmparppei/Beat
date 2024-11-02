@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -729,19 +729,12 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Screenplay" id="Oru-rb-IOS">
                         <items>
-                            <menuItem title="Title Page Editor" id="ce9-gT-GJX">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Document Settings" keyEquivalent="," id="qWH-m6-PLN">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
-                                    <action selector="editTitlePage:" target="-1" id="xEW-Og-73S"/>
+                                    <action selector="openDocumentSettings:" target="-1" id="HWf-L4-cbU"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Add Title Page" id="kNr-WO-rzd">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="addTitlePage:" target="-1" id="s6K-xU-xbT"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="nSg-0b-sL2"/>
                             <menuItem title="Style" id="r9x-8r-i9c">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="S2O-Ze-xD3">
@@ -766,6 +759,19 @@ DQ
                                         </menuItem>
                                     </items>
                                 </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="z9n-cJ-hoO"/>
+                            <menuItem title="Title Page Editor" id="ce9-gT-GJX">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="editTitlePage:" target="-1" id="xEW-Og-73S"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Title Page" id="kNr-WO-rzd">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addTitlePage:" target="-1" id="s6K-xU-xbT"/>
+                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
                             <menuItem title="Start Scene Numbering From..." id="12m-8C-qlE">

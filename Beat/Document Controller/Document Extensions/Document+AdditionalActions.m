@@ -241,4 +241,17 @@
 }
 
 
+#pragma mark - Document settings
+
+- (IBAction)openDocumentSettings:(id)sender
+{
+	BeatDocumentSettingWindow* settings = [BeatDocumentSettingWindow.alloc init];;
+	settings.editorDelegate = self;	
+	self.sheetController = settings;
+	
+	[self.documentWindow beginSheet:settings.window completionHandler:^(NSModalResponse returnCode) {
+		self.sheetController = nil;
+	}];
+}
+
 @end
