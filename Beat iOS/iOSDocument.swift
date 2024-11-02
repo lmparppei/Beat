@@ -43,6 +43,7 @@ class iOSDocument: UIDocument {
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
 		rawText = String(data: contents as! Data, encoding: .utf8)
+		rawText = rawText.replacingOccurrences(of: "\r", with: "")
 		
 		// Read settings and replace range
 		let range = settings.readAndReturnRange(rawText)

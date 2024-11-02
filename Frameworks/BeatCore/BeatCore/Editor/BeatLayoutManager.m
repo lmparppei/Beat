@@ -195,14 +195,11 @@
 {
     // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers) return;
-    
 #if TARGET_OS_IOS
     // Page number doesn't fit on phones
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        return;
-    }
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
 #endif
-    
+
     static BXColor* pageBreakColor;
     if (pageBreakColor == nil) pageBreakColor = [ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3];
     
@@ -211,8 +208,10 @@
     NSRange charRange = [self characterRangeForGlyphRange:*glyphsToShow actualGlyphRange:nil];
     CGSize inset = self.inset;
     
-    NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
+    // Why are we using a key enumerator here instead of a normal fast enumeration? I do not know.
     Line* line;
+    
+    NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
     while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
@@ -233,14 +232,14 @@
         CGRect r = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:&lRange];
         
         // Draw page numbers
-        NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
-    
-        [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
-            NSFontAttributeName: self.editorDelegate.fonts.regular,
-            NSForegroundColorAttributeName: pageNumberColor,
-            NSParagraphStyleAttributeName: self.pageNumberStyle
-        }];
-
+        if (pageNumber > 0) {
+            NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
+            [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
+                NSFontAttributeName: self.editorDelegate.fonts.regular,
+                NSForegroundColorAttributeName: pageNumberColor,
+                NSParagraphStyleAttributeName: self.pageNumberStyle
+            }];
+        }
         
         // Draw page separators if needed
         if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
@@ -711,24 +710,17 @@
     return attrs;
 }
 
-/// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
--(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
-{
-    Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
-    if (line == nil) return 0;
-
-    RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
-        
+- (NSUInteger)foldSelectionIfNeeded:(BXFont * _Nonnull)aFont charIndexes:(const NSUInteger * _Nonnull)charIndexes glyphRange:(const NSRange *)glyphRange props:(const NSGlyphProperty * _Nonnull)props {
     NSDictionary* attrs = [self.textStorage attributesAtIndex:charIndexes[0] effectiveRange:nil];
     if (attrs[@"BeatFolded"]) {
         NSUInteger location = charIndexes[0];
-        NSUInteger length = glyphRange.length;
-
-        NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+        NSUInteger length = glyphRange->length;
+        
+        NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange->length);
         CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
         
         // Folded text
-        for (NSInteger i = 0; i < glyphRange.length; i++) {
+        for (NSInteger i = 0; i < glyphRange->length; i++) {
             NSGlyphProperty prop = props[i];
             prop |= NSGlyphPropertyControlCharacter;
             modifiedProps[i] = prop;
@@ -736,14 +728,29 @@
         
         // Create the new glyphs
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), str);
-        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:*glyphRange];
         
         free(newGlyphs);
         free(modifiedProps);
         //CFRelease(str);
         
-        return glyphRange.length;
+        return glyphRange->length;
     }
+    
+    return NSNotFound;
+}
+
+/// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
+-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
+{
+    Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
+    if (line == nil) return 0;
+    
+    RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
+    
+    // Check for folded/collapsed sections
+    NSInteger foldedCharacters = [self foldSelectionIfNeeded:aFont charIndexes:charIndexes glyphRange:&glyphRange props:props];
+    if (foldedCharacters != NSNotFound) return foldedCharacters;
     
     LineType type = line.type;
     bool currentlyEditing = NSLocationInRange(_editorDelegate.selectedRange.location, line.range) || NSIntersectionRange(_editorDelegate.selectedRange, line.range).length > 0;
@@ -766,7 +773,7 @@
     NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
     
     // Nothing to do (TODO: To avoid extra range calculations after every change to attributes, retrieve markup ranges AFTER checking if hiding markup is on)
-    if (muIndices.count == 0 && markerIndices.count == 0 &&
+    if (line.macroRanges.count == 0 && muIndices.count == 0 && markerIndices.count == 0 &&
         !(type == heading || type == transitionLine || type == character) &&
         !(line.string.containsOnlyWhitespace && line.string.length > 1)
         ) return 0;
@@ -786,46 +793,72 @@
     }
     
     // Modified properties
-    NSGlyphProperty *modifiedProps;
+    //NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+    NSGlyphProperty *modifiedProps = CopyGlyphProperties(props, glyphRange);
     
     if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
         // Show bullets instead of spaces on lines which contain whitespace only
         CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-        free(newGlyphs);
-        
     } else if (_editorDelegate.hideFountainMarkup && !currentlyEditing) {
         // Hide markdown characters for the line we're not currently editing
-        modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
-        
         for (NSInteger i = 0; i < glyphRange.length; i++) {
             NSUInteger index = charIndexes[i];
             NSGlyphProperty prop = props[i];
-            
-            if ([muIndices containsIndex:index]) {
-                prop |= NSGlyphPropertyNull;
-            }
+                        
+            // Hide the glyph if it's in the markup index set
+            if ([muIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
             
             modifiedProps[i] = prop;
         }
-        
-        // Create the new glyphs
-        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-        
-        free(newGlyphs);
-        free(modifiedProps);
-    } else {
-        // Create the new glyphs
-        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-        
-        free(newGlyphs);
     }
     
+    // Macro display
+    /*
+    if (line.macroRanges.count > 0 && !currentlyEditing) {
+        for (NSValue* v in line.resolvedMacros) {
+            NSRange macroRange = v.rangeValue;
+            NSString* string = line.resolvedMacros[v];
+            
+            if (string.length < macroRange.length) {
+                for (NSInteger i=0; i<string.length; i++) {
+                    CFStringRef chr = (__bridge CFStringRef)[string substringWithRange:NSMakeRange(i, 1)];
+                    CFStringReplace(modifiedStr, CFRangeMake(macroRange.location+i, 1), chr);
+                    //CFRelease(chr);
+                }
+                
+                // Hide the remaining glyphs
+                for (NSInteger i = 0; i < glyphRange.length; i++) {
+                    NSRange actualRange = NSMakeRange(macroRange.location + line.position + macroRange.location + string.length, macroRange.length - string.length);
+                    NSInteger ci = charIndexes[i];
+                    if (NSLocationInRange(ci, actualRange)) {
+                        NSGlyphProperty prop = modifiedProps[i];
+                        prop |= NSGlyphPropertyNull;
+                        modifiedProps[i] = prop;
+                    }
+                }
+            }
+        }
+    }
+     */
+
+    CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+    [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+    
+    free(newGlyphs);
+    free(modifiedProps);    
     CFRelease(modifiedStr);
+    
     return glyphRange.length;
+}
+
+NSGlyphProperty *CopyGlyphProperties(const NSGlyphProperty *props, NSRange glyphRange) {
+    NSGlyphProperty *propsCopy = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+    
+    // Copy the properties from the original array to the new array
+    if (propsCopy != NULL) {
+        memcpy(propsCopy, props, glyphRange.length * sizeof(NSGlyphProperty));
+    }
+    return propsCopy;
 }
 
 /// Returns glyphs in given font
