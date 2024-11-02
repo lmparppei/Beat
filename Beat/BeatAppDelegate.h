@@ -10,11 +10,15 @@
 #import <WebKit/WebKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+@class BeatStyleMenuManager;
+
 @interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate, NSWindowDelegate>
 
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;
 @property (nonatomic) bool forceDarkMode;
+
+@property (nonatomic) IBOutlet BeatStyleMenuManager *styleMenuManager;
 
 /// Backup versions
 @property (nonatomic, weak) IBOutlet NSMenu *backupMenu;

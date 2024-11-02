@@ -171,7 +171,7 @@
 			@"sceneIndex": @([outline indexOfObject:scene]),
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 			@"position": [NSNumber numberWithInteger:scene.position],
-			@"lineIndex": [NSNumber numberWithInteger:[_delegate.parser.lines indexOfObject:scene.line]],
+			@"lineIndex": [NSNumber numberWithInteger:[_delegate.parser indexOfLine:scene.line]],
 			@"omited": [NSNumber numberWithBool:scene.omitted],
 			@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
 		};
@@ -191,7 +191,7 @@
 }
 
 - (NSString *)snippet:(OutlineScene *)scene {
-	NSUInteger index = [_delegate.parser.lines indexOfObject:scene.line];
+	NSUInteger index = [_delegate.parser indexOfLine:scene.line];
 	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
 	NSUInteger lineIndex = index + 1;

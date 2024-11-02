@@ -13,55 +13,41 @@ class BeatSpellCheckingUtils:NSObject, NSMenuDelegate {
 	@IBOutlet weak var target:AnyObject?
 	var spellChecking = NSSpellChecker.shared
 	
-	var lang = ""
+	var language = ""
 	
 	override func awakeFromNib() {
-		var spLang = UserDefaults.standard.value(forKey: "BeatSpellChecking") as? String ?? "auto"
-		if (spLang == "") { spLang = "auto" }
+		language = UserDefaults.standard.value(forKey: "BeatSpellChecking") as? String ?? "auto"
+		if (language == "") { language = "auto" }
 		
-		lang = spLang
-		if (lang == "auto") {
-			spellChecking.automaticallyIdentifiesLanguages = true
-		} else {
-			spellChecking.automaticallyIdentifiesLanguages = false
-			spellChecking.setLanguage(lang)
-		}
+		updateLanguage(language)
 	}
 	
 	func menuWillOpen(_ menu: NSMenu) {
-		if langMenu == nil { return }
+		guard let langMenu else { return }
 		
-		if langMenu!.items.count < 3 {
+		if langMenu.items.count < 3 {
 			for l in spellChecking.userPreferredLanguages {
-				let item = BeatLanguageMenuItem()
-				item.keyEquivalent = ""
-				item.title = Locale.current.localizedString(forLanguageCode: l) ?? "(none)"
+				let title = Locale.current.localizedString(forLanguageCode: l) ?? "(none)"
+				
+				let item = BeatLanguageMenuItem(title: title, action: #selector(selectLanguage), keyEquivalent: "")
 				item.locale = l
 				item.target = self
-				item.action = #selector(selectLanguage)
 				
-				langMenu?.items.append(item)
+				langMenu.items.append(item)
 			}
 		}
 				
-		// Check preferred language
-		var preferredLang = lang
-		if (lang != "auto") {
-			preferredLang = spellChecking.language()
+		// Check preferred language. Automatic item is the first one.
+		if language == "auto" {
+			langMenu.items.first?.state = .on
 		} else {
-			let autoItem = langMenu!.items.first!
-			autoItem.state = NSControl.StateValue.on
-		}
-		
-		// Update on/off status
-		for item in langMenu!.items {
-			let menuItem = item as? BeatLanguageMenuItem ?? nil
-			if (menuItem == nil) { continue }
+			language = spellChecking.language()
 			
-			if menuItem!.locale == preferredLang {
-				menuItem!.state = NSControl.StateValue.on
-			} else {
-				menuItem!.state = NSControl.StateValue.off
+			// Update on/off status
+			langMenu.items.forEach { item in
+				if let menuItem = item as? BeatLanguageMenuItem {
+					menuItem.state = (menuItem.locale == language) ? .on : .off
+				}
 			}
 		}
 	}
@@ -70,14 +56,15 @@ class BeatSpellCheckingUtils:NSObject, NSMenuDelegate {
 		let menuItem = sender as! BeatLanguageMenuItem
 		
 		// Store the language
-		lang = menuItem.locale
 		UserDefaults.standard.set(menuItem.locale, forKey: "BeatSpellChecking")
+		updateLanguage(menuItem.locale)
+	}
+	
+	func updateLanguage(_ language:String) {
+		spellChecking.automaticallyIdentifiesLanguages = (language == "auto")
 		
-		if menuItem.locale == "auto" {
-			spellChecking.automaticallyIdentifiesLanguages = true
-		} else {
-			spellChecking.automaticallyIdentifiesLanguages = false
-			spellChecking.setLanguage(menuItem.locale)
+		if !spellChecking.automaticallyIdentifiesLanguages {
+			spellChecking.setLanguage(language)
 		}
 	}
 }

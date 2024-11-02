@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,12 +27,12 @@
             <windowStyleMask key="styleMask" titled="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="181" y="118" width="713" height="424"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
             <view key="contentView" id="4fr-Kx-7D3">
                 <rect key="frame" x="0.0" y="0.0" width="713" height="424"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oRS-pE-hs7">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oRS-pE-hs7">
                         <rect key="frame" x="18" y="375" width="373" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Title Page" id="1Q2-hX-DF9">
@@ -41,7 +41,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="pyx-uD-jhu">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="pyx-uD-jhu">
                         <rect key="frame" x="117" y="329" width="270" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Script Title" drawsBackground="YES" usesSingleLineMode="YES" id="L18-jD-fGA">
@@ -54,7 +54,7 @@
                             <outlet property="delegate" destination="-2" id="YYe-2w-grZ"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DIc-Yz-5ZU">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DIc-Yz-5ZU">
                         <rect key="frame" x="18" y="332" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Title" id="IfO-1A-aco">
@@ -63,7 +63,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="fY5-GW-yJe">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="fY5-GW-yJe">
                         <rect key="frame" x="117" y="301" width="270" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Written by, Por, Par, Av..." drawsBackground="YES" usesSingleLineMode="YES" id="UPj-Lx-y6u">
@@ -76,7 +76,7 @@
                             <outlet property="delegate" destination="-2" id="Htd-A8-i6G"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="X47-fg-nab">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="X47-fg-nab">
                         <rect key="frame" x="18" y="304" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Credit line" id="NoI-DQ-e7G">
@@ -85,7 +85,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="sD2-sw-iW1">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="sD2-sw-iW1">
                         <rect key="frame" x="117" y="273" width="270" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Firstname Lastname" drawsBackground="YES" usesSingleLineMode="YES" id="KMW-03-qsW">
@@ -98,7 +98,7 @@
                             <outlet property="delegate" destination="-2" id="QTq-dn-fYD"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="e4Y-fn-JbT">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="e4Y-fn-JbT">
                         <rect key="frame" x="18" y="276" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Author(s)" id="bb6-po-oAF">
@@ -107,7 +107,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="s4k-BN-zix">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="s4k-BN-zix">
                         <rect key="frame" x="117" y="217" width="270" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Version, Date..." drawsBackground="YES" usesSingleLineMode="YES" id="Dal-JX-aCz">
@@ -120,7 +120,7 @@
                             <outlet property="delegate" destination="-2" id="Gra-T9-M4I"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="HEu-EP-6jd">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="HEu-EP-6jd">
                         <rect key="frame" x="18" y="220" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Draft Date" id="fV3-Dd-fql">
@@ -129,7 +129,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="Lku-bS-WGE">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="Lku-bS-WGE">
                         <rect key="frame" x="117" y="139" width="270" height="71"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="e-mail, phone, ..." drawsBackground="YES" id="LuQ-dX-czZ">
@@ -142,7 +142,7 @@
                             <outlet property="delegate" destination="-2" id="3qq-z1-jgg"/>
                         </connections>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="3t4-yt-DGM">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="3t4-yt-DGM">
                         <rect key="frame" x="117" y="61" width="270" height="71"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Anything noteworthy" drawsBackground="YES" id="adx-JA-UZb">
@@ -155,7 +155,7 @@
                             <outlet property="delegate" destination="-2" id="Rdg-el-vqx"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="XHR-h0-7Wa">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="XHR-h0-7Wa">
                         <rect key="frame" x="18" y="192" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Contact" id="TC7-0N-c9w">
@@ -164,7 +164,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" id="eyE-Qb-qsB">
+                    <textField focusRingType="none" verticalHuggingPriority="750" id="eyE-Qb-qsB">
                         <rect key="frame" x="117" y="245" width="270" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Based on..." drawsBackground="YES" usesSingleLineMode="YES" id="qnS-Lr-H1v">
@@ -177,7 +177,7 @@
                             <outlet property="delegate" destination="-2" id="hiG-ik-snT"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jCm-h0-dbF">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jCm-h0-dbF">
                         <rect key="frame" x="18" y="248" width="93" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Source" id="xg7-rM-bI8">
@@ -186,7 +186,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f4Y-Lc-xq8">
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f4Y-Lc-xq8">
                         <rect key="frame" x="20" y="114" width="91" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Notes" id="GLL-uy-Zta">
@@ -227,7 +227,7 @@ Gw
                             <rect key="frame" x="0.0" y="0.0" width="279" height="384"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojr-4k-HeY">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojr-4k-HeY">
                                     <rect key="frame" x="28" y="35" width="112" height="104"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" alignment="left" id="6Jt-pf-ivR" customClass="BottomAlignedTextField">
@@ -236,7 +236,7 @@ Gw
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cJu-bp-UnN">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cJu-bp-UnN">
                                     <rect key="frame" x="133" y="34" width="119" height="37"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" alignment="right" id="JhC-jE-Uey" customClass="BottomAlignedTextField">
@@ -245,7 +245,7 @@ Gw
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AGm-h9-dqP">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AGm-h9-dqP">
                                     <rect key="frame" x="50" y="164" width="178" height="86"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" alignment="center" id="8Hq-6z-2xF" customClass="VerticallyCenteredTextField">

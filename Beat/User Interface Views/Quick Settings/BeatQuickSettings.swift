@@ -137,6 +137,8 @@ class BeatDesktopQuickSettings:NSViewController {
 		self.view.addSubview(container)
 	}
 	
+	/*
+	// This is an idea for loading *every* setting dynamically
 	func setupQuickSettings() {
 		guard let delegate = self.delegate else { return }
 		let revisions = BeatRevisions.revisionGenerations()
@@ -181,6 +183,7 @@ class BeatDesktopQuickSettings:NSViewController {
 			stackView?.addView(item)
 		}
 	}
+	 */
 	
 	@IBAction func toggleValue(sender:ITSwitch?) {
 		guard let button = sender, let delegate else { return }

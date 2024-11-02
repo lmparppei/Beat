@@ -43,7 +43,6 @@
 @property (nonatomic) IBOutlet NSMenuItem *menuManual;
 
 @property (nonatomic) IBOutlet BeatPluginMenuManager *pluginMenuManager;
-@property (nonatomic) IBOutlet BeatStyleMenuManager *styleMenuManager;
 
 @property (nonatomic) BeatNotifications *notifications;
 
@@ -100,22 +99,8 @@
 }
 
 - (void)awakeFromNib {
-#ifdef ADHOC
-	// Ad hoc vector
-	NSLog(@"# ADHOC RELEASE");
-
-	[self setupSparkle];
-#else
-	// App store vector
-	NSLog(@"# APP STORE RELEASE");
+	[self setupUpdates];
 	
-	// Remove update/ad hoc related menu items
-	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
-	[_enterLicenseKeyItem.menu removeItem:_enterLicenseKeyItem];
-	
-	_checkForUpdatesItem = nil;
-#endif
-		
 	// Show welcome screen
 	[self showLaunchScreen];
 	
@@ -123,6 +108,36 @@
 	[self.pluginMenuManager setup];
 	// Populate style menu
 	[self.styleMenuManager setup];
+}
+
+- (void)setupUpdates
+{
+	bool showCheckUpdates = false;
+	NSString* release = @"";
+#ifdef ADHOC
+	release = @"Ad Hoc";
+	showCheckUpdates = true;
+	[self setupSparkle];
+#endif
+#ifdef APPSTORE
+	release = @"App Store";
+#endif
+#ifdef ORGANIZATION
+	release = @"Organization";
+#endif
+	
+	NSLog(@"BEAT %@ (%@) - %@ release",
+		  NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"],
+		  NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"],
+		  release);
+	
+	if (!showCheckUpdates) {
+		// Remove update/ad hoc related menu items
+		[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
+		[_enterLicenseKeyItem.menu removeItem:_enterLicenseKeyItem];
+		
+		_checkForUpdatesItem = nil;
+	}
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
@@ -225,11 +240,14 @@
 			[self showLaunchScreen];
 		}
 		
+#ifdef APPSTORE
 		[self requestAppReview];
+#endif
 	}];
 }
 
-- (void)requestAppReview {
+- (void)requestAppReview
+{
 	// The user has either clicked that they never want to review the app
 	bool dontShowReviewPrompt = [NSUserDefaults.standardUserDefaults boolForKey:@"DontAskForReview"];
 	if (dontShowReviewPrompt) return;

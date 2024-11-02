@@ -801,7 +801,7 @@
 - (void)updateUIwithCurrentScene
 {
 	OutlineScene *currentScene = self.currentScene;
-	NSInteger sceneIndex = [self.parser.outline indexOfObject:currentScene];
+	NSInteger sceneIndex = [self.parser indexOfScene:currentScene];
 	if (sceneIndex == NSNotFound) return;
 	
 	// Update any registered outline views

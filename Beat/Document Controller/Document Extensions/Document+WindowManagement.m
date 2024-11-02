@@ -159,10 +159,15 @@
 	}
 }
 
+bool avoidLoop = false;
 - (void)windowDidResignMain:(NSNotification *)notification {
-	if (self.documentIsLoading || notification.object == NSApp.mainWindow || NSApp.mainWindow == nil) return;
+	//if (self.documentIsLoading || notification.object == NSApp.mainWindow || NSApp.mainWindow == nil) return;
+	if (avoidLoop || self.documentIsLoading || notification.object == NSApp.mainWindow) return;
+	
+	avoidLoop = true;
 	// When window resigns it main status, we'll have to hide possible floating windows
 	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:NSApp.mainWindow];
+	avoidLoop = false;
 }
 
 - (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
