@@ -62,6 +62,7 @@ NSString * const DocSettingNovelLineHeightMultiplier = @"novelLineHeightMultipli
 NSString * const DocSettingContentAlignment = @"novelContentAlignment";
 
 NSString * const DocSettingFirstPageNumber = @"firstPageNumber";
+NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
 -(id)init
 {
@@ -93,7 +94,8 @@ NSString * const DocSettingFirstPageNumber = @"firstPageNumber";
         DocSettingHeaderAlignment: @(1),
         DocSettingPrintSceneNumbers: @(true),
         DocSettingContentAlignment: @"",
-        DocSettingFirstPageNumber: @(1)
+        DocSettingFirstPageNumber: @(1),
+        DocSettingPageNumberingMode: @(0)
     };
     
     return defaultValues;

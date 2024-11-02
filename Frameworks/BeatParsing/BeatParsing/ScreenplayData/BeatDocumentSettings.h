@@ -63,6 +63,7 @@ extern NSString * const DocSettingNovelLineHeightMultiplier;
 extern NSString * const DocSettingContentAlignment;
 
 extern NSString * const DocSettingFirstPageNumber;
+extern NSString * const DocSettingPageNumberingMode;
 
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)toggleBool:(NSString*)key;
