@@ -55,6 +55,11 @@
                 
         Line *l = preprocessedLines.lastObject;
         
+        // Reset macro panel at top-level sections
+        if (l.type == section && l.sectionDepth == 1) {
+            [macros resetPanel];
+        }
+        
         // Preprocess macros
         if (l.macroRanges.count > 0) {
             NSArray<NSValue*>* macroKeys = [l.macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {
@@ -78,12 +83,14 @@
             continue;
         }
         
-        // Skip notes
-        if (l.note && !exportSettings.printNotes) continue;
-        
-        // Reset dual dialogue
-        else if (l.type == character) l.nextElementIsDualDialogue = false;
-        
+        if (l.note && !exportSettings.printNotes) {
+            // Skip notes when not needed
+            continue;
+        }
+        else if (l.type == character) {
+            // Reset dual dialogue
+            l.nextElementIsDualDialogue = false;
+        }
         else if (l.type == action || l.type == lyrics || l.type == centered) {
             l.beginsNewParagraph = true;
             
@@ -105,7 +112,6 @@
         if (sceneNumber < 1) sceneNumber = 1;
     }
     
-    
     // The array for printable elements
     NSMutableArray *linesToPrint = NSMutableArray.new;
     Line *previousLine;
@@ -120,7 +126,6 @@
             
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
-
             continue;
         }
         

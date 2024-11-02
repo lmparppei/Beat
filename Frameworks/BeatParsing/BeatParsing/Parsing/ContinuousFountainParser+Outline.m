@@ -219,7 +219,7 @@
 {
     if (index == NSNotFound) {
         OutlineScene* scene = [self outlineElementInRange:line.textRange];
-        index = [self.outline indexOfObject:scene];
+        index = [self indexOfScene:scene];
     }
     if (lineIndex == NSNotFound) lineIndex = [self indexOfLine:line];
     
@@ -238,8 +238,8 @@
 - (void)updateScene:(OutlineScene*)scene at:(NSInteger)index lineIndex:(NSInteger)lineIndex
 {
     // We can call this method without specifying the indices
-    if (index == NSNotFound) index = [self.outline indexOfObject:scene];
-    if (lineIndex == NSNotFound) lineIndex = [self.lines indexOfObject:scene.line];
+    if (index == NSNotFound) index = [self indexOfScene:scene];
+    if (lineIndex == NSNotFound) lineIndex = [self indexOfLine:scene.line];
     
     // Reset everything
     scene.synopsis = NSMutableArray.new;
