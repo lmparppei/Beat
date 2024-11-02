@@ -184,6 +184,15 @@
 - (void)viewDidAppear:(BOOL)animated
 {
 	[super viewDidAppear:animated];
+	
+	[self becomeFirstResponder];
+	
+	// When returning from another VC, let's check if we should return to editing mode
+	if (editorWasActive) {
+		editorWasActive = false;
+		[self.getTextView becomeFirstResponder];
+	}
+	
 	// Do nothing more if we're not loading the document
 	if (!self.documentIsLoading) return;
 	
@@ -206,6 +215,24 @@
 	
 	//[self appearanceChanged:nil];
 	[self displayPatchNotesIfNeeded];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	[self becomeFirstResponder];
+	if (editorWasActive) {
+		editorWasActive = false;
+		[self.textView becomeFirstResponder];
+	}
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+	editorWasActive = self.textView.isFirstResponder;
+	[self.textView resignFirstResponder];
+	[self resignFirstResponder];
 }
 
 -(IBAction)dismissViewController:(id)sender
@@ -514,14 +541,14 @@
 
 #pragma mark - Preview / Pagination
 
+bool editorWasActive = false;
 - (IBAction)togglePreview:(id)sender
 {
 	if (![self.navigationController.viewControllers containsObject:self.previewView]) {
+		editorWasActive = self.textView.isFirstResponder;
 		[self.navigationController pushViewController:self.previewView animated:true];
 		[self.previewController renderOnScreen];
 		[self.textView scrollToRange:self.textView.selectedRange];
-	} else {
-		[self.previewView closePreviewWithSender:nil];
 	}
 }
 
@@ -625,7 +652,6 @@
 	}
 	
 	[self.parser parseChangeInRange:affectedRange withString:string];
-	
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView

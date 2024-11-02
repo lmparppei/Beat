@@ -18,8 +18,6 @@ extension BeatUITextView {
 			UIKeyCommand(action: #selector(prevScene), input: UIKeyCommand.inputUpArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Previous Scene"),
 			UIKeyCommand(action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Next Scene")
 		]
-		
-		
 	}
 	
 	@objc func makeBold() {

@@ -48,49 +48,95 @@ extension BeatDocumentViewController {
 			
 			return UIMenu(children: items)
 		}
-				
+		
+		
 		let screenplayMenu = UIMenu(options: [], children: [
-			UIAction(title: "Add title page", image: UIImage(systemName: "info"), handler: { (_) in
-				self.formattingActions.addTitlePage(self)
-			}),
-			UIMenu(options: .displayInline, children: [
-				UIAction(title: "Lock scene numbers", image: UIImage(systemName: "lock"), handler: { (_) in
-					self.formattingActions.lockSceneNumbers(self)
-				}),
-				UIAction(title: "Remove locked scene numbers", image: UIImage(systemName: "lock.open"), handler: { (_) in
-					self.formattingActions.unlockSceneNumbers(self)
-				}),
-			]),
-			UIMenu(options: .displayInline, children: [
-				UIAction(title: "Screenplay statistics", handler: { (_) in
-					self.pluginAgent.runPlugin(withName: "BeatStatistics")
-				})
-			]),
-			UIMenu(options: .displayInline, children: [
-				UIAction(title: "All Settings...", image: UIImage(systemName: "gear"), handler: { (_) in
-					self.openSettings(self)
-				})
-			]),
-			/*
-			UIMenu(title: "Plugins", options: [], children: [
-				UIDeferredMenuElement.uncached { [weak self] completion in
-					var actions = [UIMenuElement]()
-					let runningPlugins = self?.runningPlugins.allKeys as? [String] ?? []
-					
-					let pluginItem = UIAction(title: "Run Test Plugin") { _ in
-						self?.pluginAgent.runPlugin(withName: "FTOutliner")
-					}
-					
-					if runningPlugins.contains(where: { $0 == "FTOutliner" } ) {
-						pluginItem.state = .on
-					}
-					
-					actions.append(pluginItem)
-					
-					completion(actions)
-				}
-			])
-			 */
+			UIDeferredMenuElement.uncached { [weak self] completion in
+				guard let self else { completion([]); return }
+				
+				let sceneNumberStart = self.documentSettings.getInt(DocSettingSceneNumberStart)
+				let sceneNumberString = String(sceneNumberStart)
+				
+				let items:[UIMenuElement] = [
+					UIAction(title: "Add title page", image: UIImage(systemName: "info"), handler: { (_) in
+						self.formattingActions.addTitlePage(self)
+					}),
+					UIMenu(title: "", options: .displayInline, children: [
+						UIAction(title: "Set First Scene Number", image: UIImage(systemName: "number"), handler: { _ in
+							BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Scene Number", message: "Scene numbering sequence begins from this number and automatically increments. Must be at least 1.", currentvalue: sceneNumberString) { value in
+								if var v = value {
+									if v < 1 { v = 1 }
+									self.documentSettings.setInt(DocSettingSceneNumberStart, as: v)
+									self.parser.updateOutline()
+									self.textView.layoutManager.invalidateDisplay(forCharacterRange: NSMakeRange(0, self.text().count))
+								}
+							}
+						}),
+						UIAction(title: "Lock scene numbers", image: UIImage(systemName: "lock"), handler: { (_) in
+							self.formattingActions.lockSceneNumbers(self)
+						}),
+						UIAction(title: "Remove locked scene numbers", image: UIImage(systemName: "lock.open"), handler: { (_) in
+							self.formattingActions.unlockSceneNumbers(self)
+						}),
+					]),
+					UIMenu(title: "Pagination Options", image: UIImage(systemName: "book.pages"), children: [
+						UIMenu(title: "Page Numbering Begins From...", children: [
+							UIAction(title: "Any Content", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.default.rawValue ? .on : .off, handler: { _ in
+								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.default.rawValue)
+								self.resetPreview()
+							}),
+							UIAction(title: "First Scene", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstScene.rawValue ? .on : .off, handler: { _ in
+								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstScene.rawValue)
+								self.resetPreview()
+							}),
+							UIAction(title: "First Forced Page Break", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstPageBreak.rawValue ? .on : .off, handler: { _ in
+								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstPageBreak.rawValue)
+								self.resetPreview()
+							})
+						]),
+						UIAction(title: "Set First Page Number...", handler: { _ in
+							BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Page Number", message: "Pagination begins from this number. Must be at least 1.", currentvalue: String(self.documentSettings.getInt(DocSettingFirstPageNumber))) { value in
+								guard let value else { return }
+								self.documentSettings.setInt(DocSettingFirstPageNumber, as: max(value, 1))
+								self.resetPreview()
+							}
+						})
+					]),
+					UIMenu(options: .displayInline, children: [
+						UIAction(title: "Screenplay statistics", handler: { (_) in
+							self.pluginAgent.runPlugin(withName: "BeatStatistics")
+						})
+					]),
+					UIMenu(options: .displayInline, children: [
+						UIAction(title: "All Settings...", image: UIImage(systemName: "gear"), handler: { (_) in
+							self.openSettings(self)
+						})
+					]),
+
+					/*
+					 UIMenu(title: "Plugins", options: [], children: [
+					 UIDeferredMenuElement.uncached { [weak self] completion in
+					 var actions = [UIMenuElement]()
+					 let runningPlugins = self?.runningPlugins.allKeys as? [String] ?? []
+					 
+					 let pluginItem = UIAction(title: "Run Test Plugin") { _ in
+					 self?.pluginAgent.runPlugin(withName: "FTOutliner")
+					 }
+					 
+					 if runningPlugins.contains(where: { $0 == "FTOutliner" } ) {
+					 pluginItem.state = .on
+					 }
+					 
+					 actions.append(pluginItem)
+					 
+					 completion(actions)
+					 }
+					 ])
+					 */
+				]
+				
+				completion(items)
+			}
 		])
 				
 		self.screenplayButton?.menu = screenplayMenu
@@ -121,7 +167,6 @@ extension BeatDocumentViewController {
 			self.screenplayButton?.menu = UIMenu(children: menuItems ?? [])
 		}
 	}
-
 }
 
 /// Support for plugin view floating buttons

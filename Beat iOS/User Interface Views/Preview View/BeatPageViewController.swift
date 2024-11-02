@@ -26,6 +26,29 @@ import BeatCore
 		}
 	}
 	
+	// We need some silliness here because of iOS responder chains
+	public override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		self.becomeFirstResponder()
+	}
+	public override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		self.pageView?.becomeFirstResponder()
+	}
+	public override func didMove(toParent parent: UIViewController?) {
+		super.didMove(toParent: parent)
+	
+		if parent != nil {
+			if !isFirstResponder { self.becomeFirstResponder() }
+		} else {
+			self.resignFirstResponder()
+		}
+	}
+	
+	public override var canBecomeFirstResponder: Bool {
+		return true
+	}
+	
 	public override func viewDidLoad() {
 		self.pageView?.becomeFirstResponder()
 		
@@ -85,6 +108,11 @@ import BeatCore
 		]
 	}
 	
+	public override func viewWillDisappear(_ animated: Bool) {
+		resignFirstResponder()
+		super.viewWillDisappear(animated)
+	}
+	
 	public func clear() {
 		self.pageView?.clear()
 	}
@@ -109,6 +137,7 @@ import BeatCore
 	
 	/// This pops the preview from navigation
 	@IBAction @objc func closePreview(sender:Any?) {
+		self.resignFirstResponder()
 		self.navigationController?.popViewController(animated: true)
 		self.pageView?.clear()
 	}
@@ -118,6 +147,7 @@ import BeatCore
 		self.dismiss(animated: true)
 		self.pageView?.clear()
 	}
+
 }
 
 @objc open class BeatPageScrollView: UIScrollView, UIScrollViewDelegate {
