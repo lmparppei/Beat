@@ -67,10 +67,10 @@
 "fxb-nx-hJp.title" = "Sulkee automaattisesti sulkeet ja hakasulkeet, kuten () ja [[]]";
 
 /* Class = "NSToolbarItem"; label = "Layout"; ObjectID = "ha1-yG-obd"; */
-"ha1-yG-obd.label" = "Asettelu";
+"ha1-yG-obd.label" = "Muotoilu";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Layout"; ObjectID = "ha1-yG-obd"; */
-"ha1-yG-obd.paletteLabel" = "Asettelu";
+"ha1-yG-obd.paletteLabel" = "Muotoilu";
 
 /* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
 "lzW-qc-hjs.title" = "Editorin toiminta";
@@ -126,3 +126,20 @@
 "6OX-Qw-Due.title" = "Kuvaotsikon tyyli";
 "mSK-8B-nEj.title" = "Lihavoitu";
 "MKe-sW-nsP.title" = "Alleviivattu";
+
+"Z5r-5F-vbN.title" = "Näkymättömien elementtien muotoilu";
+"wK3-T2-CKe.title" = "Osioiden kirjasin";
+"tpt-4c-5wZ.title" = "Osioiden kirjasinkoko";
+"fZw-om-qbT.title" = "Synopsisfontti";
+"UOH-ge-3Tb.ttile" = "Helvetica (oletus)";
+"PUh-9p-3fX.title" = "Courier";
+"VlM-Fm-k1u.title" = "Suuri";
+"VlM-Fm-k1u.title" = "Keskikokoinen";
+"VlM-Fm-k1u.title" = "Sama kuin leipäteksti";
+"vh8-c4-8fT.title" = "Helvetica (oletus)";
+"SwG-cV-cfD.title" = "Courier";
+
+"vNs-hq-JbK.title" = "⚠️ Toistaiseksi nämä asetukset vaikuttavat vain esikatseluun ja PDF-luontiin";
+"l1c-Mc-Ssf.title" = "Huomaa: Nämä asetukset vaikuttavat vain käsikirjoitusmuotoiluun";
+"XEa-I5-p3i.title" = "Huomaa: Nämä asetukset vaikuttavat vain käsikirjoitusmuotoiluun";
+"2Og-yp-uDM.title" = "Edistyneemmät";

@@ -92,6 +92,10 @@ NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 NSString* const BeatSettingDarkMode                     = @"Dark Mode";
 NSString* const BeatSettingLineTypeView                 = @"lineTypeView";
 
+NSString* const BeatSettingSectionFontType              = @"sectionFontType";
+NSString* const BeatSettingSectionFontSize              = @"sectionFontSize";
+NSString* const BeatSettingSynopsisFontType             = @"synopsisFontType";
+
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -167,7 +171,11 @@ NSString* const BeatSettingLineTypeView                 = @"lineTypeView";
         
         BeatSettingPhoneFontSize: @[BeatSettingPhoneFontSize, @(1)],
         
-        BeatSettingLineTypeView: @[BeatSettingLineTypeView, @NO]
+        BeatSettingLineTypeView: @[BeatSettingLineTypeView, @NO],
+        
+        BeatSettingSectionFontType: @[BeatSettingSectionFontType, @"system"],
+        BeatSettingSectionFontSize: @[BeatSettingSectionFontSize, @"18.0"],
+        BeatSettingSynopsisFontType: @[BeatSettingSynopsisFontType, @"system"]
 	};
 }
 

@@ -50,6 +50,12 @@
 
 @property (nonatomic, weak) IBOutlet NSButton *updatePluginsAutomatically;
 
+@property (nonatomic, weak) IBOutlet NSButton *sectionFontTypeSansSerif;
+@property (nonatomic, weak) IBOutlet NSButton *sectionFontTypeSerif;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *sectionFontSizeMenu;
+@property (nonatomic, weak) IBOutlet NSButton *synopsisFontTypeSansSerif;
+@property (nonatomic, weak) IBOutlet NSButton *synopsisFontTypeSerif;
+
 @property (nonatomic) NSMutableDictionary *controls;
 
 @property (weak) IBOutlet NSTabView *tabView;
@@ -77,6 +83,7 @@
 	
 	// Iterate through user default keys and find the property by that name. This is a bit shady, but works.
 	// For example: "showSceneNumbers" -> @IBOutlet NSButton* showSceneNumbers
+	// If you want to skip this behavior, see the else clause
 	for (NSString *key in userDefaults.allKeys) {
 		if ([self valueForKey:key]) {
 			// Find the property by the name of this value
@@ -126,6 +133,25 @@
 					
 					
 				self.backupURLdisplay.stringValue = url;
+			}
+			else if ([key isEqualToString:@"sectionFontType"]) {
+				NSString* value = [BeatUserDefaults.sharedDefaults get:key];
+				if (![value isEqualToString:@"system"]) self.sectionFontTypeSerif.state = NSControlStateValueOn;
+				else self.sectionFontTypeSansSerif.state = NSControlStateValueOn;
+			}
+			else if ([key isEqualToString:@"sectionFontSize"]) {
+				CGFloat value = [BeatUserDefaults.sharedDefaults getFloat:key];
+				for (BeatMenuItemWithFloat* item in self.sectionFontSizeMenu.menu.itemArray) {
+					if ((CGFloat)item.floatValue == value) {
+						[self.sectionFontSizeMenu selectItem:item];
+						break;
+					}
+				}
+			}
+			else if ([key isEqualToString:@"synopsisFontType"]) {
+				NSString* value = [BeatUserDefaults.sharedDefaults get:key];
+				if (![value isEqualToString:@"system"]) self.synopsisFontTypeSerif.state = NSControlStateValueOn;
+				else self.synopsisFontTypeSansSerif.state = NSControlStateValueOn;
 			}
 			
 		}
@@ -332,6 +358,27 @@
 	if (sender == _screenplayItemMore || sender == _screenplayItemContd) [self reloadStyles];
 	
 	[self apply];
+}
+
+- (IBAction)toggleSectionFontType:(NSButton*)sender
+{
+	NSString* value = (sender.tag == 0) ? @"system" : @"default";
+	[BeatUserDefaults.sharedDefaults save:value forKey:BeatSettingSectionFontType];
+	[self reloadStyles];
+}
+
+- (IBAction)selectSectionFontSize:(NSPopUpButton*)sender
+{
+	BeatMenuItemWithFloat* item = (BeatMenuItemWithFloat*)sender.selectedItem;
+	[BeatUserDefaults.sharedDefaults saveFloat:item.floatValue forKey:BeatSettingSectionFontSize];
+	[self reloadStyles];
+}
+
+- (IBAction)toggleSynopsisFontType:(NSButton*)sender
+{
+	NSString* value = (sender.tag == 0) ? @"system" : @"default";
+	[BeatUserDefaults.sharedDefaults save:value forKey:BeatSettingSynopsisFontType];
+	[self reloadStyles];
 }
 
 - (void)apply

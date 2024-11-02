@@ -104,6 +104,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool showPageNumbers;
+@property (nonatomic) bool hidePageNumbers;
 
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;

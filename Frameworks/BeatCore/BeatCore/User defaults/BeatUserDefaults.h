@@ -67,6 +67,10 @@ extern NSString* const BeatSettingPhoneFontSize;
 extern NSString* const BeatSettingDarkMode;
 extern NSString* const BeatSettingLineTypeView;
 
+extern NSString* const BeatSettingSectionFontType;
+extern NSString* const BeatSettingSectionFontSize;
+extern NSString* const BeatSettingSynopsisFontType;
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 

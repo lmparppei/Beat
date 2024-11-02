@@ -128,7 +128,7 @@
 
 - (BeatStylesheet *)editorStyles
 {
-    BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet] delegate:self];
+    BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet] delegate:(id<BeatEditorDelegate>)self];
     return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
 }
 - (BeatStylesheet *)styles

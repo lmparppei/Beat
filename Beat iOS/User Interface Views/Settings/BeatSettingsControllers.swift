@@ -73,6 +73,10 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var stylesheetSwitch:BeatSegmentedStylesheetControl?
 	@IBOutlet weak var highContrastSwitch:UISwitch?
 	
+	@IBOutlet weak var sectionFontType:UIButton?
+	@IBOutlet weak var sectionFontSize:UIButton?
+	@IBOutlet weak var synopsisFontType:UIButton?
+	
 	/// Font size switch is only available on iOS
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
 	
@@ -110,12 +114,56 @@ class BeatSettingsViewController:UITableViewController {
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
 			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
 		}
+				
+		if let sectionFontType = BeatUserDefaults.shared().get(BeatSettingSectionFontType) {
+			let command = self.sectionFontType?.menu?.command(withPropertyList: sectionFontType)
+			command?.state = .on
+		}
+		
+		let sectionFontSize = BeatUserDefaults.shared().getFloat(BeatSettingSectionFontSize)
+		let value = String(floor(sectionFontSize))
+		if let sectionFontCommand = self.sectionFontSize?.menu?.command(withPropertyList: value) {
+			sectionFontCommand.state = .on
+		}
+		
 	}
 	
 	@IBAction func toggleDarkMode(_ sender:UISegmentedControl) {
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
 			appDelegate.toggleDarkMode()
 		}
+	}
+	
+	@IBAction func toggleSectionFontType(_ sender:UICommand?) {
+		guard let value = sender?.propertyList as? String else { return }
+		if value == "system" {
+			BeatUserDefaults.shared().reset(toDefault: BeatSettingSectionFontType)
+		} else {
+			BeatUserDefaults.shared().save(value, forKey: BeatSettingSectionFontType)
+		}
+		
+		delegate?.reloadStyles()
+		delegate?.resetPreview()
+	}
+	
+	@IBAction func toggleSynopsisFontType(_ sender:UICommand?) {
+		guard let value = sender?.propertyList as? String else { return }
+		if value == "system" {
+			BeatUserDefaults.shared().reset(toDefault: BeatSettingSynopsisFontType)
+		} else {
+			BeatUserDefaults.shared().save(value, forKey: BeatSettingSynopsisFontType)
+		}
+		
+		delegate?.reloadStyles()
+		delegate?.resetPreview()
+	}
+	
+	@IBAction func toggleSectionFontSize(_ sender:UICommand?) {
+		guard let value = sender?.propertyList as? String else { print("!!! faulty value"); return }
+		BeatUserDefaults.shared().save(value, forKey: BeatSettingSectionFontSize)
+		
+		delegate?.reloadStyles()
+		delegate?.resetPreview()
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {
@@ -232,8 +280,40 @@ class BeatSettingsViewController:UITableViewController {
 		self.delegate?.updateUIColors()
 		self.delegate?.formatting.formatAllLines()
 	}
+	
+	@IBAction func togglePaginationMode(_ sender:UIButton) {
+		// ...
+	}
+	
+	@IBAction func setFirstPageNumber(_ sender:UITextField) {
+		print(" -> ", sender.text)
+		// ...
+	}
+	
+	@IBAction func setFirstSceneNumber(_ sender:UITextField) {
+		// ...
+	}
+
 }
 
 class BeatURLButton:UIButton {
 	@IBInspectable var url:String?
+}
+
+extension UIMenu {
+	/// Recursively searches through a UIMenu to find a UICommand with a matching propertyList value.
+	func command(withPropertyList propertyList: Any?) -> UICommand? {
+		for element in self.children {
+			if let command = element as? UICommand, command.propertyList as? String == propertyList as? String {
+				return command
+			}
+			if let submenu = element as? UIMenu {
+				// Recursively search in submenus
+				if let foundCommand = submenu.command(withPropertyList: propertyList) {
+					return foundCommand
+				}
+			}
+		}
+		return nil
+	}
 }
