@@ -407,12 +407,11 @@
 		pos += lineRange.length;
 	}
 
-		
 	// Let's create a faux Beat document out of the FDX data
 	BeatDocumentSettings *settings = BeatDocumentSettings.new;
 	NSDictionary *revisionRanges = [BeatRevisions rangesForSaving:attributedScript];
 	[settings set:DocSettingRevisions as:revisionRanges];
-	
+    
 	return [NSString stringWithFormat:@"%@\n%@", attributedScript.string, [settings getSettingsString]];
 }
 

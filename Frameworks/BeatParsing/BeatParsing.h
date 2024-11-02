@@ -23,6 +23,7 @@
 #import <BeatParsing/NSString+CharacterControl.h>
 #import <BeatParsing/NSString+Regex.h>
 #import <BeatParsing/NSMutableString+Regex.h>
+#import <BeatParsing/NSArray+BinarySearch.h>
 
 #import <BeatParsing/NSCharacterSet+BadControlCharacters.h>
 #import <BeatParsing/NSString+EMOEmoji.h>
