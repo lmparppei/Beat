@@ -406,6 +406,22 @@
 "backup.browseVersions" = "Visa versioner...";
 
 "quickSettings.novelLineHeightMultiplier" = "Mellanrum";
+"quickSettings.novelLineHeightMultiplier" = "Textjustering";
+
+"documentSettings.novelLineHeightMultiplier" = "Mellanrum";
+"documentSettings.novelContentAlignment" = "Textjustering";
 
 "spelling.ignoreDialogue.title" = "Ignorera stavning för dialoger";
 "spelling.ignoreDialogue.text" = "Du kan behöva öppna dokumentet igen för att ändringarna ska träda i kraft.";
+
+"documentSettings.pageSize" = "Sidstorlek";
+"documentSettings.firstSceneNumber" = "Nummer på första scenen";
+"documentSettings.firstPageNumber" = "Nummer på första sidan";
+"documentSettings.pageNumberingMode" = "Sidnumrering börjar vid...";
+"documentSettings.novelLineHeightMultiplier" = "Radavstånd";
+"documentSettings.novelContentAlignment" = "Justering";
+
+"pagination.pageNumberingMode.anyContent" = "Valfritt innehåll";
+"pagination.pageNumberingMode.firstScene" = "Första scenen";
+"pagination.pageNumberingMode.forcedPageBreak" = "Första tvingade sidbrytningen";
+"pagination.forcedNote" = "Obs: Med den här inställningen förblir alla sidor onumrerade fram till första sidbrytningen (===)";

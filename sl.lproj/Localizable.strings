@@ -223,3 +223,21 @@
 
 "spelling.ignoreDialogue.title" = "Prezri preverjanje črkovanja v pogovorih";
 "spelling.ignoreDialogue.text" = "Morda boste morali znova odpreti dokument, da bodo spremembe začele veljati.";
+
+"documentSettings.novelLineHeightMultiplier" = "Razmik vrstic";
+"documentSettings.novelContentAlignment" = "Poravnava";
+
+"quickSettings.novelLineHeightMultiplier" = "Razmik vrstic";
+"quickSettings.novelContentAlignment" = "Poravnava";
+
+"documentSettings.pageSize" = "Velikost strani";
+"documentSettings.firstSceneNumber" = "Številka prve scene";
+"documentSettings.firstPageNumber" = "Številka prve strani";
+"documentSettings.pageNumberingMode" = "Številčenje strani se začne pri...";
+"documentSettings.novelLineHeightMultiplier" = "Razmik vrstic";
+"documentSettings.novelContentAlignment" = "Poravnava";
+
+"pagination.pageNumberingMode.anyContent" = "Kakršna koli vsebina";
+"pagination.pageNumberingMode.firstScene" = "Prva scena";
+"pagination.pageNumberingMode.forcedPageBreak" = "Prva prisiljena prelom strani";
+"pagination.forcedNote" = "Opomba: S to nastavitvijo bodo vse strani ostale brez številk do prvega preloma strani (===)";

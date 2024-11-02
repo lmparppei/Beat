@@ -234,6 +234,18 @@
 "quickSettings.novelLineHeightMultiplier" = "Line Spacing";
 "quickSettings.novelContentAlignment" = "Alignment";
 
+"documentSettings.pageSize" = "Page Size";
+"documentSettings.firstSceneNumber" = "First Scene Number";
+"documentSettings.firstPageNumber" = "First Page Number";
+"documentSettings.pageNumberingMode" = "Page Numbering Starts at...";
+"documentSettings.novelLineHeightMultiplier" = "Line Spacing";
+"documentSettings.novelContentAlignment" = "Alignment";
+
+"pagination.pageNumberingMode.anyContent" = "Any Content";
+"pagination.pageNumberingMode.firstScene" = "First Scene";
+"pagination.pageNumberingMode.forcedPageBreak" = "First Forced Page Break";
+"pagination.forcedNote" = "Note: With this setting all pages will remain non-numbered until the first page break (===)";
+
 "tag.cast" = "Cast";
 "tag.prop" = "Prop";
 "tag.costume" = "Costume";
@@ -272,3 +284,5 @@
 "type.centered" = "Centered";
 "type.shot" = "Shot / Mini Slug";
 "type.multiple" = "(Multiple lines)";
+
+

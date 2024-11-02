@@ -219,3 +219,18 @@
 
 "spelling.ignoreDialogue.title" = "Ohita oikeinkirjoitus dialogissa";
 "spelling.ignoreDialogue.text" = "Saatat joutua avaamaan käsikirjoituksen uudelleen, jotta muutokset tulevat voimaan.";
+
+"documentSettings.novelLineHeightMultiplier" = "Riviväli";
+"documentSettings.novelContentAlignment" = "Asettelu";
+
+"documentSettings.pageSize" = "Sivun koko";
+"documentSettings.firstSceneNumber" = "Ensimmäisen kohtauksen numero";
+"documentSettings.firstPageNumber" = "Ensimmäisen sivun numero";
+"documentSettings.pageNumberingMode" = "Sivunumerointi alkaa kohdasta...";
+"documentSettings.novelLineHeightMultiplier" = "Riviväli";
+"documentSettings.novelContentAlignment" = "Tasaus";
+
+"pagination.pageNumberingMode.anyContent" = "Mikä tahansa sisältö";
+"pagination.pageNumberingMode.firstScene" = "Ensimmäinen kohtaus";
+"pagination.pageNumberingMode.forcedPageBreak" = "Ensimmäinen pakotettu sivunvaihto";
+"pagination.forcedNote" = "Huom: Tällä asetuksella sivut pysyvät numeroimattomina ensimmäiseen sivunvaihtoon (===) asti";
