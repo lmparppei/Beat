@@ -7,6 +7,7 @@
 //
 
 #import "BeatTextView+FocusMode.h"
+#import "Document.h"
 
 @implementation BeatTextView (FocusMode)
 
@@ -24,17 +25,7 @@
 - (void)setFocusModeType:(BeatFocusModeType)type
 {
 	[BeatUserDefaults.sharedDefaults saveInteger:type forKey:BeatSettingFocusMode];
-}
-- (BeatFocusModeType)focusModeType
-{
-	return (BeatFocusModeType)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingFocusMode];
-}
-
-- (IBAction)toggleFocusMode:(id)sender
-{
-	NSMenuItem* item = sender;
-	[self setFocusModeType:(BeatFocusModeType)item.tag];
-		
+	
 	if (self.focusModeType != BeatFocusModeOff) {
 		// Start observing
 		[self.editorDelegate registerSelectionObserver:self];
@@ -44,6 +35,22 @@
 		[self.editorDelegate unregisterSelectionObserver:self];
 		NSLayoutManager* lm = self.layoutManager;
 		[lm removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:NSMakeRange(0, self.text.length)];
+	}
+}
+
+- (BeatFocusModeType)focusModeType
+{
+	return (BeatFocusModeType)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingFocusMode];
+}
+
+- (IBAction)toggleFocusMode:(id)sender
+{
+	NSMenuItem* item = sender;
+
+	// Toggle focus mode for every document
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		BeatTextView* textView = doc.textView;
+		[textView setFocusModeType:(BeatFocusModeType)item.tag];
 	}
 }
 
