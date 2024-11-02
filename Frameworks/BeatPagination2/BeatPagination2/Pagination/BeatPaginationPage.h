@@ -65,6 +65,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSRange)rangeForLocation:(NSInteger)location;
 - (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
 - (CGFloat)positionOfBlockForLine:(Line*)line;
+
+- (bool)hasScene;
+- (bool)hasForcedPageBreak;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -34,6 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatPaginationManager;
 @class BeatRenderer;
 
+typedef NS_ENUM(NSInteger, BeatPageNumberingMode) {
+    BeatPageNumberingModeDefault = 0,
+    BeatPageNumberingModeFirstScene,
+    BeatPageNumberingModeFirstPageBreak
+};
+
+
 @protocol BeatPaginationDelegate
 @property (weak, nonatomic) BeatRenderer* _Nullable renderer;
 @property (nonatomic) BeatExportSettings *settings;

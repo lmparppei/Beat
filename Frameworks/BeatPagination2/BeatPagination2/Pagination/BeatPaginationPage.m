@@ -428,5 +428,17 @@
 	[self invalidateRender];
 }
 
+- (bool)hasForcedPageBreak
+{
+    return (self.lines.lastObject.type == pageBreak);
+}
+
+- (bool)hasScene
+{
+    for (Line* l in self.lines) {
+        if (l.type == heading) return true;
+    }
+    return false;
+}
 
 @end

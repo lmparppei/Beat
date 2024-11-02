@@ -152,10 +152,27 @@
     _running = false;
     
     // Update page numbers
+    BeatPageNumberingMode mode = [self.settings.documentSettings getInt:DocSettingPageNumberingMode];
     NSInteger pageNumber = self.settings.firstPageNumber;
+    
+    bool numberingBegan = (mode == BeatPageNumberingModeDefault);
+    
     for (BeatPaginationPage* page in self.pages) {
-        page.pageNumber = pageNumber;
-        pageNumber += 1;
+        if (!numberingBegan) {
+            if (mode == BeatPageNumberingModeFirstScene && page.hasScene) {
+                // This page will get a number, because it has a scene
+                numberingBegan = true;
+            } else if (mode == BeatPageNumberingModeFirstPageBreak && page.hasForcedPageBreak) {
+                // This page WON'T get a number, but the following ones do
+                numberingBegan = true;
+                continue;
+            }
+        }
+        
+        if (numberingBegan) {
+            page.pageNumber = pageNumber;
+            pageNumber += 1;
+        }
     }
     
     [self.delegate paginationFinished:self];
