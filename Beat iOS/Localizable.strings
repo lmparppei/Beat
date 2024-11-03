@@ -78,3 +78,43 @@
 "gender.woman.plural" = "Women";
 "gender.man.plural" = "Men";
 "gender.unspecified.plural" = "Unspecified";
+
+"color.none" = "None";
+"color.default" = "Default";
+"color.red" = "Red";
+"color.green" = "Green";
+"color.blue" = "Blue";
+"color.pink" = "Pink";
+"color.yellow" = "Yellow";
+"color.brown" = "Brown";
+"color.cyan" = "Cyan";
+"color.orange" = "Orange";
+"color.magenta" = "Magenta";
+"color.purple" = "Purple";
+"color.salmon" = "Salmon";
+"color.rose" = "Rose";
+"color.goldenrod" = "Goldenrod";
+"color.buff" = "Buff";
+"color.cherry" = "Cherry";
+
+"menuItem.createPDF" = "Create PDF...";
+"menuItem.export" = "Export";
+"menuItem.export.fdx" = "Export Final Draft File...";
+"menuItem.export.outline" = "Export Fountain Outline...";
+
+"menuItem.addTitlePage" = "Add Title Page";
+"menuItem.sceneNumbering" = "Scene Numbering";
+"menuItem.sceneNumbering.setFirstSceneNumber" = "Set First Scene Number...";
+"menuItem.sceneNumbering.lockSceneNumbers" = "Lock Scene Numbers";
+"menuItem.sceneNumbering.unlockSceneNumbers" = "Remove locked scene numbers";
+
+"menuItem.pagination" = "Pagination Options";
+"menuItem.pagination.numberingBeginsFrom" = "Page Numbering Begins From...";
+"menuItem.pagination.numberingBeginsFrom.anyContent" = "Any Content (Default)";
+"menuItem.pagination.numberingBeginsFrom.firstScene" = "First Scene";
+"menuItem.pagination.numberingBeginsFrom.firstPageBreak" = "First Forced Page Break";
+"menuItem.pagination.numberingBeginsFrom.firstPageBreak.note" = "All pages before === are non-numbered";
+"menuItem.pagination.setFirstPageNumber" = "Set First Page Number...";
+"menuItem.notepad" = "Notepad";
+"menuItem.statistics" = "Screenplay Statistics";
+"menuItem.allSettings" = "All Settings...";

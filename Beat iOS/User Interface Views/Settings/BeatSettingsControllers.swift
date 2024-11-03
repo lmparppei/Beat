@@ -10,7 +10,7 @@ import UIKit
 import BeatThemes
 
 extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
-	@IBAction func openSettings(_ sender:AnyObject) {
+	@IBAction func openSettings(_ sender:AnyObject?) {
 		if let vc = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? BeatSettingsViewController {
 			vc.modalPresentationStyle = .formSheet
 			vc.delegate = self
@@ -281,19 +281,6 @@ class BeatSettingsViewController:UITableViewController {
 		self.delegate?.formatting.formatAllLines()
 	}
 	
-	@IBAction func togglePaginationMode(_ sender:UIButton) {
-		// ...
-	}
-	
-	@IBAction func setFirstPageNumber(_ sender:UITextField) {
-		print(" -> ", sender.text)
-		// ...
-	}
-	
-	@IBAction func setFirstSceneNumber(_ sender:UITextField) {
-		// ...
-	}
-
 }
 
 class BeatURLButton:UIButton {
