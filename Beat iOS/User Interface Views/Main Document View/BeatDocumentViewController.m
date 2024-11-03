@@ -350,7 +350,7 @@
 {
 	// Show document name
 	self.titleBar.title = self.fileNameString;
-	
+
 }
 
 - (IBAction)dismissDocumentViewController:(id)sender
@@ -542,7 +542,7 @@
 #pragma mark - Preview / Pagination
 
 bool editorWasActive = false;
-- (IBAction)togglePreview:(id)sender
+- (IBAction)togglePreview:(id _Nullable)sender
 {
 	if (![self.navigationController.viewControllers containsObject:self.previewView]) {
 		editorWasActive = self.textView.isFirstResponder;
@@ -560,6 +560,21 @@ bool editorWasActive = false;
 - (bool)previewVisible
 {
 	return (self.presentedViewController == self.previewView || self.navigationController.viewControllers.lastObject == self.previewView);
+}
+
+
+#pragma mark - Notepad
+
+- (IBAction)toggleNotepad:(id _Nullable)sender
+{
+	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"BeatNotepadView" bundle:nil];
+	BeatNotepadViewController* vc = [sb instantiateViewControllerWithIdentifier:@"Notepad"];
+	vc.delegate = self;
+	
+	UINavigationController* nc = [UINavigationController.alloc initWithRootViewController:vc];
+	[self presentViewController:nc animated:true completion:^{
+		NSLog(@"ok");
+	}];
 }
 
 

@@ -15,11 +15,9 @@
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatCore-Swift.h>
 
-@class DynamicColor;
-
 @interface BeatNotepad() <BeatEditorView>
-@property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) BeatMarkdownTextStorageDelegate* mdDelegate;
+@property (nonatomic) bool loading;
 @end
 
 @implementation BeatNotepad
@@ -28,9 +26,12 @@
 {
     [super awakeFromNib];
     [self setColor:@"default"];
+
+    CGFloat fontSize = (self.baseFontSize > 0) ? self.baseFontSize : 12.0;
     
-    self.mdDelegate = BeatMarkdownTextStorageDelegate.new;
+    self.mdDelegate = [BeatMarkdownTextStorageDelegate.alloc initWithFontSize:fontSize];
     self.mdDelegate.textStorage = self.textStorage;
+    
     self.textStorage.delegate = self.mdDelegate;
     
     self.textColor = self.currentColor;
@@ -41,14 +42,20 @@
 #if TARGET_OS_OSX
     [self.editorDelegate registerEditorView:self];
 #endif
-    
+    _loading = true;
     NSString* notes = [self.editorDelegate.documentSettings getString:@"Notes"];
     if (notes.length > 0) [self loadString:notes];
+    else [self setString:@""];
+    _loading = false;
 }
 
 
 #pragma mark - Loading and storing text
 
+#if TARGET_OS_IOS
+- (NSString*)string { return self.text; }
+- (void)setText:(NSString*)text { [self setString:text]; }
+#endif
 
 - (void)setString:(NSString *)string
 {
@@ -57,13 +64,13 @@
 #else
     [super setText:string];
 #endif
-    [self saveToDocument];
+    if (!_loading) [self saveToDocument];
 }
 
 /// Alias for iOS
-- (NSString*)text { return self.string; }
+//- (NSString*)text { return self.string; }
 /// Alias for iOS
-- (void)setText:(NSString *)text { [self setString:text]; }
+//- (void)setText:(NSString *)text { [self setString:text]; }
 
 -(void)loadString:(NSString*)string
 {
@@ -130,6 +137,15 @@
     } else {
         self.currentColor = [BeatColors color:colorName];
     }
+    
+    NSMutableDictionary* attrs = self.typingAttributes.mutableCopy;
+    attrs[NSForegroundColorAttributeName] = self.currentColor;
+    [self setTypingAttributes:attrs];
+    
+#if TARGET_OS_IOS
+    
+    //self.typingAttributes[NSForegroundColorAttributeName] = self.currentColor;
+#endif
 }
 
 - (void)saveToDocument
@@ -141,27 +157,45 @@
 - (NSString*)stringForSaving
 {
     NSMutableString *result = [NSMutableString.alloc initWithString:@""];
-    
-    [self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-        
+    [self.textStorage enumerateAttributesInRange:NSMakeRange(0, self.textStorage.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        DynamicColor* color = attrs[NSForegroundColorAttributeName];
         NSString* string = [self.string substringWithRange:range];
-                
-        // Do nothing for default color
-        if (value != self.defaultColor) {
+        
+        if (color != self.defaultColor) {
             NSString *colorTag;
             for (NSString *colorName in BeatColors.colors.allKeys) {
-                if (BeatColors.colors[colorName] == value) {
+                if (BeatColors.colors[colorName] == color) {
                     colorTag = colorName;
                     break;
                 }
             }
             
-            if (colorTag) string = [NSString stringWithFormat:@"<%@>%@</%@>", colorTag, string, colorTag];
+            if (colorTag != nil) string = [NSString stringWithFormat:@"<%@>%@</%@>", colorTag, string, colorTag];
         }
-                
+        
         [result appendString:string];
     }];
-    
+    /*
+     [self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+     
+     NSString* string = [self.string substringWithRange:range];
+     
+     // Do nothing for default color
+     if (value != self.defaultColor) {
+     NSString *colorTag;
+     for (NSString *colorName in BeatColors.colors.allKeys) {
+     if (BeatColors.colors[colorName] == value) {
+     colorTag = colorName;
+     break;
+     }
+     }
+     
+     if (colorTag) string = [NSString stringWithFormat:@"<%@>%@</%@>", colorTag, string, colorTag];
+     }
+     
+     [result appendString:string];
+     }];
+     */
     return result;
 }
 
@@ -179,9 +213,7 @@
 - (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName
 {
     NSRange range = NSMakeRange(position, length);
-    if (NSMaxRange(range) > self.string.length) {
-        return;
-    }
+    if (NSMaxRange(range) > self.string.length) return;
     
     BXColor* color;
     if (colorName.length > 0) color = [BeatColors color:colorName];

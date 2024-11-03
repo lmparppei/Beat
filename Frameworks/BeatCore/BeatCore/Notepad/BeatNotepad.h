@@ -18,6 +18,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DynamicColor;
+
 @protocol BeatNotepadExports <JSExport>
 @property (nonatomic) NSString* string;
 @property (nonatomic) NSString* text;
@@ -30,9 +32,14 @@ JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)position length:(NSInte
 @property (weak, nonatomic) IBOutlet id<BeatEditorDelegate> editorDelegate;
 @property (nonatomic) bool observerDisabled;
 
+@property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) NSString *currentColorName;
 @property (nonatomic) BXColor *currentColor;
+#if TARGET_OS_IOS
 @property (nonatomic) NSString* string;
+#endif
+
+@property (nonatomic) IBInspectable CGFloat baseFontSize;
 
 - (void)setup;
 - (void)loadString:(NSString*)string;

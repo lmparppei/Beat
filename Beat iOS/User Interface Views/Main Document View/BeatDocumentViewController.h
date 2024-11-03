@@ -37,8 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem* dismissKeyboardButton;
 
-- (IBAction)togglePreview:(id)sender;
-- (IBAction)toggleCards:(id)sender;
+- (IBAction)togglePreview:(id _Nullable)sender;
+- (IBAction)toggleCards:(id _Nullable)sender;
+- (IBAction)toggleNotepad:(id _Nullable)sender;
 
 @end
 

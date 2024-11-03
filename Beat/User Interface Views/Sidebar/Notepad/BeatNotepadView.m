@@ -37,7 +37,7 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonPink;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonCyan;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonMagenta;
-@property (nonatomic) DynamicColor* defaultColor;
+//@property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) NSMutableArray* observers;
 @end
 
