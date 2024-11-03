@@ -29,15 +29,25 @@ import UXKit
 	}
 	
 	@objc public weak var textStorage:NSTextStorage?
-	
+    @objc public var fontSize:CGFloat = 12.0
+    
+    var stylization:[String:Any]
+    
+    @objc public init(fontSize:CGFloat = 12.0) {
+        self.fontSize = fontSize
+        self.stylization = [
+            "*": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: fontSize).italics()],
+            "**": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: fontSize).bold()],
+            "_": [NSAttributedString.Key.underlineStyle: 1]
+        ]
+        
+        super.init()
+    }
+    
+    func setupStyles() {
+        
+    }
 
-	var stylization:[String:Any] = [
-		"*": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: 12.0).italics()],
-		"**": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: 12.0).bold()],
-		"_": [NSAttributedString.Key.underlineStyle: 1]
-	]
-
-	
 	var lines:[BeatMdLine] {
 		guard let textStorage = self.textStorage else { return [] }
 		
@@ -53,7 +63,7 @@ import UXKit
 		
 		return mdLines
 	}
-	
+    	
 	public func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
 		if editedMask != .editedAttributes {
 			// Update highlights in edited range
@@ -93,13 +103,13 @@ import UXKit
 			}
 			
 			if level > 4 { level = 4 }
-			let size = 20 - 2 * CGFloat(level)
+            let size = 1.6 * fontSize - 2 * CGFloat(level)
 			let newFont = BXFont.boldSystemFont(ofSize: size)
 
 			newAttrs[NSAttributedString.Key.font] = newFont
 		} else {
 			// Something else
-			newAttrs[NSAttributedString.Key.font] = BXFont.systemFont(ofSize: 12.0)
+			newAttrs[NSAttributedString.Key.font] = BXFont.systemFont(ofSize: fontSize)
 		}
 		
 		// Reset underline
