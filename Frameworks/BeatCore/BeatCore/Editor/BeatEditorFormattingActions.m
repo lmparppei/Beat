@@ -32,8 +32,8 @@ static NSString *centeredEnd = @" <";
 
 static NSString *highlightSymbolOpen = @"<<";
 static NSString *highlightSymbolClose = @">>";
-static NSString *strikeoutSymbolOpen = @"{{";
-static NSString *strikeoutSymbolClose = @"}}";
+static NSString *macroSymbolOpen = @"{{";
+static NSString *macroSymbolClose = @"}}";
 
 
 #pragma mark - Init
@@ -267,10 +267,9 @@ static NSString *strikeoutSymbolClose = @"}}";
 
 - (IBAction)makeOmitted:(id)sender
 {
-	NSRange cursorLocation = _delegate.selectedRange;
-	[self format:cursorLocation startingSymbol:omitOpen endSymbol:omitClose style:Block];
-
+	[self format:_delegate.selectedRange startingSymbol:omitOpen endSymbol:omitClose style:Block];
 }
+
 - (IBAction)omitScene:(id)sender {
 	OutlineScene *scene = [_delegate.parser sceneAtPosition:_delegate.selectedRange.location];
 	if (scene.omitted) return;
@@ -286,6 +285,12 @@ static NSString *strikeoutSymbolClose = @"}}";
     NSString* string = [_delegate.text substringWithRange:range];
     
     [_delegate.textActions replaceRange:range withString:string.uppercaseString];
+}
+
+- (IBAction)makeMacro:(id)sender
+{
+    NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
+    [self format:range startingSymbol:macroSymbolOpen endSymbol:macroSymbolClose style:Other];
 }
 
 /*
@@ -327,7 +332,7 @@ static NSString *strikeoutSymbolClose = @"}}";
 }
 */
 
-- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(BeatMarkupStyle)style
+- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(NSInteger)style
 {
     //[self addFormattingTo:cursorLocation open:startingSymbol close:endSymbol style:style];
     

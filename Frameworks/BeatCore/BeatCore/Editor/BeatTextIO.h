@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, BeatMarkupStyle) {
     Italic,
     Underline,
     Note,
-    Centered
+    Centered,
+    Other
 };
 
 @class OutlineScene;

@@ -36,12 +36,12 @@ extension BeatDocumentViewController {
 		navigationItem.titleMenuProvider = { suggestions in
 			var items = suggestions
 			
-			items.append(UICommand(title: "Create PDF...", action: #selector(self.openExportPanel)))
-			items.append(UIMenu(title: "Export", options: .displayInline, children: [
-				UIAction(title: "Export Final Draft File...", handler: { _ in
+			items.append(UICommand(title: BeatLocalization.localizedString(forKey: "menuItem.createPDF"), action: #selector(self.openExportPanel)))
+			items.append(UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.export"), options: .displayInline, children: [
+				UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.export.fdx"), handler: { _ in
 					self.exportFile(type: "FDX")
 				}),
-				UIAction(title: "Export Fountain Outline...", handler: { _ in
+				UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.export.outline"), handler: { _ in
 					self.exportFile(type: "Outline")
 				})
 			]))
@@ -49,67 +49,57 @@ extension BeatDocumentViewController {
 			return UIMenu(children: items)
 		}
 		
-		
-		let screenplayMenu = UIMenu(options: [], children: [
+		// Warning: This menu is a pain to debug.
+		let screenplayMenu:UIMenu = UIMenu(options: [], children: [
 			UIDeferredMenuElement.uncached { [weak self] completion in
-				guard let self else { completion([]); return }
-				
-				let sceneNumberStart = self.documentSettings.getInt(DocSettingSceneNumberStart)
-				let sceneNumberString = String(sceneNumberStart)
-				
 				let items:[UIMenuElement] = [
-					UIAction(title: "Add title page", image: UIImage(systemName: "info"), handler: { (_) in
-						self.formattingActions.addTitlePage(self)
+					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.addTitlePage"), image: UIImage(systemName: "info"), handler: { (_) in
+						self?.formattingActions.addTitlePage(self)
 					}),
-					UIMenu(title: "", options: .displayInline, children: [
-						UIAction(title: "Set First Scene Number", image: UIImage(systemName: "number"), handler: { _ in
-							BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Scene Number", message: "Scene numbering sequence begins from this number and automatically increments. Must be at least 1.", currentvalue: sceneNumberString) { value in
-								if var v = value {
-									if v < 1 { v = 1 }
-									self.documentSettings.setInt(DocSettingSceneNumberStart, as: v)
-									self.parser.updateOutline()
-									self.textView.layoutManager.invalidateDisplay(forCharacterRange: NSMakeRange(0, self.text().count))
-								}
-							}
+					// Scene Numbering
+					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering"), image: UIImage(systemName: "number"), children: [
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.setFirstSceneNumber"), handler: { _ in
+							self?.firstSceneNumberPrompt()
 						}),
-						UIAction(title: "Lock scene numbers", image: UIImage(systemName: "lock"), handler: { (_) in
-							self.formattingActions.lockSceneNumbers(self)
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.lockSceneNumbers"), image: UIImage(systemName: "lock"), handler: { (_) in
+							self?.formattingActions.lockSceneNumbers(self)
 						}),
-						UIAction(title: "Remove locked scene numbers", image: UIImage(systemName: "lock.open"), handler: { (_) in
-							self.formattingActions.unlockSceneNumbers(self)
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.unlockSceneNumbers"), image: UIImage(systemName: "lock.open"), handler: { (_) in
+							self?.formattingActions.unlockSceneNumbers(self)
 						}),
 					]),
-					UIMenu(title: "Pagination Options", image: UIImage(systemName: "book.pages"), children: [
-						UIMenu(title: "Page Numbering Begins From...", children: [
-							UIAction(title: "Any Content", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.default.rawValue ? .on : .off, handler: { _ in
-								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.default.rawValue)
-								self.resetPreview()
+					// Pagination options
+					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.pagination"), image: UIImage(systemName: "book.pages"), children: [
+						UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom"), children: [
+							UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom.anyContent"), state: self?.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.default.rawValue ? .on : .off, handler: { _ in
+								self?.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.default.rawValue)
+								self?.resetPreview()
 							}),
-							UIAction(title: "First Scene", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstScene.rawValue ? .on : .off, handler: { _ in
-								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstScene.rawValue)
-								self.resetPreview()
+							UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom.firstScene"), state: self?.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstScene.rawValue ? .on : .off, handler: { _ in
+								self?.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstScene.rawValue)
+								self?.resetPreview()
 							}),
-							UIAction(title: "First Forced Page Break", state: self.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstPageBreak.rawValue ? .on : .off, handler: { _ in
-								self.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstPageBreak.rawValue)
-								self.resetPreview()
+							UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom.firstPageBreak"), subtitle: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom.firstPageBreak.note"), state: self?.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.firstPageBreak.rawValue ? .on : .off, handler: { _ in
+								self?.documentSettings.setInt(DocSettingPageNumberingMode, as: BeatPageNumberingMode.firstPageBreak.rawValue)
+								self?.resetPreview()
 							})
 						]),
-						UIAction(title: "Set First Page Number...", handler: { _ in
-							BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Page Number", message: "Pagination begins from this number. Must be at least 1.", currentvalue: String(self.documentSettings.getInt(DocSettingFirstPageNumber))) { value in
-								guard let value else { return }
-								self.documentSettings.setInt(DocSettingFirstPageNumber, as: max(value, 1))
-								self.resetPreview()
-							}
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.setFirstPageNumber"), handler: { _ in
+							self?.firstPageNumberPrompt()
+							
 						})
 					]),
 					UIMenu(options: .displayInline, children: [
-						UIAction(title: "Screenplay statistics", handler: { (_) in
-							self.pluginAgent.runPlugin(withName: "BeatStatistics")
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.notepad"), handler: { _ in
+							self?.toggleNotepad(self)
+						}),
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.statistics"), handler: { (_) in
+							self?.pluginAgent.runPlugin(withName: "BeatStatistics")
 						})
 					]),
 					UIMenu(options: .displayInline, children: [
-						UIAction(title: "All Settings...", image: UIImage(systemName: "gear"), handler: { (_) in
-							self.openSettings(self)
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.allSettings"), image: UIImage(systemName: "gear"), handler: { (_) in
+							self?.openSettings(self)
 						})
 					]),
 
@@ -165,6 +155,27 @@ extension BeatDocumentViewController {
 			
 			menuItems?.insert(contentsOf: additionalButtons, at: 0)
 			self.screenplayButton?.menu = UIMenu(children: menuItems ?? [])
+		}
+	}
+	
+	func firstSceneNumberPrompt() {
+		let sceneNumberStart:Int = self.documentSettings.getInt(DocSettingSceneNumberStart)
+		let sceneNumberString:String = String(sceneNumberStart)
+
+		BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Scene Number", message: "Scene numbering sequence begins from this number and automatically increments. Must be at least 1.", currentvalue: sceneNumberString) { value in
+			if let v = value {
+				self.documentSettings.setInt(DocSettingSceneNumberStart, as: max(1, v))
+				self.parser.updateOutline()
+				self.textView.layoutManager.invalidateDisplay(forCharacterRange: NSMakeRange(0, self.text().count))
+			}
+		}
+	}
+	
+	func firstPageNumberPrompt() {
+		BeatNumberInput.presentNumberInputPrompt(on: self, title: "First Page Number", message: "Pagination begins from this number. Must be at least 1.", currentvalue: String(self.documentSettings.getInt(DocSettingFirstPageNumber))) { value in
+			guard let value else { return }
+			self.documentSettings.setInt(DocSettingFirstPageNumber, as: max(value, 1))
+			self.resetPreview()
 		}
 	}
 }

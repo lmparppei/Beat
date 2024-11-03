@@ -509,6 +509,23 @@ extension BeatUITextView {
 		]
 		self.assistantView?.trailingActions = [
 			InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
+				UIMenu(title:"Macro", children: [
+					UIAction(title: "New Macro", handler: { _ in
+						self.editorDelegate?.formattingActions.makeMacro(self)
+					}),
+					UIAction(title: "Panel", subtitle: "Auto-incrementing number which resets at top-level sections", handler: { _ in
+						self.editorDelegate?.textActions.add("{{ panel }}", at: UInt(self.selectedRange.location))
+					}),
+					UIAction(title: "Date", subtitle: "Automatic date", handler: { _ in
+						self.editorDelegate?.textActions.add("{{ date YYYY-MM-dd }}", at: UInt(self.selectedRange.location))
+					}),
+					UIAction(title: "Define Text Macro", subtitle: "Definition for any text", handler: { _ in
+						self.editorDelegate?.textActions.add("{{ name = value }}", at: UInt(self.selectedRange.location))
+					}),
+					UIAction(title: "Define Serial Number", subtitle: "Auto-incrementing number", handler: { _ in
+						self.editorDelegate?.textActions.add("{{ serial name = 1 }}", at: UInt(self.selectedRange.location))
+					}),
+				].reversed()),
 				
 				UIMenu(title:"", options: [.displayInline], children: [
 					UIMenu(title: "Marker With Color...", children: [
@@ -591,7 +608,6 @@ extension BeatUITextView {
 						self.editorDelegate?.formattingActions.makeUnderlined(nil)
 					})
 				]),
-
 			])),
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo)),
 			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.forward")!, target: self, action: #selector(redo))

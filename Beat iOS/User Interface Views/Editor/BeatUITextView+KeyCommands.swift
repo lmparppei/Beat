@@ -15,8 +15,10 @@ extension BeatUITextView {
 			UIKeyCommand(action: #selector(makeItalic), input: "i", modifierFlags: [.command], discoverabilityTitle: "Italic"),
 			UIKeyCommand(action: #selector(makeUnderlined), input: "u", modifierFlags: [.command], discoverabilityTitle: "Underline"),
 			UIKeyCommand(action: #selector(makeOmitted), input: "e", modifierFlags: [.command, .shift], discoverabilityTitle: "Omit"),
+			UIKeyCommand(action: #selector(addNote), input: "e", modifierFlags: [.command, .alternate], discoverabilityTitle: "Note"),
+			UIKeyCommand(action: #selector(addMacro), input: "m", modifierFlags: [.command, .alternate], discoverabilityTitle: "Macro"),
 			UIKeyCommand(action: #selector(prevScene), input: UIKeyCommand.inputUpArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Previous Scene"),
-			UIKeyCommand(action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Next Scene")
+			UIKeyCommand(action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Next Scene"),
 		]
 	}
 	
@@ -44,4 +46,11 @@ extension BeatUITextView {
 		self.editorDelegate?.previousScene?(self)
 	}
 	
+	@objc func addMacro() {
+		self.editorDelegate?.formattingActions.makeMacro(self)
+	}
+	
+	@objc func addNote() {
+		self.editorDelegate?.formattingActions.makeNote(self)
+	}
 }

@@ -18,7 +18,6 @@
 
 @protocol BeatEditorDelegate;
 
-
 @interface BeatEditorFormattingActions : BXResponder
 @property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> delegate;
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
@@ -38,12 +37,17 @@
 - (IBAction)omitScene:(id)sender;
 - (IBAction)makeSceneNonNumbered:(id)sender;
 - (IBAction)makeCentered:(id)sender;
+- (IBAction)makeMacro:(id)sender;
 
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceAction:(id)sender;
 - (IBAction)forceCharacter:(id)sender;
 - (IBAction)forceTransition:(id)sender;
 - (IBAction)forceLyrics:(id)sender;
+
+/// A generic way to add any sort of formatting.
+/// @param style This is actually `BeatMarkupStyle` but I don't know how to forward-declare enums. :----)
+- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(NSInteger)style;
 
 @end
 
