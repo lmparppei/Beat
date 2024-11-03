@@ -152,7 +152,7 @@
 	return styledTags;
 }
 
-+ (NSString*)localizedTagNameOnType:(BeatTagType)type
++ (NSString*)localizedTagNameForType:(BeatTagType)type
 {
     NSString* tag = [BeatTagging keyFor:type];
     return [BeatTagging localizedTagNameFor:tag];

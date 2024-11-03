@@ -19,7 +19,7 @@ import Foundation
     }
     
     @objc class func fromArray(_ numbers:[NSNumber]) -> NSIndexSet {
-        var indices:NSMutableIndexSet = NSMutableIndexSet()
+        let indices:NSMutableIndexSet = NSMutableIndexSet()
         for num in numbers {
             indices.add(num.intValue)
         }
