@@ -211,7 +211,7 @@ public final class CssParser {
             value = val
         }
                 
-        // Check type
+        // First check return valuetype and handle it elsewhere if needed.
         if type == .stringType {
             // This is a string, no processing required
             return value
@@ -224,10 +224,13 @@ public final class CssParser {
         } else if type == .enumType {
             // Enum value
             return enumValue(value: value, key: key)
+        } else {
+            // This is most likely a number (float) value, so let's calculate. The & pointer is here just out of lazinesss.
+            return floatValue(value: &value, key: key)
         }
-        
-        // This is most likely a number value, so let's calculate
-        
+    }
+    
+    func floatValue(value: inout String, key: String) -> Any? {
         // Calculate different units based on *fixed values*
         value = value.replacingOccurrences(of: "ch", with: "* 7.25")
         value = value.replacingOccurrences(of: "l", with: "* \(self.lineHeight)")

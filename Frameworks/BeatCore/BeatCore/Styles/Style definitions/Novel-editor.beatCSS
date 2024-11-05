@@ -29,7 +29,7 @@ page {
     default-width-a4: 60ch;
     default-width-us: 62ch;
     
-    line-height: 16;
+    line-height: 12;
     
     content-padding: 7ch;
  
@@ -48,6 +48,7 @@ section {
     text-align: center;
     italic: true;
     fontSize: 18;
+    margin-bottom: 12;
 }
 
 action, dialogue, character, parenthetical {
@@ -56,6 +57,11 @@ action, dialogue, character, parenthetical {
     
     indent-split-elements: false;
     unindent-fresh-paragraphs: true;
+    line-fragment-multiplier: documentSetting(novelLineHeightMultiplier);
+}
+
+empty {
+    line-fragment-multiplier: documentSetting(novelLineHeightMultiplier);
 }
 
 action {

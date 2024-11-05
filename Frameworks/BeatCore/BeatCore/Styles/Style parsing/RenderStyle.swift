@@ -127,6 +127,8 @@ struct PaginationRule {
     @objc public var paddingLeft:CGFloat = 0
     @objc public var contentPadding:CGFloat = 0
 
+    @objc public var lineFragmentMultiplier = 1.0;
+    
     /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
     @objc public var forcedMargin = false
 
@@ -330,6 +332,8 @@ struct PaginationRule {
             return "reformatFollowingParagraphAfterTypeChange"
         case "disable-automatic-paragraphs":
             return "disableAutomaticParagraphs"
+        case "line-fragment-multiplier":
+            return "lineFragmentMultiplier"
         default:
             return name
         }
