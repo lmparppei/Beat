@@ -223,7 +223,7 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
                     
                     let marker = BeatRevisions.revisionGenerations()[generation].marker as NSString
                     marker.draw(at: revisionRect.origin, withAttributes: [
-                        NSAttributedString.Key.font: BeatFonts.shared().regular,
+                        NSAttributedString.Key.font: BeatFontManager.shared.defaultFonts.regular,
                         NSAttributedString.Key.foregroundColor: UIColor.black,
                         NSAttributedString.Key.backgroundColor: UIColor.white
                     ])
