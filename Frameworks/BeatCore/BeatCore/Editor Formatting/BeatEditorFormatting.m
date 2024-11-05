@@ -17,7 +17,7 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-#import <BeatCore/BeatFonts.h>
+//#import <BeatCore/BeatFonts.h>
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatTextIO.h>
@@ -35,7 +35,7 @@
 // Paragraph styles are stored as { @(paperSize): { @(type): style } }
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSMutableParagraphStyle*>*>* paragraphStyles;
 @property (nonatomic) NSMutableAttributedString* textStorage;
-@property (nonatomic) BeatFonts* fonts;
+@property (nonatomic) BeatFontSet* fonts;
 @property (nonatomic) NSMutableIndexSet* linesToFormat;
 @end
 
@@ -56,10 +56,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Setters and getters
 
-- (BeatFonts *)fonts
+- (BeatFontSet *)fonts
 {
     if (_delegate != nil) return _delegate.fonts;
-    else return BeatFonts.sharedFonts;
+    //else return BeatFonts.sharedFonts;
+    else return BeatFontManager.shared.defaultFonts;
 }
 
 - (void)setParser:(ContinuousFountainParser *)parser { _staticParser = parser; }
@@ -82,11 +83,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingDefaultPageSize];
 }
 
-- (BXFont*)regular { return (_delegate != nil) ? _delegate.fonts.regular : BeatFonts.sharedFonts.regular; }
-- (BXFont*)bold { return (_delegate != nil) ? _delegate.fonts.bold : BeatFonts.sharedFonts.bold; }
-- (BXFont*)italic { return (_delegate != nil) ? _delegate.fonts.italic : BeatFonts.sharedFonts.italic; }
-- (BXFont*)boldItalic { return (_delegate != nil) ? _delegate.fonts.boldItalic : BeatFonts.sharedFonts.boldItalic; }
-- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.fonts.synopsisFont : BeatFonts.sharedFonts.synopsisFont; }
+- (BXFont*)regular { return (_delegate != nil) ? _delegate.fonts.regular : BeatFontManager.shared.defaultFonts.regular; }
+- (BXFont*)bold { return (_delegate != nil) ? _delegate.fonts.bold : BeatFontManager.shared.defaultFonts.bold; }
+- (BXFont*)italic { return (_delegate != nil) ? _delegate.fonts.italic : BeatFontManager.shared.defaultFonts.italic; }
+- (BXFont*)boldItalic { return (_delegate != nil) ? _delegate.fonts.boldItalic : BeatFontManager.shared.defaultFonts.boldItalic; }
+- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.fonts.synopsis : BeatFontManager.shared.defaultFonts.synopsis; }
 
 
 #pragma mark - Paragraph styles
@@ -479,7 +480,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
     
     // Apply formatting
-    if (newAttributes.count) [textStorage addAttributes:newAttributes range:attrRange];
+    if (newAttributes.count) {
+        [textStorage addAttributes:newAttributes range:attrRange];
+    }
     
     // Apply inline formatting
 	[self applyInlineFormatting:line reset:forceFont textStorage:textStorage];
@@ -599,7 +602,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
         if (size < 12.0) size = 12.0;
         
-        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFonts.sharedFonts.sectionFont;
+        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFontManager.shared.defaultFonts.section;
     } else if (fonts[@(line.type)] != nil) {
         // Check if we have stored a specific font for this line type
         font = fonts[@(line.type)];
@@ -692,7 +695,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			color = [BeatColors color:line.color];
 		}
 		if (color == nil) {
-			if (line.type == section) color = themeManager.sectionTextColor;
+            if (line.type == heading) color = themeManager.headingColor;
+			else if (line.type == section) color = themeManager.sectionTextColor;
 			else if (line.type == synopse) color = themeManager.synopsisTextColor;
 		}
 		

@@ -201,16 +201,16 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		// The popover items can be either plain text or attributed text
 		if let label = self.items[row] as? NSAttributedString {
 			result = NSMutableAttributedString(attributedString: label)
-			result.addAttribute(NSAttributedString.Key.font, value: BeatFonts.shared().regular, range: NSRange(location: 0, length: result.length))
+			result.addAttribute(NSAttributedString.Key.font, value: BeatFontManager.shared.defaultFonts.regular, range: NSRange(location: 0, length: result.length))
 		} else if let label = self.items[row] as? String {
-			result = NSMutableAttributedString(string: label, attributes: [NSAttributedString.Key.font: BeatFonts.shared().regular, NSAttributedString.Key.foregroundColor: NSColor.white])
+			result = NSMutableAttributedString(string: label, attributes: [NSAttributedString.Key.font: BeatFontManager.shared.defaultFonts.regular, NSAttributedString.Key.foregroundColor: NSColor.white])
 		} else {
 			return cellView
 		}
 		
 		// Highlight the already typed part
 		if let range = result.string.range(of: partialText, options: [.anchored, .caseInsensitive]) {
-			result.addAttribute(NSAttributedString.Key.font, value: BeatFonts.shared().bold, range: NSRange(range, in: result.string))
+			result.addAttribute(NSAttributedString.Key.font, value: BeatFontManager.shared.defaultFonts.bold, range: NSRange(range, in: result.string))
 		}
 		
 		cellView.textField?.attributedStringValue = result

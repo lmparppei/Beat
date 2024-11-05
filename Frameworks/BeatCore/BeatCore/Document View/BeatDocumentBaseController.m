@@ -14,7 +14,8 @@
 #import <BeatCore/BeatEditorFormatting.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatLayoutManager.h>
-#import <BeatCore/BeatFonts.h>
+//#import <BeatCore/BeatFonts.h>
+#import <BeatCore/BeatFontSet.h>
 #import <BeatThemes/BeatThemes.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
@@ -417,12 +418,18 @@
 
 #pragma mark - Formatting
 /// TODO: WHY ARE THESE HERE???? Move to `BeatFormatting`
+/// Not so fast – some sort of reformatting control is nice to have in this object for theme delegate conformance. Although why aren't themes in `BeatCore` to begin with?
 
 - (IBAction)reformatEverything:(id)sender
 {
     [self.parser resetParsing];
     [self applyFormatChanges];
     [self.formatting formatAllLines];
+}
+
+- (void)reformatAllLines
+{
+    [self.formatting reformatLinesAtIndices:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.lines.count)]];
 }
 
 /// When something was changed, this method takes care of reformatting every line
@@ -817,10 +824,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Fonts
 
-/// N.B. Phones will have a hand-tailored set of mobile-sized fonts, which is why we're calling this. iPad and desktop versions use default fonts, but on iPhones, `_fonts` won't be `nil`.
-- (BeatFonts*)fonts
+- (BeatFontSet*)fonts
 {
-    if (_fonts == nil) return BeatFonts.sharedFonts;
+    //if (_fonts == nil) return BeatFonts.sharedFonts;
+    if (_fonts == nil) return BeatFontManager.shared.defaultFonts;
     else return _fonts;
 }
 
@@ -841,7 +848,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Returns current default font point size
 - (CGFloat)fontSize
 {
-    return BeatFonts.sharedFonts.regular.pointSize;
+    return BeatFontManager.shared.defaultFonts.regular.pointSize;
 }
 
 - (void)loadFonts
@@ -859,7 +866,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
         else type = BeatFontTypeFixed;
     }
     
-    self.fonts = [BeatFonts forType:type mobile:false];
+    self.fonts = [BeatFontManager.shared fontsWith:type scale:1.0];
 }
 
 /// Reloads fonts and reformats whole document if needed.

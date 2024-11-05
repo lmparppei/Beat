@@ -289,7 +289,7 @@
 		
 		CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
 		CGFloat scale = ((zoom + 4) / 10 ) + 1.0;
-		self.fonts = [BeatFonts sharedFontsWithScale:scale type:type];
+		self.fonts = [BeatFontManager.shared fontsWith:type scale:scale];
 	}
 }
 

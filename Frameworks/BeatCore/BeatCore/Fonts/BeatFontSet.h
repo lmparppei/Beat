@@ -1,20 +1,17 @@
 //
-//  BeatFonts.h
-//  Beat
+//  BeatFont.h
+//  BeatCore
 //
-//  Created by Lauri-Matti Parppei on 2.8.2022.
-//  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
+//  Created by Lauri-Matti Parppei on 4.6.2023.
 //
 
 #import <TargetConditionals.h>
-#import <BeatCore/BeatFontSet.h>
+#import <BeatCore/BeatCompatibility.h>
 
 #if TARGET_OS_IOS
-    #import <UIKit/UIKit.h>
-    #define BXFont UIFont
+#import <UIKit/UIKit.h>
 #else
-    #import <Cocoa/Cocoa.h>
-    #define BXFont NSFont
+#import <AppKit/AppKit.h>
 #endif
 
 #if TARGET_OS_IOS
@@ -36,6 +33,7 @@
     #define BXBoldFontMask NSBoldFontMask
 #endif
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, BeatFontType) {
@@ -46,35 +44,23 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
     BeatFontTypeLibertinus
 };
 
-@interface BeatFonts : NSObject
-@property (nonatomic) NSString* name;
+@interface BeatFontSet : NSObject
 
-@property (nonatomic) BXFont* regular;
-@property (nonatomic) BXFont* bold;
-@property (nonatomic) BXFont* italic;
-@property (nonatomic) BXFont* boldItalic;
+@property (nonatomic, readonly) NSString* name;
+@property (nonatomic, readonly) CGFloat scale;
+@property (nonatomic, readonly) BXFont *regular;
+@property (nonatomic, readonly) BXFont *bold;
+@property (nonatomic, readonly) BXFont *italic;
+@property (nonatomic, readonly) BXFont *boldItalic;
+@property (nonatomic, readonly) BXFont *section;
+@property (nonatomic, readonly) BXFont *synopsis;
+@property (nonatomic, readonly) BXFont *emojiFont;
 
-@property (nonatomic) BXFont* emojis;
-
-@property (nonatomic) BXFont* synopsisFont;
-@property (nonatomic) BXFont* sectionFont;
-
-@property (nonatomic) CGFloat scale;
-
-+ (BeatFonts*)forType:(BeatFontType)type;
-+ (BeatFonts*)forType:(BeatFontType)type mobile:(bool)mobile;
-+ (BeatFonts*)sharedFonts;
-+ (BeatFonts*)sharedSansSerifFonts;
-+ (BeatFonts*)sharedVariableFonts;
-+ (BeatFonts*)sharedFontsWithScale:(CGFloat)scale type:(BeatFontType)type;
-+ (CGFloat)characterWidth;
-
-- (BXFont*)withSize:(CGFloat)size;
-- (BXFont*)boldWithSize:(CGFloat)size;
-
-+ (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
-
++ (instancetype)name:(NSString *)name size:(CGFloat)size scale:(CGFloat)scale regular:(NSString *)regularFontName bold:(NSString *)boldFontName italic:(NSString *)italicFontName boldItalic:(NSString *)boldItalicFontName sectionFont:(NSString* _Nullable)sectionFontName synopsisFont:(NSString* _Nullable)synopsisFontName;
 - (BXFont*)sectionFontWithSize:(CGFloat)size;
+
+/// Cross-platform font trait creation. This should be a category.
++ (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
 
 @end
 

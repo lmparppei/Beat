@@ -28,7 +28,8 @@
 @class BeatEditorFormatting;
 @class BeatTagging;
 @class BeatPluginAgent;
-@class BeatFonts;
+//@class BeatFonts;
+@class BeatFontSet;
 
 @class BeatPaginationManager;
 @class BeatPagination;
@@ -249,7 +250,8 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - Formatting
 
-@property (nonatomic) BeatFonts* _Nonnull fonts;
+//@property (nonatomic) BeatFonts* _Nonnull fonts;
+@property (nonatomic) BeatFontSet* _Nonnull fonts;
 @property (nonatomic) bool useSansSerif;
 @property (nonatomic) bool hideFountainMarkup;
 
@@ -269,6 +271,8 @@ NS_ASSUME_NONNULL_END
 - (void)setTypeAndFormat:(Line* _Nonnull)line type:(LineType)type;
 /// A convenience method which reformats lines in given indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet * _Nonnull)indices;
+/// A convenience method for reformatting all lines. Please note that this does NOT use any sort of concurrency and can be slow on some computers.
+- (void)reformatAllLines;
 /// Refreshes the backgrounds and foreground revision colors in all lines. The method name is a bit confusing because of legacy reasons.
 - (void)renderBackgroundForLines;
 /// Returns current default font point size

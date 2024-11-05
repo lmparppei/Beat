@@ -26,7 +26,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BeatFonts;
+@class BeatFontSet;
 @class BeatStylesheet;
 @class BeatPagination;
 @class BeatPaginationPage;
@@ -72,7 +72,7 @@ typedef NS_ENUM(NSInteger, BeatPageNumberingMode) {
 @property (weak, nonatomic) BeatRenderer* __nullable renderer;
 @property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatExportSettings *settings;
-@property (nonatomic, readonly) BeatFonts *fonts;
+@property (nonatomic, readonly) BeatFontSet *fonts;
 @property (nonatomic, readonly) NSMutableArray<BeatPaginationPage*>* pages;
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
 @property (nonatomic, readonly) NSArray<Line*>* __nullable lines;

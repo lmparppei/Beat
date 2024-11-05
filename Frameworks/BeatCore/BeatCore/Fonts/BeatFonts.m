@@ -11,6 +11,7 @@
 #import <TargetConditionals.h>
 
 @interface BeatFonts ()
+@property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary<NSString*, BeatFontSet*>*>* fonts;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (nonatomic) CGFloat size;
 @end
@@ -33,6 +34,19 @@
     
     // Fallback for weird situations
     return fonts;
+}
+
+/// Modern singleton for supporting the new font system
++ (BeatFonts*)shared
+{
+    static BeatFonts* sharedInstance;
+    
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        sharedInstance = [BeatFonts.alloc init];
+    });
+    
+    return sharedInstance;
 }
 
 + (BeatFonts*)sharedFonts
@@ -88,6 +102,12 @@
     return sharedVariableSansSerifInstance;
 }
 
+- (instancetype)init
+{
+    self = [super init];
+    return self;
+}
+
 - (instancetype)initWithFontType:(BeatFontType)type
 {
     return [self initWithFontType:type size:12.0 scale:1.0];
@@ -108,6 +128,7 @@
         else if (type == BeatFontTypeFixedSansSerif) [self loadSansSerifFont];
         else if (type == BeatFontTypeVariableSerif) [self loadVariableFont];
         else if (type == BeatFontTypeVariableSansSerif) [self loadVariableSansSerifFont];
+        else if (type == BeatFontTypeLibertinus) [self loadLibertinusFont];
         
         self.emojis = [BXFont fontWithName:@"Noto Emoji" size:_size];
         if (_emojis == nil) self.emojis = [BXFont fontWithName:@"NotoEmoji" size:_size]; // Fix for Mojave
@@ -118,6 +139,65 @@
     return self;
 }
 
+
+#pragma mark - New font system (experimental)
+
+- (void)setFont:(BeatFontSet*)font
+{
+    self.regular = font.regular;
+    self.bold = font.bold;
+    self.italic = font.italic;
+    self.sectionFont = font.section;
+    self.synopsisFont = font.synopsis;
+    self.emojis = font.emojiFont;
+}
+
+- (void)loadFontsWithScale:(CGFloat)scale
+{
+    self.fonts[@(scale)] = @{
+        @"serif": [BeatFontSet
+                   name:@"Fixed Serif"
+                   size: 12.0
+                   scale: scale
+                   regular:([BXFont fontWithName:@"Courier Prime" size:_size] != nil) ? @"Courier Prime" : @"CourierPrime"
+                   bold:@"CourierPrime-Bold"
+                   italic:@"CourierPrime-Italic"
+                   boldItalic:@"CourierPrime-BoldItalic"
+                   sectionFont:nil synopsisFont:nil],
+        
+        @"sans serif": [BeatFontSet
+                        name:@"Fixed Sans Serif"
+                        size: 12.0
+                        scale: scale
+                        regular:([BXFont fontWithName:@"Courier Prime Sans" size:_size] != nil) ? @"Courier Prime Sans" : @"CourierPrimeSans"
+                        bold:@"CourierPrimeSans-Bold"
+                        italic:@"CourierPrimeSans-Italic"
+                        boldItalic:@"CourierPrimeSans-BoldItalic"
+                        sectionFont:nil synopsisFont:nil],
+        
+        @"variable serif": [BeatFontSet
+                      name:@"Variable Serif"
+                      size: 12.0
+                      scale: scale
+                      regular:@"Times New Roman"
+                      bold:@"Times New Roman Bold"
+                      italic:@"Times New Roman Italic"
+                      boldItalic:@"Times New Roman Bold Italic"
+                      sectionFont:@"Times New Roman Bold Italic"
+                      synopsisFont:nil],
+        
+        @"variable sans serif": [BeatFontSet
+                      name:@"Variable Sans Serif"
+                      size: 12.0
+                      scale: scale
+                      regular:@"Helvetica"
+                      bold:@"Helvetica Bold"
+                      italic:@"Helvetica Oblique"
+                      boldItalic:@"Helvetica Bold Oblique"
+                      sectionFont:@"Helvetica Bold Italic"
+                      synopsisFont:nil]
+    };
+}
 
 #pragma mark - macOS fonts
 /*
@@ -164,7 +244,7 @@
     self.italic = [BXFont fontWithName:@"Times New Roman Italic" size:_size];
     self.boldItalic = [BXFont fontWithName:@"Times New Roman Bold Italic" size:_size];
     
-    self.sectionFont = [BXFont fontWithName:@"Times New Roman Bold Italic" size:16.0];
+    self.sectionFont = [BXFont fontWithName:@"Times New Roman Bold Italic" size:_size * 1.34];
 }
 
 - (void)loadVariableSansSerifFont
@@ -174,6 +254,16 @@
     self.bold = [BXFont fontWithName:@"Helvetica Bold" size:_size];
     self.italic = [BXFont fontWithName:@"Helvetica Oblique" size:_size];
     self.boldItalic = [BXFont fontWithName:@"Helvetica Bold Oblique" size:_size];
+}
+
+- (void)loadLibertinusFont
+{
+    self.name = @"Libertinus";
+    self.regular = [BXFont fontWithName:@"LibertinusSerif-Regular" size:_size];
+    self.bold = [BXFont fontWithName:@"LibertinusSerif-Bold" size:_size];
+    self.italic = [BXFont fontWithName:@"LibertinusSerif-Italic" size:_size];
+    self.boldItalic = [BXFont fontWithName:@"LibertinusSerif-BoldItalic" size:_size];
+    self.sectionFont = [BXFont fontWithName:@"LibertinusSerif-BoldItalic" size:_size];
 }
 
 - (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits

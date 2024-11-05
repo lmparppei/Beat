@@ -60,7 +60,7 @@ import UXKit
     /// Paper size tag
     var paperSize:BeatPaperSize
     
-	var fonts = BeatFonts.shared()
+    var fonts = BeatFontManager.shared.defaultFonts
     var linePadding = 0.0
 	
     /// Set `true` by subclass if needed
@@ -557,7 +557,7 @@ public class BeatRenderLayoutManager:NSLayoutManager {
             let generation = BeatRevisions.revisionGenerations()[highestRevision]
             
             let marker:NSString = generation.marker as NSString
-			let font = BeatFonts.shared().regular
+            let font = BeatFontManager.shared.defaultFonts.regular
 			marker.draw(at: markerRect.origin, withAttributes: [
 				NSAttributedString.Key.font: font,
 				NSAttributedString.Key.foregroundColor: UXColor.black

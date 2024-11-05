@@ -889,6 +889,12 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     
     if (attrs[@"BeatFolded"]) {
         lineFragmentRect->size.height = 0.0;
+    } else if (attrs[@"representedLine"]) {
+        Line* line = attrs[@"representedLine"];
+        RenderStyle* style = [self.editorDelegate.editorStyles forLine:line];
+        if (style.lineFragmentMultiplier != 1.0) {
+            lineFragmentRect->size.height *= style.lineFragmentMultiplier;
+        }
     }
     
     /*

@@ -194,9 +194,9 @@ import EasyPeasy
 		guard let delegate = self.editorDelegate else { return 0.0 }
 		
 		if delegate.pageSize == .A4 {
-			width = BeatFonts.characterWidth() * 60
+			width = BeatFontManager.characterWidth * 60
 		} else {
-			width = BeatFonts.characterWidth() * 62
+			width = BeatFontManager.characterWidth * 62
 		}
 		
 		width += padding * 2

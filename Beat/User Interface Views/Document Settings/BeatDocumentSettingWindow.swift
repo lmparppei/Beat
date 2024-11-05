@@ -51,9 +51,7 @@ import Foundation
 		guard let delegate = editorDelegate, let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate else { return }
 
 		// Style menu
-		
 		styleMenu?.menu?.delegate = appDelegate.styleMenuManager
-		var selected = 0
 		for item in styleMenu?.menu?.items ?? [] {
 			if let styleItem = item as? BeatMenuItemWithStylesheet {
 				if delegate.styles.name == styleItem.stylesheet {

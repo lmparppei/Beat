@@ -104,6 +104,7 @@ class BeatDesktopQuickSettings:NSViewController {
 				}) { [weak self] value, actualValue in
 					self?.delegate?.documentSettings.set(setting, as: actualValue ?? 2.0)
 					self?.delegate?.reloadStyles()
+					//self?.delegate?.getTextView().layoutManager?.invalidateLayout(forCharacterRange: <#T##NSRange#>, actualCharacterRange: <#T##NSRangePointer?#>)
 				}
 				
 			} else if setting == "novelContentAlignment" {

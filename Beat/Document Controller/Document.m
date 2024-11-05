@@ -565,6 +565,7 @@
 
 - (void)ensureLayout
 {
+	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.text.length) actualCharacterRange:nil];
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	self.textView.needsDisplay = true;

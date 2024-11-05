@@ -709,7 +709,6 @@ Line *cachedRectLine;
 }
 
 
-
 #pragma mark - Context Menu
 
 -(NSMenu *)menu

@@ -56,6 +56,9 @@ typedef enum {
 
 - (void)formatAllAsynchronously;
 
+/// Reset text color for a single line
+- (void)setTextColorFor:(Line*)line;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -135,7 +135,7 @@
 
         
     // Set font for this element. Make sure we won't encounter a nil value.
-    BXFont* font = (_delegate.fonts.regular) ? _delegate.fonts.regular : BeatFonts.sharedFonts.regular;
+    BXFont* font = (_delegate.fonts.regular) ? _delegate.fonts.regular : BeatFontManager.shared.defaultFonts.regular;
     if (style.font) {
         BXFont* customFont = [self fontFor:style];
         if (customFont != nil) font = customFont;
@@ -175,7 +175,7 @@
         if (style.bold) traits |= BXFontDescriptorTraitBold;
         
         CGFloat size = (style.fontSize > 0) ? style.fontSize : 11.0;
-        font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
+        font = [BeatFontSet fontWithTrait:traits font:[BXFont systemFontOfSize:size]];
     }
     
     if (font == nil) font = _delegate.fonts.regular;

@@ -24,7 +24,8 @@
 @interface BeatRenderer()
 //@property (nonatomic) id<BeatPageDelegate> delegate;
 @property (nonatomic) BeatStylesheet* styles;
-@property (nonatomic, weak) BeatFonts* fonts;
+//@property (nonatomic, weak) BeatFonts* fonts;
+@property (nonatomic, weak) BeatFontSet* fonts;
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSDictionary*>*>* lineTypeAttributes;
 
 @end
@@ -41,10 +42,10 @@
 }
 
 
-- (BeatFonts*)fonts
+- (BeatFontSet*)fonts
 {
     BeatStylesheet* stylesheet = self.settings.styles;
-    BeatFonts* fonts = (stylesheet) ? [BeatFonts forType:stylesheet.page.fontType] : BeatFonts.sharedFonts;
+    BeatFontSet* fonts = (stylesheet) ? [BeatFontManager.shared fontsFor:stylesheet.page.fontType] : BeatFontManager.shared.defaultFonts;
     return fonts;
 }
 
@@ -263,7 +264,7 @@
         UIFont* font = [attributedString attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
         if (font == nil) font = self.fonts.regular;
     
-        UIFont* stylizedFont = [BeatFonts fontWithTrait:traits font:font];
+        UIFont* stylizedFont = [BeatFontSet fontWithTrait:traits font:font];
         if (stylizedFont) [attributedString addAttribute:NSFontAttributeName value:stylizedFont range:range];
     }
 #endif
@@ -589,7 +590,7 @@
         NSString* header = (self.settings.header) ? [NSString stringWithFormat:@"%@", self.settings.header] : @"";
         if (pageNumber >= self.styles.page.firstPageWithNumber && header.length > 0) header = [header stringByAppendingString:@" -"];
         
-        NSString* fullString = [NSString stringWithFormat:@"%@ %@", header, pageNumberString];
+        NSString* fullString = [NSString stringWithFormat:@"%@  %@", header, pageNumberString];
         rightContent = [NSMutableAttributedString.alloc initWithString:fullString attributes:@{
             NSParagraphStyleAttributeName: rightStyle,
             NSFontAttributeName: self.fonts.regular,
@@ -633,7 +634,8 @@
     width += self.styles.page.contentPadding + self.styles.page.marginLeft;
     
     CGFloat headerWidth = width * 0.7;
-    CGFloat cellWidth = width * 0.15;
+    CGFloat leftCellWidth = width * 0.15;
+    CGFloat rightCellWidth = width * 0.15;
     
     NSMutableParagraphStyle* rightStyle = NSMutableParagraphStyle.new;
     rightStyle.alignment = NSTextAlignmentRight;
@@ -642,24 +644,35 @@
     NSMutableParagraphStyle* headerStyle = NSMutableParagraphStyle.new;
     headerStyle.alignment = NSTextAlignmentCenter;
     headerStyle.maximumLineHeight = BeatPagination.lineHeight;
+    
+    // Adjust sizing and positioning
+    if (self.settings.headerAlignment == BeatHeaderAlignmentLeft) {
+        headerStyle.alignment = NSTextAlignmentLeft;
+        headerWidth += leftCellWidth;
+        leftCellWidth = 0.0;
+    } else if (self.settings.headerAlignment == BeatHeaderAlignmentRight) {
+        rightCellWidth += headerWidth;
+        headerWidth = 0.0;
+    }
 
     NSString* headerText = (self.settings.header != nil) ? self.settings.header : @"";
-    NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:headerText attributes:@{
+    NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:(self.settings.headerAlignment != BeatHeaderAlignmentRight) ? headerText : @"" attributes:@{
         NSParagraphStyleAttributeName: headerStyle,
         NSFontAttributeName: self.fonts.regular,
         NSForegroundColorAttributeName: BXColor.blackColor
     }];
     
     // Actual page number goes in right corner
+    if (self.settings.headerAlignment == BeatHeaderAlignmentRight) pageNumberString = [headerText stringByAppendingFormat:@"  %@", pageNumberString];
     NSMutableAttributedString* rightContent = [NSMutableAttributedString.alloc initWithString:pageNumberString attributes:@{
         NSParagraphStyleAttributeName: rightStyle,
         NSFontAttributeName: self.fonts.regular,
         NSForegroundColorAttributeName: BXColor.blackColor
     }];
     
-    BeatTextTableCell* left = [BeatTextTableCell.alloc initWithContent:NSAttributedString.new width:cellWidth];
+    BeatTextTableCell* left = [BeatTextTableCell.alloc initWithContent:NSAttributedString.new width:leftCellWidth];
     BeatTextTableCell* header = [BeatTextTableCell.alloc initWithContent:headerContent width:headerWidth];
-    BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:rightContent width:cellWidth];
+    BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:rightContent width:rightCellWidth];
     
     BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, header, right] spacing:0.0 margin:0.0];
     
@@ -710,7 +723,7 @@
             if (style.bold) traits |= BXFontDescriptorTraitBold;
             
             fontSize = (style.fontSize > 0) ? style.fontSize : 11.0;
-            font = [BeatFonts fontWithTrait:traits font:[BXFont systemFontOfSize:fontSize]];
+            font = [BeatFontSet fontWithTrait:traits font:[BXFont systemFontOfSize:fontSize]];
         } else {
             // Custom font
             font = [BXFont fontWithName:style.font size:fontSize];

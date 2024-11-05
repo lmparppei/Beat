@@ -36,7 +36,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatTextIO;
 @class BeatEditorFormatting;
 @class BeatPluginAgent;
-@class BeatFonts;
+@class BeatFontSet;
 @class BeatTagging;
 
 /**
@@ -203,7 +203,7 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - Fonts
 
-@property (nonatomic) BeatFonts* fonts;
+@property (nonatomic) BeatFontSet* fonts;
 /*
 @property (readonly, nonatomic) BXFont *courier;
 @property (readonly, nonatomic) BXFont *boldCourier;

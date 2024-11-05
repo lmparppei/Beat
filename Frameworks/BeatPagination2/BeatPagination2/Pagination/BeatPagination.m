@@ -51,7 +51,7 @@
 @property (nonatomic) NSArray<Line*>* lines;
 
 /// Fonts used for exporting
-@property (nonatomic) BeatFonts* fonts;
+@property (nonatomic) BeatFontSet* fonts;
 
 /// The position where last change was made. Used only for live pagination.
 @property (nonatomic) NSRange changedRange;
@@ -129,7 +129,7 @@
         
         // Set up fonts
         BeatStylesheet* stylesheet = settings.styles;
-        _fonts = [BeatFonts forType:stylesheet.page.fontType]; // defaults to 0, which is fixed
+        _fonts = [BeatFontManager.shared fontsFor:stylesheet.page.fontType]; // defaults to 0, which is fixed
 				
 		_startTime = NSDate.new;
 	}
