@@ -1233,7 +1233,7 @@
                                                             </connections>
                                                         </customView>
                                                         <customView id="tWr-dr-bij" customClass="BeatLineTypeView" customModule="Beat" customModuleProvider="target">
-                                                            <rect key="frame" x="261" y="21" width="150" height="24"/>
+                                                            <rect key="frame" x="260" y="21" width="150" height="24"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <subviews>
                                                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ihj-dv-Nq4">

@@ -374,6 +374,22 @@
 		B65BB8842B5056BA00C62CA7 /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; };
 		B65BBF78280C3FD500FCA23E /* BeatAboutScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65BBF7B280C3FD500FCA23E /* BeatAboutScreen.xib */; };
 		B65BBF79280C3FD500FCA23E /* BeatAboutScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65BBF7B280C3FD500FCA23E /* BeatAboutScreen.xib */; };
+		B66100312CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */; };
+		B66100322CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */; };
+		B66100332CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */; };
+		B66100342CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */; };
+		B66100352CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */; };
+		B66100362CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */; };
+		B66100372CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */; };
+		B66100382CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */; };
+		B66100392CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */; };
+		B661003A2CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */; };
+		B661003B2CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */; };
+		B661003C2CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */; };
+		B661003D2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */; };
+		B661003E2CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */; };
+		B661003F2CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */; };
+		B66100402CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */; };
 		B662FB12284CAFBC00C805CA /* BeatMenuItemWithURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B662FB11284CAFBC00C805CA /* BeatMenuItemWithURL.swift */; };
 		B662FB13284CAFE400C805CA /* BeatMenuItemWithURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B662FB11284CAFBC00C805CA /* BeatMenuItemWithURL.swift */; };
 		B663A6EF29F1C6300036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6EE29F1C6300036FE6B /* BeatPagination2.framework */; };
@@ -941,6 +957,10 @@
 		B65E03DD29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
 		B65E03DE29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatTitlePageEditor.strings; sourceTree = "<group>"; };
 		B65E03DF29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Bold.otf"; sourceTree = "<group>"; };
+		B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-BoldItalic.otf"; sourceTree = "<group>"; };
+		B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Italic.otf"; sourceTree = "<group>"; };
+		B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Regular.otf"; sourceTree = "<group>"; };
 		B662FB11284CAFBC00C805CA /* BeatMenuItemWithURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMenuItemWithURL.swift; sourceTree = "<group>"; };
 		B663680124CE1CCF009A1693 /* BeatTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTest.h; path = BeatTests/BeatTest.h; sourceTree = SOURCE_ROOT; };
 		B663680224CE1CCF009A1693 /* BeatTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTest.m; path = BeatTests/BeatTest.m; sourceTree = SOURCE_ROOT; };
@@ -1524,6 +1544,10 @@
 		B623BD512549B11B00201BC9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				B661002D2CD80436003226D6 /* LibertinusSerif-Bold.otf */,
+				B661002E2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf */,
+				B661002F2CD80436003226D6 /* LibertinusSerif-Italic.otf */,
+				B66100302CD80436003226D6 /* LibertinusSerif-Regular.otf */,
 				B6C7024B295DFF5B00920D82 /* Courier Prime Bold Italic.ttf */,
 				B6C70249295DFF5B00920D82 /* Courier Prime Bold.ttf */,
 				B6C7024A295DFF5B00920D82 /* Courier Prime Italic.ttf */,
@@ -2381,6 +2405,10 @@
 				B66F463F2565ADA0003748DA /* InfoPlist.strings in Resources */,
 				B6FA28CF2C046D390047E498 /* BeatStatisticsUI.html in Resources */,
 				B6E3894D270DDE130067DD0C /* printview.png in Resources */,
+				B66100392CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */,
+				B661003A2CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */,
+				B661003B2CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */,
+				B661003C2CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */,
 				B6763E552782295600284907 /* MainMenu.xib in Resources */,
 				B6763E912782482400284907 /* BeatPreferencesPanel.xib in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
@@ -2495,6 +2523,10 @@
 				B61260712CD3D1D8009AE189 /* BeatTitlePageEditor.xib in Resources */,
 				B61260722CD3D1D8009AE189 /* Courier Prime.ttf in Resources */,
 				B61260732CD3D1D8009AE189 /* Document.xib in Resources */,
+				B661003D2CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */,
+				B661003E2CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */,
+				B661003F2CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */,
+				B66100402CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */,
 				B61260742CD3D1D8009AE189 /* beat_manual_style.css in Resources */,
 				B61260752CD3D1D8009AE189 /* BeatPluginLibrary.xib in Resources */,
 				B61260762CD3D1D8009AE189 /* Icon-MacOS-256x256@1x.png in Resources */,
@@ -2564,6 +2596,10 @@
 				B6763E8027822DE500284907 /* BeatTitlePageEditor.xib in Resources */,
 				B6C70254295DFF5C00920D82 /* Courier Prime.ttf in Resources */,
 				B62BA4CA2BBBEEDA0055FE1A /* Document.xib in Resources */,
+				B66100312CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */,
+				B66100322CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */,
+				B66100332CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */,
+				B66100342CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */,
 				B6F9DF25276B908A00D4C263 /* beat_manual_style.css in Resources */,
 				B6F31177274BF70400D0840D /* BeatPluginLibrary.xib in Resources */,
 				B6F632FC28416FB600494BD7 /* Icon-MacOS-256x256@1x.png in Resources */,
@@ -2592,6 +2628,10 @@
 				B6C629B62A249D98003FB7FD /* Courier Prime Sans Italic.ttf in Resources */,
 				B6C629B22A249D98003FB7FD /* Courier Prime Sans.ttf in Resources */,
 				B6C629B12A249D98003FB7FD /* Courier Prime Bold.ttf in Resources */,
+				B66100352CD80436003226D6 /* LibertinusSerif-BoldItalic.otf in Resources */,
+				B66100362CD80436003226D6 /* LibertinusSerif-Regular.otf in Resources */,
+				B66100372CD80436003226D6 /* LibertinusSerif-Italic.otf in Resources */,
+				B66100382CD80436003226D6 /* LibertinusSerif-Bold.otf in Resources */,
 				B6C629B72A249D98003FB7FD /* Courier Prime Sans Bold.ttf in Resources */,
 				B6C629B52A249D98003FB7FD /* Courier Prime.ttf in Resources */,
 				B6C629B42A249D98003FB7FD /* Courier Prime Italic.ttf in Resources */,
@@ -3543,7 +3583,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133386;
+				CURRENT_PROJECT_VERSION = 133387;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3588,7 +3628,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133386;
+				CURRENT_PROJECT_VERSION = 133387;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -3635,7 +3675,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133301;
+				CURRENT_PROJECT_VERSION = 133390;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3650,7 +3690,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.998.2;
+				MARKETING_VERSION = 1.999.24;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
@@ -3679,7 +3719,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133301;
+				CURRENT_PROJECT_VERSION = 133390;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -3693,7 +3733,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.998.2;
+				MARKETING_VERSION = 1.999.24;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
