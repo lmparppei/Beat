@@ -16,6 +16,8 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *textLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *textDark;
+@property (nonatomic, weak) IBOutlet NSColorWell *headingLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *headingDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *marginLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *marginDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *selectionLight;
@@ -32,6 +34,9 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *synopsisDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *sectionLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *sectionDark;
+@property (nonatomic, weak) IBOutlet NSColorWell *macroLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *macroDark;
+
 
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundDark;
@@ -60,6 +65,9 @@
 
 @property (nonatomic) NSTimer* updateTimer;
 
+@property (nonatomic) NSMutableArray<NSString*>* typesRequiringUpdate;
+@property (nonatomic) bool changesMade;
+
 @end
 
 @implementation ThemeEditor
@@ -79,21 +87,29 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
 	
-	
+	_typesRequiringUpdate = NSMutableArray.new;
+	_changesMade = false;
 	
 	[self loadTheme:ThemeManager.sharedManager.theme];
 	
 }
 
 - (IBAction)cancel:(id)sender {
-	[ThemeManager.sharedManager revertToSaved];
+	if (_changesMade) {
+		_changesMade = false;
+		[ThemeManager.sharedManager revertToSaved];
+	}
+	
 	[NSNotificationCenter.defaultCenter postNotification:[NSNotification notificationWithName:@"Reset theme" object:nil]];
 	
 	[self.window close];
 }
-
+ 
 - (IBAction)resetToDefault:(id)sender {
-	[self loadDefaults];
+	if (_changesMade) {
+		_changesMade = false;
+		[self loadDefaults];
+	}
 }
 
 - (void)loadDefaults {
@@ -102,11 +118,14 @@
 	
 	[NSNotificationCenter.defaultCenter postNotification:[NSNotification notificationWithName:@"Reset theme" object:nil]];
 }
+
 - (void)loadTheme:(BeatTheme*)theme {
 	[_backgroundLight setColor:theme.backgroundColor.lightColor];
 	[_backgroundDark setColor:theme.backgroundColor.darkColor];
 	[_textLight setColor:theme.textColor.lightColor];
 	[_textDark setColor:theme.textColor.darkColor];
+	[_headingLight setColor:theme.headingColor.lightColor];
+	[_headingDark setColor:theme.headingColor.darkColor];
 	[_marginLight setColor:theme.marginColor.lightColor];
 	[_marginDark setColor:theme.marginColor.darkColor];
 	[_selectionLight setColor:theme.selectionColor.lightColor];
@@ -123,6 +142,9 @@
 	[_synopsisDark setColor:theme.synopsisTextColor.darkColor];
 	[_sectionLight setColor:theme.sectionTextColor.lightColor];
 	[_sectionDark setColor:theme.sectionTextColor.darkColor];
+
+	[_macroLight setColor:theme.macroColor.lightColor];
+	[_macroDark setColor:theme.macroColor.darkColor];
 	
 	[_outlineBackgroundLight setColor:theme.outlineBackground.lightColor];
 	[_outlineBackgroundDark setColor:theme.outlineBackground.darkColor];
@@ -150,12 +172,15 @@
 	[_genderUnspecified setColor:theme.genderUnspecifiedColor.lightColor];
 }
 
--(IBAction)changeColor:(id)sender {
+-(IBAction)changeColor:(id)sender
+{
 	if (![sender isKindOfClass:BeatThemeColorWell.class]) return;
+	
+	_changesMade = true;
 	
 	BeatThemeColorWell* colorWell = sender;
 	NSColor* color = [colorWell.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace device:nil];
-
+	
 	NSString* key = colorWell.themeKey;
 	if (key.length == 0) return;
 	
@@ -166,12 +191,14 @@
 		// Set color for both styles
 		themeColor.darkColor = color;
 		themeColor.lightColor = color;
-	}
-	else if (colorWell.darkColor) {
+	} else if (colorWell.darkColor) {
 		themeColor.darkColor = color;
 	} else {
 		themeColor.lightColor = color;
 	}
+	
+	// Add to updated types if needed
+	if (colorWell.lineType.length > 0) [_typesRequiringUpdate addObject:colorWell.lineType];
 	
 	// Update changes after 0.5 seconds
 	[self scheduleUpdate];
@@ -180,8 +207,18 @@
 - (void)scheduleUpdate {
 	[self.updateTimer invalidate];
 	self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-		[ThemeManager.sharedManager loadThemeForAllDocuments];
+		[self updateAllDocuments];
 	}];
+}
+
+/// Updates theme changes in documents and only reformats changed types.
+- (void)updateAllDocuments
+{
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc updateThemeAndReformat:_typesRequiringUpdate];
+	}
+	
+	[_typesRequiringUpdate removeAllObjects];
 }
 
 
@@ -220,7 +257,7 @@
  of the fresh snow
  
  the wind is howling
- it's harded and harder to enjoy things, i think
+ it's harder and harder to enjoy things, i think
  making songs is hard
  making love feels numb
  can't remember my home anymore

@@ -89,39 +89,54 @@
 	[self.marginView updateBackground];
 }
 
-- (void)updateTheme
+- (void)updateThemeAndReformat:(NSArray*)types
 {
-	[self setThemeFor:self setTextColor:NO];
+	bool formatText = false;
+	
+	// First update all basic elements
+	[self updateTheme];
+	
+	// Now, let's reformat the needed types
+	for (Line* line in self.lines)
+	{
+		if (formatText) {
+			[self.formatting refreshRevisionTextColorsInRange:line.range];
+		}
+		
+		bool reformat = false;
+		
+		if ([types containsObject:@"text"] ||
+			[types containsObject:line.typeName] ||
+			([types containsObject:@"omit"] && line.omittedRanges.count > 0) ||
+			([types containsObject:@"note"] && line.noteRanges.count) ||
+			([types containsObject:@"macro"] && line.macroRanges.count)
+			) {
+			reformat = true;
+		}
+		
+		if (reformat) [self.formatting setTextColorFor:line];
+	}
 }
 
-- (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor
+- (void)updateTheme
 {
-	if (!doc) doc = self;
-	
 	ThemeManager* tm = ThemeManager.sharedManager;
-	BeatTextView* textView = (BeatTextView*)doc.textView;
 	
-	textView.marginColor = tm.marginColor;
-	textView.textColor = tm.textColor;
-	textView.insertionPointColor = tm.caretColor;
-	doc.textScrollView.marginColor = tm.marginColor;
+	self.textView.marginColor = tm.marginColor;
+	self.textScrollView.marginColor = tm.marginColor;
+	// Because insertion point is a layer, it doesn't follow light/dark color in post-Sonoma (?)
+	self.textView.insertionPointColor = (self.isDark) ? tm.caretColor.darkColor : tm.caretColor.lightColor;
 	
-	[doc.textView setSelectedTextAttributes:@{
+	[self.textView setSelectedTextAttributes:@{
 		NSBackgroundColorAttributeName: tm.selectionColor,
 		NSForegroundColorAttributeName: tm.backgroundColor
 	}];
 	
-	if (setTextColor) {
-		[doc.textView setTextColor:tm.textColor];
-	} else {
-		[self.textView setNeedsLayout:YES];
-		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
-	}
+	[self.documentWindow setViewsNeedDisplay:YES];
+	[self.textView setNeedsLayout:YES];
+	[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
 			
-	[doc updateUIColors];
-	
-	[doc.documentWindow setViewsNeedDisplay:YES];
-	[doc.textView setNeedsDisplay:YES];
+	[self updateUIColors];
 }
 
 - (void)loadSelectedTheme:(bool)forAll
@@ -132,7 +147,7 @@
 	else openDocuments = @[self];
 	
 	for (Document* doc in openDocuments) {
-		[self setThemeFor:doc setTextColor:YES];
+		[doc updateTheme];
 	}
 }
 

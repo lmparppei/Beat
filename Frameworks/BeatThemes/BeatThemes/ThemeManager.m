@@ -316,6 +316,7 @@
 - (DynamicColor*)marginColor { return _theme.marginColor; }
 - (DynamicColor*)selectionColor { return _theme.selectionColor; }
 - (DynamicColor*)textColor { return _theme.textColor; }
+- (DynamicColor*)headingColor { return _theme.headingColor; }
 - (DynamicColor*)invisibleTextColor { return _theme.invisibleTextColor; }
 - (DynamicColor*)caretColor { return _theme.caretColor; }
 - (DynamicColor*)commentColor { return _theme.commentColor; }
@@ -350,6 +351,7 @@
 	
 	for (id<BeatThemeManagedDocument>doc in openDocuments) {
 		[doc updateTheme];
+        [doc reformatAllLines];
 	}
 #endif
 }

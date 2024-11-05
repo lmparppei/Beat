@@ -14,6 +14,7 @@ import BeatDynamicColor
 	@IBInspectable var themeKey:String = ""
 	@IBInspectable var darkColor:Bool = false
 	@IBInspectable var commonColor:Bool = false
+	@IBInspectable var lineType:String?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()

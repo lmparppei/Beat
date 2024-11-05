@@ -54,6 +54,7 @@
 @end
 @protocol BeatThemeManagedDocument
 - (void)updateTheme;
+- (void)reformatAllLines;
 @end
 
 
@@ -72,7 +73,7 @@
 - (void)revertToSaved;
 /// Read a single, preprocessed theme
 // - (void)readTheme:(BeatTheme*)theme;
-/// Reloads the UI for each open document.
+/// Reloads the UI for each open document and REFORMATS all lines. Use with care.
 - (void)loadThemeForAllDocuments;
 /// Resets themes to bundled default, removing any user customization.
 - (void)resetToDefault;
@@ -90,6 +91,7 @@
 @property (nonatomic) DynamicColor* marginColor;
 @property (nonatomic) DynamicColor* selectionColor;
 @property (nonatomic) DynamicColor* textColor;
+@property (nonatomic) DynamicColor* headingColor;
 @property (nonatomic) DynamicColor* invisibleTextColor;
 @property (nonatomic) DynamicColor* caretColor;
 @property (nonatomic) DynamicColor* commentColor;

@@ -12,6 +12,7 @@ import BeatDynamicColor
     @objc public var backgroundColor: DynamicColor!
     @objc public var selectionColor: DynamicColor!
     @objc public var textColor: DynamicColor!
+    @objc public var headingColor: DynamicColor!
     @objc public var invisibleTextColor: DynamicColor!
     @objc public var caretColor: DynamicColor!
     @objc public var commentColor: DynamicColor!
@@ -39,17 +40,18 @@ import BeatDynamicColor
         
     @objc public var name:String? = ""
     
-    /// For background-compatibility reasons, we have to do this sort of trickery
     override public init() {
         super.init()
     }
     
+    /// Yeah... so, because of backwards-compatibility, we're doing all sorts of weird things. Sorry, future me, and fuck you, past me.
     @objc public class func propertyValues() -> [String:String] {
         return [
             "backgroundColor": "Background",
             "marginColor": "Margin",
             "selectionColor": "Selection",
             "textColor": "Text",
+            "headingColor": "Heading",
             "commentColor": "Comment",
             "invisibleTextColor": "InvisibleText",
             "caretColor": "Caret",

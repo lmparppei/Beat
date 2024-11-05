@@ -35,6 +35,12 @@
 					<integer>45</integer>
 					<integer>45</integer>
 				</array>
+				<key>Heading</key>
+				<array>
+					<integer>45</integer>
+					<integer>45</integer>
+					<integer>45</integer>
+				</array>
 				<key>SynopsisText</key>
 				<array>
 					<integer>90</integer>
@@ -177,6 +183,12 @@
 					<integer>150</integer>
 				</array>
 				<key>Text</key>
+				<array>
+					<integer>170</integer>
+					<integer>170</integer>
+					<integer>170</integer>
+				</array>
+				<key>Heading</key>
 				<array>
 					<integer>170</integer>
 					<integer>170</integer>
@@ -333,6 +345,12 @@
 					<integer>0</integer>
 					<integer>0</integer>
 				</array>
+				<key>Heading</key>
+				<array>
+					<integer>0</integer>
+					<integer>0</integer>
+					<integer>0</integer>
+				</array>
 				<key>SynopsisText</key>
 				<array>
 					<integer>90</integer>
@@ -475,6 +493,12 @@
 					<integer>150</integer>
 				</array>
 				<key>Text</key>
+				<array>
+					<integer>255</integer>
+					<integer>255</integer>
+					<integer>255</integer>
+				</array>
+				<key>Heading</key>
 				<array>
 					<integer>255</integer>
 					<integer>255</integer>

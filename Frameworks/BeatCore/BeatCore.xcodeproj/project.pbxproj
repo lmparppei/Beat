@@ -36,8 +36,7 @@
 		B64AD5ED2B2F65EB00EBD63A /* BeatTitlePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64AD5EC2B2F65EB00EBD63A /* BeatTitlePage.swift */; };
 		B65BB73C2B0A96DE00145FCE /* NSBezierPath+UX.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65BB73B2B0A96DE00145FCE /* NSBezierPath+UX.swift */; };
 		B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */; };
-		B663A6D629F1C47B0036FE6B /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6D429F1C47A0036FE6B /* BeatFonts.m */; };
-		B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6D529F1C47B0036FE6B /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B66100582CD8F675003226D6 /* BeatFontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66100572CD8F675003226D6 /* BeatFontManager.swift */; };
 		B663B3BA2AFA69CE007217E3 /* BeatDocumentBaseController.h in Headers */ = {isa = PBXBuildFile; fileRef = B663B3B82AFA69CE007217E3 /* BeatDocumentBaseController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B663B3B92AFA69CE007217E3 /* BeatDocumentBaseController.m */; };
 		B663B3C02AFA7FF7007217E3 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */; };
@@ -49,8 +48,8 @@
 		B676DD2D2BA8AC7700F7DBDA /* OutlineViewItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
-		B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFont.m */; };
+		B67C2CF32A2D1AD000B88B0F /* BeatFontSet.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B67C2CF42A2D1AD000B88B0F /* BeatFontSet.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFontSet.m */; };
 		B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C73D12B383831002BD12F /* BeatCharacterData.swift */; };
 		B67E7BCA2AEF0FCE00977F7D /* BeatPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BC92AEF0FCE00977F7D /* BeatPaths.swift */; };
 		B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */; };
@@ -155,6 +154,7 @@
 		B64AD5EC2B2F65EB00EBD63A /* BeatTitlePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTitlePage.swift; sourceTree = "<group>"; };
 		B65BB73B2B0A96DE00145FCE /* NSBezierPath+UX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSBezierPath+UX.swift"; sourceTree = "<group>"; };
 		B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatURLExtensions.swift; sourceTree = "<group>"; };
+		B66100572CD8F675003226D6 /* BeatFontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontManager.swift; sourceTree = "<group>"; };
 		B663A6D429F1C47A0036FE6B /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
 		B663A6D529F1C47B0036FE6B /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
 		B663B3B82AFA69CE007217E3 /* BeatDocumentBaseController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentBaseController.h; sourceTree = "<group>"; };
@@ -168,8 +168,8 @@
 		B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
-		B67C2CF12A2D1AD000B88B0F /* BeatFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFont.h; sourceTree = "<group>"; };
-		B67C2CF22A2D1AD000B88B0F /* BeatFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFont.m; sourceTree = "<group>"; };
+		B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFontSet.h; sourceTree = "<group>"; };
+		B67C2CF22A2D1AD000B88B0F /* BeatFontSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFontSet.m; sourceTree = "<group>"; };
 		B67C73D12B383831002BD12F /* BeatCharacterData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCharacterData.swift; sourceTree = "<group>"; };
 		B67E7BC92AEF0FCE00977F7D /* BeatPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPaths.swift; sourceTree = "<group>"; };
 		B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextView+UX.m"; sourceTree = "<group>"; };
@@ -444,8 +444,9 @@
 			children = (
 				B663A6D529F1C47B0036FE6B /* BeatFonts.h */,
 				B663A6D429F1C47A0036FE6B /* BeatFonts.m */,
-				B67C2CF12A2D1AD000B88B0F /* BeatFont.h */,
-				B67C2CF22A2D1AD000B88B0F /* BeatFont.m */,
+				B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */,
+				B67C2CF22A2D1AD000B88B0F /* BeatFontSet.m */,
+				B66100572CD8F675003226D6 /* BeatFontManager.swift */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -594,9 +595,8 @@
 				B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
 				B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */,
-				B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */,
 				B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */,
-				B67C2CF32A2D1AD000B88B0F /* BeatFont.h in Headers */,
+				B67C2CF32A2D1AD000B88B0F /* BeatFontSet.h in Headers */,
 				B619DE6D29F90A7A007D1838 /* BeatAutocomplete.h in Headers */,
 				B68C0F69299D845A0031AE6B /* BeatValueTransformers.swift in Headers */,
 			);
@@ -698,6 +698,7 @@
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
 				B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */,
 				B64AD5ED2B2F65EB00EBD63A /* BeatTitlePage.swift in Sources */,
+				B66100582CD8F675003226D6 /* BeatFontManager.swift in Sources */,
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
 				B680B7D32A6EC67700FCD805 /* NSString+VersionNumber.m in Sources */,
 				B682C2652B30FBD10027511A /* BeatTemplates.swift in Sources */,
@@ -732,11 +733,10 @@
 				B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */,
 				B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */,
 				B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */,
-				B67C2CF42A2D1AD000B88B0F /* BeatFont.m in Sources */,
+				B67C2CF42A2D1AD000B88B0F /* BeatFontSet.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
 				B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */,
 				B6D15A702AF9793500DAB66D /* RenderStyle.swift in Sources */,
-				B663A6D629F1C47B0036FE6B /* BeatFonts.m in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
 				B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */,
