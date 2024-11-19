@@ -7,12 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatFileExport/BeatImportModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OSFImport : NSObject
+@interface OSFImport : NSObject <BeatFileImportModule>
 @property (nonatomic) NSString *script;
-- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback;
+@property (nonatomic) NSString* fountain;
+- (id)initWithURL:(NSURL*)url completion:(void(^)(id _Nullable))callback;
 - (id)initWithData:(NSData*)data;
 
 @end

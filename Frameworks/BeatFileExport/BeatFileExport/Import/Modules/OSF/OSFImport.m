@@ -37,11 +37,20 @@
 @property(nonatomic, strong) NSMutableAttributedString *paragraphText;
 @property(nonatomic, strong) NSMutableArray <NSAttributedString*>* scriptLines;
 @property(nonatomic) NSUInteger dualDialogue;
+
 @end
 
 @implementation OSFImport
 
-- (id)initWithData:(NSData*)data {
+- (bool)asynchronous { return true; }
+
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+{
+    return [self initWithURL:url completion:callback];
+}
+
+- (id)initWithData:(NSData*)data
+{
 	// Parsing with just data does not need a callback, we can do everything in sync
 	self = [super init];
 	if (self) {
@@ -50,7 +59,7 @@
 	return self;
 }
 
-- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback
+- (id)initWithURL:(NSURL*)url completion:(void(^)(id _Nullable))callback
 {
 	// Parsing a URL request needs a completion callback
 	
@@ -63,7 +72,7 @@
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
 			// After the data has loaded, parse the file & return to callback
 			[self parse:data];
-			callback();
+			callback(nil);
 		}];
 			
 		[task resume];
@@ -366,6 +375,11 @@
 		return resultString;
 	}
 	return @"";
+}
+
+- (NSString *)fountain
+{
+    return self.scriptAsString;
 }
 
 @end

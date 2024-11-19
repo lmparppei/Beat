@@ -64,12 +64,22 @@
 
 @implementation FDXImport
 
+- (bool)asynchronous { return true; }
+
+/// - note Callback should never be empty for FDX import
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+{
+    bool importNotes = (((NSNumber*)options[@"importNotes"]).boolValue);
+    return [self initWithURL:url importNotes:importNotes completion:callback];
+}
+
 - (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback
 {
 	self = [super init];
 	if (self) {
+        self.callback = callback;
 		_importNotes = importNotes;
-		
+        
 		[self setup];
 
 		// Thank you, RIPtutorial
@@ -124,7 +134,7 @@
 	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 	self.xmlParser.delegate = self;
         
-	if ([self.xmlParser parse]){
+	if ([self.xmlParser parse]) {
 		callback(self);
 	} else {
 		NSLog(@"ERROR: %@", self.xmlParser.parserError);
@@ -423,5 +433,9 @@
 	return false;
 }
 
+- (NSString*)fountain
+{
+    return self.scriptAsString;
+}
 
 @end

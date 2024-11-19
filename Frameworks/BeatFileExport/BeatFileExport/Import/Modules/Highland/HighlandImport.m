@@ -11,6 +11,11 @@
 
 @implementation HighlandImport
 
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+{
+    return [self initWithURL:url];
+}
+
 - (id)initWithURL:(NSURL*)url {
 	self = [super init];
 	if (self) {
@@ -36,6 +41,11 @@
 	}
 	
 	_script = [[NSString alloc] initWithData:scriptData encoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)fountain
+{
+    return self.script;
 }
 
 @end

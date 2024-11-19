@@ -14,12 +14,15 @@
 
 @implementation FadeInImport
 
-- (id)initWithURL:(NSURL*)url {
-	self = [super init];
-	if (self) {
-		[self readFromURL:url];
-	}
-	return self;
+- (bool)asynchronous { return true; }
+
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+{
+    self = [super init];
+    if (self) {
+        [self readFromURL:url];
+    }
+    return self;
 }
 
 - (void)readFromURL:(NSURL*)url {
@@ -42,6 +45,11 @@
 		OSFImport *import = [[OSFImport alloc] initWithData:scriptData];
 		_script = import.script;
 	}
+}
+
+- (NSString *)fountain
+{
+    return self.script;
 }
 
 @end

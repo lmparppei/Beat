@@ -7,12 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatFileExport/BeatImportModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FadeInImport : NSObject
+@interface FadeInImport : NSObject <BeatFileImportModule>
 @property (nonatomic) NSString *script;
-- (id)initWithURL:(NSURL*)url;
+@property (nonatomic) NSString *fountain;
+@property (nonatomic, copy) void (^callback)(id);
 @end
 
 NS_ASSUME_NONNULL_END

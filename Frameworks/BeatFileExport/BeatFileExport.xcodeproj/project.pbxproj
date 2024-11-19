@@ -30,6 +30,10 @@
 		B62D16332BFE2254000EFEE5 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D162F2BFE2254000EFEE5 /* FDXImport.m */; };
 		B62D16342BFE2254000EFEE5 /* FDXImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16302BFE2254000EFEE5 /* FDXImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62D16362BFE23FB000EFEE5 /* BeatFileImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */; };
+		B658DCCD2CE5E9BF00DDDBDE /* BeatImportModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B658DCCA2CE5E9BF00DDDBDE /* BeatImportModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B658DCD02CE5EDB800DDDBDE /* BeatExportProgressPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B658DCCF2CE5EDAD00DDDBDE /* BeatExportProgressPanel.swift */; };
+		B658DCD22CE5EF7800DDDBDE /* BeatExportProgressModal.xib in Resources */ = {isa = PBXBuildFile; fileRef = B658DCD12CE5EF7800DDDBDE /* BeatExportProgressModal.xib */; platformFilters = (macos, ); };
+		B658DCD42CE5F37A00DDDBDE /* PDFImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B658DCD32CE5F37800DDDBDE /* PDFImport.swift */; };
 		B692E2E42C7A1EDA0009833F /* Final Draft Template.xml in Resources */ = {isa = PBXBuildFile; fileRef = B692E2E32C7A1EDA0009833F /* Final Draft Template.xml */; };
 		B6A97C7A2BF0BDB600414878 /* BeatFileExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C792BF0BDB600414878 /* BeatFileExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6A97C8B2BF0BDDD00414878 /* BeatFDXExport.h in Headers */ = {isa = PBXBuildFile; fileRef = B6A97C802BF0BDDD00414878 /* BeatFDXExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -66,6 +70,10 @@
 		B62D162F2BFE2254000EFEE5 /* FDXImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
 		B62D16302BFE2254000EFEE5 /* FDXImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
 		B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFileImportManager.swift; sourceTree = "<group>"; };
+		B658DCCA2CE5E9BF00DDDBDE /* BeatImportModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatImportModule.h; sourceTree = "<group>"; };
+		B658DCCF2CE5EDAD00DDDBDE /* BeatExportProgressPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatExportProgressPanel.swift; sourceTree = "<group>"; };
+		B658DCD12CE5EF7800DDDBDE /* BeatExportProgressModal.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatExportProgressModal.xib; sourceTree = "<group>"; };
+		B658DCD32CE5F37800DDDBDE /* PDFImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFImport.swift; sourceTree = "<group>"; };
 		B692E2E32C7A1EDA0009833F /* Final Draft Template.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Final Draft Template.xml"; sourceTree = "<group>"; };
 		B6A97C762BF0BDB600414878 /* BeatFileExport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatFileExport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A97C792BF0BDB600414878 /* BeatFileExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFileExport.h; sourceTree = "<group>"; };
@@ -117,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */,
+				B658DCCA2CE5E9BF00DDDBDE /* BeatImportModule.h */,
 				B62D16372BFE2401000EFEE5 /* Modules */,
 				B62D16142BFE20CC000EFEE5 /* HTMLParser */,
 			);
@@ -159,6 +168,7 @@
 		B62D16372BFE2401000EFEE5 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				B658DCC92CE5E86D00DDDBDE /* PDF */,
 				B6273F102C86609C0025B87F /* Trelby */,
 				B62D162C2BFE2249000EFEE5 /* Final Draft */,
 				B62D16382BFE240B000EFEE5 /* OSF */,
@@ -205,6 +215,23 @@
 			path = Highland;
 			sourceTree = "<group>";
 		};
+		B658DCC92CE5E86D00DDDBDE /* PDF */ = {
+			isa = PBXGroup;
+			children = (
+				B658DCD32CE5F37800DDDBDE /* PDFImport.swift */,
+			);
+			path = PDF;
+			sourceTree = "<group>";
+		};
+		B658DCCE2CE5EDA500DDDBDE /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B658DCCF2CE5EDAD00DDDBDE /* BeatExportProgressPanel.swift */,
+				B658DCD12CE5EF7800DDDBDE /* BeatExportProgressModal.xib */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		B6A97C6C2BF0BDB600414878 = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +255,7 @@
 				B6A97C792BF0BDB600414878 /* BeatFileExport.h */,
 				B62D15B92BFE2066000EFEE5 /* Import */,
 				B62D15B82BFE2059000EFEE5 /* Export */,
+				B658DCCE2CE5EDA500DDDBDE /* UI */,
 			);
 			path = BeatFileExport;
 			sourceTree = "<group>";
@@ -283,6 +311,7 @@
 				B62D162B2BFE2132000EFEE5 /* HTMLParser.h in Headers */,
 				B62D16272BFE210E000EFEE5 /* HighlandImport.h in Headers */,
 				B62D16282BFE2113000EFEE5 /* GTMNSString+HTML.h in Headers */,
+				B658DCCD2CE5E9BF00DDDBDE /* BeatImportModule.h in Headers */,
 				B62D16292BFE211B000EFEE5 /* GTMDefines.h in Headers */,
 				B6A97C8F2BF0BDDD00414878 /* OutlineExtractor.h in Headers */,
 				B62D16262BFE2107000EFEE5 /* CeltxImport.h in Headers */,
@@ -356,6 +385,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B658DCD22CE5EF7800DDDBDE /* BeatExportProgressModal.xib in Resources */,
 				B692E2E42C7A1EDA0009833F /* Final Draft Template.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -376,8 +406,10 @@
 				B62D161E2BFE20CD000EFEE5 /* GTMNSString+HTML.m in Sources */,
 				B62D16132BFE20A9000EFEE5 /* HighlandImport.m in Sources */,
 				B62D16322BFE2254000EFEE5 /* FDXElement.m in Sources */,
+				B658DCD42CE5F37A00DDDBDE /* PDFImport.swift in Sources */,
 				B62D160D2BFE209C000EFEE5 /* FadeInImport.m in Sources */,
 				B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */,
+				B658DCD02CE5EDB800DDDBDE /* BeatExportProgressPanel.swift in Sources */,
 				B62D161F2BFE20CD000EFEE5 /* HTMLNode.m in Sources */,
 				B6A97C902BF0BDDD00414878 /* OutlineExtractor.m in Sources */,
 				B62D160A2BFE2097000EFEE5 /* OSFImport.m in Sources */,

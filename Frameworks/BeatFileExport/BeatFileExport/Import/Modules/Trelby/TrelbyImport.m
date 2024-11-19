@@ -9,9 +9,14 @@
 
 @implementation TrelbyImport
 
-- (id)initWithURL:(NSURL*)url {
+- (id)initWithURL:(NSURL *)url options:(NSDictionary *)options completion:(void (^)(id _Nullable))callback
+{
     self = [super init];
-    if (self) [self readFromURL:url];
+    if (self) {
+        self.callback = callback;
+        [self readFromURL:url];
+    }
+
     return self;
 }
 
@@ -63,7 +68,9 @@
     }
     
     _script = script;
-    NSLog(@"%@", script);
+    self.callback(self);
 }
+
+- (NSString *)fountain { return self.script; }
 
 @end

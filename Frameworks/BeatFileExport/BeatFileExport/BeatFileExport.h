@@ -15,9 +15,11 @@ FOUNDATION_EXPORT const unsigned char BeatFileExportVersionString[];
 #import <BeatFileExport/BeatFDXExport.h>
 #import <BeatFileExport/OutlineExtractor.h>
 
+#import <BeatFileExport/BeatImportModule.h>
 #import <BeatFileExport/HighlandImport.h>
 #import <BeatFileExport/CeltxImport.h>
 #import <BeatFileExport/FDXImport.h>
 #import <BeatFileExport/FadeInImport.h>
 #import <BeatFileExport/OSFImport.h>
 #import <BeatFileExport/TrelbyImport.h>
+

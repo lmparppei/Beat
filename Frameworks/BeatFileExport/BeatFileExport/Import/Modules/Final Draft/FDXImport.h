@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatFileExport/BeatImportModule.h>
 
-@interface FDXImport : NSObject
+@interface FDXImport : NSObject <BeatFileImportModule>
 
 typedef NS_ENUM(NSInteger, FDXSectionType) {
 	FDXSectionNone = 0,
@@ -18,12 +19,16 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
 	FDXSectionTags
 };
 
-@property(nonatomic, strong) NSMutableArray *results;
-@property(nonatomic, strong) NSMutableString *parsedString;
-@property(nonatomic, strong) NSMutableString *resultScript;
+@property (nonatomic, copy) void (^callback)(id);
 
-@property(nonatomic, strong) NSMutableArray *script;
-@property(nonatomic, strong) NSMutableArray *attrScript;
+@property (nonatomic, strong) NSMutableArray *results;
+@property (nonatomic, strong) NSMutableString *parsedString;
+@property (nonatomic, strong) NSMutableString *resultScript;
+ 
+@property (nonatomic, strong) NSMutableArray *script;
+@property (nonatomic, strong) NSMutableArray *attrScript;
+
+@property (nonatomic) NSString* fountain;
 
 - (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback;
 - (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback;
