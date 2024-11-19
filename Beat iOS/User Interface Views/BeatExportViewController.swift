@@ -74,6 +74,12 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 				
 		refreshPreview()
 		
+		// Toggle revisions
+		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? [Int] ?? []
+		for revision in revisionSwitches ?? [] {
+			revision.isChecked = !hiddenRevisions.contains(revision.tag)
+		}
+		
 		//checkPaywall()
 	}
 	

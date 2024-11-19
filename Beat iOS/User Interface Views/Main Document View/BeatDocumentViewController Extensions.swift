@@ -69,6 +69,7 @@ extension BeatDocumentViewController {
 						}),
 					]),
 					// Pagination options
+					/*
 					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.pagination"), image: UIImage(systemName: "book.pages"), children: [
 						UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom"), children: [
 							UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.pagination.numberingBeginsFrom.anyContent"), state: self?.documentSettings.getInt(DocSettingPageNumberingMode) == BeatPageNumberingMode.default.rawValue ? .on : .off, handler: { _ in
@@ -89,6 +90,7 @@ extension BeatDocumentViewController {
 							
 						})
 					]),
+					 */
 					UIMenu(options: .displayInline, children: [
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.notepad"), handler: { _ in
 							self?.toggleNotepad(self)
@@ -230,8 +232,7 @@ extension BeatDocumentViewController {
 		if let line = self.parser.previousOutlineItem(of: .heading, from: self.selectedRange().location) {
 			self.scroll(to: line)
 		}
-	}
-	
+	}		
 }
 
 

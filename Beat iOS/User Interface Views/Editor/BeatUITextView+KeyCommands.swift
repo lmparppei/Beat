@@ -11,14 +11,16 @@ import UIKit
 extension BeatUITextView {
 	override var keyCommands: [UIKeyCommand]? {
 		return [
-			UIKeyCommand(action: #selector(makeBold), input: "b", modifierFlags: [.command], discoverabilityTitle: "Bold"),
-			UIKeyCommand(action: #selector(makeItalic), input: "i", modifierFlags: [.command], discoverabilityTitle: "Italic"),
-			UIKeyCommand(action: #selector(makeUnderlined), input: "u", modifierFlags: [.command], discoverabilityTitle: "Underline"),
-			UIKeyCommand(action: #selector(makeOmitted), input: "e", modifierFlags: [.command, .shift], discoverabilityTitle: "Omit"),
-			UIKeyCommand(action: #selector(addNote), input: "e", modifierFlags: [.command, .alternate], discoverabilityTitle: "Note"),
-			UIKeyCommand(action: #selector(addMacro), input: "m", modifierFlags: [.command, .alternate], discoverabilityTitle: "Macro"),
-			UIKeyCommand(action: #selector(prevScene), input: UIKeyCommand.inputUpArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Previous Scene"),
-			UIKeyCommand(action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate], discoverabilityTitle: "Next Scene"),
+			UIKeyCommand(title: "Bold", action: #selector(makeBold), input: "b", modifierFlags: [.command]),
+			UIKeyCommand(title: "Italic", action: #selector(makeItalic), input: "i", modifierFlags: [.command]),
+			UIKeyCommand(title: "Underline", action: #selector(makeUnderlined), input: "u", modifierFlags: [.command]),
+			UIKeyCommand(title: "Omit", action: #selector(makeOmitted), input: "e", modifierFlags: [.command, .shift]),
+			UIKeyCommand(title: "Note", action: #selector(addNote), input: "e", modifierFlags: [.command, .alternate]),
+			UIKeyCommand(title: "Macro", action: #selector(addMacro), input: "m", modifierFlags: [.command, .alternate]),
+			UIKeyCommand(title: "Previous Scene", action: #selector(prevScene), input: UIKeyCommand.inputUpArrow, modifierFlags: [.command, .alternate]),
+			UIKeyCommand(title: "Next Scene", action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate]),
+			UIKeyCommand(title: "Mark as Revised", action: #selector(markAsRevised), input: "k", modifierFlags: [.command]),
+			UIKeyCommand(title: "Clear Revisions", action: #selector(clearRevisions), input: "k", modifierFlags: [.command, .alternate]),
 		]
 	}
 	
@@ -52,5 +54,13 @@ extension BeatUITextView {
 	
 	@objc func addNote() {
 		self.editorDelegate?.formattingActions.makeNote(self)
+	}
+	
+	@objc func markAsRevised() {
+		self.editorDelegate?.revisionTracking.markerAction(.addition)
+	}
+	
+	@objc func clearRevisions() {
+		self.editorDelegate?.revisionTracking.markerAction(.none)
 	}
 }

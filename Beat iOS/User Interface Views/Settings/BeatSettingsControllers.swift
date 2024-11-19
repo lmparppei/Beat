@@ -144,11 +144,12 @@ class BeatSettingsViewController:UITableViewController {
 		
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
+		delegate?.formatting.formatAllLines(of: .section)
 	}
 	
 	@IBAction func toggleSynopsisFontType(_ sender:UICommand?) {
 		guard let value = sender?.propertyList as? String else { return }
-		if value == "system" {
+		if value == "system" || value == "" {
 			BeatUserDefaults.shared().reset(toDefault: BeatSettingSynopsisFontType)
 		} else {
 			BeatUserDefaults.shared().save(value, forKey: BeatSettingSynopsisFontType)
@@ -156,6 +157,7 @@ class BeatSettingsViewController:UITableViewController {
 		
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
+		delegate?.formatting.formatAllLines(of: .synopse)
 	}
 	
 	@IBAction func toggleSectionFontSize(_ sender:UICommand?) {
@@ -164,6 +166,7 @@ class BeatSettingsViewController:UITableViewController {
 		
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
+		delegate?.formatting.formatAllLines(of: .section)
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {

@@ -155,5 +155,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>fi.KAPITAN.Beat.editing</string>
+	</array>
 </dict>
 </plist>

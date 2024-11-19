@@ -50,8 +50,15 @@ class iOSDocument: UIDocument {
 		if (range.length > 0) {
 			rawText = rawText.stringByReplacing(range: range, withString: "")
 		}
+		
+		//setupHandoff()
     }
-
+	
+	override func close() async -> Bool {
+		self.userActivity?.resignCurrent()
+		return await super.close()
+	}
+	
 	@objc func rename(newName:String) {
 		
 	}
@@ -136,5 +143,62 @@ class iOSDocument: UIDocument {
 			}
 		}
 	}
+	
+	/// Check if the file is stored on a cloud service
+	func isDocumentInCloud(fileURL: URL) -> Bool {
+		do {
+			let resourceValues = try fileURL.resourceValues(forKeys: [.isUbiquitousItemKey])
+			return resourceValues.isUbiquitousItem ?? false
+		} catch {
+			print("Error checking if document is in cloud: \(error)")
+			return false
+		}
+	}
+	/// Check that the document is actually fully uploaded in the cloud
+	func isDocumentFullyUploaded(fileURL: URL) -> Bool {
+		do {
+			let resourceValues = try fileURL.resourceValues(forKeys: [.ubiquitousItemIsUploadedKey])
+			return resourceValues.ubiquitousItemIsUploaded ?? false
+		} catch {
+			print("Error checking if document is fully downloaded: \(error)")
+			return false
+		}
+	}
+	
+	func checkDocumentCloudStatus(fileURL: URL) {
+		let inCloud = isDocumentInCloud(fileURL: fileURL)
+		let fullyDownloaded = isDocumentFullyUploaded(fileURL: fileURL)
+		
+		print("""
+			  Document Status:
+			  - In iCloud: \(inCloud)
+			  - Fully Downloaded: \(fullyDownloaded)
+			  """)
+	}
+	
+	
+	// MARK: - Handoff
+	/*
+	@objc func setupHandoff() {
+		let activity = NSUserActivity(activityType: "fi.KAPITAN.Beat.editing")
+		activity.title = "Editing Document"
+		activity.isEligibleForHandoff = true
+		activity.isEligibleForSearch = true
+		activity.isEligibleForPublicIndexing = false
+		
+		activity.userInfo = ["url": self.fileURL.absoluteString]
+		
+		self.userActivity = activity
+		activity.becomeCurrent()
+	}
+	
+	override func updateUserActivityState(_ userActivity: NSUserActivity) {
+		super.updateUserActivityState(userActivity)
+		userActivity.addUserInfoEntries(from: [
+			"url": self.fileURL.absoluteString
+		])
+		self.userActivity?.becomeCurrent()
+	}
+	 */
 }
 

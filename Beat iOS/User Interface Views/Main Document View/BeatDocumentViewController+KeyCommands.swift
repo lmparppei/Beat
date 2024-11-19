@@ -12,7 +12,7 @@ extension BeatDocumentViewController {
 	
 	open override var keyCommands: [UIKeyCommand]? {
 		return [
-			UIKeyCommand(action: #selector(togglePreview), input: "e", modifierFlags: [.command], discoverabilityTitle: "Preview"),
+			UIKeyCommand(title: "Show Preview", action: #selector(togglePreview), input: "e", modifierFlags: [.command]),
 		]
 	}
 

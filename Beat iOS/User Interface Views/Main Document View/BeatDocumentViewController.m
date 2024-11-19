@@ -287,9 +287,7 @@
 		bool variableSize = self.editorStyles.variableFont;
 		BeatFontType type = (variableSize) ? BeatFontTypeVariableSerif : BeatFontTypeFixed;
 		
-		CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
-		CGFloat scale = ((zoom + 4) / 10 ) + 1.0;
-		self.fonts = [BeatFontManager.shared fontsWith:type scale:scale];
+		self.fonts = [BeatFontManager.shared fontsWith:type scale:self.fontScale];
 	}
 }
 
@@ -350,7 +348,6 @@
 {
 	// Show document name
 	self.titleBar.title = self.fileNameString;
-
 }
 
 - (IBAction)dismissDocumentViewController:(id)sender

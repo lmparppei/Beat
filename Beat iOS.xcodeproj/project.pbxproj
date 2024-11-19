@@ -126,6 +126,7 @@
 		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
 		B6F59D452C6E9A9B00AB8FAE /* BeatNotepadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D442C6E9A9B00AB8FAE /* BeatNotepadView.swift */; };
 		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
+		B6FA1E242CEB34CE002737A8 /* 0.1.19 2.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */; };
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
 		B6FD3DD82C56BBDE00028EC7 /* UIView+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */; };
 		B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */; };
@@ -308,6 +309,7 @@
 		B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPDFPrinter.swift; sourceTree = "<group>"; };
 		B6F59D442C6E9A9B00AB8FAE /* BeatNotepadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNotepadView.swift; sourceTree = "<group>"; };
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
+		B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "0.1.19 2.html"; sourceTree = "<group>"; };
 		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
 		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
 		B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Scaling.swift"; sourceTree = "<group>"; };
@@ -474,6 +476,7 @@
 				B64C925B2CC55EFF0024CC37 /* 0.1.17.html */,
 				B68C59202CCE4C6E00C1F596 /* 0.1.18.html */,
 				B60158F12CD59D8B00F9413D /* 0.1.19.html */,
+				B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -548,6 +551,13 @@
 				B64AD62B2B2F900600EBD63A /* Info.plist */,
 			);
 			path = BeatThumbnailProvider;
+			sourceTree = "<group>";
+		};
+		B658DC892CDD3C5700DDDBDE /* Theme Editor */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Theme Editor";
 			sourceTree = "<group>";
 		};
 		B686BD212B33AEFC0074FC67 /* User Interface Elements */ = {
@@ -697,6 +707,7 @@
 				B6A79B692B80C89F003FF931 /* Settings */,
 				B61914CC2C0497DE0079C828 /* Statistics */,
 				B60158F32CD6B3F400F9413D /* Notepad */,
+				B658DC892CDD3C5700DDDBDE /* Theme Editor */,
 				B619DE5529F6ED51007D1838 /* BeatExportViewController.swift */,
 				B6F61400299FF051002188C0 /* BeatPopover.swift */,
 				B61FD05C2A66D49200A40883 /* BeatIndexCardView.swift */,
@@ -860,6 +871,7 @@
 				B6423B992C01108500373C34 /* Beat-FDX.png in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
 				B62D16442BFE35D1000EFEE5 /* BeatDocument 256.png in Resources */,
+				B6FA1E242CEB34CE002737A8 /* 0.1.19 2.html in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
 				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */,

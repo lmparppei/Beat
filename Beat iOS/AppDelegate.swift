@@ -40,6 +40,22 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
+	
+	func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
+		print("-> ",userActivity.activityType)
+		guard userActivity.activityType == "fi.KAPITAN.Beat.editing",
+			  let path = userActivity.userInfo?["url"] as? String
+		else { return false }
+		
+		let url = URL(filePath: path)
+		openDocument(url)
+		
+		return false
+	}
+	
+	func openDocument(_ url:URL) {
+		print("Open doc at ", url)
+	}
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
