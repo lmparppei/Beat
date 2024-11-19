@@ -28,6 +28,8 @@
 @property (nonatomic, weak) IBOutlet NSMenu *exportMenu;
 @property (nonatomic, weak) IBOutlet NSMenu *importMenu;
 
++ (NSString*)distribution;
+
 /// Returns `true` when the app is running in dark mode – either simulated (10.13) or real (10.14+)
 - (bool)isDark;
 - (void)toggleDarkMode;

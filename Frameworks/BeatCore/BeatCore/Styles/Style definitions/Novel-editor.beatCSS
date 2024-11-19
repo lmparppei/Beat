@@ -46,9 +46,20 @@ heading {
 
 section {
     text-align: center;
+    bold: true;
     italic: true;
     fontSize: 18;
     margin-bottom: 12;
+    
+    min-font-size: 12;
+    
+    if sectionDepth > 1 then fontSize: 20;
+    if sectionDepth > 2 then fontSize: 14;
+}
+
+synopsis {
+    font: system;
+    italic: true;
 }
 
 action, dialogue, character, parenthetical {

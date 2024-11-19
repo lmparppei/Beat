@@ -20,6 +20,7 @@ public enum RenderStyleValueType:Int {
     case enumType
     case lineType
     case additionalSettings
+    case integerType
 }
 
 enum ConditionalRenderStyleOperator {
@@ -82,7 +83,8 @@ struct PaginationRule {
         "additional-settings": .stringType,
         "skip-if-preceded-by": .lineType,
         "reformat-following-paragraph-after-type-change": .boolType,
-        "disable-automatic-paragraphs": .boolType
+        "disable-automatic-paragraphs": .boolType,
+        "pagination-mode": .integerType
     ] }
 
     @objc public var name:String = ""
@@ -129,6 +131,8 @@ struct PaginationRule {
 
     @objc public var lineFragmentMultiplier = 1.0;
     
+    @objc public var paginationMode:Int = -1
+    
     /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
     @objc public var forcedMargin = false
 
@@ -151,7 +155,16 @@ struct PaginationRule {
     
     @objc public var color:String = ""
     @objc public var font:String = ""
-    @objc public var fontSize:CGFloat = 0
+    @objc private var _fontSize:CGFloat = 0
+    @objc public var fontSize:CGFloat {
+        get {
+            return max(_fontSize, minimumFontSize)
+        }
+        set {
+            _fontSize = newValue
+        }
+    }
+    @objc public var minimumFontSize:CGFloat = 0
     
     @objc public var indent:CGFloat = 0
     @objc public var firstLineIndent:CGFloat = 0
@@ -334,6 +347,10 @@ struct PaginationRule {
             return "disableAutomaticParagraphs"
         case "line-fragment-multiplier":
             return "lineFragmentMultiplier"
+        case "min-font-size":
+            return "minimumFontSize"
+        case "pagination-mode":
+            return "paginationMode"
         default:
             return name
         }
@@ -371,7 +388,6 @@ struct PaginationRule {
         if self.conditionalRules.count == 0 { return nil }
         
         var dynamicRules:[String:Any] = [:]
-        
         
         // Iterate through conditional rules and append any fitting dynamic rules
         for conditionalRule in self.conditionalRules.keys.sorted() {            

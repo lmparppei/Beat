@@ -18,6 +18,7 @@
 #import <BeatParsing/OutlineScene.h>
 #import <BeatParsing/FountainRegexes.h>
 #import <BeatParsing/BeatDocumentSettings.h>
+#import <BeatParsing/BeatDocumentSettings+Shorthands.h>
 
 #import <BeatParsing/RegExCategories.h>
 #import <BeatParsing/NSString+CharacterControl.h>

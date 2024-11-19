@@ -195,13 +195,19 @@
 }
 
 
+
+
 #pragma mark - Tag editor
 
 - (IBAction)showTagEditor:(id)sender
 {
-	NSWindowController* wc = [BeatTagManager openTagEditorWithDelegate:self];
-	self.additionalPanels = NSMutableArray.new;
-	[self.additionalPanels addObject:wc];
+	// Check that there are no tag manager instances open...
+	if (self.tagManager == nil) {
+		self.tagManager = [BeatTagManager openTagEditorWithDelegate:self];
+	} else {
+		[self.tagManager close];
+		self.tagManager = nil;
+	}
 }
 
 

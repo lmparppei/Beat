@@ -697,9 +697,6 @@
 - (BXFont*)fontWith:(RenderStyle*)style
 {
     BXFont* font;
-    if ([style.name isEqualToString:@"section"]) {
-        NSLog(@"!!!");
-    }
     CGFloat fontSize = (style.fontSize > 0) ? style.fontSize : 12.0;
     
     if (style.font.length == 0 || [style.font isEqualToString:@"default"]) {

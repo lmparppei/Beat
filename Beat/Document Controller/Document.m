@@ -173,10 +173,14 @@
 	[self.previewController.timer invalidate];
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
+	
+	[self.userActivity invalidate];
 		
 	// Remove all registered views
 	for (NSView* view in self.registeredViews) [view removeFromSuperview];
+	for (NSView* view in self.registeredOutlineViews) [view removeFromSuperview];
 	[self.registeredViews removeAllObjects];
+	[self.registeredOutlineViews removeAllObjects];
 	[self.registeredSelectionObservers removeAllObjects];
 	
 	// Invalidate all view timers
@@ -188,7 +192,6 @@
 	// Invalidate autosave timer
 	[self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
-
 	
 	// Null other stuff, just in case
 	self.formatting = nil;
@@ -200,6 +203,8 @@
 	self.contentBuffer = nil;
 	self.currentScene = nil;
 	self.outlineView.filters = nil;
+	
+	self.outlineView = nil;
 	
 	self.outlineView.filteredOutline = nil;
 	self.tagging = nil;

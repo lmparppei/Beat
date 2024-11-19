@@ -516,6 +516,13 @@
 
 #pragma mark Convenience methods
 
+- (NSDictionary*)revisedRanges
+{
+    NSDictionary *revisions = [BeatRevisions rangesForSaving:self.delegate.getAttributedText];
+    return revisions;
+}
+
+
 /// Move to next revision marker
 - (void)nextRevision
 {

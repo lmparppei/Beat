@@ -65,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markerAction:(RevisionType)type;
 - (void)fixRevisionAttributesInRange:(NSRange)fullRange;
 
+- (NSDictionary*)revisedRanges;
+
 - (void)nextRevision;
 - (void)previousRevision;
 

@@ -41,7 +41,7 @@
 @protocol ContinuousFountainParserExports <JSExport>
 @property (readonly) NSMutableArray<Line*>* lines;
 @property (nonatomic, readonly) NSMutableArray <OutlineScene*>* outline;
-@property (nonatomic, readonly) NSMutableArray *scenes;
+@property (nonatomic, readonly) NSMutableArray <OutlineScene*>* scenes;
 @property (nonatomic, readonly) NSMutableArray<NSMutableDictionary<NSString*,NSArray<Line*>*>*>* titlePage;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
@@ -129,9 +129,9 @@
 /// Reparses the whole document.
 - (void)resetParsing;
 /// Returns parsed scenes, excluding structure elements
-- (NSArray*)scenes;
+- (NSArray<OutlineScene*>*)scenes;
 /// Returns the lines for given scene
-- (NSArray*)linesForScene:(OutlineScene*)scene;
+- (NSArray<Line*>*)linesForScene:(OutlineScene*)scene;
 /// Returns the line preceding given line
 - (Line*)previousLine:(Line*)line;
 /// Returns the line following given line
@@ -175,11 +175,11 @@
 /// Returns the first outline element which contains at least a part of the given range.
 - (OutlineScene*)outlineElementInRange:(NSRange)range;
 /// Returns all scenes in the given range (including intersecting scenes)
-- (NSArray*)scenesInRange:(NSRange)range;
+- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range;
 /// Returns all lines in the given range (including intersecting lines)
-- (NSArray*)linesInRange:(NSRange)range;
+- (NSArray<Line*>*)linesInRange:(NSRange)range;
 /// Returns all scenes in the given section.
-- (NSArray*)scenesInSection:(OutlineScene*)topSection;
+- (NSArray<OutlineScene*>*)scenesInSection:(OutlineScene*)topSection;
 /// Returns the scene with given number (note that scene numbers are strings)
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 /// Returns the number of scenes  in the file (excluding other structure elements)

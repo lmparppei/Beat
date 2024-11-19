@@ -230,6 +230,7 @@
 "quickSettings.novelLineHeightMultiplier" = "Razmik vrstic";
 "quickSettings.novelContentAlignment" = "Poravnava";
 
+"documentSettings.style" = "Slog";
 "documentSettings.pageSize" = "Velikost strani";
 "documentSettings.firstSceneNumber" = "Številka prve scene";
 "documentSettings.firstPageNumber" = "Številka prve strani";
@@ -241,3 +242,21 @@
 "pagination.pageNumberingMode.firstScene" = "Prva scena";
 "pagination.pageNumberingMode.forcedPageBreak" = "Prva prisiljena prelom strani";
 "pagination.forcedNote" = "Opomba: S to nastavitvijo bodo vse strani ostale brez številk do prvega preloma strani (===)";
+
+"about.version" = "Version";
+"about.build" = "Build";
+
+"tagManager.list.warning.noTypes" = "Najprej dodajte eno ali več vrst oznak";
+
+"tag.cast" = "Igralska zasedba";
+"tag.prop" = "Rekvizit";
+"tag.costume" = "Kostum";
+"tag.makeup" = "Ličenje";
+"tag.vfx" = "VFX";
+"tag.sfx" = "Posebni učinki";
+"tag.music" = "Glasba";
+"tag.animal" = "Žival";
+"tag.extras" = "Statisti";
+"tag.vehicle" = "Vozilo";
+"tag.none" = "Noben";
+

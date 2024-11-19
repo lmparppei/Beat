@@ -15,6 +15,8 @@
 		B64E43882AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */; };
 		B64E438A2ACAA05B003B947F /* BeatMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E43892ACAA05B003B947F /* BeatMacros.swift */; };
 		B64E438C2ACAA33D003B947F /* BeatParsingStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */; };
+		B658DC922CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m in Sources */ = {isa = PBXBuildFile; fileRef = B658DC912CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m */; };
+		B658DC932CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h in Headers */ = {isa = PBXBuildFile; fileRef = B658DC902CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6737DE92CD2642E00644D98 /* NSArray+BinarySearch.m in Sources */ = {isa = PBXBuildFile; fileRef = B6737DE82CD2642E00644D98 /* NSArray+BinarySearch.m */; };
 		B6737DEA2CD2642E00644D98 /* NSArray+BinarySearch.h in Headers */ = {isa = PBXBuildFile; fileRef = B6737DE72CD2642E00644D98 /* NSArray+BinarySearch.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6737DEF2CD2DBE700644D98 /* ContinuousFountainParser+Notes.m in Sources */ = {isa = PBXBuildFile; fileRef = B6737DEE2CD2DBE700644D98 /* ContinuousFountainParser+Notes.m */; };
@@ -75,6 +77,8 @@
 		B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSIndexSet+ReplaceRange.swift"; sourceTree = "<group>"; };
 		B64E43892ACAA05B003B947F /* BeatMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMacros.swift; sourceTree = "<group>"; };
 		B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParsingStringExtensions.swift; sourceTree = "<group>"; };
+		B658DC902CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentSettings+Shorthands.h"; sourceTree = "<group>"; };
+		B658DC912CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentSettings+Shorthands.m"; sourceTree = "<group>"; };
 		B6737DE72CD2642E00644D98 /* NSArray+BinarySearch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+BinarySearch.h"; sourceTree = "<group>"; };
 		B6737DE82CD2642E00644D98 /* NSArray+BinarySearch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+BinarySearch.m"; sourceTree = "<group>"; };
 		B6737DED2CD2DBE700644D98 /* ContinuousFountainParser+Notes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Notes.h"; sourceTree = "<group>"; };
@@ -218,6 +222,8 @@
 				B6B37F2528F01B5A00657F5F /* BeatDocumentSettings.m */,
 				B6B37F6328F0285D00657F5F /* BeatExportSettings.h */,
 				B6B37F6228F0285D00657F5F /* BeatExportSettings.m */,
+				B658DC902CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h */,
+				B658DC912CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m */,
 			);
 			path = ScreenplayData;
 			sourceTree = "<group>";
@@ -296,6 +302,7 @@
 				B6737DEA2CD2642E00644D98 /* NSArray+BinarySearch.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
 				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
+				B658DC932CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h in Headers */,
 				B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */,
 				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
 				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
@@ -392,6 +399,7 @@
 				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
 				B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */,
 				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
+				B658DC922CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m in Sources */,
 				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,

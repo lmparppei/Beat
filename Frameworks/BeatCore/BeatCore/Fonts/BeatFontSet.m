@@ -82,6 +82,20 @@
     else return font;
 }
 
+/// Returns the given font scaled to the font set size. For example, if you as for `Courier Prime` in `12pt` this method will return the font with the size `12pt * scale`
+- (BXFont*)font:(BXFont*)font inScaledSize:(CGFloat)fontSize
+{
+    static NSMutableDictionary <NSString*,NSMutableDictionary<NSNumber*, BXFont*>*>* scaledFonts;
+    CGFloat actualSize = fontSize * self.scale;
+    
+    if (scaledFonts[font.fontName][@(actualSize)] != nil) return scaledFonts[font.fontName][@(actualSize)];
+        
+    if (scaledFonts[font.fontName] == nil) scaledFonts[font.fontName] = NSMutableDictionary.new;
+    scaledFonts[font.fontName][@(actualSize)] = [BXFont fontWithName:font.fontName size:actualSize];
+    
+    return scaledFonts[font.fontName][@(actualSize)];
+}
+
 
 
 @end

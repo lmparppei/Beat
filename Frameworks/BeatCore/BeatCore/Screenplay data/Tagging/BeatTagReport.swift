@@ -22,7 +22,7 @@ public extension BeatTagging {
         return types
     }
     
-    func byType(_ types:[BeatTagType]) -> NSAttributedString {
+    func reportByType(_ types:[BeatTagType]) -> NSAttributedString {
         let text = NSMutableAttributedString()
                                                 
         for type in types {
@@ -30,7 +30,7 @@ public extension BeatTagging {
             let typeText = NSMutableAttributedString()
             
             for scene in self.delegate.parser.scenes() as? [OutlineScene] ?? [] {
-                let singleListing = singleTagListing(for: scene, type: type)
+                let singleListing = singleTagListing(for: scene, type: type, includeHeading: true)
                 if singleListing.string.count > 0 {
                     typeText.append(singleListing)
                 }
@@ -51,7 +51,46 @@ public extension BeatTagging {
         return text
     }
     
-    func singleTagListing(for scene:OutlineScene, type:BeatTagType) -> NSAttributedString {
+    func reportByScene(_ types:[BeatTagType]) -> NSAttributedString {
+        let text = NSMutableAttributedString()
+        
+        for item in delegate.parser.scenes() {
+            guard let scene = item as? OutlineScene else { continue }
+            guard let tagsForScene = tags(for: scene), tagsForScene.count > 0 else { continue }
+            
+            // Add heading for this scene
+            let heading = reportSceneHeading(for: scene, separator: true)
+            let sceneTagList = NSMutableAttributedString()
+            
+            for type in types {
+                guard let key = BeatTagging.key(for: type),
+                      let tags = tagsForScene[key],
+                      tags.count > 0
+                else { continue }
+                
+                let localizedTagName = BeatTagging.localizedTagName(forKey: key) + "\n"
+                let font = BXFont.boldSystemFont(ofSize: 10.0)
+                let pStyle = NSMutableParagraphStyle()
+                pStyle.firstLineHeadIndent = 20.0
+                pStyle.paragraphSpacingBefore = 12.0
+                
+                let tagHeading = NSAttributedString(string: localizedTagName, attributes: [.font: font, .paragraphStyle: pStyle])
+                sceneTagList.append(tagHeading)
+                
+                let definitions:[String] = tags.map { $0.name }
+                sceneTagList.append(tagList(from: definitions))
+            }
+            
+            if sceneTagList.length > 0 {
+                text.append(heading)
+                text.append(sceneTagList)
+            }
+        }
+        
+        return text
+    }
+    
+    func singleTagListing(for scene:OutlineScene, type:BeatTagType, includeHeading:Bool = false) -> NSAttributedString {
         let text = NSMutableAttributedString()
         var foundTags:[String] = []
         
@@ -68,13 +107,20 @@ public extension BeatTagging {
         // If no tags were found, return empty string
         guard foundTags.count > 0 else { return text }
                 
-        let font = BXFont.systemFont(ofSize: 12.0)
-        let headingFont = BXFont(name: "Courier-Bold", size: 12.0)!
+        if includeHeading {
+            let heading = reportSceneHeading(for: scene)
+            text.append(heading)
+        }
         
-        let headingStyle = NSMutableParagraphStyle()
-        headingStyle.paragraphSpacingBefore = 12.0
-        headingStyle.paragraphSpacing = 12.0
-
+        text.append(tagList(from: foundTags))
+        
+        return text
+    }
+    
+    func tagList(from tags:[String]) -> NSAttributedString {
+        let text = NSMutableAttributedString()
+        
+        let font = BXFont.systemFont(ofSize: 12.0)
         let list = NSTextList(markerFormat: .disc, options: 0)
         let marker = list.marker(forItemNumber: 0)
         
@@ -82,15 +128,57 @@ public extension BeatTagging {
         style.textLists = [list]
         style.firstLineHeadIndent = 30.0
         style.headIndent = 36.0
-                
-        let heading = NSAttributedString(string: scene.sceneNumber + " - " + scene.line.stripFormatting() + "\n", attributes: [.font: headingFont, .paragraphStyle: headingStyle])
-        text.append(heading)
         
-        for foundTag in foundTags {
-            text.append(NSAttributedString(string: marker + " " + foundTag + "\n", attributes: [.font: font, .paragraphStyle: style]))
+        for tag in tags {
+            text.append(NSAttributedString(string: marker + " " + tag + "\n", attributes: [.font: font, .paragraphStyle: style]))
         }
         
         return text
+    }
+    
+    func reportSceneHeading(for scene:OutlineScene, separator:Bool = false) -> NSAttributedString {
+        let headingFont = BXFont(name: "Courier-Bold", size: 12.0)!
+        let headingStyle = NSMutableParagraphStyle()
+        headingStyle.paragraphSpacingBefore = 24.0
+        headingStyle.paragraphSpacing = 0.0
+
+        var string = scene.sceneNumber + " - " + scene.line.stripFormatting()
+        if !separator { string += "\n" }
+        
+        let heading = NSMutableAttributedString(string: string, attributes: [.font: headingFont, .paragraphStyle: headingStyle])
+        
+        if separator {
+            heading.append(NSAttributedString(string: "\n\u{00A0} \u{0009} \u{00A0}\n", attributes: [.strikethroughStyle: NSUnderlineStyle.single.rawValue, .strikethroughColor: BXColor.black]))
+        }
+        
+        return heading
+    }
+    
+    func screenplayWithScenesWithTagTypes(_ tags:[BeatTagType]) -> [Line] {
+        let scenes = delegate.parser.scenes() ?? []
+        var lines:[Line] = []
+        let keys:[String] = tags.map { BeatTagging.key(for: $0) }
+        
+
+        
+        for scene in scenes {
+            guard let tags = self.tags(for: scene) else { continue }
+            var hasAnyTag = false
+            
+            for key in keys {
+                if let definitions = tags[key], definitions.count > 0 {
+                    hasAnyTag = true
+                    break
+                }
+            }
+            
+            if hasAnyTag, let linesForScene = delegate.parser.lines(for: scene) {
+                lines.append(contentsOf: linesForScene)
+            }
+        }
+        
+        //for scene in self.delegate.parser.scenes()
+        return lines
     }
     
     func pageHeader(type: BeatTagType) -> NSAttributedString {
@@ -100,7 +188,7 @@ public extension BeatTagging {
         let pageHeaderStyle = NSMutableParagraphStyle()
         pageHeaderStyle.paragraphSpacingBefore = 12.0
         
-        let pageHeading = NSMutableAttributedString(string: BeatTagging.localizedTagName(for: typeKey), attributes: [.font: pageHeaderFont, .paragraphStyle: pageHeaderStyle])
+        let pageHeading = NSMutableAttributedString(string: BeatTagging.localizedTagName(forKey: typeKey), attributes: [.font: pageHeaderFont, .paragraphStyle: pageHeaderStyle])
                 
         /*
         // macOS PDF export doesn't support image attachments for some rason, so we are skipping this step for now
@@ -120,5 +208,7 @@ public extension BeatTagging {
         
         return pageHeading
     }
+    
+    // MARK: - CSV export
     
 }

@@ -15,7 +15,7 @@ import Foundation
     @objc var gender:String { get set }
     
     @objc var lines:Int { get }
-    @objc var scenes:NSMutableSet { get }
+    @objc var scenes:[Line] { get }
     
     @objc var dictionary:[String:Any] { get }
 }
@@ -35,7 +35,7 @@ import Foundation
     
     /// Number of lines
     @objc public var lines:Int = 0
-    @objc public var scenes:NSMutableSet = NSMutableSet()
+    @objc public var scenes:[Line] = []
     
     public var dictionary:[String:Any] {
         get {
@@ -59,7 +59,7 @@ import Foundation
         }
     }
     
-    @objc public init(name: String = "", aliases: [String] = [], bio: String = "", age: String = "", gender: String = "", highlightColor: String = "", realName: String? = nil, lines: Int = 0, scenes: Set<OutlineScene> = [] ) {
+    @objc public init(name: String = "", aliases: [String] = [], bio: String = "", age: String = "", gender: String = "", highlightColor: String = "", realName: String? = nil, lines: Int = 0, scenes: [Line] = [] ) {
         self.name = name
         self.aliases = aliases
         self.bio = bio
@@ -68,7 +68,7 @@ import Foundation
         self.highlightColor = highlightColor
         self.realName = ((realName ?? "").count > 0) ? realName : nil
         self.lines = lines
-        self.scenes = NSMutableSet(set: scenes)
+        self.scenes = scenes
         
         super.init()
     }
@@ -152,8 +152,8 @@ import Foundation
                 let character = characters[realName]
                 character?.lines += 1
                 
-                if currentScene != nil {
-                    character?.scenes.add(currentScene!)
+                if let currentScene, let character, !character.scenes.contains(currentScene) {
+                    character.scenes.append(currentScene)
                 }
             }
         }

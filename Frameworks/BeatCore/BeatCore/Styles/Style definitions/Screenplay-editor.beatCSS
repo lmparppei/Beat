@@ -39,6 +39,12 @@ heading {
     uppercase: true;
 }
 
+synopsis {
+    font: userSetting(synopsisFontType);
+    font-size: 11;
+    italic: true;
+}
+
 centered {
     text-align: center;
 }
@@ -123,4 +129,6 @@ section {
     
     if sectionDepth > 2 then fontSize: 12;
     if sectionDepth > 1 then fontSize: userSetting(sectionFontSize) - 2;
+    
+    min-font-size: 12;
 }

@@ -188,7 +188,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 - (void)updateChangeCount:(BXChangeType)change;
 - (void)addToChangeCount;
-- (bool)caretAtEnd;
 - (void)scrollToLine:(Line*)line;
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
@@ -204,6 +203,7 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark - Fonts
 
 @property (nonatomic) BeatFontSet* fonts;
+- (CGFloat)fontScale;
 /*
 @property (readonly, nonatomic) BXFont *courier;
 @property (readonly, nonatomic) BXFont *boldCourier;

@@ -408,6 +408,7 @@
 "quickSettings.novelLineHeightMultiplier" = "Mellanrum";
 "quickSettings.novelLineHeightMultiplier" = "Textjustering";
 
+"documentSettings.style" = "Stil";
 "documentSettings.novelLineHeightMultiplier" = "Mellanrum";
 "documentSettings.novelContentAlignment" = "Textjustering";
 
@@ -425,3 +426,20 @@
 "pagination.pageNumberingMode.firstScene" = "Första scenen";
 "pagination.pageNumberingMode.forcedPageBreak" = "Första tvingade sidbrytningen";
 "pagination.forcedNote" = "Obs: Med den här inställningen förblir alla sidor onumrerade fram till första sidbrytningen (===)";
+
+"about.version" = "Version";
+"about.build" = "Build";
+
+"tagManager.list.warning.noTypes" = "Lägg till en eller flera taggtyper först";
+
+"tag.cast" = "Rollista";
+"tag.prop" = "Rekvisita";
+"tag.costume" = "Kostym";
+"tag.makeup" = "Smink";
+"tag.vfx" = "VFX";
+"tag.sfx" = "Specialeffekter";
+"tag.music" = "Musik";
+"tag.animal" = "Djur";
+"tag.extras" = "Statister";
+"tag.vehicle" = "Fordon";
+"tag.none" = "Ingen";

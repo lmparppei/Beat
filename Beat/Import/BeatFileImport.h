@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)highland;
 - (void)fadeIn;
 - (void)trelby;
+- (void)pdf;
 @end
 
 NS_ASSUME_NONNULL_END

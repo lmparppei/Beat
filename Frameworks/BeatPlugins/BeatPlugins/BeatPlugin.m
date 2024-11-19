@@ -2178,7 +2178,7 @@
 	[BeatRevisions bakeRevisionsIntoLines:lines text:self.delegate.getAttributedText];
 }
 - (NSDictionary*)revisedRanges {
-	return self.delegate.revisedRanges;
+    return self.delegate.revisionTracking.revisedRanges;
 }
 - (BeatRevisions*)revisionTracking
 {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,39 +16,36 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="2ip-76-u7o">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
-            <rect key="contentRect" x="196" y="240" width="484" height="272"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="contentRect" x="196" y="240" width="318" height="444"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
             <view key="contentView" id="hqH-LR-UWK">
-                <rect key="frame" x="0.0" y="0.0" width="484" height="272"/>
+                <rect key="frame" x="0.0" y="0.0" width="318" height="444"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="7rY-cc-HqE">
-                        <rect key="frame" x="0.0" y="0.0" width="484" height="272"/>
+                    <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" id="7rY-cc-HqE">
+                        <rect key="frame" x="0.0" y="0.0" width="318" height="444"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <view key="contentView" id="QUV-eN-YFX">
-                            <rect key="frame" x="0.0" y="0.0" width="484" height="272"/>
+                            <rect key="frame" x="0.0" y="0.0" width="318" height="444"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
-                                    <rect key="frame" x="252" y="187" width="173" height="37"/>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ghk-Ki-JSs">
+                                    <rect key="frame" x="0.0" y="149" width="318" height="295"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="Launch screen logo" id="cqK-NM-Eok"/>
+                                </imageView>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
+                                    <rect key="frame" x="40" y="163" width="173" height="37"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="beat" allowsEditingTextAttributes="YES" id="IhX-oQ-xOK">
                                         <font key="font" size="35" name="Courier"/>
                                         <color key="textColor" white="0.62776227679999996" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
-                                    <rect key="frame" x="252" y="78" width="204" height="53"/>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Zwe-T1-ZW3">
+                                    <rect key="frame" x="40" y="122" width="202" height="33"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2024. Released under GPL license. No animal products were consumed when creating this app." id="Vew-4a-6k0">
-                                        <font key="font" size="10" name="HelveticaNeue"/>
-                                        <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Zwe-T1-ZW3">
-                                    <rect key="frame" x="252" y="144" width="202" height="35"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version" allowsEditingTextAttributes="YES" id="p0n-Zp-SgA">
                                         <font key="font" size="10" name="HelveticaNeue"/>
                                         <color key="textColor" white="0.62776227679999996" alpha="1" colorSpace="calibratedWhite"/>
@@ -56,7 +53,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" id="NI3-iZ-dLT">
-                                    <rect key="frame" x="248" y="44" width="136" height="35"/>
+                                    <rect key="frame" x="36" y="23" width="136" height="35"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="push" title="Acknowledgements" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="umj-be-CzI">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -66,27 +63,25 @@
                                         <action selector="showAcknowledgements:" target="-2" id="IhF-Ek-n3G"/>
                                     </connections>
                                 </button>
-                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Qbi-IH-f4V">
-                                    <rect key="frame" x="29" y="36" width="200" height="199"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="B_256" id="hBU-Ie-V8p"/>
-                                </imageView>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
+                                    <rect key="frame" x="41" y="62" width="236" height="52"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2024. Released under GPL license. No animal products were consumed when creating this app." id="Vew-4a-6k0">
+                                        <font key="font" size="10" name="HelveticaNeue"/>
+                                        <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
                             </subviews>
                         </view>
                         <color key="fillColor" red="0.082352941176470587" green="0.086274509803921567" blue="0.098039215686274508" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
                 </subviews>
-                <constraints>
-                    <constraint firstItem="7rY-cc-HqE" firstAttribute="leading" secondItem="hqH-LR-UWK" secondAttribute="leading" id="AKi-gZ-EZo"/>
-                    <constraint firstAttribute="bottom" secondItem="7rY-cc-HqE" secondAttribute="bottom" id="QxG-NV-XY4"/>
-                    <constraint firstAttribute="trailing" secondItem="7rY-cc-HqE" secondAttribute="trailing" id="qtd-Z4-uia"/>
-                    <constraint firstItem="7rY-cc-HqE" firstAttribute="top" secondItem="hqH-LR-UWK" secondAttribute="top" id="u2b-v6-wTP"/>
-                </constraints>
             </view>
-            <point key="canvasLocation" x="6" y="299"/>
+            <point key="canvasLocation" x="-77" y="385"/>
         </window>
     </objects>
     <resources>
-        <image name="B_256" width="256" height="256"/>
+        <image name="Launch screen logo" width="800" height="744"/>
     </resources>
 </document>

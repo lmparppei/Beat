@@ -634,7 +634,6 @@ static BeatPluginManager *sharedManager;
 	[[session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 		NSError *writeError;
 		NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:pluginFileName];
-		NSLog(@"TEMP DIR: %@", tempDir);
 		
 		[data writeToURL:[NSURL fileURLWithPath:tempDir] options:0 error:&writeError];
 		

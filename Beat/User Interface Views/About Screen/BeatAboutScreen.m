@@ -7,6 +7,7 @@
 //
 
 #import "BeatAboutScreen.h"
+#import "BeatAppDelegate.h"
 
 @interface BeatAboutScreen ()
 @property (weak) IBOutlet NSTextField *versionField;
@@ -22,9 +23,10 @@
     [super windowDidLoad];
 	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
-	version = [version stringByAppendingFormat:@"\nBuild %@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
+	version = [version stringByAppendingFormat:@"\nBuild %@ — %@ Distribution", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"], BeatAppDelegate.distribution];
 	_versionField.stringValue = [NSString stringWithFormat:@"Version %@", version];
 }
+
 - (void)show {
 	[self.window setFrame:NSMakeRect(
 									 (NSScreen.mainScreen.frame.size.width - self.window.frame.size.width) / 2,
@@ -37,6 +39,7 @@
 	[self showWindow:self.window];
 	[self.window makeKeyAndOrderFront:self];
 }
+
 - (IBAction)showAcknowledgements:(id)sender {
 	NSURL * url = [NSBundle.mainBundle URLForResource:@"Credits" withExtension:@"pdf"];
 	[NSWorkspace.sharedWorkspace openURL:url];

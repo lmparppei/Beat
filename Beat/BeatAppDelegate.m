@@ -110,23 +110,29 @@
 	[self.styleMenuManager setup];
 }
 
++ (NSString*)distribution
+{
+#ifdef ADHOC
+	return @"Ad Hoc";
+#endif
+#ifdef APPSTORE
+	return @"App Store";
+#endif
+#ifdef ORGANIZATION
+	return @"Academic";
+#endif
+}
+
 - (void)setupUpdates
 {
 	bool showCheckUpdates = false;
-	NSString* release = @"";
+	NSString* release = BeatAppDelegate.distribution;
 #ifdef ADHOC
-	release = @"Ad Hoc";
 	showCheckUpdates = true;
 	[self setupSparkle];
 #endif
-#ifdef APPSTORE
-	release = @"App Store";
-#endif
-#ifdef ORGANIZATION
-	release = @"Organization";
-#endif
 	
-	NSLog(@"BEAT %@ (%@) - %@ release",
+	NSLog(@"(beat) %@ / %@ - %@ distribution",
 		  NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"],
 		  NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"],
 		  release);
@@ -505,6 +511,14 @@
 }
 
 
+#pragma mark - Handoff
+/*
+- (BOOL)application:(NSApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<NSUserActivityRestoring>> * _Nonnull))restorationHandler
+{
+	return false;
+}
+*/
+
 #pragma mark - File Import
 
 - (IBAction)importFDX:(id)sender
@@ -526,6 +540,10 @@
 - (IBAction)importTrelby:(id)sender
 {
 	[BeatFileImport.new trelby];
+}
+- (IBAction)importPDF:(id)sender
+{
+	[BeatFileImport.new pdf];
 }
 
 

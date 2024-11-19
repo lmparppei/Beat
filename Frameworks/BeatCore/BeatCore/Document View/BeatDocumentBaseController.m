@@ -61,7 +61,7 @@
 
 
 #pragma mark - Setting getters and setters
-// TODO: Maybe toss these into a Swift extension or a category?
+// TODO: Maybe toss these into a category?
 
 - (bool)showRevisions
 {
@@ -124,6 +124,18 @@
     return false;
 }
 
+- (void)setRevisionLevel:(NSInteger)revisionLevel
+{
+    [self.documentSettings setInt:DocSettingRevisionLevel as:revisionLevel];
+}
+
+- (NSInteger)revisionLevel
+{
+    return [self.documentSettings getInt:DocSettingRevisionLevel];
+}
+
+
+
 
 #pragma mark - Editor styles
 
@@ -145,6 +157,7 @@
 }
 
 /// Reloads __current__ stylesheet. Does NOT reload all styles if the stylesheet has changed.
+/// - note: This might need to be called in OS-specific implementation as well.
 - (void)reloadStyles
 {
     ((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
@@ -156,8 +169,6 @@
     // Let's reformat certain types of elements (and hope the user doesn't have like 9999999999 of each)
     [self.formatting formatAllLinesOfType:heading];
     [self.formatting formatAllLinesOfType:shot];
-    
-    // NOTE: This might need to be called in OS-specific implementation as well.
 }
 
 - (void)setStylesheet:(NSString*)name
@@ -367,6 +378,7 @@
     
     return nil;
 }
+
 - (OutlineScene*)getNextScene
 {
     NSArray *outline = self.parser.safeOutline;
@@ -586,22 +598,13 @@
 
 #pragma mark - Text view components
 
-- (BXTextView*)getTextView {
-    return self.textView;
-}
+- (BXTextView*)getTextView { return self.textView; }
 
-- (NSTextStorage*)textStorage {
-    return self.textView.textStorage;
-}
+- (NSTextStorage*)textStorage { return self.textView.textStorage; }
 
-- (NSLayoutManager*)layoutManager {
-    return self.textView.layoutManager;
-}
+- (NSLayoutManager*)layoutManager { return self.textView.layoutManager; }
 
-- (void)refreshTextView
-{
-    [self.textView textViewNeedsDisplay];
-}
+- (void)refreshTextView { [self.textView textViewNeedsDisplay]; }
 
 /// Focuses the editor window
 - (void)focusEditor
@@ -626,14 +629,18 @@
 
 #pragma mark - Selection
 
-- (NSRange)selectedRange {
+- (NSRange)selectedRange
+{
     return self.textView.selectedRange;
 }
-- (void)setSelectedRange:(NSRange)range {
+- (void)setSelectedRange:(NSRange)range
+{
     [self setSelectedRange:range withoutTriggeringChangedEvent:NO];
 }
-/// Set selected range but DO NOT trigger the didChangeSelection: event
-- (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent {
+
+/// Sets selected range without triggering `didChangeSelection:` event when needed
+- (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent
+{
     _skipSelectionChangeEvent = triggerChangedEvent;
     
     @try {
@@ -644,19 +651,11 @@
     }
 }
 
-- (bool)caretAtEnd {
-#if TARGET_OS_OSX
-    return (self.textView.selectedRange.location == self.textView.string.length);
-#else
-    return (self.textView.selectedRange.location == self.textView.text.length);
-#endif
-}
-
-
 
 #pragma mark - Text getter/setter
 
-- (NSString *)text {
+- (NSString *)text
+{
     if (!NSThread.isMainThread) return self.attrTextCache.string;
     return self.textView.text;
 }
@@ -667,6 +666,7 @@
     if (self.textView == nil) self.contentBuffer = text;
     else [self.textView setText:text];
 }
+
 
 #pragma mark - Text cache
 
@@ -785,25 +785,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - Revisions
 
-- (void)setRevisionLevel:(NSInteger)revisionLevel
-{
-    [self.documentSettings setInt:DocSettingRevisionLevel as:revisionLevel];
-}
-
-- (NSInteger)revisionLevel
-{
-    return [self.documentSettings getInt:DocSettingRevisionLevel];
-}
-
 - (void)bakeRevisions
 {
     [BeatRevisions bakeRevisionsIntoLines:self.parser.lines.copy text:self.getAttributedText];
-}
-
-- (NSDictionary*)revisedRanges
-{
-    NSDictionary *revisions = [BeatRevisions rangesForSaving:self.getAttributedText];
-    return revisions;
 }
 
 - (NSIndexSet*)shownRevisions
@@ -811,7 +795,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     NSMutableIndexSet* shownRevisions = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, BeatRevisions.revisionGenerations.count)];
     NSArray<NSNumber*>* hiddenRevisions = [self.documentSettings get:DocSettingHiddenRevisions];
     
-    if (hiddenRevisions != nil && hiddenRevisions.count > 0) {
+    if ([hiddenRevisions isKindOfClass:NSArray.class] && hiddenRevisions != nil && hiddenRevisions.count > 0) {
         for (NSNumber* n in hiddenRevisions) {
             if (n == nil) continue;
             [shownRevisions removeIndex:n.integerValue];
@@ -880,7 +864,47 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     if (![oldFontName isEqualToString:self.fonts.name]) [self.formatting formatAllLines];
 }
 
+- (CGFloat)fontScale
+{
+#if TARGET_OS_IOS
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
+        return ((zoom + 4) / 10 ) + 1.0;
+    }
+#endif
+    return 1.0;
+}
 
+
+#pragma mark - Handoff
+
+#if TARGET_OS_OSX
+/*
+- (void)updateUserActivityState:(NSUserActivity *)activity
+{
+    [super updateUserActivityState:activity];
+    [activity addUserInfoEntriesFromDictionary:@{
+        @"url": (self.fileURL!= nil) ? self.fileURL.absoluteString : @""
+    }];
+}
+
+- (void)setupHandoff
+{
+    NSUserActivity* activity = [NSUserActivity.alloc initWithActivityType:@"fi.KAPITAN.Beat.editing"];
+    activity.title = @"Editing Document";
+    activity.eligibleForHandoff = true;
+    activity.eligibleForSearch = false;
+    activity.eligibleForPublicIndexing = false;
+    
+    activity.userInfo = @{
+        @"url": (self.fileURL!= nil) ? self.fileURL.absoluteString : @""
+    };
+    
+    self.userActivity = activity;
+    [self.userActivity becomeCurrent];
+}
+*/
+#endif
 
 #pragma mark - Register editor views and observers
 

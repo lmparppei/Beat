@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,10 +14,11 @@
                     <window key="window" title="Tag Manager" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" toolbarStyle="unified" id="vJf-rg-99I">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="255" y="238" width="610" height="367"/>
+                        <rect key="contentRect" x="255" y="238" width="610" height="284"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
+                        <value key="minSize" type="size" width="610" height="284"/>
                         <view key="contentView" id="GJt-hS-q8F">
-                            <rect key="frame" x="0.0" y="0.0" width="610" height="367"/>
+                            <rect key="frame" x="0.0" y="0.0" width="610" height="284"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </view>
                         <toolbar key="toolbar" implicitIdentifier="F2EEC002-9FF7-42BD-94E9-2EE9A7616026" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="E5O-OO-d4u">
@@ -54,7 +55,7 @@
                 </windowController>
                 <customObject id="0CS-zA-TpJ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-35" y="-1088.5"/>
+            <point key="canvasLocation" x="-35" y="-1130"/>
         </scene>
         <!--Beat Tag Editor Tab View-->
         <scene sceneID="jdE-wI-P5M">
@@ -347,26 +348,26 @@
             <objects>
                 <viewController title="Tag Reports" id="qE6-5a-im5" customClass="BeatTagList" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="q9H-Ya-JOD">
-                        <rect key="frame" x="0.0" y="0.0" width="603" height="366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="603" height="319"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" id="KGa-Lp-QFz">
-                                <rect key="frame" x="0.0" y="0.0" width="603" height="366"/>
+                                <rect key="frame" x="0.0" y="0.0" width="603" height="319"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <customView id="3pW-ad-Znb">
-                                        <rect key="frame" x="0.0" y="0.0" width="200" height="366"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="200" height="319"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xKq-ee-5uZ">
-                                                <rect key="frame" x="0.0" y="1" width="200" height="336"/>
+                                                <rect key="frame" x="0.0" y="1" width="200" height="289"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <clipView key="contentView" id="RSV-Ch-fjy">
-                                                    <rect key="frame" x="0.0" y="0.0" width="200" height="336"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="200" height="289"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="C5c-kQ-Q3j" id="7Ou-yS-thu">
-                                                            <rect key="frame" x="0.0" y="0.0" width="200" height="336"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="200" height="289"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <size key="intercellSpacing" width="17" height="0.0"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -385,11 +386,11 @@
                                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                     <prototypeCellViews>
                                                                         <tableCellView identifier="CategoryCell" id="fyE-Pf-cJU" customClass="BeatTagCategoryCheckboxCell" customModule="Beat" customModuleProvider="target">
-                                                                            <rect key="frame" x="18" y="0.0" width="163" height="24"/>
+                                                                            <rect key="frame" x="18" y="0.0" width="566" height="24"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                             <subviews>
                                                                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XJg-7f-jjq">
-                                                                                    <rect key="frame" x="40" y="4" width="122" height="16"/>
+                                                                                    <rect key="frame" x="40" y="4" width="525" height="16"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="74x-7N-Puj">
                                                                                         <font key="font" usesAppearanceFont="YES"/>
@@ -403,7 +404,7 @@
                                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="5wV-OB-42v"/>
                                                                                 </imageView>
                                                                                 <button verticalHuggingPriority="750" id="YAF-lt-s79">
-                                                                                    <rect key="frame" x="1" y="3" width="20" height="18"/>
+                                                                                    <rect key="frame" x="1" y="3" width="423" height="18"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                     <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" inset="2" id="XJy-jV-O0z">
                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -439,9 +440,9 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="irH-hG-lrn">
-                                                <rect key="frame" x="19" y="344" width="71" height="16"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <button verticalHuggingPriority="750" id="irH-hG-lrn">
+                                                <rect key="frame" x="19" y="297" width="161" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" title="Select All" bezelStyle="regularSquare" imagePosition="left" controlSize="small" allowsMixedState="YES" inset="2" id="zzZ-Iy-Lx1">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="smallSystem"/>
@@ -456,35 +457,44 @@
                                         </constraints>
                                     </customView>
                                     <customView fixedFrame="YES" id="bU0-1a-1dw">
-                                        <rect key="frame" x="201" y="0.0" width="402" height="366"/>
+                                        <rect key="frame" x="201" y="0.0" width="402" height="319"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yho-Qu-ejT">
-                                                <rect key="frame" x="18" y="311" width="122" height="18"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <buttonCell key="cell" type="radio" title="Scene by scene" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="GIA-Vw-SZe">
+                                            <button verticalHuggingPriority="750" id="Yho-Qu-ejT">
+                                                <rect key="frame" x="18" y="249" width="364" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="radio" title="Scene by scene" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="GIA-Vw-SZe">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="toggleReportType:" target="qE6-5a-im5" id="rE8-cW-HYX"/>
+                                                </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jIw-Jy-fKs">
-                                                <rect key="frame" x="18" y="254" width="136" height="18"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <button tag="1" verticalHuggingPriority="750" id="jIw-Jy-fKs">
+                                                <rect key="frame" x="18" y="192" width="364" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="radio" title="List scenes by tag" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84k-jQ-TcI">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="toggleReportType:" target="qE6-5a-im5" id="j1V-Zp-ZIt"/>
+                                                </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3qi-eE-gr1">
-                                                <rect key="frame" x="18" y="196" width="169" height="18"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <button tag="2" verticalHuggingPriority="750" id="3qi-eE-gr1">
+                                                <rect key="frame" x="19" y="134" width="362" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="radio" title="Screenplay with scenes" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="PVz-9T-Ngc">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="toggleReportType:" target="qE6-5a-im5" id="q0V-dg-Qgf"/>
+                                                </connections>
                                             </button>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wnt-yA-Lrm">
-                                                <rect key="frame" x="38" y="279" width="306" height="28"/>
+                                                <rect key="frame" x="38" y="217" width="306" height="28"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" title="List scenes in chronological order, each followed by list of selected tags" id="7fe-5d-H5N">
                                                     <font key="font" metaFont="smallSystem"/>
@@ -493,7 +503,7 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xg1-jK-bdw">
-                                                <rect key="frame" x="38" y="221" width="306" height="28"/>
+                                                <rect key="frame" x="38" y="159" width="306" height="28"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" controlSize="small" title="List selected tag types, followed by scenes that contain them" id="dRL-ih-tk9">
                                                     <font key="font" metaFont="smallSystem"/>
@@ -502,33 +512,43 @@
                                                 </textFieldCell>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6ml-MC-qYN">
-                                                <rect key="frame" x="38" y="163" width="306" height="28"/>
+                                                <rect key="frame" x="38" y="101" width="306" height="28"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" controlSize="small" title="Create a new document with all scenes that contain selected tags" id="Btl-cg-HAD">
+                                                <textFieldCell key="cell" controlSize="small" title="Create a new document with all scenes that contain any of selected tag types" id="Btl-cg-HAD">
                                                     <font key="font" metaFont="smallSystem"/>
                                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <button verticalHuggingPriority="750" id="SnV-6k-3Mp">
-                                                <rect key="frame" x="14" y="13" width="79" height="32"/>
+                                                <rect key="frame" x="14" y="13" width="100" height="32"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <buttonCell key="cell" type="push" title="PDF" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="i8a-cP-Dlt">
+                                                <buttonCell key="cell" type="push" title="Create" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="i8a-cP-Dlt">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                                 <connections>
-                                                    <action selector="createCVS:" target="qE6-5a-im5" id="N8i-of-IQ3"/>
+                                                    <action selector="createPDF:" target="qE6-5a-im5" id="p8n-9e-0gg"/>
                                                 </connections>
                                             </button>
-                                            <button verticalHuggingPriority="750" id="ou5-Cz-wBt">
-                                                <rect key="frame" x="90" y="13" width="79" height="32"/>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8aH-TS-I1H">
+                                                <rect key="frame" x="18" y="48" width="366" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <buttonCell key="cell" type="push" title="CVS" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="I3R-6f-2FO">
-                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
-                                                </buttonCell>
-                                            </button>
+                                                <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" id="Hhx-lP-gk1">
+                                                    <font key="font" metaFont="smallSystem"/>
+                                                    <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sn3-08-C4Z">
+                                                <rect key="frame" x="18" y="283" width="366" height="16"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Create Tag Report" id="TwI-9E-8p3">
+                                                    <font key="font" metaFont="systemBold"/>
+                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
                                         </subviews>
                                     </customView>
                                 </subviews>
@@ -542,11 +562,12 @@
                     <connections>
                         <outlet property="selectAllCheckbox" destination="irH-hG-lrn" id="enm-Jr-Mb7"/>
                         <outlet property="typeList" destination="7Ou-yS-thu" id="dUZ-Cu-sft"/>
+                        <outlet property="warningLabel" destination="8aH-TS-I1H" id="s0U-4G-Gzd"/>
                     </connections>
                 </viewController>
                 <customObject id="mBJ-fb-btX" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1354.5" y="-1107"/>
+            <point key="canvasLocation" x="1354.5" y="-1130.5"/>
         </scene>
     </scenes>
     <resources>

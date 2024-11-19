@@ -66,7 +66,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="349" height="512"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Bh2-CD-gdR">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Bh2-CD-gdR">
                         <rect key="frame" x="18" y="476" width="244" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" lineBreakMode="clipping" title="Customize Colours" id="W10-WX-mev">
@@ -115,17 +115,17 @@ Gw
                         </connections>
                     </button>
                     <tabView id="O2O-9N-b7H">
-                        <rect key="frame" x="2" y="58" width="345" height="410"/>
+                        <rect key="frame" x="2" y="58" width="345" height="416"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Editor" identifier="" id="8db-n5-9bh">
                                 <view key="view" id="jb2-mu-cwf">
-                                    <rect key="frame" x="10" y="33" width="325" height="364"/>
+                                    <rect key="frame" x="10" y="33" width="325" height="370"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="UYG-an-gtj">
-                                            <rect key="frame" x="6" y="320" width="175" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="UYG-an-gtj">
+                                            <rect key="frame" x="6" y="326" width="175" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Paper" id="B8Z-S8-DXC">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -134,7 +134,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="9Rn-pt-0Rz" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="316" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="322" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -145,7 +145,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="MnQ-Gi-ZOy" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="316" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="322" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -156,8 +156,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="0Nf-8j-Uge"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oXR-fP-VNC">
-                                            <rect key="frame" x="224" y="345" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oXR-fP-VNC">
+                                            <rect key="frame" x="224" y="351" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Light" id="lFB-D9-I3Z">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -165,8 +165,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Mf4-pu-0Gz">
-                                            <rect key="frame" x="6" y="203" width="218" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Mf4-pu-0Gz">
+                                            <rect key="frame" x="6" y="209" width="218" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Text" id="KtE-ZB-M0o">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -175,7 +175,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="EBB-Rp-TYG" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="199" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="205" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -187,7 +187,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="AJW-58-ShP" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="199" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="205" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -199,8 +199,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="4ks-hq-Yik"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="FM6-2X-WA2">
-                                            <rect key="frame" x="6" y="293" width="175" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="FM6-2X-WA2">
+                                            <rect key="frame" x="6" y="299" width="175" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Margin" id="jiK-x1-9Kb">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -209,7 +209,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="Wq2-GV-6GU" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="289" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -220,7 +220,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="LEu-PY-jw2" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="289" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -231,8 +231,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="xGb-tm-Yr0"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oZx-xg-Jnp">
-                                            <rect key="frame" x="6" y="266" width="175" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oZx-xg-Jnp">
+                                            <rect key="frame" x="6" y="272" width="175" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Selection" id="vMr-Yo-A4o">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -241,7 +241,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="HZ4-jK-zAE" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="262" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -252,7 +252,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="q78-3Q-4Wx" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="262" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -263,8 +263,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="xjh-83-zzY"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="n0c-PC-npT">
-                                            <rect key="frame" x="6" y="149" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="n0c-PC-npT">
+                                            <rect key="frame" x="6" y="155" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Invisible Text" id="pol-nH-YUx">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -273,7 +273,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="bqT-RA-CO8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="145" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="151" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -285,7 +285,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="hLF-FC-rwm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="145" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="151" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -297,8 +297,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="nqC-xC-CjC"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="PUn-aW-j2b">
-                                            <rect key="frame" x="6" y="122" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="PUn-aW-j2b">
+                                            <rect key="frame" x="6" y="128" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Note" id="omc-Qp-Wls">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -307,7 +307,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="shr-n7-dhc" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="118" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="124" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -319,7 +319,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="apG-nU-9v6" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="118" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="124" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -331,8 +331,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="bf2-Kc-yvg"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1L0-Wn-rjo">
-                                            <rect key="frame" x="6" y="95" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1L0-Wn-rjo">
+                                            <rect key="frame" x="6" y="101" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" id="MhL-0X-jUG">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -341,7 +341,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="pS0-0R-luD" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="91" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="97" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -352,7 +352,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="Mq4-zF-1tf" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="91" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="97" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -363,8 +363,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="DLt-tL-ZwO"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xtu-PJ-dBO">
-                                            <rect key="frame" x="6" y="239" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xtu-PJ-dBO">
+                                            <rect key="frame" x="6" y="245" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Caret" id="zHa-4e-Vuo">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -373,7 +373,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="eT6-e5-MnA" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="235" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -384,7 +384,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="ge7-Yp-FrI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="235" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -395,8 +395,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="UVd-bC-8pV"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1wN-KI-LLE">
-                                            <rect key="frame" x="6" y="68" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1wN-KI-LLE">
+                                            <rect key="frame" x="6" y="74" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Synopsis" id="7vv-ql-pEx">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -405,7 +405,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="sgv-hg-RYe" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="64" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="70" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -417,7 +417,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="82h-Vz-FCm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="64" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="70" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -429,8 +429,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="CWc-jW-bij"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Sv2-f3-jKh">
-                                            <rect key="frame" x="6" y="41" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Sv2-f3-jKh">
+                                            <rect key="frame" x="6" y="47" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Section" id="QCU-q7-Dab">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -439,7 +439,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="Ojy-XN-ri2" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="37" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="43" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -451,7 +451,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="fUo-az-OBP" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="37" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="43" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -464,11 +464,11 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <box verticalHuggingPriority="750" boxType="separator" id="7Dl-Eb-zza">
-                                            <rect key="frame" x="6" y="226" width="310" height="5"/>
+                                            <rect key="frame" x="6" y="232" width="310" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KnW-tp-pFP">
-                                            <rect key="frame" x="270" y="345" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KnW-tp-pFP">
+                                            <rect key="frame" x="270" y="351" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Dark" id="DDr-T3-GTD">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -476,8 +476,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="QaL-Kn-rcK">
-                                            <rect key="frame" x="6" y="176" width="197" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="QaL-Kn-rcK">
+                                            <rect key="frame" x="6" y="182" width="197" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Heading" id="m4g-GO-jjO">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -486,7 +486,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="2CI-I5-JJJ" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="172" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="178" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -498,7 +498,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="4Bw-Cd-WsM" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="172" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="178" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -510,8 +510,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="yhS-aw-yaC"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="eic-i8-FHl">
-                                            <rect key="frame" x="6" y="14" width="218" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="eic-i8-FHl">
+                                            <rect key="frame" x="6" y="20" width="218" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Macro" id="6e2-bt-Jog">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -520,7 +520,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="uoc-oW-bl0" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="10" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="16" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -532,7 +532,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="f8r-km-zvy" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="10" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="16" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -549,11 +549,11 @@ Gw
                             </tabViewItem>
                             <tabViewItem label="Sidebar" identifier="" id="jya-PU-GI5">
                                 <view key="view" id="gC4-ZH-2nN">
-                                    <rect key="frame" x="10" y="33" width="325" height="364"/>
+                                    <rect key="frame" x="10" y="33" width="325" height="370"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="qKS-kW-1ga">
-                                            <rect key="frame" x="6" y="320" width="219" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="qKS-kW-1ga">
+                                            <rect key="frame" x="6" y="326" width="219" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Background" id="BS2-mF-IoS">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -562,7 +562,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="0JY-jb-QKZ" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="316" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="322" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -573,7 +573,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="fqB-xx-yF8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="316" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="322" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -584,8 +584,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="Trd-IE-tss"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="W4B-Sb-kuh">
-                                            <rect key="frame" x="6" y="293" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="W4B-Sb-kuh">
+                                            <rect key="frame" x="6" y="299" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Highlight" id="ZgE-Rl-TTE">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -594,7 +594,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="0jK-2F-8kL" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="289" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -605,7 +605,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="vBl-T8-2xh" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="289" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="295" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -617,7 +617,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="Vdu-4G-xlI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="180" y="48" width="44" height="23"/>
+                                            <rect key="frame" x="180" y="54" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -628,8 +628,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="CqN-wN-iVG"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="SLy-0g-Brx">
-                                            <rect key="frame" x="178" y="74" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="SLy-0g-Brx">
+                                            <rect key="frame" x="178" y="80" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Man" id="jaw-Da-IBj">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -637,8 +637,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="u46-Nf-eAE">
-                                            <rect key="frame" x="6" y="52" width="130" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="u46-Nf-eAE">
+                                            <rect key="frame" x="6" y="58" width="130" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Genders" id="Ghh-a5-XuU">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -647,7 +647,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="uUV-g9-gCS" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="48" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="54" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -658,8 +658,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="NLg-x8-h9S"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0XD-0L-094">
-                                            <rect key="frame" x="224" y="74" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0XD-0L-094">
+                                            <rect key="frame" x="224" y="80" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Other" id="eoU-fi-QOQ">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -668,7 +668,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="EHz-xF-QII" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="48" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="54" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -679,8 +679,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="7mW-hs-XDX"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ka7-aP-1dU">
-                                            <rect key="frame" x="270" y="74" width="49" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ka7-aP-1dU">
+                                            <rect key="frame" x="270" y="80" width="49" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Unspec." id="Whr-tU-Und">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -689,7 +689,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="K9a-jn-IkI" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="134" y="48" width="44" height="23"/>
+                                            <rect key="frame" x="134" y="54" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -700,8 +700,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="C0J-Ob-jFo"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Un5-DS-I8Q">
-                                            <rect key="frame" x="133" y="74" width="47" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Un5-DS-I8Q">
+                                            <rect key="frame" x="133" y="80" width="47" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Woman" id="e7b-TI-SvW">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -709,8 +709,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Qr-h6r">
-                                            <rect key="frame" x="224" y="345" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Qr-h6r">
+                                            <rect key="frame" x="224" y="351" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Light" id="DI5-MO-BfR">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -718,8 +718,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="eUa-dc-2uw">
-                                            <rect key="frame" x="271" y="345" width="48" height="11"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="eUa-dc-2uw">
+                                            <rect key="frame" x="271" y="351" width="48" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="center" title="Dark" id="TbH-8k-B7K">
                                                 <font key="font" metaFont="miniSystem"/>
@@ -727,8 +727,8 @@ Gw
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="UAh-9l-SaM">
-                                            <rect key="frame" x="6" y="266" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="UAh-9l-SaM">
+                                            <rect key="frame" x="6" y="272" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Scene" id="NFp-0j-8TG">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -737,7 +737,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="6Y8-Ii-Unc" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="262" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -748,7 +748,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="3UP-f8-vwm" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="262" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="268" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -759,8 +759,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="xtu-Pc-SIL"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="fKf-He-y3i">
-                                            <rect key="frame" x="6" y="239" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="fKf-He-y3i">
+                                            <rect key="frame" x="6" y="245" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Number" id="2l8-ae-CH8">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -769,7 +769,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="4Lq-7W-10c" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="235" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -780,7 +780,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="i8d-Py-i6v" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="235" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="241" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -791,8 +791,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="75Q-44-gkv"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="l6T-GC-aqr">
-                                            <rect key="frame" x="6" y="212" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="l6T-GC-aqr">
+                                            <rect key="frame" x="6" y="218" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Omitted Scene" id="rMb-4q-N2D">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -801,7 +801,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="aRS-dQ-KOw" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="208" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="214" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -812,7 +812,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="pyu-eH-ku4" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="208" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="214" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -823,8 +823,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="kBh-y4-fEf"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DQC-Ep-LAb">
-                                            <rect key="frame" x="6" y="185" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DQC-Ep-LAb">
+                                            <rect key="frame" x="6" y="191" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Section" id="cTA-xN-AxG">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -833,7 +833,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="YGP-YV-nDE" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="181" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="187" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -844,7 +844,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="uFD-os-5dH" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="181" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="187" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -855,8 +855,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="lqI-Zb-3V9"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ou5-vA-1Cw">
-                                            <rect key="frame" x="6" y="158" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ou5-vA-1Cw">
+                                            <rect key="frame" x="6" y="164" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Synopsis" id="mKl-Sz-vq1">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -865,7 +865,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="I92-wq-wvM" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="154" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="160" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -876,7 +876,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="a1h-bh-bH8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="154" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="160" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -887,8 +887,8 @@ Gw
                                                 <action selector="changeColor:" target="-2" id="qZe-8g-lsj"/>
                                             </connections>
                                         </colorWell>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="N3O-UI-49F">
-                                            <rect key="frame" x="6" y="131" width="213" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="N3O-UI-49F">
+                                            <rect key="frame" x="6" y="137" width="213" height="16"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Note" id="r3S-jp-Pwd">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -897,7 +897,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <colorWell id="jpH-nM-jVx" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="226" y="127" width="44" height="23"/>
+                                            <rect key="frame" x="226" y="133" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -908,7 +908,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <colorWell id="RHC-22-nu8" customClass="BeatThemeColorWell" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="272" y="127" width="44" height="23"/>
+                                            <rect key="frame" x="272" y="133" width="44" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
@@ -920,7 +920,7 @@ Gw
                                             </connections>
                                         </colorWell>
                                         <box verticalHuggingPriority="750" boxType="separator" id="PK7-WP-vgT">
-                                            <rect key="frame" x="6" y="105" width="310" height="5"/>
+                                            <rect key="frame" x="6" y="111" width="310" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                     </subviews>
@@ -928,7 +928,7 @@ Gw
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="LoN-9I-k68">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="LoN-9I-k68">
                         <rect key="frame" x="7" y="49" width="312" height="11"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" alignment="left" title="Note: Some changes may require reopening documents" id="j5y-Wf-te4">

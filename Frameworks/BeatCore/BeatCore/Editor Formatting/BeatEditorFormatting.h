@@ -26,7 +26,7 @@ typedef enum {
 
 @interface BeatEditorFormatting : NSObject
 
-@property (nonatomic) id<BeatEditorDelegate> delegate;
+@property (weak, nonatomic) id<BeatEditorDelegate> delegate;
 @property (nonatomic) bool didProcessForcedCharacterCue;
 
 /// Set this to use a static parser instead of delegate's parser

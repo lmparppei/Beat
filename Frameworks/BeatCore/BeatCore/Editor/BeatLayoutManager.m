@@ -104,7 +104,7 @@
         // Get range for the first character. For headings and markers we won't need anything else.
         NSRange r = NSMakeRange(line.position, 1);
         if (self.editorDelegate.hideFountainMarkup) {
-            // If the editor hides Fountain markup, there's a chance that the line is hidden (if using a formatting character, ie. ".INT. SOMETHING"
+            // If the editor hides Fountain markup, there's a chance that the first glyph or the whole line is hidden (if using a formatting character, ie. ".INT. SOMETHING"
             if (line.length > 1) r.location += 1;
             else r = line.range;
         }
@@ -129,6 +129,11 @@
         else if (line.type == pageBreak) {
             [self drawForcedPageBreakForLine:line];
         }
+#if TARGET_OS_OSX
+        else if (line.type == section) {
+            //[self drawSectionDividerForLine:line rect:rect inset:inset];
+        }
+#endif
         
         // Draw markers
         if (line.markerRange.length > 0) {
@@ -149,6 +154,7 @@
     return rect;
 }
 
+
 #pragma mark - Forced page break marker
 
 - (void)drawForcedPageBreakForLine:(Line*)line
@@ -167,6 +173,7 @@
     BXRectFill(leftRect);
     BXRectFill(rightRect);
 }
+
 
 #pragma mark - Boneyard act marker
 
@@ -286,6 +293,7 @@
     
     return pageNumberStyle;
 }
+
 
 #pragma mark - Draw text background
 
@@ -439,7 +447,7 @@
 
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow
 {
-    NSMutableArray *rects = NSMutableArray.new;
+    NSMutableArray *rects = [NSMutableArray.alloc initWithCapacity:10];
     NSTextContainer *tc = self.textContainers.firstObject;
     
     [self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
@@ -551,6 +559,41 @@
 			NSParagraphStyleAttributeName: self.sceneNumberStyle
 		}];
 	}];
+}
+
+
+#pragma mark - Draw section divider
+
+- (void)drawSectionDividerForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset
+{
+    /*
+    NSParagraphStyle* pStyle = [self.textStorage attribute:NSParagraphStyleAttributeName atIndex:line.position effectiveRange:nil];
+            
+    // Create rect for the marker position
+    CGFloat lineHeight = pStyle.minimumLineHeight;
+    CGFloat w = 12.0;
+
+    CGRect circleRect = CGRectMake(inset.width + X_OFFSET,
+                                   rect.origin.y + w - lineHeight / 2,
+                                   w,
+                                   w);
+    CGPoint textPosition = CGPointMake(circleRect.origin.x + 2.5, circleRect.origin.y - 1.0);
+    
+    BXColor* color = ThemeManager.sharedManager.sectionTextColor;
+    if (line.sectionDepth > 1) color = [color colorWithAlphaComponent:1.0 - line.sectionDepth * 0.1];
+    [color setFill];
+    
+    BXBezierPath* path = BXBezierPath.new;
+    [path appendBezierPathWithRoundedRect:circleRect xRadius:circleRect.size.width / 2 yRadius:circleRect.size.width / 2];
+    [path fill];
+    
+    BXColor* textColor = ThemeManager.sharedManager.backgroundColor;
+    NSString* string = @"#";
+    [string drawAtPoint:textPosition withAttributes:@{
+        NSFontAttributeName: [BXFont systemFontOfSize:11.0],
+        NSForegroundColorAttributeName: textColor
+    }];
+     */
 }
 
 

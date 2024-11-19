@@ -224,8 +224,10 @@ public final class CssParser {
         } else if type == .enumType {
             // Enum value
             return enumValue(value: value, key: key)
+        } else if type == .integerType {
+            return Int(value)
         } else {
-            // This is most likely a number (float) value, so let's calculate. The & pointer is here just out of lazinesss.
+            // This is most likely a float value, so let's calculate. The & reference is here just out of lazinesss.
             return floatValue(value: &value, key: key)
         }
     }

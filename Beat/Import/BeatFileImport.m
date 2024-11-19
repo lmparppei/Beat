@@ -5,48 +5,44 @@
 //  Created by Lauri-Matti Parppei on 20.9.2020.
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
  This is a generic import-module for Beat. Classes for different import options
  don't (yet) register themselves, so they have to be added as IBActions into
  this class.
  
- Basic functionality:
- Create a new class (FormatImport) and include it in this class. Either make the
- class return a string when importing, or have it set a string called [ClassName].script
- after the open dialog (see examples). Then call [self openFileWithContents:className.script];
+ Each import module should adhere to `BeatImportModule` protocol.
  
- Import currently supports:
+ Currently the modules are a bit different, but in the future we'll have a single way to handle everything. Init the module, provide `url`, `options: {}` and a completion block which will be executed once the process has ended. It will return the **import module** itself or `nil`. Each module will have a property called `.fountain` which contains the imported document, if the process was successful.
+ 
+ Modules should be OS-agnostic. Some are not, including Celtx import.
+ 
+ Import now supports:
  - Highland
  - FadeIn (though this is mostly untested)
  - CeltX
  - FDX
- 
- Future considerations/TODO:
- - Make the different import methods register themselves without loading them into memory
- - Fix import plugin menu item in App Deegate!!!
+ - PDF
+ - Trelby
  
  */
 
 #import "BeatFileImport.h"
 #import <BeatFileExport/BeatFileExport.h>
+#import <BeatFileExport/BeatFileExport-Swift.h>
 
 @interface BeatFileImport ()
-@property (nonatomic) NSURL *url;
 @property (nonatomic) NSMutableArray* checkboxes;
 @property (nonatomic) NSView* accessoryView;
 @end
+
 @implementation BeatFileImport
 
-- (void)openDialogForFormat:(NSString*)extension completion:(void(^)(void))callback {
+- (void)openDialogForFormat:(NSString*)extension completion:(void(^)(NSURL*))callback {
 	[self openDialogForFormats:@[extension] completion:callback];
 }
-- (void)openDialogForFormats:(NSArray*)extensions completion:(void(^)(void))callback {
-	_url = nil;
-	
+- (void)openDialogForFormats:(NSArray*)extensions completion:(void(^)(NSURL*))callback {
 	NSOpenPanel *openDialog = NSOpenPanel.openPanel;
-	
-	
 	openDialog.accessoryView = _accessoryView;
 	openDialog.accessoryViewDisclosed = YES;
 	
@@ -54,8 +50,7 @@
 	
 	[openDialog beginWithCompletionHandler:^(NSModalResponse result) {
 		if (result == NSModalResponseOK && openDialog.URL) {
-			self.url = openDialog.URL;
-			callback();
+			callback(openDialog.URL);
 		}
 	}];
 }
@@ -100,46 +95,65 @@
 	[importNotes setTitle:@"Import Final Draft notes (WARNING: Can cause formatting issues in some cases)"];
 
 	[self addCheckbox:importNotes];
-	
-	[self openDialogForFormat:@"fdx" completion:^{
+	[self openDialogForFormat:@"fdx" completion:^(NSURL * url) {
 	__block FDXImport *fdxImport;
 	
 		bool notes = (importNotes.state == NSOnState);
-		fdxImport = [FDXImport.alloc initWithURL:self.url importNotes:notes completion:^(FDXImport * fdx) {
-			if (fdxImport.script.count > 0) {
-				dispatch_async(dispatch_get_main_queue(), ^(void) {
-					[self openFileWithContents:fdxImport.scriptAsString];
-				});
-			}
+		fdxImport = [FDXImport.alloc initWithURL:url importNotes:notes completion:^(FDXImport * fdx) {
+			dispatch_async(dispatch_get_main_queue(), ^(void) {
+				[self openFileWithContents:fdxImport.scriptAsString];
+			});
 		}];
 	}];
 }
 
 - (void)fadeIn {
-	[self openDialogForFormat:@"fadein" completion:^{
-		FadeInImport *import = [FadeInImport.alloc initWithURL:self.url];
+	[self openDialogForFormat:@"fadein" completion:^(NSURL * url) {
+		FadeInImport *import = [FadeInImport.alloc initWithURL:url options:nil completion:nil];
 		if (import.script) [self openFileWithContents:import.script];
 	}];
 }
 
 - (void)highland {
-	[self openDialogForFormat:@"highland" completion:^{
-		HighlandImport *import = [HighlandImport.alloc initWithURL:self.url];
+	[self openDialogForFormat:@"highland" completion:^(NSURL * url) {
+		HighlandImport *import = [HighlandImport.alloc initWithURL:url];
 		if (import.script) [self openFileWithContents:import.script];
 	}];
 }
 
 - (void)celtx {
-	[self openDialogForFormats:@[@"celtx", @"cxscript"] completion:^{
-		CeltxImport *import = [CeltxImport.alloc initWithURL:self.url];
+	[self openDialogForFormats:@[@"celtx", @"cxscript"] completion:^(NSURL * url) {
+		CeltxImport *import = [CeltxImport.alloc initWithURL:url];
 		if (import.script) [self openFileWithContents:import.script];
 	}];
 }
 
 - (void)trelby {
-	[self openDialogForFormat:@"trelby" completion:^{
-		TrelbyImport* import = [TrelbyImport.alloc initWithURL:self.url];
-		if (import.script) [self openFileWithContents:import.script];
+	[self openDialogForFormat:@"trelby" completion:^(NSURL * url) {
+		(void)[TrelbyImport.alloc initWithURL:url options:nil completion:^(TrelbyImport* import) {
+			[self openFileWithContents:import.fountain];
+		}];
+	}];
+}
+
+- (void)pdf {
+	[self openDialogForFormat:@"pdf" completion:^(NSURL * url) {
+		NSAlert* alert = NSAlert.new;
+		alert.informativeText = PDFImport.infoMessage;
+		alert.messageText = PDFImport.infoTitle;
+		[alert runModal];
+		
+		(void)[PDFImport.alloc initWithURL:url options:nil completion:^(id _Nullable import) {
+			PDFImport* pdf = (PDFImport*)import;
+			[self openFileWithContents:pdf.fountain];
+		}];
+	}];
+}
+
+- (void)runImport:(id<BeatFileImportModule>)module url:(NSURL*)url options:(NSDictionary*)options
+{
+	(void)[module initWithURL:url options:options completion:^(id<BeatFileImportModule> _Nullable import) {
+		if (import.fountain != nil)	[self openFileWithContents:import.fountain];
 	}];
 }
 
@@ -148,7 +162,10 @@
 	NSError *error;
 	
 	[string writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
-	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	});
 }
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix

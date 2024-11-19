@@ -108,19 +108,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return self;
 }
 
-/*
-- (BOOL)usesFindPanel {
-	return true;
-}
-
-- (void)performTextFinderAction:(id)sender
-{
-	if ([sender tag] == NSTextFinderActionShowFindInterface || [sender tag] == NSTextFinderActionReplace) {
-		_findPanel = [BeatFindPanel createWithTextView:self];
-	}
-}
-*/
-
 /// Basic text view setup
 - (void)layoutSetup
 {
@@ -478,18 +465,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Selection events
 
-- (void)didChangeSelection:(NSNotification *)notification {
-	/**
-	 
-	 There are TWO different didChangeSelection listeners, here and in Document.
-	 This one deals with text editor events, such as tagging, typewriter scroll,
-	 closing autocomplete and displaying reviews.
-	 
-	 The one in Document handles other UI-related stuff, such as updating views
-	 that are hooked into the parsed screenplay contents, and also updates plugins.
-	 
-	 */
-	
+/**
+ 
+ There are TWO different didChangeSelection listeners, here and in Document.
+ This one deals with text editor events, such as tagging, typewriter scroll,
+ closing autocomplete and displaying reviews.
+ 
+ The one in Document handles other UI-related stuff, such as updating views
+ that are hooked into the parsed screenplay contents, and also updates plugins.
+ 
+ */
+- (void)didChangeSelection:(NSNotification *)notification
+{
 	// Skip event when needed
 	if (_editorDelegate.skipSelectionChangeEvent) {
 		_editorDelegate.skipSelectionChangeEvent = NO;
@@ -824,7 +811,7 @@ Line *cachedRectLine;
 /// Sets the `zoomLevel` ivar. Does NOT enforce redrawing and layout.
 - (void)setZoomLevel:(CGFloat)zoomLevel
 {
-	_zoomLevel = clamp(zoomLevel, 0.9, 2.2);
+	_zoomLevel = clamp(zoomLevel, 0.8, 3.2);
 }
 
 /// Set zoom level for the editor view, automatically clamped

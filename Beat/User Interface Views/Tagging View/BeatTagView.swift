@@ -109,7 +109,6 @@ class BeatTagEditor:NSViewController, BeatTagManagerView, NSOutlineViewDataSourc
 	}
 	
 	weak var tagging:BeatTagging? { return delegate?.tagging }
-	
 	weak var editorView:BeatTagEditorView?
 	
 	var tagData:[String:[TagDefinition]] = [:]
@@ -124,8 +123,25 @@ class BeatTagEditor:NSViewController, BeatTagManagerView, NSOutlineViewDataSourc
 		self.tagList?.dataSource = self
 	}
 	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+
+		NotificationCenter.default.addObserver(self, selector: #selector(tagsDidChange), name: NSNotification.Name(BeatTagging.notificationName()), object: nil)
+	}
+	
+	// Reload tags when they were modified in editor
+	@objc func tagsDidChange(_ notification:NSNotification?) {
+		if let doc = notification?.object as? BeatEditorDelegate, doc.uuid() == self.delegate?.uuid() {
+			self.reload()
+		}
+	}
+	
 	func windowWillClose(_ notification: Notification) {
+		NotificationCenter.default.removeObserver(self)
 		self.delegate?.removeChangeListeners(for: self)
+		
+		// Sorry for this hack
+		if let doc = self.delegate?.document() as? Document { doc.tagManager = nil }
 	}
 
 	func reload() {
@@ -210,7 +226,7 @@ class BeatTagEditor:NSViewController, BeatTagManagerView, NSOutlineViewDataSourc
 		if let tagName = item as? String {
 			// This is a tag name
 			view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("CategoryCell"), owner: self) as? NSTableCellView
-			view?.textField?.stringValue = BeatTagging.localizedTagName(for: tagName)
+			view?.textField?.stringValue = BeatTagging.localizedTagName(forKey: tagName)
 			
 			let type = BeatTagging.tag(for: tagName)
 			let color = BeatTagging.color(for: type)
@@ -306,7 +322,8 @@ class BeatTagEditorView:NSViewController, NSOutlineViewDelegate, NSOutlineViewDa
 	
 	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
 		if let scene = item as? OutlineScene {
-			delegate?.scroll(to: scene.line)
+			delegate?.scroll(to: NSMakeRange(scene.line.position, 0), callback: {})
+			//delegate?.scroll(to: scene.line)
 		}
 		
 		return true
@@ -359,14 +376,21 @@ class BeatTagNameField:NSTextField {
 	
 }
 
+fileprivate enum TagReportType:Int {
+	case sceneVsTags = 0
+	case tagVsScene = 1
+	case screenplayWithTags = 2
+}
+
 class BeatTagList:NSViewController, BeatTagManagerView, NSOutlineViewDelegate, NSOutlineViewDataSource {
 	weak var delegate:BeatEditorDelegate?
 	@IBOutlet weak var typeList:NSOutlineView?
 	@IBOutlet weak var selectAllCheckbox:NSButton?
 	@IBOutlet weak var textView:NSTextView?
-	
+	@IBOutlet weak var warningLabel:NSTextField?
+		
 	var checked:[BeatTagType] = []
-	
+	private var reportType:TagReportType = .sceneVsTags
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -378,6 +402,12 @@ class BeatTagList:NSViewController, BeatTagManagerView, NSOutlineViewDelegate, N
 		
 	func reload() {
 		self.typeList?.reloadData()
+	}
+	
+	@IBAction func toggleReportType(_ sender:NSButton?) {
+		if let sender {
+			self.reportType = TagReportType(rawValue: sender.tag) ?? .sceneVsTags
+		}
 	}
 	
 	@IBAction func checkItem(_ sender:NSButton?) {
@@ -431,7 +461,7 @@ class BeatTagList:NSViewController, BeatTagManagerView, NSOutlineViewDelegate, N
 		let view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("CategoryCell"), owner: self) as? BeatTagCategoryCheckboxCell
 		
 		if let tagName = item as? String {
-			view?.textField?.stringValue = BeatTagging.localizedTagName(for: tagName)
+			view?.textField?.stringValue = BeatTagging.localizedTagName(forKey: tagName)
 						
 			let type = BeatTagging.tag(for: tagName)
 			let color = BeatTagging.color(for: type)
@@ -456,14 +486,48 @@ class BeatTagList:NSViewController, BeatTagManagerView, NSOutlineViewDelegate, N
 	
 	// MARK: - Buttons
 	var printView:RTFPrintView?
-	@IBAction func createCVS(_ sender:Any?) {
+	@IBAction func createPDF(_ sender:Any?) {
+		guard checked.count > 0 else {
+			warningLabel?.stringValue = BeatLocalization.localizedString(forKey: "tagManager.list.warning.noTypes")
+			return
+		}
+		warningLabel?.stringValue = ""
+		
 		self.delegate?.tagging.bakeTags()
-		if let string = self.delegate?.tagging.byType(BeatTagging.types) {
-			self.textView?.textStorage?.setAttributedString(string)
-			
+		var string:NSAttributedString? = nil
+
+		if reportType == .screenplayWithTags {
+			self.createScreenplayAndClose()
+			return
+		} else if reportType == .tagVsScene {
+			string = self.delegate?.tagging.reportByType(checked)
+		} else if reportType == .sceneVsTags {
+			string = self.delegate?.tagging.reportByScene(self.checked)
+		}
+		
+		if let string {
 			printView = RTFPrintView(text: string)
 			printView?.pdf()
 		}
+	}
+	
+	func createScreenplayAndClose() {
+		if let lines = self.delegate?.tagging.screenplayWithScenesWithTagTypes(self.checked) {
+			
+			var text = ""
+			for line in lines {
+				var str = line.string ?? ""
+				if line.type == .heading, line.sceneNumberRange.length == 0, let sceneNumber = line.sceneNumber {
+					str = str.trimmingCharacters(in: .whitespaces) + " #\(sceneNumber)#"
+				}
+				text += str + "\n"
+			}
+
+			let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate
+			appDelegate?.newDocument(withContents: text)
+		}
+		
+		self.view.window?.windowController?.close()
 	}
 }
 

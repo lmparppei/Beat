@@ -150,11 +150,11 @@
 - (void)paginationFinished
 {
     _running = false;
+
+    // Update page numbers. If the style enforces a pagination mode, we'll use that instead of the document setting.
+    BeatPageNumberingMode mode = (self.styles.document.paginationMode != -1) ? self.styles.document.paginationMode : [self.settings.documentSettings getInt:DocSettingPageNumberingMode];
     
-    // Update page numbers
-    BeatPageNumberingMode mode = [self.settings.documentSettings getInt:DocSettingPageNumberingMode];
     NSInteger pageNumber = self.settings.firstPageNumber;
-    
     bool numberingBegan = (mode == BeatPageNumberingModeDefault);
     
     for (BeatPaginationPage* page in self.pages) {

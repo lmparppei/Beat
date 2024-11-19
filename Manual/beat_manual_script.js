@@ -101,7 +101,7 @@ var caret = "<div class='caret'></div>";
 
 var sceneAnimation = new textAnimation({
 	text: "int. school room - day", wait: 15, container: "scene", caret: caret, events: {
-		2: function () { sceneAnimation.addClass('bold'); }
+		2: function () { sceneAnimation.addClass('bold'); sceneAnimation.addClass('uppercase'); }
 	}
 });
 

@@ -27,8 +27,8 @@
 	
 	if (self.selectedRange.length < 1) return;
 	
-	// Add a new tag
-	[self.popoverController displayWithRange:self.selectedRange items:BeatTagging.styledTags callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
+	// Open tag menu
+	[self.popoverController displayWithRange:self.selectedRange items:BeatTagging.styledTagsForMenu callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
 		// Tag string in the menu is prefixed by "● " or "× " so take them out
 		NSString* tagStr = string;
 		tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
@@ -39,8 +39,15 @@
 		// Create a tag
 		__block BeatTagType type = [BeatTagging tagFor:tagStr];
 		
+		// Remove tag
+		if (type == NoTag) {
+			[self.tagging tagRange:self.selectedRange withTag:nil];
+			self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
+			return false;
+		}
+		
 		// Check if a tag with given string and corresponding tag type already exists
-		if (![self.tagging tagExists:tagString type:type]) {
+		if (![self.tagging tagDefinitionExists:tagString type:type]) {
 			// If it doesn't exist, let's find possible similar tags. This method checks similarity between strings.
 			NSArray *possibleMatches = [self.tagging searchTagsByTerm:tagString type:type];
 			
@@ -61,7 +68,7 @@
 				return true;
 			}
 		}
-
+		
 		// Tag the current range with newly created tag and deselect
 		[self.tagging tagRange:self.selectedRange withType:type];
 		self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };

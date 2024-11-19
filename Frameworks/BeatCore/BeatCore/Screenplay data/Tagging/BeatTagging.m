@@ -5,36 +5,6 @@
 //  Created by Lauri-Matti Parppei on 6.2.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
-/*
- 
- Minimal tagging implementation. This relies on adding attributes into the BeatEditorView string,
- and tagging data is NOT present in the screenplay text. It is saved as a separate JSON string
- inside the document settings.
- 
- We have two classes, BeatTag and TagDefinition (sorry for the inconsistence). BeatTags are
- added as attributes to the string (attribute name "BeatTag"), and they contain a reference
- to their definition. Definitions are created on the fly and get their text content from
- the first time something is tagged.
- 
- This is similar to the Final Draft implementation, but for now, Beat doesn't allow
- choosing from a list of previous definitions or editing them directly.
- 
- User tags a range in editor:
-	-> editor presents a menu for existing items in the selected category
-	-> add a reference to the tag definition as an attribute to the string
- 
- Save document:
-	-> create an array of tag definitions which are still present in the screenplay
-	   (some might have been deleted)
-    -> save tag ranges as previously, just include the tag definition reference
-
- Load document:
-	-> load tag definitions using this class, create the aforementioned definition array
-	-> load ranges and use this class to match tags to definitions
- 
- Nice and easy, just needs some work.
- 
- */
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
@@ -69,7 +39,7 @@
 	[BeatAttributes registerAttribute:BeatTagging.attributeKey];
 }
 
-- (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate {
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate {
 	self = [super init];
 	if (self) {
 		self.delegate = delegate;
@@ -83,14 +53,13 @@
 
 }
 
+/// Load tags from document settings
 - (void)setup {
-	// Load tags from document settings
 	[self loadTags:[_delegate.documentSettings get:DocSettingTags] definitions:[_delegate.documentSettings get:DocSettingTagDefinitions]];
 }
 
-+ (NSString*)attributeKey {
-	return @"BeatTag";
-}
++ (NSString*)attributeKey { return @"BeatTag"; }
++ (NSString*)notificationName { return @"BeatTagModified"; }
 
 + (NSDictionary<NSNumber*,NSString*>*)tagKeys
 {
@@ -137,13 +106,14 @@
     return categories;
 }
 
-+ (NSArray*)styledTags
++ (NSArray<NSAttributedString*>*)styledTagsForMenu
 {
 	NSArray *tags = BeatTagging.categories;
     NSMutableArray *styledTags = NSMutableArray.new;
 	
 	// Add menu item to remove current tag
-	[styledTags addObject:[[NSAttributedString alloc] initWithString:@"× None"]];
+    NSString* none = [NSString stringWithFormat:@"× %@", [BeatLocalization localizedStringForKey:@"tag.none"]];
+	[styledTags addObject:[[NSAttributedString alloc] initWithString:none]];
 	
 	for (NSString *tag in tags) {
 		[styledTags addObject:[self styledTagFor:tag]];
@@ -155,10 +125,10 @@
 + (NSString*)localizedTagNameForType:(BeatTagType)type
 {
     NSString* tag = [BeatTagging keyFor:type];
-    return [BeatTagging localizedTagNameFor:tag];
+    return [BeatTagging localizedTagNameForKey:tag];
 }
 
-+ (NSString*)localizedTagNameFor:(NSString*)tag
++ (NSString*)localizedTagNameForKey:(NSString*)tag
 {
     return [BeatLocalization localizedStringForKey:[NSString stringWithFormat:@"tag.%@", tag]];
 }
@@ -319,9 +289,10 @@
 	}
 }
 
-- (NSArray*)allTags {
-	NSMutableArray *tags = [NSMutableArray array];
-    NSAttributedString *string = _delegate.attributedString;
+- (NSArray*)allTags
+{
+    NSMutableArray<BeatTag*> * tags = NSMutableArray.new;
+    NSAttributedString * string = _delegate.attributedString;
 	
 	[string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
@@ -415,7 +386,7 @@
     return tags;
 }
 
-- (NSDictionary*)tagsForScene:(OutlineScene*)scene
+- (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)tagsForScene:(OutlineScene*)scene
 {
 	[self.delegate.parser updateOutline];
     return [self sortedTagsInRange:scene.range];
@@ -535,6 +506,7 @@
 	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [TagFont boldSystemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
 }
 
+
 #pragma mark - Actual tagging
 
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type {
@@ -613,13 +585,13 @@
 	return matchStrings;
 }
 
-- (bool)tagExists:(NSString*)string type:(BeatTagType)type
+- (bool)tagDefinitionExists:(NSString*)string type:(BeatTagType)type
 {
     return ([self searchForTag:string type:type] != nil);
 }
 
-/// Returns an array for saving the tags as JSON. This is a misleading name and should be fixed.
-- (NSArray*)getTags
+/// Returns an array for saving the tags for converting to JSON.
+- (NSArray<NSDictionary<NSString*,id>*>*)serializedTagData
 {
     NSMutableArray *tagsToSave = NSMutableArray.new;
     NSArray *tags = [self allTags];
@@ -667,8 +639,8 @@
 	return defs;
 }
 
-- (NSArray*)definitionsForKey:(NSString*)key {
-	NSMutableArray *tags = [NSMutableArray array];
+- (NSArray<TagDefinition*>*)definitionsForKey:(NSString*)key {
+    NSMutableArray<TagDefinition*>* tags = NSMutableArray.new;
 	BeatTagType type = [BeatTagging tagFor:key];
 	
 	for (TagDefinition *def in _tagDefinitions) {
@@ -732,6 +704,7 @@
 
 #pragma mark - Editor methods
 
+/// Tags a range in editor with tag type, taking the tag definition name from selected range.
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type {
 	NSString *string = [self.delegate.text substringWithRange:range];
 	BeatTag* tag = [self addTag:string type:type];
@@ -742,22 +715,21 @@
 	}
 }
 
-- (void)tagRange:(NSRange)range withDefinition:(id)definition {
-	TagDefinition *def = (TagDefinition*)definition;
-	BeatTag *tag = [BeatTag withDefinition:def];
+/// Tags a range in editor with given definition
+- (void)tagRange:(NSRange)range withDefinition:(TagDefinition*)definition {
+    BeatTag *tag = [BeatTag withDefinition:definition];
 
 	[self tagRange:range withTag:tag];
 	[self.delegate.formatting forceFormatChangesInRange:range];
 }
 
-- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {
-	// Tag a range with the specified tag.
-	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
-	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
-	
-	//NSDictionary *oldAttributes = [self.delegate.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+/// Tag a range with the specified single tag.
+- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag
+{
     NSAttributedString* oldAttributedString = self.delegate.attributedString;
 	
+    if (!_delegate.documentIsLoading) [_delegate.textStorage beginEditing];
+    
 	if (tag == nil) {
 		// Clear tags
 		[_delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
@@ -767,13 +739,15 @@
 		[self saveTags];
 	}
 	
+    if (!_delegate.documentIsLoading) [_delegate.textStorage endEditing];
 	if (_delegate.documentIsLoading) return;
-	
-	
-	// If document is not loading, set undo states
+
+    // Post a notification that tags have changed
+    [NSNotificationCenter.defaultCenter postNotificationName:BeatTagging.notificationName object:self.delegate];
+    
+	// If document is not loading, set undo states and post a notification
     // TODO: Save previous attributes (see how parts of undoing work in revision manager)
-	
-	[self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+    [self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
 		NSLog(@"# NOTE: Test this before making tagging public.");
 		[self.delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
 		[oldAttributedString enumerateAttribute:BeatTagging.attributeKey inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange tRange, BOOL * _Nonnull stop) {
@@ -782,13 +756,12 @@
 			[self.delegate.textStorage addAttribute:BeatTagging.attributeKey value:value range:tRange];
 		}];
 	}];
-	
 }
 
 - (void)saveTags
 {
-	NSArray *tags = [self getTags];
-	NSArray *definitions = [self getDefinitions];
+    NSArray<NSDictionary*>* tags = self.serializedTagData;
+	NSArray* definitions = [self getDefinitions];
 	
 	[_delegate.documentSettings set:DocSettingTags as:tags];
 	[_delegate.documentSettings set:DocSettingTagDefinitions as:definitions];
@@ -799,7 +772,6 @@
     NSAttributedString* tagInfo = [self displayTagsForScene:self.delegate.currentScene];
     [self.tagTextView.textStorage setAttributedString:tagInfo];
 }
-
 
 
 #pragma mark - Editor actions

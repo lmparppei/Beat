@@ -144,6 +144,7 @@
 	if (notification.object == self.documentWindow && self.documentWindow.sheets.count == 0) {
 		[self showPluginWindowsForCurrentDocument];
 	}
+	[self.userActivity becomeCurrent];
 }
 
 -(void)windowDidResignKey:(NSNotification *)notification {
@@ -168,6 +169,8 @@ bool avoidLoop = false;
 	// When window resigns it main status, we'll have to hide possible floating windows
 	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:NSApp.mainWindow];
 	avoidLoop = false;
+	
+	[self.userActivity resignCurrent];
 }
 
 - (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {

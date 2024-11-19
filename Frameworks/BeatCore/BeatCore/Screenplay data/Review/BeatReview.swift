@@ -197,21 +197,28 @@ public protocol BeatReviewInterface {
     }
     
     @objc public func applyReview(item:BeatReviewItem) {
-		guard let delegate = self.delegate else { return }
-		self.closePopover()
+        self.closePopover()
 
-        let textView = delegate.getTextView()
+		guard let delegate = self.delegate,
+              let textView = delegate.getTextView()
+        else { return }
         
+        // textStorage has different optionality on macOS and iOS. Nicely done again, Apple.
+        #if os(macOS)
+            guard let textStorage = textView.textStorage else { return }
+        #else
+            let textStorage = textView.textStorage
+        #endif
+            
         // Move the cursor at the end of review
         var effectiveRange: NSRange = NSMakeRange(0, 0)
-        guard let textStorage = textView?.textStorage else { return }
         
-        let attr:BeatReviewItem = textStorage.attribute(BeatReview.attributeKey(), at:textView?.selectedRange().location ?? 0,
+        let attr:BeatReviewItem = textStorage.attribute(BeatReview.attributeKey(), at:textView.selectedRange().location,
                                                         longestEffectiveRange: &effectiveRange,
                                                         in: NSMakeRange(0, delegate.text().count)) as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
         
         if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
-			textView?.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
+			textView.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
         }
         
         // Commit to attributed text cache

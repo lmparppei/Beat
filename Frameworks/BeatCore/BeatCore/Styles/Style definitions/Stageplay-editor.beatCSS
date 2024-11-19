@@ -1,6 +1,6 @@
 /*
 
- Editor Stylesheet for Beat.
+ Stage play Editor Stylesheet for Beat.
  This is not actual CSS, just uses similar markup.
 
  Changing values without knowing what you are doing can very
@@ -13,6 +13,10 @@
  © Lauri-Matti Parppei 2021-2022
 
 */
+
+document {
+    visible-elements: [section];
+}
 
 page {
     margin-left: 30;
@@ -30,14 +34,20 @@ page {
 }
 
 heading {
-    width-a4: 60ch - 2ch;
-    width-us: 62ch - 2ch;
-    
-    bold: userSetting(headingStyleBold);
-    underline: userSetting(headingStyleUnderline);
-    
-    uppercase: true;
+    underline: true;
+    text-align: center;
+    bold: false;
+    scene-number: false;
 }
+
+/*
+action {
+    margin-left: 40;
+    margin-right: 40;
+    width-a4: 50ch;
+    width-us: 52ch;
+}
+*/
 
 centered {
     text-align: center;
@@ -47,25 +57,14 @@ character {
     width-a4: 38ch;
     width-us: 40ch;
     
-    margin-left: 9ch;
+    margin-left: 20ch;
 }
 
 parenthetical {
-    width-a4: 28ch;
-    width-us: 28ch;
+    width-a4: 32ch;
+    width-us: 32ch;
     
-    margin-left: 7ch;
-}
-
-dialogue {
-    width-a4: 35ch;
-    width-us: 35ch;
-    
-    margin-left: 4ch;
-}
-
-section {
-    margin-top: 1l;
+    margin-left: 12ch;
 }
 
 more {
@@ -79,20 +78,20 @@ dualDialogueCharacter {
     width-a4: 38ch;
     width-us: 40ch;
 
-    margin-left: 22ch;
+    margin-left: 30ch;
 }
 
 dualDialogueParenthetical {
     width-a4: 28ch;
     width-us: 28ch;
 
-    margin-left: 18ch;
+    margin-left: 27ch;
 }
 dualDialogue {
     width-a4: 35ch;
     width-us: 35ch;
 
-    margin-left: 15ch;
+    margin-left: 21ch;
     margin-right: 0;
 }
 
@@ -113,7 +112,7 @@ shot {
 }
 
 titlePageUnknown {
-    margin-left: 5ch;
+    margin-left: 10ch;
 }
 
 pageBreak {
@@ -121,12 +120,9 @@ pageBreak {
 }
 
 section {
-    font: userSetting(sectionFontType);
-    fontSize: userSetting(sectionFontSize);
-    bold: true;
+    text-align: center;
+    font: courier;
+    underline: true;
     
-    if sectionDepth > 2 then fontSize: 12;
-    if sectionDepth > 1 then fontSize: userSetting(sectionFontSize) - 2;
-    
-    min-font-size: 12;
+    font-size: 12;
 }

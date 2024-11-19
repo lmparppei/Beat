@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -12,18 +12,18 @@
             <objects>
                 <viewController storyboardIdentifier="LaunchScreen" id="bU7-R8-ocO" customClass="BeatLaunchScreenView" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" appearanceType="darkAqua" id="ciK-QG-bGu" customClass="NSVisualEffectView">
-                        <rect key="frame" x="0.0" y="0.0" width="703" height="436"/>
+                        <rect key="frame" x="0.0" y="0.0" width="703" height="422"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lXh-Gc-ZL9">
-                                <rect key="frame" x="366" y="0.0" width="337" height="435"/>
+                                <rect key="frame" x="366" y="0.0" width="337" height="421"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                 <clipView key="contentView" drawsBackground="NO" id="rdv-5Q-fQE">
-                                    <rect key="frame" x="0.0" y="0.0" width="337" height="435"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="337" height="421"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="yt1-F7-g9y" id="wBD-iY-AmA">
-                                            <rect key="frame" x="0.0" y="0.0" width="337" height="435"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="337" height="421"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="17" height="0.0"/>
                                             <color key="backgroundColor" red="0.1960784314" green="0.1960784314" blue="0.1960784314" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -92,10 +92,10 @@
                                 </scroller>
                             </scrollView>
                             <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" id="EmU-yf-ihA">
-                                <rect key="frame" x="0.0" y="0.0" width="370" height="436"/>
+                                <rect key="frame" x="0.0" y="0.0" width="370" height="422"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <view key="contentView" id="MU2-2K-fCm">
-                                    <rect key="frame" x="0.0" y="0.0" width="370" height="436"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="370" height="422"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" id="6T8-Bj-yWC" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
@@ -123,11 +123,11 @@
                                             </textFieldCell>
                                         </textField>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cEO-qs-eoQ">
-                                            <rect key="frame" x="15" y="78" width="339" height="5"/>
+                                            <rect key="frame" x="15" y="74" width="339" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VQX-sF-w2X">
-                                            <rect key="frame" x="0.0" y="165" width="370" height="271"/>
+                                            <rect key="frame" x="0.0" y="151" width="370" height="271"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="Launch screen logo" id="NyK-C0-Qis"/>
                                         </imageView>
@@ -165,7 +165,7 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="yGG-aB-tqs">
-                                            <rect key="frame" x="65" y="170.5" width="239" height="45"/>
+                                            <rect key="frame" x="65" y="156.5" width="239" height="45"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="DbX-Gm-m0E" customClass="BeatLaunchScreenButton" customModule="Beat" customModuleProvider="target">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -181,7 +181,7 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="4RL-Nc-NYn">
-                                            <rect key="frame" x="65" y="119" width="239" height="43"/>
+                                            <rect key="frame" x="65" y="105" width="239" height="43"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="Tutorials &amp; Templates" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="HWI-6m-SnF" customClass="BeatLaunchButton">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -227,7 +227,7 @@
                                 </connections>
                             </button>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ieF-S2-ZIH">
-                                <rect key="frame" x="371" y="212" width="330" height="19"/>
+                                <rect key="frame" x="371" y="205" width="330" height="19"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No recent screenplays" id="Zf8-Dc-Df3">
                                     <font key="font" metaFont="systemLight" size="16"/>
@@ -246,7 +246,7 @@
                 </viewController>
                 <customObject id="9uD-mB-xHs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="356.5" y="36"/>
+            <point key="canvasLocation" x="356.5" y="29"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="3Ds-23-XVy">
@@ -497,13 +497,13 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="usj-3b-jHu"/>
+        <segue reference="VEG-h6-WbV"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="BeatDocumentIcon" width="512" height="512"/>
         <image name="Launch screen logo" width="800" height="744"/>
         <image name="chevron.backward" catalog="system" width="10" height="14"/>
         <image name="doc" catalog="system" width="18" height="21"/>
-        <image name="map" catalog="system" width="21" height="19"/>
+        <image name="map" catalog="system" width="17" height="15"/>
     </resources>
 </document>

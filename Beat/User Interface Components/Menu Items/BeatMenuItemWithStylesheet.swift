@@ -15,16 +15,17 @@ import Cocoa
 
 @objcMembers public class BeatStyleMenuManager:NSObject, NSMenuDelegate {
 	@IBOutlet public var styleMenu:NSMenu?
-	
+		
 	public func setup() {
-		styleMenu?.delegate = self
-		setupMenuItems()
+		guard let styleMenu else { return }
+		styleMenu.delegate = self
+		setupMenuItems(for: styleMenu)
 	}
 	
-	func setupMenuItems() {
-		guard let items = styleMenu?.items as? [BeatMenuItemWithStylesheet] else { return }
+	func setupMenuItems(for menu:NSMenu) {
+		guard let items = menu.items as? [BeatMenuItemWithStylesheet] else { return }
 		items.forEach {
-			if $0.userStyle { styleMenu?.removeItem($0) }
+			if $0.userStyle { menu.removeItem($0) }
 		}
 		
 		let userStyles = BeatStyles.shared.availableUserStylesheets()
@@ -32,17 +33,17 @@ import Cocoa
 		userStyles.forEach { stylesheet in
 			let item = BeatMenuItemWithStylesheet(title: stylesheet, action: nil, keyEquivalent: "")
 			// This is a bit cursed, but let's take both the target and selector from first item in this menu
-			item.action = styleMenu?.items.first?.action
-			item.target = styleMenu?.items.first?.target
+			item.action = menu.items.first?.action
+			item.target = menu.items.first?.target
 			
 			item.userStyle = true
 			item.stylesheet = stylesheet
 			
-			styleMenu?.addItem(item)
+			menu.addItem(item)
 		}
 	}
 	
 	public func menuWillOpen(_ menu: NSMenu) {
-		setupMenuItems()
+		setupMenuItems(for: menu)
 	}
 }

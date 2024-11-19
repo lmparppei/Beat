@@ -48,21 +48,20 @@ import Foundation
 	}
 	
 	@objc func refresh() {
-		guard let delegate = editorDelegate, let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate else { return }
+		guard let delegate = editorDelegate, let appDelegate = NSApplication.shared.delegate as? BeatAppDelegate, let styleMenu = self.styleMenu else { return }
 
 		// Style menu
-		styleMenu?.menu?.delegate = appDelegate.styleMenuManager
-		for item in styleMenu?.menu?.items ?? [] {
+		appDelegate.styleMenuManager.setupMenuItems(for: styleMenu.menu!)
+		for item in styleMenu.menu?.items ?? [] {
 			if let styleItem = item as? BeatMenuItemWithStylesheet {
 				if delegate.styles.name == styleItem.stylesheet {
-					styleMenu?.selectItem(withTitle: styleItem.title)
+					styleMenu.selectItem(withTitle: styleItem.title)
 					break
 				}
 			}
 		}
 		
 		// Shared settings
-		
 		pageSize?.selectItem(at: delegate.pageSize.rawValue)
 		
 		let sceneNumber = max(delegate.documentSettings.getInt(DocSettingSceneNumberStart), 1)
@@ -75,12 +74,16 @@ import Foundation
 		printSynopsis?.state = (delegate.documentSettings.getBool(DocSettingPrintSynopsis)) ? .on : .off
 		printNotes?.state = (delegate.documentSettings.getBool(DocSettingPrintNotes)) ? .on : .off
 		
-		let paginationMode = delegate.documentSettings.getInt(DocSettingPageNumberingMode)
+		let paginationMode = (delegate.styles.document.paginationMode != 0) ? delegate.styles.document.paginationMode : delegate.documentSettings.getInt(DocSettingPageNumberingMode)
 		if paginationMode == 1 { pageNumberingModeScene?.state = .on }
 		else if paginationMode == 2 { pageNumberingModePageBreak?.state = .on }
 		
-		// Novel Mode settings
+		// With enforced pagination style these settings won't be available
+		pageNumberingModeDefault?.isEnabled = (delegate.styles.document.paginationMode == -1)
+		pageNumberingModeScene?.isEnabled = (delegate.styles.document.paginationMode == -1)
+		pageNumberingModePageBreak?.isEnabled = (delegate.styles.document.paginationMode == -1)
 		
+		// Novel Mode settings
 		novelSettings?.isHidden = delegate.styles.name != "Novel"
 			
 		let lh = Int(floor(delegate.documentSettings.getFloat(DocSettingNovelLineHeightMultiplier)))

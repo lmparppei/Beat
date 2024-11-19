@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface BeatDocumentSettings : NSObject
--(id)initWithDelegate:(id<BeatDocumentSettingDelegate>)delegate;
+-(id)initWithDelegate:(_Nullable id<BeatDocumentSettingDelegate>)delegate;
 
 + (NSDictionary*)defaultValues;
 + (NSDictionary*)defaultValue:(NSString*)key;

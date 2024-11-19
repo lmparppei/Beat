@@ -58,6 +58,7 @@ heading {
     content: #;
     text-align: center;
     scene-number: false;
+    bold: true;
 }
 
 section {
@@ -68,6 +69,7 @@ section {
     bold: true;
     italic: true;
     fontSize: 24;
+    min-font-size: 12;
     
     begins-page: true;
     trim: true;
@@ -77,6 +79,11 @@ section {
     if sectionDepth > 2 then begins-page: false;
     if sectionDepth > 2 then margin-top: 2l;
     if sectionDepth > 2 then fontSize: 14;
+}
+
+synopsis {
+    font: system;
+    italic: true;
 }
 
 action, dialogue, character, parenthetical {

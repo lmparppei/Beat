@@ -66,11 +66,7 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
 -(id)init
 {
-	self = [super init];
-	if (self) {
-        _settings = NSMutableDictionary.new;
-	}
-	return self;
+    return [BeatDocumentSettings.alloc initWithDelegate:nil];
 }
 
 -(id)initWithDelegate:(id<BeatDocumentSettingDelegate>)delegate
@@ -109,65 +105,39 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
     return BeatDocumentSettings.defaultValues[key];
 }
 
-- (void)setBool:(NSString*)key as:(bool)value
-{
-	[_settings setValue:[NSNumber numberWithBool:value] forKey:key];
+- (bool)has:(NSString*)key {
+    return (_settings[key] != nil);
 }
+
+
+#pragma mark - Setters
+
 - (void)toggleBool:(NSString*)key
 {
     bool value = [self getBool:key];
     [self setBool:key as:!value];
 }
-
-- (void)setInt:(NSString*)key as:(NSInteger)value
-{
-	[_settings setValue:@(value) forKey:key];
-    [_delegate addToChangeCount];
-}
-- (void)setFloat:(NSString*)key as:(CGFloat)value
-{
-	[_settings setValue:[NSNumber numberWithFloat:value] forKey:key];
-    [_delegate addToChangeCount];
-}
-- (void)setString:(NSString*)key as:(NSString*)value
-{
-	[_settings setValue:value forKey:key];
-    [_delegate addToChangeCount];
-}
+- (void)setBool:(NSString*)key as:(bool)value { [self set:key as:@(value)]; }
+- (void)setInt:(NSString*)key as:(NSInteger)value { [self set:key as:@(value)]; }
+- (void)setFloat:(NSString*)key as:(CGFloat)value { [self set:key as:@(value)]; }
+- (void)setString:(NSString*)key as:(NSString*)value { [self set:key as:value]; }
 - (void)set:(NSString*)key as:(id)value
 {
 	[_settings setValue:value forKey:key];
     [_delegate addToChangeCount];
 }
 
-- (bool)has:(NSString*)key {
-	if (_settings[key] != nil) return YES;
-	else return NO;
-}
 
-- (NSInteger)getInt:(NSString *)key
-{
-    NSNumber* value = (NSNumber*)[self get:key];
-	return value.integerValue;
-}
+#pragma mark - Getters
 
-- (CGFloat)getFloat:(NSString *)key
-{
-    NSNumber* value = (NSNumber*)[self get:key];
-	return value.floatValue;
-}
-
-- (bool)getBool:(NSString *)key
-{
-    NSNumber* value = (NSNumber*)[self get:key];
-    return value.boolValue;
-}
-
+- (NSInteger)getInt:(NSString *)key { return ((NSNumber*)[self get:key]).integerValue; }
+- (CGFloat)getFloat:(NSString *)key { return ((NSNumber*)[self get:key]).floatValue; }
+- (bool)getBool:(NSString *)key { return ((NSNumber*)[self get:key]).boolValue; }
 - (NSString*)getString:(NSString *) key
 {
     NSString *value = (NSString*)[self get:key];
 	if (![value isKindOfClass:NSString.class]) value = @"";
-	return value;
+    return (value != nil) ? value : @"";
 }
 
 - (id)get:(NSString*)key
@@ -180,11 +150,13 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 	return value;
 }
 
-- (void)remove:(NSString *)key
-{
-	[_settings removeObjectForKey:key];
-}
 
+#pragma mark - Removal
+
+- (void)remove:(NSString *)key { [_settings removeObjectForKey:key]; }
+
+
+#pragma mark - Setting block getter
 
 - (NSString*)getSettingsString
 {
@@ -193,23 +165,19 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
 - (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings
 {
-	NSDictionary *settings = _settings.copy;
-	if (additionalSettings != nil) {
-		NSMutableDictionary *merged = settings.mutableCopy;
-		[merged addEntriesFromDictionary:additionalSettings];
-		settings = merged;
-	}
-	
+    NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithDictionary:_settings];
+    if (additionalSettings != nil) [settings addEntriesFromDictionary:additionalSettings];
+    	
 	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error]; // Do NOT pretty print this to make the block more compact
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error];
 
-	if (! jsonData) {
+	if (!jsonData) {
 		NSLog(@"%s: error: %@", __func__, error.localizedDescription);
 		return @"";
-	} else {
-		NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-		return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 	}
+    
+    NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 }
 
 - (NSRange)readSettingsAndReturnRange:(NSString*)string

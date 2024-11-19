@@ -223,6 +223,7 @@
 "documentSettings.novelLineHeightMultiplier" = "Riviväli";
 "documentSettings.novelContentAlignment" = "Asettelu";
 
+"documentSettings.style" = "Tyyli";
 "documentSettings.pageSize" = "Sivun koko";
 "documentSettings.firstSceneNumber" = "Ensimmäisen kohtauksen numero";
 "documentSettings.firstPageNumber" = "Ensimmäisen sivun numero";
@@ -234,3 +235,20 @@
 "pagination.pageNumberingMode.firstScene" = "Ensimmäinen kohtaus";
 "pagination.pageNumberingMode.forcedPageBreak" = "Ensimmäinen pakotettu sivunvaihto";
 "pagination.forcedNote" = "Huom: Tällä asetuksella sivut pysyvät numeroimattomina ensimmäiseen sivunvaihtoon (===) asti";
+
+"about.version" = "Versio";
+"about.build" = "Build";
+
+"tagManager.list.warning.noTypes" = "Valitse yksi tai useampi tyyppi";
+
+"tag.cast" = "Näyttelijä";
+"tag.prop" = "Rekvisiitta";
+"tag.costume" = "Puvustus";
+"tag.makeup" = "Maskeeraus";
+"tag.vfx" = "VFX";
+"tag.sfx" = "Erikoistehosteet";
+"tag.music" = "Musiikki";
+"tag.animal" = "Eläin";
+"tag.extras" = "Avustajat";
+"tag.vehicle" = "Ajoneuvo";
+"tag.none" = "Ei mitään";

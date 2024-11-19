@@ -57,7 +57,7 @@ THE SOFTWARE.
 @class BeatNotepadView;
 @class BeatOnOffMenuItem;
 
-@interface Document : BeatDocumentBaseController <BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate>
+@interface Document : BeatDocumentBaseController <BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatEditorDelegate>
 
 
 #pragma mark - Editor flags
@@ -115,6 +115,7 @@ THE SOFTWARE.
 #pragma mark - Window controls
 
 @property (nonatomic, weak) NSWindow* _Nullable currentKeyWindow;
+@property (nonatomic) NSWindowController* _Nullable tagManager;
 
 
 #pragma mark - Tabs

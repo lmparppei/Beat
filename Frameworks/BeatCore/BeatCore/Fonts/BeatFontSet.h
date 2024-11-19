@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 
 + (instancetype)name:(NSString *)name size:(CGFloat)size scale:(CGFloat)scale regular:(NSString *)regularFontName bold:(NSString *)boldFontName italic:(NSString *)italicFontName boldItalic:(NSString *)boldItalicFontName sectionFont:(NSString* _Nullable)sectionFontName synopsisFont:(NSString* _Nullable)synopsisFontName;
 - (BXFont*)sectionFontWithSize:(CGFloat)size;
+- (BXFont*)font:(BXFont*)font inScaledSize:(CGFloat)fontSize;
 
 /// Cross-platform font trait creation. This should be a category.
 + (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;

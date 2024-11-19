@@ -17,7 +17,6 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-//#import <BeatCore/BeatFonts.h>
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatTextIO.h>
@@ -498,6 +497,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage
 {
+    RenderStyle* style = [self.delegate.editorStyles forLine:line];
+    
 	NSRange range = NSMakeRange(0, line.length);
 	NSAttributedString* astr = line.attributedStringForFDX;
     
@@ -520,30 +521,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Remove underline/strikeout
 	[textStorage addAttribute:NSUnderlineStyleAttributeName value:@0 range:globalRange];
 	[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
-	    
-	// Stylize headings according to settings
-	if (line.type == heading) {
-		// Bolded or not?
-        bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
-        bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 
-        if (boldedHeading) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
-        else [self applyTrait:0 range:line.textRange textStorage:textStorage];
-        
-		if (underlinedHeading) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
-        
-	} else if (line.type == shot) {
-        bool boldedShot = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShotStyleBold];
-        bool underlinedShot = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShotStyleUnderlined];
-        
-        if (boldedShot) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
-        else [self applyTrait:0 range:line.textRange textStorage:textStorage];
-        if (underlinedShot) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
-        
-    }
-	else if (line.type == lyrics) {
-		[self applyTrait:BXItalicFontMask range:line.textRange textStorage:textStorage];
-	}
+    [self applyTrait:0 range:line.textRange textStorage:textStorage];
+    
+    if (style.bold) [self applyTrait:BXBoldFontMask range:line.textRange textStorage:textStorage];
+    if (style.italic) [self applyTrait:BXItalicFontMask range:line.textRange textStorage:textStorage];
+    if (style.underline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
 	
 	//Add in bold, underline, italics and other stylization
 	[line.italicRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -568,14 +551,19 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 {
 #if TARGET_OS_IOS
     // NSLayoutManager doesn't have traits on iOS
-	if ((trait & BXBoldFontMask) == BXBoldFontMask && (trait & BXItalicFontMask) == BXBoldFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:self.boldItalic range:range];
-	} else if (trait == BXItalicFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:self.italic range:range];
-	} else if (trait == BXBoldFontMask) {
-        [textStorage addAttribute:NSFontAttributeName value:self.bold range:range];
-    } else {
-        [textStorage addAttribute:NSFontAttributeName value:self.regular range:range];
+    if (NSMaxRange(range) < self.delegate.text.length) {
+        BXFont* font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+        UIFontDescriptorSymbolicTraits traits = 0;
+        
+        if ((trait & BXBoldFontMask) == BXBoldFontMask) {
+            traits |= UIFontDescriptorTraitBold;
+        }
+        if ((trait & BXItalicFontMask) == BXItalicFontMask) {
+            traits |= UIFontDescriptorTraitItalic;
+        }
+        
+        BXFont* newFont = [BeatFontSet fontWithTrait:traits font:font];
+        [textStorage addAttribute:NSFontAttributeName value:newFont range:range];
     }
 #else
     // NSLayoutManager DOES have traits on macOS
@@ -588,15 +576,42 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
 {
-    NSDictionary* fonts = @{
-        @(synopse): self.synopsisFont,
-        @(lyrics): self.italic,
-        @(pageBreak): self.bold
-    };
+    BXFont* font = self.regular;
     
-    BXFont* font;
+    RenderStyle* style = [self.delegate.editorStyles forLine:line];
+    NSString* fontName = style.font;
+        
+    CGFloat scale = self.delegate.fontScale;
+    if (scale <= 0.0) scale = 1.0;
+    CGFloat fontSize = scale * ((style.fontSize > 0) ? style.fontSize : 12.0);
     
+    if ((fontName != nil && fontName.length > 0)) {
+        font = nil;
+        
+        if ([fontName isEqualToString:@"system"]) {
+            font = [BXFont systemFontOfSize:fontSize];
+        } else if ([fontName isEqualToString:@"default"]) {
+            font = self.delegate.fonts.regular;
+        } else if ([fontName isEqualToString:@"courier"]) {
+            font = [BeatFontManager.shared fontsWith:BeatFontTypeFixed scale:scale].regular;
+            font = [BXFont fontWithName:font.fontName size:fontSize];
+        } else {
+            font = [BXFont fontWithName:fontName size:fontSize];
+        }
+        
+        if (font == nil) font = [BXFont fontWithName:self.delegate.fonts.regular.fontName size:fontSize];
+    } else if (font != nil) {
+        font = [BXFont fontWithName:font.fontName size:fontSize];
+    }
+        
+    return (font != nil) ? font : self.regular;
+    
+    /*
     // Section fonts are generated on the fly
+    if (fonts[@(line.type)] != nil) {
+        font = fonts[@(line.type)];
+    }
+    
     if (line.type == section) {
         // Make lower sections a bit smaller
         CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
@@ -610,6 +625,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         // Otherwise use plain courier
         font = self.regular;
     }
+    */
     
     return font;
 }

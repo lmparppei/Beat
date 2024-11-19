@@ -1520,7 +1520,7 @@ static NSDictionary* patterns;
 	return scenes;
 }
 
-- (NSArray*)scenes
+- (NSArray<OutlineScene*>*)scenes
 {
 	NSArray *outline = self.safeOutline; // Use thread-safe lines
     NSMutableArray *scenes = NSMutableArray.new;
@@ -1532,7 +1532,7 @@ static NSDictionary* patterns;
 }
 
 /// Returns the lines in given scene
-- (NSArray*)linesForScene:(OutlineScene*)scene
+- (NSArray<Line*>*)linesForScene:(OutlineScene*)scene
 {
 	// Return minimal results for non-scene elements
 	if (scene == nil) return @[];
@@ -1958,7 +1958,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 /// Returns the lines in given range (even overlapping)
-- (NSArray*)linesInRange:(NSRange)range
+- (NSArray<Line*>*)linesInRange:(NSRange)range
 {
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;

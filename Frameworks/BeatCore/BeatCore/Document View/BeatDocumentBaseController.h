@@ -139,6 +139,11 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) bool showRevisedTextColor;
 
 
+#pragma mark - Handoff
+
+// - (void)setupHandoff;
+
+
 #pragma mark - Registering views
 
 /// Registered editor views, which might require update when document contents change
@@ -203,7 +208,6 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent;
-- (bool)caretAtEnd;
 /// Redraw the text view (OS-agnosticly)
 - (void)refreshTextView;
 
@@ -277,6 +281,7 @@ NS_ASSUME_NONNULL_END
 - (void)renderBackgroundForLines;
 /// Returns current default font point size
 - (CGFloat)fontSize;
+- (CGFloat)fontScale;
 
 
 #pragma mark - Preview
@@ -302,7 +307,6 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) NSInteger revisionLevel;
 
 - (void)bakeRevisions;
-- (NSDictionary* _Nonnull)revisedRanges;
 - (NSIndexSet* _Nonnull)shownRevisions;
 
 

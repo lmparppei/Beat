@@ -116,6 +116,8 @@
 		B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6F59D412C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */; };
 		B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */; };
+		B6FA1E212CEA8A2A002737A8 /* Stageplay.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E1F2CEA8A2A002737A8 /* Stageplay.beatCSS */; };
+		B6FA1E222CEA8A2A002737A8 /* Stageplay-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E202CEA8A2A002737A8 /* Stageplay-editor.beatCSS */; };
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
 		B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */; };
@@ -232,6 +234,8 @@
 		B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotepad.m; sourceTree = "<group>"; };
 		B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMarkdownTextStorage.swift; sourceTree = "<group>"; };
 		B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontExtensions.swift; sourceTree = "<group>"; };
+		B6FA1E1F2CEA8A2A002737A8 /* Stageplay.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = Stageplay.beatCSS; sourceTree = "<group>"; };
+		B6FA1E202CEA8A2A002737A8 /* Stageplay-editor.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Stageplay-editor.beatCSS"; sourceTree = "<group>"; };
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
 		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
 		B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStorageExtensions.swift; sourceTree = "<group>"; };
@@ -472,6 +476,8 @@
 		B6D15A5E2AF978FE00DAB66D /* Style definitions */ = {
 			isa = PBXGroup;
 			children = (
+				B6FA1E1F2CEA8A2A002737A8 /* Stageplay.beatCSS */,
+				B6FA1E202CEA8A2A002737A8 /* Stageplay-editor.beatCSS */,
 				B6D15A5F2AF9790900DAB66D /* Styles.beatCSS */,
 				B6D15A612AF9790900DAB66D /* Screenplay.beatCSS */,
 				B6D15A602AF9790900DAB66D /* Screenplay-editor.beatCSS */,
@@ -672,6 +678,8 @@
 				B6D15A662AF9790A00DAB66D /* Screenplay.beatCSS in Resources */,
 				B686BD252B3444390074FC67 /* Screenplay-editor-iOS.beatCSS in Resources */,
 				B6D15A652AF9790A00DAB66D /* Screenplay-editor.beatCSS in Resources */,
+				B6FA1E212CEA8A2A002737A8 /* Stageplay.beatCSS in Resources */,
+				B6FA1E222CEA8A2A002737A8 /* Stageplay-editor.beatCSS in Resources */,
 				B61991832BA9B53D002F0E69 /* Novel Tutorial iOS.fountain in Resources */,
 				B6D15A672AF9790A00DAB66D /* Novel.beatCSS in Resources */,
 				B63AB3C02A56BD6200B28BC0 /* BeatReviewEditor iOS.xib in Resources */,

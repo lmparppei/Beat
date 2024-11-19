@@ -202,6 +202,12 @@
                                                 <action selector="importTrelby:" target="-1" id="bpk-R0-KpU"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Import PDF..." id="Zb4-LZ-kWB">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="importPDF:" target="-1" id="apT-ld-cGm"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -757,6 +763,15 @@ DQ
                                                 <action selector="selectStylesheet:" target="-1" id="KUq-qZ-prr"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Stage Play" id="NCd-Wf-dgN" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="stylesheet" value="Stageplay"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="selectStylesheet:" target="-1" id="GBh-E7-fJN"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -989,13 +1004,13 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ooU-ON-iUL"/>
-                            <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">
+                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Tag Manager" hidden="YES" id="y8D-eW-ydD">
+                            <menuItem title="Tag Manager" id="y8D-eW-ydD">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showTagEditor:" target="-1" id="qz3-g0-ukZ"/>

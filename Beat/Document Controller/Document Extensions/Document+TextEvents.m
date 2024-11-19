@@ -125,8 +125,10 @@
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
 	
+	Line* currentLine = self.currentLine;
+	
 	// Reset forced character input
-	if (self.characterInputForLine != self.currentLine && self.characterInput) {
+	if (self.characterInputForLine != currentLine && self.characterInput) {
 		self.characterInput = NO;
 		if (self.characterInputForLine.string.length == 0) {
 			[self setTypeAndFormat:self.characterInputForLine type:empty];
@@ -141,7 +143,7 @@
 	if (previouslySelectedLine.isAnyCharacter) {
 		previousCue = previouslySelectedLine;
 	}
-	if (previouslySelectedLine != self.currentLine && previousCue.isAnyCharacter) {
+	if (previouslySelectedLine != currentLine && previousCue.isAnyCharacter) {
 		[self.parser ensureDialogueParsingFor:previousCue];
 	}
 	

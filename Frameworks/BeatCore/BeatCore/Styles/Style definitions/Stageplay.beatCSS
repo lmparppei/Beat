@@ -1,6 +1,6 @@
 /*
 
- Rendering Stylesheet for Beat.
+ Stage play Stylesheet for Beat.
  This is not actual CSS, just uses similar markup.
 
  Changing values without knowing what you are doing can very
@@ -11,6 +11,11 @@
  © Lauri-Matti Parppei 2021-2023
 
 */
+
+document {
+    visible-elements: [section];
+    pagination-mode: 1;
+}
 
 page {
     padding-left: 60;
@@ -43,28 +48,20 @@ titlePage {
 }
 
 heading {
-    width-a4: 60ch - 5ch;
-    width-us: 62ch - 5ch;
-    
-    margin-top: userSetting(sceneHeadingSpacing)l;
-    bold: userSetting(headingStyleBold);
-    underline: userSetting(headingStyleUnderline);
-    
-    uppercase: true;
+    margin-top: 2l;
+    underline: true;
+    text-align: center;
+    bold: false;
+    scene-number: false;
 }
 
 section {
-    margin-top: userSetting(sceneHeadingSpacing)l;
-    bold: true;
-    font: userSetting(sectionFontType);
-    fontSize: userSetting(sectionFontSize);
+    margin-top: 2l;
+    text-align: center;
+    font: courier;
+    underline: true;
     
-    if sectionDepth > 2 then fontSize: 12;
-    if sectionDepth > 1 then fontSize: userSetting(sectionFontSize) - 2;
-    
-    min-font-size: 12;
-    
-    trim: true;
+    font-size: 12;
 }
 
 synopsis {
@@ -99,19 +96,10 @@ character {
 }
 
 parenthetical {
-    width-a4: 28ch;
-    width-us: 28ch;
+    width-a4: 32ch;
+    width-us: 32ch;
     
-    margin-left: 16ch;
-    margin-top: 0;
-}
-
-dialogue {
-    width-a4: 35ch;
-    width-us: 35ch;
-    
-    margin-top: 0;
-    margin-left: 11ch;
+    margin-left: 12ch;
 }
 
 more {
