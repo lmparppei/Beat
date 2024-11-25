@@ -89,6 +89,9 @@
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="documentSettings.title"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gUa-v0-niL">
                                 <rect key="frame" x="18" y="386" width="184" height="16"/>
@@ -318,7 +321,7 @@ Gw
                                     </userDefinedRuntimeAttributes>
                                 </textFieldCell>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="Note: With this setting all pages will remain non-numbered until the first page break (===)"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.forcedNote"/>
                                 </userDefinedRuntimeAttributes>
                             </textField>
                             <button verticalHuggingPriority="750" id="Ilo-UC-VQm">

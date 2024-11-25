@@ -202,7 +202,7 @@
 	[parser updateOutline];
 	
 	// Force reloading of current default stylesheet
-	[BeatStyles.shared.defaultStyles reloadWithExportSettings:nil];
+	[BeatStyles.shared.defaultStyles reloadWithDocumentSettings:nil];
 	BeatExportSettings* settings = BeatExportSettings.new;
 	settings.printSceneNumbers = true;
 	
@@ -358,6 +358,13 @@
 	if (sender == _screenplayItemMore || sender == _screenplayItemContd) [self reloadStyles];
 	
 	[self apply];
+}
+
+/// Only call this from `BeatUserDefaultCheckbox`
+- (IBAction)toggleUserDefault:(BeatUserDefaultCheckbox*)sender
+{
+	bool value = (sender.state == NSOnState);
+	[BeatUserDefaults.sharedDefaults save:@(value) forKey:sender.userDefaultKey];
 }
 
 - (IBAction)toggleSectionFontType:(NSButton*)sender
