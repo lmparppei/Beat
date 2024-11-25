@@ -364,7 +364,7 @@
             if (review != nil && !review.emptyReview) {
                 if (bgColors[@"review"] == nil) {
                     BXColor *reviewColor = BeatReview.reviewColor;
-                    bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
+                    bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.4];
                 }
                 BXColor *color = bgColors[@"review"];
                 [color setFill];
@@ -387,14 +387,24 @@
             }
             
             if (tag != nil && showTags) {
+                // Store tag color
                 if (bgColors[tag.typeAsString] == nil) {
-                    bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
+                    bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.4];
                 }
 
                 BXColor *tagColor = bgColors[tag.typeAsString];
                 [tagColor setFill];
                 
-                BXRectFill(aRect);
+                CGRect tagRect = aRect;
+                tagRect.origin.x -= 2.0; tagRect.size.width += 2.0;
+#if TARGET_OS_OSX
+                BXBezierPath* path = [BXBezierPath bezierPathWithRoundedRect:tagRect xRadius:3.0 yRadius:3.0];
+#else
+                BXBezierPath* path = [BXBezierPath bezierPathWithRoundedRect:tagRect cornerRadius:3.0];
+#endif
+                [path fill];
+                
+                //BXRectFill(aRect);
             }
             
             // Make note if this line has a revision which is higher than current level
