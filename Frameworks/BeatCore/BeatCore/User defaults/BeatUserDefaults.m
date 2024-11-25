@@ -96,6 +96,7 @@ NSString* const BeatSettingSectionFontType              = @"sectionFontType";
 NSString* const BeatSettingSectionFontSize              = @"sectionFontSize";
 NSString* const BeatSettingSynopsisFontType             = @"synopsisFontType";
 
+NSString* const BeatSettingAddTitlePageByDefault        = @"addTitlePageByDefault";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -175,7 +176,9 @@ NSString* const BeatSettingSynopsisFontType             = @"synopsisFontType";
         
         BeatSettingSectionFontType: @[BeatSettingSectionFontType, @"system"],
         BeatSettingSectionFontSize: @[BeatSettingSectionFontSize, @"18.0"],
-        BeatSettingSynopsisFontType: @[BeatSettingSynopsisFontType, @"system"]
+        BeatSettingSynopsisFontType: @[BeatSettingSynopsisFontType, @"system"],
+        
+        BeatSettingAddTitlePageByDefault: @[BeatSettingAddTitlePageByDefault, @NO]
 	};
 }
 

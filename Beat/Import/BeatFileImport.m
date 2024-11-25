@@ -150,13 +150,6 @@
 	}];
 }
 
-- (void)runImport:(id<BeatFileImportModule>)module url:(NSURL*)url options:(NSDictionary*)options
-{
-	(void)[module initWithURL:url options:options completion:^(id<BeatFileImportModule> _Nullable import) {
-		if (import.fountain != nil)	[self openFileWithContents:import.fountain];
-	}];
-}
-
 - (void)openFileWithContents:(NSString*)string {
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
 	NSError *error;

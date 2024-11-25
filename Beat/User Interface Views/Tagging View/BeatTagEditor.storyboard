@@ -27,6 +27,9 @@
                                     <imageReference key="image" image="tag.fill" catalog="system" symbolScale="medium"/>
                                     <size key="minSize" width="29" height="25"/>
                                     <size key="maxSize" width="29" height="25"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.tab.edit"/>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="selectTab:" target="O0a-rK-2dk" id="Q3H-CE-Bib"/>
                                     </connections>
@@ -35,6 +38,9 @@
                                     <imageReference key="image" image="scroll.fill" catalog="system" symbolScale="medium"/>
                                     <size key="minSize" width="29" height="25"/>
                                     <size key="maxSize" width="29" height="25"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.tab.report"/>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="selectTab:" target="O0a-rK-2dk" id="Pb2-KT-HmA"/>
                                     </connections>
@@ -45,6 +51,9 @@
                                 <toolbarItem reference="J7S-pn-EaT"/>
                             </defaultToolbarItems>
                         </toolbar>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.windowTitle"/>
+                        </userDefinedRuntimeAttributes>
                         <connections>
                             <outlet property="delegate" destination="O0a-rK-2dk" id="e5e-aw-U2f"/>
                         </connections>
@@ -55,7 +64,7 @@
                 </windowController>
                 <customObject id="0CS-zA-TpJ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-35" y="-1130"/>
+            <point key="canvasLocation" x="-64" y="-1093"/>
         </scene>
         <!--Beat Tag Editor Tab View-->
         <scene sceneID="jdE-wI-P5M">
@@ -233,7 +242,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uFX-GW-yHd" customClass="BeatTagNameField" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="18" y="260" width="347" height="20"/>
+                                        <rect key="frame" x="18" y="260" width="333" height="20"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Tag Name" id="skz-wK-HDh">
                                             <font key="font" metaFont="system" size="17"/>
@@ -308,12 +317,15 @@
                                         </scroller>
                                     </scrollView>
                                     <button verticalHuggingPriority="750" id="nHE-8T-aB9">
-                                        <rect key="frame" x="365" y="255" width="71" height="27"/>
+                                        <rect key="frame" x="351" y="255" width="85" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="push" title="Rename" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DdP-WL-Qaf">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.rename"/>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="rename:" target="iC6-gj-bRa" id="9qa-xt-HLH"/>
                                         </connections>
@@ -346,7 +358,7 @@
         <!--Tag Reports-->
         <scene sceneID="Uk6-xj-BMH">
             <objects>
-                <viewController title="Tag Reports" id="qE6-5a-im5" customClass="BeatTagList" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Tag Reports" id="qE6-5a-im5" customClass="BeatTagReportView" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="q9H-Ya-JOD">
                         <rect key="frame" x="0.0" y="0.0" width="603" height="319"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -386,11 +398,11 @@
                                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                     <prototypeCellViews>
                                                                         <tableCellView identifier="CategoryCell" id="fyE-Pf-cJU" customClass="BeatTagCategoryCheckboxCell" customModule="Beat" customModuleProvider="target">
-                                                                            <rect key="frame" x="18" y="0.0" width="566" height="24"/>
+                                                                            <rect key="frame" x="18" y="0.0" width="163" height="24"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                             <subviews>
                                                                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XJg-7f-jjq">
-                                                                                    <rect key="frame" x="40" y="4" width="525" height="16"/>
+                                                                                    <rect key="frame" x="40" y="4" width="122" height="16"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="74x-7N-Puj">
                                                                                         <font key="font" usesAppearanceFont="YES"/>
@@ -404,8 +416,8 @@
                                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="5wV-OB-42v"/>
                                                                                 </imageView>
                                                                                 <button verticalHuggingPriority="750" id="YAF-lt-s79">
-                                                                                    <rect key="frame" x="1" y="3" width="423" height="18"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                                    <rect key="frame" x="1" y="3" width="20" height="18"/>
+                                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                     <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" inset="2" id="XJy-jV-O0z">
                                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                                         <font key="font" metaFont="system"/>
@@ -447,6 +459,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="smallSystem"/>
                                                 </buttonCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="general.selectAll"/>
+                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="selectAllTags:" target="qE6-5a-im5" id="8VT-fj-KW9"/>
                                                 </connections>
@@ -467,6 +482,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.sceneByScene"/>
+                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="toggleReportType:" target="qE6-5a-im5" id="rE8-cW-HYX"/>
                                                 </connections>
@@ -478,6 +496,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.listScenesByTag"/>
+                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="toggleReportType:" target="qE6-5a-im5" id="j1V-Zp-ZIt"/>
                                                 </connections>
@@ -489,6 +510,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.screenplay"/>
+                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="toggleReportType:" target="qE6-5a-im5" id="q0V-dg-Qgf"/>
                                                 </connections>
@@ -501,6 +525,9 @@
                                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.sceneByScene.details"/>
+                                                </userDefinedRuntimeAttributes>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xg1-jK-bdw">
                                                 <rect key="frame" x="38" y="159" width="306" height="28"/>
@@ -510,6 +537,9 @@
                                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.listScenesByTag.details"/>
+                                                </userDefinedRuntimeAttributes>
                                             </textField>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6ml-MC-qYN">
                                                 <rect key="frame" x="38" y="101" width="306" height="28"/>
@@ -519,6 +549,9 @@
                                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.screenplay.details"/>
+                                                </userDefinedRuntimeAttributes>
                                             </textField>
                                             <button verticalHuggingPriority="750" id="SnV-6k-3Mp">
                                                 <rect key="frame" x="14" y="13" width="100" height="32"/>
@@ -527,6 +560,9 @@
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.report.create"/>
+                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="createPDF:" target="qE6-5a-im5" id="p8n-9e-0gg"/>
                                                 </connections>
@@ -548,6 +584,9 @@
                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="tagManager.createReport"/>
+                                                </userDefinedRuntimeAttributes>
                                             </textField>
                                         </subviews>
                                     </customView>

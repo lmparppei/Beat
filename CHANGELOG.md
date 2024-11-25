@@ -1,5 +1,17 @@
 # Changelog
 
+## Beat 2.0.0
+
+- Forgot to update this log
+- Tons of changes between the last version, including an internal stylesheet system, which allowed creating Novel Mode
+- Parser is slowly being separated into categories
+- Document controller is being slowly separated into categories and extensions
+- Different pagination modes
+- Document settings
+- Tagging UI
+- Some overhaul to the font system to allow scaled fonts on phones and more flexible stylization
+
+
 ## Beat 1.998.0
 
 - Lot of minor bug fixes

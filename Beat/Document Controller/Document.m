@@ -361,6 +361,11 @@
 	self.documentIsLoading = NO;
 
 	self.textView.editable = true;
+	
+	// Add title page for new documents if needed
+	if (self.fileURL == nil && self.text.length == 0 && [BeatUserDefaults.sharedDefaults getBool:BeatSettingAddTitlePageByDefault]) {
+		[self.formattingActions addTitlePage:nil];
+	}
 }
 
 -(void)awakeFromNib

@@ -48,7 +48,7 @@ class BeatLaunchScreenView : NSViewController {
 	override func viewWillAppear() {
 		super.viewWillAppear()
 		guard let supportButton = self.supportButton else { return }
-		
+				
 		// Add the version number if needed
 		if !supportButton.website.contains("?version") {
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""

@@ -102,6 +102,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly) LineType type;
 @property (readonly) NSInteger position;
 @property (readonly) NSString* sceneNumber;
+@property (readonly) bool resetsSceneNumber;
 @property (readonly) NSString* color;
 @property (readonly) NSRange range;
 @property (readonly) NSRange textRange;
@@ -227,6 +228,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSString* color;
 /// This line was forced to be a character cue in editor
 @property (nonatomic) bool forcedCharacterCue;
+
+@property (nonatomic) bool resetsSceneNumber;
 
 /// Range of the whole line, __including__ line break.
 /// @warning This can go out of bounds on last line (which doesn't have a line break), so be careful.

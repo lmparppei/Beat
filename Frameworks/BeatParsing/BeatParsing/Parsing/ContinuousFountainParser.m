@@ -838,11 +838,17 @@ static NSDictionary* patterns;
     
     if (line.type == heading) {
         line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
+        line.resetsSceneNumber = false;
         
         if (line.sceneNumberRange.length == 0) {
             line.sceneNumber = @"";
         } else {
             line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
+            NSString* lastSymbol = [line.sceneNumber substringFromIndex:line.sceneNumber.length - 1];
+            if ([lastSymbol isEqualToString:@">"] || [lastSymbol isEqualToString:@"＞"]) {
+                line.sceneNumber = [line.sceneNumber substringToIndex:line.sceneNumber.length - 1];
+                line.resetsSceneNumber = true;
+            }
         }
     }
     
@@ -912,6 +918,11 @@ static NSDictionary* patterns;
     unichar firstChar = [line.string characterAtIndex:0];
     unichar lastChar = line.lastCharacter;
     
+    // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
+    bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
+    if (fullWidthPunctuation) NSLog(@"!!! full width");
+    NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
+    
     // Also, lets add the first \ as an escape character
     if (firstChar == '\\') [line.escapeRanges addIndex:0];
     
@@ -924,11 +935,12 @@ static NSDictionary* patterns;
     // Check forced types
     if ([trimmedString isEqualToString:@"==="]) {
         return pageBreak;
-    } else if (firstChar == '!') {
+    } else if (firstChar == '!' || [firstSymbol isEqualToString:@"！"]) {
         // Action or shot
         if (line.length > 1) {
             unichar secondChar = [line.string characterAtIndex:1];
-            if (secondChar == '!') return shot;
+            NSString* secondSymbol = [line.string substringWithRange:NSMakeRange(1, 1)];
+            if (secondChar == '!'  || [secondSymbol isEqualToString:@"！"]) return shot;
         }
         return action;
     } else if (firstChar == '.' && previousIsEmpty) {
@@ -938,15 +950,14 @@ static NSDictionary* patterns;
         }
     }
     // ... and then the rest.
-    else if (firstChar == '@') return character;
+    else if (firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) return character;
     else if (firstChar == '>' && lastChar == '<') return centered;
     else if (firstChar == '>') return transitionLine;
-    else if (firstChar == '~') return lyrics;
-    else if (firstChar == '=') return synopse;
-    else if (firstChar == '#') return section;
-    else if (firstChar == '@' && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
-    else if (firstChar == '.' && previousIsEmpty) return heading;
-    
+    else if (firstChar == '~' || [firstSymbol isEqualToString:@"～"]) return lyrics;
+    else if (firstChar == '='|| [firstSymbol isEqualToString:@"＝"]) return synopse;
+    else if (firstChar == '#' || [firstSymbol isEqualToString:@"＃"]) return section;
+    else if ((firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
+    else if ((firstChar == '.' || [firstSymbol isEqualToString:@"．"]) && previousIsEmpty) return heading;
     
     // Title page
     if ((previousLine == nil || previousLine.isTitlePage) && !(line.string.containsOnlyUppercase && previousLine == nil)) {
@@ -1037,7 +1048,7 @@ static NSDictionary* patterns;
         // Note that the previous line got changed
         [_changedIndices addIndex:index-1];
         
-        if ([line.string characterAtIndex:0] == '(') {
+        if (firstChar == '(' || [firstSymbol isEqualToString:@"（"]) {
             return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
         } else {
             return dialogue;
@@ -1047,6 +1058,10 @@ static NSDictionary* patterns;
     // Action is the default
     return action;
 } }
+
+BOOL matchesCharacter(unichar chr, NSString* str, unichar chr2, NSString* str2) {
+    return (chr == chr2 || [str isEqualToString:str2]);
+}
 
 
 - (LineType)parseTitlePageLineTypeFor:(Line*)line previousLine:(Line*)previousLine lineIndex:(NSInteger)index

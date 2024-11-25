@@ -65,13 +65,10 @@ import UXKit
 	}
     	
 	public func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
-		if editedMask != .editedAttributes {
-			// Update highlights in edited range
-			self.updateHighlights(range: editedRange)
-		}
+        self.formatMarkup(range: editedRange)
 	}
 	
-	public func updateHighlights(range:NSRange) {
+	public func formatMarkup(range:NSRange) {
 		for line in self.lines {
 			if NSIntersectionRange(range, line.range).length > 0 || NSLocationInRange(range.location, line.range) {
 				parse(line.range)
@@ -92,7 +89,7 @@ import UXKit
 		
 		let type = parseLineType(string)
 		
-		var newAttrs:[NSAttributedString.Key:Any] = [:]
+        var newAttrs:[NSAttributedString.Key:Any] = [:]
 		
 		if type == .heading {
 			// A heading. Calculate its level and set font.
@@ -116,7 +113,7 @@ import UXKit
 		newAttrs[NSAttributedString.Key.underlineStyle] = 0
 		// Apply full font style first
 		self.textStorage?.addAttributes(newAttrs, range: r)
-		
+        
 		// Inline stylization
 		if type == .normal {
 			for key in stylization.keys {

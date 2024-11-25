@@ -50,7 +50,8 @@
     static NSArray* postfixes;
     if (postfixes == nil) postfixes = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G"];
 
-    NSInteger sceneNumber = [self sceneNumberOrigin];
+    NSInteger sceneNumber = self.sceneNumberOrigin;
+    
     for (id item in autoNumbered) {
         Line* line; OutlineScene* scene;
         
@@ -58,8 +59,7 @@
             // This was a scene
             line = ((OutlineScene*)item).line;
             scene = item;
-        }
-        else {
+        } else {
             // This was a plain Line object
             line = item;
         }
@@ -82,9 +82,16 @@
         if (![oldSceneNumber isEqualToString:s]) {
             if (scene != nil) [self.outlineChanges.updated addObject:scene];
         }
-
+        
         line.sceneNumber = s;
         sceneNumber++;
+        
+        // Check if we should reset scene number
+        if (line.resetsSceneNumber) {
+            NSInteger newSceneNumber = line.sceneNumber.integerValue;
+            if (newSceneNumber == 0) newSceneNumber = 1;
+            sceneNumber = newSceneNumber;
+        }
     }
 }
 

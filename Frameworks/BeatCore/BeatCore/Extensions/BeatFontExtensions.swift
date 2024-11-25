@@ -19,10 +19,8 @@ typealias BFontDescriptor = NSFontDescriptor
 
 extension BFont {
 
+	/// Creates a new font descriptor with the given traits. macOS and iOS have differing optional types, hence this mess.
 	@objc func withTraits(_ traits: BFontDescriptor.SymbolicTraits) -> BFont {
-		// Creates a new font descriptor with the given traits.
-		// macOS and iOS have differing optional types, hence this mess.
-		
 		#if os(iOS)
 			guard let fd = self.fontDescriptor.withSymbolicTraits(traits)
 			else { return self }
@@ -61,6 +59,10 @@ extension BFont {
 		#else
 			return withTraits([ .bold, .italic ])
 		#endif
+	}
+	
+	@objc func font(size:CGFloat, traits:BFontDescriptor.SymbolicTraits) -> BFont? {
+		return BFont(name: self.fontName, size: size)?.withTraits(traits)
 	}
 }
 

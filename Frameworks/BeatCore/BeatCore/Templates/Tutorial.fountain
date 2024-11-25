@@ -124,6 +124,4 @@ You can find more information about the Fountain markup language at https://www.
 
 
 
-
-
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[4059,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Changed Indices":{"115":"blue"},"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4119,9,"blue"]]}} END_BEAT */
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[{"range":[4060,7],"string":"Hey there! This is a review note. Press ⌘R to review any selected text."}],"Changed Indices":{"115":"blue"},"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[4119,9,"blue"]]}} END_BEAT */

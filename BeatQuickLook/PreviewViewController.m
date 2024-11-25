@@ -83,7 +83,7 @@
 	if ([self.document.settings getBool:DocSettingPrintSynopsis]) [additionalTypes addIndex:synopse];
 	
 	if ([self.document.settings getString:DocSettingStylesheet].length > 0) {
-		BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.document.settings getString:DocSettingStylesheet]];
+		BeatStylesheet* styles = [BeatStyles.shared stylesWithName:[self.document.settings getString:DocSettingStylesheet] delegate:nil forEditor:false];
 
 		if (styles.shouldPrintSections) [additionalTypes addIndex:section];
 		if (styles.shouldPrintSynopses) [additionalTypes addIndex:synopse];
