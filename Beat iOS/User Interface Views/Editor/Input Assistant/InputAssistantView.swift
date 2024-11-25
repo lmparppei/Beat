@@ -9,11 +9,16 @@
 
 import UIKit
 
+enum BeatInputAssistantMode {
+	case writing
+	case editing
+}
+
 /// A button to be displayed in on the leading or trailing side of an input assistant.
 public struct InputAssistantAction {
 	
 	/// Image to display to the user. Will be resized to fit the height of the input assistant.
-	public let image: UIImage
+	public let image: UIImage?
 	
 	public let title: String
 	
@@ -22,7 +27,7 @@ public struct InputAssistantAction {
 	
 	public let menu:UIMenu?
 	
-	public init(title:String = "", image: UIImage, target: AnyObject? = nil, action: Selector? = nil, menu:UIMenu? = nil) {
+	public init(title:String = "", image: UIImage?, target: AnyObject? = nil, action: Selector? = nil, menu:UIMenu? = nil) {
 		self.image = image; self.target = target; self.action = action; self.title = title; self.menu = menu;
 	}
 }
@@ -44,6 +49,7 @@ public protocol InputAssistantViewDelegate:NSObject {
 	
 	/// When the user taps on a suggestion
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String)
+	func shouldShowSuggestions() -> Bool
 }
 
 
@@ -206,16 +212,13 @@ open class InputAssistantView: UIInputView {
 	
 	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 	
-	var prevLine:Line?
 	public func reloadData() {
 		// We'll only refresh data if the line has changed
-		guard let line = self.dSource?.delegate?.currentLine() else { return }
+		guard let line = self.dSource?.delegate?.currentLine(), let delegate else { return }
 
 		suggestionsCollectionView.reloadData()
 		
-		prevLine = line
-		
-		if suggestionsCollectionView.numberOfItems(inSection: 0) > 0 {
+		if suggestionsCollectionView.numberOfItems(inSection: 0) > 0, delegate.shouldShowSuggestions() {
 			self.leadingStackView.isHidden = true
 		} else {
 			self.leadingStackView.isHidden = false
@@ -274,8 +277,10 @@ open class InputAssistantView: UIInputView {
 				let button = UIButton(type: .system)
 				if action.title.count > 0 { button.setTitle(action.title, for: .normal) }
 				
-				let width = (action.image.size.width / action.image.size.height) * 25
-				button.setImage(action.image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
+				if let image = action.image {
+					let width = (image.size.width / image.size.height) * 25
+					button.setImage(image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
+				}
 				
 				// Add target
 				if let target = action.target, let action = action.action {

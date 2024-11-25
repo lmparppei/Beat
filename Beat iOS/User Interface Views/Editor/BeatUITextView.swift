@@ -6,6 +6,13 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+/**
+ 
+ A port of sorts of the sprawling and messy `BeatTextView` class for iOS.
+ Conforms to `BeatTextEditor` protocol and provides some cross-platform stuff such as `documentWidth` and scrolling methods.
+ 
+ */
+
 import UIKit
 import BeatCore
 import BeatParsing
@@ -49,6 +56,16 @@ import EasyPeasy
 	var mobileKeyboardManager:KeyboardManager?
 	
 	var mobileDismissButton:UIBarButtonItem?
+		
+	var inputAssistantMode:BeatInputAssistantMode = .writing {
+		didSet {
+			self.setupInputAssistantButtons()
+			self.assistantView?.reloadData()
+		}
+	}
+	
+	/// Input assistant buttons for different modes. Set in an extension.
+	var inputAssistantButtons:[BeatInputAssistantMode:[InputAssistantAction]] = [:]
 	
 	class func linePadding() -> CGFloat {
 		// We'll use very tight padding for iPhone
@@ -99,11 +116,8 @@ import EasyPeasy
 		customLayoutManager = layoutManager
 		super.init(frame: frame, textContainer: textContainer)
 	}
-	
-	override var textLayoutManager: NSTextLayoutManager? {
-		return nil
-	}
-	
+		
+	/// This initializer is useless. For some reason, you can't replace the layout manager when using `NSCoder`.
 	required init?(coder: NSCoder) {
 		customLayoutManager = BeatLayoutManager()
 		super.init(coder: coder)
@@ -119,9 +133,16 @@ import EasyPeasy
 	
 	// MARK: - Layout manager
 	
+	/// Returns TextKit 1 layout manager
 	override var layoutManager: NSLayoutManager {
 		return customLayoutManager
 	}
+	
+	/// Returns `nil` to force TextKit 1 compatibility mode. Why? Because we're using the same `NSLayoutManager` on both iOS and macOS, and the desktop version tries to stay compatible all the way down to 10.14.
+	override var textLayoutManager: NSTextLayoutManager? {
+		return nil
+	}
+
 	
 	
 	// MARK: - Setup
@@ -140,6 +161,7 @@ import EasyPeasy
 		// Text container setup
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.heightTracksTextView = false
+		
 		// Set text container size. Note that in mobile mode, this varies!
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
@@ -180,8 +202,6 @@ import EasyPeasy
 			self.maximumZoomScale = 2.0
 			self.minimumZoomScale = 1.0
 		}
-		
-		//self.easy.layout(Top(0), Left(0), Right(0), Width(self.frame.size.width))
 	}
 	
 	
@@ -220,6 +240,34 @@ import EasyPeasy
 		isUpdatingLayout = true
 		mobileViewResize()
 		isUpdatingLayout = false
+	}
+	
+	
+	// MARK: - Caret drawing
+	
+	/// Because iOS draws the caret to fill line fragment rects, we need to do some additional math. We'll need to get both font and paragraph styles at given position and do some additional calculations.
+	override func caretRect(for position: UITextPosition) -> CGRect {
+		var rect = super.caretRect(for: position)
+		let offset = offset(from: beginningOfDocument, to: position)
+		
+		guard offset < self.attributedString.length,
+			  let line = self.editorDelegate?.parser.line(at: offset)
+		else { return rect }
+	
+		
+		let attrs = self.attributedString.attributes(at: line.position, effectiveRange: nil)
+		
+		// Adjust the rect using font and paragraph style
+		if let pStyle = attrs[.paragraphStyle] as? NSParagraphStyle {
+			// Caret should be a little higher than the line itself
+			let caretHeight = pStyle.maximumLineHeight * 1.1
+			let yOffset = caretHeight - pStyle.maximumLineHeight
+			
+			rect.origin.y += pStyle.paragraphSpacingBefore + (yOffset / 2)
+			rect.size.height = caretHeight
+		}
+		
+		return rect
 	}
 	
 	
@@ -495,154 +543,6 @@ extension BeatUITextView:UIGestureRecognizerDelegate {
 	}
 }
 
-
-// MARK: - Input assistant buttons
-
-extension BeatUITextView {
-	func setupInputAssistantButtons() {
-		self.assistantView?.leadingActions = [
-			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!, target: self, action: #selector(addCue)),
-			InputAssistantAction(image: UIImage(named: "Shortcut.INT")!, target: self, action: #selector(addINT)),
-			InputAssistantAction(image: UIImage(named: "Shortcut.EXT")!, target: self, action: #selector(addEXT)),
-			InputAssistantAction(image: UIImage(named: "Shortcut.Section")!, target: self, action: #selector(addSection)),
-			InputAssistantAction(image: UIImage(named: "Shortcut.Synopsis")!, target: self, action: #selector(addSynopsis))
-		]
-		self.assistantView?.trailingActions = [
-			InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
-				UIMenu(title:"Macro", children: [
-					UIAction(title: "New Macro", handler: { _ in
-						self.editorDelegate?.formattingActions.makeMacro(self)
-					}),
-					UIAction(title: "Panel", subtitle: "Auto-incrementing number which resets at top-level sections", handler: { _ in
-						self.editorDelegate?.textActions.add("{{ panel }}", at: UInt(self.selectedRange.location))
-					}),
-					UIAction(title: "Date", subtitle: "Automatic date", handler: { _ in
-						self.editorDelegate?.textActions.add("{{ date YYYY-MM-dd }}", at: UInt(self.selectedRange.location))
-					}),
-					UIAction(title: "Define Text Macro", subtitle: "Definition for any text", handler: { _ in
-						self.editorDelegate?.textActions.add("{{ name = value }}", at: UInt(self.selectedRange.location))
-					}),
-					UIAction(title: "Define Serial Number", subtitle: "Auto-incrementing number", handler: { _ in
-						self.editorDelegate?.textActions.add("{{ serial name = 1 }}", at: UInt(self.selectedRange.location))
-					}),
-				].reversed()),
-				
-				UIMenu(title:"", options: [.displayInline], children: [
-					UIMenu(title: "Marker With Color...", children: [
-						UIAction(title: "Pink", image: UIImage(named: "color.pink"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
-						}),
-						UIAction(title: "Orange", image: UIImage(named: "color.orange"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker orange:New marker]]", caretPosition: -2)
-						}),
-						UIAction(title: "Purple", image: UIImage(named: "color.purple"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker purple:New marker]]", caretPosition: -2)
-						}),
-						UIAction(title: "Blue", image: UIImage(named: "color.blue"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker blue:New marker]]", caretPosition: -2)
-						}),
-						UIAction(title: "Green", image: UIImage(named: "color.green"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker green:New marker]]", caretPosition: -2)
-						}),
-						UIAction(title: "Red", image: UIImage(named: "color.red"),  handler: { (_) in
-							self.editorDelegate?.textActions.addNewParagraph("[[marker red:New marker]]", caretPosition: -2)
-						}),
-					]),
-					UIAction(title: "Add Marker", handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker New marker]]", caretPosition: -2)
-					}),
-				]),
-				
-				UIMenu(title: "Transition...", children: [
-					UIAction(title: "FADE IN", handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("> FADE IN")
-					}),
-					UIAction(title: "CUT TO:", handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("CUT TO:")
-					}),
-					UIAction(title: "DISSOLVE TO:", handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("DISSOLVE TO:")
-					}),
-					UIAction(title: "FADE OUT", handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("> FADE OUT")
-					}),
-					
-				]),
-				
-				UIAction(title: "Make Centered", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeCentered(self)
-				}),
-				UIAction(title: "Omit", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeOmitted(self)
-				}),
-				UIAction(title: "Note", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeNote(self)
-				}),
-				
-				UIMenu(title:"Force element...", children: [
-					UIAction(title: "Scene heading", handler: { (_) in
-						self.editorDelegate?.formattingActions.forceHeading(self)
-					}),
-					UIAction(title: "Action", handler: { (_) in
-						self.editorDelegate?.formattingActions.forceAction(self)
-					}),
-					UIAction(title: "Character", handler: { (_) in
-						self.editorDelegate?.formattingActions.forceCharacter(self)
-					}),
-					UIAction(title: "Transition", handler: { (_) in
-						self.editorDelegate?.formattingActions.forceTransition(self)
-					}),
-					UIAction(title: "Lyrics", handler: { (_) in
-						self.editorDelegate?.formattingActions.forceLyrics(self)
-					}),
-				]),
-				
-				UIMenu(title:"", options: [.displayInline], preferredElementSize: .small, children: [
-					UIAction(image: UIImage(systemName: "bold"), handler: { (_) in
-						self.editorDelegate?.formattingActions.makeBold(self)
-					}),
-					UIAction(image: UIImage(systemName: "italic"), handler: { (_) in
-						self.editorDelegate?.formattingActions.makeItalic(self)
-					}),
-					UIAction(image: UIImage(systemName: "underline"), handler: { (_) in
-						self.editorDelegate?.formattingActions.makeUnderlined(nil)
-					})
-				]),
-			])),
-			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.backward")!, target: self, action: #selector(undo)),
-			InputAssistantAction(image: UIImage(systemName: "arrow.uturn.forward")!, target: self, action: #selector(redo))
-		]
-	}
-	
-	@objc func addINT() {
-		self.editorDelegate?.textActions.addNewParagraph("INT. ")
-	}
-	
-	@objc func addSection() {
-		self.editorDelegate?.textActions.addNewParagraph("# ")
-	}
-	
-	@objc func addSynopsis() {
-		self.editorDelegate?.textActions.addNewParagraph("= ")
-	}
-	
-	@objc func addEXT() {
-		self.editorDelegate?.textActions.addNewParagraph("EXT. ")
-	}
-	
-	@objc func addCue() {
-		self.editorDelegate?.formattingActions.addCue()
-		self.updateAssistingViews()
-	}
-	
-	@objc func undo() {
-		self.editorDelegate?.undoManager.undo()
-	}
-	@objc func redo() {
-		self.editorDelegate?.undoManager.redo()
-	}
-
-}
 
 // MARK: - Mobile keyboard manager
 
