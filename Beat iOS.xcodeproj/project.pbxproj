@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -64,7 +64,6 @@
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6743BF82B31A0BC0081041C /* TemplateCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6743BF72B31A0BC0081041C /* TemplateCollectionViewController.swift */; };
 		B67512302C2333DF00F57CEF /* BeatUITextView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675122F2C2333DF00F57CEF /* BeatUITextView+Layout.swift */; };
-		B67512532C233AF800F57CEF /* EasyPeasy in Frameworks */ = {isa = PBXBuildFile; productRef = B67512522C233AF800F57CEF /* EasyPeasy */; };
 		B67512552C24A71400F57CEF /* BeatUITextView+Menus+Assistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67512542C24A71400F57CEF /* BeatUITextView+Menus+Assistant.swift */; };
 		B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */; };
 		B682C25B2B30FAB50027511A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B682C25A2B30FAB50027511A /* Localizable.strings */; };
@@ -126,7 +125,7 @@
 		B6E91E3F2B68304D00EDB066 /* BeatPDFPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */; };
 		B6F59D452C6E9A9B00AB8FAE /* BeatNotepadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D442C6E9A9B00AB8FAE /* BeatNotepadView.swift */; };
 		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
-		B6FA1E242CEB34CE002737A8 /* 0.1.19 2.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */; };
+		B6FA1E242CEB34CE002737A8 /* 0.2.1.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E232CEB34CE002737A8 /* 0.2.1.html */; };
 		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
 		B6FD3DD82C56BBDE00028EC7 /* UIView+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */; };
 		B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FDCF222BD43F0300A6C9B6 /* Test.beatPlugin */; };
@@ -309,7 +308,7 @@
 		B6E91E3E2B68304D00EDB066 /* BeatPDFPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPDFPrinter.swift; sourceTree = "<group>"; };
 		B6F59D442C6E9A9B00AB8FAE /* BeatNotepadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNotepadView.swift; sourceTree = "<group>"; };
 		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
-		B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "0.1.19 2.html"; sourceTree = "<group>"; };
+		B6FA1E232CEB34CE002737A8 /* 0.2.1.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.1.html; sourceTree = "<group>"; };
 		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
 		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
 		B6FD3DD72C56BBDE00028EC7 /* UIView+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Scaling.swift"; sourceTree = "<group>"; };
@@ -331,7 +330,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B67512532C233AF800F57CEF /* EasyPeasy in Frameworks */,
 				B6A97CA22BF0C3FD00414878 /* BeatFileExport.framework in Frameworks */,
 				B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */,
 				B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */,
@@ -476,7 +474,7 @@
 				B64C925B2CC55EFF0024CC37 /* 0.1.17.html */,
 				B68C59202CCE4C6E00C1F596 /* 0.1.18.html */,
 				B60158F12CD59D8B00F9413D /* 0.1.19.html */,
-				B6FA1E232CEB34CE002737A8 /* 0.1.19 2.html */,
+				B6FA1E232CEB34CE002737A8 /* 0.2.1.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -799,7 +797,6 @@
 			);
 			name = "Beat iOS";
 			packageProductDependencies = (
-				B67512522C233AF800F57CEF /* EasyPeasy */,
 			);
 			productName = "Beat iOS";
 			productReference = B6CB96F0282FEB6500C7AFC7 /* Beat.app */;
@@ -840,7 +837,6 @@
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			packageReferences = (
-				B67512512C233AF800F57CEF /* XCRemoteSwiftPackageReference "EasyPeasy" */,
 			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
@@ -871,7 +867,7 @@
 				B6423B992C01108500373C34 /* Beat-FDX.png in Resources */,
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
 				B62D16442BFE35D1000EFEE5 /* BeatDocument 256.png in Resources */,
-				B6FA1E242CEB34CE002737A8 /* 0.1.19 2.html in Resources */,
+				B6FA1E242CEB34CE002737A8 /* 0.2.1.html in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
 				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */,
@@ -1113,8 +1109,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -1129,7 +1124,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 65;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1138,12 +1133,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 0.2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
@@ -1169,7 +1160,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 65;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1177,12 +1168,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 0.2.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1210,7 +1197,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 65;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1231,11 +1218,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 0.2.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1271,7 +1255,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 65;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1287,11 +1271,8 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 0.2.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.2.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;
@@ -1339,25 +1320,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		B67512512C233AF800F57CEF /* XCRemoteSwiftPackageReference "EasyPeasy" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nakiostudio/EasyPeasy";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.9.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		B67512522C233AF800F57CEF /* EasyPeasy */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B67512512C233AF800F57CEF /* XCRemoteSwiftPackageReference "EasyPeasy" */;
-			productName = EasyPeasy;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B138B56B19E1C973000489C4 /* Project object */;
 }
