@@ -36,7 +36,7 @@ extension UIButton: XIBLocalizable {
         set(key) {
             setTitle(key?.localized, for: .normal)
         }
-   }
+    }
 }
 #else
 import AppKit
@@ -53,12 +53,32 @@ extension NSTextField: XIBLocalizable {
 extension NSButton: XIBLocalizable {
     @IBInspectable var xibLocKey: String? {
         get { return nil }
-        set(key) {
-            if key?.localized != nil {
-                self.title = key!.localized
+        set (key) {
+            if let label = key?.localized {
+                self.title = label
             }
         }
-   }
+    }
+}
+extension NSToolbarItem: XIBLocalizable {
+    @IBInspectable var xibLocKey: String? {
+        get { return nil }
+        set (key) {
+            if let label = key?.localized {
+                self.label = label
+            }
+        }
+    }
+}
+extension NSWindow:XIBLocalizable {
+    @IBInspectable var xibLocKey: String? {
+        get { return nil }
+        set (key) {
+            if let label = key?.localized {
+                self.title = label
+            }
+        }
+    }
 }
 #endif
 
