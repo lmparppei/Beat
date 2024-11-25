@@ -754,10 +754,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
     [self.documentSettings set:DocSettingRevisions as:revisions];
     
+    // Save tag definitions and ranges
+    // [self.tagging saveTags];
+    
     // Save current revision color
     [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
-        
-    // Store currently running plugins (which should be saved)
+    
+    // Store currently running plugins (the ones which support restoration)
     [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
         
     // Save reviewed ranges

@@ -254,7 +254,7 @@ static NSDictionary *fdxIds;
 
 - (NSString*)createFDX
 {
-	return [self createFDXwithRevisions:NO tags:NO];
+	return [self createFDXwithRevisions:YES tags:YES];
 }
 
 - (NSString*)createFDXwithRevisions:(bool)includeRevisions tags:(bool)includeTags
@@ -309,6 +309,7 @@ static NSDictionary *fdxIds;
     template = [template stringByReplacingOccurrencesOfString:@"%%SCRIPT_NOTES%%" withString:scriptNotes];
     template = [template stringByReplacingOccurrencesOfString:@"%%PAGE_WIDTH%%" withString:[NSString stringWithFormat:@"%f", pageSize.width]];
     template = [template stringByReplacingOccurrencesOfString:@"%%PAGE_HEIGHT%%" withString:[NSString stringWithFormat:@"%f", pageSize.height]];
+    template = [template stringByReplacingOccurrencesOfString:@"%%REVISIONS%%" withString:revisions];
     
     _result = template;
 	return _result;
@@ -431,7 +432,7 @@ static NSDictionary *fdxIds;
 	[result appendFormat:@"    <Paragraph %@>\n\
             %@\
             %@\
-        </Paragraph>",
+        </Paragraph>\n",
         [paragraphStyles componentsJoinedByString:@" "],
         [additionalTags componentsJoinedByString:@""],
         (string.length > 0) ? string : @""
@@ -701,7 +702,7 @@ static NSDictionary *fdxIds;
 		styleString = [NSString stringWithFormat:@" %@%@", styleClasses, additionalStyles];
 		
 		// Tags for the current range
-		BeatTag *tag = attrs[@"BeatTag"];
+        BeatTag *tag = attrs[BeatTagging.attributeKey];
 		NSString *tagAttribute = @"";
 		
 		if (tag) {
@@ -733,7 +734,8 @@ static NSDictionary *fdxIds;
 		NSInteger number = [_tagItems indexOfObject:tag] + 1;
 		
 		// Add definition
-		NSDictionary *fdxTag = fdxIds[tag.key];
+        NSString* key = tag.key;
+        NSDictionary* fdxTag = [self getFDXTagForKey:key];
 	
 		NSString* definition = [NSString stringWithFormat:@"      <TagDefinition CatId=\"%@\" Id=\"%@\" Label=\"%@\" Number=\"%lu\"/>\n", fdxTag[@"id"], tag.defId.lowercaseString, tag.definition.name, number];
 		[_tagDefinitionsStr appendString:definition];
@@ -752,6 +754,16 @@ static NSDictionary *fdxIds;
 	} else {
 		return [_tagItems indexOfObject:tag] + 1;
 	}
+}
+
+/// FDX uses uppercase keys, we're using lowercase, so we need to do some additional conversions
+- (NSDictionary*)getFDXTagForKey:(NSString*)key
+{
+    for (NSString* fdxKey in fdxIds.allKeys) {
+        if ([fdxKey.lowercaseString isEqualToString:key.lowercaseString]) return fdxIds[fdxKey];
+    }
+    
+    return nil;
 }
 
 /// Collects

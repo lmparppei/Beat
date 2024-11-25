@@ -210,7 +210,7 @@
 
 + (NSString*)hexForKey:(NSString*)key
 {
-	TagColor *color = [self tagColors][key];
+    TagColor *color = [self tagColors][key.lowercaseString];
 	return [BeatColors get16bitHex:color];
 }
 

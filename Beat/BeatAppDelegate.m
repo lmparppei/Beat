@@ -12,6 +12,7 @@
 #endif
 
 #import <os/log.h>
+#import <BeatParsing/BeatParsing.h>
 #import <StoreKit/StoreKit.h>
 #import <BeatCore/NSString+VersionNumber.h>
 #import <BeatThemes/BeatThemes.h>
@@ -549,12 +550,14 @@
 
 #pragma mark - Generic methods for opening a plain-text file
 
-- (id)newDocumentWithContents:(NSString*)string {
+- (id)newDocumentWithContents:(NSString*)string
+{
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
 	NSError *error;
 	
 	[string writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
 	id document = [NSDocumentController.sharedDocumentController duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	
 	return document;
 }
 
@@ -569,6 +572,35 @@
 - (IBAction)newDocument:(id)sender {
 	[NSDocumentController.sharedDocumentController newDocument:sender];
 }
+
+
+#pragma mark - Create a file with rich text contents (attributed string)
+
+/*
+/// Unfortunately this requires some additional hacking.
+- (id)newDocumentWithAttributedString:(NSAttributedString*)string
+{
+	NSURL* tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
+	
+	NSMutableAttributedString* result = string.mutableCopy;
+	[string enumerateAttributesInRange:NSMakeRange(0, string.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+		// First append the string
+		NSString* s = [string.string substringWithRange:range];
+		[result appendAttributedString:[NSAttributedString.alloc initWithString:s]];
+		
+		// Then append all Beat-related attributes
+		for (NSString* key in attrs.allKeys) {
+			if ([key rangeOfString:@"Beat"].location != 0) continue;
+			id value = attrs[key];
+			
+			if (value != nil) [result addAttribute:key value:value range:range];
+		}
+	}];
+	
+	BeatDocumentSettings* docSettings = BeatDocumentSettings.new;
+	[docSettings set:DocSettingRevisions as:<#(nonnull id)#>
+}
+*/
 
 #pragma mark - Menu delegation
 

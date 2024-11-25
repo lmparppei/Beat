@@ -281,7 +281,7 @@
 			if (index > 0) {
 				index--;
 				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:index];
-				[_element addAttribute:@"Revision" value:revision range:range];
+                [_element addAttribute:BeatRevisions.attributeKey value:revision range:range];
 			}
 		}
 		

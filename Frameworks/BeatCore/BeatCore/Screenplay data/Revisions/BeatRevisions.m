@@ -29,13 +29,9 @@
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
-    //#import "Beat-Swift.h"
-
     #define BXChangeDone NSChangeDone
 #else
     #import <UIKit/UIKit.h>
-    //#import "Beat_iOS-Swift.h"
-
     #define BXChangeDone UIDocumentChangeDone
 #endif
 
@@ -170,7 +166,7 @@
 				// Create local range
 				NSRange localRange = [line globalRangeToLocal:range];
 				
-				// Save the revised indices based on the local range
+				// Save revised indices based on the local range
                 if (revision.type == RevisionRemovalSuggestion) {
                     [line.removalSuggestionRanges addIndexesInRange:localRange];
                 } else if (revision.type == RevisionAddition) {
@@ -197,6 +193,40 @@
     [self bakeRevisionsIntoLines:lines text:attrStr];
 }
 
+/// Returns a JSON array created from revision data baked in lines.
++ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray*)lines
+{
+    NSDictionary<NSString*,NSMutableArray*>* ranges = @{
+        @"Addition": NSMutableArray.new,
+        @"Removed": NSMutableArray.new,
+        @"RemovalSuggestion": NSMutableArray.new
+    };
+
+    for (Line* line in lines) {
+        if (line.revisedRanges.count == 0) continue;
+        
+        NSMutableArray* revisions = NSMutableArray.new;
+        
+        NSArray* sortedKeys = [line.revisedRanges.allKeys sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+            return ((NSNumber*)obj1).integerValue < ((NSNumber*)obj2).integerValue;
+        }];
+        
+        for (NSNumber* gen in sortedKeys) {
+            NSIndexSet* indices = line.revisedRanges[gen];
+            [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+                [revisions addObject:@[
+                    @(range.location),
+                    @(range.length),
+                    gen
+                ]];
+            }];
+        }
+        
+        [ranges[@"Addition"] addObjectsFromArray:revisions];
+    }
+    
+    return ranges;
+}
 
 #pragma mark Attributed string
 
@@ -210,7 +240,8 @@
 #pragma mark JSON data for saved files
 
 /// Returns the revised ranges to be saved into data block of the Fountain file
-+ (NSDictionary*)rangesForSaving:(NSAttributedString*)string {
++ (NSDictionary*)rangesForSaving:(NSAttributedString*)string
+{
     NSMutableAttributedString *str = string.mutableCopy;
     
     NSDictionary *ranges = @{
@@ -224,18 +255,22 @@
         BeatRevisionItem *item = value;
         
         if (item.type != RevisionNone) {
+            // Get the range array for given revision type
             NSMutableArray *values = ranges[item.key];
             NSArray *lastItem = values.lastObject;
             
             NSRange lastRange = NSMakeRange(NSNotFound, 0);
             NSInteger lastGeneration = NSNotFound;
             
+            // Each range item should have three items: location, length and generation level.
+            // We'll convert the previous NSNumber values into real integers.
             if (lastItem.count == 3)  {
                 lastRange.location = [(NSNumber*)lastItem[0] integerValue];
                 lastRange.length = [(NSNumber*)lastItem[1] integerValue];
                 lastGeneration = [(NSNumber*)lastItem[2] integerValue];
             }
             
+            // Check if we should continue the last range (to avoid a lot of consecutive attributes with the same revision level)
             if (NSMaxRange(lastRange) == range.location && lastGeneration == item.generationLevel) {
                 // This is a continuation of the last range
                 values[values.count-1] = @[@(lastRange.location), @(lastRange.length + range.length), @(item.generationLevel)];

@@ -136,6 +136,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (NSArray<TagDefinition*>*)tagsWithTypeName:(NSString*)type;
 /// Bakes tags from an attributed string into lines.
 - (void)bakeTags;
+/// Saves tag data into document settings.
+- (void)saveTags;
 /// A UI string for listing tags in given scene
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
 /// Returns all tag __definitions__ in current document.

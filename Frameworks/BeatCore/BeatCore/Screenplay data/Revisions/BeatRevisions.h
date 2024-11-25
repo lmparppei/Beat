@@ -39,8 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
 
-// + (NSString*)defaultRevisionColor;
-// + (NSArray<NSString*>*)revisionColors;
 /// Returns an array of the old-school legacy revision colors for converting.
 + (NSArray<NSString*>*)legacyRevisions;
 
@@ -49,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<BeatRevisionGeneration*>*)revisionGenerations;
 + (NSString*)attributeKey;
+
+/// Returns a JSON array created from revision data baked in lines.
++ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray*)lines;
 
 @property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;
 

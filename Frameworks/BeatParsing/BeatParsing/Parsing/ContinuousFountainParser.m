@@ -183,8 +183,9 @@ static NSDictionary* patterns;
             line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
         
         // Ensure correct whitespace before elements
-        if ((line.isAnyCharacter || line.type == heading) &&
-            previousLine.string.length > 0) [content appendString:@"\n"];
+        // NOPE, don't do this because it messes up stored ranges. If you insist on this, you need to create new lines,
+        // bake the range-sensitive data (revisions, tags) and THEN extract that data into JSON which is then saved.
+        // if ((line.isAnyCharacter || line.type == heading) && previousLine.string.length > 0) [content appendString:@"\n"];
             
         // Append to full content
         [content appendString:string];
