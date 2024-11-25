@@ -61,11 +61,14 @@
 }
 
 - (BeatStylesheet*)styles {
+    BeatStylesheet* sheet = nil;
     if ([self.settings.styles isKindOfClass:BeatStylesheet.class] && self.settings.styles != nil) {
-        return self.settings.styles;
+        sheet = self.settings.styles;
     } else {
-        return BeatStyles.shared.defaultStyles;
+        sheet = BeatStyles.shared.defaultStyles;
     }
+    
+    return sheet;
 }
 
 /// Returns a long attributed string, rather than paginated content. Not compatible with iOS.

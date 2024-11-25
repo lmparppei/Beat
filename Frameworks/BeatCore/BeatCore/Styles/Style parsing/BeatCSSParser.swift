@@ -18,13 +18,13 @@ public final class CssParser {
 	var styles:[String:RenderStyle] = [:]
     var lineHeight = BeatStyles.lineHeight // default line height
         
-	var settings:BeatExportSettings?
+    var documentSettings:BeatDocumentSettings?
 	
 	/// Parses the CSS file string into an array of CSS styles.
 	/// - Parameter fileContent: CSS file content.
 	/// - Returns: Array of CSS styles.
-	func parse(fileContent: String, settings:BeatExportSettings? = nil) -> [String: RenderStyle] {
-        self.settings = settings
+    func parse(fileContent: String, documentSettings:BeatDocumentSettings? = nil) -> [String: RenderStyle] {
+        self.documentSettings = documentSettings
 		
 		var styles:[String: Dictionary<String, String>] = [:]
 		
@@ -194,13 +194,13 @@ public final class CssParser {
         if let val = replaceGetter(value: value, getter: "userSetting", { key in return BeatUserDefaults.shared().get(key) }) {
             value = val
         }
-        if let val = replaceGetter(value: value, getter: "setting", { key in return self.settings?.value(forKey: key) }) {
-            value = val
-        }
+        //if let val = replaceGetter(value: value, getter: "setting", { key in return self.settings?.value(forKey: key) }) {
+        //    value = val
+        //}
         
         // Document settings are a bit tricky. If a document setting block is not provided, we need to inquire the actual default value.
         if let val = replaceGetter(value: value, getter: "documentSetting", { key in
-            let documentSettings = settings?.documentSettings ?? BeatDocumentSettings()
+            let documentSettings = documentSettings ?? BeatDocumentSettings()
             var v:Any? = documentSettings.get(key)
             
             // Try to get default value if it wasn't applied already

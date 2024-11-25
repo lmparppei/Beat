@@ -25,7 +25,7 @@ public class BeatStyles:NSObject {
     /// Default styles for exporting
     @objc public var defaultStyles:BeatStylesheet { return self.styles() }
     /// Default styles for editor
-    @objc public var defaultEditorStyles:BeatStylesheet { return self.editorStyles() }
+    @objc public var defaultEditorStyles:BeatStylesheet { return self.styles(name: "Screenplay", delegate: nil, forEditor: true) }
     
     /// Default line height
     @objc class var lineHeight:CGFloat { return 12.0 }
@@ -34,7 +34,7 @@ public class BeatStyles:NSObject {
     var _stylesheets:[String:URL]?
     /// Currently loaded styles
     private var _loadedStyles:[String:BeatStylesheet] = [:]
-    private var _documentEditorStyles:[UUID:[String:BeatStylesheet]] = [:]
+    private var _documentStyles:[UUID:[String:BeatStylesheet]] = [:]
     
     /// Returns stylesheet dictionary with `name: url`
     var stylesheets:[String:URL] {
@@ -64,36 +64,21 @@ public class BeatStyles:NSObject {
     @objc public func reset() {
         _stylesheets = [:]
     }
-    
-    /// Returns the styles for given name
-    @objc public func styles(for name:String = BeatStyles.defaultStyleName) -> BeatStylesheet {
-        // This style is already loaded
-        if _loadedStyles[name] != nil { return _loadedStyles[name]! }
         
-        // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay.beatCSS, otherwise the app will crash.
-        var url:URL? = stylesheets[name]
-        if url == nil, let userStyle = userStylesheet(name: name) {
-            // Check user folder
-            url = userStyle
-        } else if url == nil {
-            url = stylesheets[BeatStyles.defaultStyleName]!
-        }
-        
-        let stylesheet = BeatStylesheet(url: url!, name: name)
-        _loadedStyles[name] = stylesheet
-        return stylesheet
-    }
-    
-    @objc public func editorStyles(for styleName:String = "", delegate:BeatDocumentDelegate? = nil) -> BeatStylesheet {
-        let defaultStyle = (BeatStyles.defaultStyleName + "-editor")
+    @objc public func styles(name:String? = nil, delegate:BeatDocumentDelegate? = nil, forEditor:Bool = false) -> BeatStylesheet {
+        var styleName = name == nil ? "" : name!
+        let suffix = forEditor ? "-editor" : ""
+        let defaultStyle = BeatStyles.defaultStyleName + suffix
         
         // Make sure the name isn't just an empty string
-        var name = (styleName.count > 0) ? (styleName + "-editor") : defaultStyle
-        
+        var name = (styleName.count > 0) ? (styleName + suffix) : defaultStyle
+                
 #if os(iOS)
         // Adjust style for iPhone (if needed)
-        if UIDevice.current.userInterfaceIdiom == .phone && styleName == "Screenplay" {
-            name += "-iOS"
+        if forEditor {
+            if UIDevice.current.userInterfaceIdiom == .phone && styleName == "Screenplay" {
+                name += "-iOS"
+            }
         }
 #endif
         
@@ -101,25 +86,26 @@ public class BeatStyles:NSObject {
         
         if let loadedStyle = _loadedStyles[name], uuid == nil {
             return loadedStyle
-        } else if let uuid, let documentStyle = _documentEditorStyles[uuid]?[name] {
+        } else if let uuid, let documentStyle = _documentStyles[uuid]?[name] {
             return documentStyle
         }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
         var url:URL? = stylesheets[name]
         
-        // If no URL is available, first check user folder
+        // If no URL is available, first check user folder.
+        // We NEED TO HAVE a file called Screenplay.beatCSS in the bundle, otherwise the app will crash.
         if url == nil, let userStyle = userStylesheet(name: name) {
             url = userStyle
         } else if url == nil {
             url = stylesheets[defaultStyle]!
         }
         
-        let stylesheet = BeatStylesheet(url: url!, name: name, settings: delegate?.exportSettings)
+        let stylesheet = BeatStylesheet(url: url!, name: name, documentSettings: delegate?.documentSettings)
         
         if let uuid {
-            if _documentEditorStyles[uuid] == nil { _documentEditorStyles[uuid] = [:] }
-            _documentEditorStyles[uuid]?[name] = stylesheet
+            if _documentStyles[uuid] == nil { _documentStyles[uuid] = [:] }
+            _documentStyles[uuid]?[name] = stylesheet
         } else {
             _loadedStyles[name] = stylesheet
         }

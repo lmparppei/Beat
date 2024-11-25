@@ -550,9 +550,18 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage
 {
 #if TARGET_OS_IOS
-    // NSLayoutManager doesn't have traits on iOS
+    // NSLayoutManager doesn't have traits on iOS. We need to do some trickery – and navigate around full width punctuation. I hate this.
     if (NSMaxRange(range) < self.delegate.text.length) {
-        BXFont* font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+        NSRange fontRange = range;
+        unichar firstChar = [textStorage.string characterAtIndex:range.location];
+        bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
+        
+        if (fullWidthPunctuation) {
+            fontRange.location += 1;
+            fontRange.length -= 1;
+        }
+        
+        BXFont* font = [textStorage attribute:NSFontAttributeName atIndex:fontRange.location effectiveRange:nil];
         UIFontDescriptorSymbolicTraits traits = 0;
         
         if ((trait & BXBoldFontMask) == BXBoldFontMask) {
@@ -563,7 +572,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         }
         
         BXFont* newFont = [BeatFontSet fontWithTrait:traits font:font];
-        [textStorage addAttribute:NSFontAttributeName value:newFont range:range];
+        [textStorage addAttribute:NSFontAttributeName value:newFont range:fontRange];
     }
 #else
     // NSLayoutManager DOES have traits on macOS

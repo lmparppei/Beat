@@ -13,12 +13,13 @@ import OSLog
     @objc public var name = ""
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
-    public var settings:BeatExportSettings?
+    //public var settings:BeatExportSettings?
+    public var documentSettings:BeatDocumentSettings?
     
     var stylesheet:String?
     
-    public init(url:URL, name:String, settings:BeatExportSettings? = nil) {
-        self.settings = settings
+    public init(url:URL, name:String, documentSettings:BeatDocumentSettings? = nil) {
+        self.documentSettings = documentSettings
         self.name = name
 
         super.init()
@@ -39,13 +40,13 @@ import OSLog
             var stylesheet = String(stringLiteral: self.stylesheet!)
             stylesheet.append("\n\n" + additionalStyles)
 
-            styles = CssParser().parse(fileContent: stylesheet, settings: self.settings)
+            styles = CssParser().parse(fileContent: stylesheet, documentSettings: self.documentSettings)
         }
     }
     
     /// Reloads the given style
-    @objc public func reload(exportSettings:BeatExportSettings? = nil) {
-        if (exportSettings != nil) { self.settings = exportSettings }
+    @objc public func reload(documentSettings:BeatDocumentSettings? = nil) {
+        if (documentSettings != nil) { self.documentSettings = documentSettings }
         self.loadStyles()
     }
     
@@ -79,7 +80,6 @@ import OSLog
         let page = page()
         return (page.fontType == .variableSansSerif || page.fontType == .variableSerif)
     }
-    
     
     // MARK: style provider interface
     public func shouldPrintSections() -> Bool { return self.document._visibleElements.contains(.section) }

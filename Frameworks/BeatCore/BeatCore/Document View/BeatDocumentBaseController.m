@@ -140,13 +140,13 @@
 #pragma mark - Editor styles
 
 - (BeatStylesheet *)editorStyles
-{
-    BeatStylesheet* styles = [BeatStyles.shared editorStylesFor:[self.documentSettings getString:DocSettingStylesheet] delegate:(id<BeatEditorDelegate>)self];
+{    
+    BeatStylesheet* styles = [BeatStyles.shared stylesWithName:[self.documentSettings getString:DocSettingStylesheet] delegate:(id<BeatEditorDelegate>)self forEditor:true];
     return (styles != nil) ? styles : BeatStyles.shared.defaultEditorStyles;
 }
 - (BeatStylesheet *)styles
 {
-    BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.documentSettings getString:DocSettingStylesheet]];
+    BeatStylesheet* styles = [BeatStyles.shared stylesWithName:[self.documentSettings getString:DocSettingStylesheet] delegate:(id<BeatEditorDelegate>)self forEditor:false];
     return (styles != nil) ? styles : BeatStyles.shared.defaultStyles;
 }
 
@@ -162,8 +162,8 @@
 {
     ((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
     
-    [self.styles reloadWithExportSettings:self.exportSettings];
-    [self.editorStyles reloadWithExportSettings:self.exportSettings];
+    [self.styles reloadWithDocumentSettings:self.documentSettings];
+    [self.editorStyles reloadWithDocumentSettings:self.documentSettings];
     [self resetPreview];
     
     // Let's reformat certain types of elements (and hope the user doesn't have like 9999999999 of each)
@@ -174,7 +174,7 @@
 - (void)setStylesheet:(NSString*)name
 {
     // Check that this sheet exists
-    BeatStylesheet* styles = [BeatStyles.shared stylesFor:[self.documentSettings getString:DocSettingStylesheet]];
+    BeatStylesheet* styles = [BeatStyles.shared stylesWithName:[self.documentSettings getString:DocSettingStylesheet] delegate:(id<BeatEditorDelegate>)self forEditor:false];
     if (styles == nil) name = @"";
     
     // Store the new stylesheet
@@ -187,8 +187,8 @@
     
     // Re-read all styles, just in case
     [self reloadFonts];
-    [self.styles reloadWithExportSettings:self.exportSettings];
-    [self.editorStyles reloadWithExportSettings:self.exportSettings];
+    [self.styles reloadWithDocumentSettings:self.documentSettings];
+    [self.editorStyles reloadWithDocumentSettings:self.documentSettings];
     
     // Format all lines
     [self.formatting formatAllLines];
