@@ -23,6 +23,7 @@
 "general.redo" = "Tee sittenkin";
 "general.revert" = "Palauta";
 "general.close" = "Sulje";
+"general.selectAll" = "Valitse kaikki";
 
 "storyline.placeholder" = "Uuden tarinalinjan nimi";
 "storyline.add" = "Lisää tarinalinja...";
@@ -223,6 +224,7 @@
 "documentSettings.novelLineHeightMultiplier" = "Riviväli";
 "documentSettings.novelContentAlignment" = "Asettelu";
 
+"documentSettings.title" = "Dokumentin asetukset";
 "documentSettings.style" = "Tyyli";
 "documentSettings.pageSize" = "Sivun koko";
 "documentSettings.firstSceneNumber" = "Ensimmäisen kohtauksen numero";
@@ -246,9 +248,29 @@
 "tag.costume" = "Puvustus";
 "tag.makeup" = "Maskeeraus";
 "tag.vfx" = "VFX";
-"tag.sfx" = "Erikoistehosteet";
+"tag.sfx" = "Erikoistehoste";
 "tag.music" = "Musiikki";
 "tag.animal" = "Eläin";
 "tag.extras" = "Avustajat";
 "tag.vehicle" = "Ajoneuvo";
 "tag.none" = "Ei mitään";
+
+"tagManager.createReport" = "Luo tagiraportti";
+
+"tagManager.report.sceneByScene" = "Kohtaus kohtaukselta";
+"tagManager.report.sceneByScene.details" = "Listaa tagit tyypeittäin kunkin kohtauksen jälkeen";
+
+"tagManager.report.listScenesByTag" = "Listaa kohtaukset tageittain";
+"tagManager.report.listScenesByTag.details" = "Listaa tagityypin jälkeen niitä sisältävät kohtaukset";
+
+"tagManager.report.screenplay" = "Käsikirjoitus";
+"tagManager.report.screenplay.details" = "Luo uusi dokumentti kaikista kohtauksista, jotka sisältävät jonkin valituista tagityypeistä";
+
+"tagManager.report.create" = "Luo";
+
+"tagManager.rename" = "Nimeä";
+
+"tagManager.tab.edit" = "Muokkaa";
+"tagManager.tab.report" = "Raportit";
+
+"tagManager.windowTitle" = "Tagien hallinta";

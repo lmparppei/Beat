@@ -609,8 +609,8 @@
                                     <action selector="makeUnderlined:" target="-1" id="jB4-Tq-def"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Center" id="kSY-9r-dEq">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Center" keyEquivalent="C" id="kSY-9r-dEq">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="makeCentered:" target="-1" id="hF2-QG-3YA"/>
                                 </connections>
@@ -648,6 +648,12 @@ DQ
                             <menuItem title="Force Lyrics" keyEquivalent="L" id="iAy-tL-tFv">
                                 <connections>
                                     <action selector="forceLyrics:" target="-1" id="xa3-Pw-Oav"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Dual Dialogue" keyEquivalent="2" id="tXd-FU-iE5">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="dualDialogue:" target="-1" id="LXU-zz-7Bt"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="OJe-Ry-gJ2"/>
@@ -690,11 +696,41 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
-                            <menuItem title="Dual Dialogue" keyEquivalent="2" id="tXd-FU-iE5">
-                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
-                                <connections>
-                                    <action selector="dualDialogue:" target="-1" id="LXU-zz-7Bt"/>
-                                </connections>
+                            <menuItem title="Macros" id="J5q-RS-R0i">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Macros" id="Rs2-7y-NCa">
+                                    <items>
+                                        <menuItem title="Empty" keyEquivalent="M" id="SBT-S5-vbW">
+                                            <connections>
+                                                <action selector="makeMacro:" target="-1" id="Nja-B7-Sp2"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Date" id="GMX-11-zqc">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="addDateMacro:" target="-1" id="Z7Q-xb-Nfx"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Panel" id="wKT-NG-a07">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="addPanelMacro:" target="-1" id="yjn-tJ-bhY"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Define Text Macro" id="xcg-Uv-RPj">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="defineTextMacro:" target="-1" id="GcM-qV-1Ld"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Define Serial Macro" id="gaz-8T-LWR">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="defineSerialMacro:" target="-1" id="IM2-FB-cBk"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ccp-HV-yr1"/>
                             <menuItem title="Reformat Selected" hidden="YES" id="OYT-mJ-6Jc">
@@ -763,7 +799,7 @@ DQ
                                                 <action selector="selectStylesheet:" target="-1" id="KUq-qZ-prr"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Stage Play" id="NCd-Wf-dgN" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
+                                        <menuItem title="Stage Play" hidden="YES" id="NCd-Wf-dgN" customClass="BeatMenuItemWithStylesheet" customModule="Beat" customModuleProvider="target">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="stylesheet" value="Stageplay"/>
@@ -946,7 +982,6 @@ DQ
                                     <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="tV9-Zg-qgr"/>
                             <menuItem title="Manage Revisions" id="alM-1M-jHF">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="CGQ-NF-VGD">
@@ -1004,6 +1039,18 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ooU-ON-iUL"/>
+                            <menuItem title="Review Mode" id="dmq-UY-1zc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleReview:" target="-1" id="tGA-Vl-ZiI"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Review Selection" keyEquivalent="r" id="SxS-6o-8ac">
+                                <connections>
+                                    <action selector="reviewSelectedRange:" target="-1" id="GKi-dB-4b4"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="DLW-dm-dX6"/>
                             <menuItem title="Tagging Mode" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -1014,17 +1061,6 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showTagEditor:" target="-1" id="qz3-g0-ukZ"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Review Mode" id="dmq-UY-1zc">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleReview:" target="-1" id="tGA-Vl-ZiI"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Review Selection" keyEquivalent="r" id="SxS-6o-8ac">
-                                <connections>
-                                    <action selector="reviewSelectedRange:" target="-1" id="GKi-dB-4b4"/>
                                 </connections>
                             </menuItem>
                         </items>

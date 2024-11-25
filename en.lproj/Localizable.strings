@@ -19,6 +19,7 @@
 "app.manual" = "Manual";
 "app.patchNotes" = "Patch Notes";
 "general.revert" = "Revert";
+"general.selectAll" = "Select All";
 
 "plugins.errorRunningScript" = "Error running script";
 "plugins.input.select" = "Select...";
@@ -237,6 +238,7 @@
 "quickSettings.novelLineHeightMultiplier" = "Line Spacing";
 "quickSettings.novelContentAlignment" = "Alignment";
 
+"documentSettings.title" = "Document Settings";
 "documentSettings.style" = "Style";
 "documentSettings.pageSize" = "Page Size";
 "documentSettings.firstSceneNumber" = "First Scene Number";
@@ -292,3 +294,24 @@
 "tag.extras" = "Extras";
 "tag.vehicle" = "Vehicle";
 "tag.none" = "None";
+
+"tagManager.createReport" = "Create Tag Report";
+
+"tagManager.report.sceneByScene" = "Scene by scene";
+"tagManager.report.sceneByScene.details" = "List scenes in chronological order, each followed by list of selected tags";
+
+"tagManager.report.listScenesByTag" = "List scenes by tag";
+"tagManager.report.sceneByScene.details" = "List selected tag types, followed by scenes that contain them";
+
+"tagManager.report.screenplay" = "Screenplay";
+"tagManager.report.screenplay.details" = "Create a new document with all scenes that contain any of selected tag types";
+
+"tagManager.report.create" = "Create";
+
+"tagManager.rename" = "Rename";
+
+"tagManager.tab.edit" = "Edit Tags";
+"tagManager.tab.report" = "Tag Reports";
+
+"tagManager.windowTitle" = "Tag Manager";
+

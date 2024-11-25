@@ -156,10 +156,10 @@
 "mSK-8B-nEj.title" = "Krepka";
 "MKe-sW-nsP.title" = "Podčrtano";
 
-"Z5r-5F-vbN.title" = "Oblikovanje nevidnih elementov";
+"KQX-J5-sUQ.title" = "Oblikovanje nevidnih elementov";
 "wK3-T2-CKe.title" = "Pisava za razdelke";
 "tpt-4c-5wZ.title" = "Velikost pisave za razdelke";
-"fZw-om-qbT.title" = "Pisava za sinopsis";
+"7KQ-9f-i8A.title" = "Pisava za sinopsis";
 "UOH-ge-3Tb.title" = "Helvetica (privzeto)";
 "PUh-9p-3fX.title" = "Courier";
 "VlM-Fm-k1u.title" = "Velika";
@@ -169,6 +169,9 @@
 "SwG-cV-cfD.title" = "Courier";
 
 "vNs-hq-JbK.title" = "⚠️ Trenutno te nastavitve vplivajo samo na predogled in ustvarjanje PDF";
-"l1c-Mc-Ssf.title" = "Opomba: Te nastavitve vplivajo samo na oblikovanje rokopisa";
+"y4x-ys-zeh.title" = "Opomba: Te nastavitve vplivajo samo na oblikovanje rokopisa";
 "XEa-I5-p3i.title" = "Opomba: Te nastavitve vplivajo samo na oblikovanje rokopisa";
-"2Og-yp-uDM.title" = "Napredne";
+"2Og-yp-uDM.label" = "Napredne";
+
+"EbP-vJ-jSl.title" = "Samodejno dodaj naslovno stran";
+

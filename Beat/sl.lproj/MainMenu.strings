@@ -141,6 +141,8 @@
 /* Class = "NSMenuItem"; title = "Tagging Mode"; ObjectID = "Fdy-fO-lco"; */
 "Fdy-fO-lco.title" = "Označevalni način";
 
+"y8D-eW-ydD.title" = "Upravitelj oznak";
+
 /* Class = "NSMenuItem"; title = "Import"; ObjectID = "G4e-G3-Hfz"; */
 "G4e-G3-Hfz.title" = "Uvozi";
 
@@ -650,3 +652,15 @@
 
 "Hsr-QV-0FD.title" = "Prezri preverjanje črkovanja za pogovore";
 
+"J5q-RS-R0i.title" = "Makri";
+"SBT-S5-vbW.title" = "Prazno";
+"GMX-11-zqc.title" = "Datum";
+"wKT-NG-a07.title" = "Plošča";
+"xcg-Uv-RPj.title" = "Določi besedilni makro";
+"gaz-8T-LWR.title" = "Določi serijski makro";
+
+"y8D-eW-ydD.title" = "Upravitelj oznak";
+
+"YK2-x5-vM1.title" = "Pokaži vrsto vrstice";
+
+"qWH-m6-PLN.title" = "Nastavitve dokumenta...";

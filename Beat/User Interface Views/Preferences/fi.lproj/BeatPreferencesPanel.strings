@@ -110,7 +110,7 @@
 "0Hr-jR-zGH.paletteLabel" = "Järjestelmä";
 
 "ROG-62-Evk.title" = "Varmuuskopiokansio";
-"5Lw-3n-rPc.title" = "Oletus";
+"kU3-zB-g60.title" = "Oletus";
 "moV-CN-wy9.title" = "Mukautettu";
 "OWc-Ih-dLg.title" = "Valitse...";
 
@@ -127,11 +127,11 @@
 "mSK-8B-nEj.title" = "Lihavoitu";
 "MKe-sW-nsP.title" = "Alleviivattu";
 
-"Z5r-5F-vbN.title" = "Näkymättömien elementtien muotoilu";
+"KQX-J5-sUQ.title" = "Näkymättömien elementtien muotoilu";
 "wK3-T2-CKe.title" = "Osioiden kirjasin";
 "tpt-4c-5wZ.title" = "Osioiden kirjasinkoko";
-"fZw-om-qbT.title" = "Synopsisfontti";
-"UOH-ge-3Tb.ttile" = "Helvetica (oletus)";
+"7KQ-9f-i8A.title" = "Synopsisfontti";
+"UOH-ge-3Tb.title" = "Helvetica (oletus)";
 "PUh-9p-3fX.title" = "Courier";
 "VlM-Fm-k1u.title" = "Suuri";
 "VlM-Fm-k1u.title" = "Keskikokoinen";
@@ -140,6 +140,8 @@
 "SwG-cV-cfD.title" = "Courier";
 
 "vNs-hq-JbK.title" = "⚠️ Toistaiseksi nämä asetukset vaikuttavat vain esikatseluun ja PDF-luontiin";
-"l1c-Mc-Ssf.title" = "Huomaa: Nämä asetukset vaikuttavat vain käsikirjoitusmuotoiluun";
+"y4x-ys-zeh.title" = "Huomaa: Nämä asetukset vaikuttavat vain käsikirjoitusmuotoiluun";
 "XEa-I5-p3i.title" = "Huomaa: Nämä asetukset vaikuttavat vain käsikirjoitusmuotoiluun";
-"2Og-yp-uDM.title" = "Edistyneemmät";
+"2Og-yp-uDM.label" = "Edistyneemmät";
+
+"EbP-vJ-jSl.title" = "Lisää kansilehti automaattisesti";

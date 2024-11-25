@@ -122,6 +122,8 @@
 /* (No Comment) */
 "general.close" = "Stäng";
 
+"general.selectAll" = "Markera allt";
+
 /* (No Comment) */
 "general.no" = "Nej";
 
@@ -408,6 +410,7 @@
 "quickSettings.novelLineHeightMultiplier" = "Mellanrum";
 "quickSettings.novelLineHeightMultiplier" = "Textjustering";
 
+"documentSettings.title" = "Dokumentinställningar";
 "documentSettings.style" = "Stil";
 "documentSettings.novelLineHeightMultiplier" = "Mellanrum";
 "documentSettings.novelContentAlignment" = "Textjustering";
@@ -443,3 +446,25 @@
 "tag.extras" = "Statister";
 "tag.vehicle" = "Fordon";
 "tag.none" = "Ingen";
+
+"tagManager.createReport" = "Skapa taggrapport";
+
+"tagManager.report.sceneByScene" = "Scen för scen";
+"tagManager.report.sceneByScene.details" = "Lista scener i kronologisk ordning, varje följd av en lista över valda taggar";
+
+"tagManager.report.listScenesByTag" = "Lista scener efter tagg";
+"tagManager.report.listScenesByTag.details" = "Lista valda taggtyper, följt av scener som innehåller dem";
+
+"tagManager.report.screenplay" = "Manuskript";
+"tagManager.report.screenplay.details" = "Skapa ett nytt dokument med alla scener som innehåller någon av de valda taggtyperna";
+
+"tagManager.report.create" = "Skapa";
+
+"tagManager.rename" = "Byt namn";
+
+"tagManager.tab.edit" = "Redigera";
+"tagManager.tab.report" = "Rapporter";
+
+"tagManager.windowTitle" = "Tagghanterare";
+
+

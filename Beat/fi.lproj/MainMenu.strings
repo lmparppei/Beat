@@ -149,7 +149,7 @@
 "FKE-Sm-Kum.title" = "Fountain-opas (verkossa)";
 
 /* Class = "NSMenuItem"; title = "Tagging Mode"; ObjectID = "Fdy-fO-lco"; */
-"Fdy-fO-lco.title" = "Merkintätila";
+"Fdy-fO-lco.title" = "Tagaustila";
 
 /* Class = "NSMenuItem"; title = "Import"; ObjectID = "G4e-G3-Hfz"; */
 "G4e-G3-Hfz.title" = "Tuo";
@@ -619,7 +619,7 @@
 "VUa-7O-npW.title" = "Siirry...";
 
 
-"fby-dh-gUY.title" = "Lisää osio";
+"fby-dh-gUYag.title" = "Lisää osio";
 "b2L-Tp-foz.title" = "Lisää synopsis";
 "58Q-So-hJH.title" = "Lisää kuvaotsikko";
 
@@ -627,3 +627,15 @@
 
 "5SZ-7j-p2G.title" = "Vie Rich Text Format (RTF) -tiedosto...";
 "Hsr-QV-0FD.title" = "Ohita oikeinkirjoitus dialogissa";
+
+"J5q-RS-R0i.title" = "Makrot";
+"SBT-S5-vbW.title" = "Tyhjä";
+"GMX-11-zqc.title" = "Päivämäärä";
+"wKT-NG-a07.title" = "Paneeli";
+"xcg-Uv-RPj.title" = "Määritä tekstimakro";
+"gaz-8T-LWR.title" = "Määritä sarjanumeromakro";
+
+"y8D-eW-ydD.title" = "Tagien hallinta...";
+"YK2-x5-vM1.title" = "Näytä rivin tyyppi";
+
+"qWH-m6-PLN.title" = "Dokumentin asetukset...";

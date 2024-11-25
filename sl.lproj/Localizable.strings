@@ -19,6 +19,8 @@
 "app.manual" = "Priročnik";
 "app.patchNotes" = "Opombe o popravkih";
 "general.revert" = "Povrni";
+"general.selectAll" = "Izberi vse";
+
 
 "plugins.errorRunningScript" = "Napaka pri izvedbi skripta";
 "plugins.input.select" = "Izberi ...";
@@ -224,6 +226,7 @@
 "spelling.ignoreDialogue.title" = "Prezri preverjanje črkovanja v pogovorih";
 "spelling.ignoreDialogue.text" = "Morda boste morali znova odpreti dokument, da bodo spremembe začele veljati.";
 
+"documentSettings.title" = "Nastavitve dokumenta";
 "documentSettings.novelLineHeightMultiplier" = "Razmik vrstic";
 "documentSettings.novelContentAlignment" = "Poravnava";
 
@@ -259,4 +262,25 @@
 "tag.extras" = "Statisti";
 "tag.vehicle" = "Vozilo";
 "tag.none" = "Noben";
+
+
+"tagManager.createReport" = "Ustvari poročilo o oznakah";
+
+"tagManager.report.sceneByScene" = "Prizor za prizorom";
+"tagManager.report.sceneByScene.details" = "Seznam prizorov v kronološkem vrstnem redu, vsak sledi seznam izbranih oznak";
+
+"tagManager.report.listScenesByTag" = "Seznam prizorov po oznakah";
+"tagManager.report.listScenesByTag.details" = "Seznam izbranih vrst oznak in prizorov, ki jih vsebujejo";
+
+"tagManager.report.screenplay" = "Rokopis";
+"tagManager.report.screenplay.details" = "Ustvarite nov dokument z vsemi prizori, ki vsebujejo katero koli od izbranih vrst oznak";
+
+"tagManager.report.create" = "Ustvari";
+
+"tagManager.rename" = "Preimenuj";
+
+"tagManager.tab.edit" = "Uredi oznake";
+"tagManager.tab.report" = "Poročila o oznakah";
+
+"tagManager.windowTitle" = "Upravitelj oznak";
 
