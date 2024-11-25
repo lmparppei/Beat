@@ -614,5 +614,37 @@ static NSString *macroSymbolClose = @"}}";
 }
 
 
+#pragma mark - Macros
+
+- (IBAction)addPanelMacro:(id)sender
+{
+    [self.delegate.textActions addString:@"{{panel}}" atIndex:self.delegate.selectedRange.location];
+}
+
+- (IBAction)addDateMacro:(id)sender
+{
+    [self.delegate.textActions addString:@"{{date YYYY-MM-dd}}" atIndex:self.delegate.selectedRange.location];
+}
+
+- (IBAction)defineSerialMacro:(id)sender
+{
+    NSString* string = @"{{serial name = 1}}";
+    NSInteger loc = self.delegate.selectedRange.location;
+    
+    [self.delegate.textActions addString:string atIndex:self.delegate.selectedRange.location];
+    
+    self.delegate.selectedRange = NSMakeRange(loc + string.length - 2, 0);
+}
+
+- (IBAction)defineTextMacro:(id)sender
+{
+    NSString* string = @"{{name = value}}";
+    NSInteger loc = self.delegate.selectedRange.location;
+    
+    [self.delegate.textActions addString:string atIndex:self.delegate.selectedRange.location];
+    
+    self.delegate.selectedRange = NSMakeRange(loc + string.length - 2, 0);
+}
+
 @end
 
