@@ -154,11 +154,18 @@ static NSString *centeredEnd = @" <";
     // Remove unnecessary line breaks
     newString = [newString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
     
+    [self.delegate.getTextView.textStorage beginEditing];
+    
     // Replace with undo registration
     NSString *oldString = [_delegate.text substringWithRange:range];
     
     [self replaceCharactersInRange:range withString:newString];
+    [self.delegate.getTextView.textStorage endEditing];
+    
+#if TARGET_OS_OSX
+    // We shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
+#endif
     
     // Restore position on iOS
     [self restorePositionForChangeAt:range.location length:newString.length - range.length originalRange:selectedRange];
