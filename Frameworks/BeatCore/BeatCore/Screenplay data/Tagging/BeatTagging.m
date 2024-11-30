@@ -14,7 +14,7 @@
 #import "NSString+Levenshtein.h"
 #import "BeatColors.h"
 
-#define BXTagOrder @[ @"cast", @"prop", @"vfx", @"sfx", @"animal", @"extras", @"vehicle", @"costume", @"makeup", @"music" ]
+#define BXTagOrder @[ @"cast", @"prop", @"vfx", @"sfx", @"animal", @"extras", @"vehicle", @"costume", @"makeup", @"music", @"stunt" ]
 
 #define UIFontSize 11.0
 
@@ -59,7 +59,7 @@
 }
 
 + (NSString*)attributeKey { return @"BeatTag"; }
-+ (NSString*)notificationName { return @"BeatTagModified"; }
++ (NSString*)notificationName { return @"BeatTagModified"; } 
 
 + (NSDictionary<NSNumber*,NSString*>*)tagKeys
 {
@@ -74,7 +74,8 @@
         @(VehicleTag): @"vehicle",
         @(CostumeTag): @"costume",
         @(MakeupTag): @"makeup",
-        @(MusicTag): @"music"
+        @(MusicTag): @"music",
+        @(StuntTag): @"stunt"
     };
     
     return tagKeys;
@@ -93,9 +94,51 @@
         @(VehicleTag): @"bicycle",
         @(CostumeTag): @"tshirt.fill",
         @(MakeupTag): @"theatermask.and.paintbrush.fill",
-        @(MusicTag): @"music.note"
+        @(MusicTag): @"music.note",
+        @(StuntTag): @"figure.fall"
     };
     return tagIcons;
+}
+
++ (NSString*)fdxCategoryToBeat:(NSString*)category
+{
+    NSDictionary* categories = @{
+        @"Synopsis": @"other",
+        @"Cast": @"cast",
+        @"Extras": @"extras",
+        @"Stunt": @"stunt",
+        @"Stunts": @"stunt",
+        @"Vehicle": @"vehicle",
+        @"Vehicles": @"vehicle",
+        @"Prop": @"prop",
+        @"Props": @"prop",
+        @"Camera": @"camera",
+        @"Special Effect": @"sfx",
+        @"Special Effects": @"sfx",
+        @"Costume": @"costume",
+        @"Makeup": @"makeup",
+        @"Makeup & hair": @"makeup",
+        @"Animal": @"animal",
+        @"Animals": @"animal",
+        @"Music": @"music",
+        @"Sound": @"sound",
+        @"Art": @"other",
+        @"Scenography": @"setDesign",
+        @"Special Equipment": @"other",
+        @"Security": @"other",
+        @"Additional Work": @"other",
+        @"VFX": @"vfx",
+        @"Practical FX": @"sfx",
+        @"Other": @"other",
+        @"Notes": @"other",
+        @"Script Day": @"other",
+        @"Unit": @"other",
+        @"Location": @"setDesign",
+        @"Greenery": @"setDesign"
+    };
+    
+    return categories[category];
+
 }
 
 /// All available tag categories as string
@@ -171,6 +214,8 @@
 		@"extras": [BeatColors color:@"magenta"],
 		@"vehicle": [BeatColors color:@"teal"],
 		@"sfx": [BeatColors color:@"brown"],
+        @"stunt": [BeatColors color:@"blue"],
+        @"setDesign": [BeatColors color:@"goldenrod"],
 		@"generic": [BeatColors color:@"gray"]
 	};
 }
@@ -190,6 +235,8 @@
 	else if ([tag isEqualToString:@"costume"]) return CostumeTag;
 	else if ([tag isEqualToString:@"makeup"]) return MakeupTag;
 	else if ([tag isEqualToString:@"music"]) return MusicTag;
+    else if ([tag isEqualToString:@"setDesign"]) return SetDesignTag;
+    else if ([tag isEqualToString:@"stunt"]) return StuntTag;
 	else if ([tag isEqualToString:@"none"]) return NoTag;
 	else { return GenericTag; }
 }
@@ -291,19 +338,22 @@
 
 - (NSArray*)allTags
 {
+    return [BeatTagging allTagsFrom:_delegate.attributedString];
+}
+
++ (NSArray*)allTagsFrom:(NSAttributedString*)string
+{
     NSMutableArray<BeatTag*> * tags = NSMutableArray.new;
-    NSAttributedString * string = _delegate.attributedString;
-	
-	[string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatTag *tag = (BeatTag*)value;
-		if (tag.type == NoTag) return; // Just in case
-		
-		// Save current range of the tag into the object and add to array
-		tag.range = range;
-		[tags addObject:tag];
-	}];
-	
-	return tags;
+    [string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        BeatTag *tag = (BeatTag*)value;
+        if (tag.type == NoTag) return; // Just in case
+        
+        // Save current range of the tag into the object and add to array
+        tag.range = range;
+        [tags addObject:tag];
+    }];
+    
+    return tags;
 }
 
 - (NSArray<TagDefinition*>*)tagsWithTypeName:(NSString*)type
@@ -668,39 +718,45 @@
 	return nil;
 }
 
-/*
-// Alternate code
-#pragma mark - Saving into Fountain file
 
-- (NSDictionary*)tagsForSaving {
-	NSArray *tags = self.allTags;
-	
-	NSMutableDictionary <NSString*, NSMutableArray*>*tagDict = NSMutableDictionary.new;
-	NSMutableArray *definitions = NSMutableArray.new;
-	NSMutableDictionary <NSValue*, NSString*> *ranges = NSMutableDictionary.new;
-	
-	for (BeatTag *tag in tags) {
-		if (tag.definition) {
-			if (!tagDict[tag.key]) tagDict[tag.key] = NSMutableArray.new;
-			
-			// Save a JSON-compatible dictionary into definition array
-			NSMutableArray *tagDefinitions = tagDict[tag.key];
-			if (![tagDefinitions containsObject:tag.definition]) [tagDefinitions addObject:tag.definition.serialized];
-			
-			// Save range + ID for the definition
-			NSValue *r = [NSValue valueWithRange:tag.range];
-			NSValue *rangeKey = [NSValue valueWithNonretainedObject:r];
-			ranges[rangeKey] = tag.definition.defId;
-		}
-		
-	}
+#pragma mark - Saving into external Fountain file
+
+/// Get tags and definitions from an external attributed string
++ (NSDictionary*)tagsAndDefinitionsFrom:(NSAttributedString*)attrStr
+{
+    NSArray *tags = [BeatTagging allTagsFrom:attrStr];
+    
+    NSMutableArray *definitions = NSMutableArray.new;
+    
+    NSMutableArray *tagsToSave = NSMutableArray.new;
+    NSMutableArray *defsToSave = NSMutableArray.new;
+    
+    for (BeatTag* tag in tags) {
+        [tagsToSave addObject:@{
+            @"range": @[ @(tag.range.location), @(tag.range.length) ],
+            @"type": tag.key,
+            @"definition": tag.defId
+        }];
+        
+        if (![definitions containsObject:tag.definition]) {
+            [definitions addObject:tag.definition];
+        }
+    }
+    
+    for (TagDefinition *def in definitions) {
+        [defsToSave addObject:@{
+            @"name": def.name,
+            @"type": [BeatTagging keyFor:def.type],
+            @"id": def.defId
+        }];
+    }
 	
 	return @{
-		@"definitions": definitions,
-		@"taggedRanges": ranges
+        @"definitions": defsToSave,
+        @"taggedRanges": tagsToSave
 	};
 }
- */
+
 
 #pragma mark - Editor methods
 
@@ -733,11 +789,10 @@
 	if (tag == nil) {
 		// Clear tags
 		[_delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
-		[self saveTags];
 	} else {
 		[_delegate.textStorage addAttribute:BeatTagging.attributeKey value:tag range:range];
-		[self saveTags];
 	}
+    [self saveTags];
 	
     if (!_delegate.documentIsLoading) [_delegate.textStorage endEditing];
 	if (_delegate.documentIsLoading) return;

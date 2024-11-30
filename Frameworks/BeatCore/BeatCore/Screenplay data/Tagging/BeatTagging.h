@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 	ExtraTag,
 	VehicleTag,
 	MusicTag,
+    StuntTag,
+    SetDesignTag,
 	GenericTag
 };
 
@@ -119,7 +121,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 + (NSString*)localizedTagNameForKey:(NSString*)tag;
 /// Returns localized tag name for type
 + (NSString*)localizedTagNameForType:(BeatTagType)type;
-
+/// Converts an FDX tag name to Beat tag key
++ (NSString*)fdxCategoryToBeat:(NSString*)category;
 
 #pragma mark - Instance (document-bound) methods
 
@@ -158,6 +161,10 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (TagDefinition*)definitionWithName:(NSString*)name type:(BeatTagType)type;
 /// Returns all scenes which contain the given tag definition.
 - (NSArray<OutlineScene*>*)scenesForTagDefinition:(TagDefinition*)tag;
+/// Get tags and definitions from an external attributed string
++ (NSDictionary*)tagsAndDefinitionsFrom:(NSAttributedString*)attrStr;
+
++ (NSString*)fdxCategoryToBeat:(NSString*)category;
 
 #pragma mark - Tagging methods
 
