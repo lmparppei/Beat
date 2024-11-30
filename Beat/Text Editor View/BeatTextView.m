@@ -82,8 +82,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 /// Validated menu items
 @property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
 
-@property (nonatomic) BeatFindPanel* findPanel;
-
 @property (weak, nonatomic) IBOutlet NSScrollView* minimapContainer;
 @property (nonatomic) IBOutlet MinimapTextView* minimapView;
 
