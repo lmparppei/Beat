@@ -112,7 +112,8 @@ typedef NS_ENUM(NSInteger, BeatPageNumberingMode) {
 
 + (CGFloat)lineHeight;
 
-/// Returns a dictionary of page breaks converted to editor page breaks. Compatible with `BeatLayoutManager`.
+/// Returns a dictionary of page breaks converted to editor page breaks. Compatible with `BeatLayoutManager`. Key is a non-retained `Line` object wrapped in `NSValue`, and the value is an two-object array with `pageNumber` and `localIndex`. This should desperately be an object of its own for better readability.
+/// @return `{ pageBreakObject (Line, non-retained): [pageNumber, localIndex] }
 - (NSDictionary<NSValue*,NSArray<NSNumber*>*>*)editorPageBreaks;
 
 - (void)paginate;
