@@ -164,7 +164,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     CGFloat lineHeight = styles.page.lineHeight;
 
     // Set element-based line height
-    if (elementStyle.fontSize > 0) {
+    if (elementStyle.fontSize > 0 && elementStyle.fontSize > lineHeight) {
         lineHeight = elementStyle.fontSize;
     } else if (line.type == section) {
         BXFont* font = [self fontFamilyForLine:line];
