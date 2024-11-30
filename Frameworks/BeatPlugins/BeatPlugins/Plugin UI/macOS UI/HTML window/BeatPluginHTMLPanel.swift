@@ -83,8 +83,8 @@ import WebKit
     @objc func fetchHTMLPanelDataAndClose() {
         self.webView?.evaluateJavaScript("sendBeatData();")
         
+        // if something went wrong, close panel forcibly after 2 seconds 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-            // your code here
             guard let weakSelf = self else { return }
             if weakSelf.sheetParent?.attachedSheet == weakSelf && weakSelf.isVisible {
                 weakSelf.host?.reportError("Plugin timed out", withText: "Something went wrong with receiving data from the plugin")
@@ -99,6 +99,9 @@ import WebKit
             displayed = false
             self.webView?.remove()
             host?.delegate.documentWindow.endSheet(self)
+            
+            // Perform callback
+            self.callback?.call(withArguments: [])
         }
     }
     

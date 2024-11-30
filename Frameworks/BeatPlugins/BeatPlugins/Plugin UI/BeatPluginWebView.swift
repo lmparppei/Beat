@@ -93,13 +93,13 @@ import WebKit
     deinit {
         purge()
     }
-
+    
     @objc public func purge() {
         guard let url = self.tempURL else { return }
         do {
             try FileManager.default.removeItem(at: url)
         } catch {
-            print("Temporary file couldn't be removed")
+            print("Temporary file couldn't be removed:", error)
         }
     }
     

@@ -25,8 +25,15 @@
 #import <BeatPlugins/BeatPluginAgent.h>
 #import <PDFKit/PDFKit.h>
 
+// Console component
 #import "BeatConsole.h"
 
+// Extensions and categories
+#import "BeatPlugin+Parser.h"
+#import "BeatPlugin+Modals.h"
+#import "BeatPlugin+Editor.h"
+
+// UI items are only available on macOS. (These should be split into a category.)
 #if TARGET_OS_OSX
 #import "BeatPluginUIView.h"
 #import "BeatPluginUIButton.h"
@@ -60,7 +67,7 @@
 @property (nonatomic) JSValue *sceneCompletionCallback;
 @property (nonatomic) JSValue *characterCompletionCallback;
 @property (nonatomic) JSValue *documentSavedCallback;
-@property (nonatomic) BeatPluginData *plugin;
+
 @property (nonatomic) NSMutableArray *timers;
 @property (nonatomic) NSMutableArray *speakSynths;
 @property (nonatomic, nullable) JSValue* updateMethod;
@@ -74,10 +81,9 @@
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
-@property (nonatomic) bool inCallback;
+//@property (nonatomic) bool inCallback;
+@property (nonatomic) NSInteger callbacksRemaining;
 @property (nonatomic) bool terminateAfterCallback;
-@property (nonatomic) NSMutableArray *pluginWindows;
-@property (nonatomic) NSDictionary *type;
 
 @property (nonatomic) NSURL* pluginURL; // URL for a container
 
@@ -86,7 +92,6 @@
 #if !TARGET_OS_IOS
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
 @property (nonatomic) BeatPluginUIView *widgetView;
-@property (nonatomic) BeatHTMLPrinter *printer;
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) BeatPluginHTMLPanel* htmlPanel;
 #else
@@ -329,7 +334,7 @@
 /// Quits the current plugin. **Required** when using plugins with callbacks.
 - (void)end {
 	// If end was called in callback, we'll wait until it's done before killing the plugin altogether
-	if (_inCallback) {
+    if (self.callbacksRemaining > 0) {
 		_terminateAfterCallback = YES;
 		return;
 	}
@@ -370,9 +375,23 @@
 	if (_resident) [_delegate.pluginAgent deregisterPlugin:self];
 }
 
-/// Give focus back to the editor
-- (void)focusEditor {
-	[_delegate focusEditor];
+/// Runs a callback value when a plugin window is closed. We need to finish all callbacks before the plugin itself can be terminated, so we need to jump some extra hoops.
+- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments
+{
+    if (!callback || callback.isUndefined) return;
+        
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Callback functions are often called when a plugin window is closed, and we can't close the plugin until all callbacks are done.
+        // We'll increment remaining callback number, and if it's zero after this callback is done, we'll give permission to terminate the plugin.
+        self.callbacksRemaining += 1;
+        [callback callWithArguments:arguments];
+        self.callbacksRemaining -= 1;
+        
+        // If we've reached the end of any callbacks, terminate plugin.
+        if (self.terminateAfterCallback && self.callbacksRemaining == 0) {
+            [self end];
+        }
+    });
 }
 
 /// Opens plugin developer log
@@ -741,117 +760,6 @@
 }
 
 
-#pragma mark - File i/o
-
-#pragma mark macOS only
-#if !TARGET_OS_IOS
-	/** Presents a save dialog.
-	 @param format Allowed file extension
-	 @param callback If the user didn't click on cancel, callback receives an array of paths (containing only a single path). When clicking cancel, the return parameter is nil.
-	 */
-	- (void)saveFile:(NSString*)format callback:(JSValue*)callback
-	{
-		NSSavePanel *savePanel = [NSSavePanel savePanel];
-		savePanel.allowedFileTypes = @[format];
-		[savePanel beginSheetModalForWindow:self.delegate.documentWindow completionHandler:^(NSModalResponse returnCode) {
-			if (returnCode == NSModalResponseOK) {
-				[savePanel close];
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
-					[callback callWithArguments:@[savePanel.URL.path]];
-				});
-			} else {
-				
-				[self runCallback:callback withArguments:nil];
-			}
-		}];
-	}
-
-	/** Presents an open dialog box.
-	 @param formats Array of file extensions allowed to be opened
-	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths, though it contains only a single path.
-	*/
-	- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
-	{
-		NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-		openPanel.allowedFileTypes = formats;
-		
-		NSModalResponse result = [openPanel runModal];
-		if (result == NSModalResponseOK) {
-			[self runCallback:callback withArguments:@[openPanel.URL.path]];
-		} else {
-			[self runCallback:callback withArguments:nil];
-		}
-	}
-
-	/** Presents an open dialog box which allows selecting multiple files.
-	 @param formats Array of file extensions allowed to be opened
-	 @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths.
-	*/
-	- (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
-	{
-		// Open MULTIPLE files
-		NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-		openPanel.allowedFileTypes = formats;
-		openPanel.allowsMultipleSelection = YES;
-		
-		NSModalResponse result = [openPanel runModal];
-		
-		if (result == NSModalResponseOK) {
-			NSMutableArray *paths = [NSMutableArray array];
-			for (NSURL* url in openPanel.URLs) {
-				[paths addObject:url.path];
-			}
-			[self runCallback:callback withArguments:@[paths]];
-		} else {
-			[self runCallback:callback withArguments:nil];
-		}
-	}
-#endif
-
-#pragma mark Generic writing and reading methods
-
-/// Writes string content to the given path.
-- (bool)writeToFile:(NSString*)path content:(NSString*)content
-{
-	NSError *error;
-	[content writeToFile:path atomically:NO encoding:NSUTF8StringEncoding error:&error];
-	
-	if (error) {
-		[self alert:@"Error Writing File" withText:[NSString stringWithFormat:@"%@", error]];
-		return NO;
-	} else {
-		return YES;
-	}
-}
-
-
-/// Returns the given path as a string (from anywhere in the system)
-- (NSString*)fileToString:(NSString*)path
-{
-	NSError *error;
-	NSString *result = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-	
-	if (error) {
-		[self alert:@"Error Opening File" withText:@"Error occurred while trying to open the file. Did you give Beat permission to acces it?"];
-		return nil;
-	} else {
-		return result;
-	}
-}
-
-/// Attempts to open  the given path in workspace (system)
-- (void)openInWorkspace:(NSString*)path {
-#if !TARGET_OS_IOS
-	[NSWorkspace.sharedWorkspace openFile:path];
-#else
-    NSURL *fileURL = [NSURL fileURLWithPath:path];
-
-    UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-    [documentInteractionController presentOptionsMenuFromRect:CGRectZero inView:self.delegate.textView animated:YES];
-#endif
-}
-
-
 #pragma mark - Access plugin assets
 
 /// Returns the given file in plugin container as string
@@ -926,97 +834,9 @@
 	#endif
 }
 
-
-#pragma mark - Scrolling
-
-/// Scroll to given location in editor window
-- (void)scrollTo:(NSInteger)location
-{
-	[self.delegate scrollTo:location];
-}
-
-/// Scroll to the given line in editor window
-- (void)scrollToLine:(Line*)line
-{
-	@try {
-		[_delegate scrollToLine:line];
-	}
-	@catch (NSException *e) {
-		[self reportError:@"Plugin tried to access an unknown line" withText:line.string];
-	}
-}
-
-/// Scrolls to the given line index in editor window
-- (void)scrollToLineIndex:(NSInteger)index
-{
-	[self.delegate scrollToLineIndex:index];
-}
-
-/// Scrolls to the given scene index in editor window
-- (void)scrollToSceneIndex:(NSInteger)index
-{
-	[self.delegate scrollToSceneIndex:index];
-}
-
-/// Scrolls to the given scene in editor window
-- (void)scrollToScene:(OutlineScene*)scene
-{
-	@try {
-		[self.delegate scrollToScene:scene];
-	}
-	@catch (NSException *e) {
-		[self reportError:@"Can't find scene" withText:@"Plugin tried to access an unknown scene"];
-	}
-}
-
-
-#pragma mark - Text I/O
-
-/// Adds a string into the editor at given index (location)
-- (void)addString:(NSString*)string toIndex:(NSUInteger)index
-{
-	[self.delegate.textActions addString:string atIndex:index];
-}
-
-/// Replaces the given range with a string
-- (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string
-{
-	NSRange range = NSMakeRange(from, length);
-	@try {
-		[self.delegate.textActions replaceRange:range withString:string];
-	}
-	@catch (NSException *e) {
-		[self reportError:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
-	}
-}
-
-/// Returns the selected range in editor
-- (NSRange)selectedRange
-{
-	return self.delegate.selectedRange;
-}
-
-/// Sets  the selected range in editor
-- (void)setSelectedRange:(NSInteger)start to:(NSInteger)length
-{
-	@try {
-		NSRange range = NSMakeRange(start, length);
-		[self.delegate setSelectedRange:range];
-	}
-	@catch (NSException *exception) {
-		[self reportError:@"Out of range" withText:[NSString stringWithFormat:@"position: %lu  length: %lu", start, length]];
-	}
-}
-
-/// Returns the plain-text string in editor
-- (NSString*)getText
-{
-	return _delegate.text;
-}
-
 /// Report a plugin error
-- (void)reportError:(NSString*)title withText:(NSString*)string {
-	//[self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
+- (void)reportError:(NSString*)title withText:(NSString*)string
+{
     NSString* msg = [NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string];
     [BeatConsole.shared logError:msg context:self pluginName:self.pluginName];
 }
@@ -1030,254 +850,6 @@
     return [BeatLocalization localizeString:string];
 }
 
-
-#pragma mark - Modals
-
-/// Presents an alert box
-- (void)alert:(NSString*)title withText:(NSString*)info
-{
-#if TARGET_OS_IOS
-	// Do something on iOS
-    UIViewController* vc = (UIViewController*)self.delegate;
-    UIAlertController* ac = [UIAlertController alertControllerWithTitle:title message:info preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [ac dismissViewControllerAnimated:false completion:nil];
-    }]];
-    [vc presentViewController:ac animated:false completion:^{
-        //
-    }];
-    
-#else
-	// Send back to main thread
-	if (!NSThread.isMainThread) {
-		dispatch_async(dispatch_get_main_queue(), ^(void){
-			[self alert:title withText:info];
-		});
-		return;
-	}
-	if ([info isEqualToString:@"undefined"]) info = @"";
-	
-	NSAlert *alert = [self dialog:title withInfo:info];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-	[alert runModal];
-#endif
-}
-
-/// Presents a confirmation box, returning `true` if the user clicked `OK`.
-- (bool)confirm:(NSString*)title withInfo:(NSString*)info
-{
-#if TARGET_OS_IOS
-	// Do something on iOS
-	NSLog(@"WARNING: Beat.confirm missing on iOS");
-	return false;
-#else
-	NSAlert *alert = NSAlert.new;
-	alert.messageText = title;
-	alert.informativeText = info;
-	
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
-	
-	NSModalResponse response = [alert runModal];
-	
-	return (response == NSModalResponseOK || response == NSAlertFirstButtonReturn);
-#endif
-}
-
-/**
- Displays a more elaborate modal window. You can add multiple types of inputs, define their values and names.
- This is how you create the settings dictionary in JavaScript:
- ```
- Beat.modal({
-	 title: "This is a test modal",
-	 info: "You can input stuff into multiple types of fields",
-	 items: [
-		 {
-			 type: "text",
-			 name: "characterName",
-			 label: "Character Name",
-			 placeholder: "First Name"
-		 },
-		 {
-			 type: "dropdown",
-			 name: "characterRole",
-			 label: "Role",
-			 items: ["Protagonist", "Supporting Character", "Other"]
-		 },
-		 {
-			 type: "space"
-		 },
-		 {
-			 type: "checkbox",
-			 name: "important",
-			 label: "This is an important character"
-		 },
-		 {
-			 type: "checkbox",
-			 name: "recurring",
-			 label: "Recurring character"
-		 }
-	 ]
- }, function(response) {
-	 if (response) {
-		 // The user clicked OK
-		 Beat.log(JSON.stringify(response))
-	 } else {
-		 // The user clicked CANCEL
-	 }
- })
- ```
- @param settings Dictionary of modal window settings. Return value dictionary contains corresponding control names.
- */
-- (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
-#if !TARGET_OS_IOS
-	if (!NSThread.isMainThread) {
-		[self log:@"ERROR: Trying to create a modal from background thread"];
-		return nil;
-	}
-	
-	// We support both return & callback in modal windows
-	
-	NSString *title = (settings[@"title"] != nil) ? settings[@"title"] : @"";
-	NSString *info  = (settings[@"info"] != nil) ? settings[@"info"] : @"";
-	
-	NSAlert *alert = [[NSAlert alloc] init];
-	alert.messageText = title;
-	alert.informativeText = info;
-	
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
-	
-	BeatModalAccessoryView *itemView = [[BeatModalAccessoryView alloc] init];
-	
-	if ([settings[@"items"] isKindOfClass:NSArray.class]) {
-		NSArray *items = settings[@"items"];
-		
-		for (NSDictionary* item in items) {
-			[itemView addField:item];
-		}
-	}
-	
-	[itemView setFrame:(NSRect){ 0, 0, 350, itemView.heightForItems }];
-	[alert setAccessoryView:itemView];
-	NSModalResponse response = [alert runModal];
-	
-	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
-		NSDictionary *values = itemView.valuesForFields;
-		[self runCallback:callback withArguments:@[values]];
-		return values;
-	} else {
-		[self runCallback:callback withArguments:nil];
-		return nil;
-	}
-#else
-	// Do something on iOS
-	NSLog(@"WARNING: Beat.modal missing on iOS");
-	return @{};
-#endif
-}
-
-/** Simple text input prompt.
- @param prompt Title of the dialog
- @param info Further info  displayed under the title
- @param placeholder Placeholder string for text input
- @param defaultText Default value for text input
- */
-- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
-{
-#if !TARGET_OS_IOS
-	if (!NSThread.isMainThread) {
-		[self log:@"ERROR: Trying to create a prompt from background thread"];
-		return nil;
-	}
-	
-	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
-	if ([defaultText isEqualToString:@"undefined"]) defaultText = @"";
-	
-	NSAlert *alert = [self dialog:prompt withInfo:info];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
-	
-	NSRect frame = NSMakeRect(0, 0, 300, 24);
-	NSTextField *inputField = [[NSTextField alloc] initWithFrame:frame];
-	inputField.placeholderString = placeholder;
-	[alert setAccessoryView:inputField];
-	[inputField setStringValue:defaultText];
-	
-	alert.window.initialFirstResponder = inputField;
-	
-	NSModalResponse response = [alert runModal];
-	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
-		return inputField.stringValue;
-	} else {
-		return nil;
-	}
-#else
-	NSLog(@"WARNING: Beat.prompt missing on iOS");
-	return @"";
-#endif
-}
-
-/** Presents a dropdown box. Returns either the selected option or `null` when the user clicked on *Cancel*.
- @param prompt Title of the dropdown dialog
- @param info Further information presented to the user below the title
- @param items Items in the dropdown box as array of strings
-*/
-- (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
-{
-#if !TARGET_OS_IOS
-	if (!NSThread.isMainThread) {
-		[self log:@"ERROR: Trying to create a dropdown prompt from background thread"];
-		return nil;
-	}
-	
-	NSAlert *alert = [self dialog:prompt withInfo:info];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
-	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
-	
-	NSPopUpButton *popup = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0,0, 300, 24)];
-	
-	[popup addItemWithTitle:[BeatLocalization localizedStringForKey:@"plugins.input.select"]];
-	
-	for (id item in items) {
-		// Make sure the title becomes a string
-		NSString *title = [NSString stringWithFormat:@"%@", item];
-		[popup addItemWithTitle:title];
-	}
-	[alert setAccessoryView:popup];
-	NSModalResponse response = [alert runModal];
-	
-	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
-		// Return an empty string if the user didn't select anything
-		if ([popup.selectedItem.title isEqualToString: [BeatLocalization localizedStringForKey:@"plugins.input.select"]]) return @"";
-		else return popup.selectedItem.title;
-	} else {
-		return nil;
-	}
-#else
-	NSLog(@"WARNING: Beat.dropdownPrompt missing on iOS");
-	return @"";
-#endif
-}
-
-#if !TARGET_OS_IOS
-/// Displays a simple alert box.
-- (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info
-{
-	if (!NSThread.isMainThread) {
-		[self log:@"ERROR: Trying to create a dialog from background thread"];
-		return nil;
-	}
-	
-	if ([info isEqualToString:@"undefined"]) info = @"";
-
-	NSAlert *alert = NSAlert.new;
-	alert.messageText = title;
-	alert.informativeText = info;
-	
-	return alert;
-}
-#endif
 
 #pragma mark - User settings
 
@@ -1298,19 +870,6 @@
 	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
 	id value = [[NSUserDefaults standardUserDefaults] valueForKey:keyName];
 	return value;
-}
-
-#pragma mark - Timer
-
-/** Returns a timer object, and immediately fires it.
- @param seconds Delay in seconds
- @param callback Closure which is run after the delay
- */
-- (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds repeats:NO block:^(NSTimer * _Nonnull timer) {
-		[self runCallback:callback withArguments:nil];
-	}];
-	return timer;
 }
 
 
@@ -1355,20 +914,10 @@
 
 #pragma mark - HTML Window
 
-- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments {
-    if (!callback || callback.isUndefined) return;
-        
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.inCallback = YES;
-        [callback callWithArguments:arguments];
-        self.inCallback = NO;
-        
-        if (self.terminateAfterCallback) {
-            [self end];
-        }
-    });
-}
-
+/**
+ HTML view creation accepts different types of arguments as the HTML parameter. Love you, JS.
+ You can provide either a single `String`, an array `[htmlContent, headers]` or an object: `{ content: string, headers: string }`. This method converts those arguments into correct format.
+ */
 - (NSDictionary*)htmlObjectFromValue:(JSValue*)htmlContent
 {
     NSMutableDictionary<NSString*, NSString*>* html = NSMutableDictionary.new;
@@ -1390,6 +939,7 @@
 
 /**
  @param htmlContent The actual content in the window. It's wrapped in a HTML template, so no headers are needed. If you want to provide additional headers, this value can either be an array ([content, headers]) or an object ({ html: "...", headers: "<script></script>" })
+ See `htmlObjectFromValue:`.
  */
 - (BeatPluginHTMLWindow*)htmlWindow:(JSValue*)htmlContent width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
@@ -1669,77 +1219,6 @@
 #endif
 
 
-#pragma mark - Printing interface
-
-#if !TARGET_OS_IOS
-- (NSDictionary*)printInfo
-{
-    NSPrintInfo* printInfo = NSPrintInfo.sharedPrintInfo;
-    return @{
-        @"paperSize": @(printInfo.paperSize),
-        @"imageableSize": @{
-            @"width": @(printInfo.imageablePageBounds.size.width),
-            @"height": @(printInfo.imageablePageBounds.size.height)
-        }
-    };
-}
-- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback
-{
-	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-        self.printer = BeatHTMLPrinter.new;
-		
-		if (settings[@"orientation"]) {
-			NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
-			if ([orientation isEqualToString:@"landscape"]) printInfo.orientation = NSPaperOrientationLandscape;
-			else printInfo.orientation = NSPaperOrientationPortrait;
-		} else printInfo.orientation = NSPaperOrientationPortrait;
-		
-		if (settings[@"paperSize"]) {
-			NSString *paperSize = [(NSString*)settings[@"paperSize"] lowercaseString];
-			if ([paperSize isEqualToString:@"us letter"]) [BeatPaperSizing setPageSize:BeatUSLetter printInfo:printInfo];
-			else if ([paperSize isEqualToString:@"a4"]) [BeatPaperSizing setPageSize:BeatA4 printInfo:printInfo];
-		}
-        
-        if (settings[@"margins"]) {
-            NSArray* margins = settings[@"margins"];
-            
-            for (NSInteger i=0; i<margins.count; i++) {
-                NSNumber* n = margins[i];
-                if (i == 0) printInfo.topMargin = n.floatValue;
-                else if (i == 1) printInfo.rightMargin = n.floatValue;
-                else if (i == 2) printInfo.bottomMargin = n.floatValue;
-                else if (i == 3) printInfo.leftMargin = n.floatValue;
-            }
-        }
-		
-		[self.printer printHtml:html printInfo:printInfo callback:^{
-			if (callback) [callback callWithArguments:nil];
-		}];
-	});
-}
-#endif
-
-
-#pragma mark - Window interface
-
-- (void)nextTab
-{
-#if TARGET_OS_OSX
-	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
-	[self.delegate.documentWindow selectNextTab:nil];
-#endif
-}
-- (void)previousTab
-{
-#if TARGET_OS_OSX
-	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
-	[self.delegate.documentWindow selectPreviousTab:nil];
-#endif
-}
-
-
 #pragma mark - Utilities
 
 /// Returns screen frame as an array
@@ -1849,156 +1328,6 @@
 	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
 }
 
-
-#pragma mark - Parser data delegation
-
-/// Creates a new `Line` object with given string and type.
-- (Line*)lineWithString:(NSString*)string type:(LineType)type
-{
-	return [Line withString:string type:type];
-}
-/// Returns parsed `Line` objects for current document.
-- (NSArray*)lines
-{
-	return self.delegate.parser.lines;
-}
-- (NSArray*)linesForScene:(id)sceneId
-{
-	return [self.delegate.parser linesForScene:(OutlineScene*)sceneId];
-}
-
-- (NSArray*)scenes { return self.delegate.parser.scenes; }
-- (NSArray*)outline { return (self.delegate.parser.outline) ? self.delegate.parser.outline : @[]; }
-- (Line*)lineAtPosition:(NSInteger)index { return [_delegate.parser lineAtPosition:index]; }
-- (OutlineScene*)sceneAtPosition:(NSInteger)index { return [_delegate.parser sceneAtPosition:index]; }
-- (NSDictionary*)type
-{
-	if (!_type) _type = Line.typeDictionary;
-	return _type;
-}
-
-- (NSString*)scenesAsJSON
-{
-	NSMutableArray *scenesToSerialize = NSMutableArray.new;
-	NSArray* scenes = self.delegate.parser.scenes.copy;
-	
-	for (OutlineScene* scene in scenes) {
-		[scenesToSerialize addObject:scene.forSerialization];
-	}
-	
-	return scenesToSerialize.json;
-}
-
-- (NSString*)outlineAsJSON
-{
-	NSArray<OutlineScene*>* outline = self.delegate.parser.outline.copy;
-	NSMutableArray *scenesToSerialize = [NSMutableArray arrayWithCapacity:outline.count];
-	    
-    /*
-    // This is very efficient, but I can't figure out how to fix memory management issues. Would probably require a full copy of the parser.
-    NSMutableDictionary<NSNumber*, NSDictionary*>* items = NSMutableDictionary.new;
-    @synchronized (self.delegate.parser.lines) {
-        // Multi-threaded JSON process
-        dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
-        dispatch_apply((size_t)outline.count, queue, ^(size_t index) {
-            if (outline[index] == nil) return;
-            NSDictionary* json = outline[index].forSerialization;
-            @synchronized (self.delegate.parser.outline) {
-                items[@(index)] = json;
-            }
-        });
-    }
-        
-    // Turn the dictionary into a normal array
-    for (NSInteger i=0; i<items.count; i++) {
-        NSNumber* idx = @(i);
-        if (items[idx] != nil) [scenesToSerialize addObject:items[@(i)]];
-    }
-     */
-
-	for (OutlineScene* scene in outline) {
-		[scenesToSerialize addObject:scene.forSerialization];
-	}
-    
-	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:0 error:&error];
-	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	
-	return json;    
-}
-
-/// Returns all lines as JSON
-- (NSString*)linesAsJSON {
-	NSMutableArray *linesToSerialize = NSMutableArray.new;
-    NSArray* lines = self.delegate.parser.safeLines.copy;
-    
-	for (Line* line in lines) {
-        Line* l = line;
-        if (!NSThread.mainThread) l = line.clone; // Clone the line for background operations
-		
-        [linesToSerialize addObject:l.forSerialization];
-	}
-	
-	return linesToSerialize.json;
-}
-
-/// Sets given color for the line. Supports both outline elements and lines for the second parameter.
-- (void)setColor:(NSString *)color forScene:(id)scene
-{
-	if ([scene isKindOfClass:OutlineScene.class]) {
-		[_delegate.textActions setColor:color forScene:scene];
-	} else if ([scene isKindOfClass:Line.class]) {
-		[_delegate.textActions setColor:color forLine:scene];
-	}
-}
-
-- (OutlineScene*)getCurrentScene
-{
-	return _delegate.currentScene;
-}
-- (OutlineScene*)getSceneAt:(NSInteger)position
-{
-    return [_delegate.parser sceneAtPosition:position];
-}
-
-- (void)createOutline
-{
-	[self.delegate.parser updateOutline];
-}
-
-- (Line*)currentLine {
-	return _delegate.currentLine;
-}
-- (OutlineScene*)currentScene {
-	return _delegate.currentScene;
-}
-
-- (ContinuousFountainParser*)currentParser {
-	if (!_currentParser) _currentParser = _delegate.parser; 
-	return _currentParser;
-}
-
-- (ContinuousFountainParser*)parser:(NSString*)string {
-	// Catch document settings
-	NSRange settingsRange = [[[BeatDocumentSettings alloc] init] readSettingsAndReturnRange:string];
-	if (settingsRange.length > 0) {
-		string = [self removeRange:settingsRange from:string];
-	}
-	
-	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:string];
-	return parser;
-}
-- (NSString*)removeRange:(NSRange)range from:(NSString*)string {
-	NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:(NSRange){0, string.length}];
-	[indexSet removeIndexesInRange:range];
-	
-	NSMutableString *result = [NSMutableString string];
-	[indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[result appendString:[string substringWithRange:range]];
-	}];
-	
-	return result;
-}
 
 
 #pragma mark - Document
