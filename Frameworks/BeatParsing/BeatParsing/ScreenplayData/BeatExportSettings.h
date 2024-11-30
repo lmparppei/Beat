@@ -68,6 +68,9 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSIndexSet* revisions;
 @property (nonatomic) BeatPaperSize paperSize;
 
+/// When set `true`, scene headings are rendered as simply text, without the table-like layout. Used by RTF/DOC export.
+@property (nonatomic) bool simpleSceneHeadings;
+
 /// Styles for new pagination / export system
 @property (nonatomic) id _Nullable styles;
 
