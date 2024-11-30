@@ -241,7 +241,7 @@
     }
     
     // For headings, add some extra formatting (wrap them in a table and insert scene numbers)
-    if (line.type == heading && style.sceneNumber) {
+    if (line.type == heading && style.sceneNumber && !self.settings.simpleSceneHeadings) {
         attributedString = [self renderHeading:line content:attributedString firstElementOnPage:firstElementOnPage];
     }
     
