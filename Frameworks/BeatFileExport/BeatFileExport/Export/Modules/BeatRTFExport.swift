@@ -12,12 +12,12 @@ import BeatPagination2
 
 public class BeatRTFExport:NSObject {
 	public class func register(_ manager:BeatFileExportManager) {
-		manager.registerHandler(for: "RTF", fileTypes: ["rtf"], supportedStyles: ["Novel"]) { delegate in
-			return rtf(delegate)
+		manager.registerHandler(for: "RTF", fileTypes: ["rtf"], supportedStyles: ["Novel", "Screenplay"]) { delegate in
+			return export(delegate)
 		}
 	}
 	
-	class func rtf(_ delegate:BeatEditorDelegate) -> NSData? {
+    class func export(_ delegate:BeatEditorDelegate, documentType:NSAttributedString.DocumentType = .rtf) -> NSData? {
 		let attrStr = NSMutableAttributedString()
 		let settings = delegate.exportSettings
 
@@ -27,6 +27,7 @@ public class BeatRTFExport:NSObject {
 		}
 		
 		settings.additionalTypes = types
+        settings.simpleSceneHeadings = true
 		
 		if let screenplay = BeatScreenplay.from(delegate.parser, settings: settings) {
 			
@@ -40,11 +41,15 @@ public class BeatRTFExport:NSObject {
 				}
 				
 				let str = NSMutableAttributedString(attributedString: renderer.renderLine(line))
+                
 				if str.length > 0, let pStyle = str.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as? NSMutableParagraphStyle {
                     #if os(macOS)
-                    pStyle.textBlocks = []
+                    pStyle.textBlocks = [] // RTF/DOC export doesn't take kindly to text blocks
+                    
+                    // macOS DOC export doesn't always respect line breaks for some reason
+                    // if documentType == .officeOpenXML, line.type == .action { str.appendString("\n") }
                     #endif
-					
+                    
 					// Remove left margin
 					pStyle.firstLineHeadIndent = style.marginLeft + style.firstLineIndent
 					pStyle.headIndent = style.marginLeft
@@ -57,11 +62,19 @@ public class BeatRTFExport:NSObject {
 		}
 		
 		do {
-			let data = try attrStr.data(from: attrStr.range, documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]) as NSData
+            let data = try attrStr.data(from: attrStr.range, documentAttributes: [.documentType: documentType]) as NSData
 			return data
 		} catch {
 			print("RTF export error:",error)
 			return nil
 		}
 	}
+}
+
+class BeatDocxExport:NSObject {
+    public class func register(_ manager:BeatFileExportManager) {
+        manager.registerHandler(for: "Microsoft Word", fileTypes: ["docx"], supportedStyles: ["Screenplay", "Novel"]) { delegate in
+            BeatRTFExport.export(delegate, documentType: .officeOpenXML)
+        }
+    }
 }

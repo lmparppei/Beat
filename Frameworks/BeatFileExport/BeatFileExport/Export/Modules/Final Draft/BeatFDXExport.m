@@ -99,8 +99,6 @@
 #define BOLD_PATTERN_LENGTH 2
 #define ITALIC_UNDERLINE_PATTERN_LENGTH 1
 
-static NSDictionary *fdxIds;
-
 @interface BeatFDXExport ()
 @property (nonatomic) ContinuousFountainParser *parser;
 @property (nonatomic) NSString *result;
@@ -139,54 +137,56 @@ static NSDictionary *fdxIds;
 	}];
 }
 
++ (NSDictionary*)fdxIds
+{
+    static NSDictionary* fdxIds;
+    if (fdxIds == nil) fdxIds = @{
+        // Map Beat tags to FDX tag identifiers.
+        // These contain dual instances for plural forms, just in case
+        @"Synopsis":            @{ @"number": @1, @"id": @"8e5e75c2-713b-47df-a75f-f12648b98ded" },
+        @"Cast":                @{ @"number": @2, @"id": @"01fc9642-84ff-4366-b37c-a3068dee57e8" },
+        @"Extras":              @{ @"number": @3, @"id": @"028a4e2b-b507-4d09-88ab-90e3edae9071" },
+        @"Stunt":               @{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" },
+           @"Stunts":           @{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" },
+        @"Vehicle":             @{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
+          @"Vehicles":          @{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
+        @"Prop":                @{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
+        @"Props":               @{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
+        @"Camera":              @{ @"number": @7, @"id": @"47b02ff1-5161-4137-b736-f36eebba7643" },
+        @"Special Effect":      @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" },
+          @"Special Effects":   @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" },
+        
+        @"Costume":             @{ @"number": @9, @"id": @"0726fa85-1e65-4ab8-87de-bf21d09b01f0" },
+        
+        @"Makeup":              @{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
+        @"Makeup & hair":       @{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
+        
+        @"Animal":              @{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" },
+          @"Animals":           @{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" },
+        @"Music":               @{ @"number": @13, @"id": @"0b0b44c9-aa4b-4c40-88b1-d94472ad7a26" },
+        @"Sound":               @{ @"number": @15, @"id": @"0ce7d308-096d-4603-8fe8-349f72cd89ff" },
+        @"Art":                 @{ @"number": @16, @"id": @"c86eae40-3b01-41c3-a7de-6859e6ec971d" },
+        @"Scenography":         @{ @"number": @17, @"id": @"0debb71b-5743-4c53-80cc-e17e841ce645" },
+        @"Special Equipment":   @{ @"number": @19, @"id": @"0ff5cda4-4d43-4cfe-940f-91380c46fdad" },
+        @"Security":            @{ @"number": @20, @"id": @"109d0eaa-0334-4823-ac0c-b44d3f209dc4" },
+        @"Additional Work":     @{ @"number": @21, @"id": @"1179a4b1-70ee-4011-b4a2-809a0af09e92" },
+        @"VFX":                 @{ @"number": @23, @"id": @"12ab0932-e3b9-4b4a-bcd0-3da1b4e61d5e" },
+        @"Practical FX":        @{ @"number": @24, @"id": @"135cc9d1-c4d5-4d00-83d9-571f584ea9cd" },
+        @"Other":               @{ @"number": @25, @"id": @"ce04f547-f7ee-40c9-ab66-d95a0c98034e" },
+        @"Notes":               @{ @"number": @26, @"id": @"15b6f4fd-4e74-4ad8-9971-b239d88c2997" },
+        @"Script Day":          @{ @"number": @27, @"id": @"63c140da-ef2b-491a-b416-b46f461abb89" },
+        @"Unit":                @{ @"number": @28, @"id": @"849f1ebf-5507-4f33-bff6-3a5b4d73be14" },
+        //@"Sequence":        @{ @"number": @29, @"id": @"70877d87-30ef-45b6-be46-c6fa94b83a71" },
+        @"Location":            @{ @"number": @30, @"id": @"c5e89e4d-f83e-4c28-950c-92a63f1b5f26" }
+    };
+    
+    return fdxIds;
+}
+
 - (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions paperSize:(BeatPaperSize)paperSize
 {
 	self = [super init];
-	
-	// Init static tag id data
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		fdxIds = @{
-			// Map Beat tags to FDX tag identifiers.
-			// These contain dual instances for plural forms, just in case
-			@"Synopsis":	 	@{ @"number": @1, @"id": @"8e5e75c2-713b-47df-a75f-f12648b98ded" },
-			@"Cast":	 		@{ @"number": @2, @"id": @"01fc9642-84ff-4366-b37c-a3068dee57e8" },
-			@"Extras": 			@{ @"number": @3, @"id": @"028a4e2b-b507-4d09-88ab-90e3edae9071" },
-			@"Stunt": 			@{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" }, 
-               @"Stunts":          @{ @"number": @4, @"id": @"0377dbe6-77a3-41af-bda8-86eb2468fdbf" },
-			@"Vehicle": 		@{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
-              @"Vehicles":        @{ @"number": @5, @"id": @"04721a56-f54b-49c8-80ad-d53887d6b851" },
-			@"Prop": 			@{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
-            @"Props":           @{ @"number": @6, @"id": @"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa" },
-			@"Camera": 			@{ @"number": @7, @"id": @"47b02ff1-5161-4137-b736-f36eebba7643" },
-			@"Special Effect":  @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" }, 
-              @"Special Effects": @{ @"number": @8, @"id": @"069e18b8-2109-4f3d-94e7-d802027a60a8" },
-			
-			@"Costume":			@{ @"number": @9, @"id": @"0726fa85-1e65-4ab8-87de-bf21d09b01f0" },
-			
-			@"Makeup": 			@{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
-			@"Makeup & hair": 	@{ @"number": @10, @"id": @"08ae1eef-32ce-415f-9a9b-0982d2453ec4" },
-			
-			@"Animal": 			@{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" }, 
-              @"Animals": @{ @"number": @11, @"id": @"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6" },
-			@"Music": 			@{ @"number": @13, @"id": @"0b0b44c9-aa4b-4c40-88b1-d94472ad7a26" },
-			@"Sound": 			@{ @"number": @15, @"id": @"0ce7d308-096d-4603-8fe8-349f72cd89ff" },
-			@"Art": 			@{ @"number": @16, @"id": @"c86eae40-3b01-41c3-a7de-6859e6ec971d" },
-			@"Scenography": 	@{ @"number": @17, @"id": @"0debb71b-5743-4c53-80cc-e17e841ce645" },
-			@"Special Equipment": @{ @"number": @19, @"id": @"0ff5cda4-4d43-4cfe-940f-91380c46fdad" },
-			@"Security": 		@{ @"number": @20, @"id": @"109d0eaa-0334-4823-ac0c-b44d3f209dc4" },
-			@"Additional Work": @{ @"number": @21, @"id": @"1179a4b1-70ee-4011-b4a2-809a0af09e92" },
-			@"VFX": 			@{ @"number": @23, @"id": @"12ab0932-e3b9-4b4a-bcd0-3da1b4e61d5e" },
-			@"Practical FX": 	@{ @"number": @24, @"id": @"135cc9d1-c4d5-4d00-83d9-571f584ea9cd" },
-			@"Other":			@{ @"number": @25, @"id": @"ce04f547-f7ee-40c9-ab66-d95a0c98034e" },
-			@"Notes":			@{ @"number": @26, @"id": @"15b6f4fd-4e74-4ad8-9971-b239d88c2997" },
-			@"Script Day":		@{ @"number": @27, @"id": @"63c140da-ef2b-491a-b416-b46f461abb89" },
-			@"Unit":			@{ @"number": @28, @"id": @"849f1ebf-5507-4f33-bff6-3a5b4d73be14" },
-			//@"Sequence":		@{ @"number": @29, @"id": @"70877d87-30ef-45b6-be46-c6fa94b83a71" },
-			@"Location":		@{ @"number": @30, @"id": @"c5e89e4d-f83e-4c28-950c-92a63f1b5f26" }
-		};
-	});
-	
+		
 	self.parser = [[ContinuousFountainParser alloc] initWithString:string];
 	
 	if (attrString) {
@@ -208,6 +208,20 @@ static NSDictionary *fdxIds;
 	[self createFDX];
 	
 	return self;
+}
+
++ (NSString*)tagNameForFDXCategoryId:(NSString*)categoryId
+{
+    NSDictionary* ids = BeatFDXExport.fdxIds;
+    for (NSString* key in ids.allKeys) {
+        NSDictionary* fdxId = ids[key];
+        NSString* idString = fdxId[@"id"];
+        if ([idString isEqualToString:categoryId]) {
+            return key;
+        }
+    }
+    
+    return nil;
 }
 
 - (NSString*)createCategories
@@ -759,6 +773,7 @@ static NSDictionary *fdxIds;
 /// FDX uses uppercase keys, we're using lowercase, so we need to do some additional conversions
 - (NSDictionary*)getFDXTagForKey:(NSString*)key
 {
+    NSDictionary* fdxIds = BeatFDXExport.fdxIds;
     for (NSString* fdxKey in fdxIds.allKeys) {
         if ([fdxKey.lowercaseString isEqualToString:key.lowercaseString]) return fdxIds[fdxKey];
     }

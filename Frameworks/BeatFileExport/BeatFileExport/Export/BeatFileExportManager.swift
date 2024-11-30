@@ -30,6 +30,7 @@ struct BeatFileExportHandlerInfo {
 		BeatFDXExport.register(self)
         BeatRTFExport.register(self)
 		OutlineExtractor.register(self)
+        BeatDocxExport.register(self)
 	}
 		
 	/// Registers the given handler, called by export modules
@@ -122,22 +123,3 @@ struct BeatFileExportHandlerInfo {
         return nil
 	}
 }
-
-#if os(macOS)
-@objc public class BeatFileExportMenuItem:NSMenuItem {
-	@IBInspectable public var format:String = ""
-	
-	override public init(title string: String, action selector: Selector?, keyEquivalent charCode: String) {
-		super.init(title: string, action: #selector(export), keyEquivalent: "")
-		self.target = BeatFileExportManager.shared
-	}
-	
-	required init(coder: NSCoder) {
-		super.init(coder: coder)
-	}
-	
-	@objc public func export() {
-		
-	}
-}
-#endif

@@ -16,7 +16,8 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
 	FDXSectionTitlePage,
 	FDXSectionContent,
 	FDXSectionNotes,
-	FDXSectionTags
+	FDXSectionTags,
+    FDXSectionTagDefinitions,
 };
 
 @property (nonatomic, copy) void (^callback)(id);

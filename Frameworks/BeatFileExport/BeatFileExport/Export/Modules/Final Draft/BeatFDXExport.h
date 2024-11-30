@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatFDXExport : NSObject
 + (void)register:(BeatFileExportManager*)manager;
++ (NSString*)tagNameForFDXCategoryId:(NSString*)categoryId;
+
 - (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions paperSize:(BeatPaperSize)paperSize;
 - (NSString*)fdxString;
 @end

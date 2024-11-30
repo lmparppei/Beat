@@ -23,9 +23,13 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatRevisions.h>
+#import <BeatCore/BeatTagging.h>
+#import <BeatCore/TagDefinition.h>
+#import <BeatCore/BeatTag.h>
 #import <BeatCore/BeatColors.h>
 #import "FDXImport.h"
 #import "FDXElement.h"
+#import <BeatFileExport/BeatFDXExport.h>
 
 
 @interface FDXImport () <NSXMLParserDelegate>
@@ -44,6 +48,7 @@
 @property (nonatomic) NSString *alignment;
 @property (nonatomic) NSString *style;
 @property (nonatomic) NSString *textStyle;
+@property (nonatomic) NSString *tag;
 @property (nonatomic) NSMutableString *elementText;
 @property (nonatomic) NSMutableAttributedString *attrText;
 @property (nonatomic) NSString *revisionID;
@@ -59,6 +64,7 @@
 @property (nonatomic) FDXSectionType section;
 
 @property (nonatomic) bool importNotes;
+@property (nonatomic) NSMutableDictionary<NSString*,TagDefinition*>* tagDefinitions;
 
 @end
 
@@ -126,7 +132,7 @@
 	_dualDialogue = -1;
 	_attrContents = NSMutableAttributedString.new;
 	_notes = NSMutableArray.new;
-
+    _tagDefinitions = NSMutableDictionary.new;
 }
 
 - (void)parse:(NSData*)data callback:(void(^)(FDXImport*))callback
@@ -173,6 +179,10 @@
 		
 		return;
 	}
+    else if ([elementName isEqualToString:@"TagDefinitions"]) {
+        _section = FDXSectionTagDefinitions;
+        return;
+    }
 	
 	// Handle content
 	if ([elementName isEqualToString:@"DualDialogue"]) {
@@ -193,13 +203,33 @@
 		_lastFoundString = @"";
 		_textStyle = attributeDict[@"Style"];
 		_revisionID = attributeDict[@"RevisionID"];
+        _tag = attributeDict[@"TagNumber"];
 	}
 	else if ([elementName isEqualToString:@"SceneProperties"]) {
 		// Read possible scene color
 		_element.sceneColor = attributeDict[@"Color"];
         if ([_element.sceneColor isEqualToString:@"(null)"]) _element.sceneColor = nil;
 	}
-	
+    
+    else if ([elementName isEqualToString:@"TagDefinition"]) {
+        // Tag items
+        NSString* name = attributeDict[@"Label"];
+        NSString* identifier = attributeDict[@"Id"];
+        NSString* catId = attributeDict[@"CatId"];
+        NSString* number = attributeDict[@"Number"];
+        
+        // Add the definition to dictionary
+        if (name != nil && identifier != nil && catId != nil) {
+            NSString* typeName = [BeatFDXExport tagNameForFDXCategoryId:catId];
+            NSString* tagKey = [BeatTagging fdxCategoryToBeat:typeName];
+            BeatTagType type = [BeatTagging tagFor:tagKey];
+            
+            if (type != NoTag) {
+                TagDefinition* tagDefinition = [TagDefinition.alloc initWithName:name type:type identifier:identifier];
+                _tagDefinitions[number] = tagDefinition;
+            }
+        }
+    }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
@@ -243,7 +273,9 @@
 		_section = FDXSectionNone;
 		return;
 	}
-	
+    else if ([elementName isEqualToString:@"TagDefinitions"]) {
+        _section = FDXSectionNone;
+    }
 		
 	// Handle content
 	if ([elementName isEqualToString:@"Text"]) {
@@ -286,7 +318,12 @@
 		}
 		
 		// Build tagging support here some day.
-		// Just read TagNumber=x, save it into an array and later parse TagCategories and TagDefinitions. Ez.
+		// Just read TagNumber=x, save it into an array and later parse TagCategories and TagDefinitions. Ez. (fuck you, past me)
+        // So, the way to do this is to first add a temporary attribute called TEMPTAG, and after everything is finished, we'll connect these temporary tags to their actual definitions.
+        
+        if (_tag) {
+            [_element addAttribute:@"TEMPTAG" value:_tag range:range];
+        }
 	}
 }
 
@@ -416,12 +453,29 @@
 		[attributedScript appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
 		pos += lineRange.length;
 	}
-
+    
+    // Create one more copy to apply tags
+    NSAttributedString* taggedScript = attributedScript.copy;
+    [taggedScript enumerateAttribute:@"TEMPTAG" inRange:NSMakeRange(0, taggedScript.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        if (value == nil) return;
+        
+        TagDefinition* definition = _tagDefinitions[value];
+        if (definition != nil) {
+            BeatTag* tag = [BeatTag withDefinition:definition];
+            [attributedScript addAttribute:BeatTagging.attributeKey value:tag range:range];
+        }
+    }];
+    
 	// Let's create a faux Beat document out of the FDX data
 	BeatDocumentSettings *settings = BeatDocumentSettings.new;
-	NSDictionary *revisionRanges = [BeatRevisions rangesForSaving:attributedScript];
-	[settings set:DocSettingRevisions as:revisionRanges];
+	
+    NSDictionary *revisionRanges = [BeatRevisions rangesForSaving:attributedScript];
+    [settings set:DocSettingRevisions as:revisionRanges];
     
+    NSDictionary* tagsAndDefinitions = [BeatTagging tagsAndDefinitionsFrom:attributedScript];
+    [settings set:DocSettingTags as:tagsAndDefinitions[@"taggedRanges"]];
+    [settings set:DocSettingTagDefinitions as:tagsAndDefinitions[@"definitions"]];
+        
 	return [NSString stringWithFormat:@"%@\n%@", attributedScript.string, [settings getSettingsString]];
 }
 
