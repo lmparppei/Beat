@@ -52,6 +52,7 @@
 - (id)initWithData:(NSData*)data
 {
 	// Parsing with just data does not need a callback, we can do everything in sync
+    // 2024 edit: Why? Is this true for iOS as well?
 	self = [super init];
 	if (self) {
 		[self parse:data];

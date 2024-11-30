@@ -116,7 +116,7 @@
 
 - (void)highland {
 	[self openDialogForFormat:@"highland" completion:^(NSURL * url) {
-		HighlandImport *import = [HighlandImport.alloc initWithURL:url];
+		HighlandImport *import = [HighlandImport.alloc initWithURL:url options:nil completion:nil];
 		if (import.script) [self openFileWithContents:import.script];
 	}];
 }

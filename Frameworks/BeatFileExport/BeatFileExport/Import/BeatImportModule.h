@@ -17,7 +17,8 @@
 @optional
 
 @property (nonatomic) bool asynchronous;
-- (NSString* _Nullable)infoTitle;
-- (NSString* _Nullable)infoMessage;
+
++ (NSString* _Nullable)infoTitle;
++ (NSString* _Nullable)infoMessage;
 
 @end

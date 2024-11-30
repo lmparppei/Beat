@@ -13,15 +13,13 @@
 
 - (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
 {
-    return [self initWithURL:url];
-}
-
-- (id)initWithURL:(NSURL*)url {
-	self = [super init];
-	if (self) {
-		[self readFromURL:url];
-	}
-	return self;
+    self = [super init];
+    if (self) {
+        [self readFromURL:url];
+        callback(self);
+    }
+    
+    return self;
 }
 
 - (void)readFromURL:(NSURL*)url {
