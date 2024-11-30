@@ -284,7 +284,7 @@
 "tagManager.list.warning.noTypes" = "Add one or more tag types first";
 
 "tag.cast" = "Cast";
-"tag.prop" = "Prop";
+"tag.prop" = "Props";
 "tag.costume" = "Costume";
 "tag.makeup" = "Makeup";
 "tag.vfx" = "VFX";
@@ -294,6 +294,8 @@
 "tag.extras" = "Extras";
 "tag.vehicle" = "Vehicle";
 "tag.none" = "None";
+"tag.stunt" = "Stunt";
+"tag.setDesign" = "Set Design";
 
 "tagManager.createReport" = "Create Tag Report";
 

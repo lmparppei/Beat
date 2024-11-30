@@ -949,7 +949,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
             lineFragmentRect->size.height *= style.lineFragmentMultiplier;
         }
     }
-    
+        
     /*
     // A pretty solid idea for quasi-WYSIWYG mode!
      
@@ -968,6 +968,41 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     
     return true;
 }
+
+/*
+ 
+ // Ideas for quasi-wysiwyg-modes
+
+- (CGFloat)layoutManager:(NSLayoutManager *)layoutManager paragraphSpacingAfterGlyphAtIndex:(NSUInteger)glyphIndex withProposedLineFragmentRect:(NSRect)rect
+{
+    NSInteger i = [self characterIndexForGlyphAtIndex:glyphIndex];
+        
+    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
+        NSDictionary<Line*,NSArray<NSNumber*>*>* pageBreaks = _pageBreaksMap.dictionaryRepresentation;
+        for (Line* line in pageBreaks.allKeys) {
+            if (NSLocationInRange(i, line.range)) return 20.0;
+        }
+    }
+    
+    return 0.0;
+}
+
+- (CGFloat)layoutManager:(NSLayoutManager *)layoutManager paragraphSpacingBeforeGlyphAtIndex:(NSUInteger)glyphIndex withProposedLineFragmentRect:(NSRect)rect
+{
+    NSInteger i = [self characterIndexForGlyphAtIndex:glyphIndex];
+    
+    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowPageSeparators]) {
+        NSDictionary<Line*,NSArray<NSNumber*>*>* pageBreaks = _pageBreaksMap.dictionaryRepresentation;
+        for (Line* line in pageBreaks.allKeys) {
+            NSInteger globalIndex = line.position + pageBreaks[line][1].integerValue;
+            if (globalIndex == i) return 20.0;
+        }
+    }
+    
+    return 0.0;
+}
+ 
+ */
 
 
 #pragma mark - Ensuring page separator layout

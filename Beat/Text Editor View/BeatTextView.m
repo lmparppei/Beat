@@ -79,12 +79,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
-@property (nonatomic) BeatMinimapView *minimap;
-
 /// Validated menu items
 @property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
 
 @property (nonatomic) BeatFindPanel* findPanel;
+
+@property (weak, nonatomic) IBOutlet NSScrollView* minimapContainer;
+@property (nonatomic) IBOutlet MinimapTextView* minimapView;
 
 @end
 
@@ -111,7 +112,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 /// Basic text view setup
 - (void)layoutSetup
 {
-	// Setup layout manager and minimap
 	[self setupLayoutManager];
 	
 	// Does this break anything?
@@ -153,12 +153,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)setupMinimap
 {
-	_minimap = [BeatMinimapView createMinimapWithEditorDelegate:self.editorDelegate textStorage:self.textStorage editorView:self];
+	/*
+	_minimapView = [MinimapTextView.alloc initWithTextStorage:self.textStorage scrollView:_minimapContainer connectedScrollView:self.enclosingScrollView];
+	_minimapView.drawsBackground = true;
+	_minimapView.backgroundColor = [ThemeManager.sharedManager.marginColor colorWithAlphaComponent:0.5];
+
+	//_minimap = [BeatMinimapView createMinimapWithEditorDelegate:self.editorDelegate textStorage:self.textStorage editorView:self];
 	
-	[self.enclosingScrollView addFloatingSubview:_minimap forAxis:NSEventGestureAxisHorizontal];
-	[_minimap setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin | NSViewHeightSizable];
-	
-	[_minimap resizeMinimap];
+	[_minimapContainer setDocumentView:_minimapView];
+	_minimapView.frame = CGRectMake(0.0, 0.0, _minimapContainer.frame.size.width, _minimapView.frame.size.height);
+	_minimapView.autoresizingMask = NSViewHeightSizable | NSViewMinXMargin;
+	*/
+	//[_minimap resizeMinimap];
 }
 
 - (void)awakeFromNib
@@ -184,7 +190,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
 	
 	// For future generations
-	// [self setupMinimap];
+	[self setupMinimap];
 }
 
 /// General setup. Call from editor instance.
@@ -601,8 +607,10 @@ Line *cachedRectLine;
 - (void)mouseUp:(NSEvent *)event
 {
 	[super mouseUp:event];
-	
 }
+
+
+
 - (void)otherMouseUp:(NSEvent *)event
 {
 	// We'll use buttons 3/4 to navigate between scenes
@@ -711,17 +719,6 @@ Line *cachedRectLine;
 	return menu;
 }
 
-
-#pragma mark - Find panel
-
-- (void)performFindPanelAction:(id)sender
-{
-	if ([sender tag] == NSTextFinderActionShowFindInterface) {
-		NSLog(@"Open");
-	} else {
-		NSLog(@"Open");
-	}
-}
 
 #pragma mark - Scrolling interface
 
@@ -974,7 +971,7 @@ double clamp(double d, double min, double max)
 	return [super writeSelectionToPasteboard:pboard type:type];
 }
 
-- (void)draggingEnded:(id <NSDraggingInfo>)sender
+- (void)draggingEnded:(id<NSDraggingInfo>)sender
 {
 	NSPasteboard *pasteboard = [sender draggingPasteboard];
 	NSArray<NSPasteboardType> *types = [pasteboard types];
@@ -1151,6 +1148,7 @@ double clamp(double d, double min, double max)
 #pragma mark - Text Storage delegation
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+	// What?
 	[_editorDelegate textStorage:textStorage didProcessEditing:editedMask range:editedRange changeInLength:delta];
 }
 
@@ -1200,15 +1198,8 @@ double clamp(double d, double min, double max)
 
 #pragma mark - Make compatible with iOS stuff
 
--(NSString *)text
-{
-	return self.string;
-}
-- (void)setText:(NSString *)text
-{
-	self.string = text;
-}
-
+-(NSString *)text { return self.string; }
+- (void)setText:(NSString *)text { self.string = text; }
 @synthesize typingAttributes;
 
 
@@ -1236,8 +1227,6 @@ double clamp(double d, double min, double max)
 
 - (NSArray*)markersAndPositions
 {
-	// This could be inquired from the text view, too.
-	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
 	NSMutableArray * markers = NSMutableArray.new;
 	
 	CGSize containerSize = [self.layoutManager usedRectForTextContainer:self.textContainer].size;

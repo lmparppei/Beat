@@ -446,6 +446,7 @@
 "tag.extras" = "Statister";
 "tag.vehicle" = "Fordon";
 "tag.none" = "Ingen";
+"tag.stunt" = "Stunt";
 
 "tagManager.createReport" = "Skapa taggrapport";
 

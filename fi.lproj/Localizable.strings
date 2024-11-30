@@ -254,6 +254,8 @@
 "tag.extras" = "Avustajat";
 "tag.vehicle" = "Ajoneuvo";
 "tag.none" = "Ei mitään";
+"tag.stunt" = "Stuntti";
+"tag.setDesign" = "Lavastus";
 
 "tagManager.createReport" = "Luo tagiraportti";
 

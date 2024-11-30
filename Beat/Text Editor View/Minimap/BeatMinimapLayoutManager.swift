@@ -15,7 +15,7 @@ class BeatMinimapLayoutManager:NSLayoutManager {
 	weak var editorDelegate:BeatEditorDelegate?
 	
 	class func minimapFontSize() -> CGFloat {
-		return 2.0;
+		return 3.0;
 	}
 		
 	override func usedRect(for container: NSTextContainer) -> CGRect {
