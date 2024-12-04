@@ -76,7 +76,9 @@
 
 - (void)dealloc
 {
+    [self.pageBreaksMap removeAllObjects];
     self.pageBreaksMap = nil;
+    
     self.delegate = nil;
     self.editorDelegate = nil;
 }

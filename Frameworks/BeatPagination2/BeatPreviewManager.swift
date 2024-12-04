@@ -109,6 +109,13 @@ import UXKit
         self.previewView?.dataSource = self
     }
     
+    deinit {
+        self.pagination?.finishedPagination = nil
+        self.pagination?.renderer = nil
+        self.pagination = nil
+        self.renderer = nil
+    }
+    
     
     // MARK: - Pagination delegation
     

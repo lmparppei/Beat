@@ -158,8 +158,7 @@
 	// Save frame IF the document was saved
 	if (!self.hasUnautosavedChanges) [self.documentWindow saveFrameUsingName:self.fileNameString];
 
-	// Null page break map to avoid memory leaks of line data
-	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = nil;
+	self.previewController.pagination.finishedPagination = nil;
 	
 	// Unload all plugins
 	[self.pluginAgent unloadPlugins];
@@ -211,6 +210,11 @@
 	self.review = nil;
 	
 	self.previewController = nil;
+	
+	// Fully deallocate text view
+	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(0, self.textView.textStorage.string.length) withString:@""];
+	[self.textView removeFromSuperview];
+	self.textView = nil;
 		
 	// Kill observers
 	[NSNotificationCenter.defaultCenter removeObserver:self];
@@ -1276,14 +1280,10 @@
 	[self.documentWindow makeFirstResponder:self.textView];
 }
 /// Legacy method. Use selectAndScrollToRange
-- (void)scrollToRange:(NSRange)range
-{
-	[self selectAndScrollTo:range];
-}
+- (void)scrollToRange:(NSRange)range { [self selectAndScrollTo:range]; }
 
 - (void)scrollToRange:(NSRange)range callback:(nullable void (^)(void))callbackBlock {
-	BeatTextView *textView = (BeatTextView*)self.textView;
-	[textView scrollToRange:range callback:callbackBlock];
+	[self.textView scrollToRange:range callback:callbackBlock];
 }
 
 /// Scrolls the given position into view
@@ -1310,10 +1310,10 @@
 }
 
 /// Selects the given range and scrolls it into view
-- (void)selectAndScrollTo:(NSRange)range {
-	BeatTextView *textView = (BeatTextView*)self.textView;
-	[textView setSelectedRange:range];
-	[textView scrollToRange:range callback:nil];
+- (void)selectAndScrollTo:(NSRange)range
+{
+	[self.textView setSelectedRange:range];
+	[self.textView scrollToRange:range callback:nil];
 }
 
 

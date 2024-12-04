@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatRenderer : NSObject
 @property (nonatomic) BeatExportSettings* settings;
 //@property (nonatomic) BeatPaginationManager* pagination;
-@property (nonatomic) id pagination;
+@property (nonatomic, weak) id pagination;
 
 - (instancetype)initWithSettings:(BeatExportSettings*)settings;
 

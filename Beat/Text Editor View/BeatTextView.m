@@ -229,6 +229,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(void)removeFromSuperview
 {
+	[self.popoverController.tableView removeFromSuperview];
+	self.popoverController.items = @[];
+	self.popoverController = nil;
+
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super removeFromSuperview];
 }
