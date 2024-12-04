@@ -164,8 +164,6 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 /// Get tags and definitions from an external attributed string
 + (NSDictionary*)tagsAndDefinitionsFrom:(NSAttributedString*)attrStr;
 
-+ (NSString*)fdxCategoryToBeat:(NSString*)category;
-
 #pragma mark - Tagging methods
 
 /// Tags a range in editor with given tag item

@@ -89,9 +89,9 @@ class BeatURLMenuItem:NSMenuItem {
 		var urlString = website
 		if addVersion {
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-			website += "?version=" + version
+			urlString += "?version=" + version
 		}
-		return URL(string: website)
+		return URL(string: urlString)
 	}
 }
 

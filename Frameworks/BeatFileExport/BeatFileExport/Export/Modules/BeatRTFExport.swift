@@ -72,9 +72,11 @@ public class BeatRTFExport:NSObject {
 }
 
 class BeatDocxExport:NSObject {
+    #if os(macOS)
     public class func register(_ manager:BeatFileExportManager) {
         manager.registerHandler(for: "Microsoft Word", fileTypes: ["docx"], supportedStyles: ["Screenplay", "Novel"]) { delegate in
             BeatRTFExport.export(delegate, documentType: .officeOpenXML)
         }
     }
+    #endif
 }

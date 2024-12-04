@@ -30,7 +30,10 @@ struct BeatFileExportHandlerInfo {
 		BeatFDXExport.register(self)
         BeatRTFExport.register(self)
 		OutlineExtractor.register(self)
+        
+        #if os(macOS)
         BeatDocxExport.register(self)
+        #endif
 	}
 		
 	/// Registers the given handler, called by export modules

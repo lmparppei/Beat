@@ -13,7 +13,7 @@ import AppKit
 	@objc var drawnOnScreen:Bool {
 		var drawn = false
 		if let layer = self.layer, let window = self.window, let contentLayer = window.contentView?.layer {
-			drawn = self.layer?.presentation() != nil
+			drawn = layer.presentation() != nil
 		}
 		return drawn
 	}

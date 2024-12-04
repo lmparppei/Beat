@@ -11,7 +11,7 @@
 #if !TARGET_OS_IOS
 #import <Cocoa/Cocoa.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "BeatPluginUIExports.h"
+#import <BeatPlugins/BeatPluginUIExports.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

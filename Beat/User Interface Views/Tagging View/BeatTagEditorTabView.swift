@@ -24,7 +24,7 @@ class BeatTagEditorTabView:NSTabViewController {
 	
 	override var tabViewItems: [NSTabViewItem] {
 		get {
-			var items = super.tabViewItems
+			let items = super.tabViewItems
 			for item in items {
 				item.label = item.viewController?.title ?? "(none)"
 			}

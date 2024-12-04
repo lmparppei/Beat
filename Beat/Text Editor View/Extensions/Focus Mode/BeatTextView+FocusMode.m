@@ -49,8 +49,7 @@
 
 	// Toggle focus mode for every document
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
-		BeatTextView* textView = doc.textView;
-		[textView setFocusModeType:(BeatFocusModeType)item.tag];
+		[doc.textView setFocusModeType:(BeatFocusModeType)item.tag];
 	}
 }
 

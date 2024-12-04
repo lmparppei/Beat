@@ -48,7 +48,7 @@ section {
     text-align: center;
     bold: true;
     italic: true;
-    fontSize: 18;
+    fontSize: 24;
     margin-bottom: 12;
     
     min-font-size: 12;

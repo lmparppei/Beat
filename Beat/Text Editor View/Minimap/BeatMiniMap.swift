@@ -110,11 +110,11 @@ class MinimapTextView: NSTextView, NSLayoutManagerDelegate {
 	
 	func layoutManager(_ layoutManager: NSLayoutManager, shouldGenerateGlyphs glyphs: UnsafePointer<CGGlyph>, properties props: UnsafePointer<NSLayoutManager.GlyphProperty>, characterIndexes charIndexes: UnsafePointer<Int>, font aFont: NSFont, forGlyphRange glyphRange: NSRange) -> Int {
 		
-		var loc = glyphRange.location
-		var len = layoutManager.characterIndexForGlyph(at: NSMaxRange(glyphRange)) - loc
+		let loc = glyphRange.location
+		let len = layoutManager.characterIndexForGlyph(at: NSMaxRange(glyphRange)) - loc
 
-		let str:CFString = (self.textStorage?.string.substring(range: NSMakeRange(loc, len)) ?? "") as CFString
-		let modifiedStr = CFStringCreateMutable(nil, CFStringGetLength(str))
+		//let str:CFString = (self.textStorage?.string.substring(range: NSMakeRange(loc, len)) ?? "") as CFString
+		//let modifiedStr = CFStringCreateMutable(nil, CFStringGetLength(str))
 		
 		//CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
 		

@@ -54,6 +54,8 @@
 
 #if TARGET_OS_IOS
 - (NSString*)string { return self.text; }
+#else
+- (NSString*)text { return self.string; }
 - (void)setText:(NSString*)text { [self setString:text]; }
 #endif
 

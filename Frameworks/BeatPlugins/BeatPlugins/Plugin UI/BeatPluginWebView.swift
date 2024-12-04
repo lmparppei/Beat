@@ -15,7 +15,7 @@ import AppKit
 #else
 import UIKit
 #endif
-import WebKit
+@preconcurrency import WebKit
 
 @objc public protocol BeatPluginWebViewExports:JSExport {
     func setHTML(_ html:String)

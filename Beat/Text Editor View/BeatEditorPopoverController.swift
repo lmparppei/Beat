@@ -35,7 +35,7 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 	/// The mode will reset every time the popover closes
 	//var mode:BeatEditorPopoverMode = .none
 	/// Items currently displayed.`Any` is misleading here, it should be either `NSString` or `NSAttributedString`.
-	var items:[Any] = []
+	public var items:[Any] = []
 	
 	var popover:NSPopover = NSPopover()
 	var tableView:NSTableView = NSTableView()
