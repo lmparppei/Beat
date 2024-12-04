@@ -20,12 +20,10 @@ extension UIView {
 
 	func scaleLayer(layer: CALayer, scale: CGFloat) {
 		let factor = (scale > 1.0) ? scale : 1.0
-		
 		layer.contentsScale = factor
-		if layer.sublayers == nil {
-			return
-		}
-		for la in layer.sublayers! {
+		
+		guard let sublayers = layer.sublayers else { return }
+		for la in sublayers {
 			scaleLayer(layer: la, scale: factor)
 		}
 	}

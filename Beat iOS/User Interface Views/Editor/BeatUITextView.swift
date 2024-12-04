@@ -475,9 +475,12 @@ extension BeatUITextView: UIScrollViewDelegate {
 		}
 		
 		// Set content scale factor (see UIView+Scale extension)
-		let scale = scrollView.zoomScale * 1.5
+		// We'll multiply the value with screen native scale. Not sure if this is wise or not.
+		let scale = scrollView.zoomScale * UIScreen.main.nativeScale
 		scrollView.scaleView(view: scrollView, scale: scale)
 		scrollView.scaleLayer(layer: scrollView.layer, scale: scale)
+		
+		self.scaleView(view: self, scale: scale)
 		self.scaleLayer(layer: self.layer, scale: scale)
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
