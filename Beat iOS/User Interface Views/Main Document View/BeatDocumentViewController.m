@@ -359,6 +359,10 @@
 {
 	self.previewView = nil;
 	
+	self.previewController.pagination.finishedPagination = nil;
+	self.previewController.pagination = nil;
+	[self.textView removeFromSuperview];
+	
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container unload];
 	}
