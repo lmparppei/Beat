@@ -55,11 +55,11 @@
 - (Line*)lineAtIndex:(NSInteger)index;
 - (NSUInteger)indexOfLine:(Line*)line;
 - (Line*)lineAtPosition:(NSInteger)position;
-- (NSArray*)linesInRange:(NSRange)range;
+- (NSArray<Line*>*)linesInRange:(NSRange)range;
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
-- (NSArray*)scenesInRange:(NSRange)range;
+- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range;
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 - (NSString*)titlePageAsString;
 - (NSArray<Line*>*)titlePageLines;

@@ -1535,8 +1535,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
     
     // Catch dual dialogue force symbol
-    if (self.type == dualDialogueCharacter && self.string.length > 0 && [self.string characterAtIndex:self.string.length - 1] == '^') {
-        [indices addIndex:self.string.length - 1 + offset];
+    if (self.type == dualDialogueCharacter && self.string.length > 0 && self.string.lastNonWhiteSpaceCharacter == '^') {
+        [indices addIndex:self.string.indexOfLastNonWhiteSpaceCharacter + offset];
     }
     
     // Add ranges for > and < (if needed)
@@ -1718,7 +1718,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
     
     // Remove dual dialogue character if needed
-    if (self.type == dualDialogueCharacter && [name characterAtIndex:name.length-1] == '^') {
+    if (self.type == dualDialogueCharacter && name.lastNonWhiteSpaceCharacter == '^') {
         name = [name substringToIndex:name.length - 1];
     }
     

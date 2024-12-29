@@ -33,4 +33,6 @@
 #import <BeatParsing/NSIndexSet+Subset.h>
 #import <BeatParsing/NSMutableIndexSet+Lowest.h>
 
+#import <BeatParsing/ParsingRule.h>
+
 #endif /* BeatParsing_h */

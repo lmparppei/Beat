@@ -86,7 +86,7 @@
         
         _firstPageNumber = [delegate.documentSettings getInt:DocSettingFirstPageNumber];
         
-        // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings
+        // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings. Probably a bytemask?
         id<BeatExportStyleProvider> styles = self.styles;
         NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
         

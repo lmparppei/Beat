@@ -24,5 +24,8 @@
 - (NSInteger)locationOfLastOccurenceOf:(unichar)chr;
 /// Recognizes Arabic and Hebrew
 - (bool)hasRightToLeftText;
-
+/// Returns last character which is not a tab or space
+- (unichar)lastNonWhiteSpaceCharacter;
+/// Returns the index of character which is not a tab or space
+- (NSInteger)indexOfLastNonWhiteSpaceCharacter;
 @end

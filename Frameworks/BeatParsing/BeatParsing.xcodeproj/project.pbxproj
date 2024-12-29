@@ -66,6 +66,8 @@
 		B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */; };
 		B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D1E5112C456D020014D16B /* ContinuousFountainParser+Omissions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */; };
+		B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DC61522D1834BB00ED708A /* ParsingRule.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DC61532D1834BB00ED708A /* ParsingRule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -130,6 +132,8 @@
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
 		B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Omissions.h"; sourceTree = "<group>"; };
 		B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Omissions.m"; sourceTree = "<group>"; };
+		B6DC61522D1834BB00ED708A /* ParsingRule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParsingRule.h; sourceTree = "<group>"; };
+		B6DC61532D1834BB00ED708A /* ParsingRule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ParsingRule.m; sourceTree = "<group>"; };
 		B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -149,6 +153,8 @@
 			children = (
 				B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */,
 				B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */,
+				B6DC61522D1834BB00ED708A /* ParsingRule.h */,
+				B6DC61532D1834BB00ED708A /* ParsingRule.m */,
 			);
 			path = Experiments;
 			sourceTree = "<group>";
@@ -298,6 +304,7 @@
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
 				B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */,
+				B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */,
 				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
 				B6737DEA2CD2642E00644D98 /* NSArray+BinarySearch.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
@@ -403,6 +410,7 @@
 				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
+				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
 				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,
 				B6B37F2728F01B5A00657F5F /* BeatDocumentSettings.m in Sources */,
 				B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */,

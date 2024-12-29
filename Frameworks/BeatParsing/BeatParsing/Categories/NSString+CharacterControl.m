@@ -191,4 +191,26 @@
     return rightToLeft;
 }
 
+- (unichar)lastNonWhiteSpaceCharacter
+{
+    NSInteger i = self.indexOfLastNonWhiteSpaceCharacter;
+    if (i == NSNotFound) return -1;
+    else return [self characterAtIndex:i];
+}
+
+- (NSInteger)indexOfLastNonWhiteSpaceCharacter
+{
+    if (self.length == 0) return NSNotFound;
+    
+    NSInteger i = self.length - 1;
+    while (i >= 0) {
+        unichar c = [self characterAtIndex:i];
+        
+        if  (c != '\t' && c != ' ') return i;
+        i--;
+    }
+    
+    return NSNotFound;
+}
+
 @end

@@ -44,6 +44,7 @@
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
 #import <BeatParsing/NSArray+BinarySearch.h>
 #import "ContinuousFountainParser+Notes.h"
+#import "ParsingRule.h"
 
 #define NEW_OUTLINE YES
 
@@ -74,6 +75,8 @@
 @property (nonatomic, weak) Line* prevLineAtLocation;
 
 @property (nonatomic) bool macrosNeedUpdate;
+
+@property (nonatomic) NSArray<ParsingRule*>* parsingRules;
 
 @end
 
@@ -139,6 +142,35 @@ static NSDictionary* patterns;
         // Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
         if (_nonContinuous) _staticParser = YES;
         else _staticParser = NO;
+                
+        _parsingRules = @[
+            [ParsingRule ruleWithResultingType:empty previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:1 allowedWhiteSpace:1 titlePage:false],
+            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"."] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."] length:0 allowedWhiteSpace:0 titlePage:false],
+            [ParsingRule ruleWithResultingType:shot previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!!"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:action previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:lyrics previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"~"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@"] endsWith:@[@"^"]],
+            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@"] endsWith:nil],
+            
+            [ParsingRule ruleWithResultingType:section previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"#"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:synopse previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"="] endsWith:nil],
+            
+            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
+            [ParsingRule ruleWithResultingType:centered previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@">"] endsWith:@[@"<"]],
+            [ParsingRule ruleWithResultingType:transitionLine previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@">"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:transitionLine previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"TO:"]],
+            
+            // Dual dialogue
+            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"^"]],
+            [ParsingRule ruleWithResultingType:dualDialogueParenthetical previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil],
+            [ParsingRule ruleWithResultingType:dualDialogue previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false],
+            
+            // Dialogue
+            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true],
+            [ParsingRule ruleWithResultingType:parenthetical previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil],
+            [ParsingRule ruleWithResultingType:dialogue previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false],
+
+        ];
         
         [self parseText:string];
         [self updateMacros];
@@ -767,8 +799,10 @@ static NSDictionary* patterns;
 { @autoreleasepool {
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
-    
     line.type = [self parseLineTypeFor:line atIndex:index];
+    
+    //LineType test = [self ruleBasedParsingFor:line atIndex:index];
+    //if (line.type != test) NSLog(@"!!! wrong type (%lu / %lu) - %@", test, line.type, line);
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -834,8 +868,11 @@ static NSDictionary* patterns;
                                       line:line];
     
     // Intersecting indices between bold & italic are boldItalic
-    if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
-    else line.boldItalicRanges = NSMutableIndexSet.new;
+    if (line.boldRanges.count > 0 && line.italicRanges.count > 0) {
+        line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
+    } else {
+        line.boldItalicRanges = NSMutableIndexSet.new;
+    }
     
     if (line.type == heading) {
         line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
@@ -871,6 +908,22 @@ static NSDictionary* patterns;
     }
 } }
 
+
+- (LineType)ruleBasedParsingFor:(Line*)line atIndex:(NSInteger)index
+{
+    Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
+    //Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
+    
+    for (ParsingRule* rule in self.parsingRules) {
+        if ([rule validate:line previousLine:previousLine]) {
+            return rule.resultingType;
+        }
+    }
+    
+    if (line.length == 0) return empty;
+    return action;
+}
+
 /// Parses the line type for given line. It *has* to know its line index.
 /// TODO: This bunch of spaghetti should be refactored and split into smaller functions.
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index
@@ -887,7 +940,7 @@ static NSDictionary* patterns;
     if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
         line.forcedCharacterCue = NO;
         // 94 = ^ (this is here to avoid issues with Turkish alphabet)
-        if (line.lastCharacter == 94) return dualDialogueCharacter;
+        if (line.string.lastNonWhiteSpaceCharacter == 94) return dualDialogueCharacter;
         else return character;
     }
     
@@ -951,13 +1004,13 @@ static NSDictionary* patterns;
         }
     }
     // ... and then the rest.
+    else if ((firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) && line.string.lastNonWhiteSpaceCharacter == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if (firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) return character;
     else if (firstChar == '>' && lastChar == '<') return centered;
     else if (firstChar == '>') return transitionLine;
     else if (firstChar == '~' || [firstSymbol isEqualToString:@"～"]) return lyrics;
     else if (firstChar == '='|| [firstSymbol isEqualToString:@"＝"]) return synopse;
     else if (firstChar == '#' || [firstSymbol isEqualToString:@"＃"]) return section;
-    else if ((firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if ((firstChar == '.' || [firstSymbol isEqualToString:@"．"]) && previousIsEmpty) return heading;
     
     // Title page
@@ -967,7 +1020,7 @@ static NSDictionary* patterns;
     }
     
     // Dual dialogue
-    if (lastChar == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
+    if (line.string.lastNonWhiteSpaceCharacter == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
         // A character line ending in ^ is a dual dialogue character
         // (94 = ^, we'll compare the numerical value to avoid mistaking Turkish alphabet character Ş as ^)
         NSString* cue = [line.string substringToIndex:line.length - 1];
@@ -1042,8 +1095,8 @@ static NSDictionary* patterns;
         && previousLine.string.onlyUppercaseUntilParenthesis
         && [self previousLine:previousLine].type == empty) {
         
-        // (94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^')
-        if (previousLine.lastCharacter == 94) previousLine.type = dualDialogueCharacter;
+        // Welcome to UTF-8 hell in ObjC. 94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^'.
+        if (previousLine.string.lastNonWhiteSpaceCharacter == 94) previousLine.type = dualDialogueCharacter;
         else previousLine.type = character;
         
         // Note that the previous line got changed
@@ -2023,7 +2076,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 /// Returns the scenes which intersect with given range.
-- (NSArray*)scenesInRange:(NSRange)range
+- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range
 {
 	// When length is zero, return just the scene at the beginning of range (and avoid iterating over the whole outline)
     if (range.length == 0) {
