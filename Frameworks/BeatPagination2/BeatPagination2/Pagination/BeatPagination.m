@@ -459,15 +459,11 @@
         ) {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:group.blocks.firstObject.lines.firstObject attributedString:nil reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
-	}
-	else if (group.blocks.count > 0) {
+	} else if (group.blocks.count > 0) {
         // Break the block group
-        //NSLog(@"Break: %@", group.blocks.firstObject.lines.firstObject);
-        //1NSLog(@"     remaining %f / height %f ", remainingSpace, group.blocks.firstObject.height);
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace styles:self.styles];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
-	}
-	else {
+	} else {
         // Just break a single block
 		BeatPaginationBlock *pageBlock = group.blocks.firstObject;
 		NSArray* split = [pageBlock breakBlockWithRemainingSpace:remainingSpace];
@@ -886,6 +882,7 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 }
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage {
+    
     return self.titlePageContent;
 }
 

@@ -397,7 +397,7 @@
 
  
 -(void)addBlock:(BeatPaginationBlock*)block {
-    // Inalidate current line array
+    // Invalidate current line array and rendered string
     _lines = nil;
     
 	[self.blocks addObject:block];

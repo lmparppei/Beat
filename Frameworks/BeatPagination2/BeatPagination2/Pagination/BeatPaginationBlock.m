@@ -317,7 +317,7 @@
 }
 
 /**
- - returns an array with `onCurrentPage[Line], onNextPage[Line], BeatPageBreak`
+ - returns an array with members `leftOnCurrentPage:[Line], onNextPage:[Line], BeatPageBreak`
  */
 -(NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace {
 	// Dual dialogue requires different logic
@@ -342,7 +342,7 @@
     if (spiller.type == action) {
         // Break action paragraphs into two if possible and feasible
         pageBreakData = [self splitParagraphWithRemainingSpace:remainingSpace];
-    } else if (spiller.isDialogueElement || spiller.isDualDialogueElement) {
+    } else if (spiller.isDialogue || spiller.isDualDialogue) {
         // Break apart dialogue blocks
         pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
     } else if (pageBreakIndex > 0) {
@@ -473,18 +473,21 @@
     
     // Find out where we can split the block
     NSIndexSet* splittableIndices = [self possiblePageBreakIndicesForDialogueBlock];
-        
-    NSMutableArray* safeLines = NSMutableArray.new;
+    // List of safe lines which can be left on current page
+    NSMutableArray<Line*>* safeLines = NSMutableArray.new;
+    
+    CGFloat maxHeight = _delegate.maxPageHeight - _delegate.styles.page.lineHeight * 2;
+    bool splitCharacterCue = false;
     
     // Iterate through elements in dialogue block and see where we no longer can fit anything on page
     for (NSInteger i=1; i<dialogueBlock.count; i++) {
         Line* line = dialogueBlock[i];
-        
+                
         CGFloat heightBefore = [self heightUntil:line];
         CGFloat h = heightBefore + [self heightForLine:line];
         
-        // This line fits, handle it
         if (h <= remainingSpace) {
+            // This line fits, handle it
             if ((line.isAnyDialogue && i > 0) || line == dialogueBlock.lastObject) {
                 // We got to the end of block safely
                 [onThisPage addObjectsFromArray:safeLines];
@@ -498,8 +501,47 @@
             continue;
         }
         
+        // In some edge cases you could end up with a parenthetical or character cue that is longer than a page, which will cause an endless loop, because it will now fit anywhere. To avoid that, we'll check the item height and force-split it if needed.
+        if (i == 1 && heightBefore > maxHeight) {
+            splitCharacterCue = true;
+            
+            // We have encountered a character cue which is higher than a page. Rare edge case.
+            line = dialogueBlock.firstObject;
+            NSArray* splitCue = [self splitParagraphWithRemainingSpace:remainingSpace line:line];
+            Line* retain = ((NSArray*)splitCue[0]).firstObject;
+            Line* split = ((NSArray*)splitCue[1]).firstObject;
+            
+            if (retain.length > 0) {
+                cutoff = 1;
+                [tmpThisPage addObject:retain];
+                pageBreak = splitCue[2];
+            }
+            
+            if (split.length > 0) [tmpNextPage addObject:split];
+            break;
+            
+        } else if (line.isAnyParenthetical && [self heightForLine:line] > maxHeight) {
+            NSArray* splitParenthetical = [self splitParagraphWithRemainingSpace:remainingSpace - heightBefore line:line];
+            Line* retain = ((NSArray*)splitParenthetical[0]).firstObject;
+            Line* split = ((NSArray*)splitParenthetical[1]).firstObject;
+            
+            // Something was left on this page
+            if (retain.length > 0) {
+                [tmpThisPage addObjectsFromArray:safeLines];
+                [tmpThisPage addObject:retain];
+                cutoff += 1;
+                
+                pageBreak = splitParenthetical[2];
+            }
+            // Something was cut off to next page
+            if (split.length > 0) [tmpNextPage addObject:split];
+            
+            break;
+        }
+        
         // This line doesn't fit. Let's find out how to split the block.
         if (line.isAnyParenthetical) {
+            // Parentheticals are a good place to split a line
             if ([splittableIndices containsIndex:i]) {
                 // After a parenthetical which is NOT the second line, we'll just hop onto next page
                 cutoff = i;
@@ -508,25 +550,6 @@
                 // This is the first item. We'll just toss the whole block onto the next page.
                 cutoff = 1;
                 pageBreakItem = dialogueBlock.firstObject;
-            }
-            
-            // So, now we'll have to do some extra hacking. In some cases you could end up with a parenthetical or character cue that is longer than a page, which will cause an endless loop. To avoid that, we'll check the item height and force-split it if needed.
-            if ([self heightForLine:line] > _delegate.maxPageHeight - _delegate.styles.page.lineHeight * 2) {
-                // Note: splitParagraph returns ARRAYS of lines
-                NSArray* splitParenthetical = [self splitParagraphWithRemainingSpace:remainingSpace - heightBefore line:line];
-                Line* retain = ((NSArray*)splitParenthetical[0]).firstObject;
-                Line* split = ((NSArray*)splitParenthetical[1]).firstObject;
-                
-                // Something was left on this page
-                if (retain.length > 0) {
-                    [tmpThisPage addObjectsFromArray:safeLines];
-                    [tmpThisPage addObject:retain];
-                    cutoff += 1;
-                    
-                    pageBreak = splitParenthetical[2];
-                }
-                // Something was cut off to next page
-                if (split.length > 0) [tmpNextPage addObject:split];
             }
             
             break;
@@ -545,13 +568,11 @@
                 pageBreak = splitLine[2];
             }
             
-            // Something was cut off to next page
             if (split.length > 0 && retain.length > 0) {
+                // Something was cut off to next page
                 [tmpNextPage addObject:split];
-            }
-            // Nothing was left on current page, we'll need to see if we
-            // actually can split the dialogue block here
-            else if (retain.length == 0 && split.length > 0 && [splittableIndices containsIndex:i]) {
+            } else if (retain.length == 0 && split.length > 0 && [splittableIndices containsIndex:i]) {
+                // Nothing was left on current page, we'll need to see if we actually can split the dialogue block here
                 cutoff = i;
                 
                 // Set the correct page break item
@@ -571,19 +592,19 @@
     [onNextPage addObjectsFromArray:tmpNextPage];
     [onNextPage addObjectsFromArray:[self.lines subarrayWithRange:NSMakeRange(cutoff, self.lines.count - cutoff)]];
     
-    // Add character cues
-    if (onThisPage.count && onNextPage.count) {
-        [onThisPage insertObject:self.lines.firstObject atIndex:0];
-        [onThisPage addObject:[self.delegate moreLineFor:self.lines.firstObject]];
-        
-        Line* cue = [self.delegate contdLineFor:self.lines.firstObject];
-        [onNextPage insertObject:cue atIndex:0];
-    }
-    else if (onThisPage.count) {
-        [onThisPage insertObject:self.lines.firstObject atIndex:0];
-    }
-    else {
-        [onNextPage insertObject:self.lines.firstObject atIndex:0];
+    // Add character cues if needed (usually is)
+    if (!splitCharacterCue) {
+        if (onThisPage.count && onNextPage.count) {
+            [onThisPage insertObject:self.lines.firstObject atIndex:0];
+            [onThisPage addObject:[self.delegate moreLineFor:self.lines.firstObject]];
+            
+            Line* cue = [self.delegate contdLineFor:self.lines.firstObject];
+            [onNextPage insertObject:cue atIndex:0];
+        } else if (onThisPage.count) {
+            [onThisPage insertObject:self.lines.firstObject atIndex:0];
+        } else {
+            [onNextPage insertObject:self.lines.firstObject atIndex:0];
+        }
     }
     
     if (pageBreak == nil) {
@@ -591,7 +612,6 @@
         NSInteger pageBreakIndex = [self.lines indexOfObject:pageBreakItem];
         if ((pageBreakIndex == NSNotFound || pageBreakIndex <= 1) && onThisPage.count == 0) pageBreakItem = self.lines.firstObject;
     
-        //pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:pageBreakItem lineHeight:self.delegate.styles.page.lineHeight];
         pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:pageBreakItem attributedString:nil reason:@"Dialogue cut"];
     }
     
@@ -604,7 +624,7 @@
 	// Regex for splitting into sentences
     NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
     
-    // Create temporary string and atch sentences
+    // Create temporary string and catch sentences
     NSString* string = [line stripFormattingWithSettings:self.delegate.settings];
 	NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, string.length)];
 	
@@ -618,8 +638,8 @@
         
         [sentences addObject:str];
     }
-    	
-	// Make sure we're not missing anything, and if we are, bring it with us.
+    
+    // We might not catch the last sentence, so make sure we're not missing anything, and if we are, bring it with us.
 	if (length < string.length) {
 		NSString *str = [string substringWithRange:NSMakeRange(length, string.length - length)];
 		[sentences addObject:str];
@@ -630,38 +650,47 @@
     NSInteger firstSentenceHeight = [self heightForString:sentences.firstObject lineType:line.type];
     if ((CGFloat)firstSentenceHeight > self.delegate.maxPageHeight - self.delegate.styles.page.lineHeight * 2) {
         sentences = [string componentsSeparatedByString:@" "].mutableCopy;
+        
+        // This is something that is NOT separated by spaces, probably a very long word. Let's split it by each character. This is VERY silly, but fixes possible crashes with single words that are over a page long. Edge case if there ever was one.
+        if (sentences.count == 1) {
+            NSString* sentence = sentences.firstObject;
+            NSMutableArray<NSString*>* characters = NSMutableArray.new;
+            for (NSInteger i=0; i<sentence.length; i++) {
+                [characters addObject:[sentence substringWithRange:NSMakeRange(i, 1)]];
+            }
+            
+            sentences = characters;
+        }
     }
-    
+        
 	NSMutableString* text = NSMutableString.new;
 	NSInteger breakLength = 0;
 	CGFloat breakPosition = 0.0;
-
+    
     // Next, let's find out how much we can fit on this page
 	for (NSString *sentence in sentences) { @autoreleasepool {
 		[text appendString:sentence];
 		CGFloat h = [self heightForString:text lineType:line.type];
-		
-		if (h < remainingSpace) {
-			breakLength += sentence.length;
-			breakPosition += h;
-		} else {
+        
+        if (h < remainingSpace) { // Element fits
+            breakLength += sentence.length;
+            breakPosition += h;
+		} else { // Element doesn't fit anymore
 			break;
 		}
 	} }
-    
+        
 	NSArray *p = [line splitAndFormatToFountainAt:breakLength];
     BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:breakLength element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Break paragraph"];
     
 	return @[p[0], p[1], pageBreak];
 }
 
+
 /// Returns the height of string for given line type.
 /// - note: This method doesn't take margins or any other styles into account, just the width.
-/// TODO: WHAT THE FUCK IS THIS, please conform to new stylesheet standards
 - (NSInteger)heightForString:(NSString *)string lineType:(LineType)type
 {
-	// This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
-	
     CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
 	if (string.length == 0) return lineHeight;
 	
