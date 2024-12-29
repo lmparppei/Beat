@@ -29,15 +29,17 @@
 	
 	// Open tag menu
 	[self.popoverController displayWithRange:self.selectedRange items:BeatTagging.styledTagsForMenu callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
-		// Tag string in the menu is prefixed by "● " or "× " so take them out
-		NSString* tagStr = string;
-		tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
-		tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
+		// Get the selected tag item
+		__block BeatTagType type = NoTag;
+		
+		if (index > 0) {
+			// First item is "none" to remove the tag, so index is - 1
+			NSString* key = BeatTagging.categories[index - 1];
+			type = [BeatTagging tagFor:key];
+		}
 
 		// String to be tagged
 		NSString *tagString = [self.textStorage.string substringWithRange:self.selectedRange].lowercaseString;
-		// Create a tag
-		__block BeatTagType type = [BeatTagging tagFor:tagStr];
 		
 		// Remove tag
 		if (type == NoTag) {
@@ -54,7 +56,7 @@
 			// If matches were found, display them in a new menu
 			if (possibleMatches.count > 0) {
 				// First object is reserved for creating a new tag
-				NSArray *items = @[[NSString stringWithFormat:@"New: %@", tagString]];
+				NSArray *items = @[[NSString stringWithFormat:@"%@: %@", [BeatLocalization localizedStringForKey:@"general.new"], tagString]];
 				NSArray* matches = [items arrayByAddingObjectsFromArray:possibleMatches];
 				
 				// Display a new popover
