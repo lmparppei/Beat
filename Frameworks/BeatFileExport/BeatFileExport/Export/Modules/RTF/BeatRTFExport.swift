@@ -21,7 +21,7 @@ public class BeatRTFExport:NSObject {
 		let attrStr = NSMutableAttributedString()
 		let settings = delegate.exportSettings
 
-		var types:IndexSet = IndexSet()
+        var types:IndexSet = IndexSet(IndexPath(indexes: settings.additionalTypes))
 		for element in delegate.styles.document._visibleElements {
 			types.insert(Int(element.rawValue))
 		}

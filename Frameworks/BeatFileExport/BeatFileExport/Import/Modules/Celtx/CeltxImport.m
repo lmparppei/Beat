@@ -179,8 +179,9 @@
 
 #pragma mark - Opening the container
 
-- (void)parseScripts:(NSArray*)scripts {
-	_scripts = [NSMutableArray array];
+- (void)parseScripts:(NSArray<NSData*>*)scripts
+{
+    _scripts = NSMutableArray.new;
 	
 	for (NSData *data in scripts) {
 		NSDictionary *script = [self parseContents:data];

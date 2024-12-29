@@ -335,7 +335,7 @@
     return size;
 }
 
-- (NSArray*)preprocessLines
+- (NSArray<Line*>*)preprocessLines
 {
     NSMutableArray<Line*>* lines = NSMutableArray.new;
 	

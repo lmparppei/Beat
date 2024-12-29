@@ -286,7 +286,7 @@
 			children = (
 				B6A97C842BF0BDDD00414878 /* Final Draft */,
 				B6A97C872BF0BDDD00414878 /* Outline */,
-				B6A97C882BF0BDDD00414878 /* BeatRTFExport.swift */,
+				B6DC61512D182CC600ED708A /* RTF */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -299,6 +299,14 @@
 				B6A97C942BF0BE4200414878 /* BeatCore.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B6DC61512D182CC600ED708A /* RTF */ = {
+			isa = PBXGroup;
+			children = (
+				B6A97C882BF0BDDD00414878 /* BeatRTFExport.swift */,
+			);
+			path = RTF;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
