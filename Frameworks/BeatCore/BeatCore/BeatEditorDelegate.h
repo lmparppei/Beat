@@ -38,6 +38,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatPluginAgent;
 @class BeatFontSet;
 @class BeatTagging;
+@class BeatPaginationManager;
 
 /**
  Protocol for editor views which need to be updated in some cases
@@ -114,10 +115,11 @@ typedef void (^BeatChangeListener)(NSRange);
 // NO idea why currentScene is a property and currentLine a method.
 // TODO: Harmonize these
 
-@property (nonatomic, readonly, weak) OutlineScene *currentScene;
-- (Line*)currentLine;
+@property (nonatomic, readonly, weak) OutlineScene* currentScene;
+@property (nonatomic, readonly) Line* currentLine;
 
 - (NSAttributedString*)attributedString;
+- (NSAttributedString*)getAttributedText;
 
 
 #pragma mark - Screenplay document data
@@ -126,8 +128,7 @@ typedef void (^BeatChangeListener)(NSRange);
 
 @property (nonatomic) bool printSceneNumbers;
 
-- (void)setAutomaticTextCompletionEnabled:(BOOL)value;
-
+/// Bakes current revisions into alines
 - (void)bakeRevisions;
 
 
@@ -161,6 +162,8 @@ typedef void (^BeatChangeListener)(NSRange);
 /// Ensures layout of the text view
 - (void)ensureLayout;
 - (void)updateLayout;
+
+- (void)setAutomaticTextCompletionEnabled:(BOOL)value;
 
 
 #pragma mark - Editor item visibility
@@ -238,8 +241,8 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - Pagination
 
-/// Returns the current pagination in preview controller. Typecast this to `BeatPaginationManager`.
-- (id)pagination;
+/// Returns the current pagination in preview controller
+- (BeatPaginationManager*)pagination;
 
 
 #pragma mark - Formatting
@@ -264,8 +267,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 
 #pragma mark - Printing stuff for macOS
-
-- (NSAttributedString*)getAttributedText;
 
 #if TARGET_OS_OSX
 - (CGFloat)sidebarWidth;
