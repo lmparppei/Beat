@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
     InternalPlugin
 };
 
+/// Stores metadata for a plugin
 @interface BeatPluginInfo : NSObject
 @property (nonatomic) NSString *name;
 @property (nonatomic) BeatPluginType type;
@@ -33,6 +34,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSString *requiredVersion;
 @property (nonatomic) bool compatible;
 @property (nonatomic) NSString* updateAvailable;
+/// Returns a JSON representation of plugin information
 - (NSDictionary*)json;
 - (NSString*)imageDataOrURL;
 @end
@@ -41,6 +43,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSString* pluginName;
 @end
 
+/// Object created before running a plugin and creating the VM. Includes URL, bundle files and the actual JS script. This is sent to a new plugin instance.
 @interface BeatPluginData : NSObject
 @property (nonatomic) NSString* name;
 @property (nonatomic) NSString* script;
@@ -48,9 +51,10 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSURL* url;
 @end
 
+/// Handles providing plugins, as well as downloading, updating and installing plugins.
 @interface BeatPluginManager : NSObject
-/// Keys are plugin names values are plugin info instances. `[pluginName: <BeatPluginInfo>]`
-@property (nonatomic) NSMutableDictionary<NSString*, id> * availablePlugins;
+/// Keys are plugin names values are plugin info instances. `[pluginName: BeatPluginInfo]`
+@property (nonatomic) NSMutableDictionary<NSString*, BeatPluginInfo*>* availablePlugins;
 @property (nonatomic) NSURL *pluginURL;
 
 + (BeatPluginManager*)sharedManager;
@@ -62,18 +66,31 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 
 - (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin;
 
+/// Returns an array with the names for disabled plugins
 - (NSArray<NSString*>*)disabledPlugins;
 - (void)disablePlugin:(NSString*)plugin;
 - (void)enablePlugin:(NSString*)plugin;
-- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
-- (void)refreshAvailablePlugins;
-- (void)loadPlugins;
-- (void)downloadPlugin:(NSString*)pluginName withCallback:(void (^)(NSString* pluginName))callbackBlock;
-- (NSArray*)availablePluginNames;
 
+/// Returns an array of **all** available plugin names, including both local and external.
+- (NSArray*)availablePluginNames;
+/// Gets the plugin library JSON from GitHub repo. The JSON is stored into `_externalLibrary`.
+- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
+/// Refreshes plugins which are available on the external repo.
+- (void)refreshAvailablePlugins;
+/// Gets the info for user-installed plugins and the bundled ones
+- (void)loadPlugins;
+
+/// Downloads plugin from external repo. Once the download is finished, `callbackBlock` is called with the installed plugin name.
+- (void)downloadPlugin:(NSString*)pluginName withCallback:(void (^)(NSString* pluginName))callbackBlock;
+
+/// Checks available updates to installed plugins from external repo
 - (void)checkForUpdates;
+
+/// Check Beat compatibility with plugin
 - (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion;
-- (bool)isCompatible:(NSString*)requiredVersion; /// Shorthand which automatically compares against currently installed version
+/// Shorthand which automatically compares against currently installed version
+- (bool)isCompatible:(NSString*)requiredVersion;
+
 @end
 
 NS_ASSUME_NONNULL_END

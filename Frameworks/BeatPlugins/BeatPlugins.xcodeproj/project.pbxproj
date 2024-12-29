@@ -66,6 +66,10 @@
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
+		B69A975F2D130E4300DD2B77 /* BeatPlugin+Menus.m in Sources */ = {isa = PBXBuildFile; fileRef = B69A975E2D130E4300DD2B77 /* BeatPlugin+Menus.m */; };
+		B69A97602D130E4300DD2B77 /* BeatPlugin+Menus.h in Headers */ = {isa = PBXBuildFile; fileRef = B69A975D2D130E4300DD2B77 /* BeatPlugin+Menus.h */; };
+		B69A97642D1313B500DD2B77 /* BeatPlugin+Widgets.m in Sources */ = {isa = PBXBuildFile; fileRef = B69A97632D1313B500DD2B77 /* BeatPlugin+Widgets.m */; };
+		B69A97652D1313B500DD2B77 /* BeatPlugin+Widgets.h in Headers */ = {isa = PBXBuildFile; fileRef = B69A97622D1313B500DD2B77 /* BeatPlugin+Widgets.h */; };
 		B69CC6362A851FFF00124988 /* MojaveSupport.js in Resources */ = {isa = PBXBuildFile; fileRef = B69CC6352A851FFF00124988 /* MojaveSupport.js */; };
 		B6BC404C2C18C7A80055DBCE /* BeatTextChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */; };
 		B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */; };
@@ -141,6 +145,10 @@
 		B692D1002A6EBB9400574D72 /* BeatPlugins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugins.h; sourceTree = "<group>"; };
 		B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginContainer.swift; sourceTree = "<group>"; };
 		B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginPrint.swift; sourceTree = "<group>"; };
+		B69A975D2D130E4300DD2B77 /* BeatPlugin+Menus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Menus.h"; sourceTree = "<group>"; };
+		B69A975E2D130E4300DD2B77 /* BeatPlugin+Menus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Menus.m"; sourceTree = "<group>"; };
+		B69A97622D1313B500DD2B77 /* BeatPlugin+Widgets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Widgets.h"; sourceTree = "<group>"; };
+		B69A97632D1313B500DD2B77 /* BeatPlugin+Widgets.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Widgets.m"; sourceTree = "<group>"; };
 		B69CC6352A851FFF00124988 /* MojaveSupport.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MojaveSupport.js; sourceTree = "<group>"; };
 		B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTextChangeObserver.swift; sourceTree = "<group>"; };
 		B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWindowManager.swift; sourceTree = "<group>"; };
@@ -198,6 +206,7 @@
 		B65711662CF51CE300051427 /* Plugin Extensions and Categories */ = {
 			isa = PBXGroup;
 			children = (
+				B69A97612D13139700DD2B77 /* macOS */,
 				B65711692CF51D4D00051427 /* BeatPlugin+Parser.h */,
 				B657116A2CF51D4D00051427 /* BeatPlugin+Parser.m */,
 				B6F6E48D2CF7767D008AB346 /* BeatPlugin+Modals.h */,
@@ -380,6 +389,17 @@
 			path = BeatPlugins;
 			sourceTree = "<group>";
 		};
+		B69A97612D13139700DD2B77 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				B69A975D2D130E4300DD2B77 /* BeatPlugin+Menus.h */,
+				B69A975E2D130E4300DD2B77 /* BeatPlugin+Menus.m */,
+				B69A97622D1313B500DD2B77 /* BeatPlugin+Widgets.h */,
+				B69A97632D1313B500DD2B77 /* BeatPlugin+Widgets.m */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
 		B6D708E82BF2984F0031B34E /* Plugin window manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,6 +418,7 @@
 				B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */,
 				B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */,
 				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
+				B69A97652D1313B500DD2B77 /* BeatPlugin+Widgets.h in Headers */,
 				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
 				B657116C2CF51D4D00051427 /* BeatPlugin+Parser.h in Headers */,
 				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
@@ -413,6 +434,7 @@
 				B680B78E2A6EBC4800FCD805 /* BeatPluginHTMLWindow.h in Headers */,
 				B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */,
 				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
+				B69A97602D130E4300DD2B77 /* BeatPlugin+Menus.h in Headers */,
 				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
@@ -495,6 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69A97642D1313B500DD2B77 /* BeatPlugin+Widgets.m in Sources */,
 				B62117102A6FEE700053228F /* BeatPluginHTMLPanel.swift in Sources */,
 				B6F6E4982CF7805E008AB346 /* BeatPlugin+Printing.m in Sources */,
 				B657116B2CF51D4D00051427 /* BeatPlugin+Parser.m in Sources */,
@@ -514,6 +537,7 @@
 				B680B77C2A6EBBFD00FCD805 /* BeatWidgetView.m in Sources */,
 				B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */,
 				B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */,
+				B69A975F2D130E4300DD2B77 /* BeatPlugin+Menus.m in Sources */,
 				B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */,
 				B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */,
 				B67E7BAB2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift in Sources */,

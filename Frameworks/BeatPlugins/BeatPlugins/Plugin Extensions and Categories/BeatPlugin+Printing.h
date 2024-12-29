@@ -13,7 +13,5 @@ JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)
 - (NSDictionary*)printInfo;
 @end
 
-@interface BeatPlugin (Printing)
-
+@interface BeatPlugin (Printing) <BeatPluginPrintingExports>
 @end
-

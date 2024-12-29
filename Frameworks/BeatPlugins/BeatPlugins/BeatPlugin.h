@@ -57,6 +57,7 @@
 @class BeatPluginUILabel;
 
 @protocol BeatPluginContainer;
+@protocol BeatHTMLView;
 
 #pragma mark - App delegate replacement
 
@@ -77,6 +78,12 @@
 - (void)crash;
 /// Container view for this plugin (if applicable)
 @property (weak, readonly, nonatomic) id<BeatPluginContainer> container;
+
+#if TARGET_OS_OSX
+- (id)document;
+- (void)setZoomLevel:(CGFloat)zoomLevel;
+#endif
+
 
 #pragma mark System access
 /// Check compatibility with Beat version. Basically used for checking if Beat version is out of date.
@@ -125,7 +132,6 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 - (void)makeResident;
 
 // Alias + actual methods for update methods
-- (void)setUpdate:(JSValue*)updateMethod;
 - (void)onTextChange:(JSValue*)updateMethod;
 
 - (void)setSelectionUpdate:(JSValue *)updateMethod;
@@ -227,17 +233,6 @@ JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)le
 - (void)reformat:(Line*)line;
 
 
-#pragma mark Widgets (macOS only)
-#if !TARGET_OS_IOS
-	/// Add widget into sidebar
-	- (BeatPluginUIView*)widget:(CGFloat)height;
-	JSExportAs(button, - (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame);
-	JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame);
-	JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
-	JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
-#endif
-
-
 #pragma mark Speak synthesizer
 #if !TARGET_OS_IOS
 /// Create new speech synthesis instance
@@ -293,17 +288,6 @@ JSExportAs(importHandler, - (void)importHandler:(NSArray*)extensions callback:(J
 JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback);
 
 
-#pragma mark Menu items (macOS only)
-#if TARGET_OS_OSX
-	- (NSMenuItem*)separatorMenuItem;
-	- (void)refreshMenus;
-	JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
-	JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
-	JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
-    - (id)document;
-    - (void)setZoomLevel:(CGFloat)zoomLevel;
-#endif
-
 @end
 
 
@@ -334,14 +318,10 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 #endif
 
 @property (nonatomic, readonly, weak) BXTextView *textView;
-
-@property (nonatomic, strong) ContinuousFountainParser *parser;
-@property (nonatomic, readonly) BeatTagging *tagging;
-@property (nonatomic, readonly) Line* currentLine;
-@property (nonatomic, readonly) OutlineScene *currentScene;
-
 @property (nonatomic, weak) BeatNotepad* notepad;
-@property (nonatomic) BeatRevisions* revisionTracking;
+
+
+#pragma mark - Plugin container access
 
 - (void)registerPluginContainer:(id<BeatPluginContainer>)view;
 #if TARGET_OS_IOS
@@ -349,30 +329,37 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController*)view;
 #endif
 
-- (BeatPaginationManager*)pagination;
+
+#pragma mark - Preview and pagination access
+
 - (void)createPreviewAt:(NSRange)range;
 - (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
-- (void)resetPreview;
 
-@property (nonatomic) BeatPluginAgent* pluginAgent;
+
+#pragma mark - Getter and setter for main document controller class
 
 /// Sets the given property value in host document. Use only if you *REALLY*, **REALLY** know what the fuck you are doing.
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 /// Gets a property value from host document.
 - (id)getPropertyValue:(NSString*)key;
 
-- (id)document;
-
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
 
-- (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
-- (void)bakeRevisions; /// Bakes current revisions into lines
-- (NSAttributedString*)getAttributedText;
+
+#pragma mark - Scrolling
 
 - (void)scrollTo:(NSInteger)location;
 - (void)scrollToLineIndex:(NSInteger)index;
 - (void)scrollToSceneIndex:(NSInteger)index;
+
+
+#pragma mark - Screenplay data
+
+/// Revision manager
+@property (nonatomic) BeatRevisions* revisionTracking;
+/// Returns all the revised ranges in attributed text
+- (NSDictionary*)revisedRanges;
 
 @end
 
@@ -386,7 +373,12 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
 @property (readonly) NSURL* pluginURL;
+/// Set `true` if the plugin should be restored when document is opened. (Default is `true`)
 @property (nonatomic) bool restorable;
+
+/// Set `true` if the plugin should stay in memory and not terminate immediately after initial code was run.
+@property (nonatomic) bool resident;
+
 
 /// Type dictionary for plugins
 @property (nonatomic) NSDictionary *type;
@@ -409,16 +401,29 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 /// Getter for revision tracking in delegate
 @property (nonatomic) BeatRevisions* revisionTracking;
 
+
+#pragma mark UI-side stuff for macOS and iOS
+
 #if TARGET_OS_OSX
 @property (nonatomic) BeatHTMLPrinter *printer;
+@property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
+@property (nonatomic) BeatPluginUIView *widgetView;
+@property (nonatomic) NSWindow *sheet;
+@property (nonatomic) BeatPluginHTMLPanel* htmlPanel;
+#else
+@property (nonatomic) id<BeatHTMLView> htmlPanel;
+@property (nonatomic) UIWindow *sheet;
+@property (nonatomic) id widgetView;
 #endif
 
+
+#pragma mark Base plugin instance methods
 
 - (void)loadPluginWithName:(NSString*)name;
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
 - (void)reportError:(NSString*)title withText:(NSString*)string;
-- (void)update:(NSRange)range;
+- (void)updateText:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(OutlineChanges*)changes;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
@@ -441,13 +446,12 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (JSValue*)call:(NSString*)script;
 
 // Autocompletion callbacks
-- (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
-- (NSArray*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
+- (NSArray<NSString*>*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
+- (NSArray<NSString*>*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
 
 #if !TARGET_OS_IOS
 - (void)showAllWindows;
 - (void)hideAllWindows;
-- (void)refreshMenus;
 #endif
 
 - (void)restart;

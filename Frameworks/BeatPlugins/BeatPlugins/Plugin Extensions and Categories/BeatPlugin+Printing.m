@@ -11,7 +11,7 @@
 
 #pragma mark - Printing interface
 
-#if !TARGET_OS_IOS
+#if TARGET_OS_OSX
 - (NSDictionary*)printInfo
 {
     NSPrintInfo* printInfo = NSPrintInfo.sharedPrintInfo;

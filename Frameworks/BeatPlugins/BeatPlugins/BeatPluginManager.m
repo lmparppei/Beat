@@ -137,27 +137,28 @@ static BeatPluginManager *sharedManager;
 	// Faux placeholder method
 }
 
-- (IBAction)runStandalonePlugin:(id)sender {
+- (IBAction)runStandalonePlugin:(id)sender
+{
 	// This runs a plugin which is NOT tied to the document
 #if !TARGET_OS_IOS
 	id<BeatPluginInfoUIItem> item = sender;
 	NSString *pluginName = item.pluginName;
 	
-	BeatPlugin *parser = BeatPlugin.new;
-	BeatPluginData *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
-
+	BeatPlugin *plugin = BeatPlugin.new;
+	BeatPluginData *pluginData = [BeatPluginManager.sharedManager pluginWithName:pluginName];
 	BeatPluginInfo *info = [self pluginInfoFor:pluginName];
-	[parser loadPlugin:plugin];
+    
+    [plugin loadPlugin:pluginData];
 	
 	// If the plugin was an export or import plugin, it might have not run any code, but registered a callback.
-	if (info.type == ExportPlugin && parser.exportCallback != nil) {
-		[self runExportPlugin:parser];
+	if (info.type == ExportPlugin && plugin.exportCallback != nil) {
+		[self runExportPlugin:plugin];
 	}
-	else if (info.type == ImportPlugin && parser.importCallback != nil) {
-		[self runImportPlugin:parser];
+	else if (info.type == ImportPlugin && plugin.importCallback != nil) {
+		[self runImportPlugin:plugin];
 	}
 	
-	parser = nil;
+    plugin = nil;
 #endif
 }
 
@@ -295,7 +296,6 @@ static BeatPluginManager *sharedManager;
 	}
 }
 
-/// Gets the plugin library JSON from GitHub repo. The JSON is stored into `.externalLibrary`.
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock
 {
 	NSString *urlAsString = PLUGIN_LIBRARY_URL;

@@ -88,16 +88,8 @@
 {
     if (!self.delegate.runningPlugins || self.delegate.documentIsLoading) return;
     for (BeatPlugin* plugin in self.delegate.runningPlugins.allValues) {
-        [plugin update:range];
+        [plugin updateText:range];
     }
-
-/*
-    dispatch_async(dispatch_get_main_queue(), ^(void) {
-        for (BeatPlugin* plugin in self.delegate.runningPlugins.allValues) {
-            [plugin update:range];
-        }
-    });
-*/
 }
 
 - (void)updatePluginsWithSelection:(NSRange)range

@@ -32,20 +32,13 @@
 #import "BeatPlugin+Parser.h"
 #import "BeatPlugin+Modals.h"
 #import "BeatPlugin+Editor.h"
+#import "BeatPlugin+Menus.h"
 
-// UI items are only available on macOS. (These should be split into a category.)
+// Some things are only available on macOS
 #if TARGET_OS_OSX
-#import "BeatPluginUIView.h"
-#import "BeatPluginUIButton.h"
-#import "BeatPluginUIDropdown.h"
-#import "BeatPluginUIView.h"
-#import "BeatPluginUICheckbox.h"
-#import "BeatPluginUILabel.h"
 #import "BeatSpeak.h"
 #import "BeatHTMLPrinter.h"
-
 #import "BeatModalAccessoryView.h"
-
 #endif
 
 
@@ -70,7 +63,7 @@
 
 @property (nonatomic) NSMutableArray *timers;
 @property (nonatomic) NSMutableArray *speakSynths;
-@property (nonatomic, nullable) JSValue* updateMethod;
+@property (nonatomic, nullable) JSValue* updateTextMethod;
 @property (nonatomic, nullable) JSValue* updateSelectionMethod;
 @property (nonatomic, nullable) JSValue* updateOutlineMethod;
 @property (nonatomic, nullable) JSValue* updateSceneMethod;
@@ -78,7 +71,7 @@
 @property (nonatomic, nullable) JSValue* updatePreviewMethod;
 @property (nonatomic, nullable) JSValue* escapeMethod;
 @property (nonatomic, nullable) JSValue* notepadChangeMethod;
-@property (nonatomic) bool resident;
+
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
 //@property (nonatomic) bool inCallback;
@@ -89,16 +82,6 @@
 
 @property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
 
-#if !TARGET_OS_IOS
-@property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
-@property (nonatomic) BeatPluginUIView *widgetView;
-@property (nonatomic) NSWindow *sheet;
-@property (nonatomic) BeatPluginHTMLPanel* htmlPanel;
-#else
-@property (nonatomic) id<BeatHTMLView> htmlPanel;
-@property (nonatomic) UIWindow *sheet;
-@property (nonatomic) id widgetView;
-#endif
 
 @end
 
@@ -280,7 +263,8 @@
 
 
 /// Force-quit a resident plugin. Used mostly by Beat to kill a background plugin by unchecking it under the Tools menu.
-- (void)forceEnd {
+- (void)forceEnd
+{
 	_terminating = YES;
     
     [self closeWindows];
@@ -332,7 +316,8 @@
 }
 
 /// Quits the current plugin. **Required** when using plugins with callbacks.
-- (void)end {
+- (void)end
+{
 	// If end was called in callback, we'll wait until it's done before killing the plugin altogether
     if (self.callbacksRemaining > 0) {
 		_terminateAfterCallback = YES;
@@ -365,12 +350,12 @@
     self.context = nil;
     
     // Clear all listeners
-    self.updateMethod = nil;
+    self.updateTextMethod = nil;
     self.updateSceneMethod = nil;
     self.updateOutlineMethod = nil;
     self.updatePreviewMethod = nil;
     self.updateSelectionMethod = nil;
-        
+
     // Remove from the list of running plugins
 	if (_resident) [_delegate.pluginAgent deregisterPlugin:self];
 }
@@ -427,16 +412,16 @@
  - note:When text is changed, selection will change, too. Avoid creating infinite loops by listening to both changes.
  */
 - (void)onTextChange:(JSValue*)updateMethod {
-	[self setUpdate:updateMethod];
+    [self setUpdateText:updateMethod];
 }
-- (void)setUpdate:(JSValue *)updateMethod {
+- (void)setUpdateText:(JSValue *)updateMethod {
 	// Save callback
-	_updateMethod = updateMethod;
+	_updateTextMethod = updateMethod;
 	[self makeResident];
 }
-- (void)update:(NSRange)range {
-	if (!_updateMethod || [_updateMethod isNull]) return;
-	if (!self.onTextChangeDisabled) [_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
+- (void)updateText:(NSRange)range {
+	if (_updateTextMethod == nil || _updateTextMethod.isNull) return;
+	if (!self.onTextChangeDisabled) [_updateTextMethod callWithArguments:@[@(range.location), @(range.length)]];
 }
 
 /// Creates a listener for changing selection in editor.
@@ -604,7 +589,7 @@
 	[self makeResident];
 }
 /// Allows the plugin to inject data to scene heading autocompletion list. If the plugin does not have a completion callback, it's ignored.
-- (NSArray*)completionsForSceneHeadings {
+- (NSArray<NSString*>*)completionsForSceneHeadings {
 	if (_sceneCompletionCallback == nil) return @[];
 	
 	JSValue *value = [_sceneCompletionCallback callWithArguments:nil];
@@ -617,7 +602,7 @@
 	[self makeResident];
 }
 /// Allows the plugin to inject data to character autocompletion list. If the plugin does not have a completion callback, it's ignored.
-- (NSArray*)completionsForCharacters {
+- (NSArray<NSString*>*)completionsForCharacters {
 	if (_characterCompletionCallback == nil) return @[];
 	
 	JSValue *value = [_characterCompletionCallback callWithArguments:nil];
@@ -686,13 +671,8 @@
 	});
 }
 
-- (bool)isMainThread {
-	return NSThread.isMainThread;
-}
+- (bool)isMainThread { return NSThread.isMainThread; }
 
-- (JSValue*)fetch:(JSValue*)callback {
-	return nil;
-}
 
 #pragma mark - Speak
 
@@ -721,7 +701,8 @@
 #pragma mark - Timer
 
 /// Creates a `BeatPluginTimer` object, which fires after the given interval (seconds)
-- (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
+- (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats
+{
 	BeatPluginTimer *timer = [BeatPluginTimer scheduledTimerWithTimeInterval:seconds repeats:repeats block:^(NSTimer * _Nonnull timer) {
 		[self runCallback:callback withArguments:nil];
 	}];
@@ -737,7 +718,8 @@
 }
 
 /// Removes unused timers from memory.
-- (void)cleanInvalidTimers {
+- (void)cleanInvalidTimers
+{
 	NSMutableArray *timers = NSMutableArray.new;
 	
 	for (int i=0; i < _timers.count; i++) {
@@ -749,7 +731,8 @@
 }
 
 /// Kills all background instances that might have been created by the plugin.
-- (void)stopBackgroundInstances {
+- (void)stopBackgroundInstances
+{
 	for (BeatPluginTimer *timer in _timers) {
 		[timer invalidate];
 	}
@@ -1177,48 +1160,6 @@
 }
 
 
-
-#pragma mark - Widget interface and Plugin UI API
-
-#if !TARGET_OS_IOS
-- (BeatPluginUIView *)widgetView {
-	return _widgetView;
-}
-
-- (BeatPluginUIView*)widget:(CGFloat)height
-{
-	// Allow only one widget view
-	if (_widgetView) return _widgetView;
-	
-	self.resident = YES;
-	[self.delegate.pluginAgent registerPlugin:self];
-	
-	BeatPluginUIView *view = [BeatPluginUIView.alloc initWithHeight:height];
-	_widgetView = view;
-	[_delegate addWidget:_widgetView];
-	
-	return view;
-}
-
-- (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame
-{
-	return [BeatPluginUIButton buttonWithTitle:name action:action frame:frame];
-}
-- (BeatPluginUIDropdown*)dropdown:(nonnull NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame
-{
-	return [BeatPluginUIDropdown withItems:items action:action frame:frame];
-}
-- (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame
-{
-	return [BeatPluginUICheckbox withTitle:title action:action frame:frame];
-}
-- (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName
-{
-	return [BeatPluginUILabel withText:title frame:frame color:color size:size font:fontName];
-}
-#endif
-
-
 #pragma mark - Utilities
 
 /// Returns screen frame as an array
@@ -1525,75 +1466,9 @@
 #endif
 
 
-#pragma mark - Menu items
-
-#if !TARGET_OS_IOS
-- (void)clearMenus {
-	for (NSMenuItem* topMenuItem in self.menus) {
-		[topMenuItem.submenu removeAllItems];
-		
-		// Remove menus when needed
-		if ([NSApp.mainMenu.itemArray containsObject:topMenuItem]) {
-			[NSApp.mainMenu removeItem:topMenuItem];
-		}
-	}
-}
-
-/// Adds / removes menu items based on the yurrently active document
-- (void)refreshMenus {
-	for (NSMenuItem* item in self.menus) {
-		if (_delegate.documentWindow.mainWindow && ![NSApp.mainMenu.itemArray containsObject:item]) [NSApp.mainMenu addItem:item];
-		else if (!_delegate.documentWindow.mainWindow && [NSApp.mainMenu.itemArray containsObject:item]) [NSApp.mainMenu removeItem:item];
-	}
-}
-
-- (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>* _Nullable)items {
-	BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
-	
-	for (BeatPluginControlMenuItem* item in items) {
-		[menu addItem:item];
-	}
-	
-	NSMenuItem* topMenuItem = [NSMenuItem.alloc initWithTitle:name action:nil keyEquivalent:@""];
-	
-	NSMenu* mainMenu = NSApp.mainMenu;
-	[mainMenu insertItem:topMenuItem atIndex:mainMenu.numberOfItems];
-	[mainMenu setSubmenu:menu forItem:topMenuItem];
-	
-	if (self.menus == nil) self.menus = NSMutableArray.new;
-	[self.menus addObject:topMenuItem];
-	
-	return menu;
-}
-
-- (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items {
-	NSMenuItem* topItem = [NSMenuItem.alloc initWithTitle:name action:nil keyEquivalent:@""];
-	
-	BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
-	for (BeatPluginControlMenuItem* item in items) [menu addItem:item];
-	topItem.submenu = menu;
-	
-	return topItem;
-}
-
-- (NSMenuItem*)separatorMenuItem {
-	return [NSMenuItem separatorItem];
-}
-
-- (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
-	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
-}
-#endif
-
-
 #pragma mark - Notepad
 
-#if TARGET_OS_OSX
-- (id)notepad
-{
-    return self.delegate.notepad;
-}
-#endif
+- (id)notepad { return self.delegate.notepad; }
 
 
 #pragma mark - Theme manager
