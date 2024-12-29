@@ -51,7 +51,7 @@ class BeatLineTypeView:NSView {
 	}
 	
 	@objc func update() {
-		guard !self.isHidden, let line = delegate?.currentLine() else {
+		guard !self.isHidden, let line = delegate?.currentLine else {
 			return
 		}
 		

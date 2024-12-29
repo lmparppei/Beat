@@ -977,9 +977,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Plugin support
 
 /// Returns every plugin that should be registered to be saved
-- (NSArray*)runningPluginsForSaving
+- (NSArray<NSString*>*)runningPluginsForSaving
 {
     NSMutableArray* plugins = NSMutableArray.new;
+    
     for (NSString* pluginName in self.runningPlugins.allKeys) {
         id<BeatPluginInstance> plugin = (id<BeatPluginInstance>) self.runningPlugins[pluginName];
         if (!plugin.restorable) continue;

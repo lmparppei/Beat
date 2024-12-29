@@ -48,6 +48,7 @@ import BeatCore
 			guard let character = self.character else { return }
 			
 			self.biography?.text = character.bio
+			self.biography?.textColor = .textColor
 			self.age?.stringValue = character.age
 			
 			genderUnspecified?.state = (character.gender == "" || character.gender == "unspecified") ? .on : .off
@@ -93,6 +94,7 @@ import BeatCore
 		character?.bio = biography?.text ?? ""
 		changed = true
 	}
+	
 	func controlTextDidChange(_ obj: Notification) {
 		character?.age = age?.stringValue ?? ""
 		changed = true
@@ -101,6 +103,7 @@ import BeatCore
 	@IBAction @objc func nextLine(_ sender:Any?) {
 		self.manager?.nextLine()
 	}
+	
 	@IBAction @objc func prevLine(_ sender:Any?) {
 		self.manager?.prevLine()
 	}
@@ -222,7 +225,7 @@ import BeatCore
 
 	@objc func prevLine() {
 		guard let lines = delegate?.parser.lines as? [Line],
-			  let currentLine = delegate?.currentLine(),
+			  let currentLine = delegate?.currentLine,
 			  let idx = lines.firstIndex(of: currentLine)
 		else { return }
 
@@ -239,7 +242,7 @@ import BeatCore
 	
 	@objc func nextLine() {
 		guard let lines = delegate?.parser.lines as? [Line],
-			  let currentLine = delegate?.currentLine(),
+			  let currentLine = delegate?.currentLine,
 			  let idx = lines.firstIndex(of: currentLine)
 		else { return }
 

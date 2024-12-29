@@ -54,7 +54,6 @@
 	self.timerView.progress = 1;
 	[self.timerView setNeedsDisplay:YES];
 	
-	
 	[_timer invalidate];
 	[_timerView reset];
 	[_timerView start];

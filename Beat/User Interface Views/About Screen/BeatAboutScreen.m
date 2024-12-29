@@ -24,6 +24,7 @@
 	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
 	version = [version stringByAppendingFormat:@"\nBuild %@ — %@ Distribution", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"], BeatAppDelegate.distribution];
+	
 	_versionField.stringValue = [NSString stringWithFormat:@"Version %@", version];
 }
 

@@ -84,7 +84,8 @@ extern NSString* const BeatSettingAddTitlePageByDefault;
 - (void)resetToDefault:(NSString*)key;
 /// Returns the __default__ value for key
 - (id)defaultValueFor:(NSString*)key;
-
+/// Removes ALL stored keys
+- (void)removeUserDefaults;
 
 /// Resets all suppressed alerts
 - (void)resetSuppressedAlerts;

@@ -59,7 +59,7 @@ class BeatMinimapView: NSTextView {
 		super.drawBackground(in: rect)
 		
 		// Highlight the current line
-		guard let range = self.editorDelegate?.currentLine().textRange() else { return }
+		guard let range = self.editorDelegate?.currentLine.textRange() else { return }
 		if range.location != NSNotFound {
 			NSColor.lightGray.setFill()
 			layoutManager?.enumerateFragmentRects(forLineContaining: range.location, using: { rect in

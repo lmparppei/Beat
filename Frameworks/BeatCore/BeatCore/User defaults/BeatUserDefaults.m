@@ -182,7 +182,8 @@ NSString* const BeatSettingAddTitlePageByDefault        = @"addTitlePageByDefaul
 	};
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
 	self = [super init];
 	return self;
 }
@@ -222,7 +223,8 @@ NSString* const BeatSettingAddTitlePageByDefault        = @"addTitlePageByDefaul
 	}
 }
 
-- (id)defaultValueFor:(NSString*)key {
+- (id)defaultValueFor:(NSString*)key
+{
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	if (userDefaults[key] == nil) {
 		NSLog(@"WARNING: User default key does not exist: %@", key);
@@ -391,6 +393,13 @@ NSString* const BeatSettingAddTitlePageByDefault        = @"addTitlePageByDefaul
 		
 		if (keyValues && value != nil) [NSUserDefaults.standardUserDefaults setValue:value forKey:keyValues[0]];
 	}
+}
+
+- (void)removeUserDefaults
+{
+    NSDictionary * dict = NSUserDefaults.standardUserDefaults.dictionaryRepresentation;
+    for (id key in dict) [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 @end

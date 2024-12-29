@@ -46,7 +46,6 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 			return
 		}
 	
-		//guard let url = Bundle.main.url(forResource: "Patch Notes", withExtension: "html") else { return }
 		var suffix = "/?version=" + version
 		#if ADHOC
 			suffix += "&adhoc=1"

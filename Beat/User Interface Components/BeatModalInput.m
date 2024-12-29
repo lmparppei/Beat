@@ -11,7 +11,7 @@
  the operation, but can return an empty string.
  
  BeatModalInput *input = [[BeatModalInput alloc] init];
- [self inputBoxWithMessage:@"Input Prompt" text:@"Some informative text" placeholder:@"Placeholder..." forWindow:(nonnull NSWindow *) completion:^(NSString * _Nonnull result) {
+ [input inputBoxWithMessage:@"Input Prompt" text:@"Some informative text" placeholder:@"Placeholder..." forWindow:(nonnull NSWindow *) completion:^(NSString * _Nonnull result) {
 	 NSLog(@"the user typed %@", result);
  }];
  
@@ -25,11 +25,16 @@
 @property NSAlert *dialog;
 @property NSTextField *inputField;
 @end
+
 @implementation BeatModalInput
-- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion {
+
+- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion
+{
 	[self confirmBoxWithMessage:message text:infoText forWindow:window completion:completion buttons:nil];
 }
-- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion buttons:(NSArray* _Nullable)buttons {
+
+- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion buttons:(NSArray* _Nullable)buttons
+{
 	if (!_dialog) {
 		_dialog = [[NSAlert alloc] init];
 		if (buttons) {
@@ -54,7 +59,8 @@
 	}];
 }
 
-- (void)inputBoxWithMessage:(NSString*)message text:(NSString*)infoText placeholder:(NSString*)placeholder forWindow:(NSWindow*)window completion:(void (^)(NSString *result))completion {
+- (void)inputBoxWithMessage:(NSString*)message text:(NSString*)infoText placeholder:(NSString*)placeholder forWindow:(NSWindow*)window completion:(void (^)(NSString *result))completion
+{
 	
 	if (!_dialog) {
 		_dialog = [[NSAlert alloc] init];

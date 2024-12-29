@@ -20,6 +20,7 @@
 "app.patchNotes" = "Patch Notes";
 "general.revert" = "Revert";
 "general.selectAll" = "Select All";
+"general.new" = "New";
 
 "plugins.errorRunningScript" = "Error running script";
 "plugins.input.select" = "Select...";

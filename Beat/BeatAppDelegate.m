@@ -794,19 +794,6 @@
 }
 
 
-#pragma mark - Clear user defaults
-
-- (void)removeUserDefaults
-{
-	NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary * dict = [userDefaults dictionaryRepresentation];
-	for (id key in dict)
-	{
-		[userDefaults removeObjectForKey:key];
-	}
-	[userDefaults synchronize];
-}
-
 #pragma mark - Show notifications
 
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval {

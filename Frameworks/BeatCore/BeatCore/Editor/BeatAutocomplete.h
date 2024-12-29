@@ -13,8 +13,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatAutocompletionProvider
-- (NSArray*)completionsForCharacters;
-- (NSArray*)completionsForSceneHeadings;
+- (NSArray<NSString*>*)completionsForCharacters;
+- (NSArray<NSString*>*)completionsForSceneHeadings;
 @end
 
 @interface BeatAutocomplete : NSObject
