@@ -40,7 +40,7 @@ import Foundation
     public var dictionary:[String:Any] {
         get {
             // Return empty dict if no real data was set
-            if aliases.count == 0 && age.count == 0 && (gender.count == 0 || gender == "unspecified") && realName == nil && highlightColor.count == 0 {
+            if bio.count == 0 && aliases.count == 0 && age.count == 0 && (gender.count == 0 || gender == "unspecified") && realName == nil && highlightColor.count == 0 {
                 return [:]
             }
             
