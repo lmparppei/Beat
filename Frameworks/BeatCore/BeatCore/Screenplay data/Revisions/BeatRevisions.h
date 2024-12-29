@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addRevision:(NSRange)range color:(NSString*)color;
 - (void)removeRevision:(NSRange)range;
 - (void)setup;
+- (NSDictionary<NSString*,NSArray*>*)serializedRanges;
 @end
 
 @interface BeatRevisionGeneration: NSObject
@@ -34,10 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 #else
 @interface BeatRevisions: NSResponder <BeatRevisionExports>
 #endif
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string;
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions;
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
-+ (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string;
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions;
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
++ (NSDictionary<NSString*,NSArray*>*)rangesForSaving:(NSAttributedString*)string;
 
 /// Returns an array of the old-school legacy revision colors for converting.
 + (NSArray<NSString*>*)legacyRevisions;
@@ -49,13 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*)attributeKey;
 
 /// Returns a JSON array created from revision data baked in lines.
-+ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray*)lines;
++ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray<Line*>*)lines;
 
 @property (weak) IBOutlet id<BeatEditorDelegate> _Nullable delegate;
 
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
 - (void)loadRevisions;
+
+- (NSDictionary<NSString*,NSArray*>*)serializedRanges;
 
 /// Because Apple changed something in macOS Sonoma, we need to queue changes when characters are edited AND then apply those changes if needed. Oh my fucking god.
 - (void)queueRegisteringChangesInRange:(NSRange)range delta:(NSInteger)delta;

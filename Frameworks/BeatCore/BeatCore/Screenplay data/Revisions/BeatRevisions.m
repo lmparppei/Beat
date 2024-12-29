@@ -119,18 +119,18 @@
 	return REVISION_ATTR;
 }
 
-+ (void)bakeRevisionsIntoLines:(NSArray *)lines text:(NSAttributedString *)string range:(NSRange)range {
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString *)string range:(NSRange)range {
     //
 }
 
 /// Bakes the revised ranges from editor into corresponding lines in the parser.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string
 {
     NSIndexSet* allRevisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.revisionGenerations.count)];
 	[self bakeRevisionsIntoLines:lines text:string includeRevisions:allRevisions];
 }
 /// Bakes the revised ranges from editor into corresponding lines in the parser. When needed, you can specify which revisions to include.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions
 {
 	// This is a new implementation of the old code, which enumerates line ranges instead of the whole attributed string and then iterating over lines.
 	// Slower with short documents, 90 times faster on longer ones.
@@ -187,14 +187,14 @@
 }
 
 /// Bakes the revised ranges from editor into corresponding lines in the parser.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string
++ (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines revisions:(NSDictionary*)revisions string:(NSString*)string
 {
     NSAttributedString *attrStr = [self attrStringWithRevisions:revisions string:string];
     [self bakeRevisionsIntoLines:lines text:attrStr];
 }
 
 /// Returns a JSON array created from revision data baked in lines.
-+ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray*)lines
++ (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray<Line*>*)lines
 {
     NSDictionary<NSString*,NSMutableArray*>* ranges = @{
         @"Addition": NSMutableArray.new,
@@ -240,7 +240,7 @@
 #pragma mark JSON data for saved files
 
 /// Returns the revised ranges to be saved into data block of the Fountain file
-+ (NSDictionary*)rangesForSaving:(NSAttributedString*)string
++ (NSDictionary<NSString*,NSArray*>*)rangesForSaving:(NSAttributedString*)string
 {
     NSMutableAttributedString *str = string.mutableCopy;
     
@@ -282,6 +282,12 @@
     }];
     
     return ranges;
+}
+
+/// Returns serialized ranges for current document. You can use these values either for saving to document settings or in plugins etc.
+- (NSDictionary<NSString*,NSArray*>*)serializedRanges
+{
+    return [BeatRevisions rangesForSaving:self.delegate.attributedString];
 }
 
 
