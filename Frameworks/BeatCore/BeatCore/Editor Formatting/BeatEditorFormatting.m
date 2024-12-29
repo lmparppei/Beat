@@ -412,7 +412,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
 		// Do some extra checks for dual dialogue
-		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
+        if (line.length && line.string.lastNonWhiteSpaceCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
         
 		// Only do this if we are REALLY typing at this location
@@ -528,6 +528,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     if (style.italic) [self applyTrait:BXItalicFontMask range:line.textRange textStorage:textStorage];
     if (style.underline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
 	
+    // Italic for note
+    [line.noteRanges enumerateRangesInRange:range options:0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
+        [self applyTrait:BXItalicFontMask range:globalRange textStorage:textStorage];
+    }];
+    
 	//Add in bold, underline, italics and other stylization
 	[line.italicRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
@@ -541,7 +547,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
 		[self applyTrait:BXBoldFontMask | BXItalicFontMask range:globalRange textStorage:textStorage];
 	}];
-	
 	[line.underlinedRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
 	}];
