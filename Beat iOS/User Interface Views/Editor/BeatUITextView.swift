@@ -333,7 +333,7 @@ import EasyPeasy
 	
 	func shouldCancelCharacterInput() -> Bool {
 		guard let editorDelegate = self.editorDelegate,
-			  let line = editorDelegate.currentLine()
+			  let line = editorDelegate.currentLine
 		else { return true }
 		
 		/// We'll return `true` when current line is empty (what is this)
@@ -347,7 +347,7 @@ import EasyPeasy
 
 		var shouldCancel = true
 		
-		if editorDelegate.characterInputForLine != nil, editorDelegate.currentLine().position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
+		if editorDelegate.characterInputForLine != nil, editorDelegate.currentLine.position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
 			shouldCancel = false
 		}
 		

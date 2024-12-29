@@ -77,7 +77,7 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	}
 	
 	public func numberOfSuggestionsInInputAssistantView() -> Int {
-		guard let line = delegate?.currentLine(), let delegate = self.delegate else { return 0 }
+		guard let line = delegate?.currentLine, let delegate = self.delegate else { return 0 }
 		
 		// If the currently edited line has changed, we'll refresh the results
 		if line != prevLine || prevLineType != line.type {
@@ -214,7 +214,7 @@ open class InputAssistantView: UIInputView {
 	
 	public func reloadData() {
 		// We'll only refresh data if the line has changed
-		guard let line = self.dSource?.delegate?.currentLine(), let delegate else { return }
+		guard let line = self.dSource?.delegate?.currentLine, let delegate else { return }
 
 		suggestionsCollectionView.reloadData()
 		

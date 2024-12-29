@@ -13,12 +13,12 @@ extension BeatUITextView: InputAssistantViewDelegate {
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
 		guard let editorDelegate = self.editorDelegate, suggestion.count > 0 else { return }
 		
-		if suggestion[0] == "(" && editorDelegate.currentLine().isAnyCharacter() {
+		if suggestion[0] == "(" && editorDelegate.currentLine.isAnyCharacter() {
 			// This is a character extension
-			editorDelegate.textActions.addCueExtension(suggestion, on: editorDelegate.currentLine())
+			editorDelegate.textActions.addCueExtension(suggestion, on: editorDelegate.currentLine)
 		} else {
 			// This is something else
-			let r = NSMakeRange(editorDelegate.currentLine().position, editorDelegate.currentLine().length)
+			let r = NSMakeRange(editorDelegate.currentLine.position, editorDelegate.currentLine.length)
 			editorDelegate.textActions.replace(r, with: suggestion)
 		}
 	}
@@ -34,7 +34,7 @@ extension BeatUITextView: InputAssistantViewDelegate {
 		guard let editorDelegate = self.editorDelegate
 		else { return }
 		
-		if (editorDelegate.currentLine().isAnyParenthetical()) {
+		if (editorDelegate.currentLine.isAnyParenthetical()) {
 			self.autocapitalizationType = .none
 		} else {
 			self.autocapitalizationType = .sentences
@@ -287,7 +287,7 @@ extension BeatUITextView {
 	}
 	
 	@objc func moveUp() {
-		guard let line = editorDelegate?.currentLine(), let parser = editorDelegate?.parser else { return }
+		guard let line = editorDelegate?.currentLine, let parser = editorDelegate?.parser else { return }
 		
 		if let prevLine = parser.previousLine(line) {
 			self.selectedRange = NSMakeRange(NSMaxRange(prevLine.textRange()), 0)
@@ -295,7 +295,7 @@ extension BeatUITextView {
 	}
 	
 	@objc func moveDown() {
-		guard let line = editorDelegate?.currentLine(), let parser = editorDelegate?.parser else { return }
+		guard let line = editorDelegate?.currentLine, let parser = editorDelegate?.parser else { return }
 		
 		if let prevLine = parser.nextLine(line) {
 			self.selectedRange = NSMakeRange(NSMaxRange(prevLine.textRange()), 0)
@@ -444,7 +444,7 @@ extension BeatUITextView {
 	}
 	
 	@objc func deleteLine() {
-		guard let editorDelegate, let line = self.editorDelegate?.currentLine() else { return }
+		guard let editorDelegate, let line = self.editorDelegate?.currentLine else { return }
 		var range = line.range()
 		if NSMaxRange(range) > editorDelegate.text().count {
 			range.length = max(0, editorDelegate.text().count - range.location)
@@ -479,7 +479,7 @@ extension BeatUITextView {
 			}
 		}
 		
-		guard let line = editorDelegate?.currentLine() else { return UIMenu(children: actions) }
+		guard let line = editorDelegate?.currentLine else { return UIMenu(children: actions) }
 		
 		if line.isAnyDialogue() || line.type == .action {
 			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
