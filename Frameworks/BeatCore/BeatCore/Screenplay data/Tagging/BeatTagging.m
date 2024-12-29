@@ -149,6 +149,7 @@
     return categories;
 }
 
+/// Styled tag items for text view tagging menu
 + (NSArray<NSAttributedString*>*)styledTagsForMenu
 {
 	NSArray *tags = BeatTagging.categories;
@@ -164,6 +165,7 @@
 	
 	return styledTags;
 }
+
 
 + (NSString*)localizedTagNameForType:(BeatTagType)type
 {
@@ -282,7 +284,7 @@
 	return dict;
 }
 
-- (void)loadTags:(NSArray<NSDictionary*>*)tags definitions:(NSArray*)definitions
+- (void)loadTags:(NSArray<NSDictionary*>*)tags definitions:(NSArray<NSDictionary*>*)definitions
 {
 	self.tagDefinitions = NSMutableArray.new;
 	for (NSDictionary *dict in definitions) {
@@ -311,7 +313,7 @@
 /**
  This bakes the tag items in text view string into given set of lines. The lines then retain the references to the tag items, which we carry on to FDX export. It's a class method for some reason.
  */
-+ (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines
++ (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray<Line*>*)lines
 {
 	for (Line *line in lines) {
 		if (line.length == 0) continue;
@@ -336,12 +338,12 @@
 	}
 }
 
-- (NSArray*)allTags
+- (NSArray<BeatTag*>*)allTags
 {
     return [BeatTagging allTagsFrom:_delegate.attributedString];
 }
 
-+ (NSArray*)allTagsFrom:(NSAttributedString*)string
++ (NSArray<BeatTag*>*)allTagsFrom:(NSAttributedString*)string
 {
     NSMutableArray<BeatTag*> * tags = NSMutableArray.new;
     [string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -658,7 +660,7 @@
 }
 
 /// Returns dictionary values for used definitions
-- (NSArray*)getDefinitions
+- (NSArray<TagDefinition*>*)getDefinitions
 {
 	NSArray *allTags = [self allTags];
 	NSMutableArray *defs = [NSMutableArray array];

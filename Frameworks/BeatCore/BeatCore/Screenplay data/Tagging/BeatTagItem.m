@@ -39,14 +39,13 @@
 	[_indices addIndexesInRange:range];
 }
 
-- (NSArray*)rangesAsArray
+- (NSArray<NSValue*>*)ranges
 {
-	NSMutableArray *ranges = [NSMutableArray array];
-	[_indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[ranges addObject:[NSValue valueWithRange:range]];
-	}];
-	
-	return ranges;
+    NSMutableArray<NSValue*>* ranges = NSMutableArray.new;
+    [_indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [ranges addObject:[NSValue valueWithRange:range]];
+    }];
+    return ranges;
 }
 
 - (bool)inRange:(NSRange)range
@@ -54,14 +53,7 @@
 	return [_indices containsIndexesInRange:range];
 }
 
-- (NSArray*)ranges
-{
-	NSMutableArray *ranges = [NSMutableArray array];
-	[_indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[ranges addObject:[NSValue valueWithRange:range]];
-	}];
-	return ranges;
-}
+
 
 #pragma mark - Debugging
 

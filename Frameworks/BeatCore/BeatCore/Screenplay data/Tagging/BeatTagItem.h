@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TagColor*)color;
 - (NSString*)key;
 - (void)addRange:(NSRange)range;
-- (NSArray*)ranges;
+- (NSArray<NSValue*>*)ranges;
 @end
 
 NS_ASSUME_NONNULL_END

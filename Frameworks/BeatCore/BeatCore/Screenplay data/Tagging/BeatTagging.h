@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 /// Returns localized tag type name and a colored circle
 + (NSAttributedString*)styledTagFor:(NSString*)tag;
 /// Bake tags to line elements
-+ (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
++ (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray<Line*>*)lines;
 /// Dictionary of colors associated with tags (string key)
 + (NSDictionary<NSString*, BXColor*>*)tagColors;
 /// Returns the color for given tag type
@@ -131,7 +131,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 /// Loads tags for current document from document settings and applies tag attributes to editor text.
 - (void)setup;
 /// Loads given list of tag items with definitions and applies tag attributes to editor text.
-- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions;
+- (void)loadTags:(NSArray<NSDictionary*>*)tags definitions:(NSArray<NSDictionary*>*)definitions;
 
 /// Returns a dictionary of tag definitions in current document
 - (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)tagsForScene:(OutlineScene*)scene;
@@ -144,13 +144,13 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 /// A UI string for listing tags in given scene
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
 /// Returns all tag __definitions__ in current document.
-- (NSArray*)getDefinitions;
+- (NSArray<TagDefinition*>*)getDefinitions;
 /// Creates a tag item (the ones that are attached as attributes in text view) with given name and type
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;
 /// Returns an array for saving the tags for converting to JSON
 - (NSArray<NSDictionary<NSString*,id>*>*)serializedTagData;
 /// Returns an array of **all** tags in given document
-- (NSArray*)allTags;
+- (NSArray<BeatTag*>*)allTags;
 /// Returns a dictionary of all tag definitions by type
 - (NSDictionary<NSString*, NSArray<TagDefinition*>*>*)sortedTags;
 /// Returns `true` if there is a tag definition for given name and type

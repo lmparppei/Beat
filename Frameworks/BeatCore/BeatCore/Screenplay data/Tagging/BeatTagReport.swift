@@ -29,7 +29,7 @@ public extension BeatTagging {
             // For some reason Swift doesn't read our types correctly, we'll need to cast them
             let typeText = NSMutableAttributedString()
             
-            for scene in self.delegate.parser.scenes() as? [OutlineScene] ?? [] {
+            for scene in self.delegate.parser.scenes() {
                 let singleListing = singleTagListing(for: scene, type: type, includeHeading: true)
                 if singleListing.string.count > 0 {
                     typeText.append(singleListing)
@@ -54,8 +54,7 @@ public extension BeatTagging {
     func reportByScene(_ types:[BeatTagType]) -> NSAttributedString {
         let text = NSMutableAttributedString()
         
-        for item in delegate.parser.scenes() {
-            guard let scene = item as? OutlineScene else { continue }
+        for scene in delegate.parser.scenes() {
             guard let tagsForScene = tags(for: scene), tagsForScene.count > 0 else { continue }
             
             // Add heading for this scene
@@ -94,7 +93,7 @@ public extension BeatTagging {
         let text = NSMutableAttributedString()
         var foundTags:[String] = []
         
-        let lines = self.delegate.parser.lines(for: scene) as? [Line] ?? []
+        let lines = self.delegate.parser.lines(for: scene) ?? []
                         
         for line in lines {
             for value in line.tags as? [[String:Any]] ?? [] {
