@@ -70,7 +70,13 @@
 //
 //    2023 pre-new-year edit: FUCK YOU APPLE.
 //
-//    2024 edit: I'm conforming this class to the outline view protocol, and almost forgot to add that APPLE SHOULD GO FUCK THEMSELVES.
+//    2024 edit: I'm conforming this class to the outline view protocol, and almost
+//	  forgot to add that APPLE SHOULD GO FUCK THEMSELVES.
+//
+//    Late 2024 edit: I'm on the Geneva airport, trying to make sense to this code.
+//    And yes, FUCK YOU APPLE. Go fuck yourselves with all the pink washing.
+//    STOP THE GENOCIDE IN PALESTINE AND END UYGHUR SLAVE CAMPS.
+//    SEIZE THE MEANS OF PRODUCTION.
 
 
 //    So, back to the code:
@@ -112,7 +118,7 @@
 		
 	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
-	self.filteredOutline = [NSMutableArray array];
+	self.filteredOutline = NSMutableArray.new;
 	
 	self.menu.delegate = self;
 	
@@ -527,6 +533,8 @@
 	/*
 	 I have no idea what this code actually does. I've written it in lockdown (probably) and it's now November 2022.
 	 Now, I'll do my best to document and comment the code.
+	 
+	 Update on Geneva airport in 2024: You didn't comment it at all, past me.
 	 */
 	
 	// Target is always a SECTION, childIndex speaks for itself.
@@ -537,14 +545,17 @@
 	
 	OutlineScene* targetScene = targetItem;
 	
+	// What is this?
 	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetItem];
 	
+	// First we'll determine the indices
 	NSInteger to = index;
 	NSInteger from = [outline indexOfObject:_draggedScene];
 	NSInteger position = 0; // Used for sections
 	
+	// The other indices are local (section-bound) indices, so we nede to figure out the actual position in flat outline.
 	if (index == NSNotFound || index < 0) {
-		// Dropped directly into a section
+		// Dropped directly into a section header
 		OutlineScene *lastInSection = targetScene.siblings.lastObject;
 				
 		if (lastInSection != nil) {
@@ -556,7 +567,7 @@
 			to = [self.outline indexOfObject:targetItem] + 1;
 		}
 	} else {
-		// Dropped normally
+		// Dropped normally between scenes
 		if (scene) {
 			to = [self.outline indexOfObject:scene];
 			position = scene.position;
@@ -573,11 +584,13 @@
 		}
 	}
 	
-	if (from == to || from  == to - 1) return NO;
+	// If scene is being moved to the same index, do nothing.
+	if (from == to || from == to - 1) return NO;
+	
 	self.dragging = true;
 	
-	// If it's a section, let's move everything it contains
 	if (_draggedScene.type == section) {
+		// If the dropped item is a section, let's move everything it contains
 		NSArray <OutlineScene*>*scenesInSection = @[_draggedScene];
 		scenesInSection = [scenesInSection arrayByAddingObjectsFromArray:[self.editorDelegate.parser scenesInSection:_draggedScene]];
 		
@@ -595,22 +608,6 @@
 	
 	return YES;
 }
-
-/*
- -(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
- // For those who come after
- 
- OutlineScene *outlineItem = item;
- if (outlineItem.type == section) {
- self.editing = YES;
- return YES;
- }
- else {
- self.editing = NO;
- return NO;
- }
- }
- */
 
 - (void)scrollToScene:(OutlineScene*)scene
 {
@@ -664,12 +661,14 @@
 	} else {
 		[_filters resetScenes];
 	}
+
+	NSLog(@"OUTLINE: %@", self.editorDelegate.outline);
 	
-	//_filteredOutline = _filters.filteredScenes;
-	
-	for (OutlineScene * scene in self.editorDelegate.outline) {
+	for (OutlineScene* scene in self.editorDelegate.outline) {
 		if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}
+	
+	NSLog(@" -> filtered %@", _filteredOutline);
 }
 
 #pragma mark - Advanced Filtering

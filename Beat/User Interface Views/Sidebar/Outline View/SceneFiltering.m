@@ -65,11 +65,13 @@
 	[_colors addObject:color];
 }
 
-- (void)removeColorFilter:(NSString*)color {
+- (void)removeColorFilter:(NSString*)color
+{
 	[_colors removeObject:color];
 }
 
-- (void)resetScenes {
+- (void)resetScenes
+{
 	_character = @"";
 }
 
@@ -88,7 +90,7 @@
 {
 	NSInteger matches = 0;
 	
-	if (self.text.length && [scene.string containsString:self.text]) {
+	if (self.text.length && [scene.string.lowercaseString containsString:self.text.lowercaseString]) {
 		matches++;
 	}
 	if (self.character.length && [scene.characters containsObject:self.character]) {
