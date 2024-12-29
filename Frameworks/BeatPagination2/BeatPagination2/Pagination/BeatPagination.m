@@ -343,11 +343,11 @@
 			line.type == empty ||
 			line.isTitlePage ||
 			(line.isOmitted) ||
-            (line.note && !_settings.printNotes) ||
+            (line.isNote && !_settings.printNotes) ||
 
             // Check if the line is invisible AND it's not spared in export settings.
             (line.isInvisible &&
-                !([_settings.additionalTypes containsIndex:line.type] || (line.note && _settings.printNotes))
+                !([_settings.additionalTypes containsIndex:line.type] || (line.isNote && _settings.printNotes))
              )
             ) {
 			[_lineQueue removeObjectAtIndex:0];

@@ -35,6 +35,24 @@ static NSString* BeatFormattingKeyBold = @"BeatBold";
 static NSString* BeatFormattingKeyBoldItalic = @"BeatBoldItalic";
 static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
+#pragma mark - Shorthand initializers
+
++ (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
+    return [[Line alloc] initWithString:string type:type position:0 parser:parser];
+}
++ (Line*)withString:(NSString*)string type:(LineType)type {
+    return [[Line alloc] initWithString:string type:type];
+}
+
+/// Use this ONLY for creating temporary lines while paginating
++ (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
+    return [[Line alloc] initWithString:string type:type pageSplit:YES];
+}
+
++ (NSArray*)markupCharacters {
+    return @[@".", @"@", @"~", @"!"];
+}
+
 #pragma mark - Initialization
 
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser {
@@ -57,6 +75,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         _omittedRanges = NSMutableIndexSet.indexSet;
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
+        
         _uuid = NSUUID.UUID;
         
         _originalString = string;
@@ -97,24 +116,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         if (pageSplit) [self resetFormatting];
     }
     return self;
-}
-
-#pragma mark - Shorthands
-
-+ (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
-    return [[Line alloc] initWithString:string type:type position:0 parser:parser];
-}
-+ (Line*)withString:(NSString*)string type:(LineType)type {
-    return [[Line alloc] initWithString:string type:type];
-}
-
-/// Use this ONLY for creating temporary lines while paginating
-+ (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
-    return [[Line alloc] initWithString:string type:type pageSplit:YES];
-}
-
-+ (NSArray*)markupCharacters {
-    return @[@".", @"@", @"~", @"!"];
 }
 
 
@@ -255,12 +256,6 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
 }
 
-/// Retuns current line type as string
-- (NSString*)typeAsString
-{
-    return [Line typeAsString:self.type];
-}
-
 /// Returns line type for string
 + (LineType)typeFromName:(NSString *)name
 {
@@ -319,6 +314,11 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }
 }
 
+/// Retuns current line type as string
+- (NSString*)typeAsString
+{
+    return [Line typeAsString:self.type];
+}
 
 
 #pragma mark - Thread-safe getters

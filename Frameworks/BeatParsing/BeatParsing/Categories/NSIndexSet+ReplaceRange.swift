@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension NSMutableIndexSet {
+public extension NSMutableIndexSet {
     /// Replaces a range in this index set
     @objc func replaceRange(_ range:NSRange, lengthChange length:Int) {
         let startIndex = range.location
@@ -23,5 +23,19 @@ extension NSMutableIndexSet {
             self.remove(index)
             self.add(index + length)
         }
+    }
+}
+
+public extension NSIndexSet {
+    @objc func arrayRepresentation() -> NSArray {
+        let array = NSMutableArray()
+        
+        enumerateRanges { range, stop in
+            if range.length > 0 {
+                array.add([ range.location, range.length])
+            }
+        }
+        
+        return array as NSArray
     }
 }

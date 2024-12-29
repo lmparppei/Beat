@@ -79,8 +79,9 @@
 		else height = rightHeight;
 	} else {
 		for (Line* line in self.lines) {
+            // This is not beautiful or elegant. Sorry.
 			if (line.isInvisible && !([settings.additionalTypes containsIndex:line.type] ||
-                                     (line.note && settings.printNotes)
+                                     (line.isNote && settings.printNotes)
                                      )) continue;
 			CGFloat lineHeight = [self heightForLine:line];
 			height += lineHeight;

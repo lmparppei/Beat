@@ -203,12 +203,12 @@
 	while (lineIndex < _delegate.parser.lines.count) {
 		Line* line = _delegate.parser.lines[lineIndex];
 		if (line.isOutlineElement) break;
-		else if (line.omitted && !line.note) {
+		else if (line.omitted && !line.isNote) {
 			lineIndex++;
 			continue;
 		}
 		
-		if (!line.note) snippet = line.stripFormatting;
+		if (!line.isNote) snippet = line.stripFormatting;
 		else {
 			snippet = [line.string stringByReplacingOccurrencesOfString:@"[[" withString:@""];
 			snippet = [snippet stringByReplacingOccurrencesOfString:@"]]" withString:@""];

@@ -108,13 +108,10 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly) NSRange textRange;
 @property (readonly) bool omitIn;
 @property (readonly) bool omitOut;
-@property (readonly) bool omitted;
-@property (readonly) bool note;
-@property (readonly) bool centered;
+
 @property (readonly, atomic) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
-@property (nonatomic, readonly) NSArray<BeatNoteData*>* notes;
 
 @property (nonatomic, readonly) bool noteIn;
 @property (nonatomic, readonly) bool noteOut;
@@ -126,47 +123,23 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) NSDictionary* ranges;
 @property (nonatomic, readonly) NSMutableDictionary <NSNumber*, NSMutableIndexSet*>* revisedRanges;
 
-@property (nonatomic) NSArray<Storybeat*>* beats;
+@property (nonatomic, readonly) NSArray<Storybeat*>* beats;
 
 @property (nonatomic) bool collapsed;
 
 - (NSString*)stripFormatting;
-- (bool)isTitlePage;
-- (bool)isInvisible;
-- (bool)isDialogue;
-- (bool)isDualDialogue;
-- (bool)isDialogueElement;
-- (bool)isAnySortOfDialogue;
-- (bool)isDualDialogueElement;
-- (bool)isOutlineElement;
 - (bool)effectivelyEmpty;
-- (NSString*)typeAsString;
+
 - (NSString*)characterName;
 - (NSString*)textContent;
 - (NSDictionary*)forSerialization;
 - (NSString*)trimmed;
-- (bool)forced;
+
 - (id)clone;
-- (NSIndexSet*)contentRanges;
-- (NSIndexSet*)contentRangesWithNotes;
-
-- (BOOL)hasExtension;
-
-- (bool)hasBeat;
-- (bool)hasBeatForStoryline:(NSString*)storyline;
-- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
 
 // Identity
 - (BOOL)matchesUUIDString:(NSString*)uuid;
 - (NSString*)uuidString;
-
-/// Returns a dictionary with the *actual range* (including brackets) as the key
-- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
-/// Returns note content strings as an array
-- (NSArray*)noteContents;
-- (NSArray*)noteData;
-/// Returns the **last** available range adn note with given prefix  (`[range, content]`)
-- (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string;
 
 JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(id)value);
 - (id)getCustomData:(NSString*)key;
@@ -184,14 +157,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 #pragma mark - Line Object
 
 @interface Line: NSObject <LineExports, NSCopying>
-
-#pragma mark Class methods
-
-/// Returns a dictionary of all available types.
-+ (NSDictionary*)typeDictionary;
-/// Returns the type name for given string. Type names are basically `LineType`s in a string form, with no spaces. Use `typeAsString` to get a human-readable type string.
-+ (NSString*)typeName:(LineType)type;
-
 
 #pragma mark Initializers
 
@@ -236,10 +201,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSRange)range;
 /// Range of the string only, __excluding__ line break
 - (NSRange)textRange;
-/// Converts a global range to the local range insde this string.
-- (NSRange)globalRangeToLocal:(NSRange)range;
-/// Converts a local range to global range.
-- (NSRange)globalRangeFromLocal:(NSRange)range;
 
 /// Legacy method for backwards-compatibility. Use `.stripFormatting` instead.
 - (NSString*)textContent;
@@ -263,16 +224,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Returns a trimmed string
 - (NSString*)trimmed;
 
-/// An attributed string with Final Draft compatible attribute names.
-- (NSAttributedString*)attributedStringForFDX;
-/// An attributed string with Final Draft compatible attribute names.
-- (NSAttributedString*)attributedString;
-/// An attributed string with macros resolved and formatting ranges removed
-- (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings;
-
-/// Returns and caches the line with attributes.
-/// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
-@property (nonatomic) NSAttributedString *attrString;
+/// A JSON object for plugin use
+- (NSDictionary*)forSerialization;
 
 
 #pragma mark - Identity
@@ -301,7 +254,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// All storyline NAMES (string) in this line
 @property (nonatomic) NSArray<NSString*>* storylines;
 /// All story beats in this line
-@property (nonatomic) NSArray<Storybeat*>* beats;
+@property (nonatomic, readonly) NSArray<Storybeat*>* beats;
 /// Tags in this line (once they are baked into lines before export to FDX)
 @property (nonatomic) NSMutableArray<NSDictionary*>* tags;
 /// Lines can hold any sort of custom data when needed. Used by plugins.
@@ -321,9 +274,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) bool collapsed;
 
 
-#pragma mark - Ranges
-
-#pragma mark Formatting
+#pragma mark - Formatting
 
 /// The type which this line was previously formatted as. Can be used for checking if the type has changed before reformatting.
 @property (atomic) LineType formattedAs;
@@ -345,9 +296,14 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 /// Returns `true` if the line doesn't have any formatting characters.
 -(bool)noFormatting;
+/// Reformats Fountain string inside the line and stores the ranges
+- (void)resetFormatting;
 
 
 #pragma mark Other data ranges
+
+/// Character name, excluding any extensions
+- (NSString*)characterName;
 
 /// Range of opening title key (title page elements)
 @property (nonatomic) NSRange titleRange;
@@ -356,42 +312,12 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Range of scene color tag (including note brackets)
 @property (nonatomic) NSRange colorRange;
 
-/// Ranges of story beats
-@property (nonatomic) NSMutableIndexSet *beatRanges;
+/// Ranges of story beats (note: This is a getter, underlying value is `__beatRanges`)
+@property (nonatomic, readonly) NSMutableIndexSet *beatRanges;
+/// Actual beat ranges
+@property (nonatomic) NSMutableIndexSet* __beatRanges;
 /// Ranges of removal suggestions (opposite of revisions)
 @property (nonatomic) NSMutableIndexSet* removalSuggestionRanges;
-
-
-#pragma mark Range methods
-
-/// Indices of formatting characters
-- (NSIndexSet*)formattingRanges;
-/// Returns indices of formatting characters.
-/// @param globalRange When `true`, the index set will include global (and not local) indices
-- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
-/// Returns indices of formatting characters.
-/// @param globalRange When `true`, the index set will include global (and not local) indices (default is false)
-/// @param includeNotes When `true`, the index set will include note ranges (default is true)
-/// @param includeOmissions  When `true`, the index set will include omitted ranges (default is true)
-- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes includeOmissions:(bool)includeOmissions;
-/// Indices of printed content (excluding formatting symbols etc.)
-- (NSIndexSet*)contentRanges;
-/// Indices of printed content (excluding formatting symbols etc.) *including* given ranges.
-- (NSIndexSet*)contentRangesIncluding:(NSIndexSet*)includedRanges;
-/// Indices of printed content (excluding formatting symbols etc.), but with notes
-- (NSIndexSet*)contentRangesWithNotes;
-/// Character name, excluding any extensions
-- (NSString*)characterName;
-/// Range of the character name in the cue
-- (NSRange)characterNameRange;
-/// Reformats Fountain string inside the line and stores the ranges
-- (void)resetFormatting;
-/// Joins a line into this line. Copies all stylization and offsets the formatting ranges.
-- (void)joinWithLine:(Line*)line;
-/// Splits the line at given index, and also formats it back to a Fountain string, even if the split happens inside a formatted range.
-- (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index;
-/// A JSON object for plugin use
-- (NSDictionary*)forSerialization;
 
 
 #pragma mark - Omissions
@@ -401,12 +327,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Whether the line starts a note and doesn't finish it
 @property (nonatomic) bool omitOut;
 
-/// The line is omitted completely from print — either inside an omission block or a note. Legacy compatibility.
-- (bool)omitted;
-/// This line is actually only omitted (wrapped between `/* */`.
-- (bool)isOmitted;
-/// The line is centered (wtf)
-- (bool)centered;
 /// Return `true` if the line either bleeds out an omission or closes an existing one
 - (bool)opensOrClosesOmission;
 
@@ -419,23 +339,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) bool noteOut;
 /// Returns all note data in this line (this is a mess, read more inside the method)
 @property (nonatomic) NSMutableArray<BeatNoteData*>* noteData;
-
-/// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`)
-- (bool)canTerminateNoteBlock;
-/// Returns `true` if the note is able to succesfully terminate a multi-line note block (contains `]]`), and can also return the index of closing element
-- (bool)canTerminateNoteBlockWithActualIndex:(NSInteger*)position;
-/// Returns `true` if the line can begin a note block, and can also return the index of the possible opening element
-- (bool)canBeginNoteBlockWithActualIndex:(NSInteger*)index;
-/// Returns `true` if the line can begin a note block
-- (bool)canBeginNoteBlock;
-
-/// The line is filled by a note and has no other content
-- (bool)note;
-
-/// Returns a dictionary with the *actual range* (including brackets) as the key
-- (NSMutableDictionary<NSValue*, NSString*>*)noteContentsAndRanges;
-/// Returns note content strings as an array
-- (NSArray*)noteContents;
 
 
 #pragma mark - Title page lines
@@ -491,30 +394,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSInteger revisionGeneration;
 
 
-#pragma mark - Story beats
-
-/// The line contains a story beat
-- (bool)hasBeat;
-/// Returns `true` if the line contains a story beat for the given storyline.
-- (bool)hasBeatForStoryline:(NSString*)storyline;
-/// Returns the story beat item for given storyline name.
-- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
-/// Returns the range for first story beat on this line.
-- (NSRange)firstBeatRange;
-
 
 #pragma mark - Convenience methods
-
-/// Returns type based on type _name_ (not `typeAsString` value)
-+ (LineType)typeFromName:(NSString *)name;
-
-/// Returns the line type in a human-readable form.
-- (NSString*)typeAsString;
-/// Returns the type name for this line. It's basically `LineType` as string, useful for variables, CSS styles etc. To get a human-readable version, use `typeAsString`.
-- (NSString*)typeName;
-
-/// Returns `true` if the line has a forced type
-- (bool)forced;
 
 /// Returns `true` if the line can be considered as empty. Look into the method to see what this means. (I can't remember)
 - (bool)effectivelyEmpty;
@@ -522,38 +403,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Returns the last character in string
 /// @warning Be careful not to go out of range, always check the length before using this!
 - (unichar)lastCharacter;
-
-/// returns `true` for anything that can be part of a split paragraph block
-- (bool)canBeSplitParagraph;
-/// returns `true` for any title page element
-- (bool)isTitlePage;
-/// returns `true` when the line is non-printed
-- (bool)isInvisible;
-/// Returns `true` for any sort of dialogue, no matter if single or dual, cue or dialogue/parenthetical
-- (bool)isAnySortOfDialogue;
-/// returns `true` for character cues too
-- (bool)isDialogue;
-/// returns `true` for elements other than a character cue
-- (bool)isDialogueElement;
-/// returns `true` for dual dialogue characters too
-- (bool)isDualDialogue;
-/// returns `true` for elements other than a character cue
-- (bool)isDualDialogueElement;
-/// returns `true` for scene heading, section and synopsis
-- (bool)isOutlineElement;
-/// returns `true` for single and dual dialogue character cue
-- (bool)isAnyCharacter;
-/// returns `true` for single and dual dialogue parenthetical
-- (bool)isAnyParenthetical;
-/// returns `true` for single and dual dialogue
-- (bool)isAnyDialogue;
-/// returns `true` when the character cue has an extension (CONT'D), (V.O.) etc.
-- (BOOL)hasExtension;
-/// returns `true` if this begins a boneyard section
-- (bool)isBoneyardSection;
-
-- (bool)hasEmojis;
-- (NSArray<NSValue*>*)emojiRanges;
 
 /// returns `true` if the *visible* content is uppercase, which means that any notes etc. won't be taken into consideration.
 - (bool)visibleContentIsUppercase;

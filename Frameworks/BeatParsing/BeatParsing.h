@@ -15,6 +15,13 @@
 #import <BeatParsing/ContinuousFountainParser+Omissions.h>
 
 #import <BeatParsing/Line.h>
+#import <BeatParsing/Line+Type.h>
+#import <BeatParsing/Line+ConvenienceTypeChecks.h>
+#import <BeatParsing/Line+AttributedStrings.h>
+#import <BeatParsing/Line+Storybeats.h>
+#import <BeatParsing/Line+Notes.h>
+#import <BeatParsing/Line+RangeLookup.h>
+
 #import <BeatParsing/OutlineScene.h>
 #import <BeatParsing/FountainRegexes.h>
 #import <BeatParsing/BeatDocumentSettings.h>

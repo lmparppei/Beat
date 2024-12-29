@@ -345,7 +345,7 @@
 		if (line.type == empty && line.string.length > 0 && !line.string.containsOnlyWhitespace) line.type = action;
 		        
 		// Skip omited lines
-		if (line.omitted && !line.note) {
+        if (line.omitted && !line.isNote) {
 			if (line.type == empty) previousLine = line;
 			continue;
 		}

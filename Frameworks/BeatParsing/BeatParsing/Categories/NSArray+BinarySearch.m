@@ -19,7 +19,6 @@
     while (min <= max) {
         NSInteger idx = min + (max - min) / 2;
         id item = self[idx];
-        //Line* l = lines[idx];
         
         NSInteger value = ((NSNumber*)[item valueForKey:key]).integerValue;
         

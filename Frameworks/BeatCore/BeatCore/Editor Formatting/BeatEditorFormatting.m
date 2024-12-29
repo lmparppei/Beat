@@ -709,7 +709,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Foreground color attributes
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
-	if (line.omitted && !line.note) {
+	if (line.omitted && !line.isNote) {
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
 		return;
 	}

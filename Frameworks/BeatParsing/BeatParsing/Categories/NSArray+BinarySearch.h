@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSArray (BinarySearch)
 
-/// Performs a binary search for given **integer** value in the object.
+/// Performs a binary search for given **integer** value in the object, expecting it to be descending. Written for checking `position` of `Line` objects, but can be used elsewhere as well.
 - (NSUInteger)binarySearchForItem:(id)targetItem integerValueFor:(NSString*)key;
 
 @end

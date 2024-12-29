@@ -12,6 +12,7 @@
  */
 
 #import "BeatTextIO.h"
+#import <BeatParsing/Line+Storybeats.h>
 #import <BeatCore/BeatAttributes.h>
 #import <BeatCore/BeatCore-Swift.h>
 #import <TargetConditionals.h>

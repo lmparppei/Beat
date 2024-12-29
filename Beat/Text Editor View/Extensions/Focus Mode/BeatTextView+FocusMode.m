@@ -67,7 +67,7 @@
 	Line* line = self.editorDelegate.currentLine;
 	NSString* text = self.text;
 	
-	if (line.type == heading || line.isTitlePage || line.note || self.focusModeType == BeatFocusModeBlock) {
+	if (line.type == heading || line.isTitlePage || line.isNote || self.focusModeType == BeatFocusModeBlock) {
 		focusRange = line.textRange;
 	} else {
 		focusRange = [self findSentenceRangeWithSelectedRange:selectedRange];

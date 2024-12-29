@@ -8,6 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E7F2D218D4F00CE761C /* Line+Type.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E7D2D218D4F00CE761C /* Line+Type.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E7E2D218D4F00CE761C /* Line+Type.m */; };
+		B61A4E832D218EAB00CE761C /* Line+ConvenienceTypeChecks.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E812D218EAB00CE761C /* Line+ConvenienceTypeChecks.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E842D218EAB00CE761C /* Line+ConvenienceTypeChecks.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E822D218EAB00CE761C /* Line+ConvenienceTypeChecks.m */; };
+		B61A4E882D21923800CE761C /* Line+AttributedStrings.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E862D21923800CE761C /* Line+AttributedStrings.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E892D21923800CE761C /* Line+AttributedStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E872D21923800CE761C /* Line+AttributedStrings.m */; };
+		B61A4E8C2D21990B00CE761C /* Line+Storybeats.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E8A2D21990B00CE761C /* Line+Storybeats.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E8D2D21990B00CE761C /* Line+Storybeats.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E8B2D21990B00CE761C /* Line+Storybeats.m */; };
+		B61A4E902D2201DE00CE761C /* Line+Notes.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E8E2D2201DE00CE761C /* Line+Notes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E912D2201DE00CE761C /* Line+Notes.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E8F2D2201DE00CE761C /* Line+Notes.m */; };
+		B61A4E942D22068900CE761C /* Line+SplitAndJoin.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E922D22068900CE761C /* Line+SplitAndJoin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E952D22068900CE761C /* Line+SplitAndJoin.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E932D22068900CE761C /* Line+SplitAndJoin.m */; };
+		B61A4E972D22079600CE761C /* NSDictionary+Inverse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */; };
+		B61A4E9A2D220F7900CE761C /* Line+RangeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E982D220F7900CE761C /* Line+RangeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E992D220F7900CE761C /* Line+RangeLookup.m */; };
 		B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */; };
 		B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */ = {isa = PBXBuildFile; fileRef = B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */; };
@@ -72,6 +87,21 @@
 
 /* Begin PBXFileReference section */
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
+		B61A4E7D2D218D4F00CE761C /* Line+Type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Type.h"; sourceTree = "<group>"; };
+		B61A4E7E2D218D4F00CE761C /* Line+Type.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Type.m"; sourceTree = "<group>"; };
+		B61A4E812D218EAB00CE761C /* Line+ConvenienceTypeChecks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+ConvenienceTypeChecks.h"; sourceTree = "<group>"; };
+		B61A4E822D218EAB00CE761C /* Line+ConvenienceTypeChecks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+ConvenienceTypeChecks.m"; sourceTree = "<group>"; };
+		B61A4E862D21923800CE761C /* Line+AttributedStrings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+AttributedStrings.h"; sourceTree = "<group>"; };
+		B61A4E872D21923800CE761C /* Line+AttributedStrings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+AttributedStrings.m"; sourceTree = "<group>"; };
+		B61A4E8A2D21990B00CE761C /* Line+Storybeats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Storybeats.h"; sourceTree = "<group>"; };
+		B61A4E8B2D21990B00CE761C /* Line+Storybeats.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Storybeats.m"; sourceTree = "<group>"; };
+		B61A4E8E2D2201DE00CE761C /* Line+Notes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Notes.h"; sourceTree = "<group>"; };
+		B61A4E8F2D2201DE00CE761C /* Line+Notes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Notes.m"; sourceTree = "<group>"; };
+		B61A4E922D22068900CE761C /* Line+SplitAndJoin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+SplitAndJoin.h"; sourceTree = "<group>"; };
+		B61A4E932D22068900CE761C /* Line+SplitAndJoin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+SplitAndJoin.m"; sourceTree = "<group>"; };
+		B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDictionary+Inverse.swift"; sourceTree = "<group>"; };
+		B61A4E982D220F7900CE761C /* Line+RangeLookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+RangeLookup.h"; sourceTree = "<group>"; };
+		B61A4E992D220F7900CE761C /* Line+RangeLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+RangeLookup.m"; sourceTree = "<group>"; };
 		B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTypeParsingRules.swift; sourceTree = "<group>"; };
 		B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineChanges.h; sourceTree = "<group>"; };
 		B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineChanges.m; sourceTree = "<group>"; };
@@ -148,6 +178,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B61A4E7B2D218BCE00CE761C /* Assisting classes */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F1028F01A8700657F5F /* Line.h */,
+				B6B37F0B28F01A8700657F5F /* Line.m */,
+				B61A4E852D2190D800CE761C /* Line Extensions */,
+				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,
+				B6B37F0828F01A8700657F5F /* OutlineScene.m */,
+				B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */,
+				B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */,
+				B6B37F0928F01A8700657F5F /* Storybeat.h */,
+				B6B37F1128F01A8700657F5F /* Storybeat.m */,
+				B689C80629D8808A00ADC746 /* BeatNoteData.h */,
+				B689C80729D8808A00ADC746 /* BeatNoteData.m */,
+			);
+			path = "Assisting classes";
+			sourceTree = "<group>";
+		};
+		B61A4E7C2D218BFE00CE761C /* Macros */ = {
+			isa = PBXGroup;
+			children = (
+				B64E43892ACAA05B003B947F /* BeatMacros.swift */,
+			);
+			path = Macros;
+			sourceTree = "<group>";
+		};
+		B61A4E852D2190D800CE761C /* Line Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B61A4E812D218EAB00CE761C /* Line+ConvenienceTypeChecks.h */,
+				B61A4E822D218EAB00CE761C /* Line+ConvenienceTypeChecks.m */,
+				B61A4E7D2D218D4F00CE761C /* Line+Type.h */,
+				B61A4E7E2D218D4F00CE761C /* Line+Type.m */,
+				B61A4E862D21923800CE761C /* Line+AttributedStrings.h */,
+				B61A4E872D21923800CE761C /* Line+AttributedStrings.m */,
+				B61A4E8A2D21990B00CE761C /* Line+Storybeats.h */,
+				B61A4E8B2D21990B00CE761C /* Line+Storybeats.m */,
+				B61A4E8E2D2201DE00CE761C /* Line+Notes.h */,
+				B61A4E8F2D2201DE00CE761C /* Line+Notes.m */,
+				B61A4E922D22068900CE761C /* Line+SplitAndJoin.h */,
+				B61A4E932D22068900CE761C /* Line+SplitAndJoin.m */,
+				B61A4E982D220F7900CE761C /* Line+RangeLookup.h */,
+				B61A4E992D220F7900CE761C /* Line+RangeLookup.m */,
+			);
+			path = "Line Extensions";
+			sourceTree = "<group>";
+		};
 		B62F043B2B7E20C000920E50 /* Experiments */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,6 +268,8 @@
 			isa = PBXGroup;
 			children = (
 				B62F043B2B7E20C000920E50 /* Experiments */,
+				B61A4E7B2D218BCE00CE761C /* Assisting classes */,
+				B61A4E7C2D218BFE00CE761C /* Macros */,
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
 				B6737DED2CD2DBE700644D98 /* ContinuousFountainParser+Notes.h */,
@@ -201,19 +280,8 @@
 				B6B144B52B5DCD240030A6B2 /* ContinuousFountainParser+Outline.m */,
 				B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */,
 				B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */,
-				B6B37F1028F01A8700657F5F /* Line.h */,
-				B6B37F0B28F01A8700657F5F /* Line.m */,
-				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,
-				B6B37F0828F01A8700657F5F /* OutlineScene.m */,
-				B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */,
-				B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */,
-				B6B37F0928F01A8700657F5F /* Storybeat.h */,
-				B6B37F1128F01A8700657F5F /* Storybeat.m */,
 				B6B37F1228F01A8700657F5F /* FountainRegexes.h */,
 				B6B37F0C28F01A8700657F5F /* FountainRegexes.m */,
-				B689C80629D8808A00ADC746 /* BeatNoteData.h */,
-				B689C80729D8808A00ADC746 /* BeatNoteData.m */,
-				B64E43892ACAA05B003B947F /* BeatMacros.swift */,
 			);
 			path = Parsing;
 			sourceTree = "<group>";
@@ -278,6 +346,7 @@
 				B64E43872AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift */,
 				B64E438B2ACAA33D003B947F /* BeatParsingStringExtensions.swift */,
 				B63BE8402B5B1A14003814A5 /* BeatLineTypeSet.swift */,
+				B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -296,20 +365,27 @@
 				B6B37F1628F01A8700657F5F /* Storybeat.h in Headers */,
 				B6B144B62B5DCD240030A6B2 /* ContinuousFountainParser+Outline.h in Headers */,
 				B6B37F6028F027EA00657F5F /* BeatScreenplay.h in Headers */,
+				B61A4E832D218EAB00CE761C /* Line+ConvenienceTypeChecks.h in Headers */,
 				B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */,
 				B6B37F5428F0279700657F5F /* NSDictionary+Values.h in Headers */,
+				B61A4E8C2D21990B00CE761C /* Line+Storybeats.h in Headers */,
 				B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */,
 				B6737DF02CD2DBE700644D98 /* ContinuousFountainParser+Notes.h in Headers */,
+				B61A4E882D21923800CE761C /* Line+AttributedStrings.h in Headers */,
 				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
+				B61A4E902D2201DE00CE761C /* Line+Notes.h in Headers */,
 				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
+				B61A4E9A2D220F7900CE761C /* Line+RangeLookup.h in Headers */,
 				B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */,
+				B61A4E942D22068900CE761C /* Line+SplitAndJoin.h in Headers */,
 				B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */,
 				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
 				B6737DEA2CD2642E00644D98 /* NSArray+BinarySearch.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
 				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
 				B658DC932CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.h in Headers */,
+				B61A4E7F2D218D4F00CE761C /* Line+Type.h in Headers */,
 				B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */,
 				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
 				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
@@ -409,11 +485,19 @@
 				B658DC922CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m in Sources */,
 				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
+				B61A4E8D2D21990B00CE761C /* Line+Storybeats.m in Sources */,
+				B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
 				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
+				B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */,
 				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,
+				B61A4E892D21923800CE761C /* Line+AttributedStrings.m in Sources */,
 				B6B37F2728F01B5A00657F5F /* BeatDocumentSettings.m in Sources */,
+				B61A4E952D22068900CE761C /* Line+SplitAndJoin.m in Sources */,
+				B61A4E842D218EAB00CE761C /* Line+ConvenienceTypeChecks.m in Sources */,
 				B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */,
+				B61A4E972D22079600CE761C /* NSDictionary+Inverse.swift in Sources */,
+				B61A4E912D2201DE00CE761C /* Line+Notes.m in Sources */,
 				B6737DEF2CD2DBE700644D98 /* ContinuousFountainParser+Notes.m in Sources */,
 				B64E43882AC9CA52003B947F /* NSIndexSet+ReplaceRange.swift in Sources */,
 				B64E438A2ACAA05B003B947F /* BeatMacros.swift in Sources */,

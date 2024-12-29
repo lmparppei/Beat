@@ -6,6 +6,7 @@
 //
 
 #import "ContinuousFountainParser+Outline.h"
+#import <BeatParsing/Line+ConvenienceTypeChecks.h>
 
 @implementation ContinuousFountainParser (Outline)
 

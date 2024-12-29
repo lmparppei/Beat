@@ -6,6 +6,7 @@
 //
 
 #import "ParsingRule.h"
+#import <BeatParsing/Line+Type.h>
 #import <BeatParsing/NSString+CharacterControl.h>
 
 @implementation ParsingRule

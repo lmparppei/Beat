@@ -213,4 +213,8 @@
     return NSNotFound;
 }
 
+- (bool)inRange:(NSRange)range {
+    return (NSMaxRange(range) <= self.length);
+}
+
 @end
