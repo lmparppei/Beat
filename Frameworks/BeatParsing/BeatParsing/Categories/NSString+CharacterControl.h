@@ -29,4 +29,6 @@
 /// Returns the index of character which is not a tab or space
 - (NSInteger)indexOfLastNonWhiteSpaceCharacter;
 - (bool)inRange:(NSRange)range;
+
+- (NSMutableIndexSet*)rangesBetween:(NSString*)open and:(NSString*)close excludingIndices:(NSMutableIndexSet*)excludes escapedIndices:(NSMutableIndexSet*)escapes;
 @end

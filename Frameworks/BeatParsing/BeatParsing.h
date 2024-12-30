@@ -21,6 +21,7 @@
 #import <BeatParsing/Line+Storybeats.h>
 #import <BeatParsing/Line+Notes.h>
 #import <BeatParsing/Line+RangeLookup.h>
+#import <BeatParsing/Line+SplitAndJoin.h>
 
 #import <BeatParsing/OutlineScene.h>
 #import <BeatParsing/FountainRegexes.h>

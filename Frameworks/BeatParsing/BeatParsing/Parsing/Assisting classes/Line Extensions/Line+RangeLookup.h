@@ -39,5 +39,11 @@
 /// Range of the character name in the cue
 - (NSRange)characterNameRange;
 
+/// Converts a global (document-wide) range into local range inside the line
+-(NSRange)globalRangeToLocal:(NSRange)range;
+
+/// Converts a a local range in this line into a global (document-wide) one
+-(NSRange)globalRangeFromLocal:(NSRange)range;
+
 
 @end

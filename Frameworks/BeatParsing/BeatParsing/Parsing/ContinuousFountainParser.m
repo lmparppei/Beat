@@ -812,12 +812,33 @@ static NSDictionary* patterns;
         line.type = (line.length > 0) ? action : empty;
     }
     
+    // Parse notes
+    [self parseNotesFor:line at:index oldType:oldType];
+    
+    // Parse inline formatting
+    [self parseInlineFormattingFor:line atIndex:index];
+        
+    // Set color for outline elements
+    if (line.isOutlineElement || line.type == synopse) line.color = [self colorForHeading:line];
+    
+    // Parse marker
+    line.marker = [self markerForLine:line];
+    
+    // This could be done in editor formatting code, but whatever.
+    line.titleRange = NSMakeRange(0, 0);
+    if (line.isTitlePage && [line.string containsString:@":"]) {
+        // If the title doesn't begin with \t or space, format it as key name
+        if ([line.string characterAtIndex:0] != ' ' && [line.string characterAtIndex:0] != '\t' ) {
+            line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
+        }
+    }
+} }
+
+- (void)parseInlineFormattingFor:(Line*)line atIndex:(NSInteger)index
+{
     NSUInteger length = line.string.length;
     unichar charArray[length];
     [line.string getCharacters:charArray];
-    
-    // Parse notes
-    [self parseNotesFor:line at:index oldType:oldType];
     
     // Omits have stars in them, which can be mistaken for formatting characters.
     // We store the omit asterisks into the "excluded" index set to avoid this mixup.
@@ -875,7 +896,7 @@ static NSDictionary* patterns;
     }
     
     if (line.type == heading) {
-        line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
+        line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length line:line];
         line.resetsSceneNumber = false;
         
         if (line.sceneNumberRange.length == 0) {
@@ -889,26 +910,9 @@ static NSDictionary* patterns;
             }
         }
     }
-    
-    // set color for outline elements
-    if (line.type == heading || line.type == section || line.type == synopse) {
-        line.color = [self colorForHeading:line];
-    }
-    
-    // Markers
-    line.marker = [self markerForLine:line];
-    
-    if (line.isTitlePage) {
-        if ([line.string containsString:@":"] && line.string.length > 0) {
-            // If the title doesn't begin with \t or space, format it as key name
-            if ([line.string characterAtIndex:0] != ' ' &&
-                [line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
-            else line.titleRange = NSMakeRange(0, 0);
-        }
-    }
-} }
+}
 
-
+/// Modern way of parsing a line type. We should migrate to this ASAP.
 - (LineType)ruleBasedParsingFor:(Line*)line atIndex:(NSInteger)index
 {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
@@ -923,6 +927,7 @@ static NSDictionary* patterns;
     if (line.length == 0) return empty;
     return action;
 }
+
 
 /// Parses the line type for given line. It *has* to know its line index.
 /// TODO: This bunch of spaghetti should be refactored and split into smaller functions.
@@ -1113,16 +1118,13 @@ static NSDictionary* patterns;
     return action;
 } }
 
-BOOL matchesCharacter(unichar chr, NSString* str, unichar chr2, NSString* str2) {
-    return (chr == chr2 || [str isEqualToString:str2]);
-}
-
-
+/// I don't understand any of this.
 - (LineType)parseTitlePageLineTypeFor:(Line*)line previousLine:(Line*)previousLine lineIndex:(NSInteger)index
 {
     NSString *key = line.titlePageKey;
     
     if (key.length > 0) {
+        // This is a keyed title page line (Title: Something)
         NSString* value = line.titlePageValue;
         if (value == nil) value = @"";
         
@@ -1153,6 +1155,7 @@ BOOL matchesCharacter(unichar chr, NSString* str, unichar chr2, NSString* str2) 
             return titlePageUnknown;
         }
     } else if (previousLine.isTitlePage) {
+        // This is a non-keyed title page line and part of a title page block
         NSString *key = @"";
         NSInteger i = index - 1;
         while (i >= 0) {
@@ -1174,7 +1177,7 @@ BOOL matchesCharacter(unichar chr, NSString* str, unichar chr2, NSString* str2) 
     return NSNotFound;
 }
 
-/// Notifies character cue that it has a dual dialogue sibling
+/// Notifies character cue that it has a dual dialogue sibling. Used in static parsing, I guess?
 - (void)makeCharacterAwareOfItsDualSiblingFrom:(NSInteger)index
 {
     NSInteger i = index - 1;
@@ -1184,35 +1187,27 @@ BOOL matchesCharacter(unichar chr, NSString* str, unichar chr2, NSString* str2) 
         if (prevLine.type == character) {
             prevLine.nextElementIsDualDialogue = YES;
             break;
+        } else if (!prevLine.isDialogueElement && !prevLine.isDualDialogueElement && prevLine.type != empty) {
+            // If we encounter something else than a line of dialogue or an empty line, break the loop.
+            break;
         }
-        if (!prevLine.isDialogueElement && !prevLine.isDualDialogueElement && prevLine.type != empty) break;
+        
         i--;
     }
 }
 
-- (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length
+- (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length line:(Line*)line
 {
-    NSUInteger backNumberIndex = NSNotFound;
-    int note = 0;
+    NSUInteger location = NSNotFound;
     
     for(NSInteger i = length - 1; i >= 0; i--) {
+        // Exclude note ranges
+        if ([line.noteRanges containsIndex:i]) continue;
+
         unichar c = string[i];
-        
-        // Exclude note ranges: [[ Note ]]
-        if (c == ' ') continue;
-        if (c == ']' && note < 2) { note++; continue; }
-        if (c == '[' && note > 0) { note--; continue; }
-        
-        // Inside a note range
-        if (note == 2) continue;
-        
-        if (backNumberIndex == NSNotFound) {
-            if (c == '#') backNumberIndex = i;
-            else break;
-        } else {
-            if (c == '#') {
-                return NSMakeRange(i+1, backNumberIndex-i-1);
-            }
+        if (c == '#') {
+            if (location == NSNotFound) location = i;
+            else return NSMakeRange(i+1, location-i-1);
         }
     }
     

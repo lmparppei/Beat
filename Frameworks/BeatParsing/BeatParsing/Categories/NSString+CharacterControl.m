@@ -217,4 +217,101 @@
     return (NSMaxRange(range) <= self.length);
 }
 
+- (NSMutableIndexSet*)rangesBetween:(NSString*)open and:(NSString*)close excludingIndices:(NSMutableIndexSet*)excludes escapedIndices:(NSMutableIndexSet*)escapes
+{
+    // Let's not read ridiculously big strings into unichar arrays.
+    if (self.length > 30000) return NSMutableIndexSet.new;
+    
+    // Read the whole string into an unichar array
+    NSUInteger length = self.length;
+    unichar charArray[length];
+    [self getCharacters:charArray];
+    
+    // Create unichar arrays for open and closing delimiters
+    NSUInteger openLength = open.length;
+    unichar openChars[openLength];
+    [open getCharacters:openChars];
+    
+    NSUInteger closeLength = close.length;
+    unichar closeChars[closeLength];
+    [close getCharacters:closeChars];
+    
+    return [self rangesInChars:charArray ofLength:length between:openChars and:closeChars startLength:openLength endLength:closeLength excludingIndices:excludes escapeRanges:escapes];
+}
+
+/**
+ Returns all ranges between two `unichar` delimiters. Use `excludingIndices` and `escapeRanges` index sets to add and store escaped and excluded indices, ie. asterisks which were already read as part of some other set.
+ */
+- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(unichar*)startString and:(unichar*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes escapeRanges:(NSMutableIndexSet*)escapeRanges
+{
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    if (length < startLength + delimLength) return indexSet;
+    
+    NSRange range = NSMakeRange(-1, 0);
+    
+    for (NSInteger i=0; i <= length - delimLength; i++) {
+        // If this index is contained in the omit character indexes, skip
+        if ([excludes containsIndex:i]) continue;
+        
+        // First check for escape character
+        if (i > 0) {
+            unichar prevChar = string[i-1];
+            if (prevChar == '\\') {
+                [escapeRanges addIndex:i - 1];
+                continue;
+            }
+        }
+        
+        if (range.location == -1) {
+            // Next, see if we can find the whole start string
+            bool found = true;
+            for (NSInteger k=0; k<startLength; k++) {
+                if (i+k >= length) {
+                    break;
+                } else if (startString[k] != string[i+k]) {
+                    found = false;
+                    break;
+                }
+            }
+            
+            if (!found) continue;
+            
+            // Success! We found a matching string
+            range.location = i;
+            
+            // Pass the starting string
+            i += startLength-1;
+            
+        } else {
+            // We have found a range, let's see if we find a closing string.
+            bool found = true;
+            for (NSInteger k=0; k<delimLength; k++) {
+                if (endString[k] != string[i+k]) {
+                    found = false;
+                    break;
+                }
+            }
+            
+            if (!found) continue;
+            
+            // Success, we found a closing string.
+            range.length = i + delimLength - range.location;
+            [indexSet addIndexesInRange:range];
+            
+            // Add the current formatting ranges to future excludes
+            [excludes addIndexesInRange:(NSRange){ range.location, startLength }];
+            [excludes addIndexesInRange:(NSRange){ i, delimLength }];
+            
+            range.location = -1;
+            
+            // Move past the ending string
+            i += delimLength - 1;
+        }
+    }
+    
+    return indexSet;
+}
+
+
+
 @end

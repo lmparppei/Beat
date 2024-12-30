@@ -409,7 +409,6 @@
         NSLog(@"Error when trying to reset formatting: %@", e);
         return;
     }
-    
 }
 
 

@@ -1556,6 +1556,13 @@
 			path = "Touchbar Timeline";
 			sourceTree = "<group>";
 		};
+		B61A4E9C2D22FAFC00CE761C /* TextFinder */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = TextFinder;
+			sourceTree = "<group>";
+		};
 		B623BD4C2549B03700201BC9 /* Icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -2031,6 +2038,7 @@
 			children = (
 				B616518629FC490000D20882 /* BeatTextView.h */,
 				B616518529FC490000D20882 /* BeatTextView.m */,
+				B61A4E9C2D22FAFC00CE761C /* TextFinder */,
 				B62BA4C32BBBE8A60055FE1A /* Extensions */,
 				B64EFA8A2AC02F5F0042C9B7 /* Minimap */,
 				B6A79C9227B64A64008D3AFC /* Scroll View */,
