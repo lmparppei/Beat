@@ -135,6 +135,7 @@ protocol BeatReviewEditorDelegate:AnyObject {
         self.popover?.close()
         #else
         self.editor?.dismiss(animated: true)
+        self.delegate.delegate?.getTextView().becomeFirstResponder()
         #endif
     }
     
@@ -144,6 +145,7 @@ protocol BeatReviewEditorDelegate:AnyObject {
     
     func deleteReview(item: BeatReviewItem) {
         self.delegate.deleteReview(item: item)
+        self.close()
     }
     
     func saveReview(item: BeatReviewItem) {
@@ -171,6 +173,7 @@ public protocol BeatReviewDelegate: AnyObject {
 @objc public class BeatReviewEditorViewBase:UXViewController, BeatReviewDelegate, UXTextViewDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
     @IBOutlet weak var editButton:UXButton?
+    @IBOutlet weak var deleteButton:UXButton?
 
     weak var delegate:BeatReviewEditorDelegate?
     var item:BeatReviewItem
@@ -216,7 +219,7 @@ public protocol BeatReviewDelegate: AnyObject {
 @objc public class BeatReviewEditorView: BeatReviewEditorViewBase {
     // The iOS version requires more setup
     @IBOutlet weak var closeButton:UXButton?
-        
+    
     override var editorContentSize:CGSize { return CGSizeMake(250, 160) }
         
     override init(reviewItem:BeatReviewItem, delegate:BeatReviewEditorDelegate, editable:Bool) {
@@ -307,6 +310,9 @@ extension BeatReviewEditorViewBase {
         #if os(iOS)
         editButton?.isHidden = false
         editButton?.title = (editable) ? NSLocalizedString("review.editor.done", comment: "Done") : NSLocalizedString("review.editor.edit", comment: "Edit")
+        
+        self.deleteButton?.addTarget(self, action: #selector(deleteReview), for: .primaryActionTriggered)
+        
         #endif
     }
     
@@ -372,8 +378,10 @@ extension BeatReviewEditorViewBase {
         self.editable = true
     }
         
-    @IBAction public func delete(sender:Any?) {
-        delegate?.deleteReview(item: item)
+    @IBAction public func deleteReview(sender:Any?) {
+        print("Delete review")
+        guard let delegate else { print("No delegate set for deleting reviews"); return }
+        delegate.deleteReview(item: item)
     }
     
     

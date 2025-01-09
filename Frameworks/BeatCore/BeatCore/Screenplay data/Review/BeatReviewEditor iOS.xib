@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="ipad10_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BeatReviewEditorViewiOS" customModule="BeatCore" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BeatReviewEditorView" customModule="BeatCore" customModuleProvider="target">
             <connections>
                 <outlet property="closeButton" destination="q3Y-Xb-M8E" id="H8C-fO-VFT"/>
+                <outlet property="deleteButton" destination="baG-ek-nBe" id="jcK-EY-NqK"/>
                 <outlet property="editButton" destination="mmN-s3-PAm" id="VfV-VR-Qyo"/>
                 <outlet property="textView" destination="J67-lq-s4b" id="vHk-nZ-UfR"/>
-                <outlet property="view" destination="iN0-l3-epB" id="4fX-tE-Vd6"/>
+                <outlet property="view" destination="iN0-l3-epB" id="oF4-4K-atu"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -35,11 +36,12 @@
                     <rect key="frame" x="16" y="24" width="256" height="25"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" distribution="fillProportionally" alignment="top" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="BDj-LS-w1P">
+                        <stackView opaque="NO" contentMode="left" distribution="fillEqually" alignment="top" spacing="6" id="BDj-LS-w1P">
                             <rect key="frame" x="0.0" y="0.0" width="120" height="24.5"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="mmN-s3-PAm">
-                                    <rect key="frame" x="0.0" y="0.0" width="48" height="24.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="57" height="24.5"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="filled" title="Edit" buttonSize="mini" titleAlignment="leading">
@@ -50,7 +52,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" role="destructive" id="baG-ek-nBe">
-                                    <rect key="frame" x="54" y="0.0" width="66" height="24.5"/>
+                                    <rect key="frame" x="63" y="0.0" width="57" height="24.5"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="tintColor" systemColor="systemRedColor"/>
                                     <state key="normal" title="Button"/>
@@ -58,7 +60,7 @@
                                         <fontDescription key="titleFontDescription" type="system" pointSize="12"/>
                                     </buttonConfiguration>
                                     <connections>
-                                        <action selector="deleteWithSender:" destination="-2" eventType="primaryActionTriggered" id="sTt-t4-xjn"/>
+                                        <action selector="deleteReviewWithSender:" destination="-2" eventType="primaryActionTriggered" id="64R-Py-voc"/>
                                     </connections>
                                 </button>
                             </subviews>

@@ -172,10 +172,12 @@ public protocol BeatReviewInterface {
 	
     /// Deletes a review item from text view
     public func deleteReview(item:BeatReviewItem) {
+		guard let delegate else { print("No delegate set for review editor"); return }
+		
         var deleteRange = NSMakeRange(NSNotFound, 0)
-        delegate?.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
+        delegate.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate.text().count), using: { value, range, stop in
             let review = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
-            
+			
             if (review == item) {
                 deleteRange = range
                 stop.pointee = true
@@ -183,17 +185,17 @@ public protocol BeatReviewInterface {
         })
         
         if (deleteRange.location != NSNotFound) {
-            delegate?.textStorage().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
-            delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
+            delegate.textStorage().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
+			delegate.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
             
 			self.closePopover()
-            delegate?.renderBackground(for: deleteRange)
+            delegate.renderBackground(for: deleteRange)
             
             changeDone()
         }
 
         // Commit to attributed text cache
-        _ = delegate?.attributedString()
+        _ = delegate.attributedString()
     }
     
     @objc public func applyReview(item:BeatReviewItem) {
@@ -234,8 +236,33 @@ public protocol BeatReviewInterface {
 
 // MARK: - Review popover view (cross-platform)
 
+/// Don't ask me about this code.
+
 extension BeatReview {
-	@objc public func showReviewIfNeeded(range:NSRange, forEditing:Bool) {
+    @objc public func showReviewIfNeeded(range:NSRange, forEditing:Bool) {
+        guard let delegate else { return }
+        if delegate.text().count == 0 || delegate.selectedRange.location == delegate.text().count { return }
+        
+        if forEditing {
+            showReviewEditorIfNeeded(range: range, forEditing: forEditing)
+        } else {
+            let loc = delegate.selectedRange.location
+            let item = self.delegate?.textStorage().attribute(BeatReview.attributeKey(), at: loc, effectiveRange: nil) as? BeatReviewItem
+            
+            if let review = item, !review.emptyReview, review != previouslyShownReview {
+                self.showReviewEditorIfNeeded(range: range, forEditing: false)
+                previouslyShownReview = review
+            } else {
+                previouslyShownReview = nil
+                self.closePopover()
+                #if os(iOS)
+                self.delegate?.getTextView().becomeFirstResponder()
+                #endif
+            }
+        }
+    }
+    
+	@objc public func showReviewEditorIfNeeded(range:NSRange, forEditing:Bool) {
 		guard let delegate = self.delegate else { return }
 		
 		// Initialize an empty review item
@@ -246,7 +273,7 @@ extension BeatReview {
 			if let item = self.reviewItem(at: range.location) {
                 #if os(iOS)
                 // on iPhone, we won't show it if it's the same we just showed
-				if UIDevice.current.userInterfaceIdiom == .phone && self.previouslyShownReview == item {
+				if self.previouslyShownReview == item {
 					closePopover()
 					return
 				}
