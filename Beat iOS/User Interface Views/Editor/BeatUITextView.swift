@@ -16,7 +16,6 @@
 import UIKit
 import BeatCore
 import BeatParsing
-import EasyPeasy
 
 @objc protocol BeatTextEditorDelegate:BeatEditorDelegate {
 	@objc var revisionTracking:BeatRevisions { get }
