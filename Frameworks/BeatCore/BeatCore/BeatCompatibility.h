@@ -43,3 +43,5 @@
     #define __OS_KIT <AppKit/AppKit.h>
 
 #endif
+
+#define mask_contains(mask, bit) (mask & bit) == bit

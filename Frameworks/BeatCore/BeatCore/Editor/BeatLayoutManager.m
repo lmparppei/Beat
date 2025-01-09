@@ -206,7 +206,7 @@
     if (!self.editorDelegate.showPageNumbers) return;
 #if TARGET_OS_IOS
     // Page number doesn't fit on phones
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
+    if (is_Mobile) return;
 #endif
 
     static BXColor* pageBreakColor;
@@ -439,7 +439,8 @@
             CGFloat deviceOffset = 0.0;
             
 #if TARGET_OS_IOS
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) deviceOffset = 35.0;
+            // Phones have a different offset
+            if (is_Mobile) deviceOffset = 35.0;
 #endif
             
             // Calculate rect for the marker position

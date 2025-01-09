@@ -870,7 +870,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (CGFloat)fontScale
 {
 #if TARGET_OS_IOS
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+    if (is_Mobile) {
         CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
         return ((zoom + 4) / 10 ) + 1.0;
     }
