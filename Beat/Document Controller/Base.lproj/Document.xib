@@ -31,8 +31,6 @@
                 <outlet property="review" destination="Qdx-LL-csu" id="A6B-QM-KtI"/>
                 <outlet property="revisionTracking" destination="N8j-Ng-1O5" id="1d2-Fn-OGe"/>
                 <outlet property="rightSidebarConstraint" destination="O0i-Sv-K16" id="i9U-UK-D8o"/>
-                <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
-                <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
                 <outlet property="sideBarTabControl" destination="a6t-MZ-KDr" id="6JW-AT-9UF"/>
                 <outlet property="sideBarTabs" destination="O3A-UT-VXf" id="Boy-Jm-5xk"/>
                 <outlet property="splitHandle" destination="lKQ-7H-w5w" id="CIA-nS-5Ik"/>
@@ -1744,78 +1742,6 @@
             </touchBarItems>
             <point key="canvasLocation" x="19" y="-401"/>
         </touchBar>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="IUI-JC-aZs" userLabel="Scene Numbering" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="181" y="118" width="311" height="156"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
-            <view key="contentView" id="8SB-Du-J31">
-                <rect key="frame" x="0.0" y="0.0" width="311" height="156"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="8tW-vH-v5y">
-                        <rect key="frame" x="18" y="112" width="244" height="29"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbering" id="Cw1-Zn-mbx">
-                            <font key="font" size="25" name="HelveticaNeue-Light"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <textField focusRingType="none" verticalHuggingPriority="750" id="MmF-s9-or8">
-                        <rect key="frame" x="216" y="69" width="75" height="21"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="1" drawsBackground="YES" id="dJ4-oY-Is8">
-                            <numberFormatter key="formatter" formatterBehavior="custom10_4" numberStyle="decimal" allowsFloats="NO" formatWidth="-1" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" id="pzD-OT-WtQ">
-                                <integer key="roundingIncrement" value="1"/>
-                                <real key="minimum" value="1"/>
-                            </numberFormatter>
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1nx-iz-8YJ">
-                        <rect key="frame" x="20" y="72" width="190" height="16"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" lineBreakMode="clipping" title="Start Scene Numbers From" id="mRh-Qz-Ja7">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <button verticalHuggingPriority="750" id="oen-Ny-RLb">
-                        <rect key="frame" x="210" y="13" width="87" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FCG-mm-dLY">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="applySceneNumberStart:" target="-2" id="2ZI-jf-wk4"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" id="W3p-s7-qJi">
-                        <rect key="frame" x="127" y="13" width="87" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3zP-Qf-Nxg">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeSceneNumberStart:" target="-2" id="btG-fK-sEg"/>
-                        </connections>
-                    </button>
-                </subviews>
-            </view>
-            <point key="canvasLocation" x="3175.5" y="-339"/>
-        </window>
         <menu id="Tqc-M2-IZ5" userLabel="Outline Context Menu">
             <items>
                 <menuItem title="Color" enabled="NO" id="Afp-fN-Tl7" customClass="BeatColorMenuItem">

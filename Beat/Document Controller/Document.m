@@ -1,7 +1,7 @@
 //  Document.m
 //  Beat
 //
-//  Copyright © 2019 Lauri-Matti Parppei
+//  Copyright © 2019-2025 Lauri-Matti Parppei
 //  Based on Writer, copyright © 2016 Hendrik Noeller
 
 /*
@@ -109,27 +109,31 @@
 
 @interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
 
-// Windows
+/// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
 @property (weak) NSWindow *documentWindow;
 
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
 
+/// If set `true`, editor formatting won't be applied
 @property (nonatomic) bool disableFormatting;
 
+/// This class handles the first-time format of the editor text to spare some CPU time. It has to be retained in memory but can be released once loading is complete.
 @property (nonatomic) BeatEditorFormatting* initialFormatting;
+/// Autocompletion class which delivers us character names and scene headings
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
+/// Print dialog has to be retained in memory when processing the PDF
 @property (nonatomic) BeatPrintDialog *printDialog;
+/// Preview controller handles updating the preview view
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
+/// Mode indicator view at the top of the editor
 @property (weak) IBOutlet BeatModeDisplay *modeIndicator;
+/// A collection of actions for quick inline formatting etc. Instantiated in the XIB for some reason.
 @property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
 
 @property (weak) NSTimer *autosaveTimer;
 
 @property (weak) IBOutlet NSTouchBar *touchBar;
-
-@property (weak) IBOutlet NSPanel *sceneNumberingPanel;
-@property (weak) IBOutlet NSTextField *sceneNumberStartInput;
 
 /// When loading longer documents, we need to show a progress panel
 @property (nonatomic) NSPanel* progressPanel;
@@ -140,7 +144,8 @@
 @end
 
 
-// WARNING
+// WARNING!!!
+// We're suppressing protocol warnings because we're conforming to the main delegate using multiple categories
 #pragma clang diagnostic ignored "-Wprotocol"
 @implementation Document
 
@@ -229,7 +234,7 @@
 }
 
 -(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler {
-	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
+	if (mask_contains(NSEvent.modifierFlags, NSEventModifierFlagShift)) {
 		completionHandler(nil, nil);
 		[self close];
 	} else {
@@ -293,15 +298,13 @@
 		
 	// Print dialog
 	self.printDialog.document = nil;
+
+	// Hide text view for now
+	self.textView.alphaValue = 0;
 	
 	// Put any previously loaded text into the text view when it's loaded
-	self.textView.alphaValue = 0;
-	if (self.contentBuffer) {
-		self.text = self.contentBuffer;
-	} else {
-		self.contentBuffer = @"";
-		self.text = @"";
-	}
+	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
+	if (self.contentBuffer == nil) self.contentBuffer = @"";
 		
 	// Set up revision tracking before preview is created and lines are rendered on screen
 	[self.revisionTracking setup];
@@ -1095,38 +1098,6 @@
  */
 
 
-
-#pragma mark - Scene numbering
-
-- (IBAction)showSceneNumberStart:(id)sender {
-	// Load previous setting
-	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
-		[_sceneNumberStartInput setIntegerValue:[self.documentSettings getInt:DocSettingSceneNumberStart]];
-	}
-	[_documentWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
-}
-
-- (IBAction)closeSceneNumberStart:(id)sender {
-	[_documentWindow endSheet:_sceneNumberingPanel];
-}
-
-- (IBAction)applySceneNumberStart:(id)sender {
-	if (_sceneNumberStartInput.integerValue > 1 && _sceneNumberStartInput.integerValue != NSNotFound) {
-		[self.documentSettings setInt:DocSettingSceneNumberStart as:_sceneNumberStartInput.integerValue];
-	} else {
-		[self.documentSettings remove:DocSettingSceneNumberStart];
-	}
-	
-	// Rebuild outline everywhere
-	[self.parser updateOutline];
-
-	[self ensureLayout];
-	[self updateChangeCount:NSChangeDone];
-	
-	[_documentWindow endSheet:_sceneNumberingPanel];
-}
-
-
 #pragma mark - Paper size
 
 - (void)setPageSize:(BeatPaperSize)pageSize
@@ -1320,7 +1291,7 @@
 #pragma mark - For avoiding throttling
 
 - (bool)hasChanged {
-	if ([self.textView.string isEqualToString:_bufferedText]) return NO;
+	if ([self.textView.string isEqualToString:_bufferedText] || self.textView.string == nil) return NO;
 	
 	_bufferedText = [NSString stringWithString:self.textView.string];
 	return YES;
