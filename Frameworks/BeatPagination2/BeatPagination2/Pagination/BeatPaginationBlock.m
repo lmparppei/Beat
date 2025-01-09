@@ -320,7 +320,8 @@
 /**
  - returns an array with members `leftOnCurrentPage:[Line], onNextPage:[Line], BeatPageBreak`
  */
--(NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace {
+-(NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace
+{
 	// Dual dialogue requires different logic
 	if (self.dualDialogueContainer) {
 		return [self splitDualDialogueWithRemainingSpace:remainingSpace];
@@ -554,7 +555,7 @@
             }
             
             break;
-        } else if (line.isAnyDialogue) {
+        } else if (line.isAnyDialogue && !line.string.containsOnlyWhitespace) {
             // We'll try and split the dialogue line in two, if it's possible.
             NSArray* splitLine = [self splitDialogueLine:line remainingSpace:remainingSpace - heightBefore];
             Line* retain = splitLine[0];
@@ -583,6 +584,9 @@
                 [tmpNextPage insertObjects:safeLines atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, safeLines.count)]];
             }
             break;
+        } else if (line.isAnyDialogue && line.string.containsOnlyWhitespace) {
+            // Handle whitespace-only lines
+            cutoff = i + 1;
         }
     }
     
