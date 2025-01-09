@@ -104,7 +104,7 @@
 	self.textView = textView;
 	
 	// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
-	if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
+	if (!is_Mobile) {
 		self.textView.enclosingScrollView = self.scrollView;
 		[self.pageView addSubview:self.textView];
 	} else {
@@ -283,7 +283,7 @@
 	[super loadFonts];
 
 	// Phones require a specific set of fonts scaled by user setting
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+	if (is_Mobile) {
 		bool variableSize = self.editorStyles.variableFont;
 		BeatFontType type = (variableSize) ? BeatFontTypeVariableSerif : BeatFontTypeFixed;
 		
@@ -498,7 +498,7 @@
 - (IBAction)toggleSidebar:(id)sender {
 	bool shown = false;
 	
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+	if (is_Mobile) {
 		// iPhone
 		if (self.editorSplitView.sidebar.viewIfLoaded.window) {
 			[self.editorSplitView showColumn:UISplitViewControllerColumnSecondary];
@@ -686,6 +686,8 @@ bool editorWasActive = false;
 - (void)textViewDidEndSelection:(UITextView *)textView selectedRange:(NSRange)selectedRange
 {
 	// Let's not do any of this stuff if we're processing an edit. For some reason selection end is posted *before* text change. :--)
+	if (self.documentIsLoading) return;
+	
 	if (!_processingEdit) {
 		if (self.selectedRange.length == 0) [self.textView scrollRangeToVisible:NSMakeRange(NSMaxRange(textView.selectedRange), 0)];
 		[self updateSelection];
@@ -713,7 +715,7 @@ bool editorWasActive = false;
 /// Forces text reformat and editor view updates
 - (void)textDidChange:(NSNotification *)notification {
 	// Faux method for protocol compatibility
-	[self textViewDidChange:self.textView];
+	if (notification.object == self.textView) [self textViewDidChange:self.textView];
 }
 
 -(void)textViewDidChange:(UITextView *)textView
@@ -1053,7 +1055,7 @@ bool editorWasActive = false;
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime
 {
 	// Let's not use this on phones
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) return;
+	if (is_Mobile) return;
 	
 	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
 	
@@ -1093,7 +1095,7 @@ bool editorWasActive = false;
 	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
 	
 	// This is a hack to fix weird scrolling bugs on iPhone. Let's make sure the content size is adjusted correctly when keyboard has been shown.
-	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone && endFrame != nil) {
+	if (is_Mobile && endFrame != nil) {
 		UIEdgeInsets insets = self.textView.contentInset;
 		
 		CGRect currentKeyboard = endFrame.CGRectValue;
@@ -1166,7 +1168,5 @@ bool editorWasActive = false;
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view {
 	//
 }
-
-
 
 @end
