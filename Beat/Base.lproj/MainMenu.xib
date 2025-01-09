@@ -834,7 +834,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
-                            <menuItem title="Start Scene Numbering From..." id="12m-8C-qlE">
+                            <menuItem title="Start Scene Numbering From..." hidden="YES" id="12m-8C-qlE">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showSceneNumberStart:" target="-1" id="MFl-PI-GdS"/>
