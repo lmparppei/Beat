@@ -143,9 +143,14 @@
     
     // Revision attributes
     if (self.revisedRanges.count > 0) {
-        for (NSNumber* key in self.revisedRanges.allKeys) {
-            [self.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-                [string addAttribute:@"Revision" value:key range:range];
+        NSDictionary* revisedRanges = self.revisedRanges;
+        for (NSNumber* key in revisedRanges.allKeys) {
+            [revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+                // Don't go out of range
+                if (NSMaxRange(range) > string.length) {
+                    range = NSMakeRange(range.location, string.length - range.location);
+                }
+                if (range.length > 0 ) [string addAttribute:@"Revision" value:key range:range];
             }];
         }
     }
