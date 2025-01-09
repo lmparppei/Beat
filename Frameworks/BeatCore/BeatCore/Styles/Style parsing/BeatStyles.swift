@@ -66,7 +66,7 @@ public class BeatStyles:NSObject {
     }
         
     @objc public func styles(name:String? = nil, delegate:BeatDocumentDelegate? = nil, forEditor:Bool = false) -> BeatStylesheet {
-        var styleName = name == nil ? "" : name!
+        let styleName = name == nil ? "" : name!
         let suffix = forEditor ? "-editor" : ""
         let defaultStyle = BeatStyles.defaultStyleName + suffix
         

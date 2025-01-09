@@ -39,6 +39,8 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatFontSet;
 @class BeatTagging;
 @class BeatPaginationManager;
+@class BeatRevisions;
+@class BeatReview;
 
 /**
  Protocol for editor views which need to be updated in some cases
@@ -122,14 +124,18 @@ typedef void (^BeatChangeListener)(NSRange);
 - (NSAttributedString*)getAttributedText;
 
 
-#pragma mark - Screenplay document data
+#pragma mark - Revisions
 
 @property (nonatomic) NSInteger revisionLevel;
-
-@property (nonatomic) bool printSceneNumbers;
-
-/// Bakes current revisions into alines
+@property (nonatomic) BeatRevisions* revisionTracking;
+/// Bakes current revisions into lines
 - (void)bakeRevisions;
+
+
+#pragma mark - Reviews
+
+@property (nonatomic) BeatReview* review;
+
 
 
 #pragma mark - Editing the text content
@@ -173,6 +179,8 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic, readonly) bool showRevisions;
 @property (nonatomic, readonly) bool showRevisedTextColor;
 @property (nonatomic, readonly) bool showTags;
+
+@property (nonatomic) bool printSceneNumbers;
 
 
 #pragma mark - Tagging
