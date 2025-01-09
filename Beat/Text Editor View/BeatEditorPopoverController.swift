@@ -251,6 +251,30 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 	}
 	
 	
+	// MARK: - Handle editor key presses
+	
+	@objc func keyPressed(keyCode:UInt16) -> Bool {
+		var preventDefault = false
+		
+		// Specific handlers for popover state
+		if (keyCode == 125) {
+			// Down key
+			moveDown(); preventDefault = true
+		} else if (keyCode == 126) {
+			// Up key
+			moveUp(); preventDefault = true
+		} else if (keyCode == 48) {
+			// Tab
+			preventDefault = pickPopoverItem()
+		} else if (keyCode == 36) {
+			// Return
+			preventDefault = pickPopoverItem()
+		}
+				
+		return preventDefault
+	}
+	
+	
 	// MARK: - Navigate the table view
 	
 	func selectRow(index:Int) {
