@@ -21,6 +21,7 @@ extension BeatUITextView {
 			UIKeyCommand(title: "Next Scene", action: #selector(nextScene), input: UIKeyCommand.inputDownArrow, modifierFlags: [.command, .alternate]),
 			UIKeyCommand(title: "Mark as Revised", action: #selector(markAsRevised), input: "k", modifierFlags: [.command]),
 			UIKeyCommand(title: "Clear Revisions", action: #selector(clearRevisions), input: "k", modifierFlags: [.command, .alternate]),
+			UIKeyCommand(title: "Add Review", action: #selector(addReview), input: "r", modifierFlags: [.command])
 		]
 	}
 	
@@ -62,5 +63,11 @@ extension BeatUITextView {
 	
 	@objc func clearRevisions() {
 		self.editorDelegate?.revisionTracking.markerAction(.none)
+	}
+	
+	@objc func addReview() {
+		guard let editorDelegate, editorDelegate.selectedRange.length > 0 else { return }
+		
+		editorDelegate.review.showReviewIfNeeded(range: editorDelegate.selectedRange, forEditing: true)
 	}
 }
