@@ -66,7 +66,7 @@
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
                                     <rect key="frame" x="41" y="62" width="236" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2024. Released under GPL license. No animal products were consumed when creating this app." id="Vew-4a-6k0">
+                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2025. Released under GPL license. No animal products were consumed when creating this app." id="Vew-4a-6k0">
                                         <font key="font" size="10" name="HelveticaNeue"/>
                                         <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
