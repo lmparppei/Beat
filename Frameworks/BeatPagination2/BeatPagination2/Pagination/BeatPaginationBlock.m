@@ -371,7 +371,7 @@
 {
 	// If no line is set, let's use the first item
     if (line == nil) line = self.lines.firstObject;
-    
+        
 	NSString *str = [line stripFormattingWithSettings:self.delegate.settings];
 	NSString *retain = @"";
 
@@ -381,6 +381,9 @@
 	RenderStyle *style = [self.delegate.styles forLine:line];
     CGFloat width = [style widthWithPageSize:paperSize];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
+    
+    // This is a hack for some weird situations
+    remainingSpace -= 1.0;
 	
 	// Create the layout manager for remaining space calculation.
     // For reason or another, macOS Sonoma stopped retaining the text storage, and we need to explicitly create it here.
