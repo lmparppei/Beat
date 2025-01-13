@@ -70,11 +70,11 @@
 
 @property (nonatomic) bool firstPreview;
 
+@property (nonatomic) CGFloat panelWidth;
+
 @end
 
 @implementation BeatPrintDialog
-
-static CGFloat panelWidth;
 
 + (BeatPrintDialog*)showForPDF:(id)delegate
 {
@@ -101,11 +101,14 @@ static CGFloat panelWidth;
 -(void)awakeFromNib
 {
 	self.renderQueue = NSMutableArray.new;
+
+	NSLog(@"!!! woken");
+	self.panelWidth = self.window.frame.size.width;
 	
 	// Show advanced options?
-	panelWidth = self.window.frame.size.width;
-	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY];
-	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
+	
+	[self showOrHideAdvancedOptionsAndAnimate:false];
+	_advancedOptionsButton.state = ([NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY]) ? NSOnState : NSOffState;
 	
 	// Restore settings for note/synopsis/section printing
 	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSections]) _printSections.state = NSOnState;
@@ -125,6 +128,8 @@ static CGFloat panelWidth;
 	[self.headerAlign setSelectedSegment:[self.documentDelegate.documentSettings getInt:DocSettingHeaderAlignment]];
 	
 	[self toggleAdvancedOptions:_advancedOptionsButton];
+	
+	//[self.window center];
 }
 
 - (IBAction)open:(id)sender
@@ -140,6 +145,8 @@ static CGFloat panelWidth;
 	
 	_secondaryButton.title = NSLocalizedString(@"print.pdfButton", nil);
 	_secondaryButton.action = @selector(pdf:);
+	
+	//[self.window center];
 }
 
 - (IBAction)openForPDF:(id)sender
@@ -155,6 +162,8 @@ static CGFloat panelWidth;
 	
 	_secondaryButton.title = NSLocalizedString(@"print.printButton", nil);
 	_secondaryButton.action = @selector(print:);
+	
+	//[self.window center];
 }
 
 - (void)openPanel
@@ -175,13 +184,7 @@ static CGFloat panelWidth;
 	// Reload PDF preview
 	_firstPreview = YES;
 	[self loadPreview];
-	
-	NSRect frame = self.window.frame;
-	NSRect screen = self.window.screen.frame;
-	
-	CGPoint origin = CGPointMake((screen.size.width - frame.size.width) / 2.0, (screen.size.height - frame.size.height) / 2.0);
-	[self.window setFrameOrigin:origin];
-	
+
 	// We have to show the panel here to be able to set the radio buttons, because I can't figure out how to load the window.
 	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
 		[self.documentDelegate releasePrintDialog];
@@ -293,13 +296,9 @@ static CGFloat panelWidth;
 {
 	BeatPaperSize oldSize = _documentDelegate.pageSize;
 	
-	if ([(NSButton*)sender tag] == 1) {
-		// A4
-		_documentDelegate.pageSize = BeatA4;
-	} else {
-		// US Letter
-		_documentDelegate.pageSize = BeatUSLetter;
-	}
+	// Tag 1 = A4
+	if ([(NSButton*)sender tag] == 1) _documentDelegate.pageSize = BeatA4;
+	else _documentDelegate.pageSize = BeatUSLetter;
 	
 	// Preview needs refreshing
 	if (oldSize != _documentDelegate.pageSize) {
@@ -317,16 +316,24 @@ static CGFloat panelWidth;
 {
 	NSButton *button = sender;
 	
-	NSRect frame = self.window.contentView.frame;
-	if (button.state == NSOffState) {
-		frame.size.width = panelWidth - _advancedOptionsWidthConstraint.constant;
-		[NSUserDefaults.standardUserDefaults setBool:NO forKey:ADVANCED_PRINT_OPTIONS_KEY];
+	[NSUserDefaults.standardUserDefaults setBool:(button.state == NSOnState) forKey:ADVANCED_PRINT_OPTIONS_KEY];
+	[self showOrHideAdvancedOptionsAndAnimate:true];
+}
+
+- (void)showOrHideAdvancedOptionsAndAnimate:(bool)animated
+{
+	bool show = [NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY];
+	
+	CGSize contentSize = self.window.contentView.frame.size;
+	
+	if (show) {
+		contentSize.width = self.panelWidth;
 	} else {
-		frame.size.width = panelWidth;
-		[NSUserDefaults.standardUserDefaults setBool:YES forKey:ADVANCED_PRINT_OPTIONS_KEY];
+		contentSize.width = self.panelWidth - _advancedOptionsWidthConstraint.constant;
 	}
 	
-	[self.window.animator setFrame:frame display:YES];
+	if (animated) [self.window.animator setContentSize:contentSize];
+	else [self.window setContentSize:contentSize];
 }
 
 - (IBAction)toggleColorCodePages:(id)sender
