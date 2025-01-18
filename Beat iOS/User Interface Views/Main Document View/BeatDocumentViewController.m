@@ -712,10 +712,9 @@ bool editorWasActive = false;
 	[self showReviewIfNeeded];
 }
 
-/// Forces text reformat and editor view updates
-- (void)textDidChange:(NSNotification *)notification {
-	// Faux method for protocol compatibility
-	if (notification.object == self.textView) [self textViewDidChange:self.textView];
+- (void)textDidChange:(id<UITextInput>)textInput
+{
+	if (textInput == self.textView) [self textViewDidChange:self.getTextView]; 
 }
 
 -(void)textViewDidChange:(UITextView *)textView
