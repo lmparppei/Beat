@@ -21,6 +21,7 @@
 "general.revert" = "Revert";
 "general.selectAll" = "Select All";
 "general.new" = "New";
+"general.revealInFinder" = "Reveal in Finder";
 
 "plugins.errorRunningScript" = "Error running script";
 "plugins.input.select" = "Select...";

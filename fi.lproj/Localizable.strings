@@ -24,6 +24,7 @@
 "general.revert" = "Palauta";
 "general.close" = "Sulje";
 "general.selectAll" = "Valitse kaikki";
+"general.revealInFinder" = "Näytä Finderissä";
 
 "storyline.placeholder" = "Uuden tarinalinjan nimi";
 "storyline.add" = "Lisää tarinalinja...";

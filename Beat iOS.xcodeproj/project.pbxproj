@@ -68,6 +68,7 @@
 		B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67668E72B30768C004597D9 /* BeatEditorSplitView.swift */; };
 		B67969CC2D359E9E00435A38 /* 0.2.2.html in Resources */ = {isa = PBXBuildFile; fileRef = B67969CB2D359E9E00435A38 /* 0.2.2.html */; };
 		B682C25B2B30FAB50027511A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B682C25A2B30FAB50027511A /* Localizable.strings */; };
+		B6839B492D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = B6839B482D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m */; };
 		B686BD232B33AF0E0074FC67 /* BeatUserDefaultButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */; };
 		B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686BD262B345F060074FC67 /* BeatAdaptiveViews.swift */; };
 		B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B686FF9B2971BC7E00789C8D /* PreviewStyles.css */; };
@@ -248,6 +249,8 @@
 		B682C25A2B30FAB50027511A /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = "Beat iOS/Localizable.strings"; sourceTree = "<group>"; };
 		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
 		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
+		B6839B472D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentViewController+TextEvents.h"; sourceTree = "<group>"; };
+		B6839B482D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentViewController+TextEvents.m"; sourceTree = "<group>"; };
 		B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatUserDefaultButton.swift; sourceTree = "<group>"; };
 		B686BD262B345F060074FC67 /* BeatAdaptiveViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatAdaptiveViews.swift; sourceTree = "<group>"; };
 		B686FF962971BC7D00789C8D /* FooterTemplate.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = FooterTemplate.html; sourceTree = "<group>"; };
@@ -357,7 +360,6 @@
 		B138B56A19E1C973000489C4 = {
 			isa = PBXGroup;
 			children = (
-				B62D16432BFE35D1000EFEE5 /* BeatDocument 256.png */,
 				B682C25A2B30FAB50027511A /* Localizable.strings */,
 				B6CB96F1282FEB6500C7AFC7 /* Beat iOS */,
 				B64AD6282B2F900600EBD63A /* BeatThumbnailProvider */,
@@ -427,6 +429,8 @@
 			children = (
 				B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */,
 				B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */,
+				B6839B472D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.h */,
+				B6839B482D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m */,
 				B63AB3C82A586F8000B28BC0 /* BeatDocumentViewController Extensions.swift */,
 				B63148732CB698FC001EE70E /* BeatDocumentViewController+PatchNotes.swift */,
 				B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */,
@@ -463,6 +467,7 @@
 			children = (
 				B6423B982C01108500373C34 /* Beat-FDX.png */,
 				B62D163F2BFE3596000EFEE5 /* Beat-iOS-76x76.png */,
+				B62D16432BFE35D1000EFEE5 /* BeatDocument 256.png */,
 			);
 			path = Icons;
 			sourceTree = "<group>";
@@ -978,6 +983,7 @@
 				B69CE5CB2BA1D87800EF02F2 /* ViewControllerExtensions.swift in Sources */,
 				B63148742CB69908001EE70E /* BeatDocumentViewController+PatchNotes.swift in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
+				B6839B492D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m in Sources */,
 				B6F59D452C6E9A9B00AB8FAE /* BeatNotepadView.swift in Sources */,
 				B61F44DB2C38339D00A10DF3 /* Maths.swift in Sources */,
 			);
