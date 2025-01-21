@@ -1942,7 +1942,6 @@ NSInteger previousSceneIndex = NSNotFound;
 	return nil;
 }
 
-
 /**
  This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
  Instead, it first checks the line it returned the last time, and after that, starts to iterate through lines from its position and given direction. Usually we can find
@@ -1950,7 +1949,16 @@ NSInteger previousSceneIndex = NSNotFound;
  */
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
-    NSArray* lines = self.safeLines;
+    return [self lineIndexAtPosition:position lines:self.safeLines];
+}
+
+/**
+ This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
+ Instead, it first checks the line it returned the last time, and after that, starts to iterate through lines from its position and given direction. Usually we can find
+ the line with 1-2 steps, and as we're possibly iterating through thousands and thousands of lines, it's much faster than finding items by their properties the usual way.
+ */
+- (NSUInteger)lineIndexAtPosition:(NSUInteger)position lines:(NSArray<Line*>*)lines
+{
     NSUInteger actualIndex = NSNotFound;
     NSInteger lastFoundPosition = 0;
     
@@ -2027,6 +2035,16 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;
 	
+    NSInteger index = [self lineIndexAtPosition:range.location lines:lines];
+    
+    for (NSInteger i=index; i<lines.count; i++) {
+        Line* line = lines[i];
+        
+        if (NSIntersectionRange(line.range, range).length > 0) [linesInRange addObject:line];
+        else if (line.position > NSMaxRange(range)) break;
+    }
+    
+/*
 	for (Line* line in lines) {
 		if ((NSLocationInRange(line.position, range) ||
 			NSLocationInRange(range.location, line.textRange) ||
@@ -2038,7 +2056,8 @@ NSUInteger prevLineAtLocationIndex = 0;
             break;
         }
 	}
-	
+*/
+ 
 	return linesInRange;
 }
 
