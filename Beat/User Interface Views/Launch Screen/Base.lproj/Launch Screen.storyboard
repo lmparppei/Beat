@@ -22,7 +22,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="337" height="421"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="yt1-F7-g9y" id="wBD-iY-AmA">
+                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="yt1-F7-g9y" id="wBD-iY-AmA" customClass="BeatRecentFilesView" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="337" height="421"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="17" height="0.0"/>
@@ -504,6 +504,6 @@
         <image name="Launch screen logo" width="800" height="744"/>
         <image name="chevron.backward" catalog="system" width="10" height="14"/>
         <image name="doc" catalog="system" width="18" height="21"/>
-        <image name="map" catalog="system" width="21" height="19"/>
+        <image name="map" catalog="system" width="17" height="15"/>
     </resources>
 </document>

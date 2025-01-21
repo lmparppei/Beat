@@ -6,8 +6,9 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-@interface RecentFiles : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource> {
-}
+@interface RecentFiles : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource>
+
 - (void)reload;
 - (IBAction)doubleClickDocument:(id)sender;
+
 @end

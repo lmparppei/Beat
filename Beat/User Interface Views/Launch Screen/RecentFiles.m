@@ -103,6 +103,7 @@
 	BeatRecentFileCell *cell = [outlineView makeViewWithIdentifier:@"RecentFile" owner:self];
 	cell.filename.stringValue = url.lastPathComponent.stringByDeletingPathExtension;
 	cell.date.stringValue = date;
+	cell.url = url;
 	
 	return cell;
 	
@@ -120,5 +121,6 @@
 	_selectedURL = item[@"url"];
 	return YES;
 }
+
 
 @end
