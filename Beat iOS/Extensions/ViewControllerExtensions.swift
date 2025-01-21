@@ -12,4 +12,14 @@ extension UIViewController {
 	@IBAction func dismissViewController(sender:Any?) {
 		self.dismiss(animated: true)
 	}
+	
+	@objc func embed(_ viewController:UIViewController, inView view:UIView) {
+		viewController.willMove(toParent: self)
+		viewController.view.frame = view.bounds
+
+		view.addSubview(viewController.view)
+		self.addChild(viewController)
+
+		viewController.didMove(toParent: self)
+	}
 }

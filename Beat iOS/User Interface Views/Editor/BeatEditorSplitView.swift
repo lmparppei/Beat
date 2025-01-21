@@ -71,8 +71,9 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 
 class BeatEditorViewController:UIViewController {
 	@objc public weak var editorDelegate:BeatEditorDelegate?
-	@IBOutlet @objc public var scrollView:BeatScrollView?
-	@IBOutlet @objc public var pageView:BeatPageView?
+	@IBOutlet @objc public weak var scrollView:BeatScrollView?
+	@IBOutlet @objc public weak var pageView:BeatPageView?
+	@IBOutlet @objc public weak var testView:UITextView?
 }
 
 class BeatSidebarViewController:UITableViewController {

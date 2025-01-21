@@ -34,11 +34,11 @@
 
     /// AppKit compatibility (sets `selectedRange` to the argument)
     @inlinable
-    func setSelectedRange(_ range: NSRange) { selectedRange = range }
+      func setSelectedRange(_ range: NSRange) { print("...setting selected range"); selectedRange = range }
     
     /// AppKit compatibility (returns the value of `selectedRange`)
     @inlinable
-    func selectedRange() -> NSRange { return selectedRange }
+      func selectedRange() -> NSRange { print("...getting selected range"); return selectedRange }
   }
 
 #else // macOS

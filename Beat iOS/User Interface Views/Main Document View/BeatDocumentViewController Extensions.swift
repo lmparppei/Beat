@@ -168,7 +168,7 @@ extension BeatDocumentViewController {
 			if let v = value {
 				self.documentSettings.setInt(DocSettingSceneNumberStart, as: max(1, v))
 				self.parser.updateOutline()
-				self.textView.layoutManager.invalidateDisplay(forCharacterRange: NSMakeRange(0, self.text().count))
+				self.layoutManager().invalidateDisplay(forCharacterRange: NSMakeRange(0, self.text().count))
 			}
 		}
 	}
@@ -233,17 +233,4 @@ extension BeatDocumentViewController {
 			self.scroll(to: line)
 		}
 	}		
-}
-
-
-@objc public extension UIViewController {
-	@objc func embed(_ viewController:UIViewController, inView view:UIView){
-		viewController.willMove(toParent: self)
-		viewController.view.frame = view.bounds
-
-		view.addSubview(viewController.view)
-		self.addChild(viewController)
-
-		viewController.didMove(toParent: self)
-	}
 }

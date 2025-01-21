@@ -583,7 +583,6 @@
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         // Update pagination in text view
         BeatLayoutManager* lm = (BeatLayoutManager*)self.getTextView.layoutManager;
-        //lm.pageBreaks = pageBreaks;
         [lm updatePageBreaks:pageBreaks];
 
         [self.textView textViewNeedsDisplay];

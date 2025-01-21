@@ -28,9 +28,7 @@ import BeatParsing
 	@objc var dismissKeyboardButton:UIBarButtonItem? { get }
 	
 	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
-	
-	@objc var committingCharacterCue:Bool { get }
-	
+		
 	func loadFonts()
 }
 
@@ -249,12 +247,13 @@ import BeatParsing
 		var rect = super.caretRect(for: position)
 		let offset = offset(from: beginningOfDocument, to: position)
 		
-		guard offset < self.attributedString.length,
+		guard let text = self.attributedText,
+			  offset < text.length,
 			  let line = self.editorDelegate?.parser.line(at: offset)
 		else { return rect }
 	
 		
-		let attrs = self.attributedString.attributes(at: line.position, effectiveRange: nil)
+		let attrs = text.attributes(at: line.position, effectiveRange: nil)
 		
 		// Adjust the rect using font and paragraph style
 		if let pStyle = attrs[.paragraphStyle] as? NSParagraphStyle {

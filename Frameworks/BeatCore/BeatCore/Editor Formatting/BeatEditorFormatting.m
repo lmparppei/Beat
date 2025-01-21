@@ -569,12 +569,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         BXFont* font = [textStorage attribute:NSFontAttributeName atIndex:fontRange.location effectiveRange:nil];
         UIFontDescriptorSymbolicTraits traits = 0;
         
-        if ((trait & BXBoldFontMask) == BXBoldFontMask) {
-            traits |= UIFontDescriptorTraitBold;
-        }
-        if ((trait & BXItalicFontMask) == BXItalicFontMask) {
-            traits |= UIFontDescriptorTraitItalic;
-        }
+        if (mask_contains(trait, BXBoldFontMask)) traits |= UIFontDescriptorTraitBold;
+        if (mask_contains(trait, BXItalicFontMask)) traits |= UIFontDescriptorTraitItalic;
         
         BXFont* newFont = [BeatFontSet fontWithTrait:traits font:font];
         [textStorage addAttribute:NSFontAttributeName value:newFont range:fontRange];

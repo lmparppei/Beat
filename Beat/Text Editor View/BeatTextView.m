@@ -33,6 +33,8 @@
 #import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 
+#import <Carbon/Carbon.h> // For keyboard input source functions
+
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 #import "BeatTextView+FocusMode.h"
@@ -286,100 +288,115 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Key events
 
+NSString *keyCodeToString(uint16_t keyCode) {
+	// Get the current keyboard layout
+	TISInputSourceRef inputSource = TISCopyCurrentKeyboardLayoutInputSource();
+	if (!inputSource) return nil;
+
+	// Get the layout data
+	CFDataRef layoutData = TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData);
+	if (!layoutData) return nil;
+
+	const UCKeyboardLayout *keyboardLayout = (const UCKeyboardLayout *)CFDataGetBytePtr(layoutData);
+	if (!keyboardLayout) return nil;
+
+	// Translate the keycode to a string
+	UInt32 deadKeyState = 0;
+	UniChar chars[4]; // Supports up to 4 characters (e.g., accented keys)
+	UniCharCount realLength;
+	OSStatus status = UCKeyTranslate(keyboardLayout,
+									 keyCode,
+									 kUCKeyActionDisplay,
+									 0, // No modifiers
+									 LMGetKbdType(),
+									 kUCKeyTranslateNoDeadKeysBit,
+									 &deadKeyState,
+									 sizeof(chars) / sizeof(UniChar),
+									 &realLength,
+									 chars);
+
+	if (status != noErr) return nil;
+
+	return [NSString stringWithCharacters:chars length:realLength];
+}
+
 -(void)keyUp:(NSEvent *)event {
 	if (self.typewriterMode) [self typewriterScroll];
 }
-- (void)keyDown:(NSEvent *)theEvent {
+
+- (void)keyDown:(NSEvent *)event
+{
+	//NSString* key = [NSString stringWithFormat:@"'%@'", keyCodeToString(event.keyCode)];
+	//[BeatConsole.shared logToConsole:key pluginName:@"DEBUG" context:self.editorDelegate];
+	
+	// Close info popover when typing
+	if (self.infoPopover.isShown) [self.infoPopover close];
+
 	if (self.editorDelegate.contentLocked) {
 		// Show lock status for alphabet keys
-		NSString * const character = [theEvent charactersIgnoringModifiers];
+		NSString * const character = [event charactersIgnoringModifiers];
 		if (character.length > 0) {
 			unichar c = [character characterAtIndex:0];
 			if ([NSCharacterSet.letterCharacterSet characterIsMember:c]) [self.editorDelegate showLockStatus];
 		}
 	}
-	
+
 	BOOL shouldComplete = YES;
 	BOOL preventDefault = NO;
-	
-	if (self.popoverController.isShown) {
-		
-	}
-	
-	switch (theEvent.keyCode) {
-		case 51:
-			// Delete
-			[self closePopovers];
-			shouldComplete = NO;
-			
-			break;
-		case 53:
-			// Esc
-			if (self.popoverController.isShown || self.infoPopover.isShown) {
-				[self closePopovers];
-			} else {
-				[self.editorDelegate cancelOperation:self];
-			}
-			
-			preventDefault = YES;
-			break;
 
-		case 125:
-			// Down
-			if (self.popoverController.isShown) {
-				[self.popoverController moveDown];
-				preventDefault = YES;
-			}
-			break;
-		case 126:
-			// Up
-			if (self.popoverController.isShown) {
-				[self.popoverController moveUp];
-				preventDefault = YES;
-			}
-			break;
-		case 48:
-			// Tab
-			if (self.popoverController.isShown) {
-				preventDefault = [self.popoverController pickPopoverItem]; // This result is ignored
-			} else {
-				// Call delegate to handle normal tab press
-				NSUInteger flags = theEvent.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+	if ((self.popoverController.isShown || self.infoPopover.isShown) && event.keyCode == 53) {
+		// Esc key pressed when popovers are visible
+		[self closePopovers];
+		preventDefault = true;
+	} else if (self.popoverController.isShown) {
+		// Forward events to popover
+		preventDefault = [self.popoverController keyPressedWithKeyCode:event.keyCode];
+	} else {
+		switch (event.keyCode) {
+			case 51:
+				// Delete
+				[self closePopovers];
+				shouldComplete = NO;
+				break;
 				
-				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
-					[self.editorDelegate handleTabPress];
-				}
-			}
-			
-			// We'll never allow tab to be inserted
-			preventDefault = YES;
-			break;
-			
-		case 36:
-			// Return key
-			if (self.popoverController.isShown) {
-				preventDefault = [self.popoverController pickPopoverItem];
-			} else if (theEvent.modifierFlags) {
-				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
+			case 53:
+				// Esc
+				[self.editorDelegate cancelOperation:self];
+				preventDefault = YES;
+				break;
 				
-				// Alt was pressed, show force element menu
-				if (flags == NSEventModifierFlagOption) {
-					[self showForceElementMenu];
-					preventDefault = YES;
-					break;
-				}
+			case 48: {
+				// If there are no flags, we'll send the tab key to delegate. It should rather be handled here though.
+				NSUInteger flags = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+				if (flags == 0 || flags == NSEventModifierFlagCapsLock) [self.editorDelegate handleTabPress];
+				
+				// We'll never allow tab to be inserted
+				preventDefault = YES;
+				break;
 			}
-			break;
+				
+			case 36:
+				// Return key
+				if (event.modifierFlags) {
+					NSUInteger flags = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+					
+					// Alt was pressed, show force element menu
+					// Uh... wouldn't it be more sensible to have this as an IBAction?
+					if (flags == NSEventModifierFlagOption) {
+						[self showForceElementMenu];
+						preventDefault = YES;
+						break;
+					}
+				}
+				break;
+		}
 	}
-	
-	// Close info popover when typing
-	if (self.infoPopover.isShown) [self.infoPopover close];
-	
+		
 	// Skip super methods when needed
 	if (preventDefault) return;
 	
 	// Run superclass method for the event (ie. do what the keyboard says)
-	[super keyDown:theEvent];
+	[super keyDown:event];
 	
 	// Run completion block
 	if (shouldComplete && self.editorDelegate.mode != TaggingMode) {
@@ -992,6 +1009,9 @@ double clamp(double d, double min, double max)
 	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
 	
+	NSInteger location = self.selectedRange.location;
+	NSInteger length = 0;
+	
 	// See if we can read anything from the pasteboard
 	if ([pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]]) {
 		// We know for a fact that if the data originated from beat, the FIRST item will be
@@ -999,25 +1019,27 @@ double clamp(double d, double min, double max)
 		// readable objects.
 		
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:@{}];
-		
 		id obj = objectsToPaste[0];
-		
+				
 		if ([obj isKindOfClass:NSString.class]) {
 			// Plain text
 			NSString* result = [BeatPasteboardItem sanitizeString:obj];
 			[self.editorDelegate replaceRange:self.selectedRange withString:result];
-			
+			length = result.length;
 		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
 			BeatPasteboardItem *pastedItem = obj;
 			NSAttributedString *str = pastedItem.attrString;
 			
 			[self.editorDelegate.textActions replaceRange:self.selectedRange withAttributedString:str];
+			length = str.length;
 		} else {
 			// If everything else fails, try normal paste
 			[super paste:sender];
 		}
 	}
+	
+	//[(BeatLayoutManager*)self.layoutManager ensureLayoutForLinesInRange:NSMakeRange(location, length)];
 	
 	// If we didn't call super, the text view might not scroll back to caret
 	[self scrollRangeToVisible:self.selectedRange];
