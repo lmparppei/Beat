@@ -13,13 +13,20 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class iOSDocument;
+@class BeatUITextView;
+@class BeatiOSOutlineView;
 
-@interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
+@interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
 @property (nonatomic) iOSDocument* document;
 @property (weak, readonly) BXWindow* documentWindow;
 
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
+
+/// Main editor view
+@property (nonatomic) BeatUITextView* textView;
+/// Sidebar outline view
+@property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 
 @property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
@@ -36,6 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) IBOutlet UIBarButtonItem* screenplayButton;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem* dismissKeyboardButton;
+
+/// Set to true when text storage is processing an edit
+@property (nonatomic) bool processingEdit;
+/// The range where the *edit* happened
+@property (nonatomic) NSRange lastEditedRange;
+
 
 - (IBAction)togglePreview:(id _Nullable)sender;
 - (IBAction)toggleCards:(id _Nullable)sender;

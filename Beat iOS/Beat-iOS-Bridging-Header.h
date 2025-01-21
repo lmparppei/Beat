@@ -15,6 +15,8 @@
 #import <BeatThemes/BeatThemes.h>
 
 #import "BeatDocumentViewController.h"
+#import "BeatDocumentViewController+TextEvents.h"
+
 #import "BeatPrintView.h"
 
 #endif /* Beat_iOS_Bridging_Header_h */
