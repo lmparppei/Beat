@@ -104,7 +104,7 @@ public protocol BeatReviewInterface {
     /// Loads review attributes to text view
 	@objc public func setupReviews(ranges:NSArray) {
 		guard let delegate = self.delegate else { return }
-		
+        
 		for item in ranges {
 			let review = item as? Dictionary ?? [:]
 			

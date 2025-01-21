@@ -40,23 +40,7 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
-	
-	func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
-		print("-> ",userActivity.activityType)
-		guard userActivity.activityType == "fi.KAPITAN.Beat.editing",
-			  let path = userActivity.userInfo?["url"] as? String
-		else { return false }
 		
-		let url = URL(filePath: path)
-		openDocument(url)
-		
-		return false
-	}
-	
-	func openDocument(_ url:URL) {
-		print("Open doc at ", url)
-	}
-
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
@@ -81,6 +65,19 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 
         return true
     }
+	
+	/*
+	func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
+		guard userActivity.activityType == "fi.KAPITAN.Beat.editing",
+			  let path = userActivity.userInfo?["url"] as? String
+		else { return false }
+		
+		let url = URL(filePath: path)
+		openDocument(url)
+		
+		return false
+	}
+	 */
 
 	
 	// MARK: - Dark mode stuff
@@ -146,30 +143,6 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 		
 		NotificationCenter.default.post(name: NSNotification.Name("Appearance changed"), object: nil)
 	}
-	
-	/*
-	 - (void)toggleDarkMode {
-		 _darkMode = ![self isDark];
-		 
-		 // OS is in dark mode, so we need to force the light mode
-		 if ([self OSisDark]) {
-			 if (!_darkMode) _forceLightMode = YES;
-			 else _forceLightMode = NO;
-		 }
-		 // And vice versa
-		 else if (![self OSisDark]) {
-			 if (_darkMode) _forceDarkMode = YES;
-			 else _forceDarkMode = NO;
-		 }
-		 
-		 [BeatUserDefaults.sharedDefaults saveBool:_darkMode forKey:BeatSettingDarkMode];
-		 
-		 NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
-		 for (Document* doc in openDocuments) {
-			 [doc updateUIColors];
-		 }
-	 }
-	 */
 }
 	 
 
