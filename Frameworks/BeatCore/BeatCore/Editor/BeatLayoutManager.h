@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
 @property (nonatomic) NSMapTable<Line*,NSArray<NSNumber*>*>* _Nullable pageBreaksMap;
 - (void)updatePageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks;
- 
+- (void)ensureLayoutForLinesInRange:(NSRange)range;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -30,6 +30,7 @@
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
 @property (nonatomic) NSMutableParagraphStyle* _Nullable sceneNumberStyle;
 @property (nonatomic, weak) BXTextView* textView;
+
 @end
 
 #if TARGET_OS_OSX
@@ -799,8 +800,13 @@
 /// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
-    Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
-    if (line == nil) return 0;
+    // SOME WEIRD GUARDRAILS
+    NSArray<Line*>* lines = [self.editorDelegate.parser linesInRange:glyphRange];
+    Line* line = lines.firstObject;
+    if (lines.count > 1 || line == nil) {
+        // We won't lay out more than one line with this code, because... yes, I'm very bad with core stuff.
+        return 0;
+    }
     
     RenderStyle* style = [_editorDelegate.editorStyles forLine:line];
     
@@ -868,35 +874,6 @@
         }
     }
     
-    // Macro display
-    /*
-    if (line.macroRanges.count > 0 && !currentlyEditing) {
-        for (NSValue* v in line.resolvedMacros) {
-            NSRange macroRange = v.rangeValue;
-            NSString* string = line.resolvedMacros[v];
-            
-            if (string.length < macroRange.length) {
-                for (NSInteger i=0; i<string.length; i++) {
-                    CFStringRef chr = (__bridge CFStringRef)[string substringWithRange:NSMakeRange(i, 1)];
-                    CFStringReplace(modifiedStr, CFRangeMake(macroRange.location+i, 1), chr);
-                    //CFRelease(chr);
-                }
-                
-                // Hide the remaining glyphs
-                for (NSInteger i = 0; i < glyphRange.length; i++) {
-                    NSRange actualRange = NSMakeRange(macroRange.location + line.position + macroRange.location + string.length, macroRange.length - string.length);
-                    NSInteger ci = charIndexes[i];
-                    if (NSLocationInRange(ci, actualRange)) {
-                        NSGlyphProperty prop = modifiedProps[i];
-                        prop |= NSGlyphPropertyNull;
-                        modifiedProps[i] = prop;
-                    }
-                }
-            }
-        }
-    }
-     */
-
     CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
     [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
     
@@ -906,6 +883,35 @@
     
     return glyphRange.length;
 }
+
+// Macro display for glyphs
+/*
+if (line.macroRanges.count > 0 && !currentlyEditing) {
+    for (NSValue* v in line.resolvedMacros) {
+        NSRange macroRange = v.rangeValue;
+        NSString* string = line.resolvedMacros[v];
+        
+        if (string.length < macroRange.length) {
+            for (NSInteger i=0; i<string.length; i++) {
+                CFStringRef chr = (__bridge CFStringRef)[string substringWithRange:NSMakeRange(i, 1)];
+                CFStringReplace(modifiedStr, CFRangeMake(macroRange.location+i, 1), chr);
+                //CFRelease(chr);
+            }
+            
+            // Hide the remaining glyphs
+            for (NSInteger i = 0; i < glyphRange.length; i++) {
+                NSRange actualRange = NSMakeRange(macroRange.location + line.position + macroRange.location + string.length, macroRange.length - string.length);
+                NSInteger ci = charIndexes[i];
+                if (NSLocationInRange(ci, actualRange)) {
+                    NSGlyphProperty prop = modifiedProps[i];
+                    prop |= NSGlyphPropertyNull;
+                    modifiedProps[i] = prop;
+                }
+            }
+        }
+    }
+}
+ */
 
 NSGlyphProperty *CopyGlyphProperties(const NSGlyphProperty *props, NSRange glyphRange) {
     NSGlyphProperty *propsCopy = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
@@ -1036,6 +1042,17 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     
     _pageBreaks = pageBreaks;
      */
+}
+
+#pragma mark - Ensuring layout for lines
+
+- (void)ensureLayoutForLinesInRange:(NSRange)range
+{
+    NSArray<Line*>* lines = [self.editorDelegate.parser linesInRange:range];
+    
+    for (Line* line in lines) {
+        [self invalidateGlyphsForCharacterRange:line.range changeInLength:0 actualCharacterRange:nil];
+    }
 }
 
 
