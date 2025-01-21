@@ -395,14 +395,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Do nothing for already formatted empty lines (except update the represented line)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 &&
         line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
-		[_delegate.getTextView setTypingAttributes:attributes];
-		
 		// If we need to update the represented line, do it here
 		if (newAttributes[BeatRepresentedLineKey]) {
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:fullRange];
 		}
 		if (!alreadyEditing) [textStorage endEditing];
-		
+        
+        [_delegate.getTextView setTypingAttributes:attributes];
+        
 		return;
 	}
     
@@ -455,6 +455,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
 	// If we are editing a dialogue block at the end of the document, the line will be empty.
 	// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
+    bool shouldSetTypingAttributes = false;
 	if (!firstTime && line.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		Line* previousLine;
 		
@@ -473,7 +474,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		attributes[NSParagraphStyleAttributeName] = paragraphStyle;
         newAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
         
-        [_delegate.getTextView setTypingAttributes:attributes];
+        shouldSetTypingAttributes = true;
 	} else {
 		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
@@ -493,6 +494,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self setTextColorFor:line];
 
     if (!alreadyEditing) [textStorage endEditing];
+    if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage

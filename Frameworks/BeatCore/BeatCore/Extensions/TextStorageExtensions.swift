@@ -10,18 +10,9 @@ import Foundation
 fileprivate var _isEditing = false
 
 extension NSTextStorage {
-    open override func beginEditing() {
-        _isEditing = true
-        super.beginEditing()
-    }
-    
-    open override func endEditing() {
-        _isEditing = false
-        super.endEditing()
-    }
-    
-    @objc public var isEditing:Bool {
-        return _isEditing
-    }
 
+    @objc public var isEditing:Bool {
+        return self.editedMask != []
+    }
+    
 }
