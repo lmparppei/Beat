@@ -15,8 +15,11 @@
 
 #import "BeatDocumentSettings.h"
 
-#define JSON_MARKER @"\n\n/* If you're seeing this, you can remove the following stuff - BEAT:"
+#define JSON_MARKER @"/* If you're seeing this, you can remove the following stuff - BEAT:"
 #define JSON_MARKER_END @"END_BEAT */"
+
+#define SETTING_BLOCK_OPEN @"/** settings: "
+#define SETTING_BLOCK_CLOSE @"**/"
 
 @implementation BeatDocumentSettings
 
@@ -177,36 +180,64 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 	}
     
     NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
+    return [NSString stringWithFormat:@"\n\n%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 }
 
 - (NSRange)readSettingsAndReturnRange:(NSString*)string
 {
-	NSRange r1 = [string rangeOfString:JSON_MARKER];
-	NSRange r2 = [string rangeOfString:JSON_MARKER_END];
-	NSRange rSub = NSMakeRange(r1.location + r1.length, r2.location - r1.location - r1.length);
-	
-	if (r1.location != NSNotFound && r2.location != NSNotFound) {
-		NSString *settingsString = [string substringWithRange:rSub];
-		NSData *settingsData = [settingsString dataUsingEncoding:NSUTF8StringEncoding];
-		NSError *error;
-		
-		NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:&error];
+    NSRange range = [self rangeForSettingsIn:string];
+    
+    // No range available
+    if (range.location == NSNotFound || range.location < 0 || range.length < 0) return NSMakeRange(0, 0);
+    
+    // Find the actual JSON
+    NSString* settingsBlock = [string substringWithRange:range];
+    
+    NSInteger jsonOpen = [settingsBlock rangeOfString:@"{"].location;
+    NSInteger jsonClose = [settingsBlock rangeOfString:@"}" options:NSBackwardsSearch].location + 1;
+    
+    NSString* json = [settingsBlock substringWithRange:NSMakeRange(jsonOpen, jsonClose - jsonOpen)];
+    NSData *settingsData = [json dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSError *error;
+    NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:&error];
+    
+    if (error == nil) {
+        _settings = [NSMutableDictionary dictionaryWithDictionary:settings];
+        return range;
+    } else {
+        // Something went wrong in reading the settings. Just carry on but log a message.
+        NSLog(@"ERROR: Document settings could not be read. %@", error);
+        _settings = NSMutableDictionary.new;
+        return NSMakeRange(0, 0);
+    }
+}
+
+- (NSRange)rangeForModernSettingsIn:(NSString*)string
+{
+    NSRange openRange = [string rangeOfString:SETTING_BLOCK_OPEN];
+    NSRange closeRange = [string rangeOfString:SETTING_BLOCK_CLOSE options:NSBackwardsSearch];
+    
+    // No setting block available
+    if (openRange.location == NSNotFound || closeRange.location == NSNotFound) return NSMakeRange(NSNotFound, 0);
+    
+    return NSMakeRange(openRange.location, NSMaxRange(closeRange) - openRange.location);
+}
+
+- (NSRange)rangeForSettingsIn:(NSString*)string
+{
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    if ([string containsString:JSON_MARKER]) {
+        NSRange openRange = [string rangeOfString:JSON_MARKER];
+        NSRange closeRange = [string rangeOfString:JSON_MARKER_END options:NSBackwardsSearch];
         
-		if (!error) {
-			_settings = [NSMutableDictionary dictionaryWithDictionary:settings];
-		
-			// Return the index where settings start
-			return NSMakeRange(r1.location, r1.length + rSub.length + r2.length);
-		} else {
-			// Something went wrong in reading the settings. Just carry on but log a message.
-			NSLog(@"ERROR: Document settings could not be read. %@", error);
-			_settings = [NSMutableDictionary dictionary];
-			return NSMakeRange(0, 0);
-		}
-	}
-	
-	return NSMakeRange(0, 0);
+        if (openRange.location != NSNotFound && closeRange.location != NSNotFound)
+            range = NSMakeRange(openRange.location, NSMaxRange(closeRange) - openRange.location);
+        
+        // NSRange rSub = NSMakeRange(r1.location + r1.length, r2.location - r1.location - r1.length);
+    }
+    
+    return range;
 }
 
 @end
