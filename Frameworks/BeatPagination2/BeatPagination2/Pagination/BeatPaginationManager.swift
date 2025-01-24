@@ -369,7 +369,7 @@ import BeatCore
     @objc public func pageNumberForScene(_ scene:OutlineScene) -> Int {
         return pageNumberAt(Int(scene.position))
     }
-    
+        
     /// Returns page number at given location
     @objc public func pageNumberAt(_ location:Int) -> Int {
         var pageNumber = self.finishedPagination?.findPageIndex(at: location) ?? 0
@@ -431,5 +431,17 @@ import BeatCore
         }
         
         return height
+    }
+    
+    @objc public func indexInEditor(pageNumber:Int) -> Int {
+        guard let finishedPagination else { return NSNotFound }
+        
+        let pageIndex = pageNumber - 1
+        if pageIndex >= 0 && pageIndex < finishedPagination.pages.count,
+           let page = finishedPagination.pages[pageIndex] as? BeatPaginationPage {
+            return page.representedRange().location
+        }
+        
+        return NSNotFound
     }
 }
