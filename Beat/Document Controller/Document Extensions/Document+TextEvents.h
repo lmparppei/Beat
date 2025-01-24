@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 //- (NSInteger)textView:(NSTextView *)textView shouldSetSpellingState:(NSInteger)value range:(NSRange)affectedCharRange;
 - (void)cancelCharacterInput;
 
+- (void)handleTabPress;
+- (void)forceCharacterInput;
+
 @end
 
 NS_ASSUME_NONNULL_END
