@@ -13,13 +13,18 @@
 
 import Cocoa
 
+struct BeatSceneHeadingSearchResult {
+	var page = 0
+	var scene:OutlineScene? = nil
+}
+
 class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSControlTextEditingDelegate
  {
 	@objc weak var delegate:BeatEditorDelegate?
 	@IBOutlet weak var textField:NSTextField?
 	@IBOutlet weak var tableView:NSTableView?
 	
-	var results:[OutlineScene] = []
+	var results:[BeatSceneHeadingSearchResult] = []
 	
 	override var windowNibName: String! {
 		return "BeatSceneHeadingSearch"
@@ -40,7 +45,9 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		
 		textField?.delegate = self
 		delegate?.parser.updateOutline() // create a new outline from scratch, just in case
-		results = delegate?.parser.outline as! [OutlineScene]
+		//results = delegate?.parser.outline as! [OutlineScene]
+		results = []
+		self.filter("")
 	}
 	
 	override func windowDidLoad() {
@@ -63,30 +70,31 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	func controlTextDidChange(_ obj: Notification) {
 		filter(textField?.stringValue ?? "")
 	}
-
-	//var backspaces:Int = 0
+	
+	func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+		// Don't perform up and down commands
+		return commandSelector == #selector(moveUp(_:)) || commandSelector == #selector(moveDown(_:))
+	}
+	
+	
 	override func keyUp(with event: NSEvent) {
-		// Close on esc
 		if event.keyCode == 53 {
+			// Close on esc
 			self.closeModal()
 			return
-		}
-		// Select on enter
-		else if event.keyCode == 36 {
+		} else if event.keyCode == 36 {
+			// Select on enter
 			selectScene()
-		}
-		
-		else if event.keyCode == 126 {
+		} else if event.keyCode == 126 {
 			// up
 			if tableView!.numberOfRows > 0 {
 				var selected = tableView!.selectedRow - 1;
-				if (selected <= 0) { selected = tableView!.numberOfRows - 1; }
+				if (selected < 0) { selected = tableView!.numberOfRows - 1; }
 				tableView?.selectRowIndexes([selected], byExtendingSelection: false)
 				tableView?.scrollRowToVisible(tableView!.selectedRow)
 				return
 			}
-		}
-		else if event.keyCode == 125 {
+		} else if event.keyCode == 125 {
 			// down
 			if tableView!.numberOfRows > 0 {
 				var selected = tableView!.selectedRow + 1;
@@ -123,38 +131,70 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	// MARK: - Filtering and jumping to scene
 	
 	func selectScene() {
-		if (self.tableView!.numberOfRows > 0 && self.tableView!.selectedRow != NSNotFound && self.tableView!.selectedRow >= 0 ) {
-			// Get selected scene from the table (usually the first one)
-			let scene = self.tableView!.dataSource!.tableView!(self.tableView!, objectValueFor: nil, row: tableView!.selectedRow) as? OutlineScene ?? nil
-			
-			// Scroll to selected scene and close this menu
-			if (scene != nil) {
-				self.delegate?.scroll(to: scene!.line)
+		guard let delegate,
+			  let tableView,
+			  tableView.selectedRow >= 0,
+			  tableView.selectedRow != NSNotFound,
+			  let dataSource = tableView.dataSource,
+			  let result = dataSource.tableView?(tableView, objectValueFor: nil, row: tableView.selectedRow) as? BeatSceneHeadingSearchResult
+		else {
+			closeModal()
+			return
+		}
+					
+		if result.page > 0 {
+			// Go to page
+			let index = delegate.pagination().indexInEditor(pageNumber: result.page)
+			if index != NSNotFound {
+				let line = delegate.parser.line(at: index)
+				delegate.scroll(to: line)
 			}
+		} else if let scene = result.scene {
+			// Go to scene
+			delegate.scroll(to: scene.line)
 		}
 		
 		closeModal()
 	}
 	
+	func getHeadings() -> [BeatSceneHeadingSearchResult] {
+		guard let delegate, let outline = delegate.parser.outline as? [OutlineScene] else { return [] }
+	
+		var results:[BeatSceneHeadingSearchResult] = []
+		
+		for scene in outline {
+			results.append(BeatSceneHeadingSearchResult(scene: scene))
+		}
+		
+		return results
+	}
+	
 	func filter(_ string:String) {
-		if (self.delegate == nil) { return }
+		guard let delegate else { return }
 		
 		if (string.count == 0) {
-			results = delegate!.parser.outline as! [OutlineScene]
+			results = getHeadings()
 		} else {
 			results = []
 		}
 
 		let searchString = string.uppercased()
 		
-		for item in self.delegate!.parser.outline {
+		// Check if this could be a page number. We won't show all pages, just the one with this exact number.
+		let pageNumber = Int(string) ?? 0
+		let pages = self.delegate?.pagination().finishedPagination?.pages.count ?? 0
+		if pageNumber > 0 && pageNumber <= pages {
+			results.insert(BeatSceneHeadingSearchResult(page: pageNumber), at: 0)
+		}
+		
+		for item in delegate.parser.outline {
 			let scene = item as! OutlineScene
 			
 			let sceneNumber = (scene.sceneNumber ?? "").uppercased()
 			let sceneTitle = scene.string.uppercased()
 						
 			if sceneTitle.contains(searchString) || sceneNumber.contains(searchString) {
-				results.append(scene)
+				results.append(BeatSceneHeadingSearchResult(scene: scene))
 			}
 		}
 		
@@ -183,10 +223,19 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	}
 	
 	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-		let scene = results[row]
+		let result = results[row]
 		let view = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "SceneView"), owner: self) as! BeatSceneHeadingView
-		view.textField?.stringValue = scene.stringForDisplay()
-		view.sceneNumber?.stringValue = scene.sceneNumber ?? ""
+		
+		if result.page > 0 {
+			// If this is a page result, let's show it first. We only show a single page, btw.
+			view.textField?.stringValue =  BeatLocalization.localizedString(forKey: "textView.information.page") + " \(result.page)"
+			view.textField?.font = view.textField?.font?.bold()
+			view.sceneNumber?.stringValue = ""
+		} else if let scene = result.scene  {
+			// This is a scene heading result
+			view.textField?.stringValue = scene.stringForDisplay()
+			view.sceneNumber?.stringValue = scene.sceneNumber ?? ""
+		}
 		
 		return view
 	}
@@ -200,7 +249,6 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	// MARK: - Observe clicks outside the modal
 	private var monitor: Any?
 	func addCloseOnOutsideClick(ignoring ignoringViews: [NSView]? = nil) {
-		
 		monitor = NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown) { [weak self] (event) -> NSEvent? in
 			guard let self = self,
 				  let contentView = self.window?.contentView

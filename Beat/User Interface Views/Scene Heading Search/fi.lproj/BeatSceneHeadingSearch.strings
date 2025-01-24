@@ -3,7 +3,7 @@
 "7Pq-ee-6u6.title" = "1";
 
 /* Class = "NSTextFieldCell"; placeholderString = "Scene Number or Title..."; ObjectID = "DIT-bV-SYv"; */
-"DIT-bV-SYv.placeholderString" = "Kohtausnumero tai otsikko...";
+"DIT-bV-SYv.placeholderString" = "Kohtausnumero, otsikko tai sivu...";
 
 /* Class = "NSWindow"; title = "Window"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "Window";
