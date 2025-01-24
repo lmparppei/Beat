@@ -689,7 +689,7 @@ static NSDictionary* patterns;
                 nextLine.isTitlePage ||
                 
                 // Avoid dialogue weirdness
-                (currentLine.isAnySortOfDialogue && nextLine.string.length > 0 && !currentLine.isAnySortOfDialogue) ||
+                (currentLine.isAnySortOfDialogue && nextLine.string.length > 0 && !currentLine.isAnySortOfDialogue && currentLine.position != _editedRange.location) ||
 
                 nextLine.isOutlineElement ||
                 
@@ -801,7 +801,8 @@ static NSDictionary* patterns;
     line.escapeRanges = NSMutableIndexSet.new;
     line.type = [self parseLineTypeFor:line atIndex:index];
     
-    //LineType test = [self ruleBasedParsingFor:line atIndex:index];
+    // In the future we'll replace the previous function with rule-based parsing.
+    // LineType test = [self ruleBasedParsingFor:line atIndex:index];
     //if (line.type != test) NSLog(@"!!! wrong type (%lu / %lu) - %@", test, line.type, line);
     
     // Remember where our boneyard begins
@@ -1898,7 +1899,7 @@ NSInteger previousSceneIndex = NSNotFound;
 - (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item, NSInteger idx))compare
 {
 	// Don't go out of range
-	if (NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
+	if (array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
 		/** Uh, wtf, how does this work?
 			We are checking if the search origin is in range from -1 to the full array count,
 			so I don't understand how and why this could actually work, and why are we getting
@@ -1906,7 +1907,6 @@ NSInteger previousSceneIndex = NSNotFound;
 		 */
 		return nil;
 	}
-    else if (array.count == 0) return nil;
     
 	NSInteger i = searchOrigin;
 	NSInteger origin = (descending) ? i - 1 : i + 1;
