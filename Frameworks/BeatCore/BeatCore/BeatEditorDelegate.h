@@ -313,7 +313,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - General editor stuff
 
-- (void)handleTabPress;
 - (void)registerEditorView:(id<BeatEditorView>)view;
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
 /// Updates editor views asynchronously (where applicable)

@@ -101,8 +101,6 @@
 -(void)awakeFromNib
 {
 	self.renderQueue = NSMutableArray.new;
-
-	NSLog(@"!!! woken");
 	self.panelWidth = self.window.frame.size.width;
 	
 	// Show advanced options?
