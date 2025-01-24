@@ -259,7 +259,8 @@
 - (void)textDidChange
 {
     if (self.documentIsLoading) return;
- 
+    if (self.textStorage.isEditing) [self.textStorage endEditing];
+    
         // Begin from top if no last changed range was set
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
 

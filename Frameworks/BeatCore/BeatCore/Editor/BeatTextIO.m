@@ -107,6 +107,7 @@ static NSString *centeredEnd = @" <";
         [self.textView setSelectedTextRange:oldRange];
         
         [textView replaceRange:textRange withText:string];
+        if (textView.textStorage.isEditing) [textView.textStorage endEditing];
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else

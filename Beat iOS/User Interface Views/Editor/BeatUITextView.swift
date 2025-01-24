@@ -28,7 +28,7 @@ import BeatParsing
 	@objc var dismissKeyboardButton:UIBarButtonItem? { get }
 	
 	@objc func textViewDidEndSelection(_ textView:UITextView, selectedRange:NSRange)
-		
+	
 	func loadFonts()
 }
 
@@ -58,6 +58,16 @@ import BeatParsing
 		didSet {
 			self.setupInputAssistantButtons()
 			self.assistantView?.reloadData()
+		}
+	}
+	
+	override var typingAttributes: [NSAttributedString.Key : Any] {
+		get {
+			return super.typingAttributes
+		}
+		set {
+			if self.textStorage.isEditing { self.textStorage.endEditing() }
+			super.typingAttributes = newValue
 		}
 	}
 	
@@ -339,13 +349,13 @@ import BeatParsing
 	}
 	
 	@objc func cancelCharacterInput() {
-		guard let editorDelegate = self.editorDelegate else { return }
+		guard let editorDelegate = self.editorDelegate, let currentLine = editorDelegate.currentLine else { return }
 
 		let line = editorDelegate.characterInputForLine
 
 		var shouldCancel = true
 		
-		if editorDelegate.characterInputForLine != nil, editorDelegate.currentLine.position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
+		if editorDelegate.characterInputForLine != nil, currentLine.position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
 			shouldCancel = false
 		}
 		
@@ -354,7 +364,7 @@ import BeatParsing
 		
 		// Uh... well, yeah.
 		if !shouldCancel { return }
-		
+				
 		let paragraphStyle = NSMutableParagraphStyle()
 		paragraphStyle.firstLineHeadIndent = 0.0
 		paragraphStyle.minimumLineHeight = self.editorDelegate?.editorStyles.page().lineHeight ?? 12.0
@@ -370,10 +380,11 @@ import BeatParsing
 		self.setNeedsDisplay()
 		self.setNeedsLayout()
 		
-		editorDelegate.setTypeAndFormat(line, type: .empty)
+		if line?.length == 0 {
+			editorDelegate.setTypeAndFormat(line, type: .empty)
+		}
 	}
-	
-	
+		
 	// MARK: - Rects for ranges
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
@@ -496,7 +507,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 		guard let key = presses.first?.key else { return }
 		
 		if key.keyCode == .keyboardTab {
-			editorDelegate?.handleTabPress()
+			handleTabPress()
 			return
 		}
 		if key.keyCode == .keyboardReturnOrEnter, key.modifierFlags == .shift {
@@ -523,6 +534,21 @@ extension BeatUITextView: UIScrollViewDelegate {
 		default:
 			super.pressesEnded(presses, with: event)
 		}
+	}
+	
+	func handleTabPress() {
+		guard let line = self.editorDelegate?.currentLine else { return }
+		
+		if line.isAnyCharacter(), line.length > 0 {
+			self.editorDelegate?.formattingActions.addOrEditCharacterExtension()
+		} else {
+			forceCharacterInput()
+		}
+	}
+	
+	func forceCharacterInput() {
+		if self.editorDelegate?.characterInput ?? false { return }
+		self.editorDelegate?.formattingActions.addCue()
 	}
 	
 }
@@ -571,4 +597,5 @@ extension BeatUITextView:KeyboardManagerDelegate {
 		self.endEditing(true)
 	}
 }
+
 
