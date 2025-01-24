@@ -31,10 +31,11 @@ extension BeatUITextView: InputAssistantViewDelegate {
 	// MARK: - Update assisting views
 	
 	@objc func updateAssistingViews () {
-		guard let editorDelegate = self.editorDelegate
+		guard let editorDelegate = self.editorDelegate,
+			  let currentLine = self.editorDelegate?.currentLine
 		else { return }
 		
-		if (editorDelegate.currentLine.isAnyParenthetical()) {
+		if (currentLine.isAnyParenthetical()) {
 			self.autocapitalizationType = .none
 		} else {
 			self.autocapitalizationType = .sentences
