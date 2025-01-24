@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class iOSDocument;
 @class BeatUITextView;
 @class BeatiOSOutlineView;
+@class BeatScrollView;
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
@@ -22,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, readonly) BXWindow* documentWindow;
 
 @property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
+
+/// Main scroll view
+@property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 
 /// Main editor view
 @property (nonatomic) BeatUITextView* textView;

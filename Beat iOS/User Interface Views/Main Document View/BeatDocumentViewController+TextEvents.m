@@ -11,7 +11,39 @@
 
 @implementation BeatDocumentViewController (TextEvents)
 
+/// TODO: Move this to text view?
+- (void)handleTabPress
+{
+	if (self.textView.assistantView.numberOfSuggestions > 0) {
+		//Select the first one
+		[self.textView.assistantView selectItemAt:0];
+		return;
+	}
+	
+	[self.formattingActions addCue];
+	
+	self.characterInputForLine = self.currentLine;
+	self.characterInput = true;
+	
+	[self.textView updateAssistingViews];
+}
+
+- (void)restoreCaret
+{
+	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+	if (position < self.text.length) {
+		[self.textView setSelectedRange:NSMakeRange(position, 0)];
+		[self.textView scrollToRange:self.textView.selectedRange];
+	}
+}
+
+
 #pragma mark - Text view delegation
+
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+	return true;
+}
 
 /// The main method where changes are parsed.
 /// - note: This is different from macOS, where changes are parsed in text view delegate method `shouldChangeText`, meaning they get parsed before anything is actually added to the text view. Changes on iOS are parsed **after** text has hit the text storage, which can cause some headache.
@@ -42,8 +74,7 @@
 		// Single removal. Note that delta is NEGATIVE.
 		NSRange removedRange = NSMakeRange(editedRange.location, labs(delta));
 		affectedRange = removedRange;
-	}
-	else if (editedRange.length > 0 && labs(delta) >= 0) {
+	} else if (editedRange.length > 0 && labs(delta) >= 0) {
 		// Something was replaced.
 		NSRange addedRange = editedRange;
 		NSRange replacedRange;
@@ -54,8 +85,7 @@
 		
 		affectedRange = replacedRange;
 		string = [self.text substringWithRange:addedRange];
-	}
-	else {
+	} else {
 		// Something was added.
 		if (delta > 1) {
 			// Longer addition
@@ -82,8 +112,14 @@
 
 -(void)textViewDidChangeSelection:(UITextView *)textView
 {
-	if (self.characterInputForLine != nil && self.currentLine != self.characterInputForLine) {
-		[self.textView cancelCharacterInput];
+	// For some reason iOS creates a bogus reference... I don't know. This is a duct-tape fix.
+	if (self.characterInputForLine != nil) {
+		if (self.currentLine.position == self.characterInputForLine.position) {
+			self.characterInputForLine = self.currentLine;
+		} else {
+			NSLog(@" - current line %@ / input line %@", self.currentLine, self.characterInputForLine);
+			[self.textView cancelCharacterInput];
+		}
 	}
 	
 	// If this is not a touch event, scroll to content

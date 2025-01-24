@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentViewController (TextEvents) <UITextViewDelegate>
 
+/// Restores caret position from document settings
+- (void)restoreCaret;
+- (void)handleTabPress;
+
 @end
 
 NS_ASSUME_NONNULL_END

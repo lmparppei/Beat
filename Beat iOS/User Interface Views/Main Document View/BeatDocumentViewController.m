@@ -12,10 +12,12 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPlugins/BeatPlugins.h>
 
+#import "BeatDocumentViewController+KeyboardEvents.h"
+
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate>
+@interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -34,9 +36,6 @@
 
 @property (nonatomic) bool matchParentheses;
 
-@property (nonatomic) KeyboardManager* keyboardManager;
-
-@property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 @property (nonatomic, weak) IBOutlet UIView* sidebar;
 
 @property (nonatomic) BeatOutlineDataProvider* outlineProvider;
@@ -68,6 +67,7 @@
 	
 	return self;
 }
+
 
 - (BXWindow*)documentWindow {
 	return self.view.window;
@@ -197,7 +197,7 @@
 	
 	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
 	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-		
+	
 	// This is not a place of honor. No highly esteemed deed is commemorated here.
 	[self.textView firstResize];
 	[self.textView resize];
@@ -273,7 +273,7 @@
 - (void)loadFonts
 {
 	[super loadFonts];
-
+	
 	// Phones require a specific set of fonts scaled by user setting
 	if (is_Mobile) {
 		bool variableSize = self.editorStyles.variableFont;
@@ -282,6 +282,7 @@
 		self.fonts = [BeatFontManager.shared fontsWith:type scale:self.fontScale];
 	}
 }
+
 
 - (void)setupDocument
 {
@@ -307,9 +308,8 @@
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
 	
-	// Keyboard manager
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybWillShow:) name:UIKeyboardWillShowNotification object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keybDidShow:) name:UIKeyboardDidShowNotification object:nil];
+	// Observers
+	[self setupKeyboardObserver];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
 	
 	// Text I/O
@@ -326,9 +326,6 @@
 	// Setup outline view
 	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
 	self.outlineView.editorDelegate = self;
-	
-	// One day we'll migrate to diffable data source, but that day is not now.
-	//_outlineProvider = [BeatOutlineDataProvider.alloc initWithDelegate:self tableView:self.outlineView];
 }
 
 - (void)dealloc
@@ -367,51 +364,37 @@
 
 - (void)ensureLayout
 {
-	//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	
 	[self.textView setNeedsDisplay];
 	[self.textView setNeedsLayout];
 }
 
-- (void)updateLayout {
+- (void)updateLayout
+{
 	[self ensureLayout];
 }
 
 
 #pragma mark - Text view
 
-- (BXTextView*)getTextView {
-	return self.textView;
-}
-- (CGFloat)editorLineHeight {
-	return self.editorStyles.page.lineHeight;
-}
+- (BXTextView*)getTextView { return self.textView; }
+- (CGFloat)editorLineHeight { return self.editorStyles.page.lineHeight; }
+- (UIKeyModifierFlags)inputModifierFlags { return self.textView.modifierFlags; }
 
-- (UIKeyModifierFlags)inputModifierFlags {
-	return self.textView.modifierFlags;
-}
-
-- (void)restoreCaret
-{
-	// Restore caret position from settings
-	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
-	if (position < self.text.length) {
-		[self.textView setSelectedRange:NSMakeRange(position, 0)];
-		[self.textView scrollToRange:self.textView.selectedRange];
-	}
-}
 
 #pragma mark - Application data and file access
 
 - (NSString*)fileNameString {
 	return _document.fileURL.lastPathComponent.stringByDeletingPathExtension;
 }
+
 - (bool)isDark {
 	return false;
 }
+
 - (void)showLockStatus {
 	
 }
+
 - (bool)contentLocked {
 	return [self.documentSettings getBool:DocSettingLocked];
 }
@@ -419,7 +402,6 @@
 - (BeatDocumentSettings*)documentSettings {
 	return self.document.settings;
 }
-
 
 - (NSString*)contentForSaving {
 	return [self createDocumentFile];
@@ -459,29 +441,6 @@
 	
 	[self.formatting refreshRevisionTextColors];
 	
-}
-
-
-#pragma mark - Getters for parser data
-
-- (NSArray*)markers
-{
-	// This could be inquired from the text view, too.
-	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
-	NSMutableArray * markers = NSMutableArray.new;
-	
-	for (Line* line in self.parser.lines) { @autoreleasepool {
-		if (line.marker.length == 0 && line.color.length == 0) continue;
-		
-		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
-		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
-		CGFloat relativeY = yPosition / [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size.height;
-		
-		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
-		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
-	} }
-	
-	return markers;
 }
 
 
@@ -732,17 +691,7 @@ bool editorWasActive = false;
 }
 
 
-#pragma mark - Style getters
-
-- (bool)headingStyleBold
-{
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
-}
-
-- (bool)headingStyleUnderline
-{
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
-}
+#pragma mark - Apply user settings
 
 - (void)applySettingsAndRefresh
 {
@@ -755,8 +704,7 @@ bool editorWasActive = false;
 
 - (void)applyFormatChanges
 {
-	[super applyFormatChanges];
-	
+	[super applyFormatChanges];	
 	[self.textView setTypingAttributes:self.typingAttributes];
 }
 
@@ -780,19 +728,8 @@ bool editorWasActive = false;
 
 #pragma mark - General editor stuff
 
-/// TODO: Move this to text view?
-- (void)handleTabPress {
-	if (self.textView.assistantView.numberOfSuggestions > 0) {
-		//Select the first one
-		[self.textView.assistantView selectItemAt:0];
-		return;
-	}
-	
-	[self.formattingActions addCue];
-	[self.textView updateAssistingViews];
-}
-
--(void)focusEditor {
+- (void)focusEditor
+{
 	[self.textView becomeFirstResponder];
 }
 
@@ -804,91 +741,12 @@ bool editorWasActive = false;
 
 #pragma mark - For avoiding throttling
 
-- (bool)hasChanged {
-	if ([self.text isEqualToString:_bufferedText]) {
-		return NO;
-	} else {
-		_bufferedText = self.text.copy;
-		return YES;
-	}
-}
-
-
-#pragma mark - Keyboard manager delegate
-
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-	return true;
-}
-
-/// Fuck me, sorry for this
-- (void)keybWillShow:(NSNotification*)notification
+- (bool)hasChanged
 {
-	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
-	NSNumber* rate = notification.userInfo[UIKeyboardAnimationDurationUserInfoKey];
+	bool changed = ![self.text isEqualToString:_bufferedText];
+	if (changed) _bufferedText = self.text.copy;
 	
-	if (endFrame == nil || rate == nil) return;
-	
-	CGRect currentKeyboard = endFrame.CGRectValue;
-	CGRect convertedFrame = [self.view convertRect:currentKeyboard fromView:nil];
-	
-	[self keyboardWillShowWith:convertedFrame.size animationTime:rate.floatValue];
-}
-
--(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime
-{
-	// Let's not use this on phones
-	if (is_Mobile) return;
-	
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
-	
-	CGRect bounds = self.scrollView.bounds;
-	bool animateBounds = false;
-	
-	if (self.selectedRange.location != NSNotFound) {
-		CGRect selectionRect = [self.textView rectForRangeWithRange:self.selectedRange];
-		CGRect visible = [self.textView convertRect:selectionRect toView:self.scrollView];
-		
-		CGRect modifiedRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - size.height);
-		
-		if (CGRectIntersection(visible, modifiedRect).size.height == 0.0) {
-			bounds.origin.y += size.height;
-			animateBounds = true;
-		}
-	}
-	
-	[UIView animateWithDuration:0.0 animations:^{
-		self.scrollView.contentInset = insets;
-		self.outlineView.contentInset = insets;
-		if (animateBounds) self.scrollView.bounds = bounds;
-		
-	} completion:^(BOOL finished) {
-		[self.textView resize];
-	}];
-}
-
--(void)keyboardWillHide
-{
-	self.outlineView.contentInset = UIEdgeInsetsZero;
-	self.scrollView.contentInset = UIEdgeInsetsZero;
-}
-
-- (void)keybDidShow:(NSNotification*)notification
-{
-	NSValue* endFrame = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
-	
-	// This is a hack to fix weird scrolling bugs on iPhone. Let's make sure the content size is adjusted correctly when keyboard has been shown.
-	if (is_Mobile && endFrame != nil) {
-		UIEdgeInsets insets = self.textView.contentInset;
-		
-		CGRect currentKeyboard = endFrame.CGRectValue;
-		CGRect convertedFrame = [self.view convertRect:currentKeyboard fromView:nil];
-		
-		if (insets.bottom < convertedFrame.size.height) {
-			insets.bottom = convertedFrame.size.height;
-			self.textView.contentInset = insets;
-			[self.textView scrollRangeToVisible:self.textView.selectedRange];
-		}
-	}
+	return changed;
 }
 
 
@@ -950,5 +808,6 @@ bool editorWasActive = false;
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view {
 	//
 }
+
 
 @end
