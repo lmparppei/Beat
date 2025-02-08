@@ -137,7 +137,8 @@
             NSString* resolvedMacro = self.resolvedMacros[r];
             
             NSRange range = r.rangeValue;
-            [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+            if (NSMaxRange(range) <= string.length)
+                [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
         }
     }
     
@@ -147,21 +148,22 @@
         for (NSNumber* key in revisedRanges.allKeys) {
             [revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
                 // Don't go out of range
-                if (NSMaxRange(range) > string.length) {
+                if (NSMaxRange(range) > string.length)
                     range = NSMakeRange(range.location, string.length - range.location);
-                }
-                if (range.length > 0 ) [string addAttribute:@"Revision" value:key range:range];
+                if (range.length > 0 && range.location >= 0 && NSMaxRange(range) <= string.length)
+                    [string addAttribute:@"Revision" value:key range:range];
             }];
         }
     }
     
-    // Loop through tags and apply. Not used export, just for FDX exporting.
+    // Loop through tags and apply. Not used in rendering, just for FDX exporting.
     for (NSDictionary *tag in self.tags) {
         NSString* tagValue = tag[@"tag"];
         if (!tagValue) continue;
         
         NSRange range = [(NSValue*)tag[@"range"] rangeValue];
-        [string addAttribute:@"BeatTag" value:tagValue range:range];
+        if (NSMaxRange(range) <= string.length)
+            [string addAttribute:@"BeatTag" value:tagValue range:range];
     }
     
     return string;
@@ -175,21 +177,25 @@
     if (name == nil) NSLog(@"WARNING: Null value passed to attributes");
     
     // We are going out of range. Abort.
-    if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
+    if (NSMaxRange(range) > string.length || range.length < 1 || range.location == NSNotFound) return;
     
     // Make a copy and enumerate attributes.
     // Add style to the corresponding range while retaining the existing attributes, if applicable.
     [string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         NSMutableSet* style;
+        
         if (attrs[@"Style"] != nil) {
-            // We need to make a copy of the set, otherwise we'll add to the same set of attributes as earlier, causing issues with overlapping attributes.
+            // We need to make a copy of the set, otherwise we'll add to the same set of attributes as earlier,
+            // causing issues with overlapping attributes.
             style = ((NSMutableSet*)attrs[@"Style"]).mutableCopy;
             [style addObject:name];
         } else {
             style = [NSMutableSet.alloc initWithArray:@[name]];
         }
         
-        [string addAttribute:@"Style" value:style range:range];
+        if (NSMaxRange(range) <= string.length) {
+            [string addAttribute:@"Style" value:style range:range];
+        }
     }];
 }
 
@@ -230,7 +236,11 @@
         
         // To ensure we can map the resulting attributed string *back* to the editor ranges, we'll mark the ranges they represent. This is an experimental part of the possible upcoming more WYSIWYG-like experience.
         NSRange editorRange = NSMakeRange(range.location, range.length);
-        [result addAttribute:@"BeatEditorRange" value:[NSValue valueWithRange:editorRange] range:NSMakeRange(result.length-range.length, range.length)];
+        NSRange attrStringRange = NSMakeRange(result.length-range.length, range.length);
+        
+        if (attrStringRange.location >= 0 && NSMaxRange(attrStringRange) <= result.length) {
+            [result addAttribute:@"BeatEditorRange" value:[NSValue valueWithRange:editorRange] range:attrStringRange];
+        }
     }];
     
     // Replace macro ranges. All macros should be resolved by now.
