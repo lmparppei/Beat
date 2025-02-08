@@ -142,17 +142,17 @@ static NSDictionary* patterns;
         // Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
         if (_nonContinuous) _staticParser = YES;
         else _staticParser = NO;
-                
+        
+        // Parsing rules for the future.
         _parsingRules = @[
-            [ParsingRule ruleWithResultingType:empty previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:1 allowedWhiteSpace:1 titlePage:false],
-            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"."] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."] length:0 allowedWhiteSpace:0 titlePage:false],
-            [ParsingRule ruleWithResultingType:shot previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!!"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:action previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:lyrics previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"~"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@"] endsWith:@[@"^"]],
-            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
+            [ParsingRule ruleWithResultingType:shot previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!!", @"！！"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:action previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!", @"！"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:lyrics previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"~", @"～"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
+            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@", @"＠"] endsWith:nil],
             
-            [ParsingRule ruleWithResultingType:section previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"#"] endsWith:nil],
+            [ParsingRule ruleWithResultingType:section previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"#", @"＃"] endsWith:nil],
             [ParsingRule ruleWithResultingType:synopse previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"="] endsWith:nil],
             
             [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
@@ -161,15 +161,16 @@ static NSDictionary* patterns;
             [ParsingRule ruleWithResultingType:transitionLine previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"TO:"]],
             
             // Dual dialogue
-            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"^"]],
-            [ParsingRule ruleWithResultingType:dualDialogueParenthetical previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil],
-            [ParsingRule ruleWithResultingType:dualDialogue previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false],
+            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"^"] requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule ruleWithResultingType:dualDialogueParenthetical previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule ruleWithResultingType:dualDialogue previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
             
             // Dialogue
-            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true],
+            [ParsingRule ruleWithResultingType:character minimumLength:2 minimumLengthAtInput:3 previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true],
             [ParsingRule ruleWithResultingType:parenthetical previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil],
             [ParsingRule ruleWithResultingType:dialogue previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false],
 
+            [ParsingRule ruleWithResultingType:empty exactMatches:@[@"", @" "]],
         ];
         
         [self parseText:string];
@@ -917,7 +918,6 @@ static NSDictionary* patterns;
 - (LineType)ruleBasedParsingFor:(Line*)line atIndex:(NSInteger)index
 {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    //Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
     
     for (ParsingRule* rule in self.parsingRules) {
         if ([rule validate:line previousLine:previousLine]) {
@@ -980,7 +980,6 @@ static NSDictionary* patterns;
     
     // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
     bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
-    if (fullWidthPunctuation) NSLog(@"!!! full width");
     NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
     
     // Also, lets add the first \ as an escape character

@@ -18,24 +18,45 @@
 @property (nonatomic, strong) NSArray<NSString *> *endsWith;
 @property (nonatomic, strong) NSArray<NSString *> *requiredAfterPrefix;
 @property (nonatomic, strong) NSArray<NSString *> *excludedAfterPrefix;
+@property (nonatomic, strong) NSArray<NSString *> *exactMatches;
 @property (nonatomic, assign) BOOL forcedType;
 @property (nonatomic, assign) NSInteger length;
 @property (nonatomic, assign) NSInteger allowedWhiteSpace;
 @property (nonatomic, strong) NSIndexSet *previousTypes;
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                      previousIsEmpty:(BOOL)previousIsEmpty
-                         previousTypes:(NSArray<NSNumber *> *)previousTypes
-                allCapsUntilParentheses:(BOOL)allCapsUntilParentheses
-                            beginsWith:(NSArray<NSString *> *)beginsWith
-                              endsWith:(NSArray<NSString *> *)endsWith
-                   requiredAfterPrefix:(NSArray<NSString *> *)requiredAfterPrefix
-                   excludedAfterPrefix:(NSArray<NSString *> *)excludedAfterPrefix
-                                length:(NSInteger)length
-                     allowedWhiteSpace:(NSInteger)allowedWhiteSpace
-                             titlePage:(BOOL)titlePage;
+@property (nonatomic, assign) NSInteger minimumLength;
+@property (nonatomic, assign) NSInteger minimumLengthAtInput;
 
 + (instancetype)ruleWithResultingType:(LineType)resultingType
+                        minimumLength:(NSInteger)minimumLength
+                 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
+                      previousIsEmpty:(BOOL)previousIsEmpty
+                        previousTypes:(NSArray<NSNumber*>*)previousTypes
+              allCapsUntilParentheses:(BOOL)allCapsUntilParentheses
+                         exactMatches:(NSArray<NSString*>*)exactMatches
+                           beginsWith:(NSArray<NSString*>*)beginsWith
+                             endsWith:(NSArray<NSString*>*)endsWith
+                  requiredAfterPrefix:(NSArray<NSString*>*)requiredAfterPrefix
+                  excludedAfterPrefix:(NSArray<NSString*>*)excludedAfterPrefix
+                               length:(NSInteger)length
+                    allowedWhiteSpace:(NSInteger)allowedWhiteSpace
+                            titlePage:(BOOL)titlePage;
+
++ (instancetype)ruleWithResultingType:(LineType)resultingType
+                         exactMatches:(NSArray<NSString*>*)exactMatches;
+
++ (instancetype)ruleWithResultingType:(LineType)resultingType
+                               length:(NSInteger)length
+                    allowedWhiteSpace:(NSInteger)allowedWhiteSpace;
+
++ (instancetype)ruleWithResultingType:(LineType)resultingType
+                      previousIsEmpty:(BOOL)previousIsEmpty
+                        previousTypes:(NSArray<NSNumber *> *)previousTypes
+              allCapsUntilParentheses:(BOOL)allCapsUntilParentheses;
+
++ (instancetype)ruleWithResultingType:(LineType)resultingType
+                        minimumLength:(NSInteger)minimumLength
+                 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
                       previousIsEmpty:(BOOL)previousIsEmpty
                         previousTypes:(NSArray<NSNumber *> *)previousTypes
               allCapsUntilParentheses:(BOOL)allCapsUntilParentheses;
