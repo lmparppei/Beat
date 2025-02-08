@@ -17,7 +17,6 @@ import UXKit
 
 /// A protocol which defines basic preview view behaviors
 @objc public protocol BeatPreviewPageView {
-    //func updatePages(_ pagination:BeatPagination, settings:BeatExportSettings, controller:BeatPreviewManager)
     func clear()
     func scrollToPage(_ pageIndex:Int)
     

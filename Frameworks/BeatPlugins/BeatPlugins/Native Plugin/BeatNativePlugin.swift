@@ -24,6 +24,10 @@
     case documentExport
 }
 
+@objc public protocol BeatNativePluginHost {
+    func log(_ message:String)
+}
+
 @objc public protocol BeatNativePlugin {
     @objc var pluginName:String { get }
     @objc var minimumVersion:String { get }
