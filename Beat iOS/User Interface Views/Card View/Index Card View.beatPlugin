@@ -59,10 +59,11 @@ let templates = {
 	noteList: new Template("<div class='noteList'><ul>{{ notes }}</ul></div>"),
 	printedCard: new Template("<div class='cardContainer'><div class='card'>\
 									<div class='header'>\
-										<div class='sceneNumber'>{{sceneNumber}}</div> <h3>{{stringForDisplay}}</h3>\
+										<div class='sceneNumber'>{{ sceneNumber }}</div> <h3>{{ stringForDisplay }}</h3>\
 									</div>\
-									{{synopsisList}}\
+									{{ synopsisList }}\
 									<p>{{text}}</p>\
+									<div class='pageCount'>{{ pages }} {{ eights }}</div>\
 								</div></div>")
 }
 
@@ -239,10 +240,8 @@ function updateScene(scene, pagination = Beat.currentPagination()) {
 	
 	// (Oh my fucking god JavaScript is silly with its non-typed variables
 	// but I don't care.)
-	if (pages[0] > 0) sceneJSON.pages = pages[0];
-	else sceneJSON.pages = "";
-	if (pages[1] > 0) sceneJSON.eights = pages[1] + "/8";
-	else sceneJSON.eights = ""
+	if (pages[0] > 0) sceneJSON.pages = pages[0]; else sceneJSON.pages = "";
+	if (pages[1] > 0) sceneJSON.eights = pages[1] + "/8"; else sceneJSON.eights = ""
 		
 	// Add the JSON data to array
 	return sceneJSON
@@ -520,15 +519,15 @@ function printCards() {
 		let scene = updateScene(outline[i])
 
 		scene.synopsisList = ""
-			if (scene.synopsis.length) {
-				let synopsisList = []
-				for (const synopsis of scene.synopsis) {
-					synopsisList += templates.synopsisItem.withData(synopsis)
-				}
-
-				if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
-				scene.text = ""
+		if (scene.synopsis.length > 0) {
+			let synopsisList = []
+			for (const synopsis of scene.synopsis) {
+				synopsisList += templates.synopsisItem.withData(synopsis)
 			}
+
+			if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
+			scene.text = ""
+		}
 
 		json.push(scene)
     }

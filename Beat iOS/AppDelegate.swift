@@ -20,6 +20,7 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 	func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+		print("Documents URL", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first ?? "(none)")
 		return true
 	}
 

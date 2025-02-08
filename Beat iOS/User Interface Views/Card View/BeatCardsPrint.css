@@ -124,9 +124,11 @@ section {
 	width: calc(100% / 3);
 }
 
-.card, .synopse {
+.card {
 	position: relative;
-
+	display: flex;
+	flex-direction: column;
+	
 	/* width: calc(100% / 4 - 1.4rem); */
 	height: 220px;
 	padding: 20px;
@@ -139,6 +141,17 @@ section {
 
 	overflow: hidden;
 	z-index: 1;
+}
+
+.pageCount {
+	margin-top: auto;
+	padding: 0.3em 0 0 0;
+	
+	font-size: 0.75em;
+	font-family: "Helvetica", sans-serif;
+	text-align: right;
+	
+	background: white;
 }
 
 .color.none { background-color: transparent; }

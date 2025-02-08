@@ -91,6 +91,7 @@
 		B696BC432A74200D0078BA79 /* BeatCardsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B696BC3E2A741FA60078BA79 /* BeatCardsUI.html */; };
 		B696BC452A7426270078BA79 /* Index Card View.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B696BC442A7426260078BA79 /* Index Card View.beatPlugin */; };
 		B69CE5CB2BA1D87800EF02F2 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */; };
+		B69FF9AD2D4F7EA8001D36E8 /* 0.2.7.html in Resources */ = {isa = PBXBuildFile; fileRef = B69FF9AC2D4F7EA8001D36E8 /* 0.2.7.html */; };
 		B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */; };
 		B6A79B682B80B757003FF931 /* BeatSuppressCheckboxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */; };
 		B6A97BF82BF0BA3000414878 /* BeatAppStoreConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = B6A97BF72BF0BA3000414878 /* BeatAppStoreConfiguration.storekit */; };
@@ -278,6 +279,7 @@
 		B696BC402A741FA70078BA79 /* BeatCardsUI.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = BeatCardsUI.css; sourceTree = "<group>"; };
 		B696BC442A7426260078BA79 /* Index Card View.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Index Card View.beatPlugin"; sourceTree = "<group>"; };
 		B69CE5CA2BA1D87800EF02F2 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
+		B69FF9AC2D4F7EA8001D36E8 /* 0.2.7.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.7.html; sourceTree = "<group>"; };
 		B6A79B652B801B02003FF931 /* BeatStartupScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStartupScreenViewController.swift; sourceTree = "<group>"; };
 		B6A79B672B80B757003FF931 /* BeatSuppressCheckboxButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSuppressCheckboxButton.swift; sourceTree = "<group>"; };
 		B6A97BF72BF0BA3000414878 /* BeatAppStoreConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = BeatAppStoreConfiguration.storekit; sourceTree = "<group>"; };
@@ -500,6 +502,7 @@
 				B65B56E82D40284A008BB43F /* 0.2.4.html */,
 				B65B56EA2D42AB23008BB43F /* 0.2.5.html */,
 				B65B56EF2D4394AF008BB43F /* 0.2.6.html */,
+				B69FF9AC2D4F7EA8001D36E8 /* 0.2.7.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -922,6 +925,7 @@
 				B61914D02C0497EA0079C828 /* BeatStatistics.beatPlugin in Resources */,
 				B686FFC62971BC7E00789C8D /* PreviewStyles-iOS.css in Resources */,
 				B64C92582CBDBC270024CC37 /* 0.1.15.html in Resources */,
+				B69FF9AD2D4F7EA8001D36E8 /* 0.2.7.html in Resources */,
 				B65B56E92D40284A008BB43F /* 0.2.4.html in Resources */,
 				B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */,
 				B67969CC2D359E9E00435A38 /* 0.2.2.html in Resources */,
@@ -1229,7 +1233,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 71;
+				CURRENT_PROJECT_VERSION = 73;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1251,7 +1255,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.2.6;
+				MARKETING_VERSION = 0.2.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1287,7 +1291,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 71;
+				CURRENT_PROJECT_VERSION = 73;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1304,7 +1308,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.2.6;
+				MARKETING_VERSION = 0.2.7;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;

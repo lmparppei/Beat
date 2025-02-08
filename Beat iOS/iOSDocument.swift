@@ -20,7 +20,7 @@ import QuickLook
 
 class iOSDocument: UIDocument {
     
-	@objc var rawText:String! = ""
+	@objc var rawText:String = ""
 	@objc var settings:BeatDocumentSettings = BeatDocumentSettings()
 	@objc var delegate:iOSDocumentDelegate?
 	@objc var parser:ContinuousFountainParser {
@@ -32,7 +32,9 @@ class iOSDocument: UIDocument {
 	}
 	
     override func contents(forType typeName: String) throws -> Any {
-		let text = delegate?.createDocumentFile() ?? self.rawText ?? ""
+		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
+			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
+		}
 		return text.data(using: .utf8) as Any
     }
 	
@@ -42,7 +44,7 @@ class iOSDocument: UIDocument {
 		
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
-		rawText = String(data: contents as! Data, encoding: .utf8)
+		rawText = String(data: contents as! Data, encoding: .utf8) ?? ""
 		rawText = rawText.replacingOccurrences(of: "\r", with: "")
 		
 		// Read settings and replace range

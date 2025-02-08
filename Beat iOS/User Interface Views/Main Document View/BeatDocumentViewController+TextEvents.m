@@ -117,7 +117,6 @@
 		if (self.currentLine.position == self.characterInputForLine.position) {
 			self.characterInputForLine = self.currentLine;
 		} else {
-			NSLog(@" - current line %@ / input line %@", self.currentLine, self.characterInputForLine);
 			[self.textView cancelCharacterInput];
 		}
 	}
