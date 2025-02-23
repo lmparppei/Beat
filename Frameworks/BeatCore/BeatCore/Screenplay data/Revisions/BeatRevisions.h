@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
+/// Adds stored revision attributes from the delegate
 - (void)loadRevisions;
 
 - (NSDictionary<NSString*,NSArray*>*)serializedRanges;
@@ -83,6 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen;
 - (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen range:(NSRange)convertedRange;
 - (void)downgradeFromRevisionIndex:(NSInteger)genIndex;
+
+/// This method takes in a JSON range object from a line and applies it to given line
+- (void)loadLocalRevision:(NSDictionary*)revision line:(Line*)line;
 
 @end
 

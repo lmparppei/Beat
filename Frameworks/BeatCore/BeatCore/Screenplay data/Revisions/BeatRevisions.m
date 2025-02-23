@@ -349,7 +349,21 @@
             }
         }
     }
+}
+
+/// This method takes in a JSON range object from a line and applies it to given line
+- (void)loadLocalRevision:(NSDictionary*)revision line:(Line*)line
+{
+    [self.delegate removeAttribute:BeatRevisions.attributeKey range:line.textRange];
     
+    for (NSNumber* gen in revision.allKeys) {
+        NSIndexSet* indices = revision[gen];
+        [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:gen.integerValue];
+            NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
+            [self.delegate addAttribute:BeatRevisions.attributeKey value:revision range:globalRange];
+        }];
+    }
 }
 
 
