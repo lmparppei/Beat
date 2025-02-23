@@ -646,5 +646,48 @@ static NSString *macroSymbolClose = @"}}";
     self.delegate.selectedRange = NSMakeRange(loc + string.length - 2, 0);
 }
 
+
+#pragma mark - Switch between alternative versions of text
+
+- (IBAction)nextVersion:(id)sender
+{
+    [self stepVersion:1];
+}
+
+- (IBAction)prevVersion:(id)sender
+{
+    [self stepVersion:-1];
+}
+
+- (void)stepVersion:(NSInteger)amount
+{
+    // First bake revisions
+    [self.delegate bakeRevisions];
+    
+    Line* line = self.delegate.currentLine;
+    if (line.versions.count <= 1) return;
+    
+    NSDictionary* version = [line switchVersion:amount];
+    if (version != nil && version[@"text"] != nil) {
+        [self.delegate.textActions replaceRange:line.textRange withString:version[@"text"]];
+        [self.delegate.revisionTracking loadLocalRevision:version[@"revisions"] line:line];
+    }
+    
+    
+    /*
+    if (newText != nil) {
+        [self.delegate.textActions replaceRange:line.textRange withString:newText];
+    }
+     */
+}
+
+-  (IBAction)addVersionForLine:(id)sender
+{
+    Line* line = self.delegate.currentLine;
+    [line addVersion];
+    [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+}
+
+
 @end
 

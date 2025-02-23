@@ -26,9 +26,6 @@
 
 // Set character width
 #define CHR_WIDTH 7.25
-// Base font settings
-#define SECTION_FONT_SIZE 17.0 // base value for section sizes
-#define DD_RIGHT 59 * CHR_WIDTH
 
 @interface BeatEditorFormatting()
 // Paragraph styles are stored as { @(paperSize): { @(type): style } }
@@ -58,7 +55,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (BeatFontSet *)fonts
 {
     if (_delegate != nil) return _delegate.fonts;
-    //else return BeatFonts.sharedFonts;
     else return BeatFontManager.shared.defaultFonts;
 }
 
@@ -82,11 +78,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingDefaultPageSize];
 }
 
-- (BXFont*)regular { return (_delegate != nil) ? _delegate.fonts.regular : BeatFontManager.shared.defaultFonts.regular; }
-- (BXFont*)bold { return (_delegate != nil) ? _delegate.fonts.bold : BeatFontManager.shared.defaultFonts.bold; }
-- (BXFont*)italic { return (_delegate != nil) ? _delegate.fonts.italic : BeatFontManager.shared.defaultFonts.italic; }
-- (BXFont*)boldItalic { return (_delegate != nil) ? _delegate.fonts.boldItalic : BeatFontManager.shared.defaultFonts.boldItalic; }
-- (BXFont*)synopsisFont { return (_delegate != nil) ? _delegate.fonts.synopsis : BeatFontManager.shared.defaultFonts.synopsis; }
+- (BXFont*)regular { return (_delegate != nil) ? self.fonts.regular : BeatFontManager.shared.defaultFonts.regular; }
+- (BXFont*)bold { return (_delegate != nil) ? self.fonts.bold : BeatFontManager.shared.defaultFonts.bold; }
+- (BXFont*)italic { return (_delegate != nil) ? self.fonts.italic : BeatFontManager.shared.defaultFonts.italic; }
+- (BXFont*)boldItalic { return (_delegate != nil) ? self.fonts.boldItalic : BeatFontManager.shared.defaultFonts.boldItalic; }
+- (BXFont*)synopsisFont { return (_delegate != nil) ? self.fonts.synopsis : BeatFontManager.shared.defaultFonts.synopsis; }
 
 
 #pragma mark - Paragraph styles
@@ -267,7 +263,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     for (Line* line in self.parser.lines) {
         NSMutableParagraphStyle* pStyle = [self paragraphStyleFor:line];
         // Don't go over bounds
-        NSRange range = (NSMaxRange(line.range) <= self.delegate.text.length) ? line.range : line.textRange;
+        NSRange range = (NSMaxRange(line.range) <= self.textStorage.length) ? line.range : line.textRange;
         [self.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
     }
 }
@@ -330,8 +326,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 { @autoreleasepool {
 	// SAFETY MEASURES:
     // Don't do anything if the line is null or we don't have a text storage, and don't go out of range when attached to an editor
-	if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
-        return;
+	if (line == nil || self.textStorage == nil) return;
+    if (NSMaxRange(line.textRange) > self.textStorage.length) return;
 
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -351,8 +347,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Current attribute dictionary
 	NSMutableDictionary* attributes;
 	NSMutableDictionary* newAttributes = NSMutableDictionary.new;
-	if (firstTime || line.position == _delegate.text.length) attributes = NSMutableDictionary.new;
-	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
+    if (firstTime || line.position == self.textStorage.length) attributes = NSMutableDictionary.new;
+    else {
+        attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
+    }
 	
 	// Remove some attributes so they won't get overwritten
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
@@ -619,27 +617,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         
     return (font != nil) ? font : self.regular;
     
-    /*
-    // Section fonts are generated on the fly
-    if (fonts[@(line.type)] != nil) {
-        font = fonts[@(line.type)];
-    }
-    
-    if (line.type == section) {
-        // Make lower sections a bit smaller
-        CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1) * 2;
-        if (size < 12.0) size = 12.0;
-        
-        font = (_delegate != nil) ? [_delegate.fonts sectionFontWithSize:size] : BeatFontManager.shared.defaultFonts.section;
-    } else if (fonts[@(line.type)] != nil) {
-        // Check if we have stored a specific font for this line type
-        font = fonts[@(line.type)];
-    } else {
-        // Otherwise use plain courier
-        font = self.regular;
-    }
-    */
-    
     return font;
 }
 
@@ -692,9 +669,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range {
 	// Don't go out of range
-	if (NSMaxRange(range) >= self.delegate.text.length) {
+    if (NSMaxRange(range) >= self.textStorage.length) {
 		range.length = self.textStorage.length - range.location;
-        if (range.length <= 0 || NSMaxRange(range) > self.delegate.text.length) return;
+        if (range.length <= 0 || NSMaxRange(range) > self.textStorage.length) return;
 	}
 	
 	if (range.length > 0) [self.textStorage addAttribute:key value:value range:range];
@@ -885,7 +862,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)refreshRevisionTextColors
 {
-    [self refreshRevisionTextColorsInRange:NSMakeRange(0, self.delegate.text.length)];
+    [self refreshRevisionTextColorsInRange:NSMakeRange(0, self.textStorage.length)];
 }
 
 - (void)refreshRevisionTextColorsInRange:(NSRange)range

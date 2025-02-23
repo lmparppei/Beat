@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Window Controller-->
+        <scene sceneID="1cJ-Om-ZvP">
+            <objects>
+                <windowController storyboardIdentifier="DiffViewWindow" id="hRa-Ag-SZp" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="gqW-mv-M7f">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="255" y="323" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
+                        <view key="contentView" id="yko-zP-o38">
+                            <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="hRa-Ag-SZp" id="lRb-Zw-S9m"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="bU7-R8-ocO" kind="relationship" relationship="window.shadowedContentViewController" id="r1O-YQ-rqD"/>
+                    </connections>
+                </windowController>
+                <customObject id="nay-LR-fOd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="119" y="-344"/>
+        </scene>
+        <!--Diff Viewer View Controller-->
+        <scene sceneID="PEd-7d-5j0">
+            <objects>
+                <viewController id="bU7-R8-ocO" customClass="DiffViewerViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="tOy-S4-hL0">
+                        <rect key="frame" x="0.0" y="0.0" width="646" height="460"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a7R-TR-UEJ">
+                                <rect key="frame" x="0.0" y="40" width="646" height="382"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <clipView key="contentView" drawsBackground="NO" id="kMQ-Ma-G6L">
+                                    <rect key="frame" x="0.0" y="0.0" width="646" height="382"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textView wantsLayer="YES" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="qgB-Dv-OJS" customClass="DiffViewerTextView" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="646" height="382"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            <size key="minSize" width="646" height="382"/>
+                                            <size key="maxSize" width="727" height="10000000"/>
+                                        </textView>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="TfA-KX-ZTk">
+                                    <rect key="frame" x="-100" y="-100" width="240" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="ni5-EO-VRA">
+                                    <rect key="frame" x="630" y="0.0" width="16" height="382"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="UV3-ur-EKR">
+                                <rect key="frame" x="415" y="426" width="225" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="XfT-ug-X3I" id="HUk-Wa-0ZI">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="drj-5B-w1f">
+                                        <items>
+                                            <menuItem title="Item 1" state="on" id="XfT-ug-X3I"/>
+                                            <menuItem title="Item 2" id="k8p-in-0E6"/>
+                                            <menuItem title="Item 3" id="cr3-ku-Qby"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="selectVersion:" target="bU7-R8-ocO" id="NtV-u5-vud"/>
+                                </connections>
+                            </popUpButton>
+                            <button verticalHuggingPriority="750" id="KSi-ax-CEA">
+                                <rect key="frame" x="574" y="3" width="69" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uaI-Sg-0ZE">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="general.close"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="close:" target="bU7-R8-ocO" id="viI-PN-VKz"/>
+                                </connections>
+                            </button>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qNB-e3-emy">
+                                <rect key="frame" x="307" y="426" width="33.5" height="28"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="arrow.left.arrow.right" catalog="system" id="3zQ-X0-KEC"/>
+                            </imageView>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="Rbe-4P-3Pz">
+                                <rect key="frame" x="7" y="426" width="225" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Zsh-TF-t4f" id="NKF-wx-awI">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="lVv-Q3-IeG">
+                                        <items>
+                                            <menuItem title="Item 1" state="on" id="Zsh-TF-t4f"/>
+                                            <menuItem title="Item 2" id="fco-gY-NGQ"/>
+                                            <menuItem title="Item 3" id="w1N-5w-Yxz"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="selectVersion:" target="bU7-R8-ocO" id="OCa-lB-tR3"/>
+                                </connections>
+                            </popUpButton>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="currentVersionMenu" destination="Rbe-4P-3Pz" id="ciY-ix-Tw6"/>
+                        <outlet property="otherVersionMenu" destination="UV3-ur-EKR" id="H4f-jD-def"/>
+                        <outlet property="textView" destination="qgB-Dv-OJS" id="Njm-v3-wzG"/>
+                    </connections>
+                </viewController>
+                <customObject id="9uD-mB-xHs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="119" y="211"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.left.arrow.right" catalog="system" width="16" height="17"/>
+    </resources>
+</document>
