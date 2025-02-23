@@ -259,7 +259,18 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableArray<NSDictionary*>* tags;
 /// Lines can hold any sort of custom data when needed. Used by plugins.
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
+/// Possible alternative versions of the line 
+@property (nonatomic) NSMutableArray<NSDictionary*>* versions;
+/// The currently selected iteration of line
+@property (nonatomic) NSInteger currentVersion;
 
+
+#pragma mark Versions
+
+/// Returns the metadata for an alternative version of this line by stepping the given amount from current version
+/// - warning: This method **DOES NOT** replace anything, but instead returns the text and possible revisions of the line. You will need to handle the actual replacement yourself in editor.
+- (NSDictionary*)switchVersion:(NSInteger)amount;
+- (void)addVersion;
 
 #pragma mark Generated metadata
 

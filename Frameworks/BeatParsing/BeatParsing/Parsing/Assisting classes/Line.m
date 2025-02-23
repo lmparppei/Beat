@@ -81,6 +81,8 @@
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
         
+        _currentVersion = 0;
+        
         _uuid = NSUUID.UUID;
         
         _originalString = string;
@@ -204,6 +206,9 @@
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
     
+    newLine.versions = self.versions.mutableCopy;
+    newLine.currentVersion = self.currentVersion;
+    
     newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
     
     return newLine;
@@ -247,6 +252,44 @@
 - (bool)matchesOriginal
 {
     return [self.string isEqualToString:self.originalString];
+}
+
+/// Returns the metadata for an alternative version of this line
+/// - warning: This method **DOES NOT** replace anything, but instead returns the text and possible revisions of the line. You will need to handle the actual replacement yourself in editor.
+- (NSDictionary*)switchVersion:(NSInteger)amount
+{
+    NSInteger i = self.currentVersion + amount;
+    if (i < 0 || i == NSNotFound || i >= self.versions.count) return nil;
+    
+    // First, store the previous version
+    [self storeVersion];
+    
+    // Then inform the editor that it should switch to this version
+    self.currentVersion = i;
+    return self.versions[i];
+}
+
+/// Stores the current version of this line
+/// - note: You need to have baked the revisions in the text for this to work correctly
+- (void)storeVersion
+{
+    if (self.versions == nil) self.versions = NSMutableArray.new;
+    self.versions[self.currentVersion] = @{
+        @"text": self.string,
+        @"revisions": self.revisedRanges
+    };
+}
+
+/// Adds a new version of this text.
+/// - note: You need to have baked the revisions in the text for this to work correctly
+- (void)addVersion
+{
+    [self storeVersion];
+    [self.versions addObject:@{
+        @"text": self.string,
+        @"revisions": self.revisedRanges
+    }];
+    self.currentVersion = self.versions.count - 1;
 }
 
 

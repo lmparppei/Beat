@@ -43,4 +43,6 @@
 
 #import <BeatParsing/ParsingRule.h>
 
+#import <BeatParsing/NSMutableAttributedString+BeatAttributes.h>
+
 #endif /* BeatParsing_h */

@@ -71,7 +71,7 @@
  
 - (NSAttributedString*)attributedStringForFDX
 {
-    return [self attributedString];
+    return self.attributedString;
 }
 
 /// Returns a string with style attributes.
@@ -89,46 +89,46 @@
     // Add font stylization
     [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > ITALIC_PATTERN.length * 2) {
-            [self addStyleAttr:ITALIC_STYLE toString:string range:range];
+            [string addBeatStyleAttr:ITALIC_STYLE range:range];
         }
     }];
 
     [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > BOLD_PATTERN.length * 2) {
-            [self addStyleAttr:BOLD_STYLE toString:string range:range];
+            [string addBeatStyleAttr:BOLD_STYLE range:range];
         }
     }];
     
     [self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > ITALIC_PATTERN.length * 2) {
-            [self addStyleAttr:BOLDITALIC_STYLE toString:string range:range];
+            [string addBeatStyleAttr:BOLDITALIC_STYLE range:range];
         }
     }];
     
     [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > UNDERLINE_PATTERN.length * 2) {
-            [self addStyleAttr:UNDERLINE_STYLE toString:string range:range];
+            [string addBeatStyleAttr:UNDERLINE_STYLE range:range];
         }
     }];
         
     [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > OMIT_PATTERN.length * 2) {
-            [self addStyleAttr:OMIT_STYLE toString:string range:range];
+            [string addBeatStyleAttr:OMIT_STYLE range:range];
         }
     }];
     
     [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > NOTE_PATTERN.length * 2) {
-            [self addStyleAttr:NOTE_STYLE toString:string range:range];
+            [string addBeatStyleAttr:NOTE_STYLE range:range];
         }
     }];
 
     [self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self addStyleAttr:OMIT_STYLE toString:string range:range];
+        [string addBeatStyleAttr:OMIT_STYLE range:range];
     }];
         
     [self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self addStyleAttr:@"RemovalSuggestion" toString:string range:range];
+        [string addBeatStyleAttr:@"RemovalSuggestion" range:range];
     }];
         
     // Add macro attributes
@@ -167,36 +167,6 @@
     }
     
     return string;
-}
-
-/// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
-- (void)addStyleAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range
-{
-    // Make sure we don't go out of range
-    if (![self.string inRange:range]) return;
-    if (name == nil) NSLog(@"WARNING: Null value passed to attributes");
-    
-    // We are going out of range. Abort.
-    if (NSMaxRange(range) > string.length || range.length < 1 || range.location == NSNotFound) return;
-    
-    // Make a copy and enumerate attributes.
-    // Add style to the corresponding range while retaining the existing attributes, if applicable.
-    [string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        NSMutableSet* style;
-        
-        if (attrs[@"Style"] != nil) {
-            // We need to make a copy of the set, otherwise we'll add to the same set of attributes as earlier,
-            // causing issues with overlapping attributes.
-            style = ((NSMutableSet*)attrs[@"Style"]).mutableCopy;
-            [style addObject:name];
-        } else {
-            style = [NSMutableSet.alloc initWithArray:@[name]];
-        }
-        
-        if (NSMaxRange(range) <= string.length) {
-            [string addAttribute:@"Style" value:style range:range];
-        }
-    }];
 }
 
 - (NSAttributedString*)attributedStringWithMacros
