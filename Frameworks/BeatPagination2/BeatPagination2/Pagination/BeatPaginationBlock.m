@@ -341,7 +341,7 @@
     // First find a spiller
     Line* spiller = [self findSpillerAt:remainingSpace];
     
-    if (spiller.type == action) {
+    if (spiller.type == action || spiller.type == synopse || spiller.type == section) {
         // Break action paragraphs into two if possible and feasible
         pageBreakData = [self splitParagraphWithRemainingSpace:remainingSpace];
     } else if (spiller.isDialogue || spiller.isDualDialogue) {
@@ -349,7 +349,7 @@
         pageBreakData = [self splitDialogueAt:spiller remainingSpace:remainingSpace];
     } else if (pageBreakIndex > 0) {
         // Centered or lyrics, split at given safe index
-        //pageBreakData = [self splitMultilineBlockAt:spiller];
+        // TODO: This is dangerous, if we happen to have a very long lyrics / centered block. Add a failsafe!!!
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:pageBreakIndex element:spiller attributedString:nil reason:@"Multi-line block"];
         NSArray* thisPage = [self.lines subarrayWithRange:NSMakeRange(0, pageBreakIndex)];
         NSArray* nextPage = [self.lines subarrayWithRange:NSMakeRange(pageBreakIndex, self.lines.count - pageBreakIndex)];
