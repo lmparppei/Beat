@@ -102,7 +102,7 @@
         if (line == nil) return;
         
         // Do nothing if this line is not a marker or a heading
-        if (line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) return;
+        if (line.versions.count == 0 && line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) return;
         
         // Get range for the first character. For headings and markers we won't need anything else.
         NSRange r = NSMakeRange(line.position, 1);
@@ -146,9 +146,12 @@
         if (line.beats.count > 0) {
             [self drawBeat:rect inset:inset];
         }
+        
+        if (line.versions.count > 0) {
+            [self drawVersion:rect line:line inset:inset];
+        }
     }];
 }
-
 
 - (CGRect)boundingRectForLine:(Line*)line
 {
@@ -731,6 +734,20 @@
     
     [BeatColors.colors[@"cyan"] setStroke];
     [path stroke];
+}
+
+#pragma mark Draw version counter
+
+- (void)drawVersion:(CGRect)rect line:(Line*)line inset:(CGSize)inset
+{
+    CGFloat x = _editorDelegate.documentWidth - (inset.width / 2);
+    CGFloat y = rect.origin.y;
+    
+    NSString* str = [NSString stringWithFormat:@"%lu/%lu", line.currentVersion+1, line.versions.count];
+    [str drawAtPoint:CGPointMake(x, y) withAttributes:@{
+        NSFontAttributeName: [BXFont systemFontOfSize:8.0],
+        NSForegroundColorAttributeName: ThemeManager.sharedManager.invisibleTextColor
+    }];
 }
 
 
