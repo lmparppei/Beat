@@ -144,7 +144,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 // - (void)setupHandoff;
 
 
-#pragma mark - Registering views
+#pragma mark - Registered views
 
 /// Registered editor views, which might require update when document contents change
 @property (nonatomic) NSMutableSet<id<BeatEditorView>>*  _Nullable registeredViews;
@@ -154,24 +154,6 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) NSMutableSet<id<BeatSelectionObserver>>*  _Nullable registeredSelectionObservers;
 /// Views that host plugins
 @property (nonatomic) NSMutableArray<id<BeatPluginContainerInstance>>* _Nullable registeredPluginContainers;
-
-/// Registers a normal editor view. They know if they are visible and can be reloaded both in sync and async, for exaple sidebar views on macOS.
-- (void)registerEditorView:(id<BeatEditorView> _Nonnull)view;
-/// Registers a an editor view which displays outline data. Like usual editor views, they know if they are visible and can be reloaded both in sync and async.
-- (void)registerSceneOutlineView:(id<BeatSceneOutlineView> _Nonnull)view;
-
-/// Registers an observer which checks when selection changes
-- (void)registerSelectionObserver:(id<BeatSelectionObserver> _Nonnull)observer;
-- (void)unregisterSelectionObserver:(id<BeatSelectionObserver> _Nonnull)observer;
-
-- (void)updateEditorViewsInBackground;
-/// Updates all selection observers with current selection
-- (void)updateSelectionObservers;
-- (void)updateOutlineViewsWithChanges:(OutlineChanges* _Nullable)changes;
-- (void)updateOutlineViews;
-
-/// Registers a an editor view which hosts a plugin. Because plugins are separated into another framework, we need to have this weird placeholder protocol. One day I'll fix this.
-- (void)registerPluginContainer:(id<BeatPluginContainerInstance> _Nonnull)view;
 
 
 #pragma mark - Line lookup
