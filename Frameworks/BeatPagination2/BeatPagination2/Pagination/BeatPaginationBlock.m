@@ -413,8 +413,13 @@
 		}
 	}];
     
-    // If there's something to retain, let's split the string
-    if (length <= str.length) retain = [str substringToIndex:length];
+    // If there's something to retain, let's split the string.
+    if (length > 0) {
+        // In some cases length can be longer than the actual string, which... I don't know.
+        // I think this can happen in non-monospaced fonts, but not sure. Let's avoid this.
+        if (length > str.length) length -= length - str.length;
+        retain = [str substringToIndex:length];
+    }
 	
 	NSArray *splitElements = [line splitAndFormatToFountainAt:retain.length];
 	Line *prePageBreak = splitElements[0];
