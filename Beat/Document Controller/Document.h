@@ -235,6 +235,4 @@ THE SOFTWARE.
 /// A collection of actions for quick inline formatting etc. Instantiated in the XIB for some reason.
 @property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
 
-
-
 @end
