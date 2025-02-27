@@ -24,12 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// Removes version control data from the document
 - (void)stopVersionControl;
 
+- (BOOL)hasUncommittedChanges;
+
 /// Returns the text state at given timestamp, so in other words builds the full text from previous deltas.
 /// - note: If you pass a non-timestamp argument or `nil`, you'll probably get the FULL TEXT with all commits. Passing `"base"` will give you the base text.
 - (NSString* _Nullable)textAt:(NSString* _Nullable)timestamp;
 
 /// Returns all timestamps from commits
 - (NSArray<NSString*>*)timestamps;
+
+- (NSString* _Nullable)latestTimestamp;
 
 @end
 

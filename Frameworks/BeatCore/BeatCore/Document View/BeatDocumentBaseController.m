@@ -578,6 +578,7 @@
 }
 
 /// Pagination finished — called when preview controller has finished creating pagination
+/// - note: The weird `<BeatPluginInstance>` here exists, because plugins are still not part of the core framework... for reason or another.
 - (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> * _Nonnull)pageBreaks
 {
     __block NSIndexSet* changedIndices = indices.copy;
@@ -780,6 +781,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     #endif
     
     NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
+
+    // Add line break if needed
+    if (content.length > 0 && ![[content substringFromIndex:content.length-1] isEqualToString:@"\n"])
+        settingsString = [NSString stringWithFormat:@"\n%@", settingsString];
+
+    // Create final result string
     NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
     
     [self documentWasSaved];

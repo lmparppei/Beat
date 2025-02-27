@@ -71,9 +71,15 @@ static NSString* key = @"VersionControl";
 
 #pragma mark - Committing
 
+- (NSString*)textToCommit
+{
+    // TODO: Replace this with the full file including settings content
+    return self.delegate.text.copy;
+}
+
 - (void)createInitialCommit
 {
-    NSString *text = self.delegate.text.gzipCompressedString;
+    NSString *text = self.textToCommit.gzipCompressedString;
     NSDictionary* intialVersionControl = @{
         @"base": text,
         @"timestamp": self.currentTimestamp,
@@ -87,7 +93,7 @@ static NSString* key = @"VersionControl";
 {
     NSMutableDictionary* versionControl = self.versionControlDictionary;
     
-    NSString* text = self.delegate.text;
+    NSString* text = self.textToCommit;
     NSString* baseText = self.fullText;
     
     // Create new patch
@@ -110,6 +116,14 @@ static NSString* key = @"VersionControl";
 - (void)stopVersionControl
 {
     [self.delegate.documentSettings remove:BeatVersionControl.settingKey];
+}
+
+- (BOOL)hasUncommittedChanges
+{
+    NSString* current = self.textToCommit;
+    NSString* committed = [self textAt:nil];
+    
+    return ![current isEqualToString:committed];
 }
 
 #pragma mark - Helper methods
@@ -135,6 +149,11 @@ static NSString* key = @"VersionControl";
     [formatter setTimeZone:[NSTimeZone localTimeZone]]; // Use local timezone
 
     return [formatter stringFromDate:NSDate.date];
+}
+
+- (NSString* _Nullable)latestTimestamp
+{
+    return self.timestamps.lastObject;
 }
 
 @end
