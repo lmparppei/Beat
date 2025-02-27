@@ -12,7 +12,7 @@ import BeatPagination2
 
 /// This view holds the pages
 final class BeatPreviewView:NSView, BeatPreviewPageView {
-	
+		
 	override var isFlipped: Bool { return true }
 	var pageViews:[BeatPaginationPageView] = []
 	var bottomSpacing = 10.0
@@ -196,7 +196,13 @@ final class BeatPreviewView:NSView, BeatPreviewPageView {
 	}
 		
 	func scrollToPage(_ pageIndex: Int) {
-		//
+		let pageViews = self.allPageViews()
+		guard pageIndex < pageViews.count else { return }
+		
+		let page = pageViews[pageIndex]
+		let point = page.frame.origin
+
+		self.enclosingScrollView?.contentView.setBoundsOrigin(point)
 	}
 
 	func startLoadingAnimation() {
@@ -276,4 +282,5 @@ class CenteringScrollView: NSScrollView {
 		}
 		owner.cancelOperation(sender)
 	}
+	
 }

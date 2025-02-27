@@ -23,7 +23,7 @@ import BeatPagination2
 	var optionsPopover:NSPopover?
 	
 	@IBOutlet weak var scrollView:CenteringScrollView?
-	
+	@IBOutlet weak var thumbnailView:BeatPageThumbnailView?
 
 	// MARK: - Creating  preview data
 	
@@ -33,6 +33,7 @@ import BeatPagination2
 		// We should migrate to a data source model on macOS as well, but let's just cast the view this time
 		if let previewView = self.previewView as? BeatPreviewView {
 			previewView.updatePages(pagination, settings: self.settings, controller: self)
+			self.thumbnailView?.reloadData()
 		}
 	}
 	
@@ -64,6 +65,14 @@ import BeatPagination2
 				
 				let point = NSPoint(x: 0, y: linePosition + rect.size.height - viewPortHeight / 2)
 				scrollView.contentView.setBoundsOrigin(point)
+				
+				// Select page in thumbnail view
+				if let pageIndex = previewView.pageViews.firstIndex(of: pageView) {
+					// We'll add one to page index because title page is not part of `previewView.pageViews`
+					let idxPath = IndexPath(item: pageIndex+1, section: 0)
+					thumbnailView?.selectItems(at: [idxPath], scrollPosition: .top)
+					thumbnailView?.queuedSelection = idxPath
+				}
 				
 				return
 			}

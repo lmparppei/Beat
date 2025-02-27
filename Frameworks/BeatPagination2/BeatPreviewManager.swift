@@ -29,6 +29,7 @@ import UXKit
 @objc public protocol BeatPreviewPageViewDataSource {
     func numberOfPages() -> Int
     func pageSize() -> CGSize
+    func hasTitlePage() -> Bool
     func pageView(forPage pageIndex:Int) -> UXView
 }
 
@@ -63,7 +64,7 @@ import UXKit
             // This shouldn't ever happen, but if the delegate fails to return settings, we'll just create our own.
             return BeatExportSettings.operation(.ForPrint, document: nil, header: "", printSceneNumbers: true)
         }
-        
+
         return settings
     }
     
@@ -131,7 +132,6 @@ import UXKit
         // Return to main thread and render stuff on screen if needed
         DispatchQueue.main.async { [weak self] in
             if (self?.delegate?.previewVisible() ?? false) || self?.renderImmediately ?? false {
-                print("!!! preview is visible, render on screen")
                 self?.renderOnScreen()
             }
         }
@@ -239,7 +239,6 @@ import UXKit
     // MARK: - Rendering
     
     @objc open func renderOnScreen() {
-        // print("Preview manager: Override renderOnScreen() in OS-specific implementation.")
         guard let previewView = self.previewView,
               let pagination = self.pagination
         else { return }
@@ -346,6 +345,10 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
             print("Failed to create")
             return UXView()
         }
+    }
+    
+    public func hasTitlePage() -> Bool {
+        return pagination?.hasTitlePage ?? false
     }
 }
 
