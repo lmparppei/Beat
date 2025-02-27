@@ -319,3 +319,5 @@
 
 "tagManager.windowTitle" = "Tag Manager";
 
+"versionControl.base" = "Base";
+"versionControl.current" = "Current";

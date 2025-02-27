@@ -865,7 +865,58 @@ DQ
                                     <action selector="unlockSceneNumbers:" target="-1" id="Iwa-ri-jSu"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="9KI-Cy-Uax"/>
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="9KI-Cy-Uax"/>
+                            <menuItem title="Version Control" id="LyM-Wu-SXF">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="wQa-fH-1Ab">
+                                    <items>
+                                        <menuItem title="Begin Version Control for This Document" id="c8q-tr-rgC">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="beginVersionControl:" target="-1" id="oLU-VS-E5D"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Add Commit" id="ak8-Ma-gfm">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="addCommit:" target="-1" id="CRb-BJ-IIt"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Open Diff Viewer" keyEquivalent="Ö" id="p5b-Mn-HsH">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="openDiffViewer:" target="-1" id="8q9-oJ-SP6"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Line Alternatives" hidden="YES" id="zGj-P3-PkD">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="OPQ-lX-aTP">
+                                    <items>
+                                        <menuItem title="Add New Alternative" keyEquivalent="A" id="LBf-zj-RX2">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="addVersionForLine:" target="-1" id="LnU-FT-vcD"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Previous" keyEquivalent="" id="GAv-Lg-UTU">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="prevVersion:" target="-1" id="0YM-Vj-1te"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next" keyEquivalent="" id="6gU-zB-Xsw">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextVersion:" target="-1" id="VFI-FM-hLI"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="auM-e5-oEk"/>
                             <menuItem title="Add Marker" id="0iR-5D-OWq">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="SFR-ej-7sJ">

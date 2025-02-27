@@ -15,6 +15,29 @@
 		B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = B621170D2A6FABDC0053228F /* BeatCompatibility.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */; };
 		B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6311EC12D672C6200712CFE /* NSString+Compression.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311EBF2D672C6200712CFE /* NSString+Compression.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6311EC22D672C6200712CFE /* NSString+Compression.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311EC02D672C6200712CFE /* NSString+Compression.m */; };
+		B6311EC62D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311EC42D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6311EC72D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311EC52D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.m */; };
+		B6311ECA2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311EC82D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h */; };
+		B6311ECB2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311EC92D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m */; };
+		B6311EDC2D68797B00712CFE /* NSString+JavaSubstring.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED52D68797B00712CFE /* NSString+JavaSubstring.h */; };
+		B6311EDD2D68797B00712CFE /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ECE2D68797B00712CFE /* DiffMatchPatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6311EDE2D68797B00712CFE /* DiffMatchPatchCFUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED12D68797B00712CFE /* DiffMatchPatchCFUtilities.h */; };
+		B6311EDF2D68797B00712CFE /* NSMutableDictionary+DMPExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED32D68797B00712CFE /* NSMutableDictionary+DMPExtensions.h */; };
+		B6311EE02D68797B00712CFE /* NSString+UnicharUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED72D68797B00712CFE /* NSString+UnicharUtilities.h */; };
+		B6311EE12D68797B00712CFE /* MinMaxMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED22D68797B00712CFE /* MinMaxMacros.h */; };
+		B6311EE22D68797B00712CFE /* NSString+UriCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311ED92D68797B00712CFE /* NSString+UriCompatibility.h */; };
+		B6311EE32D68797B00712CFE /* DiffMatchPatch_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = B6311ECD2D68797B00712CFE /* DiffMatchPatch_Prefix.pch */; };
+		B6311EE42D68797B00712CFE /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = B6311ED02D68797B00712CFE /* DiffMatchPatchCFUtilities.c */; };
+		B6311EE52D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311ED42D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m */; };
+		B6311EE62D68797B00712CFE /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311ECF2D68797B00712CFE /* DiffMatchPatch.m */; };
+		B6311EE72D68797B00712CFE /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311ED82D68797B00712CFE /* NSString+UnicharUtilities.m */; };
+		B6311EE82D68797B00712CFE /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311ED62D68797B00712CFE /* NSString+JavaSubstring.m */; };
+		B6311EE92D68797B00712CFE /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311EDA2D68797B00712CFE /* NSString+UriCompatibility.m */; };
+		B6311F022D6B1E5D00712CFE /* BeatVersionControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311F002D6B1E5D00712CFE /* BeatVersionControl.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6311F032D6B1E5D00712CFE /* BeatVersionControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6311F012D6B1E5D00712CFE /* BeatVersionControl.m */; };
+		B6311F052D6F6DF700712CFE /* BXColor+Perception.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6311F042D6F6DEF00712CFE /* BXColor+Perception.swift */; };
 		B633C1B9298C5F750011449D /* BeatCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1B8298C5F750011449D /* BeatCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1C5298C5FEE0011449D /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1C4298C5FEE0011449D /* BeatParsing.framework */; };
 		B633C1D6298C60600011449D /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1D0298C602C0011449D /* BeatRevisions.m */; };
@@ -86,6 +109,7 @@
 		B692E2E22C73CD2E0009833F /* BeatCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */; };
 		B6974C202A2F1FDF00FA977A /* BeatDocumentDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */; };
+		B6AC5CC72D70E53800DB81C5 /* NSImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AC5CC62D70E53200DB81C5 /* NSImage+Scaling.swift */; };
 		B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB829F9C3620098D94D /* BeatEditorFormattingActions.m */; };
 		B6B61BBA29F9C36D0098D94D /* BeatEditorFormattingActions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B61BB729F9C3610098D94D /* BeatEditorFormattingActions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B85FAE2A223EAA00C7713A /* BeatDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = B681D58F29A37DBD00DF16CA /* BeatDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -133,6 +157,29 @@
 		B62FB00D298FB662003492B5 /* BeatCore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatCore.md; sourceTree = "<group>"; };
 		B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
 		B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
+		B6311EBF2D672C6200712CFE /* NSString+Compression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Compression.h"; sourceTree = "<group>"; };
+		B6311EC02D672C6200712CFE /* NSString+Compression.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Compression.m"; sourceTree = "<group>"; };
+		B6311EC42D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentBaseController+RegisteredViewsAndObservers.h"; sourceTree = "<group>"; };
+		B6311EC52D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentBaseController+RegisteredViewsAndObservers.m"; sourceTree = "<group>"; };
+		B6311EC82D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentBaseController+VersionControl.h"; sourceTree = "<group>"; };
+		B6311EC92D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentBaseController+VersionControl.m"; sourceTree = "<group>"; };
+		B6311ECD2D68797B00712CFE /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
+		B6311ECE2D68797B00712CFE /* DiffMatchPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
+		B6311ECF2D68797B00712CFE /* DiffMatchPatch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
+		B6311ED02D68797B00712CFE /* DiffMatchPatchCFUtilities.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DiffMatchPatchCFUtilities.c; sourceTree = "<group>"; };
+		B6311ED12D68797B00712CFE /* DiffMatchPatchCFUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchCFUtilities.h; sourceTree = "<group>"; };
+		B6311ED22D68797B00712CFE /* MinMaxMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinMaxMacros.h; sourceTree = "<group>"; };
+		B6311ED32D68797B00712CFE /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
+		B6311ED42D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
+		B6311ED52D68797B00712CFE /* NSString+JavaSubstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+JavaSubstring.h"; sourceTree = "<group>"; };
+		B6311ED62D68797B00712CFE /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
+		B6311ED72D68797B00712CFE /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
+		B6311ED82D68797B00712CFE /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
+		B6311ED92D68797B00712CFE /* NSString+UriCompatibility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+UriCompatibility.h"; sourceTree = "<group>"; };
+		B6311EDA2D68797B00712CFE /* NSString+UriCompatibility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+UriCompatibility.m"; sourceTree = "<group>"; };
+		B6311F002D6B1E5D00712CFE /* BeatVersionControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatVersionControl.h; sourceTree = "<group>"; };
+		B6311F012D6B1E5D00712CFE /* BeatVersionControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatVersionControl.m; sourceTree = "<group>"; };
+		B6311F042D6F6DEF00712CFE /* BXColor+Perception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BXColor+Perception.swift"; sourceTree = "<group>"; };
 		B633C1B5298C5F750011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B633C1B8298C5F750011449D /* BeatCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCore.h; sourceTree = "<group>"; };
 		B633C1C0298C5FA50011449D /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatColors.h; sourceTree = "<group>"; };
@@ -206,6 +253,7 @@
 		B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCompatibility.swift; sourceTree = "<group>"; };
 		B6974C1F2A2F1FDF00FA977A /* BeatDocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentDelegate.h; sourceTree = "<group>"; };
 		B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatScreenplayElements.swift; sourceTree = "<group>"; };
+		B6AC5CC62D70E53200DB81C5 /* NSImage+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Scaling.swift"; sourceTree = "<group>"; };
 		B6B61BB729F9C3610098D94D /* BeatEditorFormattingActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormattingActions.h; sourceTree = "<group>"; };
 		B6B61BB829F9C3620098D94D /* BeatEditorFormattingActions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEditorFormattingActions.m; sourceTree = "<group>"; };
 		B6D15A2F2AF96C0A00DAB66D /* BeatEditorFormatting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormatting.h; sourceTree = "<group>"; };
@@ -265,6 +313,55 @@
 			path = "User defaults";
 			sourceTree = "<group>";
 		};
+		B6311EC32D672D6200712CFE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B6311EC82D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h */,
+				B6311EC92D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m */,
+				B6311EC42D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h */,
+				B6311EC52D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.m */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B6311ECC2D68797300712CFE /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				B6311EDB2D68797B00712CFE /* DiffMatchPatch */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		B6311EDB2D68797B00712CFE /* DiffMatchPatch */ = {
+			isa = PBXGroup;
+			children = (
+				B6311ECD2D68797B00712CFE /* DiffMatchPatch_Prefix.pch */,
+				B6311ECE2D68797B00712CFE /* DiffMatchPatch.h */,
+				B6311ECF2D68797B00712CFE /* DiffMatchPatch.m */,
+				B6311ED02D68797B00712CFE /* DiffMatchPatchCFUtilities.c */,
+				B6311ED12D68797B00712CFE /* DiffMatchPatchCFUtilities.h */,
+				B6311ED22D68797B00712CFE /* MinMaxMacros.h */,
+				B6311ED32D68797B00712CFE /* NSMutableDictionary+DMPExtensions.h */,
+				B6311ED42D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m */,
+				B6311ED52D68797B00712CFE /* NSString+JavaSubstring.h */,
+				B6311ED62D68797B00712CFE /* NSString+JavaSubstring.m */,
+				B6311ED72D68797B00712CFE /* NSString+UnicharUtilities.h */,
+				B6311ED82D68797B00712CFE /* NSString+UnicharUtilities.m */,
+				B6311ED92D68797B00712CFE /* NSString+UriCompatibility.h */,
+				B6311EDA2D68797B00712CFE /* NSString+UriCompatibility.m */,
+			);
+			path = DiffMatchPatch;
+			sourceTree = "<group>";
+		};
+		B6311EFD2D6B1E1C00712CFE /* Version Control */ = {
+			isa = PBXGroup;
+			children = (
+				B6311F002D6B1E5D00712CFE /* BeatVersionControl.h */,
+				B6311F012D6B1E5D00712CFE /* BeatVersionControl.m */,
+			);
+			path = "Version Control";
+			sourceTree = "<group>";
+		};
 		B633C1AB298C5F750011449D = {
 			isa = PBXGroup;
 			children = (
@@ -306,6 +403,7 @@
 				B682C2622B30FB4A0027511A /* Templates */,
 				B676DD292BA8AC5C00F7DBDA /* Data representations */,
 				B6F59D3B2C6E7CF700AB8FAE /* Notepad */,
+				B6311ECC2D68797300712CFE /* Libraries */,
 				B681D58F29A37DBD00DF16CA /* BeatDocument.h */,
 				B681D59029A37DBD00DF16CA /* BeatDocument.m */,
 				B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */,
@@ -366,6 +464,7 @@
 				B68C0F5B299D82130031AE6B /* Review */,
 				B6D32020298EBE2B003DA45D /* Tagging */,
 				B633C1D1298C602C0011449D /* Revisions */,
+				B6311EFD2D6B1E1C00712CFE /* Version Control */,
 				B69A29C929FF0F3600839259 /* BeatScreenplayElements.swift */,
 				B64AD5EC2B2F65EB00EBD63A /* BeatTitlePage.swift */,
 				B67C73D12B383831002BD12F /* BeatCharacterData.swift */,
@@ -518,6 +617,8 @@
 		B6D32029298EBEDA003DA45D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B6AC5CC62D70E53200DB81C5 /* NSImage+Scaling.swift */,
+				B6311F042D6F6DEF00712CFE /* BXColor+Perception.swift */,
 				B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */,
 				B63BE8422B5B33F1003814A5 /* Synchronized.swift */,
 				B68D9CD02C64007C00FCC9BE /* NSIndexSet+Array.swift */,
@@ -538,6 +639,8 @@
 				B680B7C32A6EC31600FCD805 /* NSTextView+UX.m */,
 				B6FDCF6E2BD45B7B00A6C9B6 /* TextStorageExtensions.swift */,
 				B692E2E12C73CD2E0009833F /* BeatCompatibility.swift */,
+				B6311EBF2D672C6200712CFE /* NSString+Compression.h */,
+				B6311EC02D672C6200712CFE /* NSString+Compression.m */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -557,6 +660,7 @@
 			children = (
 				B663B3B82AFA69CE007217E3 /* BeatDocumentBaseController.h */,
 				B663B3B92AFA69CE007217E3 /* BeatDocumentBaseController.m */,
+				B6311EC32D672D6200712CFE /* Extensions */,
 			);
 			path = "Document View";
 			sourceTree = "<group>";
@@ -572,7 +676,16 @@
 				B6D15A312AF96C0A00DAB66D /* BeatEditorFormatting.h in Headers */,
 				B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */,
 				B633C1EC298C63210011449D /* BeatLocalization.h in Headers */,
+				B6311EDC2D68797B00712CFE /* NSString+JavaSubstring.h in Headers */,
+				B6311EDD2D68797B00712CFE /* DiffMatchPatch.h in Headers */,
+				B6311EDE2D68797B00712CFE /* DiffMatchPatchCFUtilities.h in Headers */,
+				B6311EDF2D68797B00712CFE /* NSMutableDictionary+DMPExtensions.h in Headers */,
+				B6311EE02D68797B00712CFE /* NSString+UnicharUtilities.h in Headers */,
+				B6311EE12D68797B00712CFE /* MinMaxMacros.h in Headers */,
+				B6311EE22D68797B00712CFE /* NSString+UriCompatibility.h in Headers */,
+				B6311EE32D68797B00712CFE /* DiffMatchPatch_Prefix.pch in Headers */,
 				B6B85FAE2A223EAA00C7713A /* BeatDocument.h in Headers */,
+				B6311ECA2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h in Headers */,
 				B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */,
 				B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */,
 				B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */,
@@ -591,6 +704,9 @@
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
 				B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */,
 				B663B3BA2AFA69CE007217E3 /* BeatDocumentBaseController.h in Headers */,
+				B6311F022D6B1E5D00712CFE /* BeatVersionControl.h in Headers */,
+				B6311EC12D672C6200712CFE /* NSString+Compression.h in Headers */,
+				B6311EC62D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
 				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
 				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
@@ -712,16 +828,20 @@
 				B682C2652B30FBD10027511A /* BeatTemplates.swift in Sources */,
 				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
+				B6311F052D6F6DF700712CFE /* BXColor+Perception.swift in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
 				B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */,
+				B6311ECB2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m in Sources */,
 				B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */,
 				B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */,
 				B68C0F62299D843C0031AE6B /* BeatValueTransformers.swift in Sources */,
+				B6AC5CC72D70E53800DB81C5 /* NSImage+Scaling.swift in Sources */,
 				B63BE8432B5B33F1003814A5 /* Synchronized.swift in Sources */,
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */,
 				B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */,
+				B6311EC22D672C6200712CFE /* NSString+Compression.m in Sources */,
 				B6D15A322AF96C0A00DAB66D /* BeatEditorFormatting.m in Sources */,
 				B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
@@ -740,6 +860,7 @@
 				B6D15A732AF9793500DAB66D /* BeatStyles.swift in Sources */,
 				B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */,
 				B6B61BB929F9C3630098D94D /* BeatEditorFormattingActions.m in Sources */,
+				B6311EC72D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.m in Sources */,
 				B680B7C52A6EC31600FCD805 /* NSTextView+UX.m in Sources */,
 				B67C2CF42A2D1AD000B88B0F /* BeatFontSet.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
@@ -747,6 +868,13 @@
 				B6D15A702AF9793500DAB66D /* RenderStyle.swift in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
+				B6311EE42D68797B00712CFE /* DiffMatchPatchCFUtilities.c in Sources */,
+				B6311EE52D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m in Sources */,
+				B6311EE62D68797B00712CFE /* DiffMatchPatch.m in Sources */,
+				B6311F032D6B1E5D00712CFE /* BeatVersionControl.m in Sources */,
+				B6311EE72D68797B00712CFE /* NSString+UnicharUtilities.m in Sources */,
+				B6311EE82D68797B00712CFE /* NSString+JavaSubstring.m in Sources */,
+				B6311EE92D68797B00712CFE /* NSString+UriCompatibility.m in Sources */,
 				B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */,
 				B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */,
 			);

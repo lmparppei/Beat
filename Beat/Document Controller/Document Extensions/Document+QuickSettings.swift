@@ -58,3 +58,19 @@ extension Document:NSPopoverDelegate {
 	 */
 	
 }
+
+extension Document {
+	@IBAction func openDiffViewer(_ sender:Any?) {
+		let storyboard = NSStoryboard(name: "DiffViewer", bundle: Bundle.main)
+		if let windowController = storyboard.instantiateController(withIdentifier: "DiffViewWindow") as? NSWindowController {
+			let diffViewer = windowController.contentViewController as? DiffViewerViewController
+			diffViewer?.delegate = self
+			
+			if let window = windowController.window {
+				self.documentWindow.beginSheet(window) { response in
+					//
+				}
+			}
+		}
+	}
+}
