@@ -180,7 +180,7 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 	}
     
     NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    return [NSString stringWithFormat:@"\n\n%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
+    return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 }
 
 - (NSRange)readSettingsAndReturnRange:(NSString*)string
