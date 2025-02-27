@@ -73,6 +73,8 @@ extern NSString* const BeatSettingSynopsisFontType;
 
 extern NSString* const BeatSettingAddTitlePageByDefault;
 
+extern NSString* const BeatSettingRelativeOutlineHeights;
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 
