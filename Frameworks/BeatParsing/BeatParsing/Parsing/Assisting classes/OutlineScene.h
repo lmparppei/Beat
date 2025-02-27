@@ -114,6 +114,11 @@
 
 @property (nonatomic) NSInteger oldSectionDepth;
 
+/// Experimental property: page number
+@property (nonatomic) NSInteger page;
+/// Experimental property: printed length
+@property (nonatomic) CGFloat printedLength;
+
 - (NSArray<Line*>*)lines;
 - (NSString*)stringForDisplay;
 - (NSRange)range;
