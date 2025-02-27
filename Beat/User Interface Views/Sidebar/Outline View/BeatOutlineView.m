@@ -147,21 +147,44 @@
 - (void)drawBackgroundInClipRect:(NSRect)clipRect
 {
 	//[super drawBackgroundInClipRect:clipRect];
-	
+	NSRange rows = [self rowsInRect:clipRect];
 	// Get current scene and represented row
-	NSInteger row = [self rowForItem:self.editorDelegate.currentScene];
-	
-	if (row != NSNotFound) {
-		NSRect rect = [self rectOfRow:row];
+	NSInteger selectedRow = [self rowForItem:self.editorDelegate.currentScene];
+		
+	for (NSUInteger i = rows.location; i < NSMaxRange(rows); i++) {
+		OutlineScene* item = [self itemAtRow:i];
+
+		NSRect rect = [self rectOfRow:i];
 		rect.origin.x += 2;
 		rect.size.width -= 4;
+		rect.size.height -= 1;
+
+		if (item.type != section) {
+			CGFloat indent = self.indentationPerLevel * item.sectionDepth;
+			rect.size.width = rect.size.width - indent;
+			rect.origin.x += indent;
+		}
 		
 		NSBezierPath *bg = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3];
+		NSColor* fillColor = nil;
+
+		if (i == selectedRow) {
+			fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkColor : ThemeManager.sharedManager.outlineHighlight.lightColor;
+			[fillColor setFill];
+		} else if (item.type != section && [BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights]) {
+			// In relative mode, we'll paint a background for each scene
+			fillColor = [NSColor.grayColor colorWithAlphaComponent:0.2];
+			/*
+			// For future generations
+			if (item.color.length > 0) {
+				BXColor* c = [BeatColors color:item.color];
+				if (c != nil) fillColor = c;
+			}
+			 */
+			[fillColor setFill];
+		}
 		
-		NSColor* fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkColor : ThemeManager.sharedManager.outlineHighlight.lightColor;
-		[fillColor setFill];
-		
-		[bg fill];
+		if (fillColor != nil) [bg fill];
 	}
 }
 
@@ -383,9 +406,7 @@
 	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
 	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
 	
-	view.outlineView = self;
-	view.editorDelegate = self.editorDelegate;
-	view.scene = item;
+	[view configureWithDelegate:self.editorDelegate scene:item outlineView:self];
 	
 	return view;
 }
@@ -631,6 +652,7 @@
 	});
 }
 
+
 #pragma mark - Outline settings
 
 - (IBAction)openSettings:(NSButton*)sender {
@@ -646,6 +668,7 @@
 - (void)popoverDidClose:(NSNotification *)notification {
 	self.settingsPopover = nil;
 }
+
 
 #pragma mark - Filtering
 

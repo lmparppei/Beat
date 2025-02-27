@@ -18,6 +18,16 @@ typedef NS_OPTIONS(NSUInteger, OutlineItemOptions) {
     OutlineItemDarkMode             = 1 << 5
 };
 
+typedef NS_OPTIONS(NSUInteger, OutlineElementType) {
+    OutlineElementTypeDefault = 0,
+    OutlineElementTypeSceneNumber,
+    OutlineElementTypeOmitted,
+    OutlineElementTypeSection,
+    OutlineElementTypeNote,
+    OutlineElementTypeMarker,
+    OutlineElementTypeSynopsis
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OutlineViewItem : NSObject

@@ -7,9 +7,11 @@
 //
 
 import Cocoa
+import BeatCore
 
 @objc public protocol BeatOutlineSettingDelegate {
 	func reloadOutline()
+	weak var editorDelegate:BeatEditorDelegate? { get }
 }
 
 class BeatOutlineSettings: NSViewController {
@@ -36,7 +38,11 @@ class BeatOutlineSettings: NSViewController {
 		else { return }
 		
 		let value = (state == .on) ? true : false
-
+		
+		if sender?.resetPreview ?? false {
+			self.outlineDelegate?.editorDelegate?.resetPreview()
+		}
+		
 		BeatUserDefaults.shared().save(value, forKey: key)
 		outlineDelegate?.reloadOutline()
 	}

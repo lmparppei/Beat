@@ -27,6 +27,16 @@ import AppKit
 		self.addTrackingArea(area)
 	}
 	
+	@objc func configure(delegate:BeatEditorDelegate?, scene:OutlineScene?, outlineView:BeatOutlineView?) {
+		self.outlineView = outlineView
+		self.editorDelegate = delegate
+		self.scene = scene
+		
+		if let textField = self.textField as? BeatOutlineTextField {
+			textField.outlineCell = self
+		}
+	}
+		
 	public override func updateTrackingAreas() {
 		super.updateTrackingAreas()
 		if let trackingArea = self.trackingAreas.first {
@@ -34,6 +44,7 @@ import AppKit
 		}
 		
 		self.addTrackingArea(NSTrackingArea(rect: self.bounds, options: [.mouseMoved, .activeAlways, .mouseEnteredAndExited], owner: self))
+		
 	}
 	
 	override public func mouseEntered(with event: NSEvent) {
@@ -43,7 +54,14 @@ import AppKit
 		
 		if BeatUserDefaults.shared().getBool(BeatSettingShowSnapshotsInOutline) {
 			timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { [weak self] timer in
-				self?.showScreenshot()
+				// Make sure the mouse pointer is still in this cell
+				guard let _self = self, let window = _self.window else { return }
+				let mouseLoc = window.convertPoint(fromScreen: NSEvent.mouseLocation)
+				let localLoc = _self.convert(mouseLoc, from: nil)
+				
+				if _self.bounds.contains(localLoc) {
+					_self.showScreenshot()
+				}
 			})
 		}
 	}
@@ -127,5 +145,32 @@ class BeatSceneSnapshot:NSObject {
 		} else {
 			return nil
 		}
+	}
+}
+
+class BeatOutlineTextField:NSTextField {
+	weak var outlineCell:BeatSceneSnapshotCell?
+	
+	public override var intrinsicContentSize: NSSize {
+		var size = super.intrinsicContentSize
+		
+		if BeatUserDefaults.shared().getBool(BeatSettingRelativeOutlineHeights) {
+			if let cell = outlineCell, let scene = cell.scene {
+				let sizeModifier = BeatUserDefaults.shared().getFloat(BeatSettingOutlineFontSizeModifier) * 0.1 + 1
+				let modifier = 80.0 * sizeModifier
+
+				if let pages = cell.outlineView?.editorDelegate.pagination().numberOfPages, pages > 0 {
+					// Calculate the relative size of the scene
+					let relativeHeight = modifier * scene.printedLength
+					
+					if relativeHeight > size.height {
+						size.height = relativeHeight
+					}
+					return size
+				}
+			}
+		}
+
+		return size
 	}
 }
