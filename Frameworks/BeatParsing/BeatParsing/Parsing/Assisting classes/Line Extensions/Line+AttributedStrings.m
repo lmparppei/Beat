@@ -138,7 +138,7 @@
             
             NSRange range = r.rangeValue;
             if (NSMaxRange(range) <= string.length)
-                [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
+                [string addAttribute:@"Macro" value:(resolvedMacro != nil) ? resolvedMacro : @"" range:range];
         }
     }
     
@@ -146,11 +146,15 @@
     if (self.revisedRanges.count > 0) {
         NSDictionary* revisedRanges = self.revisedRanges;
         for (NSNumber* key in revisedRanges.allKeys) {
+            if (![key isKindOfClass:NSNumber.class]) continue;
+            
             [revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
                 // Don't go out of range
+                if (range.length == 0 || range.location < 0 || range.length < 0) return;
+                
                 if (NSMaxRange(range) > string.length)
                     range = NSMakeRange(range.location, string.length - range.location);
-                if (range.length > 0 && range.location >= 0 && NSMaxRange(range) <= string.length)
+                if (range.location >= 0 && range.length > 0 && NSMaxRange(range) <= string.length && key != nil)
                     [string addAttribute:@"Revision" value:key range:range];
             }];
         }
