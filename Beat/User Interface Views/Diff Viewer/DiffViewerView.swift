@@ -57,11 +57,12 @@ class DiffViewerViewController: NSViewController {
 		guard let delegate = delegate else { return }
 		
 		self.vc = BeatVersionControl(delegate: delegate)
-		
-		_ = compareToLatestCommit()
-		populateVersions()
+
 		setupTextView()
 		updateCommitStatus()
+
+		_ = compareToLatestCommit()
+		populateVersions()
 	}
 	
 	// MARK: - Setup
@@ -71,16 +72,48 @@ class DiffViewerViewController: NSViewController {
 
 		textView.setup(editorDelegate: delegate)
 		textView.backgroundColor = ThemeManager.shared().backgroundColor.effectiveColor()
+		
+		// Set up custom scroller
+		if let scrollView = textView.enclosingScrollView {
+			let customScroller = DiffScrollerView()
+			customScroller.controlSize = .regular
+			customScroller.scrollerStyle = .overlay
+			scrollView.verticalScroller = customScroller
+			scrollView.hasVerticalScroller = true
+		}
 	}
 	
 	// MARK: - Version control actions
 	
 	@IBAction func commit(_ sender: Any?) {
-		guard let delegate = delegate else { return }
+		guard let delegate = delegate,
+			  let button = sender as? NSButton else { return }
 		
-		let vc = BeatVersionControl(delegate: delegate)
-		vc.addCommit()
-		updateCommitStatus()
+		// Show a popover
+		let popover = NSPopover()
+		popover.behavior = .transient
+		
+		let popoverVC = CommitMessagePopover { [weak self] message in
+			popover.close()
+			
+			// Create version control and add commit with message
+			let vc = BeatVersionControl(delegate: delegate)
+			vc.addCommit(withMessage: message)
+			self?.updateCommitStatus()
+			
+			// After committing, select the latest commit to be displayed
+			if let latest = vc.latestTimestamp() {
+				self?.originalTimestamp = latest
+			}
+			
+			self?.populateVersions()
+			self?.refreshContent()
+		}
+		
+		popover.contentViewController = popoverVC
+		
+		// Show the popover
+		popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
 	}
 	
 	private func updateCommitStatus() {
@@ -89,6 +122,7 @@ class DiffViewerViewController: NSViewController {
 		statusView?.update(uncommitedChanges: uncommitted)
 		commitButton?.isEnabled = uncommitted
 	}
+	
 	
 	// MARK: - Version selection
 	
@@ -113,13 +147,21 @@ class DiffViewerViewController: NSViewController {
 		menu.menu?.addItem(baseItem)
 		
 		// Add versioned items
-		for timestamp in versionControl.timestamps() {
+		for commit in versionControl.commits() {
+			guard let timestamp = commit["timestamp"] as? String else { return }
 			let item = DiffTimestampMenuItem(title: formatTimestamp(timestamp), action: nil, keyEquivalent: "")
 			item.timestamp = timestamp
+			
+			if #available(macOS 14.4, *) {
+				if let message = commit["message"] as? String {
+					item.subtitle = message
+				}
+			}
+			
 			menu.menu?.addItem(item)
 		}
 		
-		// Add current item
+		// Add item for current version
 		let currentItem = DiffTimestampMenuItem(title: formatTimestamp("current"), action: nil, keyEquivalent: "")
 		currentItem.timestamp = "current"
 		menu.menu?.addItem(currentItem)
@@ -131,14 +173,18 @@ class DiffViewerViewController: NSViewController {
 			return BeatLocalization.localizedString(forKey: "versionControl." + timestamp)
 		}
 		
-		// Try to parse the timestamp as a date and format according to user locale
-		if let timeInterval = TimeInterval(timestamp) {
-			let date = Date(timeIntervalSince1970: timeInterval)
-			let dateFormatter = DateFormatter()
-			dateFormatter.dateStyle = .medium
-			dateFormatter.timeStyle = .short
-			dateFormatter.doesRelativeDateFormatting = true
-			return dateFormatter.string(from: date)
+		// Timestamps are stored in shortened ISO format
+		let inputFormatter = DateFormatter()
+		inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+		
+		// Output formatter for user-friendly display
+		let outputFormatter = DateFormatter()
+		outputFormatter.dateStyle = .medium
+		outputFormatter.timeStyle = .short
+		outputFormatter.doesRelativeDateFormatting = true
+		
+		if let date = inputFormatter.date(from: timestamp) {
+			return outputFormatter.string(from: date)
 		}
 		
 		// Fallback to the original timestamp if parsing fails
@@ -162,11 +208,12 @@ class DiffViewerViewController: NSViewController {
 	
 	/// Helper method to quickly select the latest commit at startup
 	func compareToLatestCommit() -> Bool {
-		guard let vc = vc, let latest = vc.latestTimestamp() else { return false }
+		guard let vc = vc, let latest = vc.latestTimestamp() else { print("Nope"); return false }
 		
 		modifiedTimestamp = "current"
 		originalTimestamp = latest
-		loadDiff()
+		
+		refreshContent()
 		
 		return true
 	}
@@ -182,6 +229,8 @@ class DiffViewerViewController: NSViewController {
 		} else {
 			loadText()
 		}
+		
+		updateScrollerWithDiffMarkers()
 	}
 	
 	private func updateTexts() {
@@ -269,9 +318,11 @@ class DiffViewerViewController: NSViewController {
 			attributedString.addAttribute(.backgroundColor, value: redColor, range: range)
 			attributedString.addAttribute(.strikethroughColor, value: NSColor.red, range: range)
 			attributedString.addAttribute(.strikethroughStyle, value: 1, range: range)
+			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "delete", range: range)
 		})
 		indices["insert"]?.enumerateRanges(using: { range, stop in
 			attributedString.addAttribute(.backgroundColor, value: greenColor, range: range)
+			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "add", range: range)
 		})
 		
 		return attributedString
@@ -288,6 +339,34 @@ class DiffViewerViewController: NSViewController {
 		return attributedString
 	}
 	
+	
+	// Call this after the text is set in textView
+	func updateScrollerWithDiffMarkers() {
+		guard let textView = textView,
+			  let textStorage = textView.textStorage,
+			  let scrollView = textView.enclosingScrollView,
+			  let scroller = scrollView.verticalScroller as? DiffScrollerView else { return }
+		
+		var insertRanges: [NSRange] = []
+		var deleteRanges: [NSRange] = []
+		
+		// Scan through the entire text storage to find diff markers
+		textStorage.enumerateAttribute(NSAttributedString.Key("DIFF"), in: textStorage.range) { value, range, stop in
+			guard let attr = value as? String else { return }
+			if attr == "delete" {
+				deleteRanges.append(range)
+			} else {
+				insertRanges.append(range)
+			}
+		}
+				
+		// Update the scroller with the found ranges
+		scroller.updateDiffRanges(
+			insertRanges: insertRanges,
+			deleteRanges: deleteRanges,
+			totalLength: textStorage.length
+		)
+	}
 	
 	// MARK: - View mode control
 	
@@ -360,7 +439,7 @@ class DiffViewerStatusView: NSView {
 				icon?.contentTintColor = .systemYellow
 			}
 			
-			text?.stringValue = "Uncommitted changes"
+			text?.stringValue = "You have uncommitted changes"
 		} else {
 			if #available(macOS 11.0, *) {
 				icon?.image = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: nil)
@@ -388,4 +467,64 @@ class DiffTimestampMenu: NSPopUpButton {
 
 class DiffTimestampMenuItem: NSMenuItem {
 	var timestamp: String = ""
+}
+
+
+// MARK: - Custom Diff Scrollbar
+
+class DiffScrollerView: NSScroller {
+	private var insertRanges: [NSRange] = []
+	private var deleteRanges: [NSRange] = []
+	private var totalLength: CGFloat = 1.0
+	
+	func updateDiffRanges(insertRanges: [NSRange], deleteRanges: [NSRange], totalLength: Int) {
+		self.insertRanges = insertRanges
+		self.deleteRanges = deleteRanges
+		self.totalLength = CGFloat(max(totalLength, 1))
+		self.needsDisplay = true
+	}
+	
+	override func draw(_ dirtyRect: NSRect) {
+		super.draw(dirtyRect)
+		drawDiffIndicators()
+	}
+	
+	private func drawDiffIndicators() {
+		// Set up colors
+		let insertColor = NSColor.systemGreen.withAlphaComponent(0.6)
+		let deleteColor = NSColor.systemRed.withAlphaComponent(0.6)
+		
+		let slotRect = self.rect(for: .knobSlot)
+		let indicatorWidth: CGFloat = self.frame.width
+		
+		// Draw insert indicators
+		drawIndicators(ranges: insertRanges, color: insertColor, slotRect: slotRect, indicatorWidth: indicatorWidth)
+		
+		// Draw delete indicators
+		drawIndicators(ranges: deleteRanges, color: deleteColor, slotRect: slotRect, indicatorWidth: indicatorWidth)
+	}
+	
+	private func drawIndicators(ranges: [NSRange], color: NSColor, slotRect: NSRect, indicatorWidth: CGFloat) {
+		color.setFill()
+		
+		for range in ranges {
+			let rangeStart = CGFloat(range.location) / totalLength
+			let rangeEnd = CGFloat(range.location + range.length) / totalLength
+			
+			// Calculate position in scrollbar
+			let yStart = slotRect.origin.y + slotRect.size.height * rangeStart
+			let height = max(2.0, slotRect.size.height * (rangeEnd - rangeStart))
+			
+			// Draw indicator
+			let indicatorRect = NSRect(
+				x: slotRect.origin.x,
+				y: yStart,
+				width: indicatorWidth,
+				height: height
+			)
+			
+			let path = NSBezierPath(roundedRect: indicatorRect, xRadius: 1.0, yRadius: 1.0)
+			path.fill()
+		}
+	}
 }
