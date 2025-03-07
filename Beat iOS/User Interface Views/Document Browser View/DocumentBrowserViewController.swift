@@ -23,6 +23,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		
 		if let fountainUTI = UTType(filenameExtension: "fountain") { contentTypes?.append(fountainUTI) }
 		if let fdxUTI = UTType(filenameExtension: "fdx") { contentTypes?.append(fdxUTI) }
+		if let txtUTI = UTType(filenameExtension: "txt") { contentTypes?.append(txtUTI) }
 		
 		if contentTypes?.count == 0 {
 			contentTypes = nil
@@ -136,7 +137,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: - Document Presentation
     
     func presentDocument(at documentURL: URL) {
-		if documentURL.pathExtension != "fountain" && 
+		if documentURL.pathExtension != "txt" && documentURL.pathExtension != "fountain" && 
 			(documentURL.typeIdentifier != "com.kapitan.fi" && documentURL.typeIdentifier != "io.fountain") {
 			// Import
 			importFile(at: documentURL)
