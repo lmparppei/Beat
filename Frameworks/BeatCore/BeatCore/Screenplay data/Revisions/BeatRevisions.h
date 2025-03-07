@@ -77,8 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commitRevisions;
 
+/// Adds a single revision to a range
 - (void)addRevision:(NSRange)range generation:(NSInteger)generation;
-//- (void)addRevision:(NSRange)range color:(NSString*)color;
+/// Adds multiple revisions of the selected generation
+- (void)addRevisions:(NSIndexSet*)indices generation:(NSInteger)generation;
 - (void)removeRevision:(NSRange)range;
 
 - (void)convertRevisionGeneration:(BeatRevisionGeneration*)original to:(BeatRevisionGeneration* _Nullable)newGen;

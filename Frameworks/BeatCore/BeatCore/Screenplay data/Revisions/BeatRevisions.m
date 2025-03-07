@@ -423,19 +423,26 @@
             [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
             previousRevision = nil;
         }
+
+        // No revision, continut
+        if (revision == nil) return;
         
-        if (revision != nil) {
-            if (previousRevision == nil) {
-                currentRange = range;
-                previousRevision = revision;
-            } else {
-                currentRange.length += range.length;
-            }
+        if (previousRevision == nil) {
+            currentRange = range;
+            previousRevision = revision;
+        } else {
+            currentRange.length += range.length;
         }
     }];
     
-    // Add the last revision
-    if (previousRevision != nil && currentRange.length > 0) {
+    // Add the last revision. First make sure we won't go out of range.
+    if (NSMaxRange(currentRange) > textStorage.length) {
+        currentRange.length = textStorage.length - currentRange.location;
+        if (currentRange.length < 0) currentRange.length = 0;
+    }
+    
+    // Add range
+    if (currentRange.location != NSNotFound && previousRevision != nil && currentRange.length > 0 && NSMaxRange(currentRange) <= textStorage.length) {
         [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
     }
     
@@ -772,6 +779,15 @@
     
     BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:generation];
     if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+}
+
+- (void)addRevisions:(NSIndexSet*)indices generation:(NSInteger)generation
+{
+    [self.delegate.textStorage beginEditing];
+    [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self addRevision:range generation:generation];
+    }];
+    [self.delegate.textStorage endEditing];
 }
 
 /// - warning: This is a LEGACY METHOD which adds a revision based on the old, color-name-based system. __Do NOT USE THIS.__
