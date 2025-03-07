@@ -43,11 +43,16 @@ class DiffViewerViewController: NSViewController {
 	
 	// MARK: UI outlets
 	
+	@IBOutlet weak var versionControlNotificationView:NSView?
 	@IBOutlet private weak var textView: DiffViewerTextView?
 	@IBOutlet private weak var currentVersionMenu: DiffTimestampMenu?
 	@IBOutlet private weak var otherVersionMenu: DiffTimestampMenu?
 	@IBOutlet private weak var statusView: DiffViewerStatusView?
 	@IBOutlet private weak var commitButton: NSButton?
+	@IBOutlet private weak var generateRevisionsButton: NSButton?
+	@IBOutlet private weak var restoreButton:NSButton?
+	
+	@IBOutlet private weak var actionTabs:NSTabView?
 	
 	// MARK: Lifecycle
 	
@@ -58,14 +63,48 @@ class DiffViewerViewController: NSViewController {
 		
 		self.vc = BeatVersionControl(delegate: delegate)
 
+		// Health check (for future generations)
+		if let health = vc?.doHealthCheck() {
+			print("Version control dictionary is healthy:", health)
+		}
+		
 		setupTextView()
-		updateCommitStatus()
-
-		_ = compareToLatestCommit()
 		populateVersions()
+		
+		if let vc, vc.hasVersionControl() {
+			_ = compareToLatestCommit()
+		}
+		
+		refreshView()
 	}
 	
 	// MARK: - Setup
+	
+	private func refreshView(updateCommitStatus:Bool = true) {
+		guard let vc else { return }
+		
+		if updateCommitStatus {
+			self.updateCommitStatus()
+		}
+		
+		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton]
+		let state = vc.hasVersionControl()
+		
+		versionControlNotificationView?.isHidden = state
+		statusView?.isHidden = !state
+		textView?.isHidden = !state
+		actionTabs?.isHidden = !state
+		
+		for view in viewsToEnable {
+			guard let ctrl = view as? NSControl else { continue }
+			ctrl.isEnabled = state
+		}
+		
+		// Certain things are only available for current timestamp
+		restoreButton?.isEnabled = ((restoreButton?.isEnabled ?? false) && state && modifiedTimestamp == "current")
+		generateRevisionsButton?.isEnabled = ((generateRevisionsButton?.isEnabled ?? false) && state && modifiedTimestamp == "current")
+
+	}
 	
 	private func setupTextView() {
 		guard let delegate = delegate, let textView = textView else { return }
@@ -84,6 +123,14 @@ class DiffViewerViewController: NSViewController {
 	}
 	
 	// MARK: - Version control actions
+	
+	@IBAction func beginVersionControl(_ sender:Any?) {
+		guard let vc else { return }
+		
+		vc.createInitialCommit()
+		refreshView()
+		_ = compareToLatestCommit()
+	}
 	
 	@IBAction func commit(_ sender: Any?) {
 		guard let delegate = delegate,
@@ -116,11 +163,24 @@ class DiffViewerViewController: NSViewController {
 		popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
 	}
 	
-	private func updateCommitStatus() {
-		let uncommitted = vc?.hasUncommittedChanges() ?? false
+	@IBAction func revertToCurrentVersion(_ sender:Any?) {
+		guard let delegate, let vc, let window = view.window else { return }
+		let revertedVersion = self.originalTimestamp
+		let timestamp = formatTimestamp(revertedVersion)
 		
-		statusView?.update(uncommitedChanges: uncommitted)
-		commitButton?.isEnabled = uncommitted
+		let alert = NSAlert()
+		alert.messageText = "Restore Version"
+		alert.informativeText = "Are you sure you want to revert the document to the state from \(timestamp)? This can't be undone and any newer commits will be removed."
+		alert.addButton(withTitle: NSLocalizedString("general.ok", comment: "OK"))
+		alert.addButton(withTitle: NSLocalizedString("general.cancel", comment: "Cancel"))
+		
+		alert.beginSheetModal(for: window) { response in
+			guard response == .alertFirstButtonReturn else { return }
+			
+			let text = vc.revert(to: revertedVersion)
+			delegate.revert(toText: text)
+			self.close(nil)
+		}
 	}
 	
 	
@@ -175,7 +235,7 @@ class DiffViewerViewController: NSViewController {
 		
 		// Timestamps are stored in shortened ISO format
 		let inputFormatter = DateFormatter()
-		inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+		inputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 		
 		// Output formatter for user-friendly display
 		let outputFormatter = DateFormatter()
@@ -208,7 +268,9 @@ class DiffViewerViewController: NSViewController {
 	
 	/// Helper method to quickly select the latest commit at startup
 	func compareToLatestCommit() -> Bool {
-		guard let vc = vc, let latest = vc.latestTimestamp() else { print("Nope"); return false }
+		guard let vc else { return false }
+		
+		let latest = vc.latestTimestamp() ?? "base"
 		
 		modifiedTimestamp = "current"
 		originalTimestamp = latest
@@ -221,6 +283,8 @@ class DiffViewerViewController: NSViewController {
 	// MARK: - Content Loading
 	
 	private func refreshContent() {
+		refreshView(updateCommitStatus: false)
+		
 		// Update both texts
 		updateTexts()
 		
@@ -231,6 +295,13 @@ class DiffViewerViewController: NSViewController {
 		}
 		
 		updateScrollerWithDiffMarkers()
+	}
+	
+	private func updateCommitStatus() {
+		let uncommitted = vc?.hasUncommittedChanges() ?? false
+		
+		statusView?.update(uncommitedChanges: uncommitted)
+		commitButton?.isEnabled = uncommitted
 	}
 	
 	private func updateTexts() {
@@ -270,6 +341,7 @@ class DiffViewerViewController: NSViewController {
 		
 		let text = formatDiffedText(diffValues, isOriginal: false)
 		textView?.textStorage?.setAttributedString(text)
+		textView?.needsDisplay = true
 	}
 	
 	func loadText() {
@@ -315,12 +387,16 @@ class DiffViewerViewController: NSViewController {
 		
 		// Apply diff colors
 		indices["delete"]?.enumerateRanges(using: { range, stop in
+			guard NSMaxRange(range) <= attributedString.length else { return }
+			
 			attributedString.addAttribute(.backgroundColor, value: redColor, range: range)
 			attributedString.addAttribute(.strikethroughColor, value: NSColor.red, range: range)
 			attributedString.addAttribute(.strikethroughStyle, value: 1, range: range)
 			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "delete", range: range)
 		})
 		indices["insert"]?.enumerateRanges(using: { range, stop in
+			guard NSMaxRange(range) <= attributedString.length else { return }
+			
 			attributedString.addAttribute(.backgroundColor, value: greenColor, range: range)
 			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "add", range: range)
 		})
@@ -329,11 +405,19 @@ class DiffViewerViewController: NSViewController {
 	}
 	
 	private func formatFountain(_ string: String) -> NSMutableAttributedString {
-		let attributedString = NSMutableAttributedString(string: string)
+		let settings = BeatDocumentSettings()
+		
+		let settingRange = settings.readAndReturnRange(string)
+		
+		var content = string
+		if settingRange.location != NSNotFound && settingRange.length != 0 {
+			content = String(string.prefix(settingRange.location))
+		}
+
+		let attributedString = NSMutableAttributedString(string: content)
 		let formatting = BeatEditorFormatting(textStorage: attributedString)
-		let documentSettings = delegate?.documentSettings
-				
-		formatting.staticParser = ContinuousFountainParser(staticParsingWith: attributedString.string, settings: documentSettings)
+
+		formatting.staticParser = ContinuousFountainParser(staticParsingWith: attributedString.string, settings: settings)
 		formatting.formatAllLines()
 		
 		return attributedString
@@ -373,13 +457,26 @@ class DiffViewerViewController: NSViewController {
 	@IBAction func switchMode(_ sender: NSSegmentedControl) {
 		if let mode = DiffViewMode(rawValue: sender.selectedSegment) {
 			viewMode = mode
+			actionTabs?.selectTabViewItem(at: mode.rawValue)
 		}
 	}
+	
+	// MARK: - Revision menu
+	
+	func generateRevisions(generation:Int) {
+		guard let vc else { return }
+		
+		vc.generateRevisedRanges(from: self.originalTimestamp, generation: generation)
+		self.close(nil)
+	}
+	
 	
 	// MARK: - Window actions
 	
 	@IBAction func close(_ sender: Any?) {
-		view.window?.close()
+		if let sheetParent = view.window?.sheetParent, let window = view.window {
+			sheetParent.endSheet(window)
+		}
 	}
 	
 	override func cancelOperation(_ sender: Any?) {
@@ -391,6 +488,21 @@ class DiffViewerViewController: NSViewController {
 		otherVersionMenu?.selectCommit(originalTimestamp)
 		loadText()
 	}
+	
+	
+	
+	// MARK: -  Segues
+
+	override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+		guard let delegate else { return }
+		
+		if segue.identifier == "GenerateMarkers", let vc = segue.destinationController as? DiffViewerGenerateMarkersViewController {
+			vc.loadView()
+			vc.diffView = self
+			vc.generationMenu?.menu?.items = BeatRevisionMenuItem.revisionItems(currentGeneration: delegate.revisionLevel, handler: { menuItem in })
+		}
+	}
+	
 }
 
 
@@ -399,6 +511,7 @@ class DiffViewerViewController: NSViewController {
 class DiffViewerTextView: NSTextView {
 	weak var editor: BeatEditorDelegate?
 	var magnification = 1.3
+	var scaled = false
 	
 	override var frame: NSRect {
 		didSet {
@@ -410,9 +523,14 @@ class DiffViewerTextView: NSTextView {
 		editor = editorDelegate
 		
 		textContainer?.widthTracksTextView = false
-		scaleUnitSquare(to: CGSize(width: magnification, height: magnification))
 		textContainer?.lineFragmentPadding = BeatTextView.linePadding()
+		
 		updateTextLayout()
+		
+		if !scaled {
+			scaleUnitSquare(to: CGSize(width: magnification, height: magnification))
+			scaled = true
+		}
 	}
 	
 	private func updateTextLayout() {
@@ -526,5 +644,18 @@ class DiffScrollerView: NSScroller {
 			let path = NSBezierPath(roundedRect: indicatorRect, xRadius: 1.0, yRadius: 1.0)
 			path.fill()
 		}
+	}
+}
+
+
+class DiffViewerGenerateMarkersViewController:NSViewController {
+	@IBOutlet weak var generationMenu:NSPopUpButton?
+	weak var diffView:DiffViewerViewController?
+	
+	@IBAction func generate(_ sender:Any?) {
+		if let generation = generationMenu?.indexOfSelectedItem {
+			diffView?.generateRevisions(generation: generation)
+		}
+		self.view.window?.contentViewController?.dismiss(self)
 	}
 }
