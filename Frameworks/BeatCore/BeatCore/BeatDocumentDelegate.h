@@ -22,6 +22,12 @@
 
 @protocol BeatDocumentDelegate <NSObject>
 
+#pragma mark - Base document stuff
+
+/// Create a document file
+- (NSString* _Nullable)createDocumentFileWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings excludingSettings:(NSArray<NSString*>* _Nullable)excludedKeys;
+
+
 #pragma mark - Parser
 
 /// Fountain parser associated with the document
