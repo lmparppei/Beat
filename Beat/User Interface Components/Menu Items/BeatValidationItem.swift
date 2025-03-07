@@ -13,9 +13,13 @@
  */
 
 import Foundation
+import BeatCore
+
+@objc public protocol BeatMenuItemValidationInstance {
+	func validate(delegate:BeatEditorDelegate) -> Bool
+}
 
 class BeatValidationItem: NSObject {
-
 	@objc var title:String?
 	@objc var setting:String
 	@objc var target:AnyObject!
@@ -67,6 +71,23 @@ class BeatValidationItem: NSObject {
 		return value
 	}
 }
+
+/// How about this?
+@objc class BeatSelfValidatingMenuItem:NSObject {
+	weak var menuItem:NSMenuItem?
+	weak var editorDelegate:BeatEditorDelegate?
+	var handler:(_ delegate:BeatEditorDelegate?) -> Bool
+	
+	init(menuItem: NSMenuItem? = nil, handler: @escaping (_: BeatEditorDelegate?) -> Bool) {
+		self.menuItem = menuItem
+		self.handler = handler
+	}
+	
+	@objc func validate() -> Bool {
+		return handler(self.editorDelegate)
+	}
+}
+
 
 /// A more sensible way to do the above
 @objc class BeatOnOffMenuItem:NSMenuItem {
