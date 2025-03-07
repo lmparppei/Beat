@@ -379,7 +379,6 @@ extension BeatReviewEditorViewBase {
     }
         
     @IBAction public func deleteReview(sender:Any?) {
-        print("Delete review")
         guard let delegate else { print("No delegate set for deleting reviews"); return }
         delegate.deleteReview(item: item)
     }
