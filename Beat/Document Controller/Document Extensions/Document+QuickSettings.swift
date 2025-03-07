@@ -68,7 +68,6 @@ extension Document {
 			
 			if let window = windowController.window {
 				self.documentWindow.beginSheet(window) { response in
-					//
 				}
 			}
 		}

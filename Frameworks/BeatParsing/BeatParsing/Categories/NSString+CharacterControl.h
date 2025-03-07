@@ -31,4 +31,9 @@
 - (bool)inRange:(NSRange)range;
 
 - (NSMutableIndexSet*)rangesBetween:(NSString*)open and:(NSString*)close excludingIndices:(NSMutableIndexSet*)excludes escapedIndices:(NSMutableIndexSet*)escapes;
+
+/// Removes unwated Windows line breaks
+- (NSString*)stringByCleaningUpWindowsLineBreaks;
+/// Removes unwanted control characters (including Windows line breaks etc.)
+- (NSString*)stringByCleaningUpBadControlCharacters;
 @end

@@ -84,6 +84,8 @@ typedef void (^BeatChangeListener)(NSRange);
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
+/// Reverts the editor to given text, including __settings block__.
+- (void)revertToText:(NSString*)text;
 
 #pragma mark - Core functionality
 

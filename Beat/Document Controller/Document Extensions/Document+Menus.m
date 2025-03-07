@@ -31,6 +31,10 @@
 		valid = [validatingItem setCheckedWithDocument:self];
 	}
 	
+	if ([menuItem conformsToProtocol:@protocol(BeatMenuItemValidationInstance)]) {
+		
+	}
+	
 	// Export menu items
 	if ([menuItem isKindOfClass:BeatFileExportMenuItem.class]) {
 		BeatFileExportMenuItem* item = (BeatFileExportMenuItem*)menuItem;
@@ -114,11 +118,11 @@
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
 	else if (menuItem.action == @selector(undoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
-		if (!self.undoManager.canUndo) valid = false;
+		valid = self.undoManager.canUndo;
 	}
 	else if (menuItem.action == @selector(redoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.redo", nil), [self.undoManager redoActionName]];
-		if (!self.undoManager.canRedo) valid = false;
+		valid = self.undoManager.canRedo;
 	}
 	else if (menuItem.submenu.itemArray.firstObject.action == @selector(shareFromService:)) {
 		[menuItem.submenu removeAllItems];

@@ -866,32 +866,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" hidden="YES" id="9KI-Cy-Uax"/>
-                            <menuItem title="Version Control" id="LyM-Wu-SXF">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" id="wQa-fH-1Ab">
-                                    <items>
-                                        <menuItem title="Begin Version Control for This Document" id="c8q-tr-rgC">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="beginVersionControl:" target="-1" id="oLU-VS-E5D"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Add Commit" id="ak8-Ma-gfm">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="addCommit:" target="-1" id="CRb-BJ-IIt"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Open Diff Viewer" keyEquivalent="Ö" id="p5b-Mn-HsH">
-                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
-                                            <connections>
-                                                <action selector="openDiffViewer:" target="-1" id="8q9-oJ-SP6"/>
-                                            </connections>
-                                        </menuItem>
-                                    </items>
-                                </menu>
-                            </menuItem>
-                            <menuItem title="Line Alternatives" hidden="YES" id="zGj-P3-PkD">
+                            <menuItem title="Line Alternatives" id="zGj-P3-PkD">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="OPQ-lX-aTP">
                                     <items>
@@ -915,6 +890,12 @@ DQ
                                         </menuItem>
                                     </items>
                                 </menu>
+                            </menuItem>
+                            <menuItem title="Version Control..." keyEquivalent="O" id="f0T-Tr-pQT">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="openDiffViewer:" target="-1" id="M4Q-km-gGw"/>
+                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="auM-e5-oEk"/>
                             <menuItem title="Add Marker" id="0iR-5D-OWq">

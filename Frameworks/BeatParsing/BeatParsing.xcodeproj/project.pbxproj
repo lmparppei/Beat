@@ -83,6 +83,8 @@
 		B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */; };
 		B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D1E5112C456D020014D16B /* ContinuousFountainParser+Omissions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */; };
+		B6DBB2C22D778F93008327EF /* ContinuousFountainParser+Lookup.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DBB2C02D778F93008327EF /* ContinuousFountainParser+Lookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DBB2C32D778F93008327EF /* ContinuousFountainParser+Lookup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2C12D778F93008327EF /* ContinuousFountainParser+Lookup.m */; };
 		B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DC61522D1834BB00ED708A /* ParsingRule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DC61532D1834BB00ED708A /* ParsingRule.m */; };
 /* End PBXBuildFile section */
@@ -166,6 +168,8 @@
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
 		B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Omissions.h"; sourceTree = "<group>"; };
 		B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Omissions.m"; sourceTree = "<group>"; };
+		B6DBB2C02D778F93008327EF /* ContinuousFountainParser+Lookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Lookup.h"; sourceTree = "<group>"; };
+		B6DBB2C12D778F93008327EF /* ContinuousFountainParser+Lookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Lookup.m"; sourceTree = "<group>"; };
 		B6DC61522D1834BB00ED708A /* ParsingRule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParsingRule.h; sourceTree = "<group>"; };
 		B6DC61532D1834BB00ED708A /* ParsingRule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ParsingRule.m; sourceTree = "<group>"; };
 		B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
@@ -276,14 +280,7 @@
 				B61A4E7C2D218BFE00CE761C /* Macros */,
 				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
 				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
-				B6737DED2CD2DBE700644D98 /* ContinuousFountainParser+Notes.h */,
-				B6737DEE2CD2DBE700644D98 /* ContinuousFountainParser+Notes.m */,
-				B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */,
-				B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */,
-				B6B144B42B5DCD240030A6B2 /* ContinuousFountainParser+Outline.h */,
-				B6B144B52B5DCD240030A6B2 /* ContinuousFountainParser+Outline.m */,
-				B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */,
-				B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */,
+				B6DBB2BF2D778F79008327EF /* Extensions */,
 				B6B37F1228F01A8700657F5F /* FountainRegexes.h */,
 				B6B37F0C28F01A8700657F5F /* FountainRegexes.m */,
 			);
@@ -357,6 +354,23 @@
 			path = Categories;
 			sourceTree = "<group>";
 		};
+		B6DBB2BF2D778F79008327EF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B6737DED2CD2DBE700644D98 /* ContinuousFountainParser+Notes.h */,
+				B6737DEE2CD2DBE700644D98 /* ContinuousFountainParser+Notes.m */,
+				B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */,
+				B6D1E50F2C456D020014D16B /* ContinuousFountainParser+Omissions.m */,
+				B6B144B42B5DCD240030A6B2 /* ContinuousFountainParser+Outline.h */,
+				B6B144B52B5DCD240030A6B2 /* ContinuousFountainParser+Outline.m */,
+				B69401692B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h */,
+				B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */,
+				B6DBB2C02D778F93008327EF /* ContinuousFountainParser+Lookup.h */,
+				B6DBB2C12D778F93008327EF /* ContinuousFountainParser+Lookup.m */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -399,6 +413,7 @@
 				B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */,
 				B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */,
 				B6B37F3528F0212700657F5F /* BeatPaperSizing.h in Headers */,
+				B6DBB2C22D778F93008327EF /* ContinuousFountainParser+Lookup.h in Headers */,
 				B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,6 +509,7 @@
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
 				B61A4E8D2D21990B00CE761C /* Line+Storybeats.m in Sources */,
 				B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */,
+				B6DBB2C32D778F93008327EF /* ContinuousFountainParser+Lookup.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
 				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
 				B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */,

@@ -8,6 +8,7 @@
 //
 
 #import "NSString+CharacterControl.h"
+#import <BeatParsing/NSCharacterSet+BadControlCharacters.h>
 #import <NaturalLanguage/NaturalLanguage.h>
 
 @implementation NSString (CharacterControl)
@@ -312,6 +313,18 @@
     return indexSet;
 }
 
+/// Removes unwated Windows line breaks
+- (NSString*)stringByCleaningUpWindowsLineBreaks
+{
+    return [self stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+}
+
+/// Removes unwanted control characters
+- (NSString*)stringByCleaningUpBadControlCharacters
+{
+    NSArray* items = [self componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];
+    return [items componentsJoinedByString:@""];
+}
 
 
 @end

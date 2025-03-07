@@ -58,7 +58,8 @@
 	return diffs;
 }
 
-- (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript {
+- (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript
+{
 	
 	NSArray *diffs = [self diffReportFrom:newScript with:oldScript];
 	
@@ -81,7 +82,8 @@
 	return changes;
 }
 
-- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript {
+- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript
+{
 	return [self getRevisionsComparing:script with:oldScript fromIndex:0];
 }
 
