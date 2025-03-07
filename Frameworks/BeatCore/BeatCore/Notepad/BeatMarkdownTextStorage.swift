@@ -29,12 +29,15 @@ import UXKit
 	}
 	
 	@objc public weak var textStorage:NSTextStorage?
-    @objc public var fontSize:CGFloat = 12.0
+    @objc public var baseFontSize:CGFloat = 12.0
+    @objc public var fontSize:CGFloat {
+        return baseFontSize //+ CGFloat(BeatUserDefaults.shared().getInteger(BeatSettingNotepadFontSizeModifier))
+    }
     
     var stylization:[String:Any]
     
     @objc public init(fontSize:CGFloat = 12.0) {
-        self.fontSize = fontSize
+        self.baseFontSize = fontSize
         self.stylization = [
             "*": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: fontSize).italics()],
             "**": [NSAttributedString.Key.font: UXFont.systemFont(ofSize: fontSize).bold()],
@@ -75,10 +78,20 @@ import UXKit
 			}
 		}
 	}
+    
+    @objc public func setFontSizeModifier(_ modifier:Int) {
+        guard let textStorage else { return }
+                
+        BeatUserDefaults.shared().save(modifier, forKey: BeatSettingNotepadFontSizeModifier)
+    
+        parse(NSRange(location: 0, length: textStorage.length))
+    }
 	
 	public func parse(_ range:NSRange) {
 		guard let textStorage = self.textStorage else { return }
 		
+        updateStylizations()
+        
 		var r = range
 		if NSMaxRange(r) > textStorage.string.count {
 			r.length -= NSMaxRange(r) - textStorage.string.count
@@ -103,31 +116,41 @@ import UXKit
             let size = 1.6 * fontSize - 2 * CGFloat(level)
 			let newFont = BXFont.boldSystemFont(ofSize: size)
 
-			newAttrs[NSAttributedString.Key.font] = newFont
+			newAttrs[.font] = newFont
 		} else {
 			// Something else
-			newAttrs[NSAttributedString.Key.font] = BXFont.systemFont(ofSize: fontSize)
+			newAttrs[.font] = BXFont.systemFont(ofSize: fontSize)
 		}
 		
 		// Reset underline
-		newAttrs[NSAttributedString.Key.underlineStyle] = 0
+		newAttrs[.underlineStyle] = 0
 		// Apply full font style first
 		self.textStorage?.addAttributes(newAttrs, range: r)
         
 		// Inline stylization
 		if type == .normal {
 			for key in stylization.keys {
-				let dict = stylization[key] as? [NSAttributedString.Key: Any]
+                guard let dict = stylization[key] as? [NSAttributedString.Key: Any] else { continue }
+                
 				let indices = parseInlineStyles(string: string, markdown: key)
-				
 				indices.enumerateRanges { localRange, stop in
-					if (dict != nil) {
-						self.textStorage?.addAttributes(dict!, range: NSMakeRange(range.location + localRange.location, localRange.length))
-					}
+                    self.textStorage?.addAttributes(dict, range: NSMakeRange(range.location + localRange.location, localRange.length))
 				}
 			}
 		}
 	}
+    
+    func updateStylizations() {
+        for key in Array(stylization.keys) {
+            guard var dict = stylization[key] as? [NSAttributedString.Key: Any] else { continue }
+            
+            if let font = dict[.font] as? BXFont {
+                dict[.font] = BXFont(name: font.fontName, size: font.pointSize)
+            }
+            
+            stylization[key] = dict
+        }
+    }
 	
 	func parseLineType(_ string:String) -> BeatMarkdownLineType {
 		if string.count == 0 {

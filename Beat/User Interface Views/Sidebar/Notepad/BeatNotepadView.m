@@ -39,6 +39,10 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *buttonMagenta;
 //@property (nonatomic) DynamicColor* defaultColor;
 @property (nonatomic) NSMutableArray* observers;
+
+@property (nonatomic) CGFloat scaleFactor;
+@property (nonatomic) CGFloat zoomLevel;
+
 @end
 
 @implementation BeatNotepadView
@@ -55,6 +59,9 @@
 		self.layer.cornerRadius = 10.0;
 		self.layer.backgroundColor = [NSColor.darkGrayColor colorWithAlphaComponent:0.3].CGColor;
 		self.textColor = self.defaultColor;
+		
+		_scaleFactor = 1.0;
+		_zoomLevel = 1.0;
 		
 		[self setTextContainerInset:(NSSize){ 5, 5 }];
 	}
@@ -77,6 +84,8 @@
 	[self setTypingAttributes:@{
 		NSForegroundColorAttributeName: self.currentColor
 	}];
+	
+	[self updateLayout];
 }
 
 - (void)scrollWheel:(NSEvent *)event
@@ -114,6 +123,94 @@
 	if (self.observerDisabled) return;
 	for (id<BeatTextChangeObserver>observer in self.observers) [observer observedTextDidChange:self];
 }
+
+
+#pragma mark - Zooming
+
+- (void)setScale:(CGFloat)newScaleFactor
+{
+#if TARGET_OS_OSX
+	if (_scaleFactor == newScaleFactor) return;
+	
+	CGSize curDocFrameSize, newDocBoundsSize;
+	BXView* clipView = self.enclosingScrollView.documentView;
+
+	CGFloat oldScaleFactor = _scaleFactor;
+	
+	curDocFrameSize = clipView.frame.size;
+	newDocBoundsSize.width = curDocFrameSize.width;
+	newDocBoundsSize.height = curDocFrameSize.height / newScaleFactor;
+	
+	CGRect newFrame = CGRectMake(0, 0, newDocBoundsSize.width, newDocBoundsSize.height);
+	clipView.frame = newFrame;
+	
+	// Thank you, Mark Munz @ stackoverflow
+	CGFloat scaler = newScaleFactor / oldScaleFactor;
+	[self scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
+	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+	_scaleFactor = newScaleFactor;
+
+#endif
+}
+
+- (IBAction)zoomIn:(id)sender
+{
+	[self adjustZoom:0.1];
+}
+- (IBAction)zoomOut:(id)sender
+{
+	[self adjustZoom:-0.1];
+}
+- (void)adjustZoom:(CGFloat)value
+{
+#if  TARGET_OS_OSX
+	if (_zoomLevel + value < 1.0 || _zoomLevel + value > 1.5) return;
+	
+	_zoomLevel += value;
+	[self setScale:_zoomLevel];
+
+#endif
+}
+
+- (void)updateLayout
+{
+#if TARGET_OS_OSX
+	[self setNeedsDisplay:YES];
+	[self.enclosingScrollView setNeedsDisplay:YES];
+	
+	// For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
+	NSRect clipFrame = self.enclosingScrollView.contentView.frame;
+	clipFrame.size.height = self.enclosingScrollView.contentView.superview.frame.size.height * _zoomLevel;
+	self.enclosingScrollView.contentView.frame = clipFrame;
+	
+	self.needsUpdateConstraints = true;
+	self.needsLayout = true;
+	self.enclosingScrollView.needsUpdateConstraints = true;
+	self.enclosingScrollView.needsLayout = true;
+	self.enclosingScrollView.superview.needsUpdateConstraints = true;
+	
+	[self invalidateIntrinsicContentSize];
+	self.textContainer.size = CGSizeMake(self.textContainer.size.width, CGFLOAT_MAX);
+	
+	[self setNeedsUpdateConstraints:true];
+	
+	[self.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.text.length) actualCharacterRange:nil];
+	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+	
+	self.needsDisplay = true;
+	self.needsLayout = true;
+#endif
+}
+
+
+#pragma mark - Loading
+
+- (void)loadString:(NSString *)string
+{
+	[super loadString:string];
+	[self updateLayout];
+}
+
 
 #pragma mark - UI actions
 
@@ -192,6 +289,7 @@
 {
 	// This is a hack to satisfy weird responder issues in macOS Sonoma (see scroll wheel events)
 	//self.hidden = !self.visible;
+	[self updateLayout];
 }
 
 -(bool)visible

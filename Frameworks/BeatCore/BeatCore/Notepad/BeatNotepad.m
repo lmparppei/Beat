@@ -12,6 +12,7 @@
  */
 
 #import "BeatNotepad.h"
+#import <BeatCore/BeatCompatibility.h>
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatCore-Swift.h>
 
@@ -31,7 +32,6 @@
     
     self.mdDelegate = [BeatMarkdownTextStorageDelegate.alloc initWithFontSize:fontSize];
     self.mdDelegate.textStorage = self.textStorage;
-    
     self.textStorage.delegate = self.mdDelegate;
     
     self.textColor = self.currentColor;
@@ -43,6 +43,7 @@
     [self.editorDelegate registerEditorView:self];
 #endif
     _loading = true;
+        
     NSString* notes = [self.editorDelegate.documentSettings getString:@"Notes"];
     if (notes.length > 0) [self loadString:notes];
     else [self setString:@""];
@@ -77,6 +78,7 @@
 -(void)loadString:(NSString*)string
 {
     [self.textStorage setAttributedString:[self coloredRanges:string]];
+    [self textViewNeedsDisplay];
 }
 
 - (NSAttributedString*)coloredRanges:(NSString*)fullString

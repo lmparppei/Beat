@@ -26,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) bool observerDisabled;
 @property (nonatomic) NSRange selectedRange;
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)position length:(NSInteger)length string:(NSString*)string color:(NSString*)colorName);
+/// Loads given rich-text string in the stored format (using `<color>...</color>` tags)
+- (void)loadString:(NSString*)string;
+/// Returns the rich-text string in the stored format
+- (NSString*)stringForSaving;
 @end
 
 @interface BeatNotepad : BXTextView <BeatNotepadExports>
