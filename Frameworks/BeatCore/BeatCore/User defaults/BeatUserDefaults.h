@@ -56,6 +56,7 @@ extern NSString * const BeatSettingShowSnapshotsInOutline;
 extern NSString * const BeatSettingSuppressedAlert;
 
 extern NSString * const BeatSettingOutlineFontSizeModifier;
+extern NSString * const BeatSettingNotepadFontSizeModifier;
 
 extern NSString* const BeatSettingShowPageSeparators;
 
