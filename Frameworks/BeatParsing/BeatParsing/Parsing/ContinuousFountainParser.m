@@ -42,6 +42,7 @@
 #import <BeatParsing/BeatParsing-Swift.h>
 #import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
+#import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/NSArray+BinarySearch.h>
 #import "ContinuousFountainParser+Notes.h"
 #import "ParsingRule.h"
@@ -52,8 +53,6 @@
 
 @interface ContinuousFountainParser()
 
-/// The line which was last edited. We're storing this when asking for a line at caret position.
-@property (nonatomic, weak) Line *lastEditedLine;
 /// An index for the last fetched line result when asking for lines in range
 @property (nonatomic) NSUInteger lastLineIndex;
 /// The range which was edited most recently.
@@ -70,9 +69,6 @@
 @property (nonatomic) NSArray* cachedLines;
 
 @property (nonatomic) BeatMacroParser* macros;
-
-//
-@property (nonatomic, weak) Line* prevLineAtLocation;
 
 @property (nonatomic) bool macrosNeedUpdate;
 
@@ -201,7 +197,7 @@ static NSDictionary* patterns;
 /// Returns the RAW text  when saving a screenplay. Automatically fixes some stylistical issues.
 - (NSString*)screenplayForSaving
 {
-    NSArray *lines = [NSArray arrayWithArray:self.lines];
+    NSArray *lines = self.safeLines.copy;
     NSMutableString *content = NSMutableString.string;
     
     Line *previousLine;
@@ -211,15 +207,6 @@ static NSDictionary* patterns;
         NSString* string = line.string;
         LineType type = line.type;
     
-        // Make some lines uppercase
-        if ((type == heading || type == transitionLine) &&
-            line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
-        
-        // Ensure correct whitespace before elements
-        // NOPE, don't do this because it messes up stored ranges. If you insist on this, you need to create new lines,
-        // bake the range-sensitive data (revisions, tags) and THEN extract that data into JSON which is then saved.
-        // if ((line.isAnyCharacter || line.type == heading) && previousLine.string.length > 0) [content appendString:@"\n"];
-            
         // Append to full content
         [content appendString:string];
         
@@ -308,16 +295,8 @@ static NSDictionary* patterns;
 
 /**
  
- Note to future me:
- 
- I have revised the original parsing system, which parsed changes by
- always removing single characters in a loop, even with longer text blocks.
- 
- I optimized the logic so that if the change includes full lines (either removed or added)
- they are removed or added as whole, rather than character-by-character. This is why
- there are two different methods for parsing the changes, and the other one is still used
- for parsing single-character edits. parseAddition/parseRemovalAt methods fall back to
- them when needed.
+ Following code is terrible. I tried refactoring this mess, but the system is pretty confusing and intricate.
+ I'll just leave it as it is.
  
  Flow:
  parseChangeInRange ->
@@ -326,115 +305,108 @@ static NSDictionary* patterns;
  
  */
 
-- (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
-{
-    // This is for avoiding crashes when plugin developers are doing weird things.
+- (void)parseChangeInRange:(NSRange)range withString:(NSString*)string {
     if (range.location == NSNotFound) return;
     
     _lastEditedLine = nil;
     _editedRange = range;
     
-    @synchronized (self.lines) {
-        NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
-        if (range.length == 0) {
-            // Addition
-            [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-        } else if (string.length == 0) {
-            // Removal
-            [changedIndices addIndexes:[self parseRemovalAt:range]];
-        } else {
-            //Replacement
-            [changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
-            [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
-        }
-
+    dispatch_queue_t lineQueue = dispatch_queue_create("com.editor.lineQueue", DISPATCH_QUEUE_SERIAL);
+    dispatch_sync(lineQueue, ^{
+        NSMutableIndexSet *changedIndices = [self processLineChanges:range withString:string];
         [self correctParsesInLines:changedIndices];
-    }
+    });
 }
 
-/// Ensures that any dialogue on the given line is parsed correctly. Continuous parsing only. A bit confusing to use. Unhelpful documentation.
-- (void)ensureDialogueParsingFor:(Line*)line
-{
-    if (!line.isAnyCharacter) return;
-        
-    NSInteger i = [self indexOfLine:line];
-    if (i == NSNotFound) return;
+- (NSMutableIndexSet*)processLineChanges:(NSRange)range withString:(NSString*)string {
+    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
     
-    NSArray *lines = self.lines;
-    
-    Line *nextLine;
-    
-    // Get the neighboring lines
-    if (i < self.lines.count - 1) nextLine = lines[i + 1];
-    
-    // Let's not do anything, if we are currently editing these lines.
-    if (nextLine != nil && nextLine.string.length == 0 &&
-        !NSLocationInRange(_delegate.selectedRange.location, nextLine.range) &&
-        !NSLocationInRange(_delegate.selectedRange.location, line.range) &&
-        line.numberOfPrecedingFormattingCharacters == 0
-        ) {
-        line.type = action;
-        [self.changedIndices addIndex:i];
-        [_delegate applyFormatChanges];
+    if (range.length == 0) {
+        // Addition
+        [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
+    } else if (string.length == 0) {
+        // Removal
+        [changedIndices addIndexes:[self parseRemovalAt:range]];
+    } else {
+        // Replacement
+        [changedIndices addIndexes:[self parseRemovalAt:range]];
+        [changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
     }
+    
+    return changedIndices;
 }
-
 
 #pragma mark Parsing additions
 
+/// This is a convoluted mess.
+/// I've replaced the old unichar-based code with this monstrosity to avoid weird quirks with multi-byte characters, and to preserve some metadata when inserting line breaks at the beginning of a line.
 - (NSIndexSet*)parseAddition:(NSString*)string atPosition:(NSUInteger)position
 {
-    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+    NSMutableIndexSet* changedIndices = NSMutableIndexSet.new;
     
-    // Get the line where into which we are adding characters
+    // Get the line where we are adding characters
     NSUInteger lineIndex = [self lineIndexAtPosition:position];
-    Line* line = self.lines[lineIndex];
+    Line* currentLine = self.lines[lineIndex];
     
     [changedIndices addIndex:lineIndex];
     
-    NSUInteger indexInLine = position - line.position;
+    NSUInteger indexInLine = position - currentLine.position;
     
-    // Cut the string in half
-    NSString* tail = [line.string substringFromIndex:indexInLine];
-    line.string = [line.string substringToIndex:indexInLine];
+    // Split the current line at insertion point
+    NSString* firstHalf = [currentLine.string substringToIndex:indexInLine];
+    NSString* secondHalf = [currentLine.string substringFromIndex:indexInLine];
     
-    NSInteger currentRange = -1;
+    // Split the added string into components by newline
+    NSArray* components = [string componentsSeparatedByString:@"\n"];
     
-    for (NSInteger i=0; i<string.length; i++) {
-        if (currentRange < 0) currentRange = i;
+    if (components.count == 1) {
+        // No line breaks in the added string, just insert the string
+        currentLine.string = [NSString stringWithFormat:@"%@%@%@", firstHalf, string, secondHalf];
+    } else {
+        // Multiple components with line breaks
         
-        unichar chr = [string characterAtIndex:i];
-        
-        if (chr == '\n') {
-            NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
-            line.string = [line.string stringByAppendingString:addedString];
+        // Keep the original line intact with its metadata
+        if (indexInLine == 0) {
+            // When inserting at the beginning of a line
             
-            if (lineIndex < self.lines.count - 1) {
-                Line* nextLine = self.lines[lineIndex+1];
-                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
-                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+            // First, add all new lines except the last one
+            NSInteger insertionIndex = lineIndex;
+            for (NSUInteger i = 0; i < components.count - 1; i++) {
+                [self addLineWithString:components[i] atPosition:currentLine.position lineIndex:insertionIndex];
+                [changedIndices addIndex:insertionIndex];
+                insertionIndex++;
             }
             
-            [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
+            // Append the last component to the original line with secondHalf
+            currentLine.string = [components.lastObject stringByAppendingString:secondHalf];
+            lineIndex = insertionIndex; // Update lineIndex to the original line's new position
+        } else {
+            // When inserting in the middle or at the end of a line
+            // Firs update the current line with firstHalf + first component
+            currentLine.string = [firstHalf stringByAppendingString:components[0]];
             
-            // Increment current line index and reset inspected range
-            lineIndex++;
-            currentRange = -1;
+            // Now insert new lines for in-the-middle components
+            NSInteger insertionIndex = lineIndex + 1;
+            for (NSUInteger i = 1; i < components.count; i++) {
+                NSString* lineContent = (i == components.count - 1)
+                ? [components[i] stringByAppendingString:secondHalf] // Last component gets secondHalf
+                : components[i];                                      // Middle components as-is
+                
+                [self addLineWithString:lineContent
+                             atPosition:NSMaxRange(self.lines[insertionIndex-1].range)
+                              lineIndex:insertionIndex];
+                [changedIndices addIndex:insertionIndex];
+                insertionIndex++;
+            }
             
-            // Set current line
-            line = self.lines[lineIndex];
+            // Update lineIndex to point to the last inserted line
+            lineIndex = insertionIndex - 1;
         }
     }
     
-    // Get the remaining string (if applicable)
-    NSString* remainder = (currentRange >= 0) ? [string substringFromIndex:currentRange] : @"";
-    line.string = [line.string stringByAppendingString:remainder];
-    line.string = [line.string stringByAppendingString:tail];
-    
-    [self adjustLinePositionsFrom:lineIndex];
-    
-    //[self report];
-    [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
+    // Adjust positions of all subsequent lines
+    [self adjustLinePositionsFrom:changedIndices.firstIndex];
+    [self report];
     
     return changedIndices;
 }
@@ -442,7 +414,8 @@ static NSDictionary* patterns;
 
 #pragma mark Parsing removals
 
-- (NSIndexSet*)parseRemovalAt:(NSRange)range {
+- (NSIndexSet*)parseRemovalAt:(NSRange)range
+{
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
     
     // Note: First and last index can be the same, if we are parsing on the same line
@@ -459,7 +432,7 @@ static NSDictionary* patterns;
     bool omitIn = false;
     
     NSInteger i = firstIndex;
-    while (i < self.lines.count) {
+    while (i < self.lines.count && range.length > 0) {
         Line* line = self.lines[i];
         
         // Store a flag if last handled line previously terminated an omission
@@ -476,8 +449,7 @@ static NSDictionary* patterns;
             // The range covers this whole line, remove it altogether.
             [self removeLineAtIndex:i];
             range.length -= line.range.length; // Subtract from full range
-        }
-        else {
+        } else {
             // This line is partly covered by the range
             line.string = [line.string stringByRemovingRange:localRange];
             [self decrementLinePositionsFromIndex:i+1 amount:localRange.length];
@@ -558,6 +530,34 @@ static NSDictionary* patterns;
 
 
 #pragma mark - Correcting parsed content for existing lines
+
+/// Ensures that any dialogue on the given line is parsed correctly. Continuous parsing only. A bit confusing to use. Unhelpful documentation.
+- (void)ensureDialogueParsingFor:(Line*)line
+{
+    if (!line.isAnyCharacter) return;
+        
+    NSInteger i = [self indexOfLine:line];
+    if (i == NSNotFound) return;
+    
+    NSArray *lines = self.lines;
+    
+    Line *nextLine;
+    
+    // Get the neighboring lines
+    if (i < self.lines.count - 1) nextLine = lines[i + 1];
+    
+    // Let's not do anything, if we are currently editing these lines.
+    if (nextLine != nil && nextLine.string.length == 0 &&
+        !NSLocationInRange(_delegate.selectedRange.location, nextLine.range) &&
+        !NSLocationInRange(_delegate.selectedRange.location, line.range) &&
+        line.numberOfPrecedingFormattingCharacters == 0
+        ) {
+        line.type = action;
+        [self.changedIndices addIndex:i];
+        [_delegate applyFormatChanges];
+    }
+}
+
 
 /// Intermediate method for `corretParsesInLines` which first finds the indices for line objects and then passes the index set to the main method.
 - (void)correctParsesForLines:(NSArray *)lines
@@ -1595,560 +1595,6 @@ static NSDictionary* patterns;
 	return scenes;
 }
 
-/// Returns the lines in given scene
-- (NSArray<Line*>*)linesForScene:(OutlineScene*)scene
-{
-	// Return minimal results for non-scene elements
-	if (scene == nil) return @[];
-	else if (scene.type == synopse) return @[scene.line];
-	
-	NSArray *lines = self.safeLines;
-		
-    NSInteger lineIndex = [self indexOfLine:scene.line];
-	if (lineIndex == NSNotFound) return @[];
-	
-	// Automatically add the heading line and increment the index
-    NSMutableArray *linesInScene = NSMutableArray.new;
-	[linesInScene addObject:scene.line];
-	lineIndex++;
-	
-	// Iterate through scenes and find the next terminating outline element.
-	@try {
-		while (lineIndex < lines.count) {
-			Line *line = lines[lineIndex];
-
-			if (line.type == heading || line.type == section) break;
-			[linesInScene addObject:line];
-			
-			lineIndex++;
-		}
-	}
-	@catch (NSException *e) {
-		NSLog(@"No lines found");
-	}
-	
-	return linesInScene;
-}
-
-/// Returns the previous line from the given line
-- (Line*)previousLine:(Line*)line
-{
-    NSInteger i = [self lineIndexAtPosition:line.position]; // Note: We're using lineIndexAtPosition because it's *way* faster
-    
-    if (i > 0 && i != NSNotFound) return self.safeLines[i - 1];
-    else return nil;
-}
-
-/// Returns the following line from the given line
-- (Line*)nextLine:(Line*)line
-{
-    NSArray* lines = self.safeLines;
-    NSInteger i = [self lineIndexAtPosition:line.position]; // Note: We're using lineIndexAtPosition because it's *way* faster
-    
-    if (i != NSNotFound && i < lines.count - 1) return lines[i + 1];
-    else return nil;
-}
-
-/// Returns the next outline item of given type
-/// @param type Type of the outline element (heading/section)
-/// @param position Position where to start the search
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position
-{
-    return [self nextOutlineItemOfType:type from:position depth:NSNotFound];
-}
-
-/// Returns the next outline item of given type
-/// @param type Type of the outline element (heading/section)
-/// @param position Position where to start the search
-/// @param depth Desired hierarchical depth (ie. 0 for top level objects of this type)
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth
-{
-    NSInteger idx = [self lineIndexAtPosition:position] + 1;
-    NSArray* lines = self.safeLines;
-    
-    for (NSInteger i=idx; i<lines.count; i++) {
-        Line* line = lines[i];
-        
-        // If no depth was specified, we'll just pass this check.
-        NSInteger wantedDepth = (depth == NSNotFound) ? line.sectionDepth : depth;
-        
-        if (line.type == type && wantedDepth == line.sectionDepth) {
-            return line;
-        }
-    }
-    
-    return nil;
-}
-
-/// Returns the previous outline item of given type
-/// @param type Type of the outline element (heading/section)
-/// @param position Position where to start the seach
-- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position {
-    return [self previousOutlineItemOfType:type from:position depth:NSNotFound];
-}
-/// Returns the previous outline item of given type
-/// @param type Type of the outline element (heading/section)
-/// @param position Position where to start the search
-/// @param depth Desired hierarchical depth (ie. 0 for top level objects of this type)
-- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth
-{
-    NSInteger idx = [self lineIndexAtPosition:position] - 1;
-    if (idx == NSNotFound || idx < 0) return nil;
-    
-    NSArray* lines = self.safeLines;
-    
-    for (NSInteger i=idx; i>=0; i--) {
-        Line* line = lines[i];
-
-        // If no depth was specified, we'll just pass this check.
-        NSInteger wantedDepth = (depth == NSNotFound) ? line.sectionDepth : depth;
-        
-        if (line.type == type && wantedDepth == line.sectionDepth) {
-            return line;
-        }
-    }
-    
-    return nil;
-}
-
-- (Line *)lineWithUUID:(NSString *)uuid
-{
-    for (Line* line in self.lines) {
-        if ([line.uuidString isEqualToString:uuid]) return line;
-    }
-    return nil;
-}
-
-
-#pragma mark - Element blocks
-
-/// Returns the lines for a full dual dialogue block
-- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue {
-    if (!line.isDialogue && !line.isDualDialogue) return @[];
-    
-    NSMutableArray<Line*>* left = NSMutableArray.new;
-    NSMutableArray<Line*>* right = NSMutableArray.new;
-    
-    NSInteger i = [self indexOfLine:line];
-    if (i == NSNotFound) return @[];
-    
-    NSArray* lines = self.safeLines;
-    
-    while (i >= 0) {
-        Line* l = lines[i];
-        
-        // Break at first normal character
-        if (l.type == character) break;
-        
-        i--;
-    }
-    
-    // Iterate forward
-    for (NSInteger j = i; j < lines.count; j++) {
-        Line* l = lines[j];
-        
-        // Break when encountering a character cue (which is not the first line), and whenever seeing anything else than dialogue.
-        if (j > i && l.type == character) break;
-        else if (!l.isDialogue && !l.isDualDialogue && l.type != empty) break;
-        
-        if (l.isDialogue) [left addObject:l];
-        else [right addObject:l];
-    }
-    
-    // Trim left & right
-    while (left.firstObject.type == empty && left.count > 0) [left removeObjectAtIndex:0];
-    while (right.lastObject.length == 0 && right.count > 0) [right removeObjectAtIndex:right.count-1];
-    
-    *isDualDialogue = (left.count > 0 && right.count > 0);
-    
-    return @[left, right];
-}
-
-/// Returns the lines for screenplay block in given range.
-- (NSArray<Line*>*)blockForRange:(NSRange)range {
-	NSMutableArray *blockLines = NSMutableArray.new;
-	NSArray *lines;
-	
-	if (range.length > 0) lines = [self linesInRange:range];
-	else lines = @[ [self lineAtPosition:range.location] ];
-
-	for (Line *line in lines) {
-		if ([blockLines containsObject:line]) continue;
-		
-		NSArray *block = [self blockFor:line];
-		[blockLines addObjectsFromArray:block];
-	}
-	
-	return blockLines;
-}
-
-/// Returns the lines for full screenplay block associated with this line – a dialogue block, for example.
-- (NSArray<Line*>*)blockFor:(Line*)line
-{
-	NSArray *lines = self.lines;
-	NSMutableArray *block = NSMutableArray.new;
-    NSInteger blockBegin = [self indexOfLine:line];
-	
-    // If the line is empty, iterate upwards to find the start of the block
-	if (line.type == empty) {
-		NSInteger h = blockBegin - 1;
-		while (h >= 0) {
-			Line *l = lines[h];
-			if (l.type == empty) {
-				blockBegin = h + 1;
-				break;
-			}
-			h--;
-		}
-	}
-	
-    // If the line is part of a dialogue block but NOT a character cue, find the start of the block.
-	if ( (line.isDialogueElement || line.isDualDialogueElement) && !line.isAnyCharacter) {
-        NSInteger i = blockBegin - 1;
-        while (i >= 0) {
-            // If the preceding line is not a dialogue element or a dual dialogue element,
-            // or if it has a length of 0, set the block start index accordingly
-            Line *precedingLine = lines[i];
-            if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement) || precedingLine.length == 0) {
-                blockBegin = i;
-                break;
-            }
-            
-            i--;
-        }
-	}
-    
-    // Add lines until an empty line is found. The empty line belongs to the block too.
-	NSInteger i = blockBegin;
-	while (i < lines.count) {
-		Line *l = lines[i];
-		[block addObject:l];
-		if (l.type == empty || l.length == 0) break;
-		
-		i++;
-	}
-	
-	return block;
-}
-
-- (NSRange)rangeForBlock:(NSArray<Line*>*)block
-{
-    NSRange range = NSMakeRange(block.firstObject.position, NSMaxRange(block.lastObject.range) - block.firstObject.position);
-    return range;
-}
-
-
-#pragma mark - Line position lookup and convenience methods
-
-/// Returns line at given POSITION, not index.
-- (Line*)lineAtIndex:(NSInteger)position
-{
-	return [self lineAtPosition:position];
-}
-
-/**
- Returns the index in lines array for given line. This method might be called multiple times, so we'll cache the result.
- This is a *very* small optimization, we're talking about `0.000001` vs `0.000007`. It's many times faster, but doesn't actually have too big of an effect.
- Note that whenever changes are made, `previousLineIndex` should maybe be set as `NSNotFound`. Currently it's not.
- */
-NSInteger previousLineIndex = NSNotFound;
-- (NSUInteger)indexOfLine:(Line*)line
-{
-    return [self indexOfLine:line lines:self.safeLines];
-}
-
-- (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines
-{
-    // First check the cached line index
-    if (previousLineIndex >= 0 && previousLineIndex < lines.count && line == (Line*)lines[previousLineIndex]) {
-        return previousLineIndex;
-    }
-    
-    // Let's use binary search here. It's much slower in short documents, but about 20-30 times faster in longer ones.
-    NSInteger index = [self.lines binarySearchForItem:line integerValueFor:@"position"];
-    previousLineIndex = index;
-
-    return index;
-}
-
-NSInteger previousSceneIndex = NSNotFound;
-- (NSUInteger)indexOfScene:(OutlineScene*)scene
-{
-    NSArray *outline = self.safeOutline;
-    
-    if (previousSceneIndex < outline.count && previousSceneIndex >= 0) {
-        if (scene == outline[previousSceneIndex]) return previousSceneIndex;
-    }
-    
-    NSInteger index = [self.outline indexOfObject:scene];
-    previousSceneIndex = index;
-
-    return index;
-}
-
-/**
- This method finds an element in array that statisfies a certain condition, compared in the block. To optimize the search, you should provide `searchOrigin`  and the direction.
- @returns Returns either the found element or nil if none was found.
- @param array The array to be searched.
- @param searchOrigin Starting index of the search, preferrably the latest result you got from this same method.
- @param descending Set the direction of the search: true for descending, false for ascending.
- @param cacheIndex Pointer for retrieving the index of the found element. Set to NSNotFound if the result is nil.
- @param compare The block for comparison, with the inspected element as argument. If the element statisfies your conditions, return true.
- */
-- (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item, NSInteger idx))compare
-{
-	// Don't go out of range
-	if (array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
-		/** Uh, wtf, how does this work?
-			We are checking if the search origin is in range from -1 to the full array count,
-			so I don't understand how and why this could actually work, and why are we getting
-			the correct behavior. The magician surprised themself, too.
-		 */
-		return nil;
-	}
-    
-	NSInteger i = searchOrigin;
-	NSInteger origin = (descending) ? i - 1 : i + 1;
-	if (origin == -1) origin = array.count - 1;
-	
-	bool stop = NO;
-	
-	do {
-		if (!descending) {
-			i++;
-			if (i >= array.count) i = 0;
-		} else {
-			i--;
-			if (i < 0) i = array.count - 1;
-		}
-				
-		id item = array[i];
-		
-		if (compare(item, i)) {
-			*cacheIndex = i;
-			return item;
-		}
-		
-		// We have looped around the array (unsuccessfuly)
-		if (i == searchOrigin || origin == -1) {
-			NSLog(@"Failed to find match for %@ - origin: %lu / searchorigin: %lu  -- %@", self.lines[searchOrigin], origin, searchOrigin, compare);
-			break;
-		}
-		
-	} while (stop != YES);
-    
-    *cacheIndex = NSNotFound;
-	return nil;
-}
-
-/**
- This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
- Instead, it first checks the line it returned the last time, and after that, starts to iterate through lines from its position and given direction. Usually we can find
- the line with 1-2 steps, and as we're possibly iterating through thousands and thousands of lines, it's much faster than finding items by their properties the usual way.
- */
-- (NSUInteger)lineIndexAtPosition:(NSUInteger)position
-{
-    return [self lineIndexAtPosition:position lines:self.safeLines];
-}
-
-/**
- This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
- Instead, it first checks the line it returned the last time, and after that, starts to iterate through lines from its position and given direction. Usually we can find
- the line with 1-2 steps, and as we're possibly iterating through thousands and thousands of lines, it's much faster than finding items by their properties the usual way.
- */
-- (NSUInteger)lineIndexAtPosition:(NSUInteger)position lines:(NSArray<Line*>*)lines
-{
-    NSUInteger actualIndex = NSNotFound;
-    NSInteger lastFoundPosition = 0;
-    
-    // First check if we are still on the same line as before
-    if (NSLocationInRange(_lastLineIndex, NSMakeRange(0, lines.count))) {
-        Line* lastEdited = lines[_lastLineIndex];
-        lastFoundPosition = lastEdited.position;
-        
-        if (NSLocationInRange(position, lastEdited.range)) {
-            return _lastLineIndex;
-        }
-    }
-    
-    // Cyclical array lookup from the last found position
-    Line* result = [self findNeighbourIn:lines origin:_lastLineIndex descending:(position < lastFoundPosition) cacheIndex:&actualIndex block:^BOOL(id item, NSInteger idx) {
-        Line* l = item;
-        return NSLocationInRange(position, l.range);
-    }];
-    
-    if (result != nil) {
-        _lastLineIndex = actualIndex;
-        _lastEditedLine = result;
-        
-        return actualIndex;
-    } else {
-        return (self.lines.count > 0) ? self.lines.count - 1 : 0;
-    }
-}
-
-/// Cached line for location lookup. Needs a better name.
-NSUInteger prevLineAtLocationIndex = 0;
-
-/// Returns the line object at given position (btw, why aren't we using the other method?)
-- (Line*)lineAtPosition:(NSInteger)position
-{
-	// Let's check the cached line first
-    if (NSLocationInRange(position, _prevLineAtLocation.range)) return _prevLineAtLocation;
-    
-	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
-	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
-	
-	// Quick lookup for first object
-	if (position == 0) return lines.firstObject;
-	
-	// We'll use a circular lookup here. It's HIGHLY possible that we are not just randomly looking for lines,
-	// but that we're looking for close neighbours in a for loop. That's why we'll either loop the array forward
-    // or backward to avoid unnecessary looping from beginning, which soon becomes very inefficient.
-	
-	NSUInteger cachedIndex;
-	
-	bool descending = NO;
-	if (_prevLineAtLocation && position < _prevLineAtLocation.position) {
-		descending = YES;
-	}
-		
-	Line *line = [self findNeighbourIn:lines origin:prevLineAtLocationIndex descending:descending cacheIndex:&cachedIndex block:^BOOL(id item, NSInteger idx) {
-		Line *l = item;
-		if (NSLocationInRange(position, l.range)) return YES;
-		else return NO;
-	}];
-	
-	if (line) {
-		_prevLineAtLocation = line;
-		prevLineAtLocationIndex = cachedIndex;
-		return line;
-	}
-	
-	return nil;
-}
-
-/// Returns the lines in given range (even overlapping)
-- (NSArray<Line*>*)linesInRange:(NSRange)range
-{
-	NSArray *lines = self.safeLines;
-	NSMutableArray *linesInRange = NSMutableArray.array;
-	
-    NSInteger index = [self lineIndexAtPosition:range.location lines:lines];
-    
-    for (NSInteger i=index; i<lines.count; i++) {
-        Line* line = lines[i];
-        
-        if (NSIntersectionRange(line.range, range).length > 0) [linesInRange addObject:line];
-        else if (line.position > NSMaxRange(range)) break;
-    }
-    
-/*
-	for (Line* line in lines) {
-		if ((NSLocationInRange(line.position, range) ||
-			NSLocationInRange(range.location, line.textRange) ||
-			NSLocationInRange(range.location + range.length, line.textRange)) &&
-			NSIntersectionRange(range, line.textRange).length > 0) {
-			[linesInRange addObject:line];
-        } else if (NSMaxRange(range) < NSMaxRange(line.range)) {
-            // We've gone past the given range, break
-            break;
-        }
-	}
-*/
- 
-	return linesInRange;
-}
-
-/// Returns a range of indices of lines in given range (even overlapping)
-- (NSRange)lineIndicesInRange:(NSRange)range
-{
-    NSArray* lines = self.safeLines;
-    NSRange indexRange = NSMakeRange(NSNotFound, 0);
-    
-    for (NSInteger i=0; i<lines.count; i++) {
-        Line* line = lines[i];
-        
-        // (wtf is this conditional?)
-        if ((NSLocationInRange(line.position, range) ||
-            NSLocationInRange(range.location, line.textRange) ||
-            NSLocationInRange(NSMaxRange(range), line.textRange)) &&
-            NSIntersectionRange(range, line.textRange).length > 0) {
-            
-            // Adjust range
-            if (indexRange.location == NSNotFound) indexRange.location = i;
-            else indexRange.length += 1;
-            
-        } else if (NSMaxRange(range) < NSMaxRange(line.range)) {
-            // We've gone past the given range, break
-            break;
-        }
-    }
-    
-    return indexRange;
-}
-
-/// Returns the scenes which intersect with given range.
-- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range
-{
-	// When length is zero, return just the scene at the beginning of range (and avoid iterating over the whole outline)
-    if (range.length == 0) {
-        OutlineScene* scene = [self sceneAtPosition:range.location];
-        return (scene != nil) ? @[scene] : @[];
-    }
-
-    NSMutableArray *scenes = NSMutableArray.new;
-	for (OutlineScene* scene in self.safeOutline) {
-		NSRange intersection = NSIntersectionRange(range, scene.range);
-		if (intersection.length > 0) [scenes addObject:scene];
-	}
-	
-	return scenes;
-}
-
-/// Returns the first outline element which contains at least a part of the given range.
-- (OutlineScene*)outlineElementInRange:(NSRange)range
-{
-    for (OutlineScene *scene in self.safeOutline) {
-        if (NSIntersectionRange(range, scene.range).length > 0 || NSLocationInRange(range.location, scene.range)) {
-            return scene;
-        }
-    }
-    return nil;
-}
-
-/// Returns a scene which contains the given character index (position). An alias for `sceneAtPosition` for legacy compatibility.
-- (OutlineScene*)sceneAtIndex:(NSInteger)index { return [self sceneAtPosition:index]; }
-
-/// Returns a scene which contains the given position
-- (OutlineScene*)sceneAtPosition:(NSInteger)index
-{
-	for (OutlineScene *scene in self.safeOutline) {
-		if (NSLocationInRange(index, scene.range) && scene.line != nil) return scene;
-	}
-	return nil;
-}
-
-/// Returns all scenes contained by this section. You should probably use `OutlineScene.children` though.
-/// - note: Legacy compatibility. Remove when possible.
-- (NSArray*)scenesInSection:(OutlineScene*)topSection
-{
-	if (topSection.type != section) return @[];
-    return topSection.children;
-}
-
-/// Returns the scene with given number (string)
-- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber
-{
-	for (OutlineScene *scene in self.outline) {
-		if ([scene.sceneNumber.lowercaseString isEqualToString:sceneNumber.lowercaseString]) {
-			return scene;
-		}
-	}
-	return nil;
-}
-
-
 
 #pragma mark - Line identifiers (UUIDs)
 
@@ -2180,7 +1626,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 /// Sets the given UUIDs to each outline element at the same index
-- (void)setIdentifiersForOutlineElements:(NSArray*)uuids
+- (void)setIdentifiersForOutlineElements:(NSArray<NSDictionary<NSString*, NSString*>*>*)uuids
 {
     for (NSInteger i=0; i<self.outline.count; i++) {
         if (i >= uuids.count) break;
@@ -2197,7 +1643,6 @@ NSUInteger prevLineAtLocationIndex = 0;
         }
     }
 }
-
 
 
 

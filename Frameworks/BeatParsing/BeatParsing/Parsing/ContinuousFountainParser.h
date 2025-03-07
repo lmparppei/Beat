@@ -52,28 +52,12 @@
 - (NSString*)rawText;
 - (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
-- (Line*)lineAtIndex:(NSInteger)index;
-- (NSUInteger)indexOfLine:(Line*)line;
-- (Line*)lineAtPosition:(NSInteger)position;
-- (NSArray<Line*>*)linesInRange:(NSRange)range;
+
 - (NSInteger)numberOfScenes;
-- (OutlineScene*)sceneAtIndex:(NSInteger)index;
-- (OutlineScene*)sceneAtPosition:(NSInteger)index;
-- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range;
-- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
+
 - (NSString*)titlePageAsString;
 - (NSArray<Line*>*)titlePageLines;
 - (NSArray<NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage;
-
-- (Line*)previousLine:(Line*)line;
-- (Line*)nextLine:(Line*)line;
-
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position;
-- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
-- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position;
-- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
-
-- (Line *)lineWithUUID:(NSString *)uuid;
 
 - (NSArray*)safeLines;
 
@@ -81,7 +65,7 @@
 
 @end
 
-@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
+@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports>
 /// Parser delegate. Basically it's the document.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
 /// Every line as object
@@ -98,6 +82,11 @@
 /// Set `true` when a first-time parse is in process
 @property (nonatomic) bool firstTime;
 
+
+/// Previous line at a looked up location
+@property (nonatomic, weak) Line* prevLineAtLocation;
+/// The line which was last edited. We're storing this when asking for a line at caret position.
+@property (nonatomic, weak) Line *lastEditedLine;
 
 /// For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
@@ -121,6 +110,7 @@
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous;
 
+
 #pragma mark - Parsing methods
 /// Parses the full text
 - (void)parseText:(NSString*)text;
@@ -130,12 +120,6 @@
 - (void)resetParsing;
 /// Returns parsed scenes, excluding structure elements
 - (NSArray<OutlineScene*>*)scenes;
-/// Returns the lines for given scene
-- (NSArray<Line*>*)linesForScene:(OutlineScene*)scene;
-/// Returns the line preceding given line
-- (Line*)previousLine:(Line*)line;
-/// Returns the line following given line
-- (Line*)nextLine:(Line*)line;
 /// Reparses the given lines
 - (void)correctParsesForLines:(NSArray*)lines;
 
@@ -160,46 +144,13 @@
 
 #pragma mark - Convenience Methods
 
-/// Returns the index of given line. Uses cached results, so it's much more performant than using `indexOfObject:]`.
-- (NSUInteger)indexOfLine:(Line*)line;
-/// Returns the index of given line in the given array of of lines. Always use this instead of `indexOfObject:` for performance reasons.
-- (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines;
-/// Returns the index of given scene. Uses cached results, so it's more performant than using `indexOfObject:]`.
-- (NSUInteger)indexOfScene:(OutlineScene*)scene;
-/// Returns the line at given position
-- (Line*)lineAtPosition:(NSInteger)position;
-/// Returns the index of line at this position
-- (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
-/// Returns the scene which contains the line at given index
-- (OutlineScene*)sceneAtIndex:(NSInteger)index;
-/// Returns the first outline element which contains at least a part of the given range.
-- (OutlineScene*)outlineElementInRange:(NSRange)range;
-/// Returns all scenes in the given range (including intersecting scenes)
-- (NSArray<OutlineScene*>*)scenesInRange:(NSRange)range;
-/// Returns all lines in the given range (including intersecting lines)
-- (NSArray<Line*>*)linesInRange:(NSRange)range;
-/// Returns all scenes in the given section.
-- (NSArray<OutlineScene*>*)scenesInSection:(OutlineScene*)topSection;
-/// Returns the scene with given number (note that scene numbers are strings)
-- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 /// Returns the number of scenes  in the file (excluding other structure elements)
 - (NSInteger)numberOfScenes;
 
-/// Returns a "screenplay block" (items which beling together, such as character cues and dialogue) for the given range.
-- (NSArray<Line*>*)blockForRange:(NSRange)range;
-/// Returns a "screenplay block" (items which beling together, such as character cues and dialogue) for the given line,
-- (NSArray<Line*>*)blockFor:(Line*)line;
-/// Returns the both dual dialogue blocks for given line. Pass a pointer to `isDualDialogue` to see if the line *actually* is part of a dual dialogue block.
-- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue;
-/// Calculates the range for given block
-- (NSRange)rangeForBlock:(NSArray<Line*>*)block;
-
 /// Returns `NSUUID` object for each line.
 - (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines;
+
 /// Set `NSUUID` identifiers for lines in corresponding indices.
 - (void)setIdentifiers:(NSArray*)uuids;
-
-/// Get the line with this UUID
-- (Line*)lineWithUUID:(NSString*)uuid;
 
 @end
