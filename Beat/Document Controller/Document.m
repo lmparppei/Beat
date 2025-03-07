@@ -296,25 +296,9 @@
 		
 	// Print dialog
 	self.printDialog.document = nil;
-
-	// Hide text view for now
-	self.textView.alphaValue = 0;
 	
-	// Put any previously loaded text into the text view when it's loaded
-	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
-	if (self.contentBuffer == nil) self.contentBuffer = @"";
-		
-	// Set up revision tracking before preview is created and lines are rendered on screen
-	[self.revisionTracking setup];
-	
-	// Paginate the whole document at load
-	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
-		
-	// Perform first-time rendering
-	[self renderDocument];
-	
-	// Update selection to any views or objects that might require it.
-	[self updateSelectionObservers];
+	// Set up the document
+	[self setupDocument];
 }
 
 -(void)loadingComplete
@@ -625,34 +609,69 @@
 	return dataRepresentation;
 }
 
-- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError {
+- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
+{
 	if (![url checkResourceIsReachableAndReturnError:outError]) return NO;
 	return [super readFromURL:url ofType:typeName error:outError];
 }
-- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
+{
 	return [self readFromData:data ofType:typeName error:outError reverting:NO];
 }
-- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting {
-	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
-
-	__block NSString* text = @"";
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
+{
+	self.documentIsLoading = true;
 
 	// Load text & remove settings block from Fountain
-	text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
+	text = [self readBeatDocumentString:text];
 	
-	self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
-	
-	NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
-	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
-
-	// Remove unwanted control characters
-	NSArray* t = [text componentsSeparatedByCharactersInSet:NSCharacterSet.badControlCharacters];
-	text = [t componentsJoinedByString:@""];
-	
+	// If we're not reverting, we can also set the text here
 	if (!reverting)	[self setText:text];
-	else self.contentBuffer = text; // When reverting, we only set the content buffer
 	
 	return YES;
+}
+
+- (void)revertToText:(NSString*)text
+{
+	[super revertToText:text];
+	[self setupDocument];
+}
+
+
+#pragma mark - Document setup
+
+/// Reloads all necessary things. Should be called when the whole text has changed.
+- (void)setupDocument
+{
+	self.documentIsLoading = true;
+	if (self.contentBuffer == nil) self.contentBuffer = @"";
+	
+	[self.textView setNeedsDisplay:true];
+	
+	self.textView.alphaValue = 0.0;
+		
+	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
+	
+	[self updateChangeCount:NSChangeCleared];
+	[self updateChangeCount:NSChangeDone];
+	[self.undoManager removeAllActions];
+	
+	// Put any previously loaded text into the text view when it's loaded
+	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
+	
+	
+	// Set up revision tracking before preview is created and lines are rendered on screen
+	[self.revisionTracking setup];
+	
+	// Paginate the whole document at load
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
+		
+	// Perform first-time rendering
+	[self renderDocument];
+	
+	// Update selection to any views or objects that might require it.
+	[self updateSelectionObservers];
 }
 
 
@@ -698,17 +717,7 @@
 	
 	[self readFromData:data ofType:typeName error:nil reverting:YES];
 	
-	[self.textView setNeedsDisplay:true];
-	
-	self.textView.alphaValue = 0.0;
-	[self setText:self.contentBuffer];
-		
-	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
-	[self renderDocument];
-	
-	[self updateChangeCount:NSChangeCleared];
-	[self updateChangeCount:NSChangeDone];
-	[self.undoManager removeAllActions];
+	[self setupDocument];
 }
 
 
