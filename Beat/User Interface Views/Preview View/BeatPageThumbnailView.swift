@@ -125,8 +125,11 @@ class BeatPageThumbnailView:NSCollectionView {
 	}
 	
 	override func selectItems(at indexPaths: Set<IndexPath>, scrollPosition: NSCollectionView.ScrollPosition) {
-		super.selectItems(at: indexPaths, scrollPosition: scrollPosition)
-		self.queuedSelection = indexPaths.first
+		guard let indexPath = indexPaths.first else { print("No index path"); return }
+		if indexPath.item < numberOfItems(inSection: indexPath.section) {
+			super.selectItems(at: indexPaths, scrollPosition: scrollPosition)
+			self.queuedSelection = indexPaths.first
+		}
 	}
 	
 	override func cancelOperation(_ sender: Any?) {

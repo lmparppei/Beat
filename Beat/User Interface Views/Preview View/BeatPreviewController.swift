@@ -68,8 +68,9 @@ import BeatPagination2
 				
 				// Select page in thumbnail view
 				if let pageIndex = previewView.pageViews.firstIndex(of: pageView) {
-					// We'll add one to page index because title page is not part of `previewView.pageViews`
-					let idxPath = IndexPath(item: pageIndex+1, section: 0)
+					// We might need to add one to page index because title page is not part of `previewView.pageViews
+					let offset = (self.pagination?.hasTitlePage ?? false) ? 1 : 0
+					let idxPath = IndexPath(item: pageIndex+offset, section: 0)
 					thumbnailView?.selectItems(at: [idxPath], scrollPosition: .top)
 					thumbnailView?.queuedSelection = idxPath
 				}
