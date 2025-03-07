@@ -262,4 +262,13 @@
 	return !isTitle;
 }
 
+
+#pragma mark - Import protocol conformance (TODO)
+
+- (NSString*)fountain
+{
+    return self.script;
+}
+
+
 @end

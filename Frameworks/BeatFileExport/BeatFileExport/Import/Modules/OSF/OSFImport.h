@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OSFImport : NSObject <BeatFileImportModule>
 @property (nonatomic) NSString *script;
 @property (nonatomic) NSString* fountain;
-@property (nonatomic, copy) void (^callback)(id);
-- (id)initWithURL:(NSURL*)url completion:(void(^)(id _Nullable))callback;
+@property (nonatomic, copy) void (^callback)(NSString*);
+- (id)initWithURL:(NSURL*)url completion:(void(^)(NSString* _Nullable))callback;
 - (id)initWithData:(NSData*)data;
 
 @end

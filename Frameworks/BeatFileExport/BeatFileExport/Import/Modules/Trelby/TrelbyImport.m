@@ -9,7 +9,10 @@
 
 @implementation TrelbyImport
 
-- (id)initWithURL:(NSURL *)url options:(NSDictionary *)options completion:(void (^)(id _Nullable))callback
++ (NSArray<NSString *> * _Nullable)UTIs { return nil; }
++ (NSArray<NSString *> * _Nonnull)formats { return @[@"trelby"]; }
+
+- (id)initWithURL:(NSURL *)url options:(NSDictionary *)options completion:(void (^)(NSString* _Nullable))callback
 {
     self = [super init];
     if (self) {
@@ -68,7 +71,7 @@
     }
     
     _script = script;
-    self.callback(self);
+    self.callback(_script);
 }
 
 - (NSString *)fountain { return self.script; }

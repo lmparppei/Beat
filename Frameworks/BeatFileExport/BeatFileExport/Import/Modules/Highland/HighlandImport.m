@@ -11,12 +11,15 @@
 
 @implementation HighlandImport
 
-- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
++ (NSArray<NSString *> * _Nullable)UTIs { return nil; }
++ (NSArray<NSString *> * _Nonnull)formats { return @[@"highland"]; }
+
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(NSString* _Nullable))callback
 {
     self = [super init];
     if (self) {
         [self readFromURL:url];
-        callback(self);
+        callback(_script);
     }
     
     return self;

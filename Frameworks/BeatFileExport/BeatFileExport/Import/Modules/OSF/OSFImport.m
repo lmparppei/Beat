@@ -6,10 +6,9 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
+/**
  
- Simple import for Open Screenplay Format (XML) files.
- Could be (in theory) used to import Fade In screenplays.
+ Simple import plugin for Open Screenplay Format (XML) files. Misses a lot of features.
  
  */
 
@@ -42,12 +41,16 @@
 
 @implementation OSFImport
 
-- (bool)asynchronous { return true; }
++ (bool)asynchronous { return true; }
 
-- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(NSString*))callback
 {
     return [self initWithURL:url completion:callback];
 }
+
++ (NSArray<NSString *> * _Nullable)UTIs { return nil; }
++ (NSArray<NSString *> * _Nonnull)formats { return @[@"osf"]; }
+
 
 - (id)initWithData:(NSData*)data
 {
@@ -60,10 +63,11 @@
 	return self;
 }
 
-- (id)initWithURL:(NSURL*)url completion:(void(^)(id _Nullable))callback
+- (id)initWithURL:(NSURL*)url completion:(void(^)(NSString* _Nullable))callback
 {
 	// Parsing a URL request needs a completion callback
 	
+#if TARGET_OS_OSX
 	self = [super init];
 	if (self) {
 		// Thank you, RIPtutorial
@@ -73,12 +77,22 @@
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
 			// After the data has loaded, parse the file & return to callback
 			[self parse:data];
-			callback(nil);
+			callback(self.fountain);
 		}];
 			
 		[task resume];
 	}
-	return self;
+    return self;
+#else
+    // You can't do that on iOS for some reason, and you can't do this on macOS:
+    NSError* error;
+    NSString* string = [NSString.alloc initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
+    NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [self parse:data];
+    callback(self.fountain);
+#endif
+    return self;
 }
 
 - (void)parse:(NSData*)data {

@@ -7,16 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
+/// Types for possible options for import module
+typedef enum : NSUInteger {
+    BeatFileImportModuleOptionTypeBool = 0,
+    BeatFileImportModuleOptionTypeInteger,
+    BeatFileImportModuleOptionTypeString
+} BeatFileImportModuleOptionType;
+
 @protocol BeatFileImportModule <NSObject>
 
 @property (nonatomic, readonly) NSString* _Nullable fountain;
-@property (nonatomic, copy, nullable) void (^callback)(id _Nullable);
+@property (nonatomic, copy, nullable) void (^callback)(NSString* _Nullable);
 
-- (id _Nonnull)initWithURL:(NSURL* _Nonnull)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id _Nullable))callback;
++ (NSArray<NSString*>* _Nonnull)formats;
++ (NSArray<NSString*>* _Nullable)UTIs;
+
+- (id _Nonnull)initWithURL:(NSURL* _Nonnull)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(NSString* _Nullable))callback;
 
 @optional
 
-@property (nonatomic) bool asynchronous;
+/// Return `true` if this module can't provide the text synchronously and has to wait for the results
++ (bool)asynchronous;
+/**
+ WIP: Options for file import, as dictionary:
+ ```
+ { "optionName": { "title": "Option Description", "type": BeatFileImportModuleOptionType } }
+ ```
+ */
++ (NSDictionary<NSString*,NSDictionary*>* _Nullable)options;
 
 + (NSString* _Nullable)infoTitle;
 + (NSString* _Nullable)infoMessage;

@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TrelbyImport : NSObject <BeatFileImportModule>
 @property (nonatomic) NSString *script;
 @property (nonatomic) NSString *fountain;
-@property (nonatomic, copy, nullable) void (^callback)(id _Nullable);
-- (id)initWithURL:(NSURL *)url options:(NSDictionary * _Nullable)options completion:(void (^ _Nullable)(id _Nullable))callback;
+@property (nonatomic, copy, nullable) void (^callback)(NSString* _Nullable);
+//- (id)initWithURL:(NSURL *)url options:(NSDictionary * _Nullable)options completion:(void (^ _Nullable)(NSString* _Nullable))callback;
 
 @end
 

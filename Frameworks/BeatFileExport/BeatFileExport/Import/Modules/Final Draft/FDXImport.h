@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
     FDXSectionTagDefinitions,
 };
 
-@property (nonatomic, copy) void (^callback)(id);
+@property (nonatomic, copy) void (^callback)(NSString*);
 
 @property (nonatomic, strong) NSMutableArray *results;
 @property (nonatomic, strong) NSMutableString *parsedString;
@@ -31,8 +31,8 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
 
 @property (nonatomic) NSString* fountain;
 
-- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback;
-- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback;
+- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(NSString*))callback;
+- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(NSString*))callback;
 - (NSString*)scriptAsString;
 
 @end

@@ -70,16 +70,29 @@
 
 @implementation FDXImport
 
-- (bool)asynchronous { return true; }
++ (NSArray<NSString*>*)formats { return @[@"fdx"]; }
++ (NSArray<NSString*>*)UTIs { return @[@"com.finaldraft.fdx"]; }
++ (bool)asynchronous { return true; }
++ (NSDictionary<NSString*,NSDictionary*>* _Nullable)options {
+    return
+    @{
+        @"importNotes": @{
+            @"title": @"Import Notes",
+            @"type": @(BeatFileImportModuleOptionTypeBool)
+        }
+    };
+}
+
 
 /// - note Callback should never be empty for FDX import
-- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(id))callback
+- (id)initWithURL:(NSURL*)url options:(NSDictionary* _Nullable)options completion:(void(^ _Nullable)(NSString*))callback
 {
-    bool importNotes = (((NSNumber*)options[@"importNotes"]).boolValue);
+    bool importNotes = true;
+    if (options != nil) (((NSNumber*)options[@"importNotes"]).boolValue);
     return [self initWithURL:url importNotes:importNotes completion:callback];
 }
 
-- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback
+- (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(NSString*))callback
 {
 	self = [super init];
 	if (self) {
@@ -94,17 +107,17 @@
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            NSLog(@"Data: %@", data);
-            NSLog(@" -> error %@", error);
+
 			[self parse:data callback:callback];
 		}];
 			
 		[task resume];
 #else
+        // You can't do that on iOS for some reason, and you can't do this on macOS:
         NSError* error;
         NSString* string = [NSString.alloc initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
         NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
-        NSLog(@" -> %@, %@", error, url);
+        
         [self parse:data callback:callback];
 #endif
 	}
@@ -112,7 +125,7 @@
 	return self;
 }
 
-- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(FDXImport*))callback
+- (id)initWithData:(NSData*)data importNotes:(bool)importNotes completion:(void(^)(NSString*))callback
 {
 	self = [super init];
 	if (self) {
@@ -135,13 +148,13 @@
     _tagDefinitions = NSMutableDictionary.new;
 }
 
-- (void)parse:(NSData*)data callback:(void(^)(FDXImport*))callback
+- (void)parse:(NSData*)data callback:(void(^)(NSString*))callback
 {
 	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 	self.xmlParser.delegate = self;
         
 	if ([self.xmlParser parse]) {
-		callback(self);
+        callback(self.fountain);
 	} else {
 		NSLog(@"ERROR: %@", self.xmlParser.parserError);
 	}

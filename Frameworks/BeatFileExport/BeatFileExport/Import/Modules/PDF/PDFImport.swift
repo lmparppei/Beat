@@ -15,9 +15,12 @@ import PDFKit
 
 @objcMembers
 public class PDFImport:NSObject, BeatFileImportModule {
+    public static func formats() -> [String] { return ["pdf"] }
+    public static func utis() -> [String]? { return ["public.pdf"] }
+    
+    public var callback: ((String?) -> Void)?
     
     public var fountain: String?
-    public var callback:((Any?) -> Void)? = nil
     
     var titlePageFound = false
     // This flag determines whether the upcoming line is not linearly in its correct Y position.
@@ -51,7 +54,7 @@ public class PDFImport:NSObject, BeatFileImportModule {
         self.progressModal?.show(nil)
     }
     
-    public required init(url: URL, options: [AnyHashable : Any]? = nil, completion callback: ((Any?) -> Void)? = nil) {
+    public required init(url: URL, options: [AnyHashable : Any]? = nil, completion callback: ((String?) -> Void)? = nil) {
         super.init()
                 
         self.callback = callback
@@ -156,7 +159,7 @@ public class PDFImport:NSObject, BeatFileImportModule {
             
             let callback = self.callback
             let modal = self.progressModal
-            callback?(self)
+            callback?(self.fountain)
             
             self.callback = nil
             
