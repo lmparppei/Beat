@@ -99,9 +99,9 @@
 	__block FDXImport *fdxImport;
 	
 		bool notes = (importNotes.state == NSOnState);
-		fdxImport = [FDXImport.alloc initWithURL:url importNotes:notes completion:^(FDXImport * fdx) {
+		fdxImport = [FDXImport.alloc initWithURL:url importNotes:notes completion:^(NSString* content) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
-				[self openFileWithContents:fdxImport.scriptAsString];
+				[self openFileWithContents:content];
 			});
 		}];
 	}];
@@ -110,28 +110,31 @@
 - (void)fadeIn {
 	[self openDialogForFormat:@"fadein" completion:^(NSURL * url) {
 		FadeInImport *import = [FadeInImport.alloc initWithURL:url options:nil completion:nil];
-		if (import.script) [self openFileWithContents:import.script];
+		NSString* fountain = import.fountain;
+		if (fountain) [self openFileWithContents:fountain];
 	}];
 }
 
 - (void)highland {
 	[self openDialogForFormat:@"highland" completion:^(NSURL * url) {
 		HighlandImport *import = [HighlandImport.alloc initWithURL:url options:nil completion:nil];
-		if (import.script) [self openFileWithContents:import.script];
+		NSString* fountain = import.fountain;
+		if (fountain) [self openFileWithContents:fountain];
 	}];
 }
 
 - (void)celtx {
 	[self openDialogForFormats:@[@"celtx", @"cxscript"] completion:^(NSURL * url) {
 		CeltxImport *import = [CeltxImport.alloc initWithURL:url];
-		if (import.script) [self openFileWithContents:import.script];
+		NSString* fountain = import.fountain;
+		if (fountain) [self openFileWithContents:fountain];
 	}];
 }
 
 - (void)trelby {
 	[self openDialogForFormat:@"trelby" completion:^(NSURL * url) {
-		(void)[TrelbyImport.alloc initWithURL:url options:nil completion:^(TrelbyImport* import) {
-			[self openFileWithContents:import.fountain];
+		(void)[TrelbyImport.alloc initWithURL:url options:nil completion:^(NSString* fountain) {
+			[self openFileWithContents:fountain];
 		}];
 	}];
 }
@@ -143,9 +146,8 @@
 		alert.messageText = PDFImport.infoTitle;
 		[alert runModal];
 		
-		(void)[PDFImport.alloc initWithURL:url options:nil completion:^(id _Nullable import) {
-			PDFImport* pdf = (PDFImport*)import;
-			[self openFileWithContents:pdf.fountain];
+		(void)[PDFImport.alloc initWithURL:url options:nil completion:^(NSString* fountain) {
+			[self openFileWithContents:fountain];
 		}];
 	}];
 }
