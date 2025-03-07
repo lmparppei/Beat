@@ -274,9 +274,10 @@
 - (void)storeVersion
 {
     if (self.versions == nil) self.versions = NSMutableArray.new;
+
     self.versions[self.currentVersion] = @{
         @"text": self.string,
-        @"revisions": self.revisedRanges
+        @"revisions": (self.revisedRanges != nil) ? self.revisedRanges : @{}
     };
 }
 
@@ -287,7 +288,7 @@
     [self storeVersion];
     [self.versions addObject:@{
         @"text": self.string,
-        @"revisions": self.revisedRanges
+        @"revisions": (self.revisedRanges != nil) ? self.revisedRanges : @{}
     }];
     self.currentVersion = self.versions.count - 1;
 }
