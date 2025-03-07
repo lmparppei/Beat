@@ -219,7 +219,6 @@
 	
 	if (self.selectedSegment != selectedTab && selectedTab < self.segmentCount) {
 		[self setSelectedSegment:selectedTab];
-		return;
 	}
 	
 	// We have to run some magic here to get the correct class name
