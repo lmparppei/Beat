@@ -82,6 +82,24 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
     return self;
 }
 
+
+#pragma mark - Version control helpers
+
+/// Returns an array of ESSENTIAL values. This is used by version control to store crucial information from settings and nothing else.
++ (NSArray<NSString*>*)essentialValues
+{
+    return @[DocSettingStylesheet, DocSettingReviews, DocSettingRevisions, DocSettingRevisionLevel];
+}
+
+/// Returns the opener and terminator
++ (NSArray<NSString*>*)blockSeparators
+{
+    return @[JSON_MARKER, JSON_MARKER_END];
+}
+
+
+#pragma mark - Default values
+
 + (NSDictionary*)defaultValues
 {
     static NSDictionary* defaultValues;
@@ -161,26 +179,51 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
 #pragma mark - Setting block getter
 
-- (NSString*)getSettingsString
+/// Returns a setting string with only selected keys
+- (NSString*)getSettingsStringWithKeys:(NSArray<NSString*>*)keys
 {
-	return [self getSettingsStringWithAdditionalSettings:@{}];
+    NSMutableDictionary* settings = NSMutableDictionary.new;
+    for (NSString* key in keys) {
+        settings[key] = self.settings[key];
+    }
+    
+    return [self createSettingsBlockWithDictionary:settings];
 }
 
-- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings
+- (NSString*)createSettingsBlockWithDictionary:(NSDictionary*)settings
 {
-    NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithDictionary:_settings];
-    if (additionalSettings != nil) [settings addEntriesFromDictionary:additionalSettings];
-    	
-	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error];
-
-	if (!jsonData) {
-		NSLog(@"%s: error: %@", __func__, error.localizedDescription);
-		return @"";
-	}
+    NSError* error;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error];
+    
+    if (jsonData == nil) {
+        NSLog(@"%s: error: %@", __func__, error.localizedDescription);
+        return @"";
+    }
     
     NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
+}
+
+- (NSString*)getSettingsString
+{
+    return [self getSettingsStringWithAdditionalSettings:@{} excluding:nil];
+}
+
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings
+{
+    return [self getSettingsStringWithAdditionalSettings:additionalSettings excluding:nil];
+}
+
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings excluding:(NSArray<NSString*>* _Nullable)excludedKeys
+{
+    NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithDictionary:_settings];
+    if (additionalSettings != nil) [settings addEntriesFromDictionary:additionalSettings];
+    
+    // Remove excluded keys
+    for (NSString* key in excludedKeys)
+        [settings removeObjectForKey:key];
+    
+    return [self createSettingsBlockWithDictionary:settings];
 }
 
 - (NSRange)readSettingsAndReturnRange:(NSString*)string
@@ -197,19 +240,24 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
     NSInteger jsonClose = [settingsBlock rangeOfString:@"}" options:NSBackwardsSearch].location + 1;
     
     NSString* json = [settingsBlock substringWithRange:NSMakeRange(jsonOpen, jsonClose - jsonOpen)];
-    NSData *settingsData = [json dataUsingEncoding:NSUTF8StringEncoding];
     
     NSError *error;
-    NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:&error];
+    [self readSettings:json error:&error];
     
-    if (error == nil) {
+    return (error == nil) ? range : NSMakeRange(0, 0);
+}
+
+- (void)readSettings:(NSString*)json error:(NSError**)error
+{
+    NSData *settingsData = [json dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:error];
+    
+    if (*error == nil) {
         _settings = [NSMutableDictionary dictionaryWithDictionary:settings];
-        return range;
     } else {
         // Something went wrong in reading the settings. Just carry on but log a message.
-        NSLog(@"ERROR: Document settings could not be read. %@", error);
+        NSLog(@"ERROR: Document settings could not be read. %@", *error);
         _settings = NSMutableDictionary.new;
-        return NSMakeRange(0, 0);
     }
 }
 

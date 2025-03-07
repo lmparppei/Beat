@@ -81,9 +81,17 @@ extern NSString * const DocSettingPageNumberingMode;
 
 - (void)remove:(NSString *)key;
 
+/// Returns a setting string with only selected keys
+- (NSString*)getSettingsStringWithKeys:(NSArray<NSString*>*)keys;
+/// Returns a full settings string from current document
 - (NSString*)getSettingsString;
-- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings;
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings;
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings excluding:(NSArray<NSString*>* _Nullable)excludedKeys;
+/// Reads settings from a document file and returns the range of actual content
 - (NSRange)readSettingsAndReturnRange:(NSString*)string;
+
+/// Returns an array of ESSENTIAL values. This is used by version control to store crucial information from settings and nothing else.
++ (NSArray<NSString*>*)essentialValues;
 @end
 
 NS_ASSUME_NONNULL_END
