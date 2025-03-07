@@ -137,6 +137,29 @@
 }
 
 
+#pragma mark - Loading text
+
+/// Loads the given Beat document string by reading the settings block and returning content. Also sets the content buffer.
+- (NSString*)readBeatDocumentString:(NSString*)text
+{
+    self.documentIsLoading = true;
+    
+    self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
+    
+    NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
+    NSString* content = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
+    
+    self.contentBuffer = content;
+    
+    return content;
+}
+
+- (void)revertToText:(NSString*)text
+{
+    NSLog(@"!!! You should probably override revertToText: in OS-specific implementation");
+    self.documentIsLoading = true;
+    [self readBeatDocumentString:text];
+}
 
 
 #pragma mark - Editor styles
@@ -727,11 +750,16 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (NSString*)createDocumentFile
 {
-    return [self createDocumentFileWithAdditionalSettings:nil];
+    return [self createDocumentFileWithAdditionalSettings:nil excludingSettings:nil];
 }
 
-/// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary.
-- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary *)additionalSettings
+{
+    return [self createDocumentFileWithAdditionalSettings:additionalSettings excludingSettings:nil];
+}
+
+/// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
     // For async saving & thread safety, make a copy of the lines array
     NSAttributedString *attrStr = self.getAttributedText;
@@ -780,7 +808,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
         [self unblockUserInteraction];
     #endif
     
-    NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
+    NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
 
     // Add line break if needed
     if (content.length > 0 && ![[content substringFromIndex:content.length-1] isEqualToString:@"\n"])
