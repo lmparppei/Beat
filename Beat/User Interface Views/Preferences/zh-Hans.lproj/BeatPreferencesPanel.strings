@@ -1,0 +1,156 @@
+
+/* Class = "NSToolbarItem"; label = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.label" = "系统";
+
+/* Class = "NSToolbarItem"; paletteLabel = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.paletteLabel" = "系统";
+
+/* Class = "NSTextFieldCell"; title = "Split dialogue indicator"; ObjectID = "0oB-rC-ac3"; */
+"0oB-rC-ac3.title" = "对话分割提示";
+
+/* Class = "NSButtonCell"; title = "Automatically update plugins"; ObjectID = "1mF-I3-loO"; */
+"1mF-I3-loO.title" = "自动更新插件";
+
+/* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.label" = "通用";
+
+/* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.paletteLabel" = "通用";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
+"3O7-zn-jUw.title" = "美国信纸";
+
+/* Class = "NSButtonCell"; title = "Automatic CONT'D extensions"; ObjectID = "5Bc-al-gWv"; */
+"5Bc-al-gWv.title" = "自动 CONT'D 标记";
+
+/* Class = "NSTextFieldCell"; title = "Language"; ObjectID = "5o4-U4-n7H"; */
+"5o4-U4-n7H.title" = "语言";
+
+/* Class = "NSTextFieldCell"; title = "Shot Heading Style"; ObjectID = "6OX-Qw-Due"; */
+"6OX-Qw-Due.title" = "镜头标题样式";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
+"7Xj-J1-Y92.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "Br1-nj-6zn"; */
+"Br1-nj-6zn.title" = "自动段落换行";
+
+/* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
+"EHa-PH-tc4.title" = "标题间距";
+
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "偏好设置";
+
+/* Class = "NSButtonCell"; title = "Match parentheses"; ObjectID = "Gir-t4-vbC"; */
+"Gir-t4-vbC.title" = "匹配括号";
+
+/* Class = "NSButtonCell"; title = "Automatically hide Fountain markup"; ObjectID = "KAa-hh-Rua"; */
+"KAa-hh-Rua.title" = "自动隐藏 Fountain 标记";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "MKe-sW-nsP"; */
+"MKe-sW-nsP.title" = "下划线";
+
+/* Class = "NSMenuItem"; title = "Big"; ObjectID = "MNC-PG-DYp"; */
+"MNC-PG-DYp.title" = "大";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "MPF-7c-b3u"; */
+"MPF-7c-b3u.title" = "粗体";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
+"Mb6-nH-PQK.label" = "视图";
+
+/* Class = "NSTextFieldCell"; title = "Editor View"; ObjectID = "O3D-76-kt4"; */
+"O3D-76-kt4.title" = "编辑器视图";
+
+/* Class = "NSButtonCell"; title = "Select..."; ObjectID = "OWc-Ih-dLg"; */
+"OWc-Ih-dLg.title" = "选择...";
+
+/* Class = "NSTextFieldCell"; title = "Backup vault location"; ObjectID = "ROG-62-Evk"; */
+"ROG-62-Evk.title" = "备份库位置";
+
+/* Class = "NSTextFieldCell"; title = "Continued character cue extension"; ObjectID = "Ump-3W-bbM"; */
+"Ump-3W-bbM.title" = "角色提示延续标记";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "V8X-hl-rUl"; */
+"V8X-hl-rUl.title" = "框";
+
+/* Class = "NSMenuItem"; title = "Small"; ObjectID = "VQS-1g-QZ6"; */
+"VQS-1g-QZ6.title" = "小";
+
+/* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
+"VTU-wq-qyb.title" = "Courier Prime";
+
+/* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
+"WAb-8C-Sjl.title" = "中";
+
+/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "编辑器字体";
+
+/* Class = "NSMenuItem"; title = "Very big"; ObjectID = "YEd-uH-lo0"; */
+"YEd-uH-lo0.title" = "巨大";
+
+/* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
+"Yuw-0s-K2b.title" = "1 行";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
+"Zfa-HM-161.title" = "下划线";
+
+/* Class = "NSButtonCell"; title = "Show scene numbers"; ObjectID = "a44-hn-h2m"; */
+"a44-hn-h2m.title" = "显示场景编号";
+
+/* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
+"d0m-zv-bHH.title" = "自动完成场景标题和角色";
+
+/* Class = "NSTextFieldCell"; title = "Outline Font Size"; ObjectID = "dtT-V5-EVi"; */
+"dtT-V5-EVi.title" = "大纲字体大小";
+
+/* Class = "NSButtonCell"; title = "Show Page Separators (experimental)"; ObjectID = "e3i-cN-mWC"; */
+"e3i-cN-mWC.title" = "显示页面分隔符（实验性功能）";
+
+/* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
+"fan-Jn-FOW.title" = "2 行";
+
+/* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
+"fxb-nx-hJp.title" = "自动关闭元素，如 () 和 [[]]";
+
+/* Class = "NSTextFieldCell"; title = "Plugins"; ObjectID = "gW4-1f-ZbP"; */
+"gW4-1f-ZbP.title" = "插件";
+
+/* Class = "NSToolbarItem"; label = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.label" = "布局";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.paletteLabel" = "布局";
+
+/* Class = "NSButtonCell"; title = "Use default"; ObjectID = "kU3-zB-g60"; */
+"kU3-zB-g60.title" = "使用默认设置";
+
+/* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
+"lzW-qc-hjs.title" = "编辑器行为";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "mSK-8B-nEj"; */
+"mSK-8B-nEj.title" = "粗体";
+
+/* Class = "NSButtonCell"; title = "Custom"; ObjectID = "moV-CN-wy9"; */
+"moV-CN-wy9.title" = "自定义";
+
+/* Class = "NSTextFieldCell"; title = "Default Paper Size"; ObjectID = "nUl-8Q-mMa"; */
+"nUl-8Q-mMa.title" = "默认纸张大小";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "ok7-BF-Eme"; */
+"ok7-BF-Eme.label" = "选项卡";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "vls-Bk-euL"; */
+"vls-Bk-euL.label" = "视图";
+
+/* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
+"w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
+"xYL-rJ-JMw.title" = "在滚动条中显示场景颜色";
+
+/* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
+"yHb-oc-ujO.title" = "标题样式";
+
+/* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
+"yde-p1-D3O.title" = "显示场景编号";
