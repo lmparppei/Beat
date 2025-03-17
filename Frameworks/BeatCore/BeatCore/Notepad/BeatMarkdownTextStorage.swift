@@ -31,7 +31,7 @@ import UXKit
 	@objc public weak var textStorage:NSTextStorage?
     @objc public var baseFontSize:CGFloat = 12.0
     @objc public var fontSize:CGFloat {
-        return baseFontSize //+ CGFloat(BeatUserDefaults.shared().getInteger(BeatSettingNotepadFontSizeModifier))
+        return baseFontSize
     }
     
     var stylization:[String:Any]
@@ -81,9 +81,6 @@ import UXKit
     
     @objc public func setFontSizeModifier(_ modifier:Int) {
         guard let textStorage else { return }
-                
-        BeatUserDefaults.shared().save(modifier, forKey: BeatSettingNotepadFontSizeModifier)
-    
         parse(NSRange(location: 0, length: textStorage.length))
     }
 	
