@@ -9,6 +9,9 @@
 import Foundation
 import BeatCore
 
+fileprivate var autosaveCopies = 30
+fileprivate var backupCopies = 30
+
 class BeatBackupFile:NSObject {
 	@objc var name:String!
 	@objc var date:Date!
@@ -277,7 +280,7 @@ class BeatBackup:NSObject {
 	
 	class func manageBackups(url:URL, autosave:Bool = false) {
 		// Keep maximum of 10 versions of backups and 20 versions of autosaves
-		let backupCount = (autosave) ? 20 : 10
+		let backupCount = (autosave) ? autosaveCopies : backupCopies
 		
 		let fm = FileManager.default
 		let backups = BeatBackup.getBackups(autosavedCopies: autosave)

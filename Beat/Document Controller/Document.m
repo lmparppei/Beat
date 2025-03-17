@@ -1308,7 +1308,7 @@
 {
 	[super paginationFinished:operation indices:indices pageBreaks:pageBreaks];
 	
-	// If we have relative outline on, we'll need to update the heights... this should be a registered event, I think?
+	// If we have relative outline on, we'll need to update the heights... TODO: this should be a registered event
 	if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights]) {
 		for (OutlineScene* scene in self.parser.outline) {
 			CGFloat oldHeight = scene.printedLength;

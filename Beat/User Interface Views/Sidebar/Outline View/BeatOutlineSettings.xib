@@ -23,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fur-Wc-dZK" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="151" width="123" height="18"/>
+                    <rect key="frame" x="18" y="151" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Scene Numbers" bezelStyle="regularSquare" imagePosition="left" inset="2" id="VqL-ev-vI9">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -38,7 +38,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1oV-MM-ncG" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="129" width="85" height="18"/>
+                    <rect key="frame" x="18" y="129" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Synopses" bezelStyle="regularSquare" imagePosition="left" inset="2" id="GQ2-g4-z7S">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -53,7 +53,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="st0-zR-LzR" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="107" width="62" height="18"/>
+                    <rect key="frame" x="18" y="107" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Notes" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Xmh-WL-wNd">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -68,7 +68,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cO7-JC-XsD" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="85" width="75" height="18"/>
+                    <rect key="frame" x="18" y="85" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Markers" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PWH-TQ-9gi">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -83,7 +83,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A7e-nr-IJe" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="52" width="125" height="18"/>
+                    <rect key="frame" x="18" y="52" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Relative Heights" bezelStyle="regularSquare" imagePosition="left" inset="2" id="mpN-8x-JWF">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -110,7 +110,7 @@
                     </userDefinedRuntimeAttributes>
                 </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2oZ-7I-jju" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="173" width="125" height="18"/>
+                    <rect key="frame" x="18" y="173" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Scene Headings" bezelStyle="regularSquare" imagePosition="left" inset="2" id="eR6-i4-gp2">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -133,7 +133,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xs0-9w-Rl8" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                    <rect key="frame" x="18" y="19" width="127" height="18"/>
+                    <rect key="frame" x="18" y="19" width="142" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show Snapshots" bezelStyle="regularSquare" imagePosition="left" inset="2" id="roj-fJ-kJK">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>

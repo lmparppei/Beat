@@ -38,12 +38,16 @@ class BeatOutlineSettings: NSViewController {
 		else { return }
 		
 		let value = (state == .on) ? true : false
+		BeatUserDefaults.shared().save(value, forKey: key)
 		
 		if sender?.resetPreview ?? false {
+			if value {
+				self.outlineDelegate?.editorDelegate?.parser.scenes().forEach { $0.printedLength = 0 }
+			}
+			
 			self.outlineDelegate?.editorDelegate?.resetPreview()
 		}
 		
-		BeatUserDefaults.shared().save(value, forKey: key)
 		outlineDelegate?.reloadOutline()
 	}
 }

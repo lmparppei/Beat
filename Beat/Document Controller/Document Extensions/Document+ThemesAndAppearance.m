@@ -34,6 +34,7 @@
 	});
 }
 
+/// Note: This method is NOT implemented by primary class, just appears so because it's inherited from `BeatEditorDelegate` definition. Objc selectors will sort this out.
 - (void)updateUIColors
 {
 	if (self.documentWindow.frame.size.height == 0 || self.documentWindow.frame.size.width == 0) return;

@@ -26,7 +26,7 @@
  
  */
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
@@ -1009,7 +1009,6 @@ double clamp(double d, double min, double max)
 	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
 	
-	NSInteger location = self.selectedRange.location;
 	NSInteger length = 0;
 	
 	// See if we can read anything from the pasteboard
@@ -1024,7 +1023,7 @@ double clamp(double d, double min, double max)
 		if ([obj isKindOfClass:NSString.class]) {
 			// Plain text
 			NSString* result = [BeatPasteboardItem sanitizeString:obj];
-			[self.editorDelegate replaceRange:self.selectedRange withString:result];
+			[self.editorDelegate.textActions replaceRange:self.selectedRange withString:result];
 			length = result.length;
 		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
