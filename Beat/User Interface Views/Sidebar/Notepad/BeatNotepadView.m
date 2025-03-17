@@ -59,10 +59,7 @@
 		self.layer.cornerRadius = 10.0;
 		self.layer.backgroundColor = [NSColor.darkGrayColor colorWithAlphaComponent:0.3].CGColor;
 		self.textColor = self.defaultColor;
-		
-		_scaleFactor = 1.0;
-		_zoomLevel = 1.0;
-		
+				
 		[self setTextContainerInset:(NSSize){ 5, 5 }];
 	}
 	
@@ -84,6 +81,10 @@
 	[self setTypingAttributes:@{
 		NSForegroundColorAttributeName: self.currentColor
 	}];
+	
+	_scaleFactor = 1.0;
+	_zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingNotepadZoom];;
+	[self setScale:_zoomLevel];
 	
 	[self updateLayout];
 }
@@ -129,7 +130,6 @@
 
 - (void)setScale:(CGFloat)newScaleFactor
 {
-#if TARGET_OS_OSX
 	if (_scaleFactor == newScaleFactor) return;
 	
 	CGSize curDocFrameSize, newDocBoundsSize;
@@ -149,8 +149,10 @@
 	[self scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 	_scaleFactor = newScaleFactor;
-
-#endif
+	
+	[BeatUserDefaults.sharedDefaults saveFloat:_scaleFactor forKey:BeatSettingNotepadZoom];
+	
+	[self updateLayout];
 }
 
 - (IBAction)zoomIn:(id)sender
@@ -163,18 +165,14 @@
 }
 - (void)adjustZoom:(CGFloat)value
 {
-#if  TARGET_OS_OSX
-	if (_zoomLevel + value < 1.0 || _zoomLevel + value > 1.5) return;
+	if (_zoomLevel + value < 1.0 || _zoomLevel + value > 1.7) return;
 	
 	_zoomLevel += value;
 	[self setScale:_zoomLevel];
-
-#endif
 }
 
 - (void)updateLayout
 {
-#if TARGET_OS_OSX
 	[self setNeedsDisplay:YES];
 	[self.enclosingScrollView setNeedsDisplay:YES];
 	
@@ -191,6 +189,7 @@
 	
 	[self invalidateIntrinsicContentSize];
 	self.textContainer.size = CGSizeMake(self.textContainer.size.width, CGFLOAT_MAX);
+	self.textContainer.heightTracksTextView = false;
 	
 	[self setNeedsUpdateConstraints:true];
 	
@@ -199,7 +198,6 @@
 	
 	self.needsDisplay = true;
 	self.needsLayout = true;
-#endif
 }
 
 
@@ -257,7 +255,7 @@
 	[self replaceCharactersInRange:NSMakeRange(self.string.length, 0) withString:string];
 	[self didChangeText];
 	
-	[self.editorDelegate replaceRange:range withString:@""];
+	[self.editorDelegate.textActions replaceRange:range withString:@""];
 	
 	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
 		[self replaceCharactersInRange:NSMakeRange(self.string.length - string.length, string.length) withString:@""];
