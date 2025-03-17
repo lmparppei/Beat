@@ -12,6 +12,7 @@
 
 #import "BeatPluginAgent.h"
 #import <BeatPlugins/BeatPlugin.h>
+#import <BeatPlugins/BeatPlugin+Listeners.h>
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatCore/BeatEditorDelegate.h>
 

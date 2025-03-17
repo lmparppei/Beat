@@ -33,6 +33,10 @@
 #import "BeatPlugin+Modals.h"
 #import "BeatPlugin+Editor.h"
 #import "BeatPlugin+Menus.h"
+#import "BeatPlugin+TextHighlighting.h"
+#import "BeatPlugin+Listeners.h"
+#import <BeatPlugins/BeatPlugin+HTMLViews.h>
+#import <BeatPlugins/BeatPlugin+Windows.h>
 
 // Some things are only available on macOS
 #if TARGET_OS_OSX
@@ -47,45 +51,25 @@
 #if TARGET_OS_IOS
 @interface BeatPlugin () <BeatTextChangeObserver>
 #else
-@interface BeatPlugin () <NSWindowDelegate, PluginWindowHost, BeatTextChangeObserver>
+@interface BeatPlugin () <PluginWindowHost>
 #endif
-
-@property (nonatomic) JSVirtualMachine *vm;
-@property (nonatomic) JSContext *context;
 
 @property (nonatomic) BeatPluginData* pluginData;
 
-@property (nonatomic) JSValue *sheetCallback;
-@property (nonatomic) JSValue *windowCallback;
-@property (nonatomic) JSValue *sceneCompletionCallback;
-@property (nonatomic) JSValue *characterCompletionCallback;
-@property (nonatomic) JSValue *documentSavedCallback;
-
 @property (nonatomic) NSMutableArray *timers;
 @property (nonatomic) NSMutableArray *speakSynths;
-@property (nonatomic, nullable) JSValue* updateTextMethod;
-@property (nonatomic, nullable) JSValue* updateSelectionMethod;
-@property (nonatomic, nullable) JSValue* updateOutlineMethod;
-@property (nonatomic, nullable) JSValue* updateSceneMethod;
-@property (nonatomic, nullable) JSValue* documentDidBecomeMainMethod;
-@property (nonatomic, nullable) JSValue* updatePreviewMethod;
-@property (nonatomic, nullable) JSValue* escapeMethod;
-@property (nonatomic, nullable) JSValue* notepadChangeMethod;
-
-@property (nonatomic) bool terminating;
-@property (nonatomic) bool windowClosing;
-//@property (nonatomic) bool inCallback;
-@property (nonatomic) NSInteger callbacksRemaining;
-@property (nonatomic) bool terminateAfterCallback;
-
-@property (nonatomic) NSURL* pluginURL; // URL for a container
-
-@property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
-
 
 @end
 
-@implementation BeatPlugin 
+/**
+ 
+ Notes on protocol conformance:
+ - WebKit protocols are handled by `+HTMLViews` and the conformance to them is unfortunately inherited from `BeatPluginWindowHost`.
+ - `BeatPluginInstance` conformace is missing because `previewDidFinish:` is implemented in `+Listeners`.
+ - We could fix both of these with a cast, but I don't care.
+ 
+ */
+@implementation BeatPlugin
 
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate
 {
@@ -140,7 +124,7 @@
     
     [self setupErrorHandler];
     [self setupRequire];
-        
+    
     [_context setObject:self forKeyedSubscript:@"Beat"];
 }
 
@@ -403,164 +387,6 @@
 }
 
 
-#pragma mark - Resident plugin listeners
-
-// This mess needs an update.
-// Make a custom class for listeners, so they can be disabled with changing a property rather than using the endless amounts of booleans (which we're currently doing)
-
-/** Creates a listener for changes in editor text.
- - note:When text is changed, selection will change, too. Avoid creating infinite loops by listening to both changes.
- */
-- (void)onTextChange:(JSValue*)updateMethod {
-    [self setUpdateText:updateMethod];
-}
-- (void)setUpdateText:(JSValue *)updateMethod {
-	// Save callback
-	_updateTextMethod = updateMethod;
-	[self makeResident];
-}
-- (void)updateText:(NSRange)range {
-	if (_updateTextMethod == nil || _updateTextMethod.isNull) return;
-	if (!self.onTextChangeDisabled) [_updateTextMethod callWithArguments:@[@(range.location), @(range.length)]];
-}
-
-/// Creates a listener for changing selection in editor.
-- (void)onSelectionChange:(JSValue*)updateMethod {
-	[self setSelectionUpdate:updateMethod];
-}
-- (void)setSelectionUpdate:(JSValue *)updateMethod {
-	// Save callback for selection change update
-	_updateSelectionMethod = updateMethod;
-	
-	[self makeResident];
-}
-- (void)updateSelection:(NSRange)selection {
-	if (!_updateSelectionMethod || [_updateSelectionMethod isNull]) return;
-	if (!self.onSelectionChangeDisabled) [_updateSelectionMethod callWithArguments:@[@(selection.location), @(selection.length)]];
-}
-
-/// Creates a listener for changes in outline.
-- (void)onOutlineChange:(JSValue*)updateMethod {
-	[self setOutlineUpdate:updateMethod];
-}
-- (void)setOutlineUpdate:(JSValue *)updateMethod {
-	// Save callback for selection change update
-	_updateOutlineMethod = updateMethod;
-	
-	[self makeResident];
-}
-- (void)updateOutline:(OutlineChanges*)changes
-{
-	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) return;
-	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:@[changes]];
-}
-
-/// Creates a listener for selecting a new scene.
-- (void)onSceneIndexUpdate:(JSValue*)updateMethod {
-	[self setSceneIndexUpdate:updateMethod];
-}
-- (void)setSceneIndexUpdate:(JSValue*)updateMethod {
-	// Save callback for selection change update
-	_updateSceneMethod = updateMethod;
-	[self makeResident];
-}
-- (void)updateSceneIndex:(NSInteger)sceneIndex {
-	if (!self.onSceneIndexUpdateDisabled) [_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
-}
-
-/// Creates a listener for escape key
-- (void)onEscape:(JSValue*)updateMethod {
-	_escapeMethod = updateMethod;
-	[self makeResident];
-}
-- (void)escapePressed {
-	if (_escapeMethod && !_escapeMethod.isNull) [_escapeMethod callWithArguments:nil];
-}
-
-- (void)onNotepadChange:(JSValue*)updateMethod {
-#if TARGET_OS_OSX
-    [self addObservedTextView:(id<BeatTextChangeObservable>)self.delegate.notepad method:updateMethod];
-#endif
-}
-
-- (void)updateListener:(JSValue*)listener {
-    if (listener && !listener.isNull) [listener callWithArguments:nil];
-}
-
-/// This is the modern way to observe text changes in *any* objects
-- (void)addObservedTextView:(id<BeatTextChangeObservable>)object method:(JSValue*)method
-{
-    if (_observedTextViews == nil) _observedTextViews = NSMutableDictionary.new;
-    NSValue* val = [NSValue valueWithNonretainedObject:object];
-    _observedTextViews[val] = method;
-    [object addTextChangeObserver:self];
-}
-
-- (void)observedTextDidChange:(id<BeatTextChangeObservable>)object
-{
-    [self.observedTextViews[[NSValue valueWithNonretainedObject:object]] callWithArguments:nil];
-}
-
-- (void)clearObservables
-{
-    for (NSValue* val in _observedTextViews.allKeys) {
-        id<BeatTextChangeObservable> object = val.nonretainedObjectValue;
-        [object removeTextChangeObserver:self];
-    }
-    
-    [_observedTextViews removeAllObjects];
-    _observedTextViews = nil;
-}
-
-
-/// Creates a listener for the window becoming main.
-- (void)onDocumentBecameMain:(JSValue*)updateMethod {
-	_documentDidBecomeMainMethod = updateMethod;
-	[self makeResident];
-}
-- (void)documentDidBecomeMain {
-	[_documentDidBecomeMainMethod callWithArguments:nil];
-    #if !TARGET_OS_IOS
-	[self refreshMenus];
-    #endif
-}
-- (void)documentDidResignMain {
-    #if !TARGET_OS_IOS
-	[self refreshMenus];
-    #endif
-}
-
-/// Creates a listener for when preview was updated.
-- (void)onPreviewFinished:(JSValue*)updateMethod {
-	_updatePreviewMethod = updateMethod;
-	[self makeResident];
-}
-/// This is an alias for onPreviewFinished
-- (void)onPaginationFinished:(JSValue*)updateMethod {
-	[self onPreviewFinished:updateMethod];
-}
-- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices {
-	if (self.onPreviewFinishedDisabled) return;
-	
-	NSMutableArray<NSNumber*>* indices = NSMutableArray.new;
-	[changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		[indices addObject:@(idx)];
-	}];
-	
-	[_updatePreviewMethod callWithArguments:@[indices, pagination]];
-}
-
-/// Creates a listener for when document was saved.
-- (void)onDocumentSaved:(JSValue*)updateMethod
-{
-	_documentSavedCallback = updateMethod;
-	[self makeResident];
-}
-- (void)documentWasSaved {
-	[_documentSavedCallback callWithArguments:nil];
-}
-
-
 #pragma mark - Access other documents
 
 #if !TARGET_OS_IOS
@@ -581,34 +407,6 @@
 }
 #endif
 
-#pragma mark - Resident plugin data providers
-
-/// Callback for when scene headings are being autocompleted. Can be used to inject data into autocompletion.
-- (void)onSceneHeadingAutocompletion:(JSValue*)callback {
-	_sceneCompletionCallback = callback;
-	[self makeResident];
-}
-/// Allows the plugin to inject data to scene heading autocompletion list. If the plugin does not have a completion callback, it's ignored.
-- (NSArray<NSString*>*)completionsForSceneHeadings {
-	if (_sceneCompletionCallback == nil) return @[];
-	
-	JSValue *value = [_sceneCompletionCallback callWithArguments:nil];
-	if (!value.isArray) return @[];
-	else return value.toArray;
-}
-/// Callback for when character cues are being autocompleted. Can be used to inject data into autocompletion.
-- (void)onCharacterAutocompletion:(JSValue*)callback {
-	_characterCompletionCallback = callback;
-	[self makeResident];
-}
-/// Allows the plugin to inject data to character autocompletion list. If the plugin does not have a completion callback, it's ignored.
-- (NSArray<NSString*>*)completionsForCharacters {
-	if (_characterCompletionCallback == nil) return @[];
-	
-	JSValue *value = [_characterCompletionCallback callWithArguments:nil];
-	if (!value.isArray) return @[];
-	else return value.toArray;
-}
 
 #pragma mark - Import/Export callbacks
 
@@ -895,233 +693,6 @@
 #endif
 
 
-#pragma mark - HTML Window
-
-/**
- HTML view creation accepts different types of arguments as the HTML parameter. Love you, JS.
- You can provide either a single `String`, an array `[htmlContent, headers]` or an object: `{ content: string, headers: string }`. This method converts those arguments into correct format.
- */
-- (NSDictionary*)htmlObjectFromValue:(JSValue*)htmlContent
-{
-    NSMutableDictionary<NSString*, NSString*>* html = NSMutableDictionary.new;
-    
-    if (htmlContent.isString) {
-        html[@"content"] = htmlContent.toString;
-    } else if (htmlContent.isArray && htmlContent.toArray.count > 0) {
-        NSArray* components = htmlContent.toArray;
-        html[@"content"] = components[0];
-        if (components.count > 1) html[@"headers"] = components[1];
-    } else if (htmlContent.isObject) {
-        [html setDictionary:htmlContent.toDictionary];
-    }
-    
-    return html;
-}
-
-#if TARGET_OS_OSX
-
-/**
- @param htmlContent The actual content in the window. It's wrapped in a HTML template, so no headers are needed. If you want to provide additional headers, this value can either be an array ([content, headers]) or an object ({ html: "...", headers: "<script></script>" })
- See `htmlObjectFromValue:`.
- */
-- (BeatPluginHTMLWindow*)htmlWindow:(JSValue*)htmlContent width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
-{
-	// This is a floating window, so the plugin has to be resident
-	_resident = YES;
-	
-    NSDictionary* html = [self htmlObjectFromValue:htmlContent];
-    
-    NSString* content = html[@"content"];
-    NSString* headers = html[@"headers"];
-    
-	if (width <= 0) width = 500;
-	if (width > 1000) width = 1000;
-	if (height <= 0) height = 300;
-	if (height > 800) height = 800;
-	
-    BeatPluginHTMLWindow *window = [BeatPluginHTMLWindow.alloc initWithHTML:content width:width height:height headers:headers host:self];
-    [self registerPluginWindow:window];
-    
-    [window makeKeyAndOrderFront:nil];
-    window.delegate = self;
-    window.callback = callback;
-    
-    // If no callback is provided, windows will stay in memory by default
-    if (callback == nil || [callback isNull] || [callback isUndefined]) window.stayInMemory = true;
-	
-	return window;
-}
-
-/// A plugin (HTML) window will close.
-- (void)windowWillClose:(NSNotification *)notification
-{
-    // ?
-}
-
-/// When the plugin window is set as main window, the document will become active. (If applicable.)
-- (void)windowDidBecomeKey:(NSNotification *)notification
-{
-	if (NSApp.mainWindow != self.delegate.documentWindow && self.delegate.documentWindow != nil) {
-		@try {
-			[self.delegate.documentWindow makeMainWindow];
-		}
-		@catch (NSException* e) {
-			NSLog(@"Error when setting main window: %@", e);
-		}
-	}
-}
-
-#else
-
-/// Returns a HTML view controller for iOS. Width and height are disregarded.
-- (BeatPluginHTMLViewController*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton
-{
-    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
-    
-    NSString* content = htmlContent[@"content"];
-    NSString* headers = htmlContent[@"headers"];
-    
-    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:(content) ? content : @"" headers:(headers) ? headers : @""  width:width height:height host:self cancelButton:cancelButton callback:callback];
-    [self registerPluginWindow:htmlVC];
-        
-    UIViewController* documentVC = (UIViewController*)self.delegate;
-    [documentVC presentViewController:htmlVC animated:true completion:nil];
-     
-    return htmlVC;
-}
-
-#endif
-
-- (void)registerPluginWindow:(id)window
-{
-    if (_pluginWindows == nil) {
-        _pluginWindows = NSMutableArray.new;
-        [_delegate.pluginAgent registerPlugin:self];
-    }
-    
-    [_pluginWindows addObject:window];
-#if TARGET_OS_IOS
-    [self.delegate registerPluginViewController:window];
-#endif
-}
-
-/// Reliably closes a plugin window
-- (void)closePluginWindow:(id)sender
-{
-    if (_terminating) return;
-
-#if !TARGET_OS_IOS
-    // macOS
-    BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
-    
-    // Store callback
-    JSValue *callback = window.callback;
-        
-    // Run callback
-    if (!callback.isUndefined && ![callback isNull]) {
-        [self runCallback:callback withArguments:nil];
-    }
-    
-    // Close window and remove its reference
-    if (!window.stayInMemory) [_pluginWindows removeObject:window];
-    [window closeWindow];
-#else
-    // iOS
-    BeatPluginHTMLViewController* vc = (BeatPluginHTMLViewController*)sender;
-    JSValue* callback = vc.callback;
-    
-    // Run callback
-    if (!callback.isUndefined && !callback.isNull) {
-        [self runCallback:callback withArguments:nil];
-    }
-    
-    [vc closePanel:nil];
-#endif
-}
-
-
-#pragma mark - HTML panel
-/**
- 
- This is a complete mess. Please rewrite sometime soon.
- TODO: Rewrite HTML panel logic and move most of it to another class / category
- 
- */
-
-#if TARGET_OS_OSX
-- (BeatPluginHTMLPanel*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
-{
-    if (_delegate.documentWindow.attachedSheet) return nil;
-    
-    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
-    NSString* content = htmlContent[@"content"];
-    NSString* headers = htmlContent[@"headers"];
-    
-    BeatPluginHTMLPanel* panel = [BeatPluginHTMLPanel.alloc initWithHtml:content headers:(headers) ? headers : @"" width:width height:height host:self cancelButton:cancelButton callback:callback];
-    self.htmlPanel = panel;
-    
-    [self makeResident];
-    
-    [self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
-        self.htmlPanel = nil;
-    }];
-    
-    return panel;
-}
-#else
-- (BeatPluginHTMLViewController*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
-{
-    NSDictionary* htmlContent = [self htmlObjectFromValue:html];
-    NSString* content = htmlContent[@"content"];
-    NSString* headers = htmlContent[@"headers"];
-    
-    BeatPluginHTMLViewController* htmlVC = [BeatPluginHTMLViewController.alloc initWithHtml:content headers:headers width:width height:height host:self cancelButton:cancelButton callback:callback];
-    
-    UIBarButtonItem* button = [UIBarButtonItem.alloc initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(receiveDataFromHTMLPanel:)];
-    htmlVC.navigationItem.rightBarButtonItems = @[button];
-    
-    UINavigationController* nc = [UINavigationController.alloc initWithRootViewController:htmlVC];
-
-    UIViewController* documentVC = (UIViewController*)self.delegate;
-    [documentVC presentViewController:nc animated:true completion:nil];
-    
-    self.htmlPanel = htmlVC;
-    return htmlVC;
-}
-#endif
-
-- (void)receiveDataFromHTMLPanel:(NSString*)json
-{
-    if (![json isKindOfClass:NSString.class]) json = @"{}";
-    
-    // This method closes the HTML panel and fetches the results using WebKit message handlers.
-    // It is called by sending a message to the script parser via webkit message handler, so this works asynchronously.
-    if ([json isEqualToString:@"(null)"]) json = @"{}";
-    
-    if (self.htmlPanel.callback != nil) {
-        NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error;
-        NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-        
-        JSValue* callback = self.htmlPanel.callback;
-        id arguments = @[];
-        
-        if (!error) {
-            arguments = @[jsonData];
-        } else {
-            [self reportError:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
-        }
-        
-        [self.htmlPanel closePanel:nil];
-        [self runCallback:callback withArguments:arguments];
-        
-        self.htmlPanel.callback = nil;
-    } else {
-        // If there was no callback, it marks the end of the script
-        [self.htmlPanel closePanel:nil];
-        [self end];
-    }
-}
 
 
 #pragma mark - Tagging interface
@@ -1359,82 +930,6 @@
     [self.delegate resetStyles];
 }
 
-#pragma mark - Temporary attributes
-
-- (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
-{
-#if !TARGET_OS_IOS
-	NSColor *color = [BeatColors color:hexColor];
-	[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
-#endif
-}
-- (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len {
-#if !TARGET_OS_IOS
-    [_delegate.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:(NSRange){ loc,len }];
-#endif
-}
-
-- (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
-{
-#if TARGET_OS_OSX
-	NSColor *color = [BeatColors color:hexColor];
-	[self.delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
-#endif
-}
-
-- (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {
-#if !TARGET_OS_IOS
-	[_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc, len }];
-#endif
-}
-
-
-#pragma mark - WebKit controller
-
-- (bool)promisesAvailable {
-#if !TARGET_OS_IOS
-    if (@available(macOS 11.0, *)) return true;
-    else return false;
-#else
-    return true;
-#endif
-}
-
-- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
-{
-	if ([message.name isEqualToString:@"log"]) [self log:message.body];
-    
-    // The following methods will require a real JS context, so if it's no longer there, do nothing.
-    if (_context == nil) return;
-    
-	if ([message.name isEqualToString:@"sendData"]) {
-		[self receiveDataFromHTMLPanel:message.body];
-	}
-	else if ([message.name isEqualToString:@"call"]) {
-		[_context evaluateScript:message.body];
-	}
-	else if ([message.name isEqualToString:@"callAndLog"]) {
-        [_context evaluateScript:message.body];
-        [self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
-	}
-}
-
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message replyHandler:(void (^)(id _Nullable, NSString * _Nullable))replyHandler {
-	if ([message.name isEqualToString:@"callAndWait"]) {
-		JSValue* value = [_context evaluateScript:message.body];
-		
-		id returnValue;
-		if (value.isArray) returnValue = value.toArray;
-		else if (value.isNumber) returnValue = value.toNumber;
-		else if (value.isObject) returnValue = value.toDictionary;
-		else if (value.isString) returnValue = value.toString;
-		else if (value.isDate) returnValue = value.toDate;
-		else returnValue = nil;
-
-		if (returnValue) replyHandler(returnValue, nil);
-		else replyHandler(nil, @"Could not convert return value to JSON.");
-	}
-}
 
 
 #pragma mark - Return revised ranges

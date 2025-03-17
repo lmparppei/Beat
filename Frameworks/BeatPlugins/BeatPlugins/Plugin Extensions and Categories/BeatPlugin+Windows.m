@@ -1,0 +1,133 @@
+//
+//  BeatPlugin+Windows.m
+//  BeatPlugins
+//
+//  Created by Lauri-Matti Parppei on 9.3.2025.
+//
+
+#import "BeatPlugin+Windows.h"
+#import <BeatPlugins/BeatPlugins-Swift.h>
+
+@implementation BeatPlugin (Windows)
+#if TARGET_OS_OSX
+
+/// A plugin (HTML) window will close.
+- (void)windowWillClose:(NSNotification *)notification
+{
+    // ?
+}
+
+/// When the plugin window is set as main window, the document will become active. (If applicable.)
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    if (NSApp.mainWindow != self.delegate.documentWindow && self.delegate.documentWindow != nil) {
+        @try {
+            [self.delegate.documentWindow makeMainWindow];
+        }
+        @catch (NSException* e) {
+            NSLog(@"Error when setting main window: %@", e);
+        }
+    }
+}
+
+#endif
+
+#pragma mark - Plugin windows
+
+- (void)registerPluginWindow:(id)window
+{
+    if (self.pluginWindows == nil) {
+        self.pluginWindows = NSMutableArray.new;
+        [self.delegate.pluginAgent registerPlugin:self];
+    }
+    
+    [self.pluginWindows addObject:window];
+#if TARGET_OS_IOS
+    [self.delegate registerPluginViewController:window];
+#endif
+}
+
+/// Reliably closes a plugin window
+- (void)closePluginWindow:(id)sender
+{
+    if (self.terminating) return;
+
+#if !TARGET_OS_IOS
+    // macOS
+    BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
+    
+    // Run callback
+    JSValue *callback = window.callback;
+    if (!callback.isUndefined && ![callback isNull]) {
+        [self runCallback:callback withArguments:nil];
+    }
+    
+    // Close window and remove its reference
+    if (!window.stayInMemory) [self.pluginWindows removeObject:window];
+    [window closeWindow];
+#else
+    // iOS
+    BeatPluginHTMLViewController* vc = (BeatPluginHTMLViewController*)sender;
+    JSValue* callback = vc.callback;
+    
+    // Run callback
+    if (!callback.isUndefined && !callback.isNull) {
+        [self runCallback:callback withArguments:nil];
+    }
+    
+    [vc closePanel:nil];
+#endif
+}
+
+
+@end
+/*
+ 
+ The world is burning
+ I'm on a train
+ escaping the wasteland of reality
+   and traveling home
+ 
+ I still remember it:
+ his strong hands carrying me
+ keeping me safe from every danger in world
+   except him
+     himself
+ 
+ this time it was me
+ my arms around him
+ helping him walk the short road to a house
+ glowing warmly in the dark
+ 
+ after trying to hit his sisters with plates
+   after grabbing a knife
+      "this is the end of me then"
+         screaming and shouting
+ we drove 100 kilometers maybe less maybe more
+ to a place where they help
+ people just like him
+   maybe like me
+ 
+ From dead to me
+ to suddenly arisen
+ but I'm not sure if he's truly risen
+ if he'll ever give up
+   the death inside him
+     the death that's been slowly taking him away
+        killing him in plain sight
+ 
+ I can't help you
+ I can't even help myself
+ this is the furthest my now strong arms can take you
+ you got me so far in life
+   I know
+ but here I draw the line
+ on this door
+ on these steps
+ 
+ see you on the other side
+ one way
+ or another
+   
+ 
+ */

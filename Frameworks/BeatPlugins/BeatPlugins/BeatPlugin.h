@@ -88,8 +88,7 @@
 #pragma mark System access
 /// Check compatibility with Beat version. Basically used for checking if Beat version is out of date.
 - (bool)compatibleWith:(NSString*)version;
-/// Returns `true` when you can use promises in JS
-- (bool)promisesAvailable;
+
 /// Sets a property value in host document. Only for those who REALLY, REALLY, __REALLY__ KNOW WHAT THEY ARE DOING
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
 /// Executes a run-time ObjC call. This is for the people who, really, and let me emphasize, __actually__ know what the fuck they are doing. No plugins should ever use this method. Purely for testing and hacking purposes.
@@ -130,25 +129,6 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 
 /// Forces the plugin to stay in memory
 - (void)makeResident;
-
-// Alias + actual methods for update methods
-- (void)onTextChange:(JSValue*)updateMethod;
-
-- (void)setSelectionUpdate:(JSValue *)updateMethod;
-- (void)onSelectionChange:(JSValue*)updateMethod;
-
-- (void)onOutlineChange:(JSValue*)updateMethod;
-- (void)onSceneIndexUpdate:(JSValue*)updateMethod;
-
-- (void)onDocumentBecameMain:(JSValue*)updateMethod;
-- (void)onSceneHeadingAutocompletion:(JSValue*)callback;
-- (void)onCharacterAutocompletion:(JSValue*)callback;
-- (void)onPreviewFinished:(JSValue*)updateMethod;
-- (void)onPaginationFinished:(JSValue*)updateMethod;
-- (void)onDocumentSaved:(JSValue*)updateMethod;
-- (void)onEscape:(JSValue*)updateMethod;
-
-- (void)onNotepadChange:(JSValue*)updateMethod;
 
 
 #pragma mark General editor and app access
@@ -259,29 +239,11 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 - (BeatCharacterData*)characterData;
 
 
-#pragma mark Displaying HTML content
-#if TARGET_OS_OSX
-// macOS HTML views
-JSExportAs(htmlPanel, - (BeatPluginHTMLPanel*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
-#else
-// iOS HTML views
-JSExportAs(htmlPanel, - (BeatPluginHTMLViewController*)htmlPanel:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-- (BeatPluginHTMLViewController*)htmlWindow:(JSValue*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(BOOL)cancelButton;
-#endif
-
 
 #pragma mark Notepad
 #if TARGET_OS_OSX
 @property (nonatomic, weak, readonly) BeatNotepad* notepad;
 #endif
-
-#pragma mark Text highlighting
-JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
-JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
-JSExportAs(removeTextHighlight, - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len);
-JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len);
-
 
 #pragma mark Import / export plugin handlers
 JSExportAs(importHandler, - (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback);
@@ -363,21 +325,49 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @end
 
-@interface BeatPlugin: NSObject <BeatPluginInstance, BeatPluginExports, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
+
+
+#pragma mark - PLUGIN INTERFACE
+
+@interface BeatPlugin: NSObject <BeatPluginInstance, BeatPluginExports>
+#pragma mark - Class method helers
+
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate;
 + (BeatPlugin*)withName:(NSString*)name script:(NSString*)script delegate:(id<BeatPluginDelegate>)delegate;
 
+#pragma mark - Plugin metadata
+
 @property (nonatomic) BeatPluginData *plugin;
+@property (nonatomic) NSURL* pluginURL;
+
+#pragma mark - The actual JS environment
+
+@property (nonatomic) JSVirtualMachine *vm;
+@property (nonatomic) JSContext *context;
+
+
+#pragma mark - Functional flags
+
+/// Set `true` if the plugin should stay in memory and not terminate immediately after initial code was run.
+@property (nonatomic) bool resident;
+/// Set  `true` when the plugin is inside a termination sequence
+@property (nonatomic) bool terminating;
+/// A window is currently closing
+@property (nonatomic) bool windowClosing;
+/// The plugin is terminating, but there are callbacks remaining, this value is the amount of callbakcs that need to be run until we can actually terminate the process
+@property (nonatomic) NSInteger callbacksRemaining;
+/// Set `true` when the plugin can be safely closed after this callback
+@property (nonatomic) bool terminateAfterCallback;
+
+
+#pragma mark - Essential properties
 
 @property (weak) id<BeatPluginDelegate> delegate;
 @property (nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
-@property (readonly) NSURL* pluginURL;
+
 /// Set `true` if the plugin should be restored when document is opened. (Default is `true`)
 @property (nonatomic) bool restorable;
-
-/// Set `true` if the plugin should stay in memory and not terminate immediately after initial code was run.
-@property (nonatomic) bool resident;
 
 
 /// Type dictionary for plugins
@@ -423,17 +413,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
 - (void)reportError:(NSString*)title withText:(NSString*)string;
-- (void)updateText:(NSRange)range;
-- (void)updateSelection:(NSRange)selection;
-- (void)updateOutline:(OutlineChanges*)changes;
-- (void)updateSceneIndex:(NSInteger)sceneIndex;
-- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices;
-- (void)closePluginWindow:(id)window;
 - (void)forceEnd;
-- (void)documentDidBecomeMain;
-- (void)documentDidResignMain;
-- (void)documentWasSaved;
-- (void)escapePressed;
 
 - (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments;
 
@@ -445,9 +425,33 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 /// Runs given script in the plugin context
 - (JSValue*)call:(NSString*)script;
 
-// Autocompletion callbacks
-- (NSArray<NSString*>*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
-- (NSArray<NSString*>*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
+
+#pragma mark Listeners
+
+@property (nonatomic) JSValue* updateTextMethod;
+@property (nonatomic) JSValue* updateSelectionMethod;
+@property (nonatomic) JSValue* updateOutlineMethod;
+@property (nonatomic) JSValue* updateSceneMethod;
+@property (nonatomic) JSValue* documentDidBecomeMainMethod;
+@property (nonatomic) JSValue* updatePreviewMethod;
+@property (nonatomic) JSValue* escapeMethod;
+@property (nonatomic) JSValue* notepadChangeMethod;
+@property (nonatomic) JSValue* documentSavedCallback;
+
+
+#pragma mark Other callbacks and data providers
+
+@property (nonatomic) JSValue *sheetCallback;
+@property (nonatomic) JSValue *windowCallback;
+@property (nonatomic) JSValue *sceneCompletionCallback;
+@property (nonatomic) JSValue *characterCompletionCallback;
+
+
+#pragma mark Observed text views
+
+@property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
+
+
 
 #if !TARGET_OS_IOS
 - (void)showAllWindows;
