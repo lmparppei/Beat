@@ -116,9 +116,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - Getters for parser data
 
-// NO idea why currentScene is a property and currentLine a method.
-// TODO: Harmonize these
-
 @property (nonatomic, readonly, weak) OutlineScene* currentScene;
 @property (nonatomic, readonly) Line* currentLine;
 
@@ -146,20 +143,9 @@ typedef void (^BeatChangeListener)(NSRange);
 
 @property (nonatomic, readonly) NSRange lastEditedRange;
 
-// TODO: Remove these and access the text methods only through BeatTextIO
-
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index;
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-- (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
-
-// TODO: Remove these and only add attributes through the text storage
-
 - (void)removeAttribute:(NSString*)key range:(NSRange)range;
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range;
-
 
 /// Determines if the text has changed since last query
 - (bool)hasChanged;
