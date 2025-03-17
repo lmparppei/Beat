@@ -143,8 +143,8 @@
 - (NSString*)readBeatDocumentString:(NSString*)text
 {
     self.documentIsLoading = true;
-    
-    self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
+    // Sorry for this weird cast. The OS-specific implementations will implement this protocol.
+    self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:(id<BeatDocumentSettingDelegate>)self];
     
     NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
     NSString* content = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
@@ -189,6 +189,7 @@
     
     [self.styles reloadWithDocumentSettings:self.documentSettings];
     [self.editorStyles reloadWithDocumentSettings:self.documentSettings];
+    [self reloadFonts];
     [self resetPreview];
     
     // Let's reformat certain types of elements (and hope the user doesn't have like 9999999999 of each)
@@ -875,22 +876,29 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     return BeatFontManager.shared.defaultFonts.regular.pointSize;
 }
 
-- (void)loadFonts
+- (BeatFontType)fontType
 {
-    bool variableSize = self.editorStyles.variableFont;
+    bool variableWidth = self.editorStyles.variableFont;
     bool sansSerif = self.useSansSerif;
+    BeatFontType type = BeatFontTypeFixed;
     
-    BeatFontType type;
-    
-    if (sansSerif) {
-        if (variableSize) type = BeatFontTypeVariableSansSerif;
-        else type = BeatFontTypeFixedSansSerif;
+    if (variableWidth) {
+        type = (sansSerif) ? BeatFontTypeVariableSansSerif : BeatFontTypeVariableSerif;
     } else {
-        if (variableSize) type = BeatFontTypeVariableSerif;
-        else type = BeatFontTypeFixed;
+        type = (sansSerif) ? BeatFontTypeFixedSansSerif : BeatFontTypeFixed;
     }
     
-    self.fonts = [BeatFontManager.shared fontsWith:type scale:1.0];
+    return type;
+}
+
+- (void)loadFonts
+{
+    self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:1.0];
+}
+
+- (void)loadFontsWithScale:(CGFloat)scale
+{
+    self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:scale];
 }
 
 /// Reloads fonts and reformats whole document if needed.

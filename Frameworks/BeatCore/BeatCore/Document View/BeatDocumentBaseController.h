@@ -83,8 +83,7 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (NSString* _Nullable)readBeatDocumentString:(NSString* _Nullable)text;
 /// Reverts the editor to given text
 - (void)revertToText:(NSString* _Nullable)text;
-/// Performed when document was loaded to `.contentBuffer` and settings applied to `.documentSettings`
-- (void)didLoadDocumentToBuffer;
+
 
 #pragma mark - Document settings
 @property (nonatomic) BeatDocumentSettings* _Nonnull documentSettings;
@@ -251,6 +250,8 @@ NS_ASSUME_NONNULL_END
 
 /// Loads the current fonts defined by stylesheet.
 - (void)loadFonts;
+/// Loads fonts with given scale
+- (void)loadFontsWithScale:(CGFloat)scale;
 /// Reloads fonts and performs reformatting if needed.
 - (void)reloadFonts;
 
