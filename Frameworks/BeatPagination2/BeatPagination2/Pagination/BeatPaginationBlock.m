@@ -341,7 +341,7 @@
     // First find a spiller
     Line* spiller = [self findSpillerAt:remainingSpace];
     
-    if (spiller.type == action || spiller.type == synopse || spiller.type == section) {
+    if (spiller.type == action || spiller.type == synopse || spiller.type == section || spiller.type == centered || spiller.type == lyrics || spiller.type == transitionLine) {
         // Break action paragraphs into two if possible and feasible
         pageBreakData = [self splitParagraphWithRemainingSpace:remainingSpace];
     } else if (spiller.isDialogue || spiller.isDualDialogue) {
@@ -369,16 +369,20 @@
 
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace line:(Line*)line
 {
-	// If no line is set, let's use the first item
+    // If no line is set, let's use the first item
     if (line == nil) line = self.lines.firstObject;
-        
+    
+    // Line height and render style for this element
+    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
+    RenderStyle* style = [self.delegate.styles forLine:line];
+    if (style.lineHeight > 0) lineHeight = style.lineHeight;
+    
 	NSString *str = [line stripFormattingWithSettings:self.delegate.settings];
 	NSString *retain = @"";
 
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
     
     // Get block size
-	RenderStyle *style = [self.delegate.styles forLine:line];
     CGFloat width = [style widthWithPageSize:paperSize];
     if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
     
@@ -389,16 +393,13 @@
     // For reason or another, macOS Sonoma stopped retaining the text storage, and we need to explicitly create it here.
     NSTextStorage* textStorage;
     NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
-	
-	// We'll get the number of lines rather than calculating exact size in NSTextField
-	__block NSInteger numberOfLines = 0;
-	
-	// Iterate through line fragments
-	__block CGFloat pageBreakPos = 0;
-	__block NSInteger length = 0;
-    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
-    
     NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
+	
+    // We'll get the number of lines rather than calculating exact size in NSTextField
+    __block NSInteger numberOfLines = 0;
+    __block CGFloat pageBreakPos = 0;
+    __block NSInteger length = 0;
+    
     
 	[lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;

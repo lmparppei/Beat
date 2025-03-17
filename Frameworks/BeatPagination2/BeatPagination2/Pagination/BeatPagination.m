@@ -81,6 +81,8 @@
 /// Reusable styles for paragraph sizing
 @property (nonatomic) NSMutableDictionary<NSString*, NSParagraphStyle*>* paragraphStyles;///
 
+@property (nonatomic) bool timedOut;
+
 @end
 
 @implementation BeatPagination
@@ -384,6 +386,7 @@
 		 • a heading or a shot, followed by another block
 		*/
 		@autoreleasepool {
+            if (_canceled) return false;
 			NSArray *blocks = [self blocksForLineAt:0];
 			[self addBlocks:blocks];
 		}
@@ -413,7 +416,14 @@
 - (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks
 {
 	// Do nothing. This can happen with live pagination.
-	if (blocks.count == 0) return;
+    if (blocks.count == 0 || _canceled) return;
+    
+    // Avoid infinite loops here
+    if ([NSDate.new timeIntervalSinceDate:_startTime] > 5.0) {
+        self.timedOut = true;
+        self.canceled = true;
+        return;
+    }
     
     // Array for possible blocks
     NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
@@ -452,10 +462,9 @@
 
 	// Nothing fit, let's break it apart
 	CGFloat remainingSpace = _currentPage.remainingSpace;
-        
+    
 	// If remaining space is less than 1 line OR we're just leaving one line on this page, just roll on to next page
-	if (remainingSpace < lineHeight
-        //|| (overflow < lineHeight * 1.2 && remainingSpace <= lineHeight * 2)
+	if (remainingSpace < lineHeight || (remainingSpace <= lineHeight + group.topMargin)
         ) {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:group.blocks.firstObject.lines.firstObject attributedString:nil reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
@@ -565,6 +574,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 - (void)addPage:(NSArray<Line*>*)elements toQueue:(NSArray<Line*>*)toQueue pageBreak:(BeatPageBreak*)pageBreak
 {
+    if (_canceled) return;
+    
     if (elements.count > 0) {
         BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
         [_currentPage addBlock:block];

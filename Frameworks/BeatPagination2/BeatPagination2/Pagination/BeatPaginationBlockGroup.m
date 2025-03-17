@@ -34,13 +34,19 @@
 	return self;
 }
 
--(CGFloat)height {
+- (CGFloat)height
+{
 	CGFloat height = 0.0;
 	for (BeatPaginationBlock* block in self.blocks) {
 		height += block.height;
 	}
 	
 	return height;
+}
+
+- (CGFloat)topMargin
+{
+    return self.blocks.firstObject.topMargin;
 }
 
 /**

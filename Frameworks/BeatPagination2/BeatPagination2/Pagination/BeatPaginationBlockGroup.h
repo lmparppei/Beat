@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatPaginationBlockGroup*)withBlocks:(NSArray<BeatPaginationBlock*>*)blocks delegate:(id<BeatPageDelegate>)delegate;
 - (NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace styles:(BeatStylesheet*)styles;
 - (NSArray<Line*>*)lines;
+/// Returns the top margin for this whole group
+- (CGFloat)topMargin;
 @end
 
 NS_ASSUME_NONNULL_END
