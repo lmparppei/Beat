@@ -85,7 +85,7 @@ NSString* const BeatSettingOutlineSceneFontSize         = @"outlineSceneFontSize
 NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontSize";
 
 NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
-NSString* const BeatSettingNotepadFontSizeModifier      = @"notepadFontSizeModifier";
+NSString* const BeatSettingNotepadZoom                  = @"notepadZoom";
 
 NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen";
 NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
@@ -169,7 +169,7 @@ NSString* const BeatSettingRelativeOutlineHeights       = @"relativeOutlineHeigh
 		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
         
         BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0],
-        BeatSettingNotepadFontSizeModifier: @[BeatSettingNotepadFontSizeModifier, @0],
+        BeatSettingNotepadZoom: @[BeatSettingNotepadZoom, @(1.0)],
         
         BeatSettingShowPageSeparators: @[BeatSettingShowPageSeparators, @NO],
         

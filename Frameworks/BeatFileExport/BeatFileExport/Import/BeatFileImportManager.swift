@@ -18,7 +18,6 @@ import BeatCore
 public class BeatFileImportManager: NSObject {
     let modules:[BeatFileImportModule.Type] = [FDXImport.self, FadeInImport.self]
 
-    
     public var _error:Error?
     private var retainedModule:Any?
     private var waiting = false
@@ -59,6 +58,7 @@ public class BeatFileImportManager: NSObject {
                     return
                 }
             }
+            return
         } else {
             // Synchronous import
             let importModule = moduleClass.init(url: url)
@@ -66,6 +66,7 @@ public class BeatFileImportManager: NSObject {
                 self.createImportedFile(content: fountain, url: tempURL) { url in
                     completion(url)
                 }
+                return
             } else {
                 completion(nil)
                 return
@@ -74,7 +75,7 @@ public class BeatFileImportManager: NSObject {
 
         // If we're still waiting for the file, let's call the completion with nil argument ... uh.
         // Yeah, we need better error handling here, but that's a task for future me.
-        if !waiting { completion(nil) }
+        // if !waiting { completion(nil) }
     }
     
     /// Writes the file to a temporary directory and provides the temp URL for further handling
@@ -91,7 +92,7 @@ public class BeatFileImportManager: NSObject {
     /// Returns the import module class for given UTI / file extension
     private func importModule(for format: String, UTI: String?) -> BeatFileImportModule.Type? {
         return modules.first {
-            $0.formats().contains(format) ||
+            $0.formats().contains(format.lowercased()) ||
             (UTI.map { $0 } != nil && $0.utis()?.contains(UTI!) == true)
         }
     }

@@ -120,10 +120,8 @@ class BeatExportProgressViewController: UIViewController {
     
     // Public method to update the label text
     func updateProgress(_ progress:CGFloat, label:String? = nil) {
-        var percentage = progress * 100
-        var text = label ?? "\(percentage)%"
-                
-        progressLabel.text = text
+        let percentage = progress * 100
+        progressLabel.text = label ?? "\(percentage)%"
     }
 
 }

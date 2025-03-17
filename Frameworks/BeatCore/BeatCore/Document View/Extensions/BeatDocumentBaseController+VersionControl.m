@@ -16,13 +16,13 @@
 
 - (IBAction)beginVersionControl:(id)sender
 {
-    BeatVersionControl* vc = [BeatVersionControl.alloc initWithDelegate:(id<BeatDocumentDelegate>)self];
+    BeatVersionControl* vc = [BeatVersionControl.alloc initWithDelegate:(id<BeatEditorDelegate>)self];
     [vc createInitialCommit];
 }
 
 - (IBAction)addCommit:(id)sender
 {
-    BeatVersionControl* vc = [BeatVersionControl.alloc initWithDelegate:(id<BeatDocumentDelegate>)self];
+    BeatVersionControl* vc = [BeatVersionControl.alloc initWithDelegate:(id<BeatEditorDelegate>)self];
     [vc addCommit];
 }
 

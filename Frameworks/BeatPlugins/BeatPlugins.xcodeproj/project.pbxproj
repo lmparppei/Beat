@@ -64,6 +64,8 @@
 		B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7982A6EBEBD00FCD805 /* BeatSpeak.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7992A6EBEBD00FCD805 /* BeatPluginTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */ = {isa = PBXBuildFile; fileRef = B692D1002A6EBB9400574D72 /* BeatPlugins.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6964D942D7E21AB00F034A4 /* BeatPlugin+Windows.h in Headers */ = {isa = PBXBuildFile; fileRef = B6964D922D7E21AB00F034A4 /* BeatPlugin+Windows.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6964D952D7E21AB00F034A4 /* BeatPlugin+Windows.m in Sources */ = {isa = PBXBuildFile; fileRef = B6964D932D7E21AB00F034A4 /* BeatPlugin+Windows.m */; };
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
 		B69A975F2D130E4300DD2B77 /* BeatPlugin+Menus.m in Sources */ = {isa = PBXBuildFile; fileRef = B69A975E2D130E4300DD2B77 /* BeatPlugin+Menus.m */; };
@@ -73,6 +75,12 @@
 		B69CC6362A851FFF00124988 /* MojaveSupport.js in Resources */ = {isa = PBXBuildFile; fileRef = B69CC6352A851FFF00124988 /* MojaveSupport.js */; };
 		B6BC404C2C18C7A80055DBCE /* BeatTextChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */; };
 		B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */; };
+		B6DBB2C62D7E14AA008327EF /* BeatPlugin+TextHighlighting.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2C52D7E14AA008327EF /* BeatPlugin+TextHighlighting.m */; };
+		B6DBB2C72D7E14AA008327EF /* BeatPlugin+TextHighlighting.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DBB2C42D7E14AA008327EF /* BeatPlugin+TextHighlighting.h */; };
+		B6DBB2CA2D7E170A008327EF /* BeatPlugin+Listeners.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2C92D7E170A008327EF /* BeatPlugin+Listeners.m */; };
+		B6DBB2CB2D7E170A008327EF /* BeatPlugin+Listeners.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DBB2C82D7E170A008327EF /* BeatPlugin+Listeners.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DBB2CE2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2CD2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m */; };
+		B6DBB2CF2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DBB2CC2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6F6E48F2CF7767D008AB346 /* BeatPlugin+Modals.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F6E48D2CF7767D008AB346 /* BeatPlugin+Modals.h */; };
 		B6F6E4902CF7767D008AB346 /* BeatPlugin+Modals.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F6E48E2CF7767D008AB346 /* BeatPlugin+Modals.m */; };
 		B6F6E4932CF77774008AB346 /* BeatPlugin+Editor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F6E4922CF77774008AB346 /* BeatPlugin+Editor.m */; };
@@ -143,6 +151,8 @@
 		B680B7BF2A6EC2C100FCD805 /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D0FD2A6EBB9400574D72 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B692D1002A6EBB9400574D72 /* BeatPlugins.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugins.h; sourceTree = "<group>"; };
+		B6964D922D7E21AB00F034A4 /* BeatPlugin+Windows.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Windows.h"; sourceTree = "<group>"; };
+		B6964D932D7E21AB00F034A4 /* BeatPlugin+Windows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Windows.m"; sourceTree = "<group>"; };
 		B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginContainer.swift; sourceTree = "<group>"; };
 		B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginPrint.swift; sourceTree = "<group>"; };
 		B69A975D2D130E4300DD2B77 /* BeatPlugin+Menus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Menus.h"; sourceTree = "<group>"; };
@@ -152,6 +162,12 @@
 		B69CC6352A851FFF00124988 /* MojaveSupport.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MojaveSupport.js; sourceTree = "<group>"; };
 		B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTextChangeObserver.swift; sourceTree = "<group>"; };
 		B6D708E92BF298660031B34E /* BeatPluginWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWindowManager.swift; sourceTree = "<group>"; };
+		B6DBB2C42D7E14AA008327EF /* BeatPlugin+TextHighlighting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+TextHighlighting.h"; sourceTree = "<group>"; };
+		B6DBB2C52D7E14AA008327EF /* BeatPlugin+TextHighlighting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+TextHighlighting.m"; sourceTree = "<group>"; };
+		B6DBB2C82D7E170A008327EF /* BeatPlugin+Listeners.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Listeners.h"; sourceTree = "<group>"; };
+		B6DBB2C92D7E170A008327EF /* BeatPlugin+Listeners.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Listeners.m"; sourceTree = "<group>"; };
+		B6DBB2CC2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+HTMLViews.h"; sourceTree = "<group>"; };
+		B6DBB2CD2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+HTMLViews.m"; sourceTree = "<group>"; };
 		B6F6E48D2CF7767D008AB346 /* BeatPlugin+Modals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Modals.h"; sourceTree = "<group>"; };
 		B6F6E48E2CF7767D008AB346 /* BeatPlugin+Modals.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Modals.m"; sourceTree = "<group>"; };
 		B6F6E4912CF77774008AB346 /* BeatPlugin+Editor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Editor.h"; sourceTree = "<group>"; };
@@ -217,6 +233,14 @@
 				B6F6E4962CF7805E008AB346 /* BeatPlugin+Printing.m */,
 				B6F6E4992CF78236008AB346 /* BeatPlugin+FileIO.h */,
 				B6F6E49A2CF78236008AB346 /* BeatPlugin+FileIO.m */,
+				B6DBB2C42D7E14AA008327EF /* BeatPlugin+TextHighlighting.h */,
+				B6DBB2C52D7E14AA008327EF /* BeatPlugin+TextHighlighting.m */,
+				B6DBB2C82D7E170A008327EF /* BeatPlugin+Listeners.h */,
+				B6DBB2C92D7E170A008327EF /* BeatPlugin+Listeners.m */,
+				B6DBB2CC2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h */,
+				B6DBB2CD2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m */,
+				B6964D922D7E21AB00F034A4 /* BeatPlugin+Windows.h */,
+				B6964D932D7E21AB00F034A4 /* BeatPlugin+Windows.m */,
 			);
 			path = "Plugin Extensions and Categories";
 			sourceTree = "<group>";
@@ -378,8 +402,8 @@
 				B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */,
 				B67F757E2B1D27000028D009 /* BeatPluginAgent.h */,
 				B67F757F2B1D27000028D009 /* BeatPluginAgent.m */,
-				B65711672CF51CF400051427 /* Plugin Components */,
 				B65711662CF51CE300051427 /* Plugin Extensions and Categories */,
+				B65711672CF51CF400051427 /* Plugin Components */,
 				B62117112A6FFAD40053228F /* Plugin UI */,
 				B680B7A72A6EC0E200FCD805 /* Console */,
 				B680B7952A6EBEBD00FCD805 /* API object wrappers */,
@@ -420,9 +444,11 @@
 				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
 				B69A97652D1313B500DD2B77 /* BeatPlugin+Widgets.h in Headers */,
 				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
+				B6DBB2CF2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h in Headers */,
 				B657116C2CF51D4D00051427 /* BeatPlugin+Parser.h in Headers */,
 				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
 				B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */,
+				B6964D942D7E21AB00F034A4 /* BeatPlugin+Windows.h in Headers */,
 				B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */,
 				B6F6E48F2CF7767D008AB346 /* BeatPlugin+Modals.h in Headers */,
 				B680B7852A6EBC1C00FCD805 /* BeatWidgetView.h in Headers */,
@@ -430,12 +456,14 @@
 				B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */,
 				B680B7872A6EBC2C00FCD805 /* BeatPluginUIButton.h in Headers */,
 				B680B7892A6EBC2C00FCD805 /* BeatPluginUILabel.h in Headers */,
+				B6DBB2CB2D7E170A008327EF /* BeatPlugin+Listeners.h in Headers */,
 				B6F6E4942CF77774008AB346 /* BeatPlugin+Editor.h in Headers */,
 				B680B78E2A6EBC4800FCD805 /* BeatPluginHTMLWindow.h in Headers */,
 				B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */,
 				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
 				B69A97602D130E4300DD2B77 /* BeatPlugin+Menus.h in Headers */,
 				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
+				B6DBB2C72D7E14AA008327EF /* BeatPlugin+TextHighlighting.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
 				B67F75802B1D27000028D009 /* BeatPluginAgent.h in Headers */,
@@ -527,7 +555,9 @@
 				B62117142A6FFBFF0053228F /* BeatPluginHTMLViewController.swift in Sources */,
 				B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */,
 				B67F75812B1D27000028D009 /* BeatPluginAgent.m in Sources */,
+				B6DBB2C62D7E14AA008327EF /* BeatPlugin+TextHighlighting.m in Sources */,
 				B680B7832A6EBBFD00FCD805 /* BeatPluginControlMenuItem.swift in Sources */,
+				B6964D952D7E21AB00F034A4 /* BeatPlugin+Windows.m in Sources */,
 				B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */,
 				B680B79A2A6EBEBD00FCD805 /* BeatPluginTimer.m in Sources */,
 				B6F6E4902CF7767D008AB346 /* BeatPlugin+Modals.m in Sources */,
@@ -538,12 +568,14 @@
 				B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */,
 				B680B7792A6EBBFD00FCD805 /* BeatPluginUIButton.m in Sources */,
 				B69A975F2D130E4300DD2B77 /* BeatPlugin+Menus.m in Sources */,
+				B6DBB2CE2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m in Sources */,
 				B6D708EA2BF298660031B34E /* BeatPluginWindowManager.swift in Sources */,
 				B680B7812A6EBBFD00FCD805 /* BeatPluginUILabel.m in Sources */,
 				B67E7BAB2AEEE0DB00977F7D /* BeatPluginHTMLTemplate.swift in Sources */,
 				B680B7802A6EBBFD00FCD805 /* BeatPluginUITextField.m in Sources */,
 				B680B77D2A6EBBFD00FCD805 /* BeatPluginUIView.m in Sources */,
 				B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */,
+				B6DBB2CA2D7E170A008327EF /* BeatPlugin+Listeners.m in Sources */,
 				B6BC404C2C18C7A80055DBCE /* BeatTextChangeObserver.swift in Sources */,
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
 				B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */,
