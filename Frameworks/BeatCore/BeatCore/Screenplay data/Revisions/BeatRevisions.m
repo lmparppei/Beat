@@ -837,7 +837,7 @@
 		
 		if (revision.type == RevisionRemovalSuggestion && range.length > 0) {
 			[self markerAction:RevisionNone range:range];
-			[self.delegate replaceRange:range withString:@""];
+            [self.delegate.textActions replaceRange:range withString:@""];
 		}
 	}];
 	

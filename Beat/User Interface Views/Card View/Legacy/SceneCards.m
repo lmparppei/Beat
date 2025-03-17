@@ -380,7 +380,7 @@
 			
 			OutlineScene *scene = [outline objectAtIndex:from];
 			
-			[self.delegate moveScene:scene from:from to:to];
+			[self.delegate.textActions moveScene:scene from:from to:to];
 			
 			// Refresh the view, tell it's already visible
 			[self reloadCardsWithVisibility:YES changed:changedIndex];

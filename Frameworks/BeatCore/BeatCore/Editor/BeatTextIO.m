@@ -159,7 +159,7 @@ static NSString *centeredEnd = @" <";
     [self.delegate.getTextView.textStorage beginEditing];
     
     // Replace with undo registration
-    NSString *oldString = [_delegate.text substringWithRange:range];
+    // NSString *oldString = [_delegate.text substringWithRange:range];
     
     [self replaceCharactersInRange:range withString:newString];
     [self.delegate.getTextView.textStorage endEditing];
