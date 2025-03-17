@@ -45,6 +45,7 @@
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/NSArray+BinarySearch.h>
 #import "ContinuousFountainParser+Notes.h"
+#import <BeatParsing/NSString+CharacterControl.h>
 #import "ParsingRule.h"
 
 #define NEW_OUTLINE YES
@@ -141,32 +142,40 @@ static NSDictionary* patterns;
         
         // Parsing rules for the future.
         _parsingRules = @[
-            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
-            [ParsingRule ruleWithResultingType:shot previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!!", @"！！"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:action previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"!", @"！"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:lyrics previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"~", @"～"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
-            [ParsingRule ruleWithResultingType:character previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"@", @"＠"] endsWith:nil],
+            [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
+            [ParsingRule type:shot options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"!!", @"！！"] endsWith:nil],
+            [ParsingRule type:action options:0 previousTypes:nil beginsWith:@[@"!", @"！"] endsWith:nil],
+            [ParsingRule type:lyrics options:0 previousTypes:nil beginsWith:@[@"~", @"～"] endsWith:nil],
+            [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
+            [ParsingRule type:character options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:nil],
             
-            [ParsingRule ruleWithResultingType:section previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"#", @"＃"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:synopse previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"="] endsWith:nil],
+            [ParsingRule type:section options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"#", @"＃"] endsWith:nil],
+            [ParsingRule type:synopse options:0 previousTypes:nil beginsWith:@[@"="] endsWith:nil],
             
-            [ParsingRule ruleWithResultingType:heading previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
-            [ParsingRule ruleWithResultingType:centered previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@">"] endsWith:@[@"<"]],
-            [ParsingRule ruleWithResultingType:transitionLine previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false beginsWith:@[@">"] endsWith:nil],
-            [ParsingRule ruleWithResultingType:transitionLine previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"TO:"]],
+            [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
+            [ParsingRule type:centered options:(AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@">"] endsWith:@[@"<"]],
+            [ParsingRule type:transitionLine options:0 previousTypes:nil beginsWith:@[@">"] endsWith:nil],
+            [ParsingRule type:transitionLine options:(PreviousIsEmpty | AllCapsUntilParentheses) previousTypes:nil beginsWith:nil endsWith:@[@"TO:"]],
             
             // Dual dialogue
-            [ParsingRule ruleWithResultingType:dualDialogueCharacter previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true beginsWith:nil endsWith:@[@"^"] requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule ruleWithResultingType:dualDialogueParenthetical previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule ruleWithResultingType:dualDialogue previousIsEmpty:false previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)] allCapsUntilParentheses:false beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) previousTypes:nil beginsWith:nil endsWith:@[@"^"] requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule type:dualDialogueParenthetical options:AllowsLeadingWhitespace  previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule type:dualDialogue options:AllowsLeadingWhitespace minimumLength:1 previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)]],
             
             // Dialogue
-            [ParsingRule ruleWithResultingType:character minimumLength:2 minimumLengthAtInput:3 previousIsEmpty:true previousTypes:nil allCapsUntilParentheses:true],
-            [ParsingRule ruleWithResultingType:parenthetical previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false beginsWith:@[@"("] endsWith:nil],
-            [ParsingRule ruleWithResultingType:dialogue previousIsEmpty:false previousTypes:@[@(character), @(dialogue), @(parenthetical)] allCapsUntilParentheses:false],
-
-            [ParsingRule ruleWithResultingType:empty exactMatches:@[@"", @" "]],
+            [ParsingRule type:character options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) minimumLength:2 minimumLengthAtInput:3 previousTypes:nil],
+            [ParsingRule type:parenthetical options:(AllowsLeadingWhitespace) previousTypes:@[@(character), @(dialogue), @(parenthetical)] beginsWith:@[@"("] endsWith:nil],
+            [ParsingRule type:dialogue options:(AllowsLeadingWhitespace) minimumLength:1 previousTypes:@[@(character), @(dialogue), @(parenthetical)]],
+            
+            [ParsingRule type:titlePageTitle options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"title:"] endsWith:nil ],
+            [ParsingRule type:titlePageCredit options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"credit:"] endsWith:nil],
+            [ParsingRule type:titlePageAuthor options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"author:", @"authors:"] endsWith:nil],
+            [ParsingRule type:titlePageSource options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"source:"] endsWith:nil],
+            [ParsingRule type:titlePageContact options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"contact:"] endsWith:nil],
+            [ParsingRule type:titlePageDraftDate options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"draft date:"] endsWith:nil],
+            [ParsingRule type:titlePageUnknown options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:nil endsWith:nil],
+                         
+            [ParsingRule type:empty exactMatches:@[@"", @" "]],
         ];
         
         [self parseText:string];
@@ -194,7 +203,7 @@ static NSDictionary* patterns;
 
 #pragma mark - Saved file processing
 
-/// Returns the RAW text  when saving a screenplay. Automatically fixes some stylistical issues.
+/// Returns the RAW text when saving a screenplay.
 - (NSString*)screenplayForSaving
 {
     NSArray *lines = self.safeLines.copy;
@@ -205,7 +214,6 @@ static NSDictionary* patterns;
         if (!line) continue;
         
         NSString* string = line.string;
-        LineType type = line.type;
     
         // Append to full content
         [content appendString:string];
@@ -222,7 +230,7 @@ static NSDictionary* patterns;
 /// Returns the whole document as single string
 - (NSString*)rawText
 {
-    NSMutableString *string = [NSMutableString string];
+    NSMutableString *string = NSMutableString.string;
     for (Line* line in self.lines) {
         if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
         else [string appendFormat:@"%@", line.string];
@@ -803,8 +811,8 @@ static NSDictionary* patterns;
     line.type = [self parseLineTypeFor:line atIndex:index];
     
     // In the future we'll replace the previous function with rule-based parsing.
-    // LineType test = [self ruleBasedParsingFor:line atIndex:index];
-    //if (line.type != test) NSLog(@"!!! wrong type (%lu / %lu) - %@", test, line.type, line);
+    LineType test = [self ruleBasedParsingFor:line atIndex:index];
+    if (line.type != test) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:test], [Line typeName:line.type], line);
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -975,15 +983,24 @@ static NSDictionary* patterns;
     }
     
     // Check forced elements
-    unichar firstChar = [line.string characterAtIndex:0];
-    unichar lastChar = line.lastCharacter;
+    
+    // Find last and first character. Excuse the upcoming mess.
+    // Some elements ignore the leading whitespace, but NOT action, section and synopsis.
+    unichar actualFirstChar = [line.string characterAtIndex:0];
+    NSInteger firstCharIndex = line.string.indexOfFirstNonWhiteSpaceCharacter;
+    if (firstCharIndex == NSNotFound || actualFirstChar == '!' || actualFirstChar == '=' || actualFirstChar == '#') firstCharIndex = 0;
+    NSInteger lastCharIndex = line.string.indexOfLastNonWhiteSpaceCharacter;
+    if (lastCharIndex == NSNotFound) lastCharIndex = line.string.length - 1;
+    
+    unichar firstChar = [line.string characterAtIndex:firstCharIndex];
+    unichar lastChar = [line.string characterAtIndex:lastCharIndex];
     
     // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
     bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
     NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
     
     // Also, lets add the first \ as an escape character
-    if (firstChar == '\\') [line.escapeRanges addIndex:0];
+    if (firstChar == '\\') [line.escapeRanges addIndex:firstCharIndex];
     
     // Forced whitespace
     bool containsOnlyWhitespace = line.string.containsOnlyWhitespace; // Save to use again later
@@ -994,7 +1011,7 @@ static NSDictionary* patterns;
     // Check forced types
     if ([trimmedString isEqualToString:@"==="]) {
         return pageBreak;
-    } else if (firstChar == '!' || [firstSymbol isEqualToString:@"！"]) {
+    } else if (firstCharIndex == 0 && (firstChar == '!' || [firstSymbol isEqualToString:@"！"]) ) {
         // Action or shot
         if (line.length > 1) {
             unichar secondChar = [line.string characterAtIndex:1];
@@ -1025,7 +1042,7 @@ static NSDictionary* patterns;
     }
     
     // Dual dialogue
-    if (line.string.lastNonWhiteSpaceCharacter == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
+    if (lastChar == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
         // A character line ending in ^ is a dual dialogue character
         // (94 = ^, we'll compare the numerical value to avoid mistaking Turkish alphabet character Ş as ^)
         NSString* cue = [line.string substringToIndex:line.length - 1];

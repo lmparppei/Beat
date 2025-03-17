@@ -88,6 +88,8 @@ centered {
 
     margin-top: 1l;
     text-align: center;
+    
+    trim: true;
 }
 
 character {
@@ -96,6 +98,8 @@ character {
     
     margin-left: 20ch;
     margin-top: 1l;
+    
+    trim: true;
 }
 
 parenthetical {
@@ -104,6 +108,8 @@ parenthetical {
     
     margin-left: 16ch;
     margin-top: 0;
+    
+    trim:true;
 }
 
 dialogue {
@@ -112,6 +118,8 @@ dialogue {
     
     margin-top: 0;
     margin-left: 11ch;
+    
+    trim: true;
 }
 
 more {
@@ -123,6 +131,8 @@ more {
 }
 
 dualDialogueCharacter {
+    trim: true;
+    
     width-a4: 20ch;
     width-us: 21ch;
 
@@ -142,6 +152,8 @@ dualDialogueParenthetical {
     
     margin-top: 0;
     margin-left: 4ch;
+    
+    trim: true;
 }
 dualDialogue {
     width-a4: 27ch;
@@ -149,6 +161,8 @@ dualDialogue {
 
     margin-left: 0ch;
     margin-right: 1ch;
+    
+    trim: true;
 }
 
 transition {

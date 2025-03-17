@@ -9,64 +9,75 @@
 #import <BeatParsing/Line+Type.h>
 #import <BeatParsing/NSString+CharacterControl.h>
 
+#define mask_contains(mask, bit) (mask & bit) == bit
+
 @implementation ParsingRule
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                      previousIsEmpty:(BOOL)previousIsEmpty
-                         previousTypes:(NSArray<NSNumber *> *)previousTypes
-                allCapsUntilParentheses:(BOOL)allCapsUntilParentheses
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       previousTypes:(NSArray<NSNumber *> *)previousTypes
 {
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:0 minimumLengthAtInput:0 previousIsEmpty:previousIsEmpty previousTypes:previousTypes allCapsUntilParentheses:allCapsUntilParentheses exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 titlePage:false];
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
 }
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                               length:(NSInteger)length
-                    allowedWhiteSpace:(NSInteger)allowedWhiteSpace
-{
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:0 minimumLengthAtInput:0 previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:length allowedWhiteSpace:allowedWhiteSpace titlePage:false];
++ (instancetype)type:(LineType)resultingType options:(ParsingOptions)options minimumLength:(NSInteger)minimumLength previousTypes:(NSArray<NSNumber *> *)previousTypes {
+    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
 }
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                         exactMatches:(NSArray<NSString*>*)exactMatches
++ (instancetype)type:(LineType)resultingType
+              length:(NSInteger)length
+   allowedWhiteSpace:(NSInteger)allowedWhiteSpace
 {
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:0 minimumLengthAtInput:0 previousIsEmpty:false previousTypes:nil allCapsUntilParentheses:false exactMatches:exactMatches beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 titlePage:false];
+    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil  exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:length allowedWhiteSpace:allowedWhiteSpace];
 }
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                        minimumLength:(NSInteger)minimumLength
-                 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
-                      previousIsEmpty:(BOOL)previousIsEmpty
-                         previousTypes:(NSArray<NSNumber *> *)previousTypes
-                allCapsUntilParentheses:(BOOL)allCapsUntilParentheses
++ (instancetype)type:(LineType)resultingType
+        exactMatches:(NSArray<NSString*>*)exactMatches
 {
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:minimumLength minimumLengthAtInput:minimumLengthAtInput previousIsEmpty:previousIsEmpty previousTypes:previousTypes allCapsUntilParentheses:allCapsUntilParentheses exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 titlePage:false];
+    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil exactMatches:exactMatches beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
 }
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType previousIsEmpty:(BOOL)previousIsEmpty previousTypes:(NSArray<NSNumber *> *)previousTypes allCapsUntilParentheses:(BOOL)allCapsUntilParentheses beginsWith:(NSArray<NSString *> *)beginsWith endsWith:(NSArray<NSString *> *)endsWith requiredAfterPrefix:(NSArray<NSString *> *)requiredAfterPrefix excludedAfterPrefix:(NSArray<NSString *> *)excludedAfterPrefix
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       minimumLength:(NSInteger)minimumLength
+minimumLengthAtInput:(NSInteger)minimumLengthAtInput
+       previousTypes:(NSArray<NSNumber *> *)previousTypes
 {
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:0 minimumLengthAtInput:0 previousIsEmpty:previousIsEmpty previousTypes:previousTypes allCapsUntilParentheses:allCapsUntilParentheses exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:requiredAfterPrefix excludedAfterPrefix:excludedAfterPrefix length:0 allowedWhiteSpace:0 titlePage:false];
+    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:minimumLengthAtInput previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
 }
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType previousIsEmpty:(BOOL)previousIsEmpty previousTypes:(NSArray<NSNumber *> *)previousTypes allCapsUntilParentheses:(BOOL)allCapsUntilParentheses beginsWith:(NSArray<NSString *> *)beginsWith endsWith:(NSArray<NSString *> *)endsWith
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       previousTypes:(NSArray<NSNumber *> *)previousTypes
+          beginsWith:(NSArray<NSString *> *)beginsWith
+            endsWith:(NSArray<NSString *> *)endsWith
+ requiredAfterPrefix:(NSArray<NSString *> *)requiredAfterPrefix
+excludedAfterPrefix:(NSArray<NSString *> *)excludedAfterPrefix
 {
-    return [ParsingRule ruleWithResultingType:resultingType minimumLength:0 minimumLengthAtInput:0 previousIsEmpty:previousIsEmpty previousTypes:previousTypes allCapsUntilParentheses:allCapsUntilParentheses exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 titlePage:false];
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:requiredAfterPrefix excludedAfterPrefix:excludedAfterPrefix length:0 allowedWhiteSpace:0];
 }
 
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       previousTypes:(NSArray<NSNumber *> *)previousTypes
+          beginsWith:(NSArray<NSString *> *)beginsWith
+            endsWith:(NSArray<NSString *> *)endsWith
+{
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+}
 
-+ (instancetype)ruleWithResultingType:(LineType)resultingType
-                        minimumLength:(NSInteger)minimumLength
-                 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
-                      previousIsEmpty:(BOOL)previousIsEmpty
-                        previousTypes:(NSArray<NSNumber*>*)previousTypes
-              allCapsUntilParentheses:(BOOL)allCapsUntilParentheses
-                         exactMatches:(NSArray<NSString*>*)exactMatches
-                           beginsWith:(NSArray<NSString*>*)beginsWith
-                             endsWith:(NSArray<NSString*>*)endsWith
-                  requiredAfterPrefix:(NSArray<NSString*>*)requiredAfterPrefix
-                  excludedAfterPrefix:(NSArray<NSString*>*)excludedAfterPrefix
-                               length:(NSInteger)length
-                    allowedWhiteSpace:(NSInteger)allowedWhiteSpace
-                            titlePage:(BOOL)titlePage
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       minimumLength:(NSInteger)minimumLength
+minimumLengthAtInput:(NSInteger)minimumLengthAtInput
+       previousTypes:(NSArray<NSNumber*>*)previousTypes
+        exactMatches:(NSArray<NSString*>*)exactMatches
+          beginsWith:(NSArray<NSString*>*)beginsWith
+            endsWith:(NSArray<NSString*>*)endsWith
+ requiredAfterPrefix:(NSArray<NSString*>*)requiredAfterPrefix
+ excludedAfterPrefix:(NSArray<NSString*>*)excludedAfterPrefix
+              length:(NSInteger)length
+   allowedWhiteSpace:(NSInteger)allowedWhiteSpace
 {
     ParsingRule *rule = [[ParsingRule alloc] init];
     rule.resultingType = resultingType;
@@ -75,15 +86,19 @@
     rule.minimumLengthAtInput = minimumLengthAtInput;
     
     rule.exactMatches = exactMatches;
-    rule.previousIsEmpty = previousIsEmpty;
-    rule.allCapsUntilParentheses = allCapsUntilParentheses;
     rule.beginsWith = beginsWith ?: @[];
     rule.endsWith = endsWith ?: @[];
     rule.requiredAfterPrefix = requiredAfterPrefix ?: @[];
     rule.excludedAfterPrefix = excludedAfterPrefix ?: @[];
     rule.length = length;
     rule.allowedWhiteSpace = allowedWhiteSpace;
-    rule.titlePage = titlePage;
+    
+    rule.options = options;
+    
+    rule.previousIsEmpty = mask_contains(options, PreviousIsEmpty);
+    rule.allCapsUntilParentheses = mask_contains(options, AllCapsUntilParentheses);
+    rule.allowsLeadingWhitespace = mask_contains(options, AllowsLeadingWhitespace);
+    rule.titlePage = mask_contains(options, BelongsToTitlePage);
     
     NSMutableIndexSet *pTypes = [NSMutableIndexSet indexSet];
     for (NSNumber *typeNumber in previousTypes) {
@@ -109,7 +124,7 @@
         return false;
     }
     
-    // Exact matches
+    // First find the exact matches
     if (self.exactMatches.count > 0) {
         bool match = false;
         for (NSString* exactMatch in self.exactMatches) {
@@ -117,29 +132,44 @@
         }
         if (!match) return false;
     }
-        
-    if (previousLine != nil && self.previousTypes.count > 0 && ![self.previousTypes containsIndex:previousLine.type]) {
-        return false;
-    }
-    else if (self.beginsWith.count > 0 && ![self matchesPrefix:line]) {
-        return false;
-    }
-    else if (self.endsWith.count > 0 && ![self matchesSuffix:line]) {
-        return false;
-    }
-    else if (self.titlePage && (previousLine.isTitlePage || previousLine == nil)) {
-        // Parse title page here
-        return false;
+    
+    // Catch special title page conditions
+    if (self.titlePage) {
+        // This can't be a title page element
+        if ((previousLine == nil && ![line.string containsString:@":"]) ||
+            (previousLine != nil && !previousLine.isTitlePage) ||
+            (previousLine.isTitlePage && line.length == 0)) {
+            return false;
+        } else if (previousLine != nil && previousLine.isTitlePage && ![line.string containsString:@":"] && line.trimmed.length > 0) {
+            // This IS a title element, and for nested lines, we need to be a little more allowing
+            if (previousLine.type == self.resultingType) return true;
+        }
     }
     
-    // We've passed all tests
+    // Perform more tests.
+    if (
+        // Check required previous type
+        (self.previousTypes.count > 0 && ![self.previousTypes containsIndex:previousLine.type]) ||
+        // Check required prefix
+        (self.beginsWith.count > 0 && ![self matchesPrefix:line]) ||
+        // Check required suffix
+        (self.endsWith.count > 0 && ![self matchesSuffix:line])
+    ) {
+        // Nothing passed
+        return false;
+    }
+        
+    // Hooray, we've passed all tests!
     return true;
     
 }
 
 - (bool)matchesPrefix:(Line*)line
 {
-    NSString* string = line.string.lowercaseString;
+    NSInteger idx = (self.allowsLeadingWhitespace) ? line.string.indexOfFirstNonWhiteSpaceCharacter : 0;
+    if (idx == NSNotFound) idx = 0;
+    
+    NSString* string = [line.string substringFromIndex:idx].lowercaseString;
     
     for (NSString* prefix in self.beginsWith) {
         if (![string hasPrefix:prefix]) continue;

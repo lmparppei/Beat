@@ -75,22 +75,25 @@
 {
     if (self.string.length < 1) return 0;
     
-    unichar c = [self.string characterAtIndex:0];
+    NSInteger firstCharIndex = self.string.indexOfFirstNonWhiteSpaceCharacter;
+    if (firstCharIndex == NSNotFound) firstCharIndex = 0;
+    unichar c = [self.string characterAtIndex:firstCharIndex];
     
-    // First check if this is a shot (!!)
-    if (self.string.length > 1 && self.type == shot && c == '!') {
+    // First check if this is a shot (!!) or action
+    if (self.string.length > 1 && self.type == shot && [self.string characterAtIndex:0] == '!') {
         if ([self.string characterAtIndex:1] == '!') return 2;
+    } else if ([self.string characterAtIndex:0] == '!') {
+        return 1;
     }
         
     // Other types
     if ((self.type == character && c == '@') ||
         (self.type == heading && c == '.') ||
-        (self.type == action && c == '!') ||
         (self.type == lyrics && c == '~') ||
         (self.type == synopse && c == '=') ||
         (self.type == centered && c == '>') ||
         (self.type == transitionLine && c == '>')) {
-        return 1;
+        return firstCharIndex+1;
     }
     // Section
     else if (self.type == section) {

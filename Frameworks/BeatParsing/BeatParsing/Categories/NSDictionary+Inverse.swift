@@ -10,7 +10,7 @@ import Foundation
 public extension NSDictionary {
     
     @objc func inverted() -> NSDictionary {
-        var dict = NSMutableDictionary()
+        let dict = NSMutableDictionary()
         
         for key in self.allKeys {
             if let value = self[key] {
