@@ -20,11 +20,6 @@
 
 + (BeatFonts*)forType:(BeatFontType)type
 {
-    return [BeatFonts forType:type mobile:false];
-}
-
-+ (BeatFonts*)forType:(BeatFontType)type mobile:(bool)mobile
-{
     BeatFonts* fonts;
     
     if (type == BeatFontTypeFixed) fonts = BeatFonts.sharedFonts;
@@ -32,7 +27,6 @@
     else if (type == BeatFontTypeVariableSerif) fonts = BeatFonts.sharedVariableFonts;
     else if (type == BeatFontTypeVariableSansSerif) fonts = BeatFonts.sharedVariableSansSerifFonts;
     
-    // Fallback for weird situations
     return fonts;
 }
 

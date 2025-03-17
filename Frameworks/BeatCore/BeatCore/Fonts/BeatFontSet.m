@@ -38,6 +38,9 @@
         _bold = [BXFont fontWithName:boldFontName size:fontSize];
         _italic = [BXFont fontWithName:italicFontName size:fontSize];
         _boldItalic = [BXFont fontWithName:boldItalicFontName size:fontSize];
+        
+        if (_regular == nil || _bold == nil || _italic == nil)
+            NSLog(@"🆘 WARNING - font not found: %@", name);
             
         // Fonts for sections and synopsis lines. If something goes wrong, we'll load system font as a fallback.
         if (sectionFontName != nil) _section = [BXFont fontWithName:sectionFontName size:fontSize];

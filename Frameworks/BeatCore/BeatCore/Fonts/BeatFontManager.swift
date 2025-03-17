@@ -88,18 +88,24 @@ private struct BeatFontSetTemplate {
     
     /// Returns a font set, similar to the old `BeatFonts` object.
     @objc public func fonts(type:String, scale:CGFloat = 1.0) -> BeatFontSet? {
-        guard let template = fontTemplates[type] else { print("⚠️ No font template found for ", type); return nil }
+        guard let template = fontTemplates[type] else {
+            print("⚠️ No font template found for ", type);
+            return nil
+        }
+        
         if let font = fonts[scale]?[type] {
             return font
         }
         
         if fonts[scale] == nil { fonts[scale] = [:] }
     
+        let regularName = (BXFont(name: template.regular, size: 12.0) != nil) ? template.regular : template.regularAlternative ?? ""
+        
         // Let's create a font set from template
         let font = BeatFontSet.name(template.name,
                                  size: 12.0,
                                  scale: scale,
-                                 regular: (BXFont(name: template.regular, size: 12.0) != nil) ? template.regular : template.regularAlternative ?? "",
+                                    regular: regularName,
                                  bold: template.bold,
                                  italic: template.italic,
                                  boldItalic: template.boldItalic,

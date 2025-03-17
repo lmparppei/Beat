@@ -62,7 +62,6 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 @property (nonatomic) CGFloat scale;
 
 + (BeatFonts*)forType:(BeatFontType)type;
-+ (BeatFonts*)forType:(BeatFontType)type mobile:(bool)mobile;
 + (BeatFonts*)sharedFonts;
 + (BeatFonts*)sharedSansSerifFonts;
 + (BeatFonts*)sharedVariableFonts;
