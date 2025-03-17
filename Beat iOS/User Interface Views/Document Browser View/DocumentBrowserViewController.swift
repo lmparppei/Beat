@@ -24,6 +24,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		if let fountainUTI = UTType(filenameExtension: "fountain") { contentTypes?.append(fountainUTI) }
 		if let fdxUTI = UTType(filenameExtension: "fdx") { contentTypes?.append(fdxUTI) }
 		if let txtUTI = UTType(filenameExtension: "txt") { contentTypes?.append(txtUTI) }
+		if let fadeInUTI = UTType(filenameExtension: "fadein") { contentTypes?.append(fadeInUTI) }
 		
 		if contentTypes?.count == 0 {
 			contentTypes = nil
@@ -159,10 +160,12 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 					return
 				}
 				
-				self.importDocument(at: url, nextToDocumentAt: documentURL, mode: .copy) { url, error in
-					if let url {
-						self.presentDocument(at: url)
-						documentURL.stopAccessingSecurityScopedResource()
+				if url.startAccessingSecurityScopedResource() {
+					self.importDocument(at: url, nextToDocumentAt: documentURL, mode: .copy) { url, error in
+						if let url {
+							self.presentDocument(at: url)
+							documentURL.stopAccessingSecurityScopedResource()
+						}
 					}
 				}
 			}
