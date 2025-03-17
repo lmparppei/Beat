@@ -31,8 +31,7 @@ extension BeatUITextView: InputAssistantViewDelegate {
 	// MARK: - Update assisting views
 	
 	@objc func updateAssistingViews () {
-		guard let editorDelegate = self.editorDelegate,
-			  let currentLine = self.editorDelegate?.currentLine
+		guard let currentLine = self.editorDelegate?.currentLine
 		else { return }
 		
 		if (currentLine.isAnyParenthetical()) {

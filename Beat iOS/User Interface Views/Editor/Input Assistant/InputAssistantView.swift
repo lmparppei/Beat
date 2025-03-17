@@ -213,8 +213,7 @@ open class InputAssistantView: UIInputView {
 	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 	
 	public func reloadData() {
-		// We'll only refresh data if the line has changed
-		guard let line = self.dSource?.delegate?.currentLine, let delegate else { return }
+		guard let delegate else { return }
 
 		suggestionsCollectionView.reloadData()
 		

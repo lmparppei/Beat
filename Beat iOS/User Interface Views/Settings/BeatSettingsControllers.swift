@@ -284,6 +284,14 @@ class BeatSettingsViewController:UITableViewController {
 		self.delegate?.formatting.formatAllLines()
 	}
 	
+	@IBAction func toggleFontStyle(_ sender:UISegmentedControl) {
+		let sansSerif = (sender.selectedSegmentIndex == 1)
+		BeatUserDefaults.shared().save(sansSerif, forKey: BeatSettingUseSansSerif)
+		
+		self.delegate?.reloadStyles()
+		self.delegate?.formatting.formatAllLines()
+	}
+	
 }
 
 class BeatURLButton:UIButton {

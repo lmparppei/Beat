@@ -22,14 +22,14 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Plain Text</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.plain-text</string>
 			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Alternative</string>
 		</dict>
 	</array>
 	<key>CFBundleIcons</key>
@@ -46,6 +46,11 @@
 		<string>Courier Prime Bold.ttf</string>
 		<string>Courier Prime Bold Italic.ttf</string>
 		<string>Courier Prime Italic.ttf</string>
+		<string>Courier Prime Sans.ttf</string>
+		<string>Courier Prime Sans Bold.ttf</string>
+		<string>Courier Prime Sans Italic.ttf</string>
+		<string>Courier Prime Sans Bold Italic.ttf</string>
+		<string>Courier Prime Sans Italic.ttf</string>
 		<string>NotoEmoji.ttf</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
@@ -117,6 +122,31 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>fdx</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/xml</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Fade In</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>Beat-FadeIn.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.generalcoffee.fadein</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fadein</string>
 				</array>
 				<key>public.mime-type</key>
 				<array>

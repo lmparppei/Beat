@@ -41,6 +41,7 @@ public class BeatUserSettingSegmentedControl:UISegmentedControl {
 		
 		guard let setting = setting else { return }
 		let value = BeatUserDefaults.shared().getInteger(setting)
+		print(setting, "  - value", value)
 		
 		if value < self.numberOfSegments && value >= 0 {
 			self.selectedSegmentIndex = value

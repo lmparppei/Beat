@@ -272,15 +272,12 @@
 
 - (void)loadFonts
 {
-	[super loadFonts];
-	
-	// Phones require a specific set of fonts scaled by user setting
 	if (is_Mobile) {
-		bool variableSize = self.editorStyles.variableFont;
-		BeatFontType type = (variableSize) ? BeatFontTypeVariableSerif : BeatFontTypeFixed;
-		
-		self.fonts = [BeatFontManager.shared fontsWith:type scale:self.fontScale];
-	}
+		// Phones require a specific set of fonts scaled by user setting
+		[super loadFontsWithScale:self.fontScale];
+	} else {
+		[super loadFonts];
+	}	
 }
 
 
@@ -375,6 +372,8 @@
 
 
 #pragma mark - Text view
+
+@synthesize inputModifierFlags;
 
 - (BXTextView*)getTextView { return self.textView; }
 - (CGFloat)editorLineHeight { return self.editorStyles.page.lineHeight; }
@@ -808,6 +807,5 @@ bool editorWasActive = false;
 - (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view {
 	//
 }
-
 
 @end
