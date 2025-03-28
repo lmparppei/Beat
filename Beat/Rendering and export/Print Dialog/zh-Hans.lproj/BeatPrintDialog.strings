@@ -1,0 +1,93 @@
+
+/* Class = "NSButtonCell"; title = "2nd"; ObjectID = "2ld-An-t4A"; */
+"2ld-An-t4A.title" = "第二版";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "83k-sp-7QO"; */
+"83k-sp-7QO.title" = "橙色";
+
+/* Class = "NSButtonCell"; title = "PDF"; ObjectID = "8t8-IM-hHv"; */
+"8t8-IM-hHv.title" = "PDF";
+
+/* Class = "NSTextFieldCell"; title = "Print"; ObjectID = "B23-AL-UUS"; */
+"B23-AL-UUS.title" = "打印";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "BEN-AI-rRD"; */
+"BEN-AI-rRD.title" = "绿色";
+
+/* Class = "NSButtonCell"; title = "8th"; ObjectID = "BNA-67-JgB"; */
+"BNA-67-JgB.title" = "第八版";
+
+/* Class = "NSButtonCell"; title = "  Print  "; ObjectID = "BTh-vA-fQk"; */
+"BTh-vA-fQk.title" = "  打印  ";
+
+/* Class = "NSButtonCell"; title = "Sections"; ObjectID = "DrB-io-gNd"; */
+"DrB-io-gNd.title" = "章节";
+
+/* Class = "NSButtonCell"; title = "3rd"; ObjectID = "Fuc-Nw-9ve"; */
+"Fuc-Nw-9ve.title" = "第三版";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "Gug-Yv-fGM"; */
+"Gug-Yv-fGM.title" = "纸张大小";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "HOf-0E-WLn"; */
+"HOf-0E-WLn.placeholderString" = "修订，版本，...";
+
+/* Class = "NSButtonCell"; title = "Show advanced options"; ObjectID = "K23-C7-mRO"; */
+"K23-C7-mRO.title" = "显示高级选项";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "LmY-As-h9q"; */
+"LmY-As-h9q.title" = "青色";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "MFT-DM-C4L"; */
+"MFT-DM-C4L.title" = "着色修订页面";
+
+/* Class = "NSTextFieldCell"; title = "Include Invisible Elements"; ObjectID = "Nef-4V-udt"; */
+"Nef-4V-udt.title" = "包含不可见元素";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "QKZ-PI-6GB"; */
+"QKZ-PI-6GB.title" = "A4";
+
+/* Class = "NSWindow"; title = "Print"; ObjectID = "Rg7-lI-xne"; */
+"Rg7-lI-xne.title" = "打印";
+
+/* Class = "NSButtonCell"; title = "Print Scene Numbers"; ObjectID = "XTs-KO-ZjG"; */
+"XTs-KO-ZjG.title" = "打印场景编号";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "XaA-mb-KGd"; */
+"XaA-mb-KGd.title" = "美国信纸";
+
+/* Class = "NSButtonCell"; title = "4th"; ObjectID = "XyP-L6-Yh9"; */
+"XyP-L6-Yh9.title" = "第四版";
+
+/* Class = "NSButtonCell"; title = "7th"; ObjectID = "YA6-dX-Ctn"; */
+"YA6-dX-Ctn.title" = "第七版";
+
+/* Class = "NSButtonCell"; title = "6th"; ObjectID = "YI4-GJ-jLL"; */
+"YI4-GJ-jLL.title" = "第六版";
+
+/* Class = "NSButtonCell"; title = "1st"; ObjectID = "eFm-th-NeC"; */
+"eFm-th-NeC.title" = "第一版";
+
+/* Class = "NSButtonCell"; title = "Notes"; ObjectID = "hsE-MS-Br7"; */
+"hsE-MS-Br7.title" = "注释";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "jyA-d7-eqg"; */
+"jyA-d7-eqg.title" = "红色";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "oDa-5Z-L46"; */
+"oDa-5Z-L46.title" = "框";
+
+/* Class = "NSButtonCell"; title = "Synopsis"; ObjectID = "p05-ak-YGH"; */
+"p05-ak-YGH.title" = "概述";
+
+/* Class = "NSTextFieldCell"; title = "Include Revision Markers"; ObjectID = "tAR-96-UAV"; */
+"tAR-96-UAV.title" = "包含修订标记";
+
+/* Class = "NSTextFieldCell"; title = "Page Header"; ObjectID = "vz7-gT-RKM"; */
+"vz7-gT-RKM.title" = "页眉";
+
+/* Class = "NSButtonCell"; title = "5th"; ObjectID = "xBa-Ue-WC0"; */
+"xBa-Ue-WC0.title" = "第五版";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "y6u-Lj-RR8"; */
+"y6u-Lj-RR8.title" = "取消";

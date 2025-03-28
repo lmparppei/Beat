@@ -1,0 +1,72 @@
+
+/* Class = "NSButtonCell"; title = "New Screenplay"; ObjectID = "DbX-Gm-m0E"; */
+"DbX-Gm-m0E.title" = "新建剧本";
+
+/* Class = "NSTextFieldCell"; title = "Filename"; ObjectID = "EY0-Ql-hX0"; */
+"EY0-Ql-hX0.title" = "文件名";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "EmU-yf-ihA"; */
+"EmU-yf-ihA.title" = "框";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "FRr-J8-xuv"; */
+"FRr-J8-xuv.title" = "标签";
+
+/* Class = "NSButtonCell"; title = "Tutorial & Templates"; ObjectID = "HWI-6m-SnF"; */
+"HWI-6m-SnF.title" = "教程 & 模板";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "JWP-tG-3rC"; */
+"JWP-tG-3rC.title" = "标签";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Jjh-as-7aM"; */
+"Jjh-as-7aM.title" = "表格视图";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "MfA-sY-vfO"; */
+"MfA-sY-vfO.title" = "文本框";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "OFy-2u-sio"; */
+"OFy-2u-sio.title" = "表格视图";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "Smg-6c-mQH"; */
+"Smg-6c-mQH.title" = "框";
+
+/* Class = "NSTextFieldCell"; title = "Learn Beat"; ObjectID = "UjG-qn-mj6"; */
+"UjG-qn-mj6.title" = "学习 Beat";
+
+/* Class = "NSButtonCell"; title = "Button"; ObjectID = "Wvt-te-p5O"; */
+"Wvt-te-p5O.title" = "按钮";
+
+/* Class = "NSTextFieldCell"; title = "Templates"; ObjectID = "XSB-VA-eAB"; */
+"XSB-VA-eAB.title" = "模板";
+
+/* Class = "NSButtonCell"; title = "→ Support Beat"; ObjectID = "ZFK-os-h00"; */
+"ZFK-os-h00.title" = "→ 支持 Beat";
+
+/* Class = "NSTextFieldCell"; title = "No recent screenplays"; ObjectID = "Zf8-Dc-Df3"; */
+"Zf8-Dc-Df3.title" = "没有最近的剧本";
+
+/* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2024"; ObjectID = "b0H-0Y-Klb"; */
+"b0H-0Y-Klb.title" = "© Lauri-Matti Parppei 2019–2024";
+
+/* Class = "NSTextFieldCell"; title = "Released under GPL license"; ObjectID = "b4P-Uh-CmK"; */
+"b4P-Uh-CmK.title" = "在 GPL 许可证下发布";
+
+/* Class = "NSTextFieldCell"; title = "Date"; ObjectID = "d9P-af-E8t"; */
+"d9P-af-E8t.title" = "日期";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "lpM-8A-vqw"; */
+"lpM-8A-vqw.title" = "文本框";
+
+/* Class = "NSButtonCell"; title = "→ Discord Community"; ObjectID = "osl-e8-t6d"; */
+"osl-e8-t6d.title" = "→ Discord 社区";
+
+/* Class = "NSTextFieldCell"; title = "Tutorials & Templates"; ObjectID = "u0S-ze-FnT"; */
+"u0S-ze-FnT.title" = "教程 & 模版";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "uau-QP-8yL"; */
+"uau-QP-8yL.title" = "版本";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "upO-fb-u7s"; */
+"upO-fb-u7s.title" = "文本框";
+
+/* Class = "NSButtonCell"; title = "Browse..."; ObjectID = "w3a-gm-hjm"; */
+"w3a-gm-hjm.title" = "浏览...";
