@@ -81,6 +81,7 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
 {
     ParsingRule *rule = [[ParsingRule alloc] init];
     rule.resultingType = resultingType;
+    rule.options = options;
     
     rule.minimumLength = minimumLength;
     rule.minimumLengthAtInput = minimumLengthAtInput;
@@ -92,15 +93,14 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
     rule.excludedAfterPrefix = excludedAfterPrefix ?: @[];
     rule.length = length;
     rule.allowedWhiteSpace = allowedWhiteSpace;
-    
-    rule.options = options;
-    
+        
     rule.previousIsEmpty = mask_contains(options, PreviousIsEmpty);
     rule.allCapsUntilParentheses = mask_contains(options, AllCapsUntilParentheses);
     rule.allowsLeadingWhitespace = mask_contains(options, AllowsLeadingWhitespace);
+    rule.nextIsEmpty = mask_contains(options, NextIsEmpty);
     rule.titlePage = mask_contains(options, BelongsToTitlePage);
     
-    NSMutableIndexSet *pTypes = [NSMutableIndexSet indexSet];
+    NSMutableIndexSet *pTypes = NSMutableIndexSet.new;
     for (NSNumber *typeNumber in previousTypes) {
         [pTypes addIndex:[typeNumber unsignedIntegerValue]];
     }
@@ -109,16 +109,28 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
     return rule;
 }
 
-- (BOOL)validate:(Line*)line previousLine:(Line*)previousLine
+- (BOOL)validate:(Line*)line previousLine:(Line*)previousLine nextLine:(Line*)nextLine delegate:(id<ContinuousFountainParserDelegate>)delegate
 {
     bool previousIsEmpty = (previousLine.type == empty);
+    bool nextIsEmpty = (previousLine.type == empty);
     
-    // Basic rules
-    if ((self.minimumLength > line.length) ||                                            // Min length requirement
-        (self.length > 0 && line.length > self.length) ||                                // Max length requirement
-        (self.previousIsEmpty && !previousIsEmpty) ||                                    // Previous is empty
-        (self.allCapsUntilParentheses && !line.string.onlyUppercaseUntilParenthesis) ||  // All caps
-        (line.string.containsOnlyWhitespace && line.length > self.allowedWhiteSpace)     // Only whitespace
+    // Check length first
+    bool isLongEnough = false;
+    if (line.length >= self.minimumLength || (delegate.currentLine == line && line.length >= self.minimumLengthAtInput)) {
+        isLongEnough = true;
+    }
+    
+    // Apply all basic rules. Any of these should not fail.
+    if ((!isLongEnough) ||                                                                          // Min length requirement failed
+        (self.length > 0 && line.length > self.length) ||                                           // Max length requirement
+        (self.previousIsEmpty && !previousIsEmpty) ||                                               // Previous isn't empty
+        (self.nextIsEmpty && !nextIsEmpty) ||                                                       // Next isn't empty
+        (mask_contains(self.options, PreviousIsNotEmpty) && previousLine.length == 0) ||            // Previous should NOT be empty, but isn't
+        
+        (self.allCapsUntilParentheses && !line.string.onlyUppercaseUntilParenthesis) ||             // Caps rules not fulfilled
+        (line.string.containsOnlyWhitespace && line.length > self.allowedWhiteSpace)  ||            // Wrong amount of whitespace 
+
+        (mask_contains(self.options, RequiresTwoEmptyLines) && line.length == 0 && !nextIsEmpty)
         )
     {
         return false;

@@ -8,14 +8,18 @@
 #import <Foundation/Foundation.h>
 #import <BeatParsing/Line.h>
 
+@protocol ContinuousFountainParserDelegate;
+
 @interface ParsingRule : NSObject
 
 typedef NS_OPTIONS(NSUInteger, ParsingOptions) {
     PreviousIsEmpty          = 1 << 1,
-    NextIsEmpty              = 1 << 2,
-    AllCapsUntilParentheses  = 1 << 3,
-    AllowsLeadingWhitespace  = 1 << 4,
-    BelongsToTitlePage       = 1 << 5
+    PreviousIsNotEmpty       = 1 << 2,
+    NextIsEmpty              = 1 << 3,
+    AllCapsUntilParentheses  = 1 << 4,
+    AllowsLeadingWhitespace  = 1 << 5,
+    RequiresTwoEmptyLines    = 1 << 6,
+    BelongsToTitlePage       = 1 << 7
 };
 
 @property (nonatomic, assign) LineType resultingType;
@@ -23,7 +27,9 @@ typedef NS_OPTIONS(NSUInteger, ParsingOptions) {
 
 @property (nonatomic, assign) BOOL allCapsUntilParentheses;
 @property (nonatomic, assign) BOOL previousIsEmpty;
+@property (nonatomic, assign) BOOL nextIsEmpty;
 @property (nonatomic, assign) BOOL titlePage;
+
 @property (nonatomic, strong) NSArray<NSString *> *beginsWith;
 @property (nonatomic, strong) NSArray<NSString *> *endsWith;
 @property (nonatomic, strong) NSArray<NSString *> *requiredAfterPrefix;
@@ -87,6 +93,6 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
               length:(NSInteger)length
    allowedWhiteSpace:(NSInteger)allowedWhiteSpace;
 
-- (BOOL)validate:(Line*)line previousLine:(Line*)previousLine;
+- (BOOL)validate:(Line*)line previousLine:(Line*)previousLine nextLine:(Line*)nextLine delegate:(id<ContinuousFountainParserDelegate>)delegate;
 
 @end
