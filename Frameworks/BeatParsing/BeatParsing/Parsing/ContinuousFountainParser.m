@@ -159,13 +159,13 @@ static NSDictionary* patterns;
             
             // Dual dialogue
             [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) previousTypes:nil beginsWith:nil endsWith:@[@"^"] requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule type:dualDialogueParenthetical options:AllowsLeadingWhitespace  previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule type:dualDialogue options:AllowsLeadingWhitespace minimumLength:1 previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)]],
+            [ParsingRule type:dualDialogueParenthetical options:(AllowsLeadingWhitespace | PreviousIsNotEmpty)  previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
+            [ParsingRule type:dualDialogue options:(AllowsLeadingWhitespace | PreviousIsNotEmpty) minimumLength:1 previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)]],
             
             // Dialogue
             [ParsingRule type:character options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) minimumLength:2 minimumLengthAtInput:3 previousTypes:nil],
-            [ParsingRule type:parenthetical options:(AllowsLeadingWhitespace) previousTypes:@[@(character), @(dialogue), @(parenthetical)] beginsWith:@[@"("] endsWith:nil],
-            [ParsingRule type:dialogue options:(AllowsLeadingWhitespace) minimumLength:1 previousTypes:@[@(character), @(dialogue), @(parenthetical)]],
+            [ParsingRule type:parenthetical options:(AllowsLeadingWhitespace | PreviousIsNotEmpty) previousTypes:@[@(character), @(dialogue), @(parenthetical)] beginsWith:@[@"("] endsWith:nil],
+            [ParsingRule type:dialogue options:(AllowsLeadingWhitespace | RequiresTwoEmptyLines | PreviousIsNotEmpty) minimumLength:0 previousTypes:@[@(character), @(dialogue), @(parenthetical)]],
             
             [ParsingRule type:titlePageTitle options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"title:"] endsWith:nil ],
             [ParsingRule type:titlePageCredit options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"credit:"] endsWith:nil],
@@ -810,9 +810,9 @@ static NSDictionary* patterns;
     line.escapeRanges = NSMutableIndexSet.new;
     line.type = [self parseLineTypeFor:line atIndex:index];
     
-    // In the future we'll replace the previous function with rule-based parsing.
-    LineType test = [self ruleBasedParsingFor:line atIndex:index];
-    if (line.type != test) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:test], [Line typeName:line.type], line);
+    // In the future we'll replace the previous function with rule-based parsing. This already works, but needs support for FORCED TYPES.
+    //LineType test = [self ruleBasedParsingFor:line atIndex:index];
+    //if (line.type != test) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:test], [Line typeName:line.type], line);
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -926,9 +926,26 @@ static NSDictionary* patterns;
 - (LineType)ruleBasedParsingFor:(Line*)line atIndex:(NSInteger)index
 {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
+    Line *nextLine = (index+1 < self.lines.count && index >= 0) ? self.lines[index + 1] : nil;
+    
+    // Check if this line was forced to become a character cue in editor (by pressing tab)
+    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
+        line.forcedCharacterCue = NO;
+        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
+        return (line.string.lastNonWhiteSpaceCharacter == 94) ? dualDialogueCharacter : character;
+    } else if (line.length == 0 && previousLine.isAnyCharacter) {
+        
+        //return (previousLine.type == character) ? dialogue : dualDialogue;
+    }
+    
+    if (line.string.length > 0) {
+        // Add the first \ as an escape character if needed
+        if ([line.string characterAtIndex:0] == '\\')
+            [line.escapeRanges addIndex:0];
+    }
     
     for (ParsingRule* rule in self.parsingRules) {
-        if ([rule validate:line previousLine:previousLine]) {
+        if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
             return rule.resultingType;
         }
     }

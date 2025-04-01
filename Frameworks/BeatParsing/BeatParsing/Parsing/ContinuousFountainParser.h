@@ -27,6 +27,8 @@
 /// A list of disabled line types (`LineType` is an integer enum, so an index set is the fastest way to implement this)
 @property (nonatomic, readonly) NSIndexSet* disabledTypes;
 
+- (Line*)currentLine;
+
 /// Forces reformatting at given line indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 /// Forces any changes in parser to be reformatted in editor
