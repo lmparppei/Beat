@@ -108,11 +108,16 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
     defaultValues = @{
         DocSettingStylesheet: @"Screenplay",
         DocSettingNovelLineHeightMultiplier: @(2.0),
-        DocSettingHeaderAlignment: @(1),
+        DocSettingHeaderAlignment: @1,
         DocSettingPrintSceneNumbers: @(true),
         DocSettingContentAlignment: @"",
-        DocSettingFirstPageNumber: @(1),
-        DocSettingPageNumberingMode: @(0)
+        DocSettingFirstPageNumber: @1,
+        DocSettingPageNumberingMode: @0,
+        
+        DocSettingPrintNotes: @0,
+        DocSettingPrintSections: @0,
+        DocSettingPrintSynopsis: @0,
+        DocSettingPrintSceneNumbers: @1,
     };
     
     return defaultValues;
