@@ -113,9 +113,8 @@
 - (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage {
     if (block.renderedString == nil) {
         if (block.dualDialogueContainer) {
-            // Render dual dialogue block (enter kind of recursion)
+            // Render dual dialogue block
             block.renderedString = [self renderDualDialogueContainer:block];
-            
         } else {
             NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
             
@@ -152,13 +151,20 @@
         return NSAttributedString.new;
     }
     
-    RenderStyle* style = [self.styles forLine:line];
+    // We might need to flip the type for lonely dual dialogue.
+    if (line.isDualDialogue && !dualDialogueElement) {
+        if (line.type == dualDialogueCharacter) line.type = character;
+        if (line.type == dualDialogueParenthetical) line.type = parenthetical;
+        if (line.type == dualDialogue) line.type = dialogue;
+    }
     
+    RenderStyle* style = [self.styles forLine:line];
+        
     // Create attributed string with attributes for current style
     NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
     
     // Support for empty character cues
-    if (line.isAnyCharacter && line.string.trim.length == 1 && line.numberOfPrecedingFormattingCharacters == 1) {
+    if (line.isAnyCharacter && line.stripFormatting.length == 0 && line.numberOfPrecedingFormattingCharacters == 1) {
         return [self emptyCharacterCueWith:attrs];
     }
     
@@ -737,6 +743,9 @@
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue
 {
     if (line == nil) return @{};
+    if (line.type == dualDialogue) {
+        NSLog(@"Dual dialogue: %@ // should be: %@", line, isDualDialogue ? @"yes" : @"no");
+    }
     
     @synchronized (self.lineTypeAttributes) {
         BeatPaperSize paperSize = self.settings.paperSize;

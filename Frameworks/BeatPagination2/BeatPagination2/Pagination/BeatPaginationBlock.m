@@ -49,7 +49,7 @@
 		_lines = lines;
 		_dualDialogueElement = dualDialogueElement;
         _calculatedHeight = -1.0;
-		
+
 		if (!_dualDialogueElement) {
 			Line* firstLine = _lines.firstObject;
 			if (firstLine.nextElementIsDualDialogue) _dualDialogueContainer = true;
@@ -291,13 +291,15 @@
 - (NSIndexSet*)possiblePageBreakIndicesForDialogueBlock
 {
     NSMutableIndexSet* indices = [NSMutableIndexSet indexSetWithIndex:0];
+    
     for (NSInteger i=0; i<self.lines.count; i++) {
-        Line *line = _lines[i];
+        Line* line = _lines[i];
+        Line* previousLine = (i > 0) ? _lines[i-1] : nil;
         
-        // Any parenthetical after the first one are good places to break the page
-        if (line.isAnyParenthetical && i > 1) [indices addIndex:i];
-        // Any line of dialogue is a good place to attempt to break the page
-        if (line.isAnyDialogue) [indices addIndex:i];
+        // Any parenthetical after a character cue one are good places to break the page.
+        if (line.isAnyParenthetical && i > 1 && !previousLine.isAnyCharacter) [indices addIndex:i];
+        // Any line of dialogue or a deeper dual dialogue character cue is a good place to attempt to break the page
+        else if (line.isAnyDialogue || (line.type == dualDialogueCharacter && i > 0)) [indices addIndex:i];
     }
     
     return indices;
@@ -444,26 +446,42 @@
 	
 	NSArray* leftResult;
 	NSArray* rightResult;
+    BeatPageBreak* pageBreak;
 	
 	if (leftBlock.height > remainingSpace) {
 		// We need to split left side
 		leftResult = [leftBlock breakBlockWithRemainingSpace:remainingSpace];
 		[onThisPage addObjectsFromArray:leftResult[0]];
 		[onNextPage addObjectsFromArray:leftResult[1]];
-	}
+    } else {
+        [onThisPage addObjectsFromArray:leftBlock.lines];
+    }
 	if (rightBlock.height > remainingSpace) {
 		// We need to split left side
 		rightResult = [rightBlock breakBlockWithRemainingSpace:remainingSpace];
 		[onThisPage addObjectsFromArray:rightResult[0]];
 		[onNextPage addObjectsFromArray:rightResult[1]];
-	}
-	
-	if (((NSArray*)leftResult[0]).count > 0 && ((NSArray*)rightResult[0]).count > 0) {
+    } else {
+        [onThisPage addObjectsFromArray:rightBlock.lines];
+    }
+	    
+    // If something was left on both pages, let's return that result.
+    if (onThisPage.count > 0 && onNextPage.count > 0) {
+        BeatPageBreak* leftPB = (leftResult.count == 3) ? leftResult[2] : nil;
+        BeatPageBreak* rightPB = (rightResult.count == 3) ? rightResult[2] : nil;
+        
+        // A fallback page break
+        if (leftPB == nil) leftPB = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"Weird dual dialogue issue?"];
+        
+        return @[onThisPage, onNextPage, (rightPB != nil) ? rightPB : leftPB];
+    }
+    
+    // To be on the safe side, we'll also try this.
+    else if (((NSArray*)leftResult[0]).count > 0 && ((NSArray*)rightResult[0]).count > 0) {
 		return @[onThisPage, onNextPage, rightResult[2]];
-	}
+    }
 	
-	//BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0.0 element:self.lines.firstObject lineHeight:self.delegate.styles.page.lineHeight reason:@"Nothing was left on page with dual dialogue container"];
-    BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"Nothing was left on page with dual dialogue container"];
+    pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:self.lines.firstObject attributedString:nil reason:@"Nothing was left on page with dual dialogue container"];
 	return @[@[], self.lines, pageBreak];
 }
 
@@ -513,7 +531,7 @@
         }
         
         // In some edge cases you could end up with a parenthetical or character cue that is longer than a page, which will cause an endless loop, because it will now fit anywhere. To avoid that, we'll check the item height and force-split it if needed.
-        if (i == 1 && heightBefore > maxHeight) {
+        if (i <= 1 && heightBefore > maxHeight) {
             splitCharacterCue = true;
             
             // We have encountered a character cue which is higher than a page. Rare edge case.
@@ -551,7 +569,13 @@
         }
         
         // This line doesn't fit. Let's find out how to split the block.
-        if (line.isAnyParenthetical) {
+        
+        if (line.type == dualDialogueCharacter) {
+            // So, breaking with some Fountain standards, we support multiple dual dialogue items on the right side.
+            cutoff = i;
+            pageBreakItem = line;
+            break;
+        } else if (line.isAnyParenthetical) {
             // Parentheticals are a good place to split a line
             if ([splittableIndices containsIndex:i]) {
                 // After a parenthetical which is NOT the second line, we'll just hop onto next page
@@ -608,7 +632,7 @@
     
     // Add character cues if needed (usually is)
     if (!splitCharacterCue) {
-        if (onThisPage.count && onNextPage.count) {
+        if (onThisPage.count && onNextPage.count && !onNextPage.firstObject.isAnyCharacter) {
             [onThisPage insertObject:self.lines.firstObject atIndex:0];
             [onThisPage addObject:[self.delegate moreLineFor:self.lines.firstObject]];
             

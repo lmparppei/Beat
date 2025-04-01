@@ -420,6 +420,7 @@
     
     // Avoid infinite loops here
     if ([NSDate.new timeIntervalSinceDate:_startTime] > 5.0) {
+        NSLog(@"WARNING: Pagination timed out (%f)", [NSDate.new timeIntervalSinceDate:_startTime]);
         self.timedOut = true;
         self.canceled = true;
         return;
@@ -459,7 +460,7 @@
 		}
 		return;
 	}
-
+    
 	// Nothing fit, let's break it apart
 	CGFloat remainingSpace = _currentPage.remainingSpace;
     
@@ -491,6 +492,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (NSArray<NSArray<Line*>*>*)blocksForLineAt:(NSInteger)idx
 {
 	Line* line = self.lineQueue[idx];
+    
 	NSMutableArray<Line*>* block = [NSMutableArray arrayWithObject:line];
 	
 	if (line.isAnyCharacter) {
@@ -562,6 +564,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		Line* l = _lineQueue[i];
 		
 		if (l.type == character) break;
+        //if (l.type == character || (l.type == dualDialogueCharacter && hasBegunDualDialogue)) break;
 		else if (!l.isDialogue && !l.isDualDialogue) break;
 		else if (l.isDualDialogue) hasBegunDualDialogue = true;
 		else if (hasBegunDualDialogue && (l.isDialogue || l.type == dualDialogueCharacter )) break;
