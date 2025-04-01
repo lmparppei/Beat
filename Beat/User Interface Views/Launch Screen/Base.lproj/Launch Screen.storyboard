@@ -277,7 +277,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                         </box>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="fj0-pi-Ae8">
-                                            <rect key="frame" x="346" y="263" width="311" height="19"/>
+                                            <rect key="frame" x="346" y="263" width="310" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Templates" id="XSB-VA-eAB">
                                                 <font key="font" metaFont="systemLight" size="16"/>
