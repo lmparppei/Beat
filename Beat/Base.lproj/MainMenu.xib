@@ -866,7 +866,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" hidden="YES" id="9KI-Cy-Uax"/>
-                            <menuItem title="Line Alternatives" id="zGj-P3-PkD">
+                            <menuItem title="Line Alternatives" hidden="YES" id="zGj-P3-PkD">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="OPQ-lX-aTP">
                                     <items>

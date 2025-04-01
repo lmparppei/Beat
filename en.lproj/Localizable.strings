@@ -68,8 +68,8 @@
 "lock.documentLocked" = "Document is locked";
 
 
-"statistics.lines" = "Lines";
-"statistics.scenes" = "Scenes";
+"statistics.lines" = "lines";
+"statistics.scenes" = "scenes";
 
 "statisticsPanel.title" = "Screenplay Statistics";
 "statisticsPanel.averageSceneLength" = "Average scene length";
@@ -234,6 +234,8 @@
 "character.editor.age" = "Age";
 "character.editor.biography" = "Biography";
 "character.editor.lines" = "Lines";
+"character.editor.highlight" = "Highlight Color";
+"character.editor.addAlias" = "Add Alias...";
 
 "backup.browseVersions" = "Browse versions...";
 

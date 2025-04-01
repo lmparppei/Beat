@@ -244,10 +244,10 @@
 "revisions.commitPrompt.title" = "Acceptera alla revisioner";
 
 /* (No Comment) */
-"statistics.lines" = "Rader";
+"statistics.lines" = "rader";
 
 /* (No Comment) */
-"statistics.scenes" = "Scener";
+"statistics.scenes" = "scener";
 
 /* (No Comment) */
 "statisticsPanel.averageSceneLength" = "Genomsnittlig scenlängd";
@@ -404,6 +404,8 @@
 "character.editor.age" = "Ålder";
 "character.editor.biography" = "Biografi";
 "character.editor.lines" = "Rader";
+"character.editor.highlight" = "Markeringsfärg";
+"character.editor.addAlias" = "Tillsätt alias...";
 
 "backup.browseVersions" = "Visa versioner...";
 

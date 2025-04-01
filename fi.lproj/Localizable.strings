@@ -56,8 +56,8 @@
 "gender.man.plural" = "Miehet";
 "gender.unspecified.plural" = "Määrittämätön";
 
-"statistics.lines" = "Repliikit";
-"statistics.scenes" = "Kohtaukset";
+"statistics.lines" = "repliikkiä";
+"statistics.scenes" = "kohtausta";
 
 "lock.clickToUnlock" = "Klikkaa avataksesi";
 "lock.documentLocked" = "Dokumentti on lukittu";
@@ -204,6 +204,8 @@
 "character.editor.age" = "Ikä";
 "character.editor.biography" = "Kuvaus";
 "character.editor.lines" = "Repliikit";
+"character.editor.highlight" = "Korostus";
+"character.editor.addAlias" = "Lisää alias...";
 
 "backup.browseVersions" = "Selaa versioita...";
 

@@ -488,7 +488,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <size key="minSize" width="290" height="470"/>
+                                                                                            <size key="minSize" width="280" height="470"/>
                                                                                             <size key="maxSize" width="304" height="10000000"/>
                                                                                             <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <connections>
@@ -706,7 +706,7 @@
                                                                                     <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                                 <connections>
-                                                                                    <action selector="zoomIn:" target="717-An-Uvy" id="Dz9-2L-ID3"/>
+                                                                                    <action selector="zoomNotepadIn:" target="717-An-Uvy" id="XkJ-OW-Ul2"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button id="oeo-I1-hTN">
@@ -717,7 +717,7 @@
                                                                                     <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
                                                                                 <connections>
-                                                                                    <action selector="zoomOut:" target="717-An-Uvy" id="Y4t-wB-UhU"/>
+                                                                                    <action selector="zoomNotepadOut:" target="717-An-Uvy" id="AoB-as-JxH"/>
                                                                                 </connections>
                                                                             </button>
                                                                         </subviews>

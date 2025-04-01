@@ -60,8 +60,8 @@
 "gender.man.plural" = "Moški";
 "gender.unspecified.plural" = "Nedoločeno";
 
-"statistics.lines" = "Vrstice";
-"statistics.scenes" = "Prizori";
+"statistics.lines" = "vrstice";
+"statistics.scenes" = "prizori";
 
 "lock.clickToUnlock" = "Kliknite za odklenitev";
 "lock.documentLocked" = "Dokument je zaklenjen";
@@ -199,6 +199,7 @@
 "character.editor.age" = "Starost";
 "character.editor.biography" = "Biografija";
 "character.editor.lines" = "Vrstice";
+"character.editor.highlight" = "Boudarjena barva";
 
 "templates.novel-tutorial.title" = "Vodnik za roman";
 "templates.novel-tutorial.description" = "Začnite z pisanjem romanov";
