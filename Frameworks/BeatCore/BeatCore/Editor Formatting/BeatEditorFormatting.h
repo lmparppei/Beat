@@ -34,6 +34,9 @@ typedef enum {
 
 - (instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage;
 
+/// Applies any required formatting changes from the parser
+- (void)applyFormatChanges;
+
 /// Forces reformatting of each line
 - (void)formatAllLines;
 /// Formats a single line
@@ -49,15 +52,32 @@ typedef enum {
 /// Reformats all lines in given index set
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices;
 
-- (void)refreshRevisionTextColors;
-- (void)refreshRevisionTextColorsInRange:(NSRange)range;
-
 - (void)forceFormatChangesInRange:(NSRange)range;
 
 - (void)formatAllAsynchronously;
 
+
+#pragma mark - Text color
+
 /// Reset text color for a single line
 - (void)setTextColorFor:(Line*)line;
+
+- (void)refreshRevisionTextColors;
+- (void)refreshRevisionTextColorsInRange:(NSRange)range;
+- (void)refreshTextColorsForTypes:(NSIndexSet*)types range:(NSRange)range;
+
+
+#pragma mark - Backgrounds
+
+/// Refreshes the backgrounds and foreground revision colors in all lines. The method name is a bit confusing because of legacy reasons.
+- (void)refreshBackgroundForAllLines;
+
+/// Renders background for this line range
+- (void)refreshBackgroundForLine:(Line*)line clearFirst:(bool)clear;
+
+/// Redraws backgrounds in given range
+- (void)refreshBackgroundForRange:(NSRange)range;
+
 
 @end
 

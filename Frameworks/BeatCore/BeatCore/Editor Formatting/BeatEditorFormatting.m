@@ -85,6 +85,25 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (BXFont*)synopsisFont { return (_delegate != nil) ? self.fonts.synopsis : BeatFontManager.shared.defaultFonts.synopsis; }
 
 
+#pragma mark - Formatting calls
+
+- (void)applyFormatChanges
+{
+    ContinuousFountainParser* parser = self.delegate.parser;
+    NSArray* lines = parser.lines;
+    
+    while (parser.changedIndices.count > 0) {
+        NSInteger idx = parser.changedIndices.firstIndex;
+        [parser.changedIndices removeIndex:idx];
+        
+        if (idx < lines.count) [self formatLine:lines[idx]];
+        else break;
+    }
+    
+    [parser.changedIndices removeAllIndexes];
+}
+
+
 #pragma mark - Paragraph styles
 
 /// Returns paragraph style for given line type
@@ -415,7 +434,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         
 		// Only do this if we are REALLY typing at this location
 		// Foolproof fix for a strange, rare bug which changes multiple lines into character cues and the user is unable to undo the changes
-		if (NSMaxRange(range) <= selectedRange.location) {
+        if (NSMaxRange(range) <= selectedRange.location) {
             self.didProcessForcedCharacterCue = true; // Flag that we're processing a character cue (to avoid reparsing the change on iOS)
 			
             [self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
@@ -430,7 +449,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
                 [_delegate setSelectedRange:selectedRange];
             #else
                 // And on macOS we need to set the color (no idea why)
-                [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
+            [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range textStorage:nil];
             #endif
 
 			_delegate.selectedRange = selectedRange;
@@ -655,26 +674,33 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Set foreground color
 
-- (void)setForegroundColor:(BXColor*)color line:(Line*)line range:(NSRange)localRange {
+- (void)setForegroundColor:(BXColor*)color line:(Line*)line range:(NSRange)localRange textStorage:(NSMutableAttributedString*)textStorage
+{
+    if (textStorage == nil) textStorage = self.textStorage;
+    
 	NSRange globalRange = [line globalRangeFromLocal:localRange];
 	
 	// Don't go out of range and add attributes
 	if (NSMaxRange(localRange) <= line.string.length && localRange.location >= 0 && color != nil) {
-		[self addAttribute:NSForegroundColorAttributeName value:color range:globalRange];
+        [self addAttribute:NSForegroundColorAttributeName value:color range:globalRange textStorage:textStorage];
 	}
 	
 }
 
 #pragma mark - Set temporary attributes
 
-- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range {
+/// Safely adds an attribute to the text. Set `textStorage` to `nil` to use the default editor text storage.
+- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage;
+{
+    if (textStorage == nil) textStorage = self.textStorage;
+    
 	// Don't go out of range
-    if (NSMaxRange(range) >= self.textStorage.length) {
-		range.length = self.textStorage.length - range.location;
-        if (range.length <= 0 || NSMaxRange(range) > self.textStorage.length) return;
+    if (NSMaxRange(range) >= textStorage.length) {
+		range.length = textStorage.length - range.location;
+        if (range.length <= 0 || NSMaxRange(range) > textStorage.length) return;
 	}
 	
-	if (range.length > 0) [self.textStorage addAttribute:key value:value range:range];
+	if (range.length > 0) [textStorage addAttribute:key value:value range:range];
 }
 
 
@@ -682,16 +708,23 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)setTextColorFor:(Line*)line
 {
+    [self setTextColorFor:line textStorage:nil];
+}
+
+- (void)setTextColorFor:(Line*)line textStorage:(NSMutableAttributedString*)textStorage
+{
+    if (textStorage == nil) textStorage = self.textStorage;
+    
 	// Foreground color attributes
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
 	if (line.omitted && !line.isNote) {
-		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 		return;
 	}
-		
+    
 	// Set the base font color
-	[self setForegroundColor:themeManager.textColor line:line range:NSMakeRange(0, line.length)];
+    [self setForegroundColor:themeManager.textColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 	
 	// Heading elements can be colorized using [[COLOR COLORNAME]],
 	// so let's respect that first
@@ -706,20 +739,43 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			else if (line.type == synopse) color = themeManager.synopsisTextColor;
 		}
 		
-		[self setForegroundColor:color line:line range:NSMakeRange(0, line.length)];
+        [self setForegroundColor:color line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 	}
 	else if (line.type == pageBreak) {
-		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 	}
+    else if (line.isAnySortOfDialogue && self.delegate != nil) {
+        BeatCharacterData* cd = [BeatCharacterData.alloc initWithDelegate:self.delegate];
+        NSArray<Line*>* block = [self.delegate.parser blockFor:line];
+        
+        Line* cue = block.firstObject;
+        NSString* chrName = cue.characterName;
+        BeatCharacter* c = [cd getCharacterWith:chrName];
+        
+        if (c.highlightColor.length > 0) {
+            BXColor* color = [BeatColors color:c.highlightColor];
+            if (color != nil) {
+                [self setForegroundColor:color line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
+                
+                // Make sure the whole block gets the correct color
+                NSInteger idx = [self.delegate.parser indexOfLine:line];
+                if (idx+1 < self.delegate.parser.lines.count) {
+                    Line* nextLine = self.delegate.parser.lines[idx+1];
+                    if (nextLine.isAnySortOfDialogue && nextLine.length > 0) [self.delegate.parser.changedIndices addIndex:idx+1];
+                }
+            }
+        }
+        
+    }
 		
 	// Enumerate FORMATTING RANGES and make all of them invisible
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:range textStorage:textStorage];
 	}];
 	
 	// Enumerate MACRO RANGES
 	[line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self setForegroundColor:themeManager.macroColor line:line range:range];
+        [self setForegroundColor:themeManager.macroColor line:line range:range textStorage:textStorage];
 	}];
 	
 	NSArray* notes = line.noteData;
@@ -732,17 +788,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			if (c != nil) color = c;
 		}
 		
-		if (range.length > 0) [self setForegroundColor:color line:line range:range];
+        if (range.length > 0) [self setForegroundColor:color line:line range:range textStorage:textStorage];
 	}
 	
 	// Enumerate title page ranges
 	if (line.isTitlePage && line.titleRange.length > 0) {
-		[self setForegroundColor:themeManager.commentColor line:line range:line.titleRange];
+        [self setForegroundColor:themeManager.commentColor line:line range:line.titleRange textStorage:textStorage];
 	}
 	
 	// Bullets for forced empty lines are invisible, too
 	else if ((line.string.containsOnlyWhitespace && line.length >= 2)) {
-		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 	}
 	
 	// Color markers
@@ -754,7 +810,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		NSRange markerRange = line.markerRange;
 		
-		if (color) [self setForegroundColor:color line:line range:markerRange];
+        if (color) [self setForegroundColor:color line:line range:markerRange textStorage:textStorage];
 	}
     
     [self revisedTextColorFor:line];
@@ -856,7 +912,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		BXColor* color = BeatColors.colors[colorName];
 		if (color == nil) return;
 		
-		[self addAttribute:NSForegroundColorAttributeName value:color range:range];
+        [self addAttribute:NSForegroundColorAttributeName value:color range:range textStorage:textStorage];
 	}];
 }
 
@@ -867,12 +923,67 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (void)refreshRevisionTextColorsInRange:(NSRange)range
 {
-	[self revisedTextStyleForRange:range];
+	// First update revision attribute ranges
+    [self revisedTextStyleForRange:range];
 	
+    // Then apply color for each line. This is very heavy but I don't know any other solution.
 	NSArray* lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
         [self setTextColorFor:line];
 	}
+}
+
+- (void)refreshTextColorsForTypes:(NSIndexSet*)types range:(NSRange)range
+{
+
+    NSArray* lines = [self.parser linesInRange:range];
+    for (Line* line in lines) {
+        if ([types containsIndex:line.type]) [self setTextColorFor:line];
+    }
+     
+    /*
+    NSArray<Line*>* lines = self.delegate.parser.lines.copy;
+    
+    @synchronized (self.delegate.getTextView.text) {
+        dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+        dispatch_apply(lines.count, queue, ^(size_t i) {
+            Line *line = lines[i];
+            
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self setTextColorFor:line];
+            });
+        });
+        
+        [self.delegate updateLayout];
+        [self.delegate ensureLayout];
+    }
+     */
+}
+
+
+#pragma mark - Background refreshing
+
+- (void)refreshBackgroundForRange:(NSRange)range
+{
+    NSArray *lines = [self.delegate.parser linesInRange:range];
+    for (Line* line in lines) {
+        [self refreshRevisionTextColorsInRange:line.textRange];
+        [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+    }
+}
+
+- (void)refreshBackgroundForLine:(Line*)line clearFirst:(bool)clear
+{
+    [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+}
+
+- (void)refreshBackgroundForAllLines
+{
+    NSArray* lines = self.delegate.parser.lines;
+    for (Line* line in lines) {
+        [self refreshRevisionTextColorsInRange:line.textRange];
+        [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+    }
 }
 
 

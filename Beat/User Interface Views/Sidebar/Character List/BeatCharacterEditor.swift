@@ -25,6 +25,7 @@ import BeatCore
 	@objc weak var manager:BeatCharacterEditorPopoverManager?
 	
 	@objc @IBOutlet weak var titleView:NSTextField?
+	@objc @IBOutlet weak var secondaryTitleView:NSTextField?
 	
 	@objc @IBOutlet weak var biography:NSTextView?
 	@objc @IBOutlet weak var age:NSTextField?
@@ -37,6 +38,8 @@ import BeatCore
 	@objc @IBOutlet weak var genderMan:NSButton?
 	@objc @IBOutlet weak var genderOther:NSButton?
 	
+	@objc @IBOutlet weak var highlightColorButton:NSPopUpButton?
+	
 	@objc var allNames:[String] = []
 	
 	@objc var changed = false
@@ -46,7 +49,7 @@ import BeatCore
 	@objc weak var character:BeatCharacter? {
 		didSet {
 			guard let character = self.character else { return }
-			
+						
 			self.biography?.text = character.bio
 			self.biography?.textColor = .textColor
 			self.age?.stringValue = character.age
@@ -56,19 +59,12 @@ import BeatCore
 			genderMan?.state = (character.gender == "man") ? .on : .off
 			genderOther?.state = (character.gender == "other") ? .on : .off
 			
-			let info:NSMutableAttributedString = NSMutableAttributedString(string: "")
 			
-			let title = NSAttributedString(string: character.name + "\n", attributes: [ .font: NSFont.boldSystemFont(ofSize: NSFont.systemFontSize) ])
-			
-			let linesAndScenes = NSAttributedString(string:
-														NSLocalizedString("statistics.lines", comment: "Lines") + ": \(character.lines)\n" +
-														NSLocalizedString("statistics.scenes", comment: "Scenes") + ": \(character.scenes.count)",
-													attributes: [NSAttributedString.Key.font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)])
-			
-			info.append(title)
-			info.append(linesAndScenes)
-			
-			self.titleView?.attributedStringValue = info
+			titleView?.stringValue = character.name
+			secondaryTitleView?.stringValue = "\(character.lines) \(NSLocalizedString("statistics.lines", comment: "lines")) • " +
+						" \(character.scenes.count) \(NSLocalizedString("statistics.scenes", comment: "scenes"))"
+						
+			applyHighlightColor(character.highlightColor)
 			
 			changed = false
 		}
@@ -76,6 +72,28 @@ import BeatCore
 	
 	init() {
 		super.init(nibName: "BeatCharacterEditorView", bundle: Bundle.main)
+	}
+	
+	override func viewWillAppear() {
+		super.viewWillAppear()
+		let colors = ["red", "blue", "green", "pink", "brown", "cyan", "orange", "magenta", "cherry", "mint", "violet"]
+		
+		// Add empty item
+		let item = BeatColorMenuItem(title: "", action: #selector(pickColor), keyEquivalent: "")
+		item.colorKey = ""
+		self.highlightColorButton?.menu?.addItem(item)
+		
+		for color in colors {
+			let item = BeatColorMenuItem(title: "", action: #selector(pickColor), keyEquivalent: "")
+			item.colorKey = color
+			item.target = self
+			item.image = BeatColors.labelImage(forColor: color, size: CGSize(width: 16, height: 16))
+			self.highlightColorButton?.menu?.addItem(item)
+		}
+		
+		if let highlightColor = character?.highlightColor {
+			applyHighlightColor(highlightColor)
+		}
 	}
 	
 	required init?(coder: NSCoder) {
@@ -95,6 +113,39 @@ import BeatCore
 		changed = true
 	}
 	
+	@objc func pickColor(_ sender:BeatColorMenuItem?) {
+		guard let delegate = manager?.delegate, let chr = self.character, let color = sender?.colorKey else { return }
+		chr.highlightColor = color
+		manager?.saveCharacter(chr, reloadView: true)
+		changed = true
+		
+		// This is a little silly, but whatever
+		let types:IndexSet = [
+			Int(LineType.character.rawValue),
+			Int(LineType.parenthetical.rawValue),
+			Int(LineType.dialogue.rawValue),
+			Int(LineType.dualDialogueCharacter.rawValue),
+			Int(LineType.dualDialogueParenthetical.rawValue),
+			Int(LineType.dualDialogue.rawValue)
+		]
+		
+		delegate.formatting.refreshTextColors(forTypes: types, range: NSRange(location: 0, length: delegate.text().count))
+		self.manager?.listDelegate?.reloadView()
+	}
+	
+	@objc func applyHighlightColor(_ color:String) {
+		guard let menu = highlightColorButton?.menu else { return }
+		
+		for item in menu.items {
+			if let cItem = item as? BeatColorMenuItem, cItem.colorKey == character?.highlightColor {
+				item.state = .on
+				highlightColorButton?.selectItem(at: menu.index(of: item))
+			} else {
+				item.state = .off
+			}
+		}
+	}
+	
 	func controlTextDidChange(_ obj: Notification) {
 		character?.age = age?.stringValue ?? ""
 		changed = true
@@ -111,29 +162,32 @@ import BeatCore
 	// MARK: Alias menus
 	
 	@objc func createAliasMenu() -> NSMenu? {
-		guard let character else { print("No character"); return nil }
+		guard let character, let characterData = manager?.characterData else { print("No character"); return nil }
 		
 		// Populate alias list
-		if let characterData = manager?.characterData {
-			var names = characterData.charactersAndLines()
-			
-			// Remove this character's name
-			names.removeValue(forKey: character.name)
-			
-			aliasMenu = NSMenu()
-			
-			// First, add existing aliases
-			for alias in character.aliases {
-				let aliasItem = NSMenuItem(title: alias, action: #selector(selectAlias), keyEquivalent: "")
-				aliasItem.state = .on
-				aliasMenu?.addItem(aliasItem)
-			}
-			
-			// Then, all others in alphabetical order
-			for name in names.keys.sorted() {
-				let aliasItem = NSMenuItem(title: name, action: #selector(selectAlias), keyEquivalent: "")
-				aliasMenu?.addItem(aliasItem)
-			}
+		var names = characterData.charactersAndLines()
+		
+		// Remove this character's name
+		names.removeValue(forKey: character.name)
+		
+		aliasMenu = NSMenu()
+		
+		
+		let aliasItem = NSMenuItem(title: BeatLocalization.localizedString(forKey: "character.editor.addAlias"), action: nil, keyEquivalent: "")
+		aliasItem.isEnabled = false
+		aliasMenu?.addItem(aliasItem)
+		
+		// First, add existing aliases
+		for alias in character.aliases {
+			let aliasItem = NSMenuItem(title: alias, action: #selector(selectAlias), keyEquivalent: "")
+			aliasItem.state = .on
+			aliasMenu?.addItem(aliasItem)
+		}
+		
+		// Then, all others in alphabetical order
+		for name in names.keys.sorted() {
+			let aliasItem = NSMenuItem(title: name, action: #selector(selectAlias), keyEquivalent: "")
+			aliasMenu?.addItem(aliasItem)
 		}
 		
 		return aliasMenu
@@ -288,4 +342,30 @@ class BeatGenderRadioButton:NSButton {
 		self.title = NSLocalizedString("gender." + self.gender, comment: "")
 	}
 	
+}
+
+class BeatCharacterTextScrollView:NSScrollView {
+	override func draw(_ dirtyRect: NSRect) {
+		let rect = NSBezierPath(roundedRect: self.bounds, xRadius: 5.0, yRadius: 5.0)
+		
+		self.backgroundColor.setFill()
+		NSColor.quaternaryLabelColor.setStroke()
+		rect.fill()
+		rect.stroke()
+
+		super.draw(dirtyRect)
+	}
+}
+
+class BeatCharacterTextField:NSTextField {
+	override func draw(_ dirtyRect: NSRect) {
+		let rect = NSBezierPath(roundedRect: self.bounds, xRadius: 5.0, yRadius: 5.0)
+		
+		self.backgroundColor?.setFill()
+		NSColor.quaternaryLabelColor.setStroke()
+		rect.fill()
+		rect.stroke()
+
+		super.draw(dirtyRect)
+	}
 }

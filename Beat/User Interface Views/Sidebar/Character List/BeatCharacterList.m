@@ -24,7 +24,8 @@
 
 @implementation BeatLinesBarRowView
 
--(void)drawRect:(NSRect)dirtyRect {
+-(void)drawRect:(NSRect)dirtyRect
+{
 	[super drawRect:dirtyRect];
 
 	static NSDictionary *colorForGender;
@@ -37,6 +38,11 @@
 
 	NSColor *color = colorForGender[_character.gender];
 	CGFloat alpha = _barWidth * 1.0;
+	
+	if (self.character.highlightColor.length > 0) {
+		NSColor* cc = [BeatColors color:self.character.highlightColor];
+		if (cc != nil) color = cc;
+	}
 
 	if (alpha > 1.0) alpha = 1.0;
 	if (alpha < 0.2) alpha = .2;
@@ -143,6 +149,11 @@
 		return linesRow;
 	} else {
 		NSTableCellView *row = [tableView makeViewWithIdentifier:@"CharacterName" owner:nil];
+
+		BXColor* color = [BeatColors color:character.highlightColor];
+		if (color != nil) row.textField.textColor = color;
+		else row.textField.textColor = BXColor.labelColor;
+		
 		row.textField.stringValue = character.name;
 		return row;
 	}

@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @class BeatPreviewController;
 @class BeatReview;
 @class BeatStylesheet;
+@class BeatEditorFormatting;
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
@@ -46,12 +47,13 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 
+@property (nonatomic) BeatEditorFormatting* formatting;
+
 - (bool)isDark;
 - (void)showLockStatus;
 - (void)handleTabPress;
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
-- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (CGFloat)lineHeight;
 
 - (void)setSplitHandleMinSize:(CGFloat)value;

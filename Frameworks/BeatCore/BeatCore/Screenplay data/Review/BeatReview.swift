@@ -164,7 +164,7 @@ public protocol BeatReviewInterface {
             delegate?.addAttribute(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
         }
         
-        self.delegate?.renderBackground(for: currentRange)
+        self.delegate?.formatting.refreshBackground(for: currentRange)
         delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
         
 		changeDone()
@@ -189,7 +189,7 @@ public protocol BeatReviewInterface {
 			delegate.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
             
 			self.closePopover()
-            delegate.renderBackground(for: deleteRange)
+            delegate.formatting.refreshBackground(for: deleteRange)
             
             changeDone()
         }

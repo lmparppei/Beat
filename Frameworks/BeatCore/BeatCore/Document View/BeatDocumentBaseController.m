@@ -291,7 +291,7 @@
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
 
     // Update formatting
-    [self applyFormatChanges];
+    [self.formatting applyFormatChanges];
 
     // Save attributed text to cache
     self.attrTextCache = [self getAttributedText];
@@ -462,8 +462,14 @@
 - (IBAction)reformatEverything:(id)sender
 {
     [self.parser resetParsing];
-    [self applyFormatChanges];
+    [self.formatting applyFormatChanges];
     [self.formatting formatAllLines];
+}
+
+/// When something was changed, this method takes care of reformatting every line. Actually done in `BeatEditorFormatting`.
+- (void)applyFormatChanges
+{
+    [self.formatting applyFormatChanges];
 }
 
 - (void)reformatAllLines
@@ -471,49 +477,17 @@
     [self.formatting reformatLinesAtIndices:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.lines.count)]];
 }
 
-/// When something was changed, this method takes care of reformatting every line
-- (void)applyFormatChanges
-{
-    [self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= _parser.lines.count) *stop = true;
-        else [_formatting formatLine:self.parser.lines[idx]];
-    }];
-    
-    [self.parser.changedIndices removeAllIndexes];
-}
-
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices
 {
     [self.formatting reformatLinesAtIndices:indices];
 }
 
-- (void)renderBackgroundForRange:(NSRange)range
-{
-    NSArray *lines = [self.parser linesInRange:range];
-    for (Line* line in lines) {
-        [self.formatting refreshRevisionTextColorsInRange:line.textRange];
-        [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-    }
-}
-
-- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear
-{
-    [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-}
 
 /// Forces a type on a line and formats it accordingly. Can be abused to do strange and esoteric stuff.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type
 {
     line.type = type;
     [self.formatting formatLine:line];
-}
-
-- (void)renderBackgroundForLines
-{
-    for (Line* line in self.lines) {
-        [self.formatting refreshRevisionTextColorsInRange:line.textRange];
-        [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-    }
 }
 
 

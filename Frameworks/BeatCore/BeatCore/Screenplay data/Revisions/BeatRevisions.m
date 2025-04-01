@@ -736,7 +736,7 @@
 #endif
     
     // Refresh backgrounds
-    [_delegate renderBackgroundForRange:range];
+    [_delegate.formatting refreshBackgroundForRange:range];
 }
 
 - (void)restoreRevisionsInRange:(NSRange)range from:(NSAttributedString*)string
@@ -752,7 +752,7 @@
         }
     }];
     
-    [_delegate renderBackgroundForRange:range];
+    [_delegate.formatting refreshBackgroundForRange:range];
 }
 
 - (void)markRangeAsAddition:(NSRange)range

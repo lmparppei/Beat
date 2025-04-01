@@ -39,7 +39,6 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nullable parser;
 @property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
-- (NSMutableArray<Line*>* _Nonnull)lines;
 - (NSArray<OutlineScene*>* _Nonnull)outline;
 - (NSString* _Nullable)displayName;
 @end
@@ -125,13 +124,12 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 
 #pragma mark - Creating the actual document file
 
+/// Creates the actual file for saving, which contains the Beat JSON block at the end.
 - (NSString* _Nonnull)createDocumentFile;
+/// Creates the actual file for saving, which contains the Beat JSON block at the end. You can provide additional settings which are not actually present in the document.
 - (NSString* _Nonnull)createDocumentFileWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings;
-
-
-#pragma mark - Parser convenience methods
-
-- (NSMutableArray<Line*>* _Nonnull)lines;
+/// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
+- (NSString* _Nonnull)createDocumentFileWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings excludingSettings:(NSArray<NSString*>* _Nullable)excludedKeys;
 
 
 #pragma mark - Identity
@@ -256,20 +254,15 @@ NS_ASSUME_NONNULL_END
 - (void)reloadFonts;
 
 @property (nonatomic) BeatEditorFormatting* _Nullable formatting;
-/// When something was changed, this method takes care of reformatting every line
+/// When something was changed, this method takes care of reformatting every line. Actually done in `BeatEditorFormatting`.
 - (void)applyFormatChanges;
-/// Redraws backgrounds in given range
-- (void)renderBackgroundForRange:(NSRange)range;
-/// Renders background for this line range
-- (void)renderBackgroundForLine:(Line* _Nonnull)line clearFirst:(bool)clear;
+
 /// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
 - (void)setTypeAndFormat:(Line* _Nonnull)line type:(LineType)type;
 /// A convenience method which reformats lines in given indices
 - (void)reformatLinesAtIndices:(NSMutableIndexSet * _Nonnull)indices;
 /// A convenience method for reformatting all lines. Please note that this does NOT use any sort of concurrency and can be slow on some computers.
 - (void)reformatAllLines;
-/// Refreshes the backgrounds and foreground revision colors in all lines. The method name is a bit confusing because of legacy reasons.
-- (void)renderBackgroundForLines;
 /// Returns current default font point size
 - (CGFloat)fontSize;
 - (CGFloat)fontScale;
