@@ -79,7 +79,7 @@
     if (firstCharIndex == NSNotFound) firstCharIndex = 0;
     unichar c = [self.string characterAtIndex:firstCharIndex];
     
-    // First check if this is a shot (!!) or action
+    // First check if this is a shot (!!) or action.
     if (self.string.length > 1 && self.type == shot && [self.string characterAtIndex:0] == '!') {
         if ([self.string characterAtIndex:1] == '!') return 2;
     } else if ([self.string characterAtIndex:0] == '!') {
@@ -88,6 +88,7 @@
         
     // Other types
     if ((self.type == character && c == '@') ||
+        (self.type == dualDialogueCharacter && c == '@') ||
         (self.type == heading && c == '.') ||
         (self.type == lyrics && c == '~') ||
         (self.type == synopse && c == '=') ||
@@ -128,9 +129,9 @@
     if (precedingCharacters > 0) {
         [indices addIndexesInRange:NSMakeRange(offset, precedingCharacters)];
     }
-    
-    // Catch dual dialogue force symbol
-    if (self.type == dualDialogueCharacter && self.string.length > 0 && self.string.lastNonWhiteSpaceCharacter == '^') {
+        
+    // Catch dual dialogue force symbol, even in single dialogue (just to be sure, we sometimes flip the types)
+    if (self.isAnyCharacter && self.string.length > 0 && self.string.lastNonWhiteSpaceCharacter == '^') {
         [indices addIndex:self.string.indexOfLastNonWhiteSpaceCharacter + offset];
     }
     
