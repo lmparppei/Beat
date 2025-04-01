@@ -155,11 +155,11 @@
 	[self updateLayout];
 }
 
-- (IBAction)zoomIn:(id)sender
+- (IBAction)zoomNotepadIn:(id)sender
 {
 	[self adjustZoom:0.1];
 }
-- (IBAction)zoomOut:(id)sender
+- (IBAction)zoomNotepadOut:(id)sender
 {
 	[self adjustZoom:-0.1];
 }
