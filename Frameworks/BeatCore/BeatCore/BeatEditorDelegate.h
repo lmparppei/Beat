@@ -254,10 +254,6 @@ typedef void (^BeatChangeListener)(NSRange);
 /// Resets all styles
 - (void)resetStyles;
 
-- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
-- (void)renderBackgroundForLines;
-- (void)renderBackgroundForRange:(NSRange)range;
-
 /// Forces line type and formats it. Use only if you know what you are doing.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type;
 

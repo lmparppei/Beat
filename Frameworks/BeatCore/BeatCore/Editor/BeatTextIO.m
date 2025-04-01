@@ -159,7 +159,7 @@ static NSString *centeredEnd = @" <";
     [self.delegate.getTextView.textStorage beginEditing];
     
     // Replace with undo registration
-    // NSString *oldString = [_delegate.text substringWithRange:range];
+    NSString *oldString = [_delegate.text substringWithRange:range];
     
     [self replaceCharactersInRange:range withString:newString];
     [self.delegate.getTextView.textStorage endEditing];
@@ -582,6 +582,10 @@ static NSString *centeredEnd = @" <";
                 result = [result stringByAppendingFormat:@"%@%@\n", contdString, (currentLine.type == dualDialogueCharacter) ? @"^" : @""];
                 
                 [self replaceRange:currentLine.textRange withString:result];
+                if (_delegate.characterInputForLine == currentLine && _delegate.characterInput) {
+                    _delegate.characterInput = false;
+                    _delegate.characterInputForLine = nil;
+                }
                 return YES;
             }
         }

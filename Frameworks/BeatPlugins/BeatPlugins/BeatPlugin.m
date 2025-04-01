@@ -934,17 +934,22 @@
 
 #pragma mark - Return revised ranges
 
-- (void)bakeRevisions {
+- (void)bakeRevisions
+{
 	[self.delegate bakeRevisions];
 }
-- (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len {
+
+- (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len
+{
 	NSRange range = NSMakeRange(loc, len);
 	NSArray *lines = [self.delegate.parser linesInRange:range];
 	[BeatRevisions bakeRevisionsIntoLines:lines text:self.delegate.getAttributedText];
 }
+
 - (NSDictionary*)revisedRanges {
     return self.delegate.revisionTracking.revisedRanges;
 }
+
 - (BeatRevisions*)revisionTracking
 {
     return self.delegate.revisionTracking;

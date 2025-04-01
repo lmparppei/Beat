@@ -257,31 +257,28 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @protocol BeatPluginDelegate <BeatEditorDelegate>
 
-// macOS-only
 #if !TARGET_OS_IOS
-@property (nonatomic, readonly) BeatPaginationManager *paginator;
-@property (nonatomic, readonly) BeatPreviewController* previewController;
-@property (nonatomic, readonly) NSPrintInfo *printInfo;
-@property (nonatomic, weak, readonly) NSWindow *documentWindow;
+    // macOS-only
+    @property (nonatomic, readonly) BeatPaginationManager *paginator;
+    @property (nonatomic, readonly) BeatPreviewController* previewController;
+    @property (nonatomic, readonly) NSPrintInfo *printInfo;
+    @property (nonatomic, weak, readonly) NSWindow *documentWindow;
+    @property (nonatomic, weak) BeatNotepad* notepad;
 
-/// Returns the file name without extension
-- (NSString*)fileNameString;
-
-/// Adds a widget view
-- (void)addWidget:(id)widget;
-/// Shows widget panel
-- (IBAction)showWidgets:(id)sender;
-
-/// Sets current zoom level
-- (void)setZoom:(CGFloat)zoomLevel;
-
+    /// Returns the file name without extension
+    - (NSString*)fileNameString;
+    /// Adds a widget view
+    - (void)addWidget:(id)widget;
+    /// Shows widget panel
+    - (IBAction)showWidgets:(id)sender;
+    /// Sets current zoom level
+    - (void)setZoom:(CGFloat)zoomLevel;
 #else
-@property (nonatomic, weak, readonly) UIWindow *documentWindow;
+    // iOS-only
+    @property (nonatomic, weak, readonly) UIWindow *documentWindow;
 #endif
 
 @property (nonatomic, readonly, weak) BXTextView *textView;
-@property (nonatomic, weak) BeatNotepad* notepad;
-
 
 #pragma mark - Plugin container access
 
@@ -320,9 +317,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 /// Revision manager
 @property (nonatomic) BeatRevisions* revisionTracking;
-/// Returns all the revised ranges in attributed text
-- (NSDictionary*)revisedRanges;
-
 @end
 
 
