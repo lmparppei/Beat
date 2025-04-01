@@ -19,7 +19,7 @@
     self = [super init];
     if (self) {
         [self readFromURL:url];
-        callback(_script);
+        if (callback != nil) callback(_script);
     }
     
     return self;
@@ -29,7 +29,10 @@
 	NSError *error;
 	
 	UZKArchive *container = [[UZKArchive alloc] initWithURL:url error:&error];
-	if (error || !container) return;
+    if (error || !container) {
+        _errorMessage = [NSString stringWithFormat:@"Error opening Highland text bundle: %@", error];
+        return;
+    }
 	
 	NSData *scriptData;
 	NSArray<NSString*> *filesInArchive = [container listFilenames:&error];

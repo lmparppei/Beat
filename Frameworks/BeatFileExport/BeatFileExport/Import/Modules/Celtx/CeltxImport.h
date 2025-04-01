@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @property (nonatomic) NSString *script;
 @property (nonatomic) NSString *fountain;
+@property (nonatomic) NSString* errorMessage;
 
 - (instancetype)initWithURL:(NSURL*)url;
 @end

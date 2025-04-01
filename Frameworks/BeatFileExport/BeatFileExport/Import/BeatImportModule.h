@@ -19,6 +19,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSString* _Nullable fountain;
 @property (nonatomic, copy, nullable) void (^callback)(NSString* _Nullable);
 
+@property (nonatomic, readonly) NSString* _Nullable errorMessage;
+
 + (NSArray<NSString*>* _Nonnull)formats;
 + (NSArray<NSString*>* _Nullable)UTIs;
 

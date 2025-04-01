@@ -20,6 +20,8 @@ public class PDFImport:NSObject, BeatFileImportModule {
     
     public var callback: ((String?) -> Void)?
     
+    public var errorMessage: String?
+    
     public var fountain: String?
     
     var titlePageFound = false
@@ -63,6 +65,7 @@ public class PDFImport:NSObject, BeatFileImportModule {
     
     func readPDF(_ url:URL) {
         guard let pdf = PDFDocument(url: url) else {
+            errorMessage = "Could not open PDF file"
             callback?(nil)
             return
         }

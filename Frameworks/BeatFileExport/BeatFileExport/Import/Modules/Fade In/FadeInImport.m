@@ -36,10 +36,18 @@
 
 - (void)readFromURL:(NSURL*)url
 {
-	NSError *error;
-	
+    if (![url startAccessingSecurityScopedResource]) {
+        _errorMessage = @"Could not access file";
+        return;
+    }
+    
+    NSError *error;
 	UZKArchive *container = [[UZKArchive alloc] initWithURL:url error:&error];
-	if (error || !container) return;
+    
+    if (error || !container) {
+        self.errorMessage = [NSString stringWithFormat:@"%@", error];
+        return;
+    }
 	
 	NSData *scriptData;
 	NSArray<NSString*> *filesInArchive = [container listFilenames:&error];
@@ -55,6 +63,7 @@
     // We can parse XML in sync when providing a data object. I don't know why.
 	if (scriptData != nil) {
 		OSFImport *import = [[OSFImport alloc] initWithData:scriptData];
+        if (import.errorMessage != nil) _errorMessage = import.errorMessage;
 		_script = import.script;
 	}
 }

@@ -77,7 +77,7 @@
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
 			// After the data has loaded, parse the file & return to callback
 			[self parse:data];
-			callback(self.fountain);
+			if (callback != nil) callback(self.fountain);
 		}];
 			
 		[task resume];
@@ -89,13 +89,18 @@
     NSString* string = [NSString.alloc initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     
+    if (error != nil) {
+        self.errorMessage = [NSString stringWithFormat:@"%@", error];
+    }
+    
     [self parse:data];
     callback(self.fountain);
 #endif
     return self;
 }
 
-- (void)parse:(NSData*)data {
+- (void)parse:(NSData*)data
+{
 	_elementText = NSMutableAttributedString.new;
 	_paragraphText = NSMutableAttributedString.new;
 	_scriptLines = NSMutableArray.new;
@@ -218,7 +223,9 @@
 		NSMutableString* left = NSMutableString.new;
 		NSMutableString* right = NSMutableString.new;
 		
-		if ([_textProperties[@"bold"] isEqualToString:@"1"]) {
+        bool isSlug = [_style isEqualToString:@"scene heading"] || [_style isEqualToString:@"shot"];
+        
+        if ([_textProperties[@"bold"] isEqualToString:@"1"] && !isSlug) {
 			[left appendString:@"**"];
 			[right insertString:@"**" atIndex:0];
 		}
@@ -261,15 +268,14 @@
 		}
 		
 		if ([_style isEqualToString:@"scene heading"]) {
-			[result.mutableString setString:result.string.uppercaseString];
+            [result.mutableString setString:[self sceneHeadingFrom:result.string.uppercaseString]];
 			
 			// Force scene prefix if there is none and the style is scene heading anyway
-			if ([result.string rangeOfString:@"INT"].location == NSNotFound &&
-				[result.string rangeOfString:@"EXT"].location == NSNotFound &&
-				[result.string rangeOfString:@"I./E"].location == NSNotFound &&
-				[result.string rangeOfString:@"E./I"].location == NSNotFound
+			if ([result.string rangeOfString:@"INT"].location != 0 &&
+				[result.string rangeOfString:@"EXT"].location != 0 &&
+				[result.string rangeOfString:@"I./E"].location != 0 &&
+				[result.string rangeOfString:@"E./I"].location != 0
 			) {
-				//result = [NSString stringWithFormat:@".%@", result];
 				[result insertAttributedString:[NSAttributedString.alloc initWithString:@"."] atIndex:0];
 			}
 			
@@ -364,6 +370,29 @@
     if ([elementName isEqualToString:@"paragraphs"]) {
 		_contentFound = NO;
     }
+}
+
+/// Extract scene number from the heading if needed.
+- (NSString*)sceneHeadingFrom:(NSString*)input
+{
+    NSError *error = nil;
+    // Strip away number from a line like "123. Int. My heading" and add it at the end
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(\\d+)\\.\\s" options:0 error:&error];
+
+    NSTextCheckingResult *match = [regex firstMatchInString:input options:0 range:NSMakeRange(0, input.length)];
+    if (match) {
+        NSRange numberRange = [match rangeAtIndex:1]; // Captures the number before the dot
+        NSString *sceneNumber = [[input substringWithRange:numberRange] stringByReplacingOccurrencesOfString:@"." withString:@""];
+        
+        // Strip the number, dot, and space
+        NSString *strippedString = [input stringByReplacingCharactersInRange:[match range] withString:@""];
+        NSString* heading = [NSString stringWithFormat:@"%@ #%@#", strippedString, sceneNumber];
+
+        return heading;
+    } else {
+        return input;
+    }
+    
 }
 
 - (NSString*)scriptAsString {

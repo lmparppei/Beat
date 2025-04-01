@@ -70,7 +70,10 @@
 	_scriptData = [NSMutableDictionary dictionary];
 	_container = [[UZKArchive alloc] initWithURL:url error:&error];
 
-	if (error) os_log(OS_LOG_DEFAULT, "Celtx import: Error unarchiving file '%@'", url.lastPathComponent);
+    if (error) {
+        os_log(OS_LOG_DEFAULT, "Celtx import: Error unarchiving file '%@'", url.lastPathComponent);
+        _errorMessage = @"Error unarchiving Celtx file";
+    }
 	if (!_container) return;
 	
 	// Gather the data

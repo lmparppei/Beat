@@ -107,7 +107,12 @@
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            if (error != nil) {
+                self.errorMessage = [NSString stringWithFormat:@"%@", error];
+                return;
+            }
 
+            
 			[self parse:data callback:callback];
 		}];
 			
@@ -117,6 +122,11 @@
         NSError* error;
         NSString* string = [NSString.alloc initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
         NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+        
+        if (error != nil) {
+            self.errorMessage = @"Failed to open URL";
+            return nil;
+        }
         
         [self parse:data callback:callback];
 #endif
@@ -154,7 +164,7 @@
 	self.xmlParser.delegate = self;
         
 	if ([self.xmlParser parse]) {
-        callback(self.fountain);
+        if (callback != nil) callback(self.fountain);
 	} else {
 		NSLog(@"ERROR: %@", self.xmlParser.parserError);
 	}

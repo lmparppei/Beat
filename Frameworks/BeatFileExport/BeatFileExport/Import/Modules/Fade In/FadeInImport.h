@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FadeInImport : NSObject <BeatFileImportModule>
 @property (nonatomic) NSString *script;
 @property (nonatomic) NSString *fountain;
-@property (nonatomic, copy) void (^callback)(id);
+@property (nonatomic) NSString* errorMessage;
+@property (nonatomic, copy) void (^callback)(_Nullable id);
 @end
 
 NS_ASSUME_NONNULL_END

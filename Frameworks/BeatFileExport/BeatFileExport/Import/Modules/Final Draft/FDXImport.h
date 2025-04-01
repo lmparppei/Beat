@@ -29,6 +29,8 @@ typedef NS_ENUM(NSInteger, FDXSectionType) {
 @property (nonatomic, strong) NSMutableArray *script;
 @property (nonatomic, strong) NSMutableArray *attrScript;
 
+@property (nonatomic) NSString* errorMessage;
+
 @property (nonatomic) NSString* fountain;
 
 - (id)initWithURL:(NSURL*)url importNotes:(bool)importNotes completion:(void(^)(NSString*))callback;
