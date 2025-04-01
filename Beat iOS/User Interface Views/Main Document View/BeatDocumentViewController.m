@@ -707,10 +707,6 @@ bool editorWasActive = false;
 	[self.textView setTypingAttributes:self.typingAttributes];
 }
 
-- (void)lineWasRemoved:(Line *)line {
-	
-}
-
 
 #pragma mark - Printing stuff for iOS
 
@@ -779,7 +775,8 @@ bool editorWasActive = false;
 
 #pragma mark - Segues
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
 	if ([segue.identifier isEqualToString:@"Cards"]) {
 		BeatPluginContainerViewController* vc = segue.destinationViewController;
 		
@@ -799,12 +796,14 @@ bool editorWasActive = false;
 
 #pragma mark - Registering view controllers
 
-- (void)registerPluginViewController:(BeatPluginHTMLViewController *)view {
+- (void)registerPluginViewController:(BeatPluginHTMLViewController *)view
+{
 	//
 }
 
 
-- (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view {
+- (void)unregisterPluginViewController:(BeatPluginHTMLViewController *)view
+{
 	//
 }
 
