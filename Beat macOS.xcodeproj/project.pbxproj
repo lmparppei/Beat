@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -30,6 +30,9 @@
 		B60B9AA62A30785800BCE4B2 /* BeatNSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */; };
 		B60D192726B0811E005C2693 /* BeatNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B60D192626B0811E005C2693 /* BeatNotifications.m */; };
 		B60D192826B0811E005C2693 /* BeatNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B60D192626B0811E005C2693 /* BeatNotifications.m */; };
+		B60DC6F42D9701DD00B6B133 /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */; };
+		B60DC6F52D9701DD00B6B133 /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */; };
+		B60DC6F62D9701DD00B6B133 /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */; };
 		B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FAD7526A1D4960019A77B /* BeatLockButton.m */; };
 		B60FAD7726A1D4960019A77B /* BeatLockButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FAD7526A1D4960019A77B /* BeatLockButton.m */; };
 		B60FF86826582D1500886E06 /* BeatTitlePageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B60FF86626582D1500886E06 /* BeatTitlePageEditor.m */; };
@@ -330,9 +333,6 @@
 		B6311EF12D68DF6600712CFE /* DiffViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6311EF02D68DF6200712CFE /* DiffViewerView.swift */; };
 		B6311EF22D68DF6600712CFE /* DiffViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6311EF02D68DF6200712CFE /* DiffViewerView.swift */; };
 		B6311EF32D68DF6600712CFE /* DiffViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6311EF02D68DF6200712CFE /* DiffViewerView.swift */; };
-		B6311EFA2D69E24D00712CFE /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6311EF92D69E24D00712CFE /* DiffViewer.storyboard */; };
-		B6311EFB2D69E24D00712CFE /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6311EF92D69E24D00712CFE /* DiffViewer.storyboard */; };
-		B6311EFC2D69E24D00712CFE /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6311EF92D69E24D00712CFE /* DiffViewer.storyboard */; };
 		B633C1DD298C60C80011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; };
 		B633C1DE298C60C80011449D /* BeatCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B633C1F3298C68260011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E6298C62C50011449D /* BeatCore.framework */; };
@@ -846,6 +846,8 @@
 		B60B9AA42A30785800BCE4B2 /* BeatNSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNSColorExtensions.swift; sourceTree = "<group>"; };
 		B60D192526B0811E005C2693 /* BeatNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotifications.h; sourceTree = "<group>"; };
 		B60D192626B0811E005C2693 /* BeatNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotifications.m; sourceTree = "<group>"; };
+		B60DC6F22D9701DD00B6B133 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/DiffViewer.storyboard; sourceTree = "<group>"; };
+		B60DC6F72D9701DD00B6B133 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/DiffViewer.xcstrings; sourceTree = "<group>"; };
 		B60FAD7426A1D4960019A77B /* BeatLockButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLockButton.h; sourceTree = "<group>"; };
 		B60FAD7526A1D4960019A77B /* BeatLockButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLockButton.m; sourceTree = "<group>"; };
 		B60FF86526582D1500886E06 /* BeatTitlePageEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTitlePageEditor.h; sourceTree = "<group>"; };
@@ -933,7 +935,6 @@
 		B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreenButton.swift; sourceTree = "<group>"; };
 		B6311EEA2D68A2B200712CFE /* BeatPageThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPageThumbnailView.swift; sourceTree = "<group>"; };
 		B6311EF02D68DF6200712CFE /* DiffViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffViewerView.swift; sourceTree = "<group>"; };
-		B6311EF92D69E24D00712CFE /* DiffViewer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DiffViewer.storyboard; sourceTree = "<group>"; };
 		B633C1DC298C60C80011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B633C1E6298C62C50011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
@@ -1663,7 +1664,7 @@
 			isa = PBXGroup;
 			children = (
 				B6311EF02D68DF6200712CFE /* DiffViewerView.swift */,
-				B6311EF92D69E24D00712CFE /* DiffViewer.storyboard */,
+				B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */,
 				B657EDE82D71F8FD008BD165 /* CommitMessagePopover.swift */,
 			);
 			path = "Diff Viewer";
@@ -2443,7 +2444,7 @@
 				B606FDC22817F09C00D89CD6 /* BeatPrintDialog.xib in Resources */,
 				B6763E5A2782295E00284907 /* Localizable.strings in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
-				B6311EFA2D69E24D00712CFE /* DiffViewer.storyboard in Resources */,
+				B60DC6F42D9701DD00B6B133 /* DiffViewer.storyboard in Resources */,
 				B6EE9B2C2C57DECF00834243 /* Sortable.min.js in Resources */,
 				B696BC2E2A7151D40078BA79 /* BeatCardsUI.html in Resources */,
 				B617656E2BA5A1C600F18417 /* BeatOutlineSettings.xib in Resources */,
@@ -2516,7 +2517,7 @@
 				B61260632CD3D1D8009AE189 /* Courier Prime Sans Italic.ttf in Resources */,
 				B61260642CD3D1D8009AE189 /* CardView.js in Resources */,
 				B61260652CD3D1D8009AE189 /* outline.png in Resources */,
-				B6311EFB2D69E24D00712CFE /* DiffViewer.storyboard in Resources */,
+				B60DC6F62D9701DD00B6B133 /* DiffViewer.storyboard in Resources */,
 				B61260662CD3D1D8009AE189 /* BeatStatistics.beatPlugin in Resources */,
 				B61260672CD3D1D8009AE189 /* beat_manual_script.js in Resources */,
 				B61260682CD3D1D8009AE189 /* BeatTagEditor.storyboard in Resources */,
@@ -2588,7 +2589,7 @@
 				B68B60A2260B849300463AD8 /* Courier Prime Sans Italic.ttf in Resources */,
 				B68B60A3260B849300463AD8 /* CardView.js in Resources */,
 				B6E3894B270DDE120067DD0C /* outline.png in Resources */,
-				B6311EFC2D69E24D00712CFE /* DiffViewer.storyboard in Resources */,
+				B60DC6F52D9701DD00B6B133 /* DiffViewer.storyboard in Resources */,
 				B6FA28D32C046D3D0047E498 /* BeatStatistics.beatPlugin in Resources */,
 				B6F9DF23276B908A00D4C263 /* beat_manual_script.js in Resources */,
 				B6BC40452C0E4F270055DBCE /* BeatTagEditor.storyboard in Resources */,
@@ -3155,6 +3156,15 @@
 			name = BeatSceneHeadingSearch.xib;
 			sourceTree = "<group>";
 		};
+		B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B60DC6F22D9701DD00B6B133 /* Base */,
+				B60DC6F72D9701DD00B6B133 /* mul */,
+			);
+			name = DiffViewer.storyboard;
+			sourceTree = "<group>";
+		};
 		B62BA4C72BBBEEDA0055FE1A /* Document.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3601,7 +3611,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133439;
+				CURRENT_PROJECT_VERSION = 133447;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3646,7 +3656,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133439;
+				CURRENT_PROJECT_VERSION = 133447;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
