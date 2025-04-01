@@ -1,0 +1,663 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "0Un-pe-ZSK.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Commit\"; ObjectID = \"0Un-pe-ZSK\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Commit"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vahvista"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potrdi"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bekräfta"
+          }
+        }
+      }
+    },
+    "1dJ-QV-LNg.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 3\"; ObjectID = \"1dJ-QV-LNg\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 3"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "4pA-Ii-vdC.label" : {
+      "comment" : "Class = \"NSTabViewItem\"; label = \"Restore\"; ObjectID = \"4pA-Ii-vdC\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Restore"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palauta"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obnovi"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Återställ"
+          }
+        }
+      }
+    },
+    "26G-OC-IDB.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Generate\"; ObjectID = \"26G-OC-IDB\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Generate"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustvari"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generera"
+          }
+        }
+      }
+    },
+    "92s-ey-KGa.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Generate Revision Markers\"; ObjectID = \"92s-ey-KGa\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Generate Revision Markers"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo korjausmerkinnät"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustvari oznake revizij"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generera revisionsmarkörer"
+          }
+        }
+      }
+    },
+    "BoU-Np-mw7.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Version control is not enabled for this document. Note that this is still a highly experimental feature.\"; ObjectID = \"BoU-Np-mw7\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version control is not enabled for this document. Note that this is still a highly experimental feature."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versiohallinta ei ole vielä käytössä tälle dokumentille. Huomaathan, että tämä on yhä kokeellinen ominaisuus."
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadzor različic ni omogočen za ta dokument. Upoštevajte, da je to še vedno zelo eksperimentalna funkcija."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versionskontroll är inte aktiverad för detta dokument. Observera att detta fortfarande är en mycket experimentell funktion."
+          }
+        }
+      }
+    },
+    "cr3-ku-Qby.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 3\"; ObjectID = \"cr3-ku-Qby\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 3"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "DTn-LQ-J1F.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Generation\"; ObjectID = \"DTn-LQ-J1F\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Generation"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korjausversio"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raven revizije"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisionnivå"
+          }
+        }
+      }
+    },
+    "EeU-eL-No6.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Restore\"; ObjectID = \"EeU-eL-No6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Restore"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palauta"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obnovi"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Återställ"
+          }
+        }
+      }
+    },
+    "fco-gY-NGQ.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 2\"; ObjectID = \"fco-gY-NGQ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 2"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "HJw-83-5C6.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 2\"; ObjectID = \"HJw-83-5C6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 2"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "Hq7-oF-swU.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"NOTE: This action can't be undone and existing markers might be overwritten\"; ObjectID = \"Hq7-oF-swU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "NOTE: This action can't be undone and existing markers might be overwritten"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HUOMAA: Tätä toimintoa ei voi perua ja olemassaolevat merkinnät korvataan"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OPOZORILO: Tega dejanja ni mogoče razveljaviti in obstoječi označevalci bodo morda prepisani"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS: Denna åtgärd kan inte ångras och befintliga markörer kan skrivas över"
+          }
+        }
+      }
+    },
+    "JnN-Hd-ZkU.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Uncommitted Changes\"; ObjectID = \"JnN-Hd-ZkU\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uncommitted Changes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vahvistamattomia muutoksia"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nepotrjene spremembe"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obekräftade ändringar"
+          }
+        }
+      }
+    },
+    "k5W-Cp-2rm.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"No Version Control\"; ObjectID = \"k5W-Cp-2rm\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No Version Control"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei versiohallintaa"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brez nadzora različic"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen versionskontroll"
+          }
+        }
+      }
+    },
+    "k8p-in-0E6.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 2\"; ObjectID = \"k8p-in-0E6\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 2"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "M6O-5k-N75.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Generate Markers\"; ObjectID = \"M6O-5k-N75\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Generate Markers"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo merkintöjä"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustvari oznake"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generera markörer"
+          }
+        }
+      }
+    },
+    "ONR-c1-aQa.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Cancel\"; ObjectID = \"ONR-c1-aQa\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Cancel"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peru"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prekliči"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt"
+          }
+        }
+      }
+    },
+    "ORJ-gc-iyn.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Begin Version Control\"; ObjectID = \"ORJ-gc-iyn\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Begin Version Control"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aloita versiohallinta"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Začni nadzor različic"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starta versionskontroll"
+          }
+        }
+      }
+    },
+    "Szk-PU-Iek.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Revision markers will be added to where the document has changed compared to the selected commit.\"; ObjectID = \"Szk-PU-Iek\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Revision markers will be added to where the document has changed compared to the selected commit."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dokumentin muutettuihin kohtiin lisätään korjausmerkinnät."
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oznake revizij bodo dodane tam, kjer se je dokument spremenil glede na izbrano commit spremembo."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisionsmarkörer kommer att läggas till där dokumentet har ändrats jämfört med den valda versionen."
+          }
+        }
+      }
+    },
+    "uaI-Sg-0ZE.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Close\"; ObjectID = \"uaI-Sg-0ZE\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Close"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sulje"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapri"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stäng"
+          }
+        }
+      }
+    },
+    "Ug2-VQ-YXr.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 1\"; ObjectID = \"Ug2-VQ-YXr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 1"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "w1N-5w-Yxz.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 3\"; ObjectID = \"w1N-5w-Yxz\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 3"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "XfT-ug-X3I.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 1\"; ObjectID = \"XfT-ug-X3I\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 1"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "YF5-oc-QU1.ibShadowedToolTips[0]" : {
+      "comment" : "Class = \"NSSegmentedCell\"; YF5-oc-QU1.ibShadowedToolTips[0] = \"Comparison\"; ObjectID = \"YF5-oc-QU1\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Comparison"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertaa"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primerjava"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jämförelse"
+          }
+        }
+      }
+    },
+    "YF5-oc-QU1.ibShadowedToolTips[1]" : {
+      "comment" : "Class = \"NSSegmentedCell\"; YF5-oc-QU1.ibShadowedToolTips[1] = \"Full Text\"; ObjectID = \"YF5-oc-QU1\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Full Text"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koko teksti"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celotno besedilo"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fulltext"
+          }
+        }
+      }
+    },
+    "z97-cz-wvq.label" : {
+      "comment" : "Class = \"NSTabViewItem\"; label = \"Commit\"; ObjectID = \"z97-cz-wvq\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Commit"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sitoudu"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potrdi"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bekräfta"
+          }
+        }
+      }
+    },
+    "Zsh-TF-t4f.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Item 1\"; ObjectID = \"Zsh-TF-t4f\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Item 1"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    }
+  },
+  "version" : "1.0"
+}
