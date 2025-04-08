@@ -64,6 +64,7 @@
 		B64C92582CBDBC270024CC37 /* 0.1.15.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C92572CBDBC270024CC37 /* 0.1.15.html */; };
 		B64C925A2CC1CEA60024CC37 /* 0.1.16.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C92592CC1CEA60024CC37 /* 0.1.16.html */; };
 		B64C925C2CC55EFF0024CC37 /* 0.1.17.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C925B2CC55EFF0024CC37 /* 0.1.17.html */; };
+		B64FA4A62DA374990098F448 /* 0.2.10.html in Resources */ = {isa = PBXBuildFile; fileRef = B64FA4A52DA374990098F448 /* 0.2.10.html */; };
 		B65B56E92D40284A008BB43F /* 0.2.4.html in Resources */ = {isa = PBXBuildFile; fileRef = B65B56E82D40284A008BB43F /* 0.2.4.html */; };
 		B65B56EB2D42AB23008BB43F /* 0.2.5.html in Resources */ = {isa = PBXBuildFile; fileRef = B65B56EA2D42AB23008BB43F /* 0.2.5.html */; };
 		B65B56EE2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B56ED2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.m */; };
@@ -248,6 +249,7 @@
 		B64C92572CBDBC270024CC37 /* 0.1.15.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.15.html; sourceTree = "<group>"; };
 		B64C92592CC1CEA60024CC37 /* 0.1.16.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.16.html; sourceTree = "<group>"; };
 		B64C925B2CC55EFF0024CC37 /* 0.1.17.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.17.html; sourceTree = "<group>"; };
+		B64FA4A52DA374990098F448 /* 0.2.10.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.10.html; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
 		B65B56E82D40284A008BB43F /* 0.2.4.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.4.html; sourceTree = "<group>"; };
 		B65B56EA2D42AB23008BB43F /* 0.2.5.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.5.html; sourceTree = "<group>"; };
@@ -512,6 +514,7 @@
 				B69FF9AC2D4F7EA8001D36E8 /* 0.2.7.html */,
 				B6DAAC942D74C13400FF6BD6 /* 0.2.8.html */,
 				B628E7382D86DC3000A3FBCD /* 0.2.9.html */,
+				B64FA4A52DA374990098F448 /* 0.2.10.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -897,6 +900,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B64FA4A62DA374990098F448 /* 0.2.10.html in Resources */,
 				B686FFCE2971BC7E00789C8D /* FooterTemplate.html in Resources */,
 				B696BC422A74200D0078BA79 /* BeatCardsUI.css in Resources */,
 				B696BC412A74200D0078BA79 /* BeatCardsPrint.css in Resources */,
@@ -1245,7 +1249,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1267,7 +1271,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.2.9;
+				MARKETING_VERSION = 0.2.10;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1303,7 +1307,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1320,7 +1324,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.2.9;
+				MARKETING_VERSION = 0.2.10;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;
