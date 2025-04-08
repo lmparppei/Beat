@@ -160,14 +160,14 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 					return
 				}
 				
-				if url.startAccessingSecurityScopedResource() {
+				//if url.startAccessingSecurityScopedResource() {
 					self.importDocument(at: url, nextToDocumentAt: documentURL, mode: .copy) { url, error in
 						if let url {
 							self.presentDocument(at: url)
-							documentURL.stopAccessingSecurityScopedResource()
+							//documentURL.stopAccessingSecurityScopedResource()
 						}
 					}
-				}
+				//}
 			}
 		}))
 		alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
