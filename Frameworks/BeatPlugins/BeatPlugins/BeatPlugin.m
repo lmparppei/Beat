@@ -968,7 +968,9 @@
 
 #pragma mark - Notepad
 
+#if TARGET_OS_OSX
 - (id)notepad { return self.delegate.notepad; }
+#endif
 
 
 #pragma mark - Theme manager
