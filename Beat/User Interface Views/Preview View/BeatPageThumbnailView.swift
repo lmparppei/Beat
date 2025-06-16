@@ -165,7 +165,9 @@ class BeatPageThumbnailProvider:NSObject, NSCollectionViewDataSource, NSCollecti
 	func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
 		let item = collectionView.makeItem(withIdentifier: BeatPageThumbnailItem.identifier, for: indexPath) as! BeatPageThumbnailItem
 		
-		if let view = pageDataSource?.pageView(forPage: indexPath.item) {
+		let temporary = pageDataSource?.rendering ?? false
+		
+		if let view = pageDataSource?.pageView(forPage: indexPath.item, placeholder: temporary) {
 			var pageNumber = indexPath.item + 1
 			if self.pageDataSource?.hasTitlePage() ?? false {
 				// Ignore page number at first page of a title page
