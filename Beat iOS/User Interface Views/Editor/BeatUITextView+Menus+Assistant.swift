@@ -13,6 +13,8 @@ extension BeatUITextView: InputAssistantViewDelegate {
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestion suggestion: String) {
 		guard let editorDelegate = self.editorDelegate, suggestion.count > 0 else { return }
 		
+		let originalPosition = editorDelegate.selectedRange.location
+		
 		if suggestion[0] == "(" && editorDelegate.currentLine.isAnyCharacter() {
 			// This is a character extension
 			editorDelegate.textActions.addCueExtension(suggestion, on: editorDelegate.currentLine)
@@ -21,6 +23,12 @@ extension BeatUITextView: InputAssistantViewDelegate {
 			let r = NSMakeRange(editorDelegate.currentLine.position, editorDelegate.currentLine.length)
 			editorDelegate.textActions.replace(r, with: suggestion)
 		}
+		
+		// Oh well. Because iOS doesn't (always) parse the changes when getting here, we need to do some silly string index magic to get the position and then move at the end of the line
+		let nextLineBreak = editorDelegate.text().rawIndexOfNextLineBreak(from: originalPosition)
+		if nextLineBreak != NSNotFound {
+			editorDelegate.selectedRange = NSRange(location: nextLineBreak, length: 0)
+		}	
 	}
 	
 	func shouldShowSuggestions() -> Bool {

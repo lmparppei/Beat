@@ -502,14 +502,38 @@ extension BeatUITextView: UIScrollViewDelegate {
 		}
 	}
 
-	
 	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
 		guard let key = presses.first?.key else { return }
+		
+		// First check possible assistant view status and move highlight if needed
+		if let assistantView, assistantView.numberOfSuggestions > 0,
+		   key.modifierFlags.rawValue == 0 || key.modifierFlags == .shift {
+			var preventSuper = false
+			
+			if key.keyCode == .keyboardTab && key.modifierFlags == .shift {
+				assistantView.highlightPreviousSuggestion()
+				preventSuper = true
+			} else if key.keyCode == .keyboardTab {
+				assistantView.highlightNextSuggestion()
+				preventSuper = true
+			} else if assistantView.highlightedSuggestion >= 0, key.keyCode == .keyboardReturnOrEnter {
+				// Select the highlighted item
+				assistantView.selectHighlightedItem()
+				preventSuper = true
+			} else if assistantView.highlightedSuggestion >= 0, key.keyCode == .keyboardEscape  {
+				// De-select highlights
+				assistantView.deselectHighlightedItem()
+				preventSuper = true
+			}
+			
+			if preventSuper { return }
+		}
 		
 		if key.keyCode == .keyboardTab {
 			handleTabPress()
 			return
 		}
+		
 		if key.keyCode == .keyboardReturnOrEnter, key.modifierFlags == .shift {
 			self.modifierFlags = key.modifierFlags
 		} else if key.keyCode == .keyboardDeleteOrBackspace, self.shouldCancelCharacterInput() {

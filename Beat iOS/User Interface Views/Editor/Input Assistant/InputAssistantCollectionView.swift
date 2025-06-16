@@ -10,6 +10,12 @@ import UIKit
 
 class InputAssistantCollectionView: UICollectionView {
     
+	@objc public var highlightedItem = -1 {
+		didSet {
+			highlightItem(at: self.highlightedItem)
+		}
+	}
+	
     /// Reference to the containing input assistant view
     weak var inputAssistantView: InputAssistantView?
     
@@ -27,7 +33,7 @@ class InputAssistantCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         super.init(frame: .zero, collectionViewLayout: layout)
-
+		
         register(InputAssistantCollectionViewCell.self, forCellWithReuseIdentifier: "Suggestion")
         backgroundColor = .clear
         showsHorizontalScrollIndicator = false
@@ -56,6 +62,8 @@ class InputAssistantCollectionView: UICollectionView {
 		
         noSuggestionsLabel.text = self.inputAssistantView?.dataSource?.textForEmptySuggestionsInInputAssistantView()
         noSuggestionsLabel.isHidden = self.numberOfItems(inSection: 0) > 0
+		
+		highlightedItem = -1
     }
     
     override var contentSize: CGSize {
@@ -70,6 +78,32 @@ class InputAssistantCollectionView: UICollectionView {
             }
         }
     }
+	
+	@objc public func highlightNext() {
+		let numberOfItems = self.numberOfItems(inSection: 0)
+		if self.highlightedItem + 1 < numberOfItems {
+			self.highlightedItem += 1
+		}
+	}
+	
+	@objc public func highlightPrevious() {
+		if self.highlightedItem - 1 >= 0 {
+			self.highlightedItem -= 1
+		}
+	}
+	
+	func highlightItem(at index:Int) {
+		let items = self.numberOfItems(inSection: 0)
+		for i in 0..<items {
+			let indexPath = IndexPath(row: i, section: 0)
+			guard let cell = self.cellForItem(at: indexPath) as? InputAssistantCollectionViewCell else { continue }
+			cell.isHighlighted = (i == self.highlightedItem)
+			
+			if cell.isHighlighted {
+				self.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+			}
+		}
+	}
 }
 
 extension InputAssistantCollectionView: UICollectionViewDataSource {
@@ -98,7 +132,7 @@ extension InputAssistantCollectionView: UICollectionViewDataSource {
 private class InputAssistantCollectionViewCell: UICollectionViewCell {
     
     let label: UILabel
-	let highlightedBackgroundColor = UIColor.secondarySystemBackground
+	let highlightedBackgroundColor = UIColor.systemBlue
 	let regularBackgroundColor = UIColor.secondarySystemBackground.withAlphaComponent(0.8)
     let darkBackgroundColor = UIColor(white: 200/255, alpha: 0.4)
 
@@ -149,6 +183,6 @@ private class InputAssistantCollectionViewCell: UICollectionViewCell {
     private func updateSelectionState() {
         let isHighlighted = self.isHighlighted || self.isSelected
         self.backgroundColor = isHighlighted ? self.highlightedBackgroundColor : self.keyboardAppearanceBackgroundColor
-        self.label.textColor = isHighlighted ? .black : .white
+        //self.label.textColor = isHighlighted ? .black : .white
     }
 }
