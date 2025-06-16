@@ -44,4 +44,19 @@
 
 #endif
 
+// Shorthand for comparing bitmasks
 #define mask_contains(mask, bit) (mask & bit) == bit
+
+// This is AI-generated slop, sorry, but I was in a hurry.
+#define CLAMP_RANGE(range, maxLength) ({ \
+    NSRange _r = (range); \
+    NSUInteger _max = (maxLength); \
+    if (_r.location >= _max) { \
+        _r.length = 0; \
+    } else if (_r.location + _r.length > _max) { \
+        _r.length = _max - _r.location; \
+    } \
+    _r; \
+})
+
+#define ToAttributedString(string) [[NSAttributedString alloc] initWithString:string]
