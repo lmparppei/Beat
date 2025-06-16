@@ -316,7 +316,7 @@ import BeatCore
             if !CGRectIntersectsRect(bounds, localRect) { continue }
             if loadedPageViews[i] != nil { continue }
             
-            let view = dataSource.pageView(forPage: i)
+			let view = dataSource.pageView(forPage: i, placeholder: false)
             view.frame = pageRect
             
             self.container?.addSubview(view)
