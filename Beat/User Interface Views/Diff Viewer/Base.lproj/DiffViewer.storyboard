@@ -190,7 +190,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LMx-W8-yTO">
-                                                            <rect key="frame" x="100" y="-2.5" width="26.5" height="44"/>
+                                                            <rect key="frame" x="100" y="-2" width="27" height="44"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="exclamationmark.triangle.fill" catalog="system" id="GB5-bh-aTf"/>
                                                             <color key="contentTintColor" red="0.98431372549999996" green="0.75686274509999996" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -373,10 +373,10 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="arrow.left.arrow.right" catalog="system" width="16" height="17"/>
-        <image name="asterisk" catalog="system" width="12" height="13"/>
+        <image name="arrow.left.arrow.right" catalog="system" width="17" height="17"/>
+        <image name="asterisk" catalog="system" width="11" height="13"/>
         <image name="clock.arrow.circlepath" catalog="system" width="14" height="13"/>
-        <image name="exclamationmark.triangle.fill" catalog="system" width="17" height="15"/>
-        <image name="text.justify.left" catalog="system" width="16" height="13"/>
+        <image name="exclamationmark.triangle.fill" catalog="system" width="16" height="15"/>
+        <image name="text.justify.left" catalog="system" width="17" height="13"/>
     </resources>
 </document>

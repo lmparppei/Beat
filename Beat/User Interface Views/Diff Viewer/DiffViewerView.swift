@@ -110,7 +110,7 @@ class DiffViewerViewController: NSViewController {
 		guard let delegate = delegate, let textView = textView else { return }
 
 		textView.setup(editorDelegate: delegate)
-		textView.backgroundColor = ThemeManager.shared().backgroundColor.effectiveColor()
+		textView.backgroundColor = ThemeManager.shared().backgroundColor
 		
 		// Set up custom scroller
 		if let scrollView = textView.enclosingScrollView {
