@@ -7,6 +7,7 @@
 //
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCompatibility.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatTagging.h"
 #import "BeatTagItem.h"
@@ -185,7 +186,7 @@
     NSString* localizedTag = [BeatLocalization localizedStringForKey:[NSString stringWithFormat:@"tag.%@", tag]];
     
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", localizedTag]];
-	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
+	if (color != nil) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
 	return string;
 }
 
@@ -196,7 +197,7 @@
 	paragraph.paragraphSpacing = 3.0;
 	
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@\n", tag]];
-	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
+	if (color != nil) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
 	[string addAttribute:NSForegroundColorAttributeName value:textColor range:(NSRange){1, string.length - 1}];
 	[string addAttribute:NSFontAttributeName value:[TagFont boldSystemFontOfSize:UIFontSize] range:(NSRange){0, string.length}];
 	[string addAttribute:NSParagraphStyleAttributeName value:paragraph range:(NSRange){0, string.length}];
@@ -763,7 +764,8 @@
 #pragma mark - Editor methods
 
 /// Tags a range in editor with tag type, taking the tag definition name from selected range.
-- (void)tagRange:(NSRange)range withType:(BeatTagType)type {
+- (void)tagRange:(NSRange)range withType:(BeatTagType)type
+{
 	NSString *string = [self.delegate.text substringWithRange:range];
 	BeatTag* tag = [self addTag:string type:type];
 	
@@ -774,7 +776,8 @@
 }
 
 /// Tags a range in editor with given definition
-- (void)tagRange:(NSRange)range withDefinition:(TagDefinition*)definition {
+- (void)tagRange:(NSRange)range withDefinition:(TagDefinition*)definition
+{
     BeatTag *tag = [BeatTag withDefinition:definition];
 
 	[self tagRange:range withTag:tag];
@@ -784,20 +787,29 @@
 /// Tag a range with the specified single tag.
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag
 {
+    range = CLAMP_RANGE(range, self.delegate.text.length);
+    if (range.length == 0) return;
+    
     NSAttributedString* oldAttributedString = self.delegate.attributedString;
 	
+    // Start editing text storage
     if (!_delegate.documentIsLoading) [_delegate.textStorage beginEditing];
     
+    // Either add or remove the tag from text. Tagging a range with nil tag means that we're clearing the range.
 	if (tag == nil) {
-		// Clear tags
 		[_delegate.textStorage removeAttribute:BeatTagging.attributeKey range:range];
 	} else {
 		[_delegate.textStorage addAttribute:BeatTagging.attributeKey value:tag range:range];
 	}
+    
+    // Save tags to document settings again
     [self saveTags];
 	
-    if (!_delegate.documentIsLoading) [_delegate.textStorage endEditing];
-	if (_delegate.documentIsLoading) return;
+    // If we're still loading, we'll stop here
+    if (_delegate.documentIsLoading) return;
+    
+    // End editing of text storage
+    [_delegate.textStorage endEditing];
 
     // Post a notification that tags have changed
     [NSNotificationCenter.defaultCenter postNotificationName:BeatTagging.notificationName object:self.delegate];
