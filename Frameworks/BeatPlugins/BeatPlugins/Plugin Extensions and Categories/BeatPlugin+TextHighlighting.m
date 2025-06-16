@@ -15,7 +15,8 @@
 {
 #if !TARGET_OS_IOS
     NSColor *color = [BeatColors color:hexColor];
-    [self.delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+    if (color != nil && NSMaxRange(NSMakeRange(loc, len)) <= self.delegate.text.length)
+        [self.delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 #endif
 }
 - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len
@@ -29,7 +30,8 @@
 {
 #if TARGET_OS_OSX
     NSColor *color = [BeatColors color:hexColor];
-    [self.delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+    if (color != nil && NSMaxRange(NSMakeRange(loc, len)) <= self.delegate.text.length)
+        [self.delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 #endif
 }
 
