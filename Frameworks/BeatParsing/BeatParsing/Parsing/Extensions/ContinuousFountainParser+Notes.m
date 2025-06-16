@@ -86,7 +86,7 @@
             line.noteIn = true; // We might change this value later.
         }
     }
-    
+        
     // Check if there was an unfinished not (except on the last line)
     if (noteRange.location != NSNotFound && lineIndex != self.lines.count-1) {
         line.noteOut = true;

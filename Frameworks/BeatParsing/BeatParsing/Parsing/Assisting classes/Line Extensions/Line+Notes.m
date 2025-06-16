@@ -79,7 +79,7 @@
     return false;
 }
 
-- (NSArray*)noteContents
+- (NSArray<NSString*>*)noteContents
 {
     return [self noteContentsWithRanges:false];
 }

@@ -80,6 +80,10 @@
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"download"];
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openLink"];
 	[self.webview.configuration.userContentController removeAllUserScripts];
+
+	if (@available(macOS 13.3, *))
+		self.webview.inspectable = true;
+
 	[self createPluginPageTemplate];
 }
 

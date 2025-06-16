@@ -8,6 +8,7 @@
 
 #import "BeatPieGraph.h"
 #import <BeatCore/BeatColors.h>
+#import <BeatCore/BeatCore-Swift.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
 
@@ -137,7 +138,7 @@
 			NSForegroundColorAttributeName: _colors[key]
 		}]];
 		
-		if (key != sortedValues.lastObject) [attrStr appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+		if (key != sortedValues.lastObject) [attrStr appendString:@"\n"];
 		
 		offset += percentage;
 		i++;
