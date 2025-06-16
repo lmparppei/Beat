@@ -319,11 +319,10 @@ static NSDictionary* patterns;
     _lastEditedLine = nil;
     _editedRange = range;
     
-    dispatch_queue_t lineQueue = dispatch_queue_create("com.editor.lineQueue", DISPATCH_QUEUE_SERIAL);
-    dispatch_sync(lineQueue, ^{
+    @synchronized (_lines) {
         NSMutableIndexSet *changedIndices = [self processLineChanges:range withString:string];
         [self correctParsesInLines:changedIndices];
-    });
+    }
 }
 
 - (NSMutableIndexSet*)processLineChanges:(NSRange)range withString:(NSString*)string {
@@ -350,6 +349,7 @@ static NSDictionary* patterns;
 /// I've replaced the old unichar-based code with this monstrosity to avoid weird quirks with multi-byte characters, and to preserve some metadata when inserting line breaks at the beginning of a line.
 - (NSIndexSet*)parseAddition:(NSString*)string atPosition:(NSUInteger)position
 {
+    /*
     NSMutableIndexSet* changedIndices = NSMutableIndexSet.new;
     
     // Get the line where we are adding characters
@@ -414,7 +414,61 @@ static NSDictionary* patterns;
     
     // Adjust positions of all subsequent lines
     [self adjustLinePositionsFrom:changedIndices.firstIndex];
-    [self report];
+    
+    return changedIndices;
+     */
+    
+    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+    
+    // Get the line where into which we are adding characters
+    NSUInteger lineIndex = [self lineIndexAtPosition:position];
+    Line* line = self.lines[lineIndex];
+    
+    [changedIndices addIndex:lineIndex];
+    
+    NSUInteger indexInLine = position - line.position;
+    
+    // Cut the string in half
+    NSString* tail = [line.string substringFromIndex:indexInLine];
+    line.string = [line.string substringToIndex:indexInLine];
+    
+    NSInteger currentRange = -1;
+    
+    for (NSInteger i=0; i<string.length; i++) {
+        if (currentRange < 0) currentRange = i;
+        
+        unichar chr = [string characterAtIndex:i];
+        
+        if (chr == '\n') {
+            NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
+            line.string = [line.string stringByAppendingString:addedString];
+            
+            if (lineIndex < self.lines.count - 1) {
+                Line* nextLine = self.lines[lineIndex+1];
+                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
+                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+            }
+            
+            [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
+            
+            // Increment current line index and reset inspected range
+            lineIndex++;
+            currentRange = -1;
+            
+            // Set current line
+            line = self.lines[lineIndex];
+        }
+    }
+    
+    // Get the remaining string (if applicable)
+    NSString* remainder = (currentRange >= 0) ? [string substringFromIndex:currentRange] : @"";
+    line.string = [line.string stringByAppendingString:remainder];
+    line.string = [line.string stringByAppendingString:tail];
+    
+    [self adjustLinePositionsFrom:lineIndex];
+    
+    //[self report];
+    [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
 }
@@ -731,6 +785,8 @@ static NSDictionary* patterns;
 /// @note: When calling, start from the line that was changed.
 - (void)adjustLinePositionsFrom:(NSInteger)index
 {
+    if (index >= self.lines.count) return;
+    
     Line* line = self.lines[index];
     NSInteger delta = NSMaxRange(line.range);
     index++;
