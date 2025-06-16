@@ -7,8 +7,14 @@
 
 #import <BeatParsing/ContinuousFountainParser.h>
 #import <BeatParsing/OutlineChanges.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
-@interface ContinuousFountainParser (Outline)
+@protocol ContinuousFountainParserOutlineExports <JSExport>
+/// Returns a tree structure for the outline. Only top-level elements are included, get the rest using `element.chilren`.
+- (NSArray*)outlineTree;
+@end
+
+@interface ContinuousFountainParser (Outline) <ContinuousFountainParserOutlineExports>
 
 #pragma mark - Outline creation
 
