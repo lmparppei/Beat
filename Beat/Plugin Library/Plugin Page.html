@@ -276,6 +276,13 @@
 				
 				setButtonStatus(data)
 				
+				let image = data.image
+				let imageURL = null
+				if (image.length > 0) {
+					let i = image.lastIndexOf("/")
+					imageURL = image.substr(0,i) + "/" + encodeURIComponent(image.substr(i+1))
+				}
+				
 				if (!data.compatible) displayWarning()
 				else pluginWarning.className = ""
 				
@@ -285,8 +292,7 @@
 				if (data.text) pluginDescription.innerHTML = data.text
 				if (data.html) pluginDescription.innerHTML = data.html
 				if (data.copyright) pluginInfo.innerHTML = "© " + data.copyright
-				if (data.image) pluginImage.innerHTML = "<img src='" + data.image + "'>"
-				
+				if (imageURL != null) pluginImage.innerHTML = "<img src=\"" + imageURL + "\">"
 
 				const links = document.querySelectorAll("a").forEach((link) => {
 					link.onclick = function (e) {
