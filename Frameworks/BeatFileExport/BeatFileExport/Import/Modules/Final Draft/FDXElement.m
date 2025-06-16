@@ -8,6 +8,7 @@
 
 #import "FDXElement.h"
 #import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 @implementation FDXNote
 - (instancetype)initWithRange:(NSRange)range
@@ -72,24 +73,32 @@
 	if (self.text.string == nil) return @"";
 	else return self.text.string;
 }
+
 - (void)setString:(NSString*)string
 {
-	[self.text setAttributedString:[self attrStrFrom:string]];
+    [self.text setAttributedString:ToAttributedString(string)];
 }
 
 - (void)append:(NSString *)string
 {
-	[_text appendAttributedString:[self attrStrFrom:string]];
+    [_text appendAttributedString:ToAttributedString(string)];
 }
 
 - (void)insertAtBeginning:(NSString*)string
 {
-	[_text insertAttributedString:[self attrStrFrom:string] atIndex:0];
+	[_text insertAttributedString:ToAttributedString(string) atIndex:0];
 }
+
 - (void)insertAtEnd:(NSString*)string
 {
-	[_text appendAttributedString:[self attrStrFrom:string]];
+	[_text appendAttributedString:ToAttributedString(string)];
 }
+
+- (void)addAttribute:(NSAttributedStringKey)name value:(id)value range:(NSRange)range
+{
+    [_text addAttribute:name value:value range:range];
+}
+
 - (void)makeUppercase
 {
 	if (_text.length > 0) {
@@ -99,18 +108,9 @@
 	}
 }
 
-- (void)addAttribute:(nonnull NSAttributedStringKey)name value:(nonnull id)value range:(NSRange)range
-{
-	[self.text addAttribute:name value:value range:range];
-}
-
 - (void)addStyle:(NSString *)style to:(NSRange)range
 {
 	[self.text addAttribute:@"Style" value:style range:range];
-}
-
-- (NSAttributedString*)attrStrFrom:(NSString*)string {
-	return [[NSAttributedString alloc] initWithString:string];
 }
 
 - (NSInteger)length
@@ -120,40 +120,8 @@
 
 - (NSString*)fountainString
 {
-	NSMutableString *result = [NSMutableString string];
-	
-	// Enumerate string attributes, find previously set stylization and convert it to Fountain
-	[self.text enumerateAttributesInRange:(NSRange){0, self.text.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-		NSString *open = @"";
-		NSString *close = @"";
-		NSString *openClose = @"";
-
-		NSAttributedString *attrStr = [self.text attributedSubstringFromRange:range];
-		
-		if (attrs[@"Style"]) {
-			NSArray *styles = [(NSString*)attrs[@"Style"] componentsSeparatedByString:@","];
-			for (NSString *style in styles) {
-				if ([self style:style matches:@"Italic"]) {
-					openClose = [openClose stringByAppendingString:@"*"];
-				}
-				else if ([self style:style matches:@"Bold"]) {
-					openClose = [openClose stringByAppendingString:@"**"];
-				}
-				else if ([self style:style matches:@"Underline"]) {
-					openClose = [openClose stringByAppendingString:@"_"];
-				}
-				else if ([self style:style matches:@"Strikeout"]) {
-					open = [open stringByAppendingString:@"{{"];
-					close = [close stringByAppendingString:@"}}"];
-				}
-			}
-		}
-		
-		NSString *formatted = [NSString stringWithFormat:@"%@%@%@%@%@", openClose, open, attrStr.string, close, openClose];
-		[result appendString:formatted];
-	}];
-	
-	return result;
+    NSAttributedString* str = self.attributedFountainString;
+    return str.string;
 }
 
 - (NSAttributedString*)attributedFountainString
@@ -167,7 +135,8 @@
 		NSString *openClose = @"";
 
 		NSAttributedString *attrStr = [self.text attributedSubstringFromRange:range];
-		
+        bool allCaps = false;
+        
 		if (attrs[@"Style"]) {
 			NSArray *styles = [(NSString*)attrs[@"Style"] componentsSeparatedByString:@","];
 			for (NSString *style in styles) {
@@ -184,25 +153,31 @@
 					open = [open stringByAppendingString:@"{{"];
 					close = [close stringByAppendingString:@"}}"];
 				}
+                else if ([self style:style matches:@"AllCaps"]) {
+                    allCaps = true;
+                }
 			}
 		}
 		
-		[attrResult appendAttributedString:[self attrStrFrom:open]];
-		[attrResult appendAttributedString:[self attrStrFrom:openClose]];
+        if (allCaps) {
+            attrStr = attrStr.uppercased;
+        }
+        
+        [attrResult appendString:open];
+        [attrResult appendString:openClose];
+        
 		[attrResult appendAttributedString:attrStr];
-		[attrResult appendAttributedString:[self attrStrFrom:openClose]];
-		[attrResult appendAttributedString:[self attrStrFrom:close]];
+        
+        [attrResult appendString:openClose];
+        [attrResult appendString:close];
 	}];
 	
 	return attrResult;
 }
 
-- (bool)style:(NSString*)style matches:(NSString*)match {
-	if ([[self trim:style] isEqualToString:match]) return YES;
-	else return NO;
-}
-- (NSString*)trim:(NSString*)string {
-	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+- (bool)style:(NSString*)style matches:(NSString*)match
+{
+    return ([style.trim isEqualToString:match]);
 }
 
 + (NSString*)colorNameFor16bitHex:(NSString*)hex
