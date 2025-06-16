@@ -11,7 +11,7 @@ import UXKit
 
 // MARK: - Convenience methods
 
-public extension NSAttributedString {
+@objc public extension NSAttributedString {
 	@objc func height(containerWidth: CGFloat) -> CGFloat {
 		let rect = self.boundingRect(with: CGSize.init(width: containerWidth, height: CGFloat.greatestFiniteMagnitude),
 									 options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -30,8 +30,7 @@ public extension NSAttributedString {
 		get { return NSRange(location: 0, length: self.length) }
 	}
 	
-	func uppercased() -> NSAttributedString {
-
+    @objc func uppercased() -> NSAttributedString {
 		let result = NSMutableAttributedString(attributedString: self)
 
 		result.enumerateAttributes(in: NSRange(location: 0, length: length), options: []) {_, range, _ in
@@ -49,7 +48,7 @@ public extension NSAttributedString {
             guard let chr = string[string.index(before: string.endIndex)].unicodeScalars.first else { break }
             
             if set.contains(chr) {
-                str = str.attributedSubstring(from: NSMakeRange(0, self.length - 1))
+                str = str.attributedSubstring(from: NSMakeRange(0, str.string.count - 1))
             } else {
                 break
             }
@@ -57,6 +56,14 @@ public extension NSAttributedString {
         
         return str
     }
+}
+
+@objc public extension NSMutableAttributedString {
+    
+    @objc func appendString(_ string:String) {
+        append(NSAttributedString(string: string))
+    }
+    
 }
 
 

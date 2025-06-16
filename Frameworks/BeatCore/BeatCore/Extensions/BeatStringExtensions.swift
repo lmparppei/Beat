@@ -91,3 +91,21 @@ public extension StringProtocol {
 	subscript(range: PartialRangeThrough<Int>) -> SubSequence { self[...index(startIndex, offsetBy: range.upperBound)] }
 	subscript(range: PartialRangeUpTo<Int>) -> SubSequence { self[..<index(startIndex, offsetBy: range.upperBound)] }
 }
+
+public extension StringProtocol {
+    
+    /// Returns the raw integer index (offset) of the next `\n` after or at the given character offset.
+    func rawIndexOfNextLineBreak(from index: Int) -> Int {
+        guard index >= 0 && index < self.utf16.count else { return NSNotFound }
+        
+        // Convert raw offset to String.Index
+        let startIndex = self.index(self.startIndex, offsetBy: index, limitedBy: self.endIndex) ?? self.endIndex
+        
+        if let lineBreakIndex = self[startIndex...].firstIndex(of: "\n") {
+            return self.distance(from: self.startIndex, to: lineBreakIndex)
+        }
+        
+        return NSNotFound
+    }
+    
+}
