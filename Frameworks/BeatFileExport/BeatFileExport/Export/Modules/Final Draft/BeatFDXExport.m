@@ -298,7 +298,7 @@
         if (note.color.length > 0) color = [BeatColors colorWith16bitHex:note.color];
         
         [scriptNotes appendFormat:@"    <ScriptNote Range='%lu,%lu' Color='#%@'>\n", range.location, range.length + range.location, color];
-        [scriptNotes appendFormat:@"      <Paragraph><Text>%@</Text></Paragraph>\n", note.content];
+        [scriptNotes appendFormat:@"      <Paragraph>%@</Paragraph>\n", [self textBlockFor:note.content]];
         [scriptNotes appendFormat:@"    </ScriptNote>\n"];
     }
     
@@ -631,10 +631,10 @@
 - (NSString*)titlePageLineWithString:(NSString*)string center:(bool)center
 {
     return [NSString stringWithFormat:@"      <Paragraph%@>\n"
-                                       "        <Text>%@</Text>\n"
+                                       "         %@\n"
                                        "      </Paragraph>\n",
             (center) ? @" Alignment=\"Center\"" : @"",
-            string
+            [self textBlockFor:string]
     ];
 }
 
@@ -735,7 +735,8 @@
 		[text setString:[l componentsJoinedByString:@""]];
 		
 		// Append snippet to paragraph
-		[xmlString appendString:[NSString stringWithFormat:@"      <Text%@%@>%@</Text>\n", styleString, tagAttribute, text]];
+        [xmlString appendString:[self textBlockFor:text attributes:@[styleString, tagAttribute]]];
+		//[xmlString appendString:[NSString stringWithFormat:@"      <Text%@%@>%@</Text>\n", styleString, tagAttribute, text]];
 	}];
 	
 	return xmlString;
@@ -796,6 +797,32 @@
     }
 }
 
+/// Returns a single `<Text></Text>` block for a paragraph.
+- (NSString*)textBlockFor:(NSString*)string
+{
+    return [self textBlockFor:string attributes:@[]];
+}
+
+/// Returns a single `<Text></Text>` block for a paragraph with additional attributes. Takes care of possible different font for Hindi lines.
+/// @param attrs An array of attributes for the text tag. NOTE: You need to prefix all of these with a space because I didn't feel like refactoring the whole thing, ie. `[" Style='Italic'", " TagAttribute='1'"]`
+- (NSString*)textBlockFor:(NSString*)string attributes:(NSArray<NSString*>*)attrs
+{
+    NSMutableString *additionalClasses = NSMutableString.new;
+    for (NSString* attr in attrs) {
+        [additionalClasses appendString:attr];
+    }
+    
+    if (string.containsHindi) {
+        [additionalClasses appendString:self.hindiClass];
+    }
+    
+    return [NSString stringWithFormat:@"<Text%@>%@</Text>", additionalClasses, string];
+}
+
+- (NSString*)hindiClass
+{
+    return @" Font=\"Sans Devanagari Final Draft\"";
+}
 
 @end
 /*

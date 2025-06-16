@@ -40,4 +40,8 @@
 - (NSString*)stringByCleaningUpWindowsLineBreaks;
 /// Removes unwanted control characters (including Windows line breaks etc.)
 - (NSString*)stringByCleaningUpBadControlCharacters;
+
+/// Check for Devanagari text. This is used by FDX export.
+- (BOOL)containsHindi;
+
 @end

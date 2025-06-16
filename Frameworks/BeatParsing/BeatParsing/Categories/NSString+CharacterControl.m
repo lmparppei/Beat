@@ -346,5 +346,16 @@
     return [items componentsJoinedByString:@""];
 }
 
+/// Check for Devanagari text. This is used by FDX export.
+- (BOOL)containsHindi
+{
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\p{InDevanagari}" options:0 error:&error];
+    
+    if (error) return NO;
+    
+    NSRange range = [regex rangeOfFirstMatchInString:self options:0 range:NSMakeRange(0, self.length)];
+    return range.location != NSNotFound;
+}
 
 @end
