@@ -19,6 +19,23 @@
 				box-sizing: border-box;
 				cursor: default;
 			}
+            
+            :root {
+              --red: rgb(239, 0, 73);
+              --blue: rgb(0, 129, 239);
+              --green: rgb(0, 223, 121);
+              --pink: rgb(250, 111, 193);
+              --magenta: rgb(236, 0, 140);
+              --gray: gray;
+              --gray-light: #ccc;
+              --purple: rgb(181, 32, 218);
+              --yellow: rgb(255, 162, 0);
+              --cyan: rgb(7, 189, 236);
+              --teal: rgb(12, 224, 227);
+              --orange: rgb(255, 161, 13);
+              --orange-text: #006573;
+              --brown: rgb(169, 106, 7);
+            }
 			
 			@font-face
 			{
@@ -122,24 +139,40 @@
 			}
 
 			/* Beat colors */
-			.red { background-color: rgb(239,0,73); color: white; }
-			.blue { background-color: rgb(0,129,239); color: white; }
-			.textBlue { color: rgb(0,129,239); }
-			.green { background-color: rgb(0,223,121); color: white; }
-			.pink { background-color: rgb(250,111,193); color: white; }
-			.magenta { background-color: rgb(236,0,140); color: white; }
-			.textMagenta { color: rgb(236,0,140); }
-			.gray { background-color: gray; color: white; }
-			.textGray { color: #ccc; }
-			.purple { background-color: rgb(181, 32, 218); color: white; }
-			.textPurple { color: rgb(181, 32, 218); }
-			.prince { background-color: rgb(181, 32, 218); color: white; }
-			.yellow { background-color: rgb(255, 162, 0); color: #333; }
-			.cyan { background-color: rgb(7, 189, 236); color: white; }
-			.teal { background-color: rgb(12, 224, 227); color: white; }
-			.orange { background-color: rgb(255, 161, 13); color: white; }
-			.textOrange { color: #006573; }
-			.brown { background-color: rgb(169, 106, 7); color: white; }
+            
+            .red       { background-color: var(--red); color: white; }
+            .blue      { background-color: var(--blue); color: white; }
+            .green     { background-color: var(--green); color: white; }
+            .pink      { background-color: var(--pink); color: white; }
+            .magenta   { background-color: var(--magenta); color: white; }
+            .gray      { background-color: var(--gray); color: white; }
+            .purple,
+            .prince    { background-color: var(--purple); color: white; }
+            .yellow    { background-color: var(--yellow); color: #222; }
+            .cyan      { background-color: var(--cyan); color: white; }
+            .teal      { background-color: var(--teal); color: white; }
+            .orange    { background-color: var(--orange); color: white; }
+            .brown     { background-color: var(--brown); color: white; }
+
+            .textBlue     { color: var(--blue); }
+            .textMagenta  { color: var(--magenta); }
+            .textGray     { color: var(--gray-light); }
+            .textPurple   { color: var(--purple); }
+            .textOrange   { color: var(--orange-text); }
+            
+            p.red       { background-color: transparent; color: var(--red); }
+            p.blue      { background-color: transparent; color: var(--blue); }
+            p.green     { background-color: transparent; color: var(--green); }
+            p.pink      { background-color: transparent; color: var(--pink); }
+            p.magenta   { background-color: transparent; color: var(--magenta); }
+            p.gray      { background-color: transparent; color: var(--gray-light); }
+            p.purple,
+            p.prince    { background-color: transparent; color: var(--purple); }
+            p.yellow    { background-color: transparent; color: var(--yellow); }
+            p.cyan      { background-color: transparent; color: var(--cyan); }
+            p.teal      { background-color: transparent; color: var(--teal); }
+            p.orange    { background-color: transparent; color: var(--orange-text); }
+            p.brown     { background-color: transparent; color: var(--brown); }
 			
 			input[type="radio"] {
 				margin: 0;
