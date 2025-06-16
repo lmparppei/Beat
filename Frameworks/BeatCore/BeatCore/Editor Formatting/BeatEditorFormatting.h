@@ -29,6 +29,8 @@ typedef enum {
 @property (weak, nonatomic) id<BeatEditorDelegate> delegate;
 @property (nonatomic) bool didProcessForcedCharacterCue;
 
+@property (nonatomic) Line* _Nullable lineBeingFormatted;
+
 /// Set this to use a static parser instead of delegate's parser
 @property (nonatomic) ContinuousFountainParser* staticParser;
 

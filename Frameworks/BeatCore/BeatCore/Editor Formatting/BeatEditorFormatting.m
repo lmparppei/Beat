@@ -345,9 +345,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 { @autoreleasepool {
 	// SAFETY MEASURES:
     // Don't do anything if the line is null or we don't have a text storage, and don't go out of range when attached to an editor
-	if (line == nil || self.textStorage == nil) return;
-    if (NSMaxRange(line.textRange) > self.textStorage.length) return;
-
+    if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > self.textStorage.length) {
+        self.lineBeingFormatted = nil;
+        return;
+    }
+    
+    // Store the currently formatted line to fix iOS issues
+    self.lineBeingFormatted = line;
+    
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
@@ -375,7 +380,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
 	[attributes removeObjectForKey:BeatReview.attributeKey];
 	[attributes removeObjectForKey:BeatRepresentedLineKey];
-		
+    
 	// Store the represented line
 	NSRange representedRange;
 	if (range.length > 0) {
@@ -399,6 +404,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         newAttributes[NSFontAttributeName] = self.fonts.regular;
         [textStorage addAttributes:newAttributes range:fullRange];
         if (!alreadyEditing) [textStorage endEditing];
+        self.lineBeingFormatted = nil;
         return;
     }
     
@@ -420,6 +426,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         
         [_delegate.getTextView setTypingAttributes:attributes];
         
+        self.lineBeingFormatted = nil;
 		return;
 	}
     
@@ -509,9 +516,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
     // Actual text colors
 	[self setTextColorFor:line];
-
+    
     if (!alreadyEditing) [textStorage endEditing];
     if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
+    
+    self.lineBeingFormatted = nil;
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage
