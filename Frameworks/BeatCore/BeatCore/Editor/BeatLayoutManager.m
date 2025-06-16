@@ -228,14 +228,14 @@
     while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
-        // The dictionary value is always a two-item array with [pageNumber, pageBreakPosition]
-        NSArray<NSNumber*>* values = [_pageBreaksMap objectForKey:line];
+        // The dictionary value is always a two-item array with [pageNumber<Strinrg>, pageBreakPosition<Float>]
+        NSArray* values = [_pageBreaksMap objectForKey:line];
         
         // Page number
-        NSInteger pageNumber = values[0].integerValue;
+        NSString* pageNumber = values[0];
         
         // Get the glyph position
-        NSUInteger localIndex = values[1].unsignedIntegerValue;
+        NSUInteger localIndex = ((NSNumber*)values[1]).unsignedIntegerValue;
         NSInteger globalIndex = line.position + localIndex;
         NSInteger glyphIndex = [self glyphIndexForCharacterAtIndex:globalIndex];
         
@@ -246,7 +246,7 @@
         
         // Draw page numbers
         if (pageNumber > 0) {
-            NSString* pNumber = [NSString stringWithFormat:@"%lu.",pageNumber];
+            NSString* pNumber = [NSString stringWithFormat:@"%@.",pageNumber];
             [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
                 NSFontAttributeName: self.editorDelegate.fonts.regular,
                 NSForegroundColorAttributeName: pageNumberColor,
