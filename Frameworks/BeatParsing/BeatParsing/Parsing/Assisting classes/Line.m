@@ -209,6 +209,8 @@
     newLine.versions = self.versions.mutableCopy;
     newLine.currentVersion = self.currentVersion;
     
+    newLine.noteData = self.noteData;
+    
     newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
     
     return newLine;
@@ -669,6 +671,33 @@
     NSString* string = self.stripFormatting;
     return [string containsOnlyUppercase];
 }
+
+
+#pragma mark - Page number convenience method
+
+/// - note You should never, I repeat, NEVER set the underlying forced page number ivar yourself on any line. The only time this is used is when preprocessing __cloned__ lines for printing, because empty (pure note) lines are cleaned up and we need to somehow tell the previous remaining line that it will carry this information onwards.
+- (NSString*)forcedPageNumber
+{
+    if (self.noteRanges.count == 0 && _inheritedForcedPageNumber == nil)
+        return nil;
+    else if (_inheritedForcedPageNumber != nil)
+        return _inheritedForcedPageNumber; // Read the note above
+     
+    for (NSString* note in self.noteContents) {
+        if ([note.lowercaseString rangeOfString:@"page "].location == 0 && note.length > 5) {
+            NSString* pageNumber = [note substringFromIndex:5];
+            return pageNumber;
+        }
+    }
+    
+    return nil;
+}
+
+- (void)setForcedPageNumber:(NSString *)forcedPageNumber
+{
+    _inheritedForcedPageNumber = forcedPageNumber;
+}
+
 
 
 #pragma mark - Debugging

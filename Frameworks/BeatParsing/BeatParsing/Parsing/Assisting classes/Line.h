@@ -127,6 +127,9 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @property (nonatomic) bool collapsed;
 
+/// Returns line string content with no formatting to be displayed in UI elements.
+- (NSString*)stringForDisplay;
+
 - (NSString*)stripFormatting;
 - (bool)effectivelyEmpty;
 
@@ -417,6 +420,10 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 /// returns `true` if the *visible* content is uppercase, which means that any notes etc. won't be taken into consideration.
 - (bool)visibleContentIsUppercase;
+
+/// Page number convenience getter. Note that this can also be SET.
+@property (nonatomic) NSString* forcedPageNumber;
+@property (nonatomic) NSString* inheritedForcedPageNumber;
 
 
 #pragma mark - Debugging
