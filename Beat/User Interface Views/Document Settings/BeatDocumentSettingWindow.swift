@@ -74,7 +74,7 @@ import Foundation
 		printSynopsis?.state = (delegate.documentSettings.getBool(DocSettingPrintSynopsis)) ? .on : .off
 		printNotes?.state = (delegate.documentSettings.getBool(DocSettingPrintNotes)) ? .on : .off
 		
-		let paginationMode = (delegate.styles.document.paginationMode != 0) ? delegate.styles.document.paginationMode : delegate.documentSettings.getInt(DocSettingPageNumberingMode)
+		let paginationMode = (delegate.styles.document.paginationMode > 0) ? delegate.styles.document.paginationMode : delegate.documentSettings.getInt(DocSettingPageNumberingMode)
 		if paginationMode == 1 { pageNumberingModeScene?.state = .on }
 		else if paginationMode == 2 { pageNumberingModePageBreak?.state = .on }
 		
