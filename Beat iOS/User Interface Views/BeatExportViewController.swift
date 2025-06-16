@@ -47,6 +47,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 				hiddenRevisions.insert(revision.tag)
 			}
 		}
+		print(" ... hidden revisions from buttons:", hiddenRevisions)
 		
 		return hiddenRevisions
 	}
@@ -75,11 +76,13 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		refreshPreview()
 		
 		// Toggle revisions
-		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? [Int] ?? []
+		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? NSIndexSet ?? NSIndexSet()
+		print("Hidden revisions:", hiddenRevisions)
 		for revision in revisionSwitches ?? [] {
 			revision.isChecked = !hiddenRevisions.contains(revision.tag)
 		}
 		
+		// This is a remnant from the time when I planned on making the iOS version paywalled. I'm keeping it here to remind me that it was a bad idea.
 		//checkPaywall()
 	}
 	
@@ -120,6 +123,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	
 	@IBAction func toggleRevision(sender:UIButton?) {
 		self.editorDelegate?.documentSettings.set(DocSettingHiddenRevisions, as: self.hiddenRevisions)
+		print("Stored revisions:", self.editorDelegate?.documentSettings.get(DocSettingHiddenRevisions))
 	}
 	
 	/// Refresh the underlying document
