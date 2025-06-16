@@ -30,7 +30,8 @@ import UXKit
     func numberOfPages() -> Int
     func pageSize() -> CGSize
     func hasTitlePage() -> Bool
-    func pageView(forPage pageIndex:Int) -> UXView
+    func pageView(forPage pageIndex:Int, placeholder:Bool) -> UXView
+    var rendering:Bool { get }
 }
 
 @objc public protocol BeatPreviewManagerDelegate:BeatEditorDelegate {
@@ -42,6 +43,8 @@ import UXKit
     
     @IBOutlet public weak var delegate:BeatPreviewManagerDelegate?
     @IBOutlet weak open var previewView:BeatPreviewPageView?
+    
+    @objc public var rendering = false
     
     /// Pagination manager
     @objc public var pagination:BeatPaginationManager?
@@ -239,6 +242,8 @@ import UXKit
     // MARK: - Rendering
     
     @objc open func renderOnScreen() {
+        self.rendering = true
+        
         guard let previewView = self.previewView,
               let pagination = self.pagination
         else { return }
@@ -281,6 +286,7 @@ import UXKit
                 
                 // Hide animation
                 previewView.endLoadingAnimation()
+                self?.rendering = false
             }
         }
     }
@@ -311,7 +317,7 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
         return pages
     }
     
-    public func pageView(forPage pageIndex: Int) -> UXView {
+    public func pageView(forPage pageIndex: Int, placeholder:Bool = false) -> UXView {
         guard let pagination = self.pagination?.finishedPagination
         else {
             return UXView()
@@ -330,15 +336,20 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
         var pageView:UXView?
                         
         if pageIndex == 0 && hasTitlePage {
-            // If we have a title page and page index is 0, we'll return a title page view
-            pageView = BeatTitlePageView(titlePage: pagination.titlePage(), settings: settings)
+            // If we have a title page and page index is 0, we'll return a title page view.
+            // Something causes a race condition with title page lines (or something) when requesting a title page from thumbnail view, so... yeah. Let's avoid that by checking the placeholder flag.
+            if !placeholder {
+                pageView = BeatTitlePageView(titlePage: pagination.titlePage(), settings: settings)
+            } else {
+                pageView = BeatTitlePageView(titlePage: [], settings: settings)
+            }
         } else if let pages = self.pagination?.pages, actualIndex != NSNotFound, actualIndex < pages.count {
             // Otherwise we'll just return the actual page
             let page = pages[actualIndex]
             pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
         }
         
-        if (pageView != nil) {
+        if (pageView != nil && !placeholder) {
             pageViews[pageIndex] = pageView
             return pageView!
         } else {

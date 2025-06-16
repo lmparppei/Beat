@@ -178,7 +178,7 @@
     }
     
     NSMutableAttributedString* attributedString = [NSMutableAttributedString.alloc initWithAttributedString:lineAttrStr];
-    [attributedString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+    [attributedString appendString:@"\n"];
     [attributedString addAttributes:attrs range:NSMakeRange(0, attributedString.length)];
     
     // Underlining
@@ -412,7 +412,7 @@
     BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, center, right] spacing:0.0 margin:0.0];
     
     NSMutableAttributedString* tableString = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
-    [tableString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+    [tableString appendString:@"\n"];
     
     // Restore margin
     [tableString addAttribute:NSParagraphStyleAttributeName value:contentStyle range:NSMakeRange(0, tableString.length)];
@@ -533,9 +533,14 @@
 - (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page
 {
     NSInteger pageNumber = page.pageNumber;
+    NSString* pageNumberString;
     
     // We might skip first page number (in screenplay mode)
-    NSString* pageNumberString = (pageNumber >= self.styles.page.firstPageWithNumber) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
+    if (pageNumber < self.styles.page.firstPageWithNumber && page.customPageNumber == nil) {
+        pageNumberString = @"\n";
+    } else {
+        pageNumberString = (page.customPageNumber == nil) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : [NSString stringWithFormat:@"%@\n", page.customPageNumber];
+    }
     
     // We'll use A4 size for both page sizes
     CGFloat width = self.styles.page.defaultWidthA4 - 10.0;
@@ -686,7 +691,7 @@
     BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, header, right] spacing:0.0 margin:0.0];
     
     NSMutableAttributedString* tableString = [NSAttributedString attributedStringWithAttachment:attachment].mutableCopy;
-    [tableString appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+    [tableString appendString:@"\n"];
     
     // Restore margin
     NSMutableParagraphStyle* blockStyle = NSMutableParagraphStyle.new;

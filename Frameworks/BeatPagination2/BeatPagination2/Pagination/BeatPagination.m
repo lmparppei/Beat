@@ -171,7 +171,7 @@
             }
         }
         
-        if (numberingBegan) {
+        if (numberingBegan && page.customPageNumber == nil) {
             page.pageNumber = pageNumber;
             pageNumber += 1;
         }
@@ -194,7 +194,6 @@
     //NSInteger pageNumber = 0;
     
     for (BeatPaginationPage* page in self.pages) {
-        
         BeatPageBreak* pageBreak = page.pageBreak;
         NSInteger position = pageBreak.element.position + pageBreak.index;
         
@@ -208,7 +207,8 @@
         // Store the local position of character
         NSUInteger localIndex = position - pageBreak.element.position;
         NSValue* key = [NSValue valueWithNonretainedObject:pageBreak.element];
-        pageBreaks[key] = @[@(page.pageNumber), @(localIndex)];
+                
+        pageBreaks[key] = @[page.pageNumberForPrinting, @(localIndex)];
     }
     
     return pageBreaks;
@@ -392,7 +392,10 @@
 		}
 	}
 	
-	if (_currentPage.blocks.count > 0) [_pages addObject:_currentPage];
+    if (_currentPage.blocks.count > 0) {
+        [self addPage:@[] toQueue:@[] pageBreak:nil];
+        //[_pages addObject:_currentPage];
+    }
 	
 	return true;
 }
@@ -583,6 +586,13 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
         BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
         [_currentPage addBlock:block];
     }
+    
+    _currentPage.customPageNumber = nil;
+    for (Line* line in _currentPage.lines) {
+        NSString* pgNumber = line.forcedPageNumber;
+        if (pgNumber != nil) _currentPage.customPageNumber = pgNumber;
+    }
+    
 	[self.pages addObject:_currentPage];
 	
 	// Add objects to queue
@@ -590,8 +600,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	NSIndexSet* indices = [NSIndexSet indexSetWithIndexesInRange:range];
 	[_lineQueue insertObjects:toQueue atIndexes:indices];
 	
-	_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
-	_currentPage.pageBreak = pageBreak;
+    if (pageBreak != nil) {
+        _currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
+        _currentPage.pageBreak = pageBreak;
+    }
 }
 
 
@@ -896,7 +908,6 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 }
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage {
-    
     return self.titlePageContent;
 }
 

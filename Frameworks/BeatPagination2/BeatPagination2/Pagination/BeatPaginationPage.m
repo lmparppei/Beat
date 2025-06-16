@@ -441,4 +441,9 @@
     return false;
 }
 
+- (NSString*)pageNumberForPrinting
+{
+    return (self.customPageNumber == nil) ? [NSString stringWithFormat:@"%lu", self.pageNumber] : self.customPageNumber;
+}
+
 @end

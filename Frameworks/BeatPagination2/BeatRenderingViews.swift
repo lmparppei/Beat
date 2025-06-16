@@ -396,7 +396,7 @@ import UXKit
             guard let key = dict.keys.first?.lowercased(), key.prefix(2) != "x-" else {
                 continue
             }
-            
+                    
 			if let element = titlePageElement(dict.keys.first ?? "") {
 				let attrStr = NSMutableAttributedString()
 				_ = element.map { attrStr.append(renderer.renderLine($0)) }
@@ -412,6 +412,7 @@ import UXKit
         #endif
 		
 		// Layout manager doesn't handle newlines too well, so let's trim the column content
+        print("Creating title page ...")
 		leftTextStorage.setAttributedString(leftTextStorage.trimmedAttributedString(set: .newlines))
 		rightTextStorage.setAttributedString(rightTextStorage.trimmedAttributedString(set: .newlines))
 
@@ -486,18 +487,18 @@ import UXKit
 		}
 		
 		var elementLines:[Line] = []
-				
-		for i in 0..<lines.count {
-			let l = lines[i]
-			l.type = type
-			elementLines.append(l)
-		}
+        for i in 0..<lines.count {
+            let l = lines[i]
+            l.type = type
+            elementLines.append(l)
+        }
 				
 		return elementLines
 	}
 	
 	/// Updates title page content 
 	@objc public func updateTitlePage(_ titlePageContent: [[String:[Line]]]) {
+        self.titlePageLines = []
 		self.titlePageLines = titlePageContent
 		createTitlePage()
 	}

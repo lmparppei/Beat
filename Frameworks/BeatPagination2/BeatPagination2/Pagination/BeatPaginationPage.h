@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<Line*>* lines;
 
 @property (nonatomic, readonly) NSInteger pageNumber;
-@property (nonatomic, readonly) NSString* customPageNumber;
+@property (nonatomic, readonly) NSString* _Nullable customPageNumber;
 
 -(NSRange)representedRange;
 -(NSRange)safeRange;
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat maxHeight;
 @property (nonatomic) CGFloat remainingSpace;
 @property (nonatomic) NSInteger pageNumber;
-@property (nonatomic) NSString* customPageNumber;
+@property (nonatomic) NSString* _Nullable customPageNumber;
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;
 -(BeatPaginationPage*)copyWithDelegate:(id)delegate;
@@ -68,6 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (bool)hasScene;
 - (bool)hasForcedPageBreak;
+
+- (NSString*)pageNumberForPrinting;
+
 @end
 
 NS_ASSUME_NONNULL_END
