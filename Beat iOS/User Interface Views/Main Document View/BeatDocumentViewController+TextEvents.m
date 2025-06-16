@@ -52,6 +52,8 @@
 	if (self.documentIsLoading) return;
 	else if (self.formatting.didProcessForcedCharacterCue) return;
 	
+	Line* line = [self.parser lineAtPosition:editedRange.location];
+	
 	// Don't parse anything when editing attributes
 	if (editedMask == NSTextStorageEditedAttributes) {
 		return;
@@ -85,6 +87,7 @@
 		
 		affectedRange = replacedRange;
 		string = [self.text substringWithRange:addedRange];
+		
 	} else {
 		// Something was added.
 		if (delta > 1) {
@@ -107,7 +110,10 @@
 		string = string.uppercaseString;
 	}
 	
-	[self.parser parseChangeInRange:affectedRange withString:string];
+	// Make sure we're double-formatting .... fix for a silly iOS issue
+	if (line != self.formatting.lineBeingFormatted || line == nil) {
+		[self.parser parseChangeInRange:affectedRange withString:string];
+	}
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView
