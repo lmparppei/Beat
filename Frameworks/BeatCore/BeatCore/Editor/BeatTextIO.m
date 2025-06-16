@@ -89,6 +89,16 @@ static NSString *centeredEnd = @" <";
 {
     BXTextView* textView = self.textView;
     
+    if (NSMaxRange(range) > textView.text.length) {
+        if (range.length == 0) {
+            range = NSMakeRange(textView.text.length, 0);
+        } else {
+            NSInteger loc = MIN(textView.text.length, range.location);
+            NSInteger len = textView.text.length - loc;
+            range = NSMakeRange(loc, len);
+        }
+    }
+
     // If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
     if (range.length + range.location > _delegate.text.length) {
         NSInteger length = _delegate.text.length - range.location;
