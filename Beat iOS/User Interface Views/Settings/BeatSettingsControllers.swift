@@ -185,6 +185,7 @@ class BeatSettingsViewController:UITableViewController {
 		}
 		
 		if button.reformatHeadings {
+			delegate?.reloadStyles()
 			delegate?.formatting.formatAllLines(of: .heading)
 		}
 		
