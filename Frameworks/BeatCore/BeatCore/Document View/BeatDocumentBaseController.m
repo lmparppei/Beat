@@ -761,7 +761,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     [self.documentSettings set:DocSettingRevisions as:revisions];
     
     // Save tag definitions and ranges
-    // [self.tagging saveTags];
+    [self.tagging saveTags];
     
     // Save current revision color
     [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
