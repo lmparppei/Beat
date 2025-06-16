@@ -374,7 +374,7 @@
 
 /// Check compatibility with Beat version number
 - (bool)compatibleWith:(NSString *)version {
-	return [BeatPluginManager.sharedManager isCompatible:version];
+	return [BeatPluginManager isCompatible:version];
 }
 
 

@@ -16,11 +16,18 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 	ImportPlugin,
 	ExportPlugin,
 	StandalonePlugin,
-    InternalPlugin
+    InternalPlugin,
+    StylePlugin
 };
 
 /// Stores metadata for a plugin
 @interface BeatPluginInfo : NSObject
+- (instancetype)initWithURL:(NSURL*)url;
+
+@property (nonatomic) bool installed;
+@property (nonatomic) bool compatible;
+@property (nonatomic) bool isFolder;
+
 @property (nonatomic) NSString *name;
 @property (nonatomic) BeatPluginType type;
 @property (nonatomic) NSString *version;
@@ -30,9 +37,8 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSString *html;
 @property (nonatomic) NSURL *localURL;
 @property (nonatomic) NSURL *bundleURL;
-@property (nonatomic) bool installed;
+@property (nonatomic) NSURL *descriptionURL;
 @property (nonatomic) NSString *requiredVersion;
-@property (nonatomic) bool compatible;
 @property (nonatomic) NSString* updateAvailable;
 /// Returns a JSON representation of plugin information
 - (NSDictionary*)json;
@@ -56,6 +62,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 /// Keys are plugin names values are plugin info instances. `[pluginName: BeatPluginInfo]`
 @property (nonatomic) NSMutableDictionary<NSString*, BeatPluginInfo*>* availablePlugins;
 @property (nonatomic) NSURL *pluginURL;
+@property (nonatomic) NSArray<NSURL*>* managedURLs;
 
 + (BeatPluginManager*)sharedManager;
 
@@ -63,8 +70,6 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 - (BeatPluginData*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
 - (NSURL*)pluginFolderURL;
-
-- (BeatPluginInfo*)pluginInfoFor:(NSString*)plugin;
 
 /// Returns an array with the names for disabled plugins
 - (NSArray<NSString*>*)disabledPlugins;
@@ -86,10 +91,14 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 /// Checks available updates to installed plugins from external repo
 - (void)checkForUpdates;
 
-/// Check Beat compatibility with plugin
-- (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion;
 /// Shorthand which automatically compares against currently installed version
-- (bool)isCompatible:(NSString*)requiredVersion;
++ (bool)isCompatible:(NSString*)requiredVersion;
+/// Check Beat compatibility with plugin
++ (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion;
+
+/// Returns all installed plugins, including disabled ones
+- (NSArray<BeatPluginInfo*>*)allPlugins;
+- (NSArray<BeatPluginInfo*>*)allActivePlugins;
 
 @end
 
