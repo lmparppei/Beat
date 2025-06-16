@@ -54,6 +54,7 @@
         [preprocessedLines addObject:line.clone];
                 
         Line *l = preprocessedLines.lastObject;
+        NSString* forcedPageNumber = l.forcedPageNumber;
         
         // Reset macro panel at top-level sections
         if (l.type == section && l.sectionDepth == 1) {
@@ -85,6 +86,8 @@
         
         if (l.note && !exportSettings.printNotes) {
             // Skip notes when not needed
+            precedingLine.forcedPageNumber = forcedPageNumber;
+            if (forcedPageNumber != nil) NSLog(@"Preceding: %@", precedingLine.forcedPageNumber);
             continue;
         }
         else if (l.type == character) {
@@ -115,14 +118,24 @@
     // The array for printable elements
     NSMutableArray *linesToPrint = NSMutableArray.new;
     Line *previousLine;
+    NSString* queuedPageNumber;
     
     for (Line *line in preprocessedLines) {
         // Fix a weird bug for first line
         if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
         
+        // Check for forced page numbers
+        if (queuedPageNumber != nil) line.forcedPageNumber = queuedPageNumber;
+        queuedPageNumber = line.forcedPageNumber;
+        
         // Check if we should spare some non-printing objects or not.
         if ((line.isInvisible || line.effectivelyEmpty) &&
             !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
+            // The previous line has to inherit this info
+            if (previousLine != nil) {
+                previousLine.forcedPageNumber = queuedPageNumber;
+                queuedPageNumber = nil;
+            }
             
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
@@ -147,7 +160,7 @@
             line.type = empty;
             continue;
         }
-                 
+                
         // Remove misinterpreted dialogue
         if (line.isAnyDialogue && line.string.length == 0) {
             line.type = empty;
@@ -173,6 +186,9 @@
                 i--;
             }
         }
+
+        // We can safely remove the page number from queue here.
+        queuedPageNumber = nil;
         
         [linesToPrint addObject:line];
         
