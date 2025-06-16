@@ -19,8 +19,11 @@
 @property (nonatomic, readonly) NSString * color;
 
 @property (nonatomic, readonly) Line * line;
+
 @property (nonatomic, readonly) OutlineScene * parent;
 @property (nonatomic, readonly) NSArray<OutlineScene*>* siblings;
+@property (nonatomic, readonly) NSMutableArray <OutlineScene*>* children;
+
 @property (nonatomic, readonly) LineType type;
 
 @property (strong, nonatomic, readonly) NSString * string;
@@ -46,7 +49,8 @@
 
 @property (nonatomic, readonly) NSMutableArray * characters;
 
--(NSArray<Line*>*)lines;
+
+- (NSArray<Line*>*)lines;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 - (NSDictionary*)forSerialization;

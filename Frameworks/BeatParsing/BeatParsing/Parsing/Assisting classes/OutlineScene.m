@@ -76,6 +76,7 @@
             // String values have to be guarded so we don't try to put nil into NSDictionary
             @"string": (self.string != nil) ? self.string.copy : @"",
             @"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
+            @"type": self.line.typeName,
             @"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
             @"storylines": (self.storylines) ? self.storylines.copy : @[],
             @"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
