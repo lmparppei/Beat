@@ -93,27 +93,21 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 		
 		let disabledPlugins = pluginManager.disabledPlugins()
 		
-		for pluginName in pluginManager.pluginNames() {
-			if disabledPlugins.contains(pluginName) {
-				continue
-			}
-			
-			let plugin = pluginManager.pluginInfo(for: pluginName)
-			
+		for plugin in pluginManager.allActivePlugins() {
 			if menuForType(plugin.type) != parentMenu || plugin.type == .InternalPlugin {
 				continue
 			}
 			
-			var displayName = String(pluginName)
+			var displayName = String(plugin.name)
 			
-			if plugin.type == .ExportPlugin, let _ = pluginName.range(of: "Export") {
-				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "export.prefix"), pluginName.replacingOccurrences(of: "Export ", with: ""))
+			if plugin.type == .ExportPlugin, let _ = displayName.range(of: "Export") {
+				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "export.prefix"), displayName.replacingOccurrences(of: "Export ", with: ""))
 			}
-			else if plugin.type == .ImportPlugin, let _ = pluginName.range(of: "Import") {
-				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "import.prefix"), pluginName.replacingOccurrences(of: "Import ", with: ""))
+			else if plugin.type == .ImportPlugin, let _ = displayName.range(of: "Import") {
+				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "import.prefix"), displayName.replacingOccurrences(of: "Import ", with: ""))
 			}
 			
-			let item = BeatPluginMenuItem(title: displayName, pluginName: pluginName, type: plugin.type)
+			let item = BeatPluginMenuItem(title: displayName, pluginName: displayName, type: plugin.type)
 			item.state = .off
 			
 			// Set correct target for standalone plugins
@@ -126,9 +120,7 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 			}
 			
 			// See if the plugin is currently running
-			if runningPlugins[pluginName] != nil {
-				item.state = .on
-			}
+			item.state = (runningPlugins[displayName] != nil) ? .on : .off
 			
 			// Add to the parent menu
 			parentMenu.addItem(item)
