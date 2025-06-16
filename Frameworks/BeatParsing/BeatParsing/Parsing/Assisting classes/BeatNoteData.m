@@ -94,4 +94,9 @@
     }
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"Note: %@ (%lu, %lu)", self.content, self.range.location, self.range.length];
+}
+
 @end

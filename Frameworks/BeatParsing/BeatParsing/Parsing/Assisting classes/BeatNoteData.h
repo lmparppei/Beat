@@ -22,15 +22,16 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic, readonly) NSString* color;
 @property (nonatomic, readonly) NSRange range;
 @property (nonatomic, readonly) bool multiline;
+@property (nonatomic, readonly) NoteType type;
 /// Returns a JSON representation of the note
 - (NSDictionary*)json;
 @end
 
 @interface BeatNoteData : NSObject<BeatNoteDataExports>
+@property (nonatomic, readonly) NoteType type;
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic) NSString* color;
 @property (nonatomic, readonly) NSRange range;
-@property (nonatomic, readonly) NoteType type;
 @property (nonatomic) bool multiline;
 + (BeatNoteData*)withNote:(NSString*)text range:(NSRange)range;
 @end
