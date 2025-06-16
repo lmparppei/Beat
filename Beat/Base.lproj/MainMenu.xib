@@ -1259,7 +1259,7 @@ DQ
                                     <action selector="toggleDarkMode:" target="-1" id="9SW-xS-Tmx"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Customize Colours..." id="Zms-ef-jSw">
+                            <menuItem title="Customize Colors..." id="Zms-ef-jSw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="customizeColors:" target="-1" id="ICN-YS-Hs6"/>

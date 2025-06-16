@@ -1255,7 +1255,10 @@ double clamp(double d, double min, double max)
 	CGSize containerSize = [self.layoutManager usedRectForTextContainer:self.textContainer].size;
 	if (containerSize.height == 0.0) return @[];
 	
-	for (Line* line in self.editorDelegate.parser.lines) { @autoreleasepool {
+	
+	NSArray* lines = self.editorDelegate.parser.lines;
+	
+	for (Line* line in lines) {
 		if (line.marker.length == 0 && line.color.length == 0) continue;
 		
 		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
@@ -1268,7 +1271,7 @@ double clamp(double d, double min, double max)
 		
 		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
 		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
-	} }
+	}
 	
 	return markers;
 }

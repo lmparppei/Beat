@@ -69,7 +69,7 @@
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Bh2-CD-gdR">
                         <rect key="frame" x="18" y="476" width="244" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" lineBreakMode="clipping" title="Customize Colours" id="W10-WX-mev">
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Customize Colors" id="W10-WX-mev">
                             <font key="font" size="21" name="HelveticaNeue-Light"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
