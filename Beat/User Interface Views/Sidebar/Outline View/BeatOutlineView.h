@@ -19,9 +19,7 @@
 @property (readonly, weak, nonatomic) BeatAutocomplete* autocompletion;
 @property (nonatomic, strong, readonly) ContinuousFountainParser *parser;
 - (NSMutableArray<Line*>*)lines;
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)scrollToScene:(OutlineScene*)scene;
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string;
 @end
 
 @interface BeatOutlineView : NSOutlineView <NSOutlineViewDelegate, NSOutlineViewDataSource>
