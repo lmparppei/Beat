@@ -174,7 +174,7 @@
     if (matchType) {
         NSString *typeString = [[(RxMatchGroup*)matchType.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet].lowercaseString;
         BeatPluginType type = ToolPlugin;
-        
+                
         if ([typeString isEqualToString:@"export"]) type = ExportPlugin;
         else if ([typeString isEqualToString:@"import"]) type = ImportPlugin;
         else if ([typeString isEqualToString:@"standalone"]) type = StandalonePlugin;
@@ -182,6 +182,8 @@
         else if ([typeString isEqualToString:@"style"]) type = StylePlugin;
         
         self.type = type;
+    } else {
+        if ([self.localURL.pathExtension isEqualToString:@"beatCSS"]) self.type = StylePlugin;
     }
 }
 
