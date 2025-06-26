@@ -19,6 +19,7 @@
 - (void)updateThemeAndReformat:(NSArray*)types;
 
 /// Redraws all UI elements to reliably update theme or appearance
+/// - note: This method is NOT implemented by primary class, just appears so because it's inherited from `BeatEditorDelegate` definition. Objc selectors will sort this out.
 - (void)updateUIColors;
 
 /// Loads current theme (for all open documents if needed)

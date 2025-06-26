@@ -57,7 +57,10 @@ THE SOFTWARE.
 @class BeatNotepadView;
 @class BeatOnOffMenuItem;
 
-@interface Document : BeatDocumentBaseController <BeatOutlineViewEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatEditorDelegate>
+@interface Document : BeatDocumentBaseController <BeatEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate>
+
+/// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
+@property (weak) NSWindow *documentWindow;
 
 
 #pragma mark - Editor flags
@@ -94,6 +97,9 @@ THE SOFTWARE.
 
 /// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
 - (IBAction)toggleSetting:(BeatOnOffMenuItem* _Nonnull)menuItem;
+
+/// Check for dark mode
+- (bool)isDark;
 
 
 #pragma mark - Applying settings
@@ -197,28 +203,6 @@ THE SOFTWARE.
 #pragma mark - Touch bar
 
 @property (nonatomic) NSColorPickerTouchBarItem* _Nullable colorPicker;
-
-
-#pragma mark - Scrolling methods (move these elsewhere)
-
-/// Scroll to given scene number (number is `NSString`)
-- (void)scrollToSceneNumber:(NSString* __nullable)sceneNumber;
-/// Scroll to given scene object.
-- (void)scrollToScene:(OutlineScene* __nullable)scene;
-/// Legacy method. Use selectAndScrollToRange
-- (void)scrollToRange:(NSRange)range;
-/// Scrolls to given range and runs a callback after animation is done.
-- (void)scrollToRange:(NSRange)range callback:(nullable void (^)(void))callbackBlock;
-/// Scrolls the given position into view
-- (void)scrollTo:(NSInteger)location;
-/// Selects the given line and scrolls it into view
-- (void)scrollToLine:(Line* __nullable)line;
-/// Selects the line at given index and scrolls it into view
-- (void)scrollToLineIndex:(NSInteger)index;
-/// Selects the scene at given index and scrolls it into view
-- (void)scrollToSceneIndex:(NSInteger)index;
-/// Selects the given range and scrolls it into view
-- (void)selectAndScrollTo:(NSRange)range;
 
 /// Some menu items to validate. This should be removed at some point.
 @property (nonatomic) NSArray* _Nullable itemsToValidate;

@@ -92,6 +92,7 @@
 #import "Document+Lock.h"
 #import "Document+TextEvents.h"
 #import "Document+SceneColorPicker.h"
+#import "Document+Scrolling.h"
 
 #import "ScrollView.h"
 #import "BeatAppDelegate.h"
@@ -107,10 +108,7 @@
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 
-@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate>
-
-/// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
-@property (weak) NSWindow *documentWindow;
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate>
 
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
@@ -804,20 +802,7 @@
 	[self.revisionTracking applyQueuedChanges];
 	
 	// Finally, reset last changed range
-	self.lastChangedRange = NSMakeRange(NSNotFound, 0);
-	
-/*
-	if (self.textView.selectedRange.length == 0 && self.currentLine.type == dialogue) {
-		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-		pStyle.firstLineHeadIndent = 300.0;
-		[self.textView setTypingAttributes:@{
-			NSParagraphStyleAttributeName: pStyle
-		}];
-		[self.textView.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(self.selectedRange.location-1, 1)];
-	} else {
-		self.textView.typingAttributes = @{};
-	}
- */
+	self.lastChangedRange = NSMakeRange(NSNotFound, 0);	
 }
 
 
@@ -1217,58 +1202,6 @@
 	[self showWidgets:nil];
 }
 
-
-#pragma mark - Scrolling
-
-// TODO: How do I move these into a category?
-
-- (void)scrollToSceneNumber:(NSString*)sceneNumber
-{
-	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
-	OutlineScene *scene = [self.parser sceneWithNumber:sceneNumber];
-	if (scene != nil) [self scrollToScene:scene];
-}
-- (void)scrollToScene:(OutlineScene*)scene
-{
-	[self selectAndScrollTo:scene.line.textRange];
-	[self.documentWindow makeFirstResponder:self.textView];
-}
-/// Legacy method. Use selectAndScrollToRange
-- (void)scrollToRange:(NSRange)range { [self selectAndScrollTo:range]; }
-
-- (void)scrollToRange:(NSRange)range callback:(nullable void (^)(void))callbackBlock {
-	[self.textView scrollToRange:range callback:callbackBlock];
-}
-
-/// Scrolls the given position into view
-- (void)scrollTo:(NSInteger)location {
-	NSRange range = NSMakeRange(location, 0);
-	[self selectAndScrollTo:range];
-}
-/// Selects the given line and scrolls it into view
-- (void)scrollToLine:(Line*)line {
-	if (line != nil) [self selectAndScrollTo:line.textRange];
-}
-/// Selects the line at given index and scrolls it into view
-- (void)scrollToLineIndex:(NSInteger)index {
-	Line *line = [self.parser.lines objectAtIndex:index];
-	if (line != nil) [self selectAndScrollTo:line.textRange];
-}
-/// Selects the scene at given index and scrolls it into view
-- (void)scrollToSceneIndex:(NSInteger)index {
-	OutlineScene *scene = [self.parser.outline objectAtIndex:index];
-	if (!scene) return;
-	
-	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
-	[self selectAndScrollTo:range];
-}
-
-/// Selects the given range and scrolls it into view
-- (void)selectAndScrollTo:(NSRange)range
-{
-	[self.textView setSelectedRange:range];
-	[self.textView scrollToRange:range callback:nil];
-}
 
 
 #pragma mark - For avoiding throttling

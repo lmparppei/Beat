@@ -34,7 +34,7 @@
 	});
 }
 
-/// Note: This method is NOT implemented by primary class, just appears so because it's inherited from `BeatEditorDelegate` definition. Objc selectors will sort this out.
+/// - note: This method is NOT implemented by primary class, just appears so because it's inherited from `BeatEditorDelegate` definition. Objc selectors will sort this out.
 - (void)updateUIColors
 {
 	if (self.documentWindow.frame.size.height == 0 || self.documentWindow.frame.size.width == 0) return;
@@ -98,7 +98,7 @@
 	[self updateTheme];
 	
 	// Now, let's reformat the needed types
-	for (Line* line in self.lines)
+	for (Line* line in self.parser.lines)
 	{
 		if (formatText) {
 			[self.formatting refreshRevisionTextColorsInRange:line.range];

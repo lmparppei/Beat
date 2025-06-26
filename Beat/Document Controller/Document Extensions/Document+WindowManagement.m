@@ -9,6 +9,7 @@
 #import "Document+WindowManagement.h"
 #import "Document+ThemesAndAppearance.h"
 #import "BeatTextView.h"
+#import <BeatPlugins/BeatPlugin+Windows.h>
 
 #define MIN_WINDOW_HEIGHT 400
 #define MIN_OUTLINE_WIDTH 270

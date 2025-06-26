@@ -143,7 +143,8 @@
 
 #pragma mark - Timer
 
-- (IBAction)showTimer:(id)sender {
+- (IBAction)showTimer:(id)sender
+{
 	self.beatTimer.delegate = self;
 	[self.beatTimer showTimer];
 }
@@ -222,14 +223,16 @@
 
 #pragma mark - Zooming
 
-- (IBAction)zoomIn:(id)sender {
+- (IBAction)zoomIn:(id)sender
+{
 	if (self.currentTab == self.editorTab) {
 		[self.textView zoom:YES];
 	} else if (self.currentTab == self.nativePreviewTab) {
 		self.previewController.scrollView.magnification += .05;
 	}
 }
-- (IBAction)zoomOut:(id)sender {
+- (IBAction)zoomOut:(id)sender
+{
 	if (self.currentTab == self.editorTab) {
 		[self.textView zoom:NO];
 	} else if (self.currentTab == self.nativePreviewTab) {
