@@ -69,8 +69,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 /// Touch bar view
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
-@property (nonatomic, strong) NSPopover *taggingPopover;
-
 /// Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
 
@@ -320,7 +318,8 @@ NSString *keyCodeToString(uint16_t keyCode) {
 	return [NSString stringWithCharacters:chars length:realLength];
 }
 
--(void)keyUp:(NSEvent *)event {
+-(void)keyUp:(NSEvent *)event
+{
 	if (self.typewriterMode) [self typewriterScroll];
 }
 
@@ -419,7 +418,8 @@ NSString *keyCodeToString(uint16_t keyCode) {
 }
 
 // Typewriter mode
-- (IBAction)toggleTypewriterMode:(id)sender {
+- (IBAction)toggleTypewriterMode:(id)sender
+{
 	self.typewriterMode = !self.typewriterMode;
 	
 	for (id<BeatEditorDelegate>doc in NSDocumentController.sharedDocumentController.documents) {
@@ -450,9 +450,9 @@ NSString *keyCodeToString(uint16_t keyCode) {
 	
 	// Find the rect for current range
 	NSRect rect = [self rectForRange:self.selectedRange];
-	
+		
 	// Calculate correct scroll position
-	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize * 3) * self.editorDelegate.magnification;
+	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fonts.regular.pointSize * 2) * self.editorDelegate.magnification;
 	
 	// Take find & replace bar height into account
 	// CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
@@ -466,7 +466,8 @@ NSString *keyCodeToString(uint16_t keyCode) {
 	[self.superview.animator setBoundsOrigin:bounds.origin];
 }
 
--(void)scrollWheel:(NSEvent *)event {
+-(void)scrollWheel:(NSEvent *)event
+{
 	// If the user scrolls, let's ignore any other scroll behavior
 	_selectionAtEnd = NO;
 	
@@ -485,7 +486,6 @@ NSString *keyCodeToString(uint16_t keyCode) {
 	
 	return [super adjustScroll:newVisible];
 }
-
 
 
 #pragma mark - Selection events
@@ -532,8 +532,7 @@ NSString *keyCodeToString(uint16_t keyCode) {
 }
 
 - (bool)selectionAtEnd {
-	if (self.selectedRange.location == self.string.length) return YES;
-	else return NO;
+	return (self.selectedRange.location == self.string.length);
 }
 
 - (void)selectionEvents {
@@ -740,6 +739,17 @@ Line *cachedRectLine;
 
 
 #pragma mark - Scrolling interface
+
+- (void)scrollPoint:(NSPoint)point
+{
+	[super scrollPoint:point];
+}
+
+- (void)scrollRangeToVisible:(NSRange)range
+{
+	if (self.editorDelegate.formatting.formatting) return;
+	[super scrollRangeToVisible:range];
+}
 
 /// Non-animated scrolling
 - (void)scrollToRange:(NSRange)range
