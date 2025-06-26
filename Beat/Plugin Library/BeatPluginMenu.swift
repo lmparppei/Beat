@@ -46,6 +46,8 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 			return self.exportMenu
 		case .InternalPlugin:
 			return nil
+		case .StylePlugin:
+			return nil
 		default:
 			return self.pluginMenu
 		}
@@ -94,11 +96,12 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 		let disabledPlugins = pluginManager.disabledPlugins()
 		
 		for plugin in pluginManager.allActivePlugins() {
-			if menuForType(plugin.type) != parentMenu || plugin.type == .InternalPlugin {
+			if menuForType(plugin.type) != parentMenu || plugin.type == .InternalPlugin || plugin.type == .StylePlugin || disabledPlugins.contains(plugin.name) {
 				continue
 			}
 			
 			var displayName = String(plugin.name)
+			print(" -> ",displayName, plugin.type.rawValue)
 			
 			if plugin.type == .ExportPlugin, let _ = displayName.range(of: "Export") {
 				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "export.prefix"), displayName.replacingOccurrences(of: "Export ", with: ""))
