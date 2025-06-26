@@ -350,8 +350,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         return;
     }
     
-    // Store the currently formatted line to fix iOS issues
-    self.lineBeingFormatted = line;
+    _formatting = true;
+    self.lineBeingFormatted = line; // Store the currently formatted line to fix iOS issues
     
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -405,6 +405,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         [textStorage addAttributes:newAttributes range:fullRange];
         if (!alreadyEditing) [textStorage endEditing];
         self.lineBeingFormatted = nil;
+        _formatting = false;
         return;
     }
     
@@ -427,6 +428,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         [_delegate.getTextView setTypingAttributes:attributes];
         
         self.lineBeingFormatted = nil;
+        _formatting = false;
 		return;
 	}
     
@@ -469,7 +471,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			if (line == self.parser.lines.lastObject) range = line.textRange; // Don't go out of range
 		}
 	}
-    	
+        
 	// Add new attributes
 	NSRange attrRange = range;
 	if (range.length == 0 && range.location < textStorage.string.length) {
@@ -502,7 +504,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	} else {
 		[attributes removeObjectForKey:NSParagraphStyleAttributeName];
 	}
-    
+        
     // Apply formatting
     if (newAttributes.count) {
         [textStorage addAttributes:newAttributes range:attrRange];
@@ -521,10 +523,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
     
     self.lineBeingFormatted = nil;
+    _formatting = false;
 } }
 
 - (void)applyInlineFormatting:(Line*)line reset:(bool)reset textStorage:(NSMutableAttributedString*)textStorage
 {
+    [BeatMeasure queue:@"format" startPhase:@"inline formatting"];
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
     
 	NSRange range = NSMakeRange(0, line.length);
@@ -615,6 +619,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
 {
+    [BeatMeasure queue:@"format" startPhase:@"font family"];
     BXFont* font = self.regular;
     
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
@@ -654,6 +659,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 /// Sets the font for given line. You can force it if needed.
 - (void)setFontForLine:(Line*)line force:(bool)force {
+    [BeatMeasure queue:@"format" startPhase:@"set font"];
     NSMutableAttributedString *textStorage = self.textStorage;
     
     NSRange range = line.textRange;
@@ -696,7 +702,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 }
 
-#pragma mark - Set temporary attributes
+#pragma mark - Set attributes
 
 /// Safely adds an attribute to the text. Set `textStorage` to `nil` to use the default editor text storage.
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage;
