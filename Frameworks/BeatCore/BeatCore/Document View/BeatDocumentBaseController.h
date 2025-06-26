@@ -339,5 +339,10 @@ NS_ASSUME_NONNULL_END
 /// Set stylesheet and refresh everything.
 - (void)setStylesheetAndReformat:(NSString * _Nonnull)name;
 
+
+#pragma mark - Additional data storage
+
+@property (nonatomic) NSMapTable<NSString*, id>* _Nullable additionalData;
+
 @end
 
