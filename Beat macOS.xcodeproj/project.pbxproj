@@ -605,6 +605,9 @@
 		B6D70AAA2C8C62D400295AB6 /* BeatPreviewController+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D70AA82C8C62D400295AB6 /* BeatPreviewController+Settings.swift */; };
 		B6D70AAC2C8C655600295AB6 /* Document+QuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D70AAB2C8C655600295AB6 /* Document+QuickSettings.swift */; };
 		B6D70AAD2C8C655600295AB6 /* Document+QuickSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D70AAB2C8C655600295AB6 /* Document+QuickSettings.swift */; };
+		B6D761A12E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
+		B6D761A22E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
+		B6D761A32E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
 		B6DBB2BC2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
 		B6DBB2BD2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
 		B6DBB2BE2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
@@ -1141,6 +1144,8 @@
 		B6D70AA52C8C5E9400295AB6 /* Document+SceneColorPicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Document+SceneColorPicker.m"; sourceTree = "<group>"; };
 		B6D70AA82C8C62D400295AB6 /* BeatPreviewController+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatPreviewController+Settings.swift"; sourceTree = "<group>"; };
 		B6D70AAB2C8C655600295AB6 /* Document+QuickSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document+QuickSettings.swift"; sourceTree = "<group>"; };
+		B6D7619F2E06BEB400DA46DA /* Document+Scrolling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Document+Scrolling.h"; sourceTree = "<group>"; };
+		B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Document+Scrolling.m"; sourceTree = "<group>"; };
 		B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRevisionMenuItem.swift; sourceTree = "<group>"; };
 		B6DCA85A272187E600CBE9BC /* BeatSegmentedControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedControl.h; sourceTree = "<group>"; };
 		B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSegmentedControl.m; sourceTree = "<group>"; };
@@ -1711,6 +1716,8 @@
 				B6D70AA42C8C5E9400295AB6 /* Document+SceneColorPicker.h */,
 				B6D70AA52C8C5E9400295AB6 /* Document+SceneColorPicker.m */,
 				B6D70AAB2C8C655600295AB6 /* Document+QuickSettings.swift */,
+				B6D7619F2E06BEB400DA46DA /* Document+Scrolling.h */,
+				B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */,
 			);
 			path = "Document Extensions";
 			sourceTree = "<group>";
@@ -2772,6 +2779,7 @@
 				B6D70AA22C8C5E2700295AB6 /* Document+RevisionActions.m in Sources */,
 				B6FA1EB62CF335E3002737A8 /* BeatTagSomething.swift in Sources */,
 				B648C16A2B9F155B00F0DD34 /* BeatTextView+Tagging.m in Sources */,
+				B6D761A32E06BEB400DA46DA /* Document+Scrolling.m in Sources */,
 				B640765D27D784270053D63A /* BeatLaunchScreen.swift in Sources */,
 				B689FE3F290D05EF002F0785 /* NSString+VersionNumber.m in Sources */,
 				B616493E26F7535600582671 /* BeatPasteboardItem.m in Sources */,
@@ -2916,6 +2924,7 @@
 				B61260102CD3D1D8009AE189 /* Document+RevisionActions.m in Sources */,
 				B6FA1EB42CF335E3002737A8 /* BeatTagSomething.swift in Sources */,
 				B61260112CD3D1D8009AE189 /* BeatTextView+Tagging.m in Sources */,
+				B6D761A12E06BEB400DA46DA /* Document+Scrolling.m in Sources */,
 				B61260122CD3D1D8009AE189 /* BeatLaunchScreen.swift in Sources */,
 				B61260132CD3D1D8009AE189 /* NSString+VersionNumber.m in Sources */,
 				B61260142CD3D1D8009AE189 /* BeatPasteboardItem.m in Sources */,
@@ -3060,6 +3069,7 @@
 				B6D70AA32C8C5E2700295AB6 /* Document+RevisionActions.m in Sources */,
 				B6FA1EB52CF335E3002737A8 /* BeatTagSomething.swift in Sources */,
 				B648C16B2B9F155B00F0DD34 /* BeatTextView+Tagging.m in Sources */,
+				B6D761A22E06BEB400DA46DA /* Document+Scrolling.m in Sources */,
 				B640765E27D784270053D63A /* BeatLaunchScreen.swift in Sources */,
 				B689FE41290D05EF002F0785 /* NSString+VersionNumber.m in Sources */,
 				B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */,
@@ -3611,7 +3621,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133457;
+				CURRENT_PROJECT_VERSION = 133458;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3656,7 +3666,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133457;
+				CURRENT_PROJECT_VERSION = 133458;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -3703,7 +3713,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133457;
+				CURRENT_PROJECT_VERSION = 133458;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3747,7 +3757,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133457;
+				CURRENT_PROJECT_VERSION = 133458;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

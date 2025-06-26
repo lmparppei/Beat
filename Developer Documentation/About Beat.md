@@ -30,6 +30,8 @@ There are some parts that have been completely commented out. Sometimes I've wri
 
 `Document` is a massive class, and I'm sorry for that. It is that because of legacy reasons (meaning me being bad at Objective C) and I'm not proud of it. I've started moving a lot of stuff to an OS-agnostic class called `BeatDocumentBaseController`, which is the superclass of both macOS and iOS implementations of the actual document view.
 
+At some point I should migrate the document class to the more modern approach, where the document is NOT the actual view controller. This current setup is a legacy macOS thing. It's not that hard, but requires some hard manual labor. AI wasn't able to do it for me. 
+
 Start from `windowControllerDidLoadNib` and work from there. Document loading is throttled using chained GC dispatches, and might be a bit confusing at first.
 
 From there, editing a document is this constant three-way ping-pong of `BeatTextView`, `Document` and `ContinuousFountainParser`. It's often unclear what happens in `BeatTextView`, and what happens in `Document`. 

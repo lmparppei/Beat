@@ -10,14 +10,6 @@
  Turns Final Draft files into Fountain. There are certain quirks
  and some elements are not supported yet.
  
- Usage:
- __block FDXImport *fdxImport;
- fdxImport = [[FDXImport alloc] initWithURL:fileName completion:(void)callback];
- 
- Upon callback you can access the fdxImport.script array, which
- holds every line as string or just call [fdxImport scriptAsString];
- 
- 
  */
 
 

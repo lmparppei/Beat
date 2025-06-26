@@ -71,6 +71,8 @@
 		B676DD2D2BA8AC7700F7DBDA /* OutlineViewItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
+		B67B070E2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.h in Headers */ = {isa = PBXBuildFile; fileRef = B67B070C2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.h */; };
+		B67B070F2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B070D2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m */; };
 		B67C2CF32A2D1AD000B88B0F /* BeatFontSet.h in Headers */ = {isa = PBXBuildFile; fileRef = B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B67C2CF42A2D1AD000B88B0F /* BeatFontSet.m in Sources */ = {isa = PBXBuildFile; fileRef = B67C2CF22A2D1AD000B88B0F /* BeatFontSet.m */; };
 		B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C73D12B383831002BD12F /* BeatCharacterData.swift */; };
@@ -218,6 +220,8 @@
 		B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
+		B67B070C2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentBaseController+AdditionalData.h"; sourceTree = "<group>"; };
+		B67B070D2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentBaseController+AdditionalData.m"; sourceTree = "<group>"; };
 		B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFontSet.h; sourceTree = "<group>"; };
 		B67C2CF22A2D1AD000B88B0F /* BeatFontSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFontSet.m; sourceTree = "<group>"; };
 		B67C73D12B383831002BD12F /* BeatCharacterData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCharacterData.swift; sourceTree = "<group>"; };
@@ -318,6 +322,8 @@
 		B6311EC32D672D6200712CFE /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				B67B070C2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.h */,
+				B67B070D2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m */,
 				B6311EC82D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h */,
 				B6311EC92D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m */,
 				B6311EC42D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h */,
@@ -724,6 +730,7 @@
 				B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */,
 				B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */,
 				B68C0F5D299D82EA0031AE6B /* BeatReview.swift in Headers */,
+				B67B070E2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.h in Headers */,
 				B68C0F66299D845A0031AE6B /* BeatAttributedStringExtensions.swift in Headers */,
 				B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
@@ -863,6 +870,7 @@
 				B67C73D22B383831002BD12F /* BeatCharacterData.swift in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B692E2E02C73CAE10009833F /* BeatTagReport.swift in Sources */,
+				B67B070F2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B68D9CD12C64007C00FCC9BE /* NSIndexSet+Array.swift in Sources */,
 				B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */,
