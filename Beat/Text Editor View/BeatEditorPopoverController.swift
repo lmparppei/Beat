@@ -19,7 +19,7 @@ import BeatCore
 }
 
 fileprivate let popoverWidth = 300.0
-fileprivate let maxResults = 10
+fileprivate let maxResults = 12
 
 @objc public protocol BeatEditorPopoverDelegate {
 	var partialText:String? { get }
@@ -158,6 +158,7 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		// are a lot of items.
 		let numberOfRows = min(self.tableView.numberOfRows, maxResults)
 		let height = (tableView.rowHeight + tableView.intercellSpacing.height) * CGFloat(numberOfRows)
+		print("HEIGHT: ", height, " / rows",numberOfRows)
 		
 		let frame = CGRectMake(0.0, 0.0, popoverWidth, height)
 		tableView.enclosingScrollView?.frame = frame
@@ -183,16 +184,6 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 			cellView.addSubview(textField)
 			cellView.textField = textField
 			
-			/*
-			if self.delegate?.responds(to: #selector(MyDelegate.textView(_:imageForCompletion:))) ?? false {
-				let imageView = NSImageView(frame: NSZeroRect)
-				imageView.imageFrameStyle = .none
-				imageView.imageScaling = .none
-				cellView.addSubview(imageView)
-				cellView.imageView = imageView
-			}
-			 */
-			
 			cellView.identifier = NSUserInterfaceItemIdentifier("BeatPopoverItemView")
 		}
 		
@@ -214,13 +205,6 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		}
 		
 		cellView.textField?.attributedStringValue = result
-		
-		/*
-		if self.delegate?.responds(to: #selector(MyDelegate.textView(_:imageForCompletion:))) ?? false {
-			//let image = self.delegate?.textView(self, imageForCompletion: self.matches[row])
-			//cellView.imageView?.image = image
-		}
-		*/
 		
 		return cellView
 	}
