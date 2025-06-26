@@ -33,8 +33,8 @@
 #import "BeatPlugin+Modals.h"
 #import "BeatPlugin+Editor.h"
 #import "BeatPlugin+Menus.h"
-#import "BeatPlugin+TextHighlighting.h"
 #import "BeatPlugin+Listeners.h"
+#import "BeatPlugin+TextHighlighting.h"
 #import <BeatPlugins/BeatPlugin+HTMLViews.h>
 #import <BeatPlugins/BeatPlugin+Windows.h>
 
@@ -49,9 +49,9 @@
 #import <objc/runtime.h>
 
 #if TARGET_OS_IOS
-@interface BeatPlugin () <BeatTextChangeObserver>
+@interface BeatPlugin () <BeatPluginInstance, BeatTextChangeObserver>
 #else
-@interface BeatPlugin () <PluginWindowHost>
+@interface BeatPlugin () <BeatPluginInstance>
 #endif
 
 @property (nonatomic) BeatPluginData* pluginData;
@@ -66,7 +66,6 @@
  Notes on protocol conformance:
  - WebKit protocols are handled by `+HTMLViews` and the conformance to them is unfortunately inherited from `BeatPluginWindowHost`.
  - `BeatPluginInstance` conformace is missing because `previewDidFinish:` is implemented in `+Listeners`.
- - We could fix both of these with a cast, but I don't care.
  
  */
 @implementation BeatPlugin
@@ -75,7 +74,7 @@
 {
     BeatPlugin* plugin = BeatPlugin.new;
     plugin.delegate = delegate;
-    
+        
     BeatPluginData *pluginData = [BeatPluginManager.sharedManager pluginWithName:name];
     [plugin loadPlugin:pluginData];
     
@@ -652,46 +651,6 @@
 	id value = [[NSUserDefaults standardUserDefaults] valueForKey:keyName];
 	return value;
 }
-
-
-#pragma mark - Window management
-
-#if !TARGET_OS_IOS
-	/// Makes the given window move along its parent document window. **Never use with standalone plugins.**
-	- (void)gangWithDocumentWindow:(NSWindow*)window
-	{
-		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
-	}
-
-	/// Window no longer moves aside its document window.
-	- (void)detachFromDocumentWindow:(NSWindow*)window
-	{
-		if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
-	}
-
-	/// Show all plugin windows.
-	- (void)showAllWindows
-	{
-		if (_terminating) return;
-		
-		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-            // If the window was already set as full screen, let's not make it appear,
-            // because the content size can get wrong on macOS Sonoma
-            if (!window.isFullScreen) [window appear];
-		}
-	}
-
-	/// All plugin windows become normal level windows, so they no longer float above the document window.
-	- (void)hideAllWindows
-	{
-		if (_terminating) return;
-		
-		for (BeatPluginHTMLWindow *window in self.pluginWindows) {
-			[window hideBehindOthers];
-		}
-	}
-#endif
-
 
 
 

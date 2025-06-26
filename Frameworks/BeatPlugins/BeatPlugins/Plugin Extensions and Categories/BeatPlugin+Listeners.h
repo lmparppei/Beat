@@ -14,23 +14,23 @@
 
 @protocol BeatPluginListenerExports <JSExport>
 
-- (void)onTextChange:(JSValue*)updateMethod;
+- (void)onTextChange:(JSValue* _Nullable)updateMethod;
 
-- (void)setSelectionUpdate:(JSValue *)updateMethod;
-- (void)onSelectionChange:(JSValue*)updateMethod;
+- (void)setSelectionUpdate:(JSValue* _Nullable)updateMethod;
+- (void)onSelectionChange:(JSValue* _Nullable)updateMethod;
 
-- (void)onOutlineChange:(JSValue*)updateMethod;
-- (void)onSceneIndexUpdate:(JSValue*)updateMethod;
+- (void)onOutlineChange:(JSValue* _Nullable)updateMethod;
+- (void)onSceneIndexUpdate:(JSValue* _Nullable)updateMethod;
 
-- (void)onDocumentBecameMain:(JSValue*)updateMethod;
-- (void)onSceneHeadingAutocompletion:(JSValue*)callback;
-- (void)onCharacterAutocompletion:(JSValue*)callback;
-- (void)onPreviewFinished:(JSValue*)updateMethod;
-- (void)onPaginationFinished:(JSValue*)updateMethod;
-- (void)onDocumentSaved:(JSValue*)updateMethod;
-- (void)onEscape:(JSValue*)updateMethod;
+- (void)onDocumentBecameMain:(JSValue* _Nullable)updateMethod;
+- (void)onSceneHeadingAutocompletion:(JSValue* _Nullable)callback;
+- (void)onCharacterAutocompletion:(JSValue* _Nullable)callback;
+- (void)onPreviewFinished:(JSValue* _Nullable)updateMethod;
+- (void)onPaginationFinished:(JSValue* _Nullable)updateMethod;
+- (void)onDocumentSaved:(JSValue* _Nullable)updateMethod;
+- (void)onEscape:(JSValue* _Nullable)updateMethod;
 
-- (void)onNotepadChange:(JSValue*)updateMethod;
+- (void)onNotepadChange:(JSValue* _Nullable)updateMethod;
 
 @end
 
@@ -45,17 +45,17 @@
 
 - (void)updateText:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;
-- (void)updateOutline:(OutlineChanges*)changes;
+- (void)updateOutline:(OutlineChanges* _Nullable)changes;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
 
-- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices;
+- (void)previewDidFinish:(BeatPagination* _Nullable)operation indices:(NSIndexSet* _Nullable)indices;
 
 - (void)clearObservables;
 
 #pragma mark Autocompletion callbacks
 
-- (NSArray<NSString*>*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
-- (NSArray<NSString*>*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
+- (NSArray<NSString*>* _Nullable)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
+- (NSArray<NSString*>* _Nullable)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
 
 @end
 

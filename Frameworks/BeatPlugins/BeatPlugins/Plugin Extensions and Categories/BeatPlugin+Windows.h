@@ -19,6 +19,12 @@
 
 #if TARGET_OS_OSX
 @interface BeatPlugin (Windows) <BeatPluginWindowsExports, NSWindowDelegate>
+/// Makes the given window move along its parent document window. **Never use with standalone plugins.**
+- (void)gangWithDocumentWindow:(NSWindow*)window;
+/// Show all plugin windows.
+- (void)showAllWindows;
+/// Hides all plugin windows
+- (void)hideAllWindows;
 #else
 @interface BeatPlugin (Windows) <BeatPluginWindowsExports>
 #endif

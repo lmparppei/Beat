@@ -323,7 +323,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 #pragma mark - PLUGIN INTERFACE
 
-@interface BeatPlugin: NSObject <BeatPluginInstance, BeatPluginExports>
+@interface BeatPlugin: NSObject <BeatPluginExports>
 #pragma mark - Class method helers
 
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate;
@@ -445,15 +445,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 @property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
 
-
-
-#if !TARGET_OS_IOS
-- (void)showAllWindows;
-- (void)hideAllWindows;
-#endif
-
 - (void)restart;
-
 
 
 @end

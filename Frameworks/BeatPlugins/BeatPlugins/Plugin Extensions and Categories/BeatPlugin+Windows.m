@@ -38,7 +38,7 @@
 {
     if (self.pluginWindows == nil) {
         self.pluginWindows = NSMutableArray.new;
-        [self.delegate.pluginAgent registerPlugin:self];
+        [self.delegate.pluginAgent registerPlugin:(id<BeatPluginInstance>)self];
     }
     
     [self.pluginWindows addObject:window];
@@ -78,6 +78,46 @@
     [vc closePanel:nil];
 #endif
 }
+
+
+#pragma mark - Window management on macOS
+
+#if !TARGET_OS_IOS
+    /// Makes the given window move along its parent document window. **Never use with standalone plugins.**
+    - (void)gangWithDocumentWindow:(NSWindow*)window
+    {
+        if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
+    }
+
+    /// Window no longer moves aside its document window.
+    - (void)detachFromDocumentWindow:(NSWindow*)window
+    {
+        if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
+    }
+
+    /// Show all plugin windows.
+    - (void)showAllWindows
+    {
+        if (self.terminating) return;
+        
+        for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+            // If the window was already set as full screen, let's not make it appear,
+            // because the content size can get wrong on macOS Sonoma
+            if (!window.isFullScreen) [window appear];
+        }
+    }
+
+    /// All plugin windows become normal level windows, so they no longer float above the document window.
+    - (void)hideAllWindows
+    {
+        if (self.terminating) return;
+        
+        for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+            [window hideBehindOthers];
+        }
+    }
+#endif
+
 
 
 @end

@@ -167,8 +167,9 @@
     [self onPreviewFinished:updateMethod];
 }
 
-/// NOTE: This is shown to be duplicate, but this is not the case
-- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices {
+/// - note: This is shown to be duplicate, but this is not the case. This is some unfortunate spaghetti caused by the placeholder `PluginInstace` protocol, as `BeatCore` is a separate framework from the plugins.
+- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices
+{
     if (self.onPreviewFinishedDisabled) return;
     
     NSMutableArray<NSNumber*>* indices = NSMutableArray.new;
