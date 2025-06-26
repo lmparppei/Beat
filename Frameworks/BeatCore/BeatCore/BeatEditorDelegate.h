@@ -41,6 +41,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatPaginationManager;
 @class BeatRevisions;
 @class BeatReview;
+@class BeatPlugin;
 
 /**
  Protocol for editor views which need to be updated in some cases
@@ -195,7 +196,7 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #pragma mark - Plugin access
 
-@property (nonatomic, readonly) NSMutableDictionary* runningPlugins;
+@property (nonatomic, readonly) NSMutableDictionary<NSString*, BeatPlugin*>* runningPlugins;
 @property (nonatomic, readonly) NSMutableArray* registeredPluginContainers;
 @property (nonatomic) BeatPluginAgent* pluginAgent;
 
@@ -287,7 +288,7 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark - Preview
 
 #if TARGET_OS_OSX
-- (BeatPreviewController*)previewController;
+@property (nonatomic, readonly) BeatPreviewController* previewController;
 #endif
 
 - (void)invalidatePreview;
