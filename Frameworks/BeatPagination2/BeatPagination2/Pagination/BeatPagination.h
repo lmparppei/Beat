@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, BeatPageNumberingMode) {
     BeatPageNumberingModeDefault = 0,
     BeatPageNumberingModeFirstScene,
-    BeatPageNumberingModeFirstPageBreak
+    BeatPageNumberingModeFirstPageBreak,
+    BeatPageNumberingModeForcedOnly
 };
 
 
@@ -64,6 +65,8 @@ typedef NS_ENUM(NSInteger, BeatPageNumberingMode) {
 - (NSInteger)pageIndexForScene:(OutlineScene*)scene;
 - (NSInteger)pageNumberForScene:(OutlineScene*)scene;
 - (NSInteger)pageNumberAt:(NSInteger)location;
+
+- (NSArray<BeatPageBreak*>*)pageBreaks;
 
 @end
 

@@ -7,11 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @class Line;
 
-@interface BeatPageBreak : NSObject
+@protocol BeatPageBreakExports <JSExport>
+@property (nonatomic, readonly) CGFloat y;
+@property (nonatomic, readonly) CGFloat lineHeight;
+@property (nonatomic, readonly) Line* element;
+@property (nonatomic, readonly) NSString* reason;
+@property (nonatomic, readonly) NSInteger index;
+@end
+
+@interface BeatPageBreak : NSObject <BeatPageBreakExports>
 @property (nonatomic) CGFloat y;
 @property (nonatomic) CGFloat lineHeight;
 @property (nonatomic) Line* element;
@@ -19,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight reason:(NSString*)reason;
 -(instancetype)initWithY:(CGFloat)y element:(Line*)line lineHeight:(CGFloat)lineHeight;
-
 
 -(instancetype)initWithVisibleIndex:(NSInteger)index element:(Line*)line attributedString:(NSAttributedString* _Nullable)attrStr reason:(NSString*)reason;
 

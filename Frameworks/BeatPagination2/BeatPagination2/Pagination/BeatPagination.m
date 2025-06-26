@@ -214,6 +214,17 @@
     return pageBreaks;
 }
 
+/// Returns actual page breaks. Do NOT retain this array, because it might lead to retain cycles.
+- (NSArray<BeatPageBreak*>*)pageBreaks
+{
+    NSMutableArray<BeatPageBreak*>* pageBreaks = NSMutableArray.new;
+    
+    for (BeatPaginationPage* page in self.pages) {
+        if (page.pageBreak != nil) [pageBreaks addObject:page.pageBreak];
+    }
+    
+    return pageBreaks;
+}
 
 #pragma mark - Convenience stuff
 

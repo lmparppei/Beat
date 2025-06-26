@@ -49,7 +49,7 @@
         } else {
             // Find out the actual index
             __block NSInteger actualIndex = NSNotFound;
-            [attrStr enumerateAttribute:@"BeatRange" inRange:NSMakeRange(0, index) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+            [attrStr enumerateAttribute:@"BeatEditorRange" inRange:NSMakeRange(0, index) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
                 NSRange representedRange = ((NSValue*)value).rangeValue;
                 actualIndex = representedRange.location + range.length;
                 *stop = true;
