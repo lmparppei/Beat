@@ -38,6 +38,12 @@
     return (self.omitted || self.type == section || self.type == synopse || self.isTitlePage);
 }
 
+/// A shorthand for either an invisible or effectively empty line
+- (bool)isNonPrinting
+{
+    return (self.isInvisible || self.effectivelyEmpty);
+}
+
 /// Returns TRUE if the line type is forced
 - (bool)forced
 {

@@ -46,16 +46,24 @@
     NSMutableArray *preprocessedLines = NSMutableArray.array;
     Line *precedingLine;
     BeatMacroParser* macros = BeatMacroParser.new;
+        
+    NSString* queuedPageNumber = nil;
     
     for (Line* line in lines) {
         // Stop at boneyard
         if (line.isBoneyardSection) break;
-    
-        [preprocessedLines addObject:line.clone];
-                
-        Line *l = preprocessedLines.lastObject;
-        NSString* forcedPageNumber = l.forcedPageNumber;
         
+        bool printable = !line.effectivelyEmpty || ([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes));
+        
+        // Let's use a clone of the line
+        [preprocessedLines addObject:line.clone];
+        Line *l = preprocessedLines.lastObject;
+        
+        if (queuedPageNumber != nil && printable) {
+            l.forcedPageNumber = queuedPageNumber;
+            queuedPageNumber = nil;
+        }
+                
         // Reset macro panel at top-level sections
         if (l.type == section && l.sectionDepth == 1) {
             [macros resetPanel];
@@ -86,15 +94,12 @@
         
         if (l.note && !exportSettings.printNotes) {
             // Skip notes when not needed
-            precedingLine.forcedPageNumber = forcedPageNumber;
-            if (forcedPageNumber != nil) NSLog(@"Preceding: %@", precedingLine.forcedPageNumber);
+            queuedPageNumber = l.forcedPageNumber;
             continue;
-        }
-        else if (l.type == character) {
+        } else if (l.type == character) {
             // Reset dual dialogue
             l.nextElementIsDualDialogue = false;
-        }
-        else if (l.type == action || l.type == lyrics || l.type == centered) {
+        } else if (l.type == action || l.type == lyrics || l.type == centered) {
             l.beginsNewParagraph = true;
             
             // BUT in some cases, they don't.
@@ -118,7 +123,7 @@
     // The array for printable elements
     NSMutableArray *linesToPrint = NSMutableArray.new;
     Line *previousLine;
-    NSString* queuedPageNumber;
+    queuedPageNumber = nil;
     
     for (Line *line in preprocessedLines) {
         // Fix a weird bug for first line
@@ -127,27 +132,41 @@
         // Check for forced page numbers
         if (queuedPageNumber != nil) line.forcedPageNumber = queuedPageNumber;
         queuedPageNumber = line.forcedPageNumber;
+                
+        BOOL shouldProcessLine = true;
+        
+        // Eliminate faux empty lines with only single space. To force whitespace you have to use two spaces.
+        if ([line.string isEqualToString:@" "] && line.type != empty) line.type = empty;
         
         // Check if we should spare some non-printing objects or not.
-        if ((line.isInvisible || line.effectivelyEmpty) &&
+        if (line.isNonPrinting &&
             !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
-            // The previous line has to inherit this info
-            if (previousLine != nil) {
+            // The previous line has to inherit the page number IF it's not a line break
+            if (previousLine != nil && previousLine.type != pageBreak && queuedPageNumber != nil) {
                 previousLine.forcedPageNumber = queuedPageNumber;
                 queuedPageNumber = nil;
             }
             
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
-            continue;
+            shouldProcessLine = false;
         }
+        // Remove misinterpreted dialogue
+        else if (line.isAnyDialogue && line.string.length == 0) {
+            line.type = empty;
+            previousLine = line;
+            shouldProcessLine = false;
+        }
+         
+        // This line didn't pass the tests
+        if (!shouldProcessLine) continue;
         
+
         // Add scene numbers
         if (line.type == heading) {
             if (line.sceneNumberRange.length > 0) {
                 line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
-            }
-            else if (!line.sceneNumber) {
+            } else if (!line.sceneNumber) {
                 line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
                 sceneNumber += 1;
             }
@@ -155,47 +174,40 @@
             line.sceneNumber = @"";
         }
         
-        // Eliminate faux empty lines with only single space. To force whitespace you have to use two spaces.
-        if ([line.string isEqualToString:@" "]) {
-            line.type = empty;
-            continue;
-        }
-                
-        // Remove misinterpreted dialogue
-        if (line.isAnyDialogue && line.string.length == 0) {
-            line.type = empty;
-            previousLine = line;
-            continue;
-        }
-                    
         // If this is a dual dialogue character cue, we'll need to search for the previous one
         // and make it aware of being a part of a dual dialogue block.
         if (line.type == dualDialogueCharacter) {
-            NSInteger i = linesToPrint.count - 1;
-            while (i >= 0) {
-                Line *precedingLine = linesToPrint[i];
-                                
-                if (precedingLine.type == character) {
-                    precedingLine.nextElementIsDualDialogue = YES;
-                    break;
-                }
-                
-                // Break the loop if this is not a dialogue element OR it's another dual dialogue element.
-                if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
-
-                i--;
-            }
+            [self findAndSetDualDialogueSiblingIn:linesToPrint];
         }
-
-        // We can safely remove the page number from queue here.
+        
+        // We can safely nil the queued page number here
         queuedPageNumber = nil;
         
+        // This line safely passed processing to be printed
         [linesToPrint addObject:line];
-        
         previousLine = line;
     }
-    
+
+        
     return linesToPrint;
+}
+
++ (void)findAndSetDualDialogueSiblingIn:(NSArray*)lines
+{
+    NSInteger i = lines.count - 1;
+    while (i >= 0) {
+        Line *precedingLine = lines[i];
+        
+        if (precedingLine.type == character) {
+            precedingLine.nextElementIsDualDialogue = YES;
+            break;
+        }
+        
+        // Break the loop if this is not a dialogue element OR it's another dual dialogue element.
+        if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
+        
+        i--;
+    }
 }
 
 

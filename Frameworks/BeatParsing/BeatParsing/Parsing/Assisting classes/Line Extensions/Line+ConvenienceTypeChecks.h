@@ -40,6 +40,8 @@
 - (bool)isTitlePage;
 /// returns `true` when the line is non-printed
 - (bool)isInvisible;
+/// A shorthand for either an invisible or effectively empty line
+- (bool)isNonPrinting;
 /// Returns `true` for any sort of dialogue, no matter if single or dual, cue or dialogue/parenthetical
 - (bool)isAnySortOfDialogue;
 /// returns `true` for character cues too
