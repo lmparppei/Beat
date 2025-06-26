@@ -44,6 +44,13 @@
 	[BeatMeasure.shared.measurements removeObjectForKey:name];
 }
 
++ (NSTimeInterval)getTimeAndEnd:(NSString*)name
+{
+    NSTimeInterval executionTime = [BeatMeasure getTime:name];
+    [BeatMeasure.shared.measurements removeObjectForKey:name];
+    return executionTime;
+}
+
 + (NSTimeInterval)getTime:(NSString*)name {
 	NSDate *methodFinish = [NSDate date];
 	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:(NSDate*)BeatMeasure.shared.measurements[name]];
@@ -54,6 +61,43 @@
 	NSString *string = [NSString stringWithFormat:@"%f", [BeatMeasure getTime:name]];
 	[BeatMeasure.shared.measurements removeObjectForKey:name];
 	return string;
+}
+
+/// Starts a new *queue* of time measurements. Never use the same name for a single measurement.
++ (void)startQueue:(NSString*)name
+{
+    NSMutableArray* measurements = NSMutableArray.new;
+    BeatMeasure.shared.measurements[name] = measurements;
+}
+/// Starts a new phase in the measurements
++ (void)queue:(NSString*)name startPhase:(NSString*)phaseName
+{
+    // Phase item: [phase, start, end]
+    NSMutableArray<NSMutableDictionary*>* queue = BeatMeasure.shared.measurements[name];
+    NSMutableDictionary* previousPhase = queue.lastObject;
+    if (previousPhase != nil) {
+        NSTimeInterval interval = [NSDate.new timeIntervalSinceDate:previousPhase[@"start"]];
+        previousPhase[@"executionTime"] = @(interval);
+    }
+    
+    NSMutableDictionary* phase = [NSMutableDictionary dictionaryWithDictionary:@{
+        @"name": phaseName,
+        @"start": NSDate.new
+    }];
+    [queue addObject:phase];
+}
+/// Ends the whole queue and returns the array of dictionaries.
++ (NSArray<NSMutableDictionary*>*)getAndEndQueue:(NSString*)name
+{
+    NSArray* phases = BeatMeasure.shared.measurements[name];
+    NSMutableDictionary* lastPhase = phases.lastObject;
+    if (lastPhase != nil) {
+        NSTimeInterval interval = [NSDate.new timeIntervalSinceDate:lastPhase[@"start"]];
+        lastPhase[@"executionTime"] = @(interval);
+    }
+    
+    [BeatMeasure.shared.measurements removeObjectForKey:name];
+    return phases;
 }
 
 @end
