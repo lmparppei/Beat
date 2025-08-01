@@ -19,6 +19,7 @@ pagination {
 document {
     visible-elements: [section];
     disabled-types: [character, dualDialogueCharacter, dialogue, dualDialogue, parenthetical, dualDialogueParenthetical, shot, transition];
+    overrideParagraphPaginationMode: true;
 }
 
 titlePage {

@@ -56,6 +56,9 @@
 @property (nonatomic, weak) IBOutlet NSButton *synopsisFontTypeSansSerif;
 @property (nonatomic, weak) IBOutlet NSButton *synopsisFontTypeSerif;
 
+@property (nonatomic, weak) IBOutlet NSButton *actionPaginationDefault;
+@property (nonatomic, weak) IBOutlet NSButton *actionPaginationAvoid;
+
 @property (nonatomic) NSMutableDictionary *controls;
 
 @property (weak) IBOutlet NSTabView *tabView;
@@ -148,12 +151,16 @@
 					}
 				}
 			}
-			else if ([key isEqualToString:@"synopsisFontType"]) {
+			else if ([key isEqualToString:BeatSettingSynopsisFontType]) {
 				NSString* value = [BeatUserDefaults.sharedDefaults get:key];
 				if (![value isEqualToString:@"system"]) self.synopsisFontTypeSerif.state = NSControlStateValueOn;
 				else self.synopsisFontTypeSansSerif.state = NSControlStateValueOn;
 			}
-			
+			else if ([key isEqualToString:BeatSettingParagraphPaginationMode]) {
+				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:BeatSettingParagraphPaginationMode];
+				if (value == 0) self.actionPaginationDefault.state = NSControlStateValueOn;
+				else self.actionPaginationAvoid.state = NSControlStateValueOn;
+			}
 		}
 	}
 	
@@ -385,6 +392,12 @@
 {
 	NSString* value = (sender.tag == 0) ? @"system" : @"default";
 	[BeatUserDefaults.sharedDefaults save:value forKey:BeatSettingSynopsisFontType];
+	[self reloadStyles];
+}
+
+- (IBAction)toggleActionPagination:(NSButton*)sender
+{
+	[BeatUserDefaults.sharedDefaults save:@(sender.tag) forKey:BeatSettingParagraphPaginationMode];
 	[self reloadStyles];
 }
 

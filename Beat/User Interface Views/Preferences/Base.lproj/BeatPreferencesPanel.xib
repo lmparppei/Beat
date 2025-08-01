@@ -9,6 +9,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="BeatPreferencesPanel">
             <connections>
+                <outlet property="actionPaginationAvoid" destination="6NC-qG-b6k" id="weS-jd-Lfj"/>
+                <outlet property="actionPaginationDefault" destination="Cdz-E5-EWs" id="Wr0-bY-mNh"/>
                 <outlet property="autoLineBreaks" destination="lU2-0R-Qlm" id="fBz-wJ-Q33"/>
                 <outlet property="autocomplete" destination="g8c-VD-hRA" id="zLg-J1-PCB"/>
                 <outlet property="automaticContd" destination="GfG-mn-QkH" id="IFQ-Mf-yZK"/>
@@ -44,14 +46,14 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="preference" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
-            <rect key="contentRect" x="196" y="240" width="564" height="466"/>
+            <rect key="contentRect" x="196" y="240" width="564" height="476"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
             <view key="contentView" id="se5-gp-TjO">
-                <rect key="frame" x="0.0" y="0.0" width="564" height="466"/>
+                <rect key="frame" x="0.0" y="0.0" width="564" height="476"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <tabView type="noTabsNoBorder" id="vYj-Wj-ba8">
-                        <rect key="frame" x="0.0" y="0.0" width="564" height="466"/>
+                        <rect key="frame" x="0.0" y="0.0" width="564" height="476"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
@@ -292,11 +294,11 @@
                             </tabViewItem>
                             <tabViewItem label="View" identifier="" id="Mb6-nH-PQK" userLabel="Layout">
                                 <view key="view" id="gcD-3D-8Zp">
-                                    <rect key="frame" x="0.0" y="0.0" width="564" height="466"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="564" height="476"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DFt-in-f1B">
-                                            <rect key="frame" x="46" y="285" width="142" height="17"/>
+                                            <rect key="frame" x="46" y="253" width="142" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Heading Style" usesSingleLineMode="YES" id="yHb-oc-ujO">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -305,7 +307,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0Se-qY-uTA">
-                                            <rect key="frame" x="207" y="285" width="152" height="17"/>
+                                            <rect key="frame" x="207" y="253" width="152" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Heading Spacing" usesSingleLineMode="YES" id="EHa-PH-tc4">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -314,7 +316,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" id="aHV-Ph-6Mp" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="46" y="237" width="140" height="18"/>
+                                            <rect key="frame" x="46" y="205" width="140" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Zfa-HM-161">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -329,7 +331,7 @@
                                             </connections>
                                         </button>
                                         <popUpButton verticalHuggingPriority="750" id="OOl-ZM-PBd">
-                                            <rect key="frame" x="280" y="419" width="165" height="25"/>
+                                            <rect key="frame" x="280" y="432" width="165" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="A4" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="7Xj-J1-Y92" id="fza-OB-xeP">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -346,7 +348,7 @@
                                             </connections>
                                         </popUpButton>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DEO-Es-4wX">
-                                            <rect key="frame" x="86" y="426" width="182" height="16"/>
+                                            <rect key="frame" x="86" y="439" width="182" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Default Paper Size" usesSingleLineMode="YES" id="nUl-8Q-mMa">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -355,11 +357,11 @@
                                             </textFieldCell>
                                         </textField>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="NMm-YH-kP9">
-                                            <rect key="frame" x="20" y="400" width="524" height="5"/>
+                                            <rect key="frame" x="20" y="420" width="524" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <button verticalHuggingPriority="750" id="2IJ-xC-SPZ" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="46" y="259" width="140" height="18"/>
+                                            <rect key="frame" x="46" y="227" width="140" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MPF-7c-b3u">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -374,7 +376,7 @@
                                             </connections>
                                         </button>
                                         <button identifier="1" verticalHuggingPriority="750" id="IO7-Hz-k6N">
-                                            <rect key="frame" x="207" y="259" width="150" height="18"/>
+                                            <rect key="frame" x="207" y="227" width="150" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="1 line" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Yuw-0s-K2b">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -385,7 +387,7 @@
                                             </connections>
                                         </button>
                                         <button identifier="2" verticalHuggingPriority="750" id="BHk-g1-cy2">
-                                            <rect key="frame" x="207" y="237" width="150" height="18"/>
+                                            <rect key="frame" x="207" y="205" width="150" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="2 lines" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="fan-Jn-FOW">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -443,7 +445,7 @@
                                             <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </box>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hDc-KF-D8h">
-                                            <rect key="frame" x="10" y="364" width="254" height="19"/>
+                                            <rect key="frame" x="18" y="389" width="246" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Continued character cue extension" usesSingleLineMode="YES" id="Ump-3W-bbM">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -451,8 +453,17 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ge8-hl-0gs">
+                                            <rect key="frame" x="28" y="318" width="236" height="19"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Action Pagination" usesSingleLineMode="YES" id="Ua4-bb-eBe">
+                                                <font key="font" usesAppearanceFont="YES"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ASX-Zp-9i3">
-                                            <rect key="frame" x="281" y="364" width="209" height="21"/>
+                                            <rect key="frame" x="281" y="389" width="209" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="HVk-Ok-okc">
                                                 <font key="font" metaFont="system"/>
@@ -461,7 +472,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xZg-tJ-LYo">
-                                            <rect key="frame" x="10" y="340" width="254" height="19"/>
+                                            <rect key="frame" x="10" y="365" width="254" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Split dialogue indicator" usesSingleLineMode="YES" id="0oB-rC-ac3">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -470,7 +481,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J2b-ja-mcY">
-                                            <rect key="frame" x="281" y="340" width="209" height="21"/>
+                                            <rect key="frame" x="281" y="365" width="209" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="n44-OM-EQx">
                                                 <font key="font" metaFont="system"/>
@@ -479,11 +490,15 @@
                                             </textFieldCell>
                                         </textField>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="1xd-EC-8E9">
-                                            <rect key="frame" x="20" y="319" width="524" height="5"/>
+                                            <rect key="frame" x="20" y="349" width="524" height="5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </box>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="zbO-mR-wev">
+                                            <rect key="frame" x="20" y="281" width="524" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="6Ft-FT-OHl">
-                                            <rect key="frame" x="373" y="285" width="166" height="17"/>
+                                            <rect key="frame" x="373" y="253" width="166" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Shot Heading Style" usesSingleLineMode="YES" id="6OX-Qw-Due">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -492,7 +507,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" id="Qw6-SX-toL" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="373" y="238" width="164" height="18"/>
+                                            <rect key="frame" x="373" y="206" width="164" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MKe-sW-nsP">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -507,7 +522,7 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="sJl-dG-Pi3" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="373" y="260" width="164" height="18"/>
+                                            <rect key="frame" x="373" y="228" width="164" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="mSK-8B-nEj">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -530,6 +545,40 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <button verticalHuggingPriority="750" id="Cdz-E5-EWs">
+                                            <rect key="frame" x="279" y="320" width="265" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="radio" title="Break actions between pages" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="ay2-Q6-PKT">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.pageNumberingMode.anyContent"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.paragraphPaginationMode.default"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleActionPagination:" target="-2" id="FBK-rP-ccv"/>
+                                            </connections>
+                                        </button>
+                                        <button tag="1" verticalHuggingPriority="750" id="6NC-qG-b6k">
+                                            <rect key="frame" x="279" y="298" width="265" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="radio" title="Avoid breaking actions" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="3jQ-Fb-lPg">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.pageNumberingMode.firstScene"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.paragraphPaginationMode.avoid"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleActionPagination:" target="-2" id="ltE-Ab-wjv"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -812,7 +861,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="188" y="180"/>
+            <point key="canvasLocation" x="188" y="185"/>
         </window>
     </objects>
     <resources>
