@@ -770,7 +770,7 @@ static BeatPluginManager *sharedManager;
 	if (error || !container) return;
     
     // We need to get the plugin info here to know where to put the plugin.
-    NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:[path.lastPathComponent stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
+    NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:[path.lastPathComponent.stringByDeletingPathExtension stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
     [container extractFilesTo:tempDir overwrite:YES error:&error];
     
     if (error) {
