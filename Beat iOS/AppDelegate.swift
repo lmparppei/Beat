@@ -83,21 +83,7 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 
 	
 	// MARK: - Dark mode stuff
-	/*
-	fileprivate var forcedAppearance:BeatForcedAppearance = .none
-	var darkMode = BeatUserDefaults.shared().getBool(BeatSettingDarkMode)
 
-	func checkDarkMode() {
-		darkMode = BeatUserDefaults.shared().getBool(BeatSettingDarkMode)
-		
-		if darkMode && UITraitCollection.current.userInterfaceStyle != .dark {
-			forcedAppearance = .light
-		} else {
-			darkMode && UITr
-		}
-	}
-	 */
-	
 	var darkMode = false
 	var forcedAppearance:BeatForcedAppearance = .none
 	

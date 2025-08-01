@@ -118,3 +118,9 @@
 "menuItem.notepad" = "Notepad";
 "menuItem.statistics" = "Screenplay Statistics";
 "menuItem.allSettings" = "All Settings...";
+
+"menuItem.paragraphPagination" = "Action Pagination";
+"menuItem.paragraphPagination.default" = "Break Actions Across Pages (Default)";
+"menuItem.paragraphPagination.avoid" = "Avoid Breaking Actions";
+
+"menuItem.editTheme" = "Customize Colors...";
