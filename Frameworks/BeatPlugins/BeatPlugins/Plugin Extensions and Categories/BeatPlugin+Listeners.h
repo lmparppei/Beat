@@ -10,8 +10,6 @@
 #import <BeatPlugins/BeatPlugins.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
-@protocol BeatTextChangeObserver;
-
 @protocol BeatPluginListenerExports <JSExport>
 
 - (void)onTextChange:(JSValue* _Nullable)updateMethod;
@@ -34,7 +32,9 @@
 
 @end
 
-@interface BeatPlugin (Listeners) <BeatPluginListenerExports>
+@protocol BeatTextChangeObserver;
+
+@interface BeatPlugin (Listeners) <BeatPluginListenerExports, BeatTextChangeObserver>
 
 #pragma mark Public event listener methods
 

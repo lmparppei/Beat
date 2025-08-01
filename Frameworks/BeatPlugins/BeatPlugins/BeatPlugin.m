@@ -49,7 +49,7 @@
 #import <objc/runtime.h>
 
 #if TARGET_OS_IOS
-@interface BeatPlugin () <BeatPluginInstance, BeatTextChangeObserver>
+@interface BeatPlugin () <BeatPluginInstance>
 #else
 @interface BeatPlugin () <BeatPluginInstance>
 #endif
@@ -200,8 +200,7 @@
 {
     BeatPluginData *pluginData = [BeatPluginManager.sharedManager pluginWithName:name];
     if (pluginData == nil) NSLog(@"No plugin found with name: %@", pluginData);
-    
-    [self loadPlugin:pluginData];
+    else [self loadPlugin:pluginData];
 }
 
 /// Load plugin data with the given data.

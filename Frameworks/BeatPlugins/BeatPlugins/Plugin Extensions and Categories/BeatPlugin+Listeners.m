@@ -9,7 +9,7 @@
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import "BeatPlugin+Menus.h"
 
-@interface BeatPlugin () <BeatTextChangeObserver>
+@interface BeatPlugin ()
 @end
 
 @implementation BeatPlugin (Listeners)

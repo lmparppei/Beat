@@ -16,6 +16,8 @@
 #import <BeatPlugins/BeatPlugins-Swift.h>
 #import <BeatCore/BeatEditorDelegate.h>
 
+@class BeatPlugin;
+
 @interface BeatPluginAgent() <BeatPluginAgentInstance>
 @property (nonatomic, weak) id<BeatPluginDelegate> delegate;
 @end
@@ -76,7 +78,7 @@
 
 - (void)registerPlugin:(id<BeatPluginInstance>)plugin
 {
-    self.delegate.runningPlugins[plugin.pluginName] = plugin;
+    self.delegate.runningPlugins[plugin.pluginName] = (BeatPlugin*)plugin;
 }
 
 - (void)deregisterPlugin:(id<BeatPluginInstance>)plugin
