@@ -58,7 +58,8 @@
 + (NSString*)localizedStringForKey:(NSString*)key {
 	NSDictionary *dictionary = [BeatLocalization dictionary];
 	if (dictionary[key]) return dictionary[key];
-	else return @"";
+	//else return @"";
+    else return key;
 }
 
 @end
