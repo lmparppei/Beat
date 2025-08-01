@@ -9,16 +9,40 @@
 class BeatColorWell:UIColorWell {
 	
 	@IBInspectable var themeKey:String = ""
-	@IBInspectable var darkColor:Bool = false
-	@IBInspectable var commonColor:Bool = false
 	@IBInspectable var lineType:String?
 	
+	var colorChangeWorkItem: DispatchWorkItem?
+		
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		
-		NotificationCenter.default.addObserver(self, selector: #selector(resetColor), name: Notification.Name(rawValue: "Reset theme"), object: nil)
-		
+						
 		resetColor()
+		self.addTarget(self, action: #selector(colorDidChange), for: .valueChanged)
+	}
+	
+	@objc func colorDidChange() {
+		// We need to throttle the color changes a little
+		let item = DispatchWorkItem { [weak self] in
+			self?.saveColor()
+		}
+		
+		colorChangeWorkItem?.cancel()
+		colorChangeWorkItem = item
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: item)
+	}
+	
+	func saveColor() {
+		guard let color = selectedColor, let themeColor = ThemeManager.shared().value(forKey: themeKey) as? DynamicColor else {
+			print("Theme Editor: Color not found:", themeKey)
+			return
+		}
+		
+		themeColor.lightColor = color
+		themeColor.darkColor = color
+		
+		ThemeManager.shared().saveTheme()
+		NotificationCenter.default.post(name: NSNotification.Name("Theme color changed"), object: nil, userInfo: ["sender": self])
 	}
 	
 	@objc func resetColor() {
@@ -27,7 +51,7 @@ class BeatColorWell:UIColorWell {
 			return
 		}
 	
-		self.selectedColor = (self.darkColor) ? (color.darkColor ?? color.lightColor) : color.lightColor
+		self.selectedColor = color
 	}
 	
 }

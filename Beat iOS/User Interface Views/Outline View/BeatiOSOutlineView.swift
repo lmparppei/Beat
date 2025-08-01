@@ -9,8 +9,10 @@
 
 import Foundation
 
-class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
+@objc class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
 	@objc public var aboutToShow = false
+	
+	@IBInspectable var themePropertyForAutomaticAppearance:String = "outlineBackground"
 	
 	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	//var dataProvider:BeatOutlineDataProvider?
@@ -35,8 +37,6 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		super.awakeFromNib()
 		
 		self.delegate = self
-		self.backgroundColor = UIColor.black;
-		self.backgroundView?.backgroundColor = UIColor.black;
 		
 		self.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
 		self.estimatedRowHeight = 14.0
@@ -49,6 +49,17 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 		let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeToClose))
 		swipe.direction = .left
 		self.addGestureRecognizer(swipe)
+	}
+	
+	@objc func setupColors() {
+		self.backgroundColor = ThemeManager.shared().outlineBackground;
+		self.backgroundView?.backgroundColor = ThemeManager.shared().outlineBackground;
+		self.superview?.backgroundColor = ThemeManager.shared().outlineBackground;
+		
+		for cell in self.visibleCells {
+			let outlineCell = cell as? BeatOutlineViewCell
+			outlineCell?.setup()
+		}
 	}
 	
 	func setup(editorDelegate:BeatEditorDelegate) {
@@ -97,6 +108,9 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView
 	@objc public func reload() {
 		guard (self.visible() || aboutToShow), self.hasUncommittedUpdates == false else { return }
 		
+		// Update appearance ahead of time
+		_ = UIView.shouldAppearAsDark(view: self, apply: true)
+
 		// Stop scrolling, just in case
 		// self.setContentOffset(self.contentOffset, animated: false)
 		
@@ -239,12 +253,12 @@ class BeatOutlineViewCell:UITableViewCell {
 	}
 	
 	func setup() {
-		self.backgroundColor = .black
+		self.backgroundColor = .clear
 		
 		let selectionView = UIView()
 		selectionView.backgroundColor = ThemeManager.shared().outlineHighlight
 		self.selectedBackgroundView = selectionView
 	}
 	
-
+	
 }
