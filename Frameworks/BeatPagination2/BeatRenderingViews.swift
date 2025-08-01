@@ -302,13 +302,18 @@ import UXKit
                                    height: 400)
         textView?.frame = frame
         
+        // Placeholder frame
         let columnFrame = CGRect(x: pageStyle.marginLeft + 10.0,
                                  y: textViewFrame.origin.y + textViewFrame.height,
-                                 width: textViewFrame.width / 2 - 10,
+                                 width: 0.0,
                                  height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight() * 4)
         
+        // Specific calculations for the
+        let columnFrameLeft = CGRect(x: columnFrame.origin.x, y: columnFrame.origin.y, width: textViewFrame.width * 0.65 - 10, height: columnFrame.height)
+        let columnFrameRight = CGRect(x: columnFrameLeft.maxX, y: columnFrame.origin.y, width: textViewFrame.width * 0.35 - 10, height: columnFrame.height)
+        
         if (leftColumn == nil) {
-            leftColumn = UXTextView(frame: columnFrame)
+            leftColumn = UXTextView(frame: columnFrameLeft)
             leftColumn?.isEditable = false
             #if os(macOS)
                 leftColumn?.drawsBackground = false
@@ -323,10 +328,7 @@ import UXKit
         }
 
         if (rightColumn == nil) {
-            let rightColumnFrame = CGRect(x: frame.width - pageStyle.marginLeft - 10.0 - columnFrame.width,
-                                          y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
-            
-            rightColumn = UXTextView(frame: rightColumnFrame)
+            rightColumn = UXTextView(frame: columnFrameRight)
             rightColumn?.isEditable = false
             #if os(macOS)
                 rightColumn?.drawsBackground = false
@@ -412,7 +414,6 @@ import UXKit
         #endif
 		
 		// Layout manager doesn't handle newlines too well, so let's trim the column content
-        print("Creating title page ...")
 		leftTextStorage.setAttributedString(leftTextStorage.trimmedAttributedString(set: .newlines))
 		rightTextStorage.setAttributedString(rightTextStorage.trimmedAttributedString(set: .newlines))
 
