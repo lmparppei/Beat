@@ -67,6 +67,8 @@ NSString * const DocSettingContentAlignment = @"novelContentAlignment";
 NSString * const DocSettingFirstPageNumber = @"firstPageNumber";
 NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
+NSString * const DocSettingTextLengthAtSave = @"Text Length";
+
 -(id)init
 {
     return [BeatDocumentSettings.alloc initWithDelegate:nil];

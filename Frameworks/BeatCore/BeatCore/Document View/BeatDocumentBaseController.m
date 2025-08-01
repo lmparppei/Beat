@@ -149,6 +149,11 @@
     NSRange settingsRange = [self.documentSettings readSettingsAndReturnRange:text];
     NSString* content = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
     
+    NSInteger length = [self.documentSettings getInt:DocSettingTextLengthAtSave];
+    if (length > 0 && length != content.length) {
+        [self showDataHealthWarningIfNeeded];
+    }
+    
     self.contentBuffer = content;
     
     return content;
@@ -222,16 +227,11 @@
     [self resetPreview];
 }
 
-/// Returns __actual__ line height for editor view
+/// Returns the __default__ line height for editor view as defined in styles. This value is used by the layout manager for some drawing operations, which is not that good.
+/// We should rather use actual line heights from the attributed string.
 - (CGFloat)editorLineHeight
 {
     return self.editorStyles.page.lineHeight;
-}
-
-/// Returns LINE HEIGHT MODIFIER (!!!), not actual line height
-- (CGFloat)lineHeight
-{
-    return self.editorStyles.page.lineHeight / 12.0;
 }
 
 - (void)ensureLayout
@@ -490,6 +490,39 @@
     [self.formatting formatLine:line];
 }
 
+- (void)updateTheme
+{
+    NSLog(@"WARNING: Override updateTheme in OS-specific implementation");
+}
+
+- (void)updateThemeAndReformat:(NSArray*)types
+{
+    bool formatText = false;
+    
+    // First update all basic elements
+    [self updateTheme];
+    
+    // Now, let's reformat the needed types
+    for (Line* line in self.parser.lines)
+    {
+        if (formatText) {
+            [self.formatting refreshRevisionTextColorsInRange:line.range];
+        }
+        
+        bool reformat = false;
+        
+        if ([types containsObject:@"text"] ||
+            [types containsObject:line.typeName] ||
+            ([types containsObject:@"omit"] && line.omittedRanges.count > 0) ||
+            ([types containsObject:@"note"] && line.noteRanges.count) ||
+            ([types containsObject:@"macro"] && line.macroRanges.count)
+            ) {
+            reformat = true;
+        }
+        
+        if (reformat) [self.formatting setTextColorFor:line];
+    }
+}
 
 
 #pragma mark - Parser shorthands
@@ -754,6 +787,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     
     // Resort to content buffer if needed
     if (content == nil) content = self.attrTextCache.string;
+
+    // Store the text length. This is used for health checks.
+    [self.documentSettings setInt:DocSettingTextLengthAtSave as:content.length];
     
     // Save added/removed ranges
     // This saves the revised ranges into Document Settings
@@ -976,6 +1012,51 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 {
     NSValue* obj = [NSValue valueWithNonretainedObject:owner];
     _changeListeners[obj] = nil;
+}
+
+#pragma mark - Warnings
+
+- (void)showDataHealthWarningIfNeeded
+{
+    // First, we'll need to check that there is something we need to warn about.
+    
+    NSDictionary* revisions = [self.documentSettings get:DocSettingRevisions];
+    NSDictionary* tags = [self.documentSettings get:DocSettingTags];
+    NSDictionary* reviews = [self.documentSettings get:DocSettingReviews];
+    
+    bool noRanges = true;
+    
+    // Revisions might have empty arrays inside it
+    for (NSString* key in revisions.allKeys) {
+        NSArray* ranges = revisions[key];
+        if (ranges.count > 0) {
+            noRanges = false;
+            break;
+        }
+    }
+    // Other ranges are just plain arrays
+    if (reviews.count > 0 || tags.count > 0) noRanges = false;
+    
+    // Nothing to check, ignore warnings
+    if (noRanges) return;
+    
+    // This method should return true if we want to remove the expired ranges. Override in OS-specific implementation.
+    if ([self showDataHealthWarning]) {
+        [self removeExpiredRanges];
+    }
+}
+
+- (BOOL)showDataHealthWarning
+{
+    NSLog(@"⚠️ Override showDataHealthWarning in OS-specific implementation. Return true to remove all ranges.");
+    return false;
+}
+
+- (void)removeExpiredRanges
+{
+    [self.documentSettings remove:DocSettingRevisions];
+    [self.documentSettings remove:DocSettingTags];
+    [self.documentSettings remove:DocSettingReviews];
 }
 
 

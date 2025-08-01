@@ -268,6 +268,9 @@ NS_ASSUME_NONNULL_END
 - (CGFloat)fontScale;
 
 
+- (void)updateThemeAndReformat:(NSArray* _Nullable)types;
+
+
 #pragma mark - Preview
 
 @property (nonatomic) id<BeatPreviewControllerInstance> _Nonnull previewController;
@@ -332,7 +335,6 @@ NS_ASSUME_NONNULL_END
 - (void)reloadStyles;
 - (void)resetStyles;
 - (CGFloat)editorLineHeight;
-- (CGFloat)lineHeight;
 
 /// Only sets the stylesheet. Does NOT reload or reformat anything.
 - (void)setStylesheet:(NSString* _Nonnull)name;
@@ -343,6 +345,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Additional data storage
 
 @property (nonatomic) NSMapTable<NSString*, id>* _Nullable additionalData;
+
 
 @end
 
