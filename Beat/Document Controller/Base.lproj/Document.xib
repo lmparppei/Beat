@@ -168,8 +168,9 @@
                                                                                                             <rect key="frame" x="0.0" y="4" width="300" height="14"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
-                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF" customClass="BeatOutlineTextField" customModule="Beat" customModuleProvider="target">
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" id="vvi-uv-1gF">
                                                                                                                     <rect key="frame" x="-2" y="0.0" width="304" height="14"/>
+                                                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                                                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Table View Cell" id="LeM-Df-kg2">
                                                                                                                         <font key="font" metaFont="smallSystem"/>
                                                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -177,12 +178,6 @@
                                                                                                                     </textFieldCell>
                                                                                                                 </textField>
                                                                                                             </subviews>
-                                                                                                            <constraints>
-                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="leading" secondItem="mpy-KU-4Le" secondAttribute="leading" id="40V-pS-mb1"/>
-                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="top" secondItem="mpy-KU-4Le" secondAttribute="top" id="BK9-l6-APs"/>
-                                                                                                                <constraint firstAttribute="trailing" secondItem="vvi-uv-1gF" secondAttribute="trailing" id="oe6-fw-u5D"/>
-                                                                                                                <constraint firstAttribute="bottom" secondItem="vvi-uv-1gF" secondAttribute="bottom" id="tFr-Lp-dOc"/>
-                                                                                                            </constraints>
                                                                                                             <connections>
                                                                                                                 <outlet property="textField" destination="vvi-uv-1gF" id="QRB-wh-h1K"/>
                                                                                                             </connections>
@@ -915,6 +910,24 @@
                                                                                                                 <outlet property="textField" destination="Zrv-Bt-8h0" id="1AX-bZ-9Y9"/>
                                                                                                             </connections>
                                                                                                         </tableCellView>
+                                                                                                        <tableCellView identifier="ReviewKeywordCell" id="IaM-Qm-H2K" customClass="BeatReviewCellView" customModule="Beat" customModuleProvider="target">
+                                                                                                            <rect key="frame" x="17" y="47" width="264" height="25"/>
+                                                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                                            <subviews>
+                                                                                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="eFz-aO-Mub">
+                                                                                                                    <rect key="frame" x="1" y="5" width="261" height="15"/>
+                                                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                                                                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Table View Cell" id="Tgw-Yg-2i4">
+                                                                                                                        <font key="font" metaFont="systemBold" size="12"/>
+                                                                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                                                    </textFieldCell>
+                                                                                                                </textField>
+                                                                                                            </subviews>
+                                                                                                            <connections>
+                                                                                                                <outlet property="textField" destination="eFz-aO-Mub" id="ujT-PX-cLp"/>
+                                                                                                            </connections>
+                                                                                                        </tableCellView>
                                                                                                     </prototypeCellViews>
                                                                                                 </tableColumn>
                                                                                             </tableColumns>
@@ -1508,7 +1521,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="997" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
@@ -1567,7 +1580,7 @@
                                             <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                                             <clipView key="contentView" id="4TZ-H7-Mfc">
                                                 <rect key="frame" x="0.0" y="0.0" width="158" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <collectionView id="fJG-gv-m6T" customClass="BeatPageThumbnailView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="158" height="158"/>
