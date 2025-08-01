@@ -106,6 +106,10 @@ typedef void (^BeatChangeListener)(NSRange);
 - (id)themeManager;
 - (void)updateUIColors;
 
+/// Updates theme and reformats necessary lines.
+/// @param types A list of types. These are predefined string values, not necessarily actual line type names, so for example `note` and `omit` are used.
+- (void)updateThemeAndReformat:(NSArray*)types;
+
 
 #pragma mark - Application data and file access
 
