@@ -287,6 +287,7 @@ import UXKit
                 // Hide animation
                 previewView.endLoadingAnimation()
                 self?.rendering = false
+                self?.didEndRendering()
             }
         }
     }
@@ -298,8 +299,11 @@ import UXKit
     @objc open func scrollToRange(_ range:NSRange) {
         print("Preview manager: Override scrollToRange() in OS-specific implementation")
     }
+    
+    @objc open func didEndRendering() {
+        //
+    }
 }
-
 
 // MARK: - Preview view data source (iOS only for now)
 
