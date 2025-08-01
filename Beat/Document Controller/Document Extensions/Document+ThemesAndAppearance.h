@@ -14,10 +14,6 @@
 /// Updates the UI to current scene
 - (void)updateTheme;
 
-/// Updates theme and reformats necessary lines.
-/// @param type A list of types. These are predefined string values, not necessarily actual line type names, so for example `note` and `omit` are used.
-- (void)updateThemeAndReformat:(NSArray*)types;
-
 /// Redraws all UI elements to reliably update theme or appearance
 /// - note: This method is NOT implemented by primary class, just appears so because it's inherited from `BeatEditorDelegate` definition. Objc selectors will sort this out.
 - (void)updateUIColors;

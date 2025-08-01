@@ -14,6 +14,11 @@
 
 #pragma mark - Locking The Document
 
+- (void)showLockStatus
+{
+	[self.lockButton displayLabel];
+}
+
 - (bool)contentLocked
 {
 	return [self.documentSettings getBool:DocSettingLocked];

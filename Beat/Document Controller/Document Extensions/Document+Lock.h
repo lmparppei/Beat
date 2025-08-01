@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Document (Lock)
 
+- (void)showLockStatus;
 - (bool)contentLocked;
 - (void)lock;
 - (void)unlock;

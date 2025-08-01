@@ -93,6 +93,9 @@
 #import "Document+TextEvents.h"
 #import "Document+SceneColorPicker.h"
 #import "Document+Scrolling.h"
+#import "Document+EditorMode.h"
+#import "Document+UI.h"
+#import "Document+InitialFormatting.h"
 
 #import "ScrollView.h"
 #import "BeatAppDelegate.h"
@@ -116,26 +119,16 @@
 /// If set `true`, editor formatting won't be applied
 @property (nonatomic) bool disableFormatting;
 
-/// This class handles the first-time format of the editor text to spare some CPU time. It has to be retained in memory but can be released once loading is complete.
-@property (nonatomic) BeatEditorFormatting* initialFormatting;
 /// Autocompletion class which delivers us character names and scene headings
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 /// Print dialog has to be retained in memory when processing the PDF
 @property (nonatomic) BeatPrintDialog *printDialog;
 /// Preview controller handles updating the preview view
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
-/// Mode indicator view at the top of the editor
-@property (weak) IBOutlet BeatModeDisplay *modeIndicator;
 
 @property (weak) NSTimer *autosaveTimer;
 
 @property (weak) IBOutlet NSTouchBar *touchBar;
-
-/// When loading longer documents, we need to show a progress panel
-@property (nonatomic) NSPanel* progressPanel;
-
-/// The indicator for above panel
-@property (nonatomic) NSProgressIndicator *progressIndicator;
 
 @end
 
@@ -229,7 +222,11 @@
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
 }
 
--(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler {
+
+#pragma mark - Window loading
+
+-(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler
+{
 	if (mask_contains(NSEvent.modifierFlags, NSEventModifierFlagShift)) {
 		completionHandler(nil, nil);
 		[self close];
@@ -239,7 +236,10 @@
 	}
 }
 
-- (void)windowControllerWillLoadNib:(NSWindowController *)windowController {
+/// - note: This is a total mess. We should use a similar class as iOS uses for the actual `NSDocument` and initialize our parser/document settings there.
+/// This is here purely for legacy reasons, as it's how old macOS apps used to do things by default. Nowadays there are better ways to achieve the same thing, but unfortunately it would require a lot of refactoring at a very deep level, hence we are stuck with doing things in a very clunky way for now.
+- (void)windowControllerWillLoadNib:(NSWindowController *)windowController
+{
 	[super windowControllerWillLoadNib:windowController];
 
 	// Initialize document settings if needed
@@ -262,11 +262,109 @@
 	}
 	
 	[super windowControllerDidLoadNib:aController];
-	
-	[self.previewController setup];
-		
+
 	_documentWindow = aController.window;
-	_documentWindow.delegate = self; // The conformance is provided by Swift, don't worry, future me
+	_documentWindow.delegate = self; // The conformance is provided by a Swift extension
+	
+	[self setup];
+}
+
+
+#pragma mark - Loading data
+
+- (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
+{
+	// This method can crash the app in some instances, so I've tried to solve the issue
+	// by wrapping it in try-catch block. Let's see if it helps.
+	
+	NSData *dataRepresentation;
+	bool success = NO;
+	@try {
+		dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
+		success = YES;
+	} @catch (NSException *exception) {
+		os_log(OS_LOG_DEFAULT, "Error (auto)saving file: %@", exception);
+		
+		// If there is data in the cache, return it
+		if (_dataCache != nil) return _dataCache;
+		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
+		
+		// Everything is terrible, crash and don't overwrite anything.
+		if (dataRepresentation == nil) @throw NSInternalInconsistencyException;
+	} @finally {
+		// If saving was successful, let's store the data into cache
+		if (success) _dataCache = dataRepresentation.copy;
+	}
+	
+	if (dataRepresentation == nil) {
+		NSLog(@"ERROR: Something went horribly wrong. Trying to crash the app to avoid data loss.");
+		@throw NSInternalInconsistencyException;
+	}
+	
+	return dataRepresentation;
+}
+
+- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
+{
+	if (![url checkResourceIsReachableAndReturnError:outError]) return NO;
+	return [super readFromURL:url ofType:typeName error:outError];
+}
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
+{
+	return [self readFromData:data ofType:typeName error:outError reverting:NO];
+}
+
+/// Loads text & remove settings block from Fountain.
+/// - note: `readBeatDocumentString:` is implemented by the super class. It will handle setting `contentBuffer` at load.
+
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
+{
+	self.documentIsLoading = true;
+
+	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
+	text = [self readBeatDocumentString:text];
+	
+	// If we're not reverting, we can also set the text here
+	if (!reverting)	[self setText:text];
+	
+	return YES;
+}
+
+- (void)revertToText:(NSString*)text
+{
+	[super revertToText:text];
+	[self setupDocument];
+}
+
+
+#pragma mark - Document was saved
+
+- (void)documentWasSaved
+{
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin documentWasSaved];
+	}
+}
+
+/*
+ 
+ But if the while I think on thee,
+ dear friend,
+ All losses are restor'd,
+ and sorrows end.
+ 
+ */
+
+
+#pragma mark - Setup
+
+/**
+ Flow: `windowControllerDidLoadNib` -> `setup` -> `setupDocument` -> `renderDocument` -> (async formatting) -> `loadingComplete`
+ */
+- (void)setup
+{
+	[self.previewController setup];
 	
 	// Setup plugins
 	self.runningPlugins = NSMutableDictionary.new;
@@ -299,7 +397,40 @@
 	[self setupDocument];
 }
 
--(void)loadingComplete
+/// Reloads all necessary things. Should be called when the whole text has changed.
+- (void)setupDocument
+{
+	self.documentIsLoading = true;
+	if (self.contentBuffer == nil) self.contentBuffer = @"";
+	
+	[self.textView setNeedsDisplay:true];
+	
+	self.textView.alphaValue = 0.0;
+	
+	// We are re-initializing the parser here for some reason. Do we need to?
+	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
+	
+	[self updateChangeCount:NSChangeCleared];
+	[self updateChangeCount:NSChangeDone];
+	[self.undoManager removeAllActions];
+	
+	// Put any previously loaded text into the text view when it's loaded
+	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
+	
+	// Set up revision tracking before preview is created and lines are rendered on screen
+	[self.revisionTracking setup];
+	
+	// Paginate the whole document at load
+	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
+		
+	// Perform first-time rendering
+	[self renderDocument];
+	
+	// Update selection to any views or objects that might require it.
+	[self updateSelectionObservers];
+}
+
+- (void)loadingComplete
 {
 	// Reset parser and cache attributed content after load
 	[self.parser.changedIndices removeAllIndexes];
@@ -375,8 +506,7 @@
 
 - (NSString*)fileNameString
 {
-	NSString* fileName = self.lastComponentOfFileName;
-	return fileName.stringByDeletingPathExtension;
+	return self.lastComponentOfFileName.stringByDeletingPathExtension;
 }
 
 	
@@ -476,31 +606,6 @@
 	return @"Document";
 }
 
-/// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
-- (NSTabViewItem*)currentTab
-{
-	return self.tabView.selectedTabViewItem;
-}
-
-/// Returns `true` when the editor view is visible
-- (bool)editorTabVisible { return (self.currentTab == _editorTab); }
-
-/// Returns `true` if the document window is full screen
-- (bool)isFullscreen
-{
-	return ((_documentWindow.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
-}
-
-/// Update sizes and layout on resize
-- (void)windowDidResize:(NSNotification *)notification
-{
-	CGFloat width = _documentWindow.frame.size.width;
-	
-	[self.documentSettings setFloat:DocSettingWindowWidth as:width];
-	[self.documentSettings setFloat:DocSettingWindowHeight as:_documentWindow.frame.size.height];
-	[self updateLayout];
-}
-
 /// Ensures minimum window size, sets text view insets and forces editor views to be displayed. After that, ensures text view layout.
 - (void)updateLayout
 {
@@ -515,40 +620,6 @@
 }
 
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
-
-
-#pragma mark - Editor modes
-
--(void)toggleMode:(BeatEditorMode)mode
-{
-	if (_mode != mode) _mode = EditMode;
-	else _mode = mode;
-	[self updateEditorMode];
-}
-
--(void)setMode:(BeatEditorMode)mode
-{
-	_mode = mode;
-	[self updateEditorMode];
-}
-
-- (void)updateEditorMode
-{
-	_modeIndicator.hidden = (_mode == EditMode);
-	
-	// Show mode indicator
-	if (_mode != EditMode) {
-		NSString *modeName = @"";
-		
-		if (_mode == TaggingMode) modeName = [BeatLocalization localizedStringForKey:@"mode.taggingMode"];
-		else if (_mode == ReviewMode) modeName = [BeatLocalization localizedStringForKey:@"mode.reviewMode"];
-		
-		[_modeIndicator showModeWithModeName:modeName];
-	}
-	
-	[_documentWindow layoutIfNeeded];
-	[self updateLayout];
-}
 
 
 #pragma mark - Layout
@@ -573,124 +644,6 @@
 	[self.textView ensureCaret];
 }
 
-
-#pragma mark - Loading data
-
-- (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
-	// This method can crash the app in some instances, so I've tried to solve the issue
-	// by wrapping it in try-catch block. Let's see if it helps.
-	
-	NSData *dataRepresentation;
-	bool success = NO;
-	@try {
-		dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
-		success = YES;
-	} @catch (NSException *exception) {
-		os_log(OS_LOG_DEFAULT, "Error (auto)saving file: %@", exception);
-		
-		// If there is data in the cache, return it
-		if (_dataCache != nil) return _dataCache;
-		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
-		
-		// Everything is terrible, crash and don't overwrite anything.
-		if (dataRepresentation == nil) @throw NSInternalInconsistencyException;
-	} @finally {
-		// If saving was successful, let's store the data into cache
-		if (success) _dataCache = dataRepresentation.copy;
-	}
-	
-	if (dataRepresentation == nil) {
-		NSLog(@"ERROR: Something went horribly wrong. Trying to crash the app to avoid data loss.");
-		@throw NSInternalInconsistencyException;
-	}
-	
-	return dataRepresentation;
-}
-
-- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
-{
-	if (![url checkResourceIsReachableAndReturnError:outError]) return NO;
-	return [super readFromURL:url ofType:typeName error:outError];
-}
-- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
-{
-	return [self readFromData:data ofType:typeName error:outError reverting:NO];
-}
-- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
-{
-	self.documentIsLoading = true;
-
-	// Load text & remove settings block from Fountain
-	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
-	text = [self readBeatDocumentString:text];
-	
-	// If we're not reverting, we can also set the text here
-	if (!reverting)	[self setText:text];
-	
-	return YES;
-}
-
-- (void)revertToText:(NSString*)text
-{
-	[super revertToText:text];
-	[self setupDocument];
-}
-
-
-#pragma mark - Document setup
-
-/// Reloads all necessary things. Should be called when the whole text has changed.
-- (void)setupDocument
-{
-	self.documentIsLoading = true;
-	if (self.contentBuffer == nil) self.contentBuffer = @"";
-	
-	[self.textView setNeedsDisplay:true];
-	
-	self.textView.alphaValue = 0.0;
-		
-	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
-	
-	[self updateChangeCount:NSChangeCleared];
-	[self updateChangeCount:NSChangeDone];
-	[self.undoManager removeAllActions];
-	
-	// Put any previously loaded text into the text view when it's loaded
-	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
-	
-	
-	// Set up revision tracking before preview is created and lines are rendered on screen
-	[self.revisionTracking setup];
-	
-	// Paginate the whole document at load
-	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:true];
-		
-	// Perform first-time rendering
-	[self renderDocument];
-	
-	// Update selection to any views or objects that might require it.
-	[self updateSelectionObservers];
-}
-
-
-#pragma mark - Document was saved
-
-- (void)documentWasSaved
-{
-	for (NSString *pluginName in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[pluginName];
-		[plugin documentWasSaved];
-	}
-}
-
-/*
- 
- But if the while I think on thee,
- dear friend,
- All losses are restor'd,
- and sorrows end.
- 
- */
 
 
 #pragma mark - Reverting to versions
@@ -784,7 +737,7 @@
 
 
 #pragma mark - Text did change
-// Other text events are in a category
+// Other text events are in a category (why isn't this?)
 
 - (void)textDidChange:(NSNotification *)notification
 {
@@ -803,29 +756,6 @@
 	
 	// Finally, reset last changed range
 	self.lastChangedRange = NSMakeRange(NSNotFound, 0);	
-}
-
-
-#pragma mark Update UI with current scene
-
-- (void)updateUIwithCurrentScene
-{
-	OutlineScene *currentScene = self.currentScene;
-	NSInteger sceneIndex = [self.parser indexOfScene:currentScene];
-	if (sceneIndex == NSNotFound) return;
-	
-	// Update any registered outline views
-	for (id<BeatSceneOutlineView>view in self.registeredOutlineViews) {
-		if (view.visible) [view didMoveToSceneIndex:sceneIndex];
-	}
-		
-	// Update touch bar color if needed
-	if (currentScene.color.length > 0) {
-		NSColor* color = [BeatColors color:currentScene.color];
-		if (color != nil) [_colorPicker setColor:color];
-	}
-		
-	[self.pluginAgent updatePluginsWithSceneIndex:sceneIndex];
 }
 
 
@@ -855,110 +785,6 @@
 	return [_autocompletion completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
 
-
-#pragma mark - Formatting
-
-/// Render the newly opened document for editing
--(void)renderDocument
-{
-	self.textView.editable = false;
-
-	// Begin formatting lines.
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		// Show a progress bar for longer documents
-		if (self.parser.lines.count > 1000) {
-			self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
-			
-			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
-			self.progressIndicator.indeterminate = NO;
-			
-			[self.progressPanel.contentView addSubview:self.progressIndicator];
-			
-			[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
-		}
-		
-		// Apply document formatting
-		[self applyInitialFormatting];
-	});
-}
-
-/**
- Applies the initial formatting while document is loading. We'll create a temporary formatting object and attributed string to handle rendering off screen, and the text storage contents are put into text view after formatting is complete. This cuts the formatting time for longer documents to half.
- */
--(void)applyInitialFormatting
-{
-	NSMutableAttributedString* formattedString = [NSMutableAttributedString.alloc initWithAttributedString:self.textView.attributedString];
-	
-	self.initialFormatting = [BeatEditorFormatting.alloc initWithTextStorage:formattedString];
-	self.initialFormatting.delegate = self;
-	
-	if (self.parser.lines.count > 0) {
-		// Start rendering
-		self.progressIndicator.maxValue =  1.0;
-		[self formatAllWithDelayFrom:0 formattedString:formattedString];
-	} else {
-		// Empty document, do nothing.
-		[self formattingComplete:nil];
-	}
-}
-
-/// Asynchronous formatting. Takes in an index and formats a bunch of parsed lines starting from that index, applying the formatting attributes to given attributed string. This avoids beach ball when opening a large document.
-- (void)formatAllWithDelayFrom:(NSInteger)idx formattedString:(NSMutableAttributedString*)formattedString
-{
-	NSInteger batchSize = 500;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		Line *line;
-		NSInteger lastIndex = idx;
-		
-		for (NSInteger i = 0; i < batchSize; i++) {
-			// After 1000 lines, hand off the process
-			if (i + idx >= self.parser.lines.count) break;
-			
-			line = self.parser.lines[i + idx];
-			lastIndex = i + idx;
-			[self.initialFormatting formatLine:line firstTime:YES];
-		}
-		
-		[self.progressIndicator incrementBy:(CGFloat)batchSize / (CGFloat)self.parser.lines.count];
-		
-		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) {
-			// If the document is done formatting, complete the loading process.
-			[self formattingComplete:formattedString];
-		} else {
-			// Else render 1000 more lines
-			[self formatAllWithDelayFrom:lastIndex + 1 formattedString:formattedString];
-		}
-	});
-}
-
-- (void)formattingComplete:(NSAttributedString*)formattedString;
-{
-	if (formattedString != nil) [self.textStorage setAttributedString:formattedString];
-	
-	// Close progress panel and nil the reference
-	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
-	self.progressPanel = nil;
-	
-	[self loadingComplete];
-}
-
-- (bool)disableFormatting
-{
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingDisableFormatting];
-}
-
-
-/*
- 
- hei
- saanko jäädä yöksi, mun tarvii levätä
- ennen kuin se alkaa taas
- saanko jäädä yöksi, mun tarvii levätä
- en mä voi mennä enää kotiinkaan
- enkä tiedä onko mulla sellaista ollenkaan
- 
- */
 
 
 # pragma  mark - Fonts
@@ -1227,15 +1053,7 @@
 }
 
 
-#pragma mark - Lock
-
-- (void)showLockStatus
-{
-	[self.lockButton displayLabel];
-}
-
-
-#pragma mark - Experimental stuff
+#pragma mark - Pagination handler
 
 - (void)paginationFinished:(BeatPagination *)operation indices:(NSIndexSet *)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks
 {

@@ -14,6 +14,8 @@
 #define MIN_WINDOW_HEIGHT 400
 #define MIN_OUTLINE_WIDTH 270
 
+// WARNING: We are suppressing protocol conformance warnings, because of my sloppy protocols. Oh well.
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
 @implementation Document (WindowManagement)
 
 - (void)setupWindow
@@ -73,6 +75,16 @@
 }
 
 
+
+#pragma mark - Window flags
+
+/// Returns `true` if the document window is full screen
+- (bool)isFullscreen
+{
+	return ((self.documentWindow.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
+}
+
+
 #pragma mark - Tabs
 
 /// Move to another editor view
@@ -113,7 +125,17 @@
 }
 
 
-#pragma mark -
+#pragma mark - Window events
+
+/// Update sizes and layout on resize
+- (void)windowDidResize:(NSNotification *)notification
+{
+	CGFloat width = self.documentWindow.frame.size.width;
+	
+	[self.documentSettings setFloat:DocSettingWindowWidth as:width];
+	[self.documentSettings setFloat:DocSettingWindowHeight as:self.documentWindow.frame.size.height];
+	[self updateLayout];
+}
 
 -(void)windowWillBeginSheet:(NSNotification *)notification {
 	if (self.documentIsLoading) return;

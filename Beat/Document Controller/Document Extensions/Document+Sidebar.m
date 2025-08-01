@@ -7,6 +7,7 @@
 //
 
 #import "Document+Sidebar.h"
+#import "Document+WindowManagement.h"
 
 @implementation Document (Sidebar)
 

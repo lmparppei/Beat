@@ -56,11 +56,13 @@ THE SOFTWARE.
 @class BeatLockButton;
 @class BeatNotepadView;
 @class BeatOnOffMenuItem;
+@class BeatModeDisplay;
+@class BeatEditorFormatting;
 
 @interface Document : BeatDocumentBaseController <BeatEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate>
 
 /// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
-@property (weak) NSWindow *documentWindow;
+@property (weak) NSWindow* _Nullable documentWindow;
 
 
 #pragma mark - Editor flags
@@ -81,16 +83,9 @@ THE SOFTWARE.
 
 /// Current editor mode flag. Changing this should change the editor behavior as well.
 @property (nonatomic) BeatEditorMode mode;
-/// Updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
-- (void)updateEditorMode;
 
 /// For versioning support. This is probably not used right now.
 @property (nonatomic) NSURL* _Nullable revertedTo;
-
-/// When the current scene has changed, some UI elements need to be updated. Add any required updates here.
-- (void)updateUIwithCurrentScene;
-
-- (bool)isFullscreen;
 
 /// Sheet view (strong reference for avoiding weirdness)
 @property (nonatomic) NSWindowController* _Nullable sheetController;
@@ -122,6 +117,9 @@ THE SOFTWARE.
 
 @property (nonatomic, weak) NSWindow* _Nullable currentKeyWindow;
 @property (nonatomic) NSWindowController* _Nullable tagManager;
+
+/// Mode indicator view at the top of the editor
+@property (weak) IBOutlet BeatModeDisplay *modeIndicator;
 
 
 #pragma mark - Tabs
@@ -218,5 +216,17 @@ THE SOFTWARE.
 
 /// A collection of actions for quick inline formatting etc. Instantiated in the XIB for some reason.
 @property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
+
+
+#pragma mark - Initial formatting
+
+/// This class handles the first-time format of the editor text to spare some CPU time. It has to be retained in memory but can be released once loading is complete.
+@property (nonatomic) BeatEditorFormatting* _Nullable initialFormatting;
+/// When loading longer documents, we need to show a progress panel
+@property (nonatomic) NSPanel* _Nullable progressPanel;
+/// The indicator for above panel
+@property (nonatomic) NSProgressIndicator* _Nullable progressIndicator;
+
+- (void)loadingComplete;
 
 @end

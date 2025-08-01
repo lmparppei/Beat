@@ -8,6 +8,7 @@
 
 #import "Document+AdditionalActions.h"
 #import "Document+WindowManagement.h"
+#import "Document+EditorMode.h"
 #import "ThemeEditor.h"
 #import "BeatModalInput.h"
 #import "Beat-Swift.h"

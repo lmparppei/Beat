@@ -7,6 +7,7 @@
 //
 
 #import "Document+TextEvents.h"
+#import "Document+UI.h"
 
 @implementation Document (TextEvents)
 

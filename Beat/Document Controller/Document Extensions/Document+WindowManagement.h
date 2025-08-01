@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restoreSidebar;
 /// Moves to another main window tab view (ie. another editor view)
 - (void)showTab:(NSTabViewItem*)tab;
+/// Returns `true` if the document window is full screen
+- (bool)isFullscreen;
 
 @end
 

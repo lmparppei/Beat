@@ -66,8 +66,8 @@ extension Document {
 			let diffViewer = windowController.contentViewController as? DiffViewerViewController
 			diffViewer?.delegate = self
 			
-			if let window = windowController.window {
-				self.documentWindow.beginSheet(window) { response in
+			if let window = windowController.window, let documentWindow {
+				documentWindow.beginSheet(window) { response in
 				}
 			}
 		}
