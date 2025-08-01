@@ -13,7 +13,17 @@ private enum DiffViewMode: Int {
 	case fullText = 1
 }
 
+struct VersionItem {
+	var timestamp:String = ""
+	var URL:URL?
+}
 
+/**
+ 
+ A DIFF viewer for macOS version of Beat.
+ We use a struct called `VersionItem` to deliver the version data. Internal version control data uses timestamps, but you can also provide a URL to the struct to use external files for diffing.
+ 
+ */
 class DiffViewerViewController: NSViewController {
 	
 	weak var delegate: BeatEditorDelegate?
@@ -29,25 +39,33 @@ class DiffViewerViewController: NSViewController {
 	private var originalText: String?
 	private var modifiedText: String?
 	
-	private var originalTimestamp: String = "base" {
+	private var externalFiles:[URL] = []
+	
+	private var originalTarget: VersionItem = VersionItem(timestamp: "base") {
 		didSet {
-			otherVersionMenu?.selectCommit(originalTimestamp)
+			otherVersionMenu?.selectCommit(originalTarget)
 		}
 	}
 	
-	private var modifiedTimestamp: String = "current" {
+	private var modifiedTarget: VersionItem = VersionItem(timestamp: "current") {
 		didSet {
-			currentVersionMenu?.selectCommit(modifiedTimestamp)
+			currentVersionMenu?.selectCommit(modifiedTarget)
 		}
 	}
 	
 	// MARK: UI outlets
 	
+	/// A view that notes that there is currently no version control available
 	@IBOutlet weak var versionControlNotificationView:NSView?
+	/// Main text view
 	@IBOutlet private weak var textView: DiffViewerTextView?
+	/// Left side version menu
 	@IBOutlet private weak var currentVersionMenu: DiffTimestampMenu?
+	/// Right side version menu
 	@IBOutlet private weak var otherVersionMenu: DiffTimestampMenu?
+	/// Bottom view with commit status
 	@IBOutlet private weak var statusView: DiffViewerStatusView?
+	
 	@IBOutlet private weak var commitButton: NSButton?
 	@IBOutlet private weak var generateRevisionsButton: NSButton?
 	@IBOutlet private weak var restoreButton:NSButton?
@@ -78,6 +96,7 @@ class DiffViewerViewController: NSViewController {
 		refreshView()
 	}
 	
+	
 	// MARK: - Setup
 	
 	private func refreshView(updateCommitStatus:Bool = true) {
@@ -87,30 +106,46 @@ class DiffViewerViewController: NSViewController {
 			self.updateCommitStatus()
 		}
 		
+		// All views to enable
 		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton]
-		let state = vc.hasVersionControl()
+		// A subset of views that should be enabled for mixed state (not full VC, just external files)
+		let mixedStateViews = [textView, otherVersionMenu, generateRevisionsButton]
+		let viewsToHideInMixedState = [currentVersionMenu, statusView]
 		
-		versionControlNotificationView?.isHidden = state
-		statusView?.isHidden = !state
-		textView?.isHidden = !state
-		actionTabs?.isHidden = !state
+		let hasVersionControl = vc.hasVersionControl() // Full version control available
+		let mixedState = externalFiles.count > 0 // Some version controls available (no VC, only an external file loaded)
+		
+		versionControlNotificationView?.isHidden = hasVersionControl || mixedState
+		statusView?.isHidden = !hasVersionControl
+		textView?.isHidden = !hasVersionControl && !mixedState
+		actionTabs?.isHidden = !hasVersionControl
 		
 		for view in viewsToEnable {
 			guard let ctrl = view as? NSControl else { continue }
-			ctrl.isEnabled = state
+			ctrl.isEnabled = hasVersionControl
+			
+			if mixedStateViews.contains(ctrl) {
+				ctrl.isEnabled = hasVersionControl || mixedState
+			}
+			if mixedState, !hasVersionControl, viewsToHideInMixedState.contains(ctrl) {
+				ctrl.isHidden = true
+			}
 		}
 		
-		// Certain things are only available for current timestamp
-		restoreButton?.isEnabled = ((restoreButton?.isEnabled ?? false) && state && modifiedTimestamp == "current")
-		generateRevisionsButton?.isEnabled = ((generateRevisionsButton?.isEnabled ?? false) && state && modifiedTimestamp == "current")
-
+		// Certain things are only available for current timestamp.
+		// You can't restore or generate markers for anything else than the latest version.
+		restoreButton?.isEnabled = (
+			(restoreButton?.isEnabled ?? false) && hasVersionControl && modifiedTarget.timestamp == "current") &&
+			originalTarget.URL == nil
+		
+		generateRevisionsButton?.isEnabled = mixedState || ((generateRevisionsButton?.isEnabled ?? false) && hasVersionControl && modifiedTarget.timestamp == "current")
 	}
 	
 	private func setupTextView() {
 		guard let delegate = delegate, let textView = textView else { return }
 
 		textView.setup(editorDelegate: delegate)
-		textView.backgroundColor = ThemeManager.shared().backgroundColor
+		textView.backgroundColor = if self.view.effectiveAppearance == NSAppearance(named: .aqua) { ThemeManager.shared().backgroundColor.lightColor } else { ThemeManager.shared().backgroundColor.darkColor! }
 		
 		// Set up custom scroller
 		if let scrollView = textView.enclosingScrollView {
@@ -121,6 +156,7 @@ class DiffViewerViewController: NSViewController {
 			scrollView.hasVerticalScroller = true
 		}
 	}
+	
 	
 	// MARK: - Version control actions
 	
@@ -150,7 +186,7 @@ class DiffViewerViewController: NSViewController {
 			
 			// After committing, select the latest commit to be displayed
 			if let latest = vc.latestTimestamp() {
-				self?.originalTimestamp = latest
+				self?.originalTarget = VersionItem(timestamp: latest)
 			}
 			
 			self?.populateVersions()
@@ -165,8 +201,8 @@ class DiffViewerViewController: NSViewController {
 	
 	@IBAction func revertToCurrentVersion(_ sender:Any?) {
 		guard let delegate, let vc, let window = view.window else { return }
-		let revertedVersion = self.originalTimestamp
-		let timestamp = formatTimestamp(revertedVersion)
+		let revertedVersion = self.originalTarget
+		let timestamp = formatTimestamp(revertedVersion.timestamp)
 		
 		let alert = NSAlert()
 		alert.messageText = "Restore Version"
@@ -177,7 +213,7 @@ class DiffViewerViewController: NSViewController {
 		alert.beginSheetModal(for: window) { response in
 			guard response == .alertFirstButtonReturn else { return }
 			
-			let text = vc.revert(to: revertedVersion)
+			let text = vc.revert(to: revertedVersion.timestamp)
 			delegate.revert(toText: text)
 			self.close(nil)
 		}
@@ -190,27 +226,30 @@ class DiffViewerViewController: NSViewController {
 		guard let vc = vc else { return }
 		
 		addTimestampMenuItems(menu: currentVersionMenu, versionControl: vc)
-		addTimestampMenuItems(menu: otherVersionMenu, versionControl: vc)
+		addTimestampMenuItems(menu: otherVersionMenu, versionControl: vc, allowAddingExternalFiles: true)
 		
-		currentVersionMenu?.selectCommit(modifiedTimestamp)
-		otherVersionMenu?.selectCommit(originalTimestamp)
+		currentVersionMenu?.selectCommit(modifiedTarget)
+		otherVersionMenu?.selectCommit(originalTarget)
 	}
 	
-	private func addTimestampMenuItems(menu: DiffTimestampMenu?, versionControl: BeatVersionControl) {
+	private func addTimestampMenuItems(menu: DiffTimestampMenu?, versionControl: BeatVersionControl, allowAddingExternalFiles:Bool = false) {
 		guard let menu = menu else { return }
+		let hasVC = if let vc, vc.hasVersionControl() { true } else { false }
 		
 		menu.removeAllItems()
 		
 		// Add base item
-		let baseItem = DiffTimestampMenuItem(title: formatTimestamp("base"), action: nil, keyEquivalent: "")
-		baseItem.timestamp = "base"
-		menu.menu?.addItem(baseItem)
+		if (hasVC) {
+			let baseItem = DiffTimestampMenuItem(title: formatTimestamp("base"), action: nil, keyEquivalent: "")
+			baseItem.version = VersionItem(timestamp: "base")
+			menu.menu?.addItem(baseItem)
+		}
 		
 		// Add versioned items
 		for commit in versionControl.commits() {
 			guard let timestamp = commit["timestamp"] as? String else { return }
 			let item = DiffTimestampMenuItem(title: formatTimestamp(timestamp), action: nil, keyEquivalent: "")
-			item.timestamp = timestamp
+			item.version = VersionItem(timestamp: timestamp)
 			
 			if #available(macOS 14.4, *) {
 				if let message = commit["message"] as? String {
@@ -222,9 +261,33 @@ class DiffViewerViewController: NSViewController {
 		}
 		
 		// Add item for current version
-		let currentItem = DiffTimestampMenuItem(title: formatTimestamp("current"), action: nil, keyEquivalent: "")
-		currentItem.timestamp = "current"
-		menu.menu?.addItem(currentItem)
+		if (hasVC) {
+			let currentItem = DiffTimestampMenuItem(title: formatTimestamp("current"), action: nil, keyEquivalent: "")
+			currentItem.version = VersionItem(timestamp: "current")
+			menu.menu?.addItem(currentItem)
+		}
+		
+		// Add any external files last
+		if !externalFiles.isEmpty {
+			// Add a separator if there actual commits were added before this
+			if let items = menu.menu?.items, items.count > 0 {
+				menu.menu?.addItem(NSMenuItem.separator())
+			}
+			for url in externalFiles {
+				let filename = url.deletingPathExtension().lastPathComponent
+				let item = DiffTimestampMenuItem(title: filename, action: nil, keyEquivalent: "")
+				item.version = VersionItem(URL: url)
+				
+				menu.menu?.addItem(item)
+			}
+		}
+		
+		// Add a separator if there actual commits were added before this
+		if allowAddingExternalFiles {
+			if let items = menu.menu?.items, items.count > 0 { menu.menu?.addItem(NSMenuItem.separator()) }
+			let addFileItem = NSMenuItem(title: BeatLocalization.localizedString(forKey: "versionControl.addExternalFile"), action: #selector(openExternalFile), keyEquivalent: "")
+			menu.menu?.addItem(addFileItem)
+		}
 	}
 	
 	private func formatTimestamp(_ timestamp: String) -> String {
@@ -253,17 +316,40 @@ class DiffViewerViewController: NSViewController {
 	
 	@IBAction func selectVersion(_ sender: NSPopUpButton?) {
 		guard let button = sender,
-			  let menuItem = button.selectedItem as? DiffTimestampMenuItem,
-			  let timestamp = menuItem.timestamp.isEmpty ? button.selectedItem?.title : menuItem.timestamp
+			  let menuItem = button.selectedItem as? DiffTimestampMenuItem
+			  //let timestamp = menuItem.version.timestamp.isEmpty ? button.selectedItem?.title : menuItem.version.timestamp // wtf is this?
 		else { return }
 		
+		let version = menuItem.version
+		
 		if sender == currentVersionMenu {
-			modifiedTimestamp = timestamp
+			modifiedTarget = version
 		} else {
-			originalTimestamp = timestamp
+			originalTarget = version
 		}
 		
 		refreshContent()
+	}
+	
+	@IBAction func openExternalFile(_ sender: AnyObject?) {
+		let openDialog = NSOpenPanel()
+		if #available(macOS 11.0, *) {
+			if let fountain = UTType(filenameExtension: "fountain") { openDialog.allowedContentTypes.append(fountain) }
+			if let txt = UTType(filenameExtension: "txt") { openDialog.allowedContentTypes.append(txt) }
+		} else {
+			openDialog.allowedFileTypes = ["fountain", "txt"]
+		}
+		
+		openDialog.begin { response in
+			guard response == .OK, let url = openDialog.url else { return }
+			self.externalFiles.append(url)
+			
+			// Set the original target to the URL immediately, so the UI doesn't panic.
+			self.originalTarget = VersionItem(URL: url)
+			
+			self.populateVersions()
+			self.refreshContent()
+		}
 	}
 	
 	/// Helper method to quickly select the latest commit at startup
@@ -272,8 +358,8 @@ class DiffViewerViewController: NSViewController {
 		
 		let latest = vc.latestTimestamp() ?? "base"
 		
-		modifiedTimestamp = "current"
-		originalTimestamp = latest
+		modifiedTarget = VersionItem(timestamp: "current")
+		originalTarget = VersionItem(timestamp: latest)
 		
 		refreshContent()
 		
@@ -303,23 +389,43 @@ class DiffViewerViewController: NSViewController {
 		statusView?.update(uncommitedChanges: uncommitted)
 		commitButton?.isEnabled = uncommitted
 	}
-	
+
+	/// Build both texts for version control
 	private func updateTexts() {
-		// Build texts for version controls
-		originalText = getText(timestamp: originalTimestamp)
-		modifiedText = getText(timestamp: modifiedTimestamp)
+
+		// If we have external files loaded AND NO VC, we need to do some trickery
+		if let vc, !vc.hasVersionControl(), !externalFiles.isEmpty {
+			modifiedTarget = VersionItem(timestamp: "current")
+			// The "original" target has been set by the open dialog, let's hope
+		}
+		
+		originalText = getText(version: originalTarget)
+		modifiedText = getText(version: modifiedTarget)
 	}
 	
-	private func getText(timestamp: String) -> String? {
+	private func getText(version: VersionItem) -> String? {
 		guard let delegate, let vc else {
 			print("Error fetching commit text")
 			return nil
 		}
 		
-		if timestamp == "current" {
-			return delegate.text()
+		if let url = version.URL {
+			// Handle external files first
+			if var text = try? String(contentsOf: url, encoding: .utf8) {
+				let settings = BeatDocumentSettings()
+				let range = settings.readAndReturnRange(text)
+				text = String(text.prefix(range.location))
+				return text
+			} else {
+				return ""
+			}
 		} else {
-			return vc.text(at: timestamp)
+			// This is an internal timestamp
+			if version.timestamp == "current" {
+				return delegate.text()
+			} else {
+				return vc.text(at: version.timestamp)
+			}
 		}
 	}
 	
@@ -466,7 +572,14 @@ class DiffViewerViewController: NSViewController {
 	func generateRevisions(generation:Int) {
 		guard let vc else { return }
 		
-		vc.generateRevisedRanges(from: self.originalTimestamp, generation: generation)
+		if let _ = originalTarget.URL, let text = originalText, text.count > 0 {
+			// This is an external diff file
+			vc.generateRevisedRanges(fromText: text, generation: generation)
+		} else {
+			// This is a timestamp from internal VC
+			vc.generateRevisedRanges(from: self.originalTarget.timestamp, generation: generation)
+		}
+		
 		self.close(nil)
 	}
 	
@@ -483,9 +596,9 @@ class DiffViewerViewController: NSViewController {
 		close(sender)
 	}
 	
-	func showVersion(originalTimestamp: String) {
-		self.originalTimestamp = originalTimestamp
-		otherVersionMenu?.selectCommit(originalTimestamp)
+	fileprivate func showVersion(version: VersionItem) {
+		self.originalTarget = version
+		otherVersionMenu?.selectCommit(version)
 		loadText()
 	}
 	
@@ -570,12 +683,15 @@ class DiffViewerStatusView: NSView {
 }
 
 class DiffTimestampMenu: NSPopUpButton {
-	func selectCommit(_ timestamp: String) {
+	func selectCommit(_ version: VersionItem) {
 		guard let menu = menu else { return }
 		
 		for item in menu.items {
-			if let timestampItem = item as? DiffTimestampMenuItem,
-			   timestampItem.timestamp == timestamp {
+			guard let menuItem = item as? DiffTimestampMenuItem else { continue }
+			let versionItem = menuItem.version
+			
+			if (version.timestamp.count > 0 && versionItem.timestamp == version.timestamp) ||
+				(version.URL != nil && versionItem.URL == version.URL) {
 				select(item)
 				break
 			}
@@ -584,7 +700,7 @@ class DiffTimestampMenu: NSPopUpButton {
 }
 
 class DiffTimestampMenuItem: NSMenuItem {
-	var timestamp: String = ""
+	var version:VersionItem = VersionItem()
 }
 
 

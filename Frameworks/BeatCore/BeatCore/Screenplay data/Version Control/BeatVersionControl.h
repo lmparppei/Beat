@@ -56,6 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Automatically generates revised ranges in current document based on the given timestamp
 - (void)generateRevisedRangesFrom:(NSString*)timestamp generation:(NSInteger)generation;
+/// Automatically generates revised ranges in current document based on the given text
+- (void)generateRevisedRangesFromText:(NSString *)oldText generation:(NSInteger)generation;
 
 @end
 

@@ -456,6 +456,36 @@
         }
       }
     },
+    "syv-VT-CoL.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Compare to Another File\"; ObjectID = \"syv-VT-CoL\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Compare to Another File"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertaa toiseen tiedostoon"
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primerjaj z drugo datoteko"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jämför med en annan fil"
+          }
+        }
+      }
+    },
     "Szk-PU-Iek.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Revision markers will be added to where the document has changed compared to the selected commit.\"; ObjectID = \"Szk-PU-Iek\";",
       "extractionState" : "extracted_with_value",

@@ -371,8 +371,13 @@ static NSString* settingSeparator = @"<__SETTINGS__>";
 
 - (void)generateRevisedRangesFrom:(NSString*)timestamp generation:(NSInteger)generation
 {
-    NSString* currentText = self.delegate.text;
     NSString* oldText = [self textWithoutEncodedSettingsAt:timestamp];
+    [self generateRevisedRangesFromText:oldText generation:generation];
+}
+
+- (void)generateRevisedRangesFromText:(NSString *)oldText generation:(NSInteger)generation
+{
+    NSString* currentText = self.delegate.text;
     
     NSArray<Diff*>* diffs = [self diffsFrom:currentText with:oldText];
     
