@@ -128,6 +128,11 @@
                     lineStr = [self renderLine:line ofBlock:block dualDialogueElement:block.dualDialogueElement firstElementOnPage:false];
                 }
                 
+                // Do a sweep for emojis
+                if (lineStr.string.emo_containsEmoji) {
+                    lineStr = [self emojiFontsFor:lineStr];
+                }
+                
                 [attrStr appendAttributedString:lineStr];
             } }
             
@@ -748,9 +753,6 @@
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue
 {
     if (line == nil) return @{};
-    if (line.type == dualDialogue) {
-        NSLog(@"Dual dialogue: %@ // should be: %@", line, isDualDialogue ? @"yes" : @"no");
-    }
     
     @synchronized (self.lineTypeAttributes) {
         BeatPaperSize paperSize = self.settings.paperSize;
@@ -935,6 +937,34 @@
     if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
         
     return blockWidth;
+}
+
+- (NSAttributedString*)emojiFontsFor:(NSAttributedString*)attrStr
+{
+    NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:attrStr];
+#if TARGET_OS_OSX
+    if (@available(macOS 10.15, *)) {
+#endif
+        NSArray* ranges = attrStr.string.emo_emojiRanges;
+        BXFont* emojiFont = BeatFontManager.shared.defaultFonts.emojiFont;
+        
+        for (NSValue* v in ranges) {
+            NSRange range = v.rangeValue;
+            if (NSMaxRange(range) > attrStr.length) continue;
+            
+            NSDictionary* attrs = [attrStr attributesAtIndex:range.location effectiveRange:0];
+            BXFont* font = attrs[NSFontAttributeName];
+            
+            BXFont* eFont = [emojiFont fontWithSize:font.pointSize];
+            
+            if (eFont != nil)
+                [result addAttribute:NSFontAttributeName value:eFont range:range];
+        }
+#if TARGET_OS_OSX
+    }
+#endif
+    
+    return result;
 }
 
 @end
