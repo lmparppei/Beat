@@ -39,7 +39,13 @@ class iOSDocument: UIDocument {
     }
 	
 	override func save(to url: URL, for saveOperation: UIDocument.SaveOperation) async -> Bool {
-		return await super.save(to: url, for: saveOperation)
+		let success = await super.save(to: url, for: saveOperation)
+		let backup = BeatBackup.backup(documentURL: url, name: self.fileURL.deletingPathExtension().lastPathComponent)
+		if !backup {
+			print("Backup failed")
+		}
+		
+		return success
 	}
 		
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
@@ -60,7 +66,7 @@ class iOSDocument: UIDocument {
 		self.userActivity?.resignCurrent()
 		return await super.close()
 	}
-	
+		
 	@objc func rename(newName:String) {
 		
 	}

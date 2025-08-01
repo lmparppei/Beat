@@ -175,10 +175,25 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		self.present(alert, animated: true)
 	}
 	
-	func importError() {
-		let alert = UIAlertController(title: "Import Error", message: "Something went wrong when importing the file. This can happen with documents in iCloud, so first try moving the file to your local device.\n\nIf the problem persists, contact the developer at beat@beat-app.fi.", preferredStyle: .alert)
+	public func restoreBackup(of fileURL:URL, at backupURL:URL) {
+		importDocument(at: backupURL, nextToDocumentAt: fileURL, mode: .copy) { url, error in
+			if url != nil {
+				self.presentDocument(at: url!)
+			}
+			if error != nil {
+				self.displayError(title: "Backup Restoration Error", message: "Something went wrong when restoring the backup. If the current iTry moving the original file on your local device.", preferredStyle: .alert)
+			}
+		}
+	}
+	
+	func displayError(title:String, message:String, preferredStyle:UIAlertController.Style) {
+		let alert = UIAlertController(title: title, message: message, preferredStyle: preferredStyle)
 		alert.addAction(UIAlertAction(title: "OK", style: .default))
 		self.present(alert, animated: true)
+	}
+	
+	func importError() {
+		displayError(title: "Import Error", message: "Something went wrong when importing the file. This can happen with documents in iCloud, so first try moving the file to your local device.\n\nIf the problem persists, contact the developer at beat@beat-app.fi.", preferredStyle: .alert)
 	}
 	
 	func presentFountain(at documentURL:URL) {
