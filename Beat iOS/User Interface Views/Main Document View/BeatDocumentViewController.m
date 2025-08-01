@@ -68,7 +68,6 @@
 	return self;
 }
 
-
 - (BXWindow*)documentWindow {
 	return self.view.window;
 }
@@ -131,6 +130,9 @@
 	[super viewDidLoad];
 	
 	if (!self.documentIsLoading) return;
+	
+	// Let the app state know this is the current document view controller
+	BeatAppState.shared.documentController = self;
 	
 	//[self appearanceChanged:nil];
 	
@@ -221,6 +223,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+	BeatAppState.shared.documentController = nil;
+	
 	[super viewWillDisappear:animated];
 	editorWasActive = self.textView.isFirstResponder;
 	[self.textView resignFirstResponder];
@@ -370,6 +374,11 @@
 	[self ensureLayout];
 }
 
+- (void)updateTheme
+{
+	[self updateUIColors];
+}
+
 
 #pragma mark - Text view
 
@@ -381,6 +390,11 @@
 
 
 #pragma mark - Application data and file access
+
+- (NSURL *)fileURL
+{
+	return _document.fileURL;
+}
 
 - (NSString*)fileNameString {
 	return _document.fileURL.lastPathComponent.stringByDeletingPathExtension;
@@ -426,7 +440,7 @@
 	
 	bool isDark = delegate.isDark;
 	UIUserInterfaceStyle effectiveStyle = UITraitCollection.currentTraitCollection.userInterfaceStyle;
-	
+		
 	self.overrideUserInterfaceStyle = 0;
 	if (isDark && effectiveStyle != UIUserInterfaceStyleDark) {
 		self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
@@ -435,11 +449,13 @@
 	}
 	[self.view setNeedsDisplay];
 	
+	[self.outlineView setupColors];
+	self.sidebar.backgroundColor = ThemeManager.sharedManager.outlineBackground;
+	
 	self.scrollView.backgroundColor = (isDark) ?  ThemeManager.sharedManager.marginColor.darkColor : ThemeManager.sharedManager.marginColor.lightColor;
 	self.textView.backgroundColor = (isDark) ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
 	
 	[self.formatting refreshRevisionTextColors];
-	
 }
 
 
