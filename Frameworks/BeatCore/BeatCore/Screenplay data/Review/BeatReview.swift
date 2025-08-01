@@ -30,6 +30,20 @@ public protocol BeatReviewInterface {
 @objc public class BeatReviewItem:NSObject, NSCopying, NSCoding {
 	@objc public var string:NSString! = ""
 	
+    @objc public var keywords:[String] {
+        if string.range(of: "#").location == NSNotFound { return [] }
+        
+        let pattern = "#(\\w+)"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [])
+            let results = regex.matches(in: self.string as String, options: [], range: NSRange(location: 0, length: self.string.length))
+            return results.map { self.string.substring(with: $0.range(at: 1)) }
+        } catch {
+            print("Regex error: \(error)")
+            return []
+        }
+    }
+    
 	@objc public var emptyReview:Bool {
 		get {
 			if (string.length == 0) {
