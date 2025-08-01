@@ -84,6 +84,7 @@ import OSLog
     // MARK: style provider interface
     public func shouldPrintSections() -> Bool { return self.document._visibleElements.contains(.section) }
     public func shouldPrintSynopses() -> Bool { return self.document._visibleElements.contains(.synopse) }
+    @objc public func overrideParagraphPaginationMode() -> Bool { return self.document.overrideParagraphPaginationMode }
 }
 
 

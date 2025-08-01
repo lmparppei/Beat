@@ -76,6 +76,8 @@ extern NSString* const BeatSettingAddTitlePageByDefault;
 
 extern NSString* const BeatSettingRelativeOutlineHeights;
 
+extern NSString* const BeatSettingParagraphPaginationMode;
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 

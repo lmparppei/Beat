@@ -922,4 +922,13 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
     return self.titlePageContent;
 }
 
+- (BeatParagraphPaginationMode)paragraphPaginationMode
+{
+    if (!self.styles.overrideParagraphPaginationMode) {
+        return (BeatParagraphPaginationMode)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingParagraphPaginationMode];
+    } else {
+        return BeatParagraphPaginationModeDefault;
+    }
+}
+
 @end

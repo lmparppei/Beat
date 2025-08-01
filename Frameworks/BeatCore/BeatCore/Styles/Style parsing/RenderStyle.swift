@@ -84,7 +84,8 @@ struct PaginationRule {
         "skip-if-preceded-by": .lineType,
         "reformat-following-paragraph-after-type-change": .boolType,
         "disable-automatic-paragraphs": .boolType,
-        "pagination-mode": .integerType
+        "pagination-mode": .integerType,
+        "overrideParagraphPaginationMode": .boolType
     ] }
 
     @objc public var name:String = ""
@@ -132,6 +133,7 @@ struct PaginationRule {
     @objc public var lineFragmentMultiplier = 1.0;
     
     @objc public var paginationMode:Int = -1
+    @objc public var overrideParagraphPaginationMode:Bool = false
     
     /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
     @objc public var forcedMargin = false

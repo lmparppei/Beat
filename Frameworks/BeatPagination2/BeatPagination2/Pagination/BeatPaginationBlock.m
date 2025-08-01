@@ -369,10 +369,59 @@
     return [self splitParagraphWithRemainingSpace:remainingSpace line:nil];
 }
 
+- (NSInteger)getOverflowLength:(Line *)line lineHeight:(CGFloat)lineHeight remainingSpace:(CGFloat)remainingSpace string:(NSString *)str {
+    // For some reason we need to retain the text storage like this after macOS Sonoma. No idea why.
+    NSTextStorage* textStorage;
+    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
+    NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
+    
+    // We'll get the number of lines rather than calculating exact size in NSTextField
+    __block NSInteger numberOfLines = 0;
+    __block CGFloat pageBreakPos = 0;
+    __block NSInteger length = 0;
+    
+    [lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+        numberOfLines++;
+        
+        if (numberOfLines < remainingSpace / lineHeight) {
+            NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+            length += charRange.length;
+            pageBreakPos = numberOfLines * lineHeight;
+        } else {
+            *stop = true;
+        }
+    }];
+    return length;
+}
+
+- (CGFloat)getFullHeight:(Line *)line lineHeight:(CGFloat)lineHeight remainingSpace:(CGFloat)remainingSpace string:(NSString *)str numberOfLines:(NSInteger*)actualNumberOfLines
+{
+    // For some reason we need to retain the text storage like this after macOS Sonoma. No idea why.
+    NSTextStorage* textStorage;
+    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
+    NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
+    
+    // We'll get the number of lines rather than calculating exact size in NSTextField
+    __block NSInteger numberOfLines = 0;
+    __block NSInteger length = 0;
+    
+    [lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+        numberOfLines++;
+        
+        NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+        length += charRange.length;
+    }];
+    
+    *actualNumberOfLines = numberOfLines;
+    return length;
+}
+
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace line:(Line*)line
 {
     // If no line is set, let's use the first item
     if (line == nil) line = self.lines.firstObject;
+    
+    BeatParagraphPaginationMode mode = self.delegate.paragraphPaginationMode;
     
     // Line height and render style for this element
     CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
@@ -390,48 +439,41 @@
     
     // This is a hack for some weird situations
     remainingSpace -= 1.0;
-	
-	// Create the layout manager for remaining space calculation.
-    // For reason or another, macOS Sonoma stopped retaining the text storage, and we need to explicitly create it here.
-    NSTextStorage* textStorage;
-    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
-    NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
-	
-    // We'll get the number of lines rather than calculating exact size in NSTextField
-    __block NSInteger numberOfLines = 0;
-    __block CGFloat pageBreakPos = 0;
-    __block NSInteger length = 0;
+
+    bool breakParagraph = (mode == BeatParagraphPaginationModeDefault && line.type == action);
     
-    
-	[lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
-		numberOfLines++;
-        //NSRange cRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-        
-		if (numberOfLines < remainingSpace / lineHeight) {
-			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-			length += charRange.length;
-			pageBreakPos = numberOfLines * lineHeight;
-		} else {
-			*stop = true;
-		}
-	}];
-    
-    // If there's something to retain, let's split the string.
-    if (length > 0) {
-        // In some cases length can be longer than the actual string, which... I don't know.
-        // I think this can happen in non-monospaced fonts, but not sure. Let's avoid this.
-        if (length > str.length) length -= length - str.length;
-        retain = [str substringToIndex:length];
+    // For some pagination modes, we might need to stop here
+    if (mode != BeatParagraphPaginationModeDefault && line.type == action) {
+        // This has to be broken, because it's too big to fit even on the next page
+        if (self.height > self.delegate.maxPageHeight - 1.0) {
+            breakParagraph = true;
+        }
     }
-	
-	NSArray *splitElements = [line splitAndFormatToFountainAt:retain.length];
-	Line *prePageBreak = splitElements[0];
-	Line *postPageBreak = splitElements[1];
-	
-    NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
+
+    if (breakParagraph) {
+        // Default mode paginates paragraphs pretty indiscriminately
+        NSInteger length = [self getOverflowLength:line lineHeight:lineHeight remainingSpace:remainingSpace string:str];
         
-    BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
-	return @[@[prePageBreak], onNextPage, pageBreak];
+        // If there's something to retain, let's split the string.
+        if (length > 0) {
+            // In some cases length can be longer than the actual string, which... I don't know.
+            // I think this can happen in non-monospaced fonts, but not sure. Let's avoid this.
+            if (length > str.length) length -= length - str.length;
+            retain = [str substringToIndex:length];
+        }
+        
+        NSArray *splitElements = [line splitAndFormatToFountainAt:retain.length];
+        Line *prePageBreak = splitElements[0];
+        Line *postPageBreak = splitElements[1];
+        
+        NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
+        
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
+        return @[@[prePageBreak], onNextPage, pageBreak];
+    } else {
+        BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Avoid paragraph split"];
+        return @[@[], @[line], pageBreak];
+    }
 }
 
 - (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
@@ -826,10 +868,12 @@
 
 #pragma mark - Rendering blocks to attributed strings
 
-- (NSAttributedString*)attributedString {
+- (NSAttributedString*)attributedString
+{
 	return [self attributedStringForFirstElement:false];
 }
-- (NSAttributedString*)attributedStringForFirstElementOnPage {
+- (NSAttributedString*)attributedStringForFirstElementOnPage
+{
 	return [self attributedStringForFirstElement:true];
 }
 

@@ -101,6 +101,8 @@ NSString* const BeatSettingAddTitlePageByDefault        = @"addTitlePageByDefaul
 
 NSString* const BeatSettingRelativeOutlineHeights       = @"relativeOutlineHeights";
 
+NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationMode";
+
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -185,7 +187,9 @@ NSString* const BeatSettingRelativeOutlineHeights       = @"relativeOutlineHeigh
         
         BeatSettingAddTitlePageByDefault: @[BeatSettingAddTitlePageByDefault, @NO],
         
-        BeatSettingRelativeOutlineHeights: @[BeatSettingRelativeOutlineHeights, @NO]
+        BeatSettingRelativeOutlineHeights: @[BeatSettingRelativeOutlineHeights, @NO],
+        
+        BeatSettingParagraphPaginationMode: @[BeatSettingParagraphPaginationMode, @0]
 	};
 }
 
