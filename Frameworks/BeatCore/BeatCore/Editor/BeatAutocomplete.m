@@ -65,7 +65,7 @@
 	// Collect character name suggestions from running plugins
 #if !TARGET_OS_IOS
 	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
-		id<BeatAutocompletionProvider> plugin = _delegate.runningPlugins[pluginName];
+		id<BeatAutocompletionProvider> plugin = (id<BeatAutocompletionProvider>)_delegate.runningPlugins[pluginName];
 		[_characterNames addObjectsFromArray:[plugin completionsForCharacters]];
 	}
 #endif
@@ -100,7 +100,8 @@
 	}
 	
 	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
-		id<BeatAutocompletionProvider> plugin = _delegate.runningPlugins[pluginName];
+        // Force cast required for conformance here.
+		id<BeatAutocompletionProvider> plugin = (id<BeatAutocompletionProvider>)_delegate.runningPlugins[pluginName];
 		[_sceneHeadings addObjectsFromArray:[plugin completionsForSceneHeadings]];
 	}
 
