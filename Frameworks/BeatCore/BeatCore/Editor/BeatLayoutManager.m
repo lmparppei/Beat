@@ -371,11 +371,12 @@
                 if (bgColors[@"review"] == nil) {
                     BXColor *reviewColor = BeatReview.reviewColor;
                     bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.4];
+                    bgColors[@"reviewUnderline"] = [reviewColor colorWithAlphaComponent:.6];
                 }
                 BXColor *color = bgColors[@"review"];
+                BXColor *underlineColor = bgColors[@"reviewUnderline"];
                 [color setFill];
 
-                
                 NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
                 CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
                 bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
@@ -388,8 +389,11 @@
                     fullRect.origin.x = inset.width + padding;
                     fullRect.size.width = self.textView.textContainer.size.width - padding * 2;
                 }
-                
                 BXRectFill(fullRect);
+                
+                [underlineColor setFill];
+                CGRect underline = CGRectMake(fullRect.origin.x, fullRect.origin.y + fullRect.size.height - 2, fullRect.size.width, 2);
+                BXRectFill(underline);
             }
             
             if (tag != nil && showTags) {
