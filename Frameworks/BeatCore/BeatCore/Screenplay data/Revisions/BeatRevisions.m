@@ -281,7 +281,17 @@
         }
     }];
     
-    return ranges;
+    // Let's not save an empty dict if there are no values.
+    bool empty = true;
+    for (NSString* key in ranges.allKeys) {
+        NSArray* values = ranges[key];
+        if (values.count > 0) {
+            empty = false;
+            break;
+        }
+    }
+    
+    return empty ? @{} : ranges;
 }
 
 /// Returns serialized ranges for current document. You can use these values either for saving to document settings or in plugins etc.
