@@ -51,9 +51,9 @@ static NSString *macroSymbolClose = @"}}";
 #pragma mark - Validate editor action items (macOS)
 
 #if !TARGET_OS_IOS
--(BOOL)validateMenuItem:(NSMenuItem *)menuItem {
-    if (!_delegate.editorTabVisible) return NO;
-    else return YES;
+-(BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    return _delegate.editorTabVisible;
 }
 #endif
 

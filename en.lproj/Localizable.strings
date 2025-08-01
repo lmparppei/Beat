@@ -323,3 +323,13 @@
 
 "versionControl.base" = "Base";
 "versionControl.current" = "Current";
+"versionControl.addExternalFile" = "Open File...";
+"versionControl.noVersionControl" = "No Version Control";
+
+"pagination.paragraphPaginationMode.default" = "Break Actions Across Pages (Default)";
+"pagination.paragraphPaginationMode.avoid" = "Avoid Breaking Actions";
+
+"dataHealth.warning.title" = "Ranges Out Of Sync";
+"dataHealth.warning.informative" = "The file has revisions, reviews or tags, which have been moved out of place, probably because the file was edited outside of Beat.\n\nIt's not dangerous, but previous ranges might not make sense anymore";
+"dataHealth.warning.ignore" = "Ignore";
+"dataHealth.warning.remove" = "Remove All Ranges";

@@ -20,7 +20,6 @@ import AppKit
 class BeatAutomaticAppearanceView:NSView {
 	@IBInspectable var themePropertyToFollow:String = "outlineBackground"
 	
-	// This is a flag for older macOS versions
 	@objc var appearAsDark:Bool {
 		let delegate = NSApplication.shared.delegate as? BeatAppDelegate
 		let dark = delegate?.isDark() ?? false

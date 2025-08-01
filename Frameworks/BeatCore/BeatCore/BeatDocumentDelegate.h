@@ -24,6 +24,8 @@
 
 #pragma mark - Base document stuff
 
+@property (nonatomic, readonly) NSURL* _Nullable fileURL;
+
 /// Create a document file
 - (NSString* _Nullable)createDocumentFileWithAdditionalSettings:(NSDictionary* _Nullable)additionalSettings excludingSettings:(NSArray<NSString*>* _Nullable)excludedKeys;
 

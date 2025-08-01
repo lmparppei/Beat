@@ -143,9 +143,9 @@
 	return nil;
 }
 
-- (bool)widgetsVisible {
-	if (self.widgetView.subviews.count > 0) return YES;
-	else return NO;
+- (bool)widgetsVisible
+{
+	return (self.widgetView.subviews.count > 0);
 }
 
 - (void)animateTo:(NSInteger)x

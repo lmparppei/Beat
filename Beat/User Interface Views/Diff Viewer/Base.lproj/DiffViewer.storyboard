@@ -132,11 +132,11 @@
                                 </connections>
                             </segmentedControl>
                             <customView hidden="YES" id="rLS-uB-DmS">
-                                <rect key="frame" x="277" y="226" width="290" height="121"/>
+                                <rect key="frame" x="277" y="219" width="290" height="162"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pth-cW-oM5">
-                                        <rect key="frame" x="-2" y="100" width="294" height="21"/>
+                                        <rect key="frame" x="-2" y="141" width="294" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No Version Control" id="k5W-Cp-2rm">
                                             <font key="font" metaFont="systemLight" size="18"/>
@@ -145,7 +145,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7ei-HJ-z0W">
-                                        <rect key="frame" x="10" y="37" width="262" height="48"/>
+                                        <rect key="frame" x="10" y="78" width="262" height="48"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" alignment="center" title="Version control is not enabled for this document. Note that this is still a highly experimental feature." id="BoU-Np-mw7">
                                             <font key="font" metaFont="smallSystem"/>
@@ -154,7 +154,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9wt-Ww-lbl">
-                                        <rect key="frame" x="62" y="-7" width="166" height="32"/>
+                                        <rect key="frame" x="62" y="34" width="166" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="push" title="Begin Version Control" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ORJ-gc-iyn">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -162,6 +162,17 @@
                                         </buttonCell>
                                         <connections>
                                             <action selector="beginVersionControl:" target="bU7-R8-ocO" id="5us-6H-DZL"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zIw-U2-2lD">
+                                        <rect key="frame" x="55" y="2" width="182" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Compare to Another File" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="syv-VT-CoL">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="openExternalFile:" target="bU7-R8-ocO" id="EAg-0h-ahL"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -190,7 +201,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LMx-W8-yTO">
-                                                            <rect key="frame" x="100" y="-2" width="27" height="44"/>
+                                                            <rect key="frame" x="100" y="-1.5" width="27.5" height="44"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="exclamationmark.triangle.fill" catalog="system" id="GB5-bh-aTf"/>
                                                             <color key="contentTintColor" red="0.98431372549999996" green="0.75686274509999996" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -373,10 +384,10 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="arrow.left.arrow.right" catalog="system" width="17" height="17"/>
-        <image name="asterisk" catalog="system" width="11" height="13"/>
+        <image name="arrow.left.arrow.right" catalog="system" width="16" height="17"/>
+        <image name="asterisk" catalog="system" width="12" height="13"/>
         <image name="clock.arrow.circlepath" catalog="system" width="14" height="13"/>
-        <image name="exclamationmark.triangle.fill" catalog="system" width="16" height="15"/>
-        <image name="text.justify.left" catalog="system" width="17" height="13"/>
+        <image name="exclamationmark.triangle.fill" catalog="system" width="17" height="15"/>
+        <image name="text.justify.left" catalog="system" width="16" height="13"/>
     </resources>
 </document>

@@ -22,7 +22,7 @@ import Foundation
 	@IBOutlet weak var pageNumberingModeDefault:NSButton?
 	@IBOutlet weak var pageNumberingModeScene:NSButton?
 	@IBOutlet weak var pageNumberingModePageBreak:NSButton?
-	
+		
 	@IBOutlet weak var novelSettings:NSView?
 	@IBOutlet weak var lineHeight:NSSegmentedControl?
 	@IBOutlet weak var contentAlignment:NSSegmentedControl?
@@ -82,7 +82,7 @@ import Foundation
 		pageNumberingModeDefault?.isEnabled = (delegate.styles.document.paginationMode == -1)
 		pageNumberingModeScene?.isEnabled = (delegate.styles.document.paginationMode == -1)
 		pageNumberingModePageBreak?.isEnabled = (delegate.styles.document.paginationMode == -1)
-		
+				
 		// Novel Mode settings
 		novelSettings?.isHidden = delegate.styles.name != "Novel"
 			
@@ -124,7 +124,7 @@ import Foundation
 			if pageNumberingModeDefault?.state == .on { delegate.documentSettings.remove(DocSettingPageNumberingMode) }
 			else if pageNumberingModeScene?.state == .on { delegate.documentSettings.set(DocSettingPageNumberingMode, as: 1)}
 			else if pageNumberingModePageBreak?.state == .on { delegate.documentSettings.set(DocSettingPageNumberingMode, as: 2)}
-			
+						
 			delegate.pageSize = BeatPaperSize(rawValue: pageSize?.indexOfSelectedItem ?? 0) ?? .A4
 			
 			if lineHeight?.selectedSegment == 0 { delegate.documentSettings.remove(DocSettingNovelLineHeightMultiplier) }
@@ -156,13 +156,13 @@ import Foundation
 			pageNumberingMode = mode
 		}
 	}
-	
+		
 	@IBAction func cancel(_ sender:Any?) {
 		if let window {
 			window.sheetParent?.endSheet(window)
 		}
 	}
-	
+		
 	override func cancelOperation(_ sender: Any?) {
 		if let window {
 			window.sheetParent?.endSheet(window)

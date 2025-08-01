@@ -279,3 +279,6 @@
 "tagManager.tab.report" = "Raportit";
 
 "tagManager.windowTitle" = "Tagien hallinta";
+
+"pagination.paragraphPaginationMode.default" = "Sivuta toimintakappaleet (Oletus)";
+"pagination.paragraphPaginationMode.avoid" = "Vältä toiminnan jakamista eri sivuille";

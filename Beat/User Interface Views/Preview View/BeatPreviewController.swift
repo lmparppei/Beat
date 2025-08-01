@@ -33,8 +33,12 @@ import BeatPagination2
 		// We should migrate to a data source model on macOS as well, but let's just cast the view this time
 		if let previewView = self.previewView as? BeatPreviewView {
 			previewView.updatePages(pagination, settings: self.settings, controller: self)
-			self.thumbnailView?.reloadData()
+			//self.thumbnailView?.reloadData()
 		}
+	}
+	
+	public override func didEndRendering() {
+		self.thumbnailView?.reloadData()
 	}
 	
 	@objc override public func scrollToRange(_ range:NSRange) {

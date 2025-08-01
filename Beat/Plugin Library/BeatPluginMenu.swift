@@ -101,7 +101,6 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 			}
 			
 			var displayName = String(plugin.name)
-			print(" -> ",displayName, plugin.type.rawValue)
 			
 			if plugin.type == .ExportPlugin, let _ = displayName.range(of: "Export") {
 				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "export.prefix"), displayName.replacingOccurrences(of: "Export ", with: ""))

@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *script;
 @property (nonatomic) NSString *fountain;
 @property (nonatomic) NSString* errorMessage;
-@property (nonatomic, copy) void (^callback)(_Nullable id);
+@property (nonatomic, copy) void (^callback)(NSString* _Nullable);
 @end
 
 NS_ASSUME_NONNULL_END
