@@ -18,8 +18,9 @@ class BeatStartupScreenViewController: UIViewController {
 
 
 	@IBAction func newDocument(_ sender:Any?) {
-		self.dismiss(animated: true)
-		self.documentBrowser?.newDocument()
+		self.dismiss(animated: true) {
+			self.documentBrowser?.newDocument()
+		}
 	}
 	
 	@IBAction func templates(_ sender:Any?) {
