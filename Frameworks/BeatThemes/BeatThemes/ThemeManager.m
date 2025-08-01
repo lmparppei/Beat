@@ -69,7 +69,25 @@
 }
 
 
-#pragma mark - Loading themems
+#pragma mark - Loading themes
+
+- (NSURL*)themePath
+{
+#if TARGET_OS_OSX
+    // Read user-created theme file
+    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)BXApp.delegate;
+    return [delegate appDataPath:@""];
+#else
+    //let searchPaths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+    NSFileManager* fm = NSFileManager.defaultManager;
+    NSArray<NSURL*>* urls = [fm URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
+    if (![fm fileExistsAtPath:urls.firstObject.path]) {
+        [fm createDirectoryAtPath:urls.firstObject.path withIntermediateDirectories:true attributes:nil error:nil];
+    }
+    NSURL* url = [urls.firstObject URLByAppendingPathComponent:@"Beat"];
+    return url;
+#endif
+}
 
 -(void)loadThemes
 {
@@ -87,14 +105,12 @@
 {
 	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:self.bundlePlistFilePath];
     
-#if !TARGET_OS_IOS
 	NSDictionary *customPlist = [self loadCustomTheme];
 	if (customPlist) {
         // If a custom plist file exists, we'll add the theme to "themes" dictionary in our plist
 		NSMutableArray *themes = contents[THEMES_KEY];
 		[themes addObject:customPlist];
 	}
-#endif
 	
 	return contents;
 }
@@ -102,10 +118,7 @@
 /// Read user-created theme file into a dictionary
 - (NSDictionary*)loadCustomTheme
 {
-	// Read user-created theme file
-    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)BXApp.delegate;
-    
-	NSURL *userUrl = [delegate appDataPath:@""];
+    NSURL* userUrl = self.themePath;
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
@@ -222,10 +235,9 @@
 
 -(void)saveTheme
 {
-#if !TARGET_OS_IOS
 	BeatTheme* defaultTheme = [self defaultTheme];
 	BeatTheme* customTheme = BeatTheme.new;
-    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)NSApp.delegate;
+    NSURL* userUrl = self.themePath;
 	
 	for (NSString *property in BeatTheme.propertyValues) {
 		DynamicColor *currentColor = [self valueForKey:property];
@@ -237,12 +249,9 @@
 	
 	// Convert theme values into a dictionary
 	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
-	
-	NSURL *userUrl = [delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	[themeDict writeToFile:userUrl.path atomically:NO];
-#endif
 }
 
 

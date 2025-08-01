@@ -72,7 +72,8 @@
 
 @implementation ThemeEditor
 
-+ (instancetype)sharedEditor {
++ (instancetype)sharedEditor
+{
 	static ThemeEditor* sharedEditor;
 	if (!sharedEditor) {
 		sharedEditor = [[ThemeEditor alloc] init];
@@ -80,21 +81,23 @@
 	return sharedEditor;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
 	return [super initWithWindowNibName:@"ThemeEditor" owner:self];
 }
 
-- (void)windowDidLoad {
+- (void)windowDidLoad
+{
     [super windowDidLoad];
 	
 	_typesRequiringUpdate = NSMutableArray.new;
 	_changesMade = false;
 	
 	[self loadTheme:ThemeManager.sharedManager.theme];
-	
 }
 
-- (IBAction)cancel:(id)sender {
+- (IBAction)cancel:(id)sender
+{
 	if (_changesMade) {
 		_changesMade = false;
 		[ThemeManager.sharedManager revertToSaved];
@@ -105,21 +108,24 @@
 	[self.window close];
 }
  
-- (IBAction)resetToDefault:(id)sender {
+- (IBAction)resetToDefault:(id)sender
+{
 	if (_changesMade) {
 		_changesMade = false;
 		[self loadDefaults];
 	}
 }
 
-- (void)loadDefaults {
+- (void)loadDefaults
+{
 	[ThemeManager.sharedManager resetToDefault];
 	[ThemeManager.sharedManager loadThemeForAllDocuments];
 	
 	[NSNotificationCenter.defaultCenter postNotification:[NSNotification notificationWithName:@"Reset theme" object:nil]];
 }
 
-- (void)loadTheme:(BeatTheme*)theme {
+- (void)loadTheme:(BeatTheme*)theme
+{
 	[_backgroundLight setColor:theme.backgroundColor.lightColor];
 	[_backgroundDark setColor:theme.backgroundColor.darkColor];
 	[_textLight setColor:theme.textColor.lightColor];
