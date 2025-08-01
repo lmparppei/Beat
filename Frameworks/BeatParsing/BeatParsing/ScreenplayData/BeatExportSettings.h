@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BeatExportStyleProvider
 - (bool)shouldPrintSections;
 - (bool)shouldPrintSynopses;
+- (bool)overrideParagraphPaginationMode;
 @end
 
 @protocol BeatExportSettingDelegate
