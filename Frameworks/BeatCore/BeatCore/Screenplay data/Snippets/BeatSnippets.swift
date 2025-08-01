@@ -5,13 +5,13 @@
 //  Created by Lauri-Matti Parppei on 2.6.2025.
 //
 
-struct BeatSnippet {
-    var title:String
-    var text:String
-    var color:String?
-    var UUID:String?
+public struct BeatSnippet {
+    public var title:String
+    public var text:String
+    public var color:String?
+    public var UUID:String?
     
-    init(dict:[String:String]) {
+    public init(dict:[String:String]) {
         self.title = dict["title"] ?? ""
         self.text = dict["text"] ?? ""
         self.color = dict["color"] ?? ""
@@ -34,15 +34,15 @@ struct BeatSnippet {
     }
 }
 
-class BeatSnippets:NSObject {
+@objc public class BeatSnippets:NSObject {
     weak var editor:BeatEditorDelegate?
     
-    init(editor: BeatEditorDelegate) {
+    public init(editor: BeatEditorDelegate) {
         self.editor = editor
         super.init()
     }
     
-    func library() -> [BeatSnippet] {
+    public func library() -> [BeatSnippet] {
         guard let editor,
               let items = editor.documentSettings.get("Snippets") as? [[String:String]]
         else {
