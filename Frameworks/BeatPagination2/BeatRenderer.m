@@ -254,6 +254,8 @@
     // For headings, add some extra formatting (wrap them in a table and insert scene numbers)
     if (line.type == heading && style.sceneNumber && !self.settings.simpleSceneHeadings) {
         attributedString = [self renderHeading:line content:attributedString firstElementOnPage:firstElementOnPage];
+        // This is an experimental feature to support PDF outlines
+        [attributedString addAttribute:@"HEADING" value:[NSString stringWithFormat:@"%@ %@", line.sceneNumber, line.stringForDisplay.uppercaseString] range:NSMakeRange(0, attributedString.length)];
     }
     
     return attributedString;

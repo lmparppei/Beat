@@ -98,7 +98,7 @@
                             <action selector="selectPaperSize:" target="-2" id="ulM-no-aNV"/>
                         </connections>
                     </button>
-                    <stackView orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" id="oXl-Cd-3PM">
+                    <stackView orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="oXl-Cd-3PM">
                         <rect key="frame" x="364" y="11" width="249" height="24"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                         <beginningViews>

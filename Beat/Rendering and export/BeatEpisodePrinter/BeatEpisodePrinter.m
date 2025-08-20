@@ -19,7 +19,7 @@
 @property (weak) IBOutlet NSTextField *headerText;
 
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
-@property (nonatomic) BeatNativePrinting* printView;
+@property (nonatomic) BeatPrintView* printView;
 
 @property (weak) IBOutlet NSProgressIndicator *progressBar;
 
@@ -271,7 +271,7 @@
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			BeatPrintingOperation operation = (toPDF) ? BeatPrintingOperationToPDF : BeatPrintingOperationToPrint;
 			
-			self.printView = [BeatNativePrinting.alloc initWithWindow:self.window operation:operation settings:settings delegate:nil screenplays:screenplays callback:^(BeatNativePrinting * _Nonnull printing, id _Nullable item) {
+			self.printView = [BeatPrintView.alloc initWithWindow:self.window operation:operation settings:settings delegate:nil screenplays:screenplays callback:^(BeatPrintView * _Nonnull printing, id _Nullable item) {
 				[self close];
 			}];
 

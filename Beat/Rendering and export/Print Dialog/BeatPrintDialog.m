@@ -64,7 +64,7 @@
 
 @property (nonatomic) bool automaticPreview;
 
-@property (nonatomic) NSMutableArray<BeatNativePrinting*>* renderQueue;
+@property (nonatomic) NSMutableArray<BeatPrintView*>* renderQueue;
 
 @property (nonatomic) NSTimer* previewTimer;
 
@@ -206,7 +206,7 @@
 - (void)exportWithType:(BeatPrintingOperation)type
 {
 	// Create a print operation and add it to the render queue.
-	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:self.exportSettings delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+	BeatPrintView* printing = [BeatPrintView.alloc initWithWindow:self.window operation:type settings:self.exportSettings delegate:self.documentDelegate screenplays:nil callback:^(BeatPrintView * _Nonnull operation, NSURL* _Nullable url) {
 		// Remove from queue
 		[self.renderQueue removeObject:operation];
 		[self printingDidFinish];
@@ -253,7 +253,7 @@
 	BeatExportSettings *settings = [self exportSettings];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+		BeatPrintView* operation = [BeatPrintView.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplays:nil callback:^(BeatPrintView * _Nonnull operation, id _Nullable value) {
 			[self.renderQueue removeObject:operation];
 			
 			NSURL* url = (NSURL*)value;

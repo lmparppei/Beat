@@ -7,7 +7,7 @@
 //
 /**
  
- This class  provides a native `NSView`-based  printing component for macOS version of Beat, replacing the old `KWWebView`-based `PrintView`.
+ This class  provides a native `NSView`-based  printing component for macOS version of Beat, replacing the old `WKWebView`-based `PrintView`.
  You need to provide export settings, and a window which owns this operation. If you specify a delegate, screenplay content will be automatically requested from there. Otherwise you need to send a `BeatScreenplay` object.
  
  */
@@ -15,8 +15,9 @@
 import Cocoa
 import BeatCore
 import BeatPagination2
+import PDFKit
 
-class BeatNativePrinting:NSView {
+class BeatPrintView:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {
 		case toPreview, toPDF, toPrint
 	}
@@ -24,10 +25,10 @@ class BeatNativePrinting:NSView {
 	var delegate:BeatEditorDelegate?
 	
 	var settings:BeatExportSettings
-	//var pagination:BeatPaginationManager
+
 	var renderer:BeatRenderer
 	var screenplays:[BeatScreenplay]
-	var callback:(BeatNativePrinting, AnyObject?) -> ()
+	var callback:(BeatPrintView, AnyObject?) -> ()
 	var progressPanel:NSPanel = NSPanel(contentRect: NSMakeRect(0, 0, 350, 30), styleMask: [.docModalWindow], backing: .buffered, defer: false)
 	var host:NSWindow
 	var operation:BeatPrintingOperation = .toPrint
@@ -35,8 +36,10 @@ class BeatNativePrinting:NSView {
 	var pageViews:[BeatPaginationPageView] = []
 	var url:URL?
 	
-	
 	var paginations:[BeatPaginationManager] = []
+	
+	/// PDF outline will be created during rendering process
+	fileprivate var outline:[BeatPDFDestination] = []
 	
 	/**
 	 Begins a print operation. **Note**: the operation is run asynchronously, so this virtual view has to be owned by another object for the duration of the process.
@@ -47,7 +50,7 @@ class BeatNativePrinting:NSView {
 	 - parameter screenplays: An array of screenplay objects (containing title page and lines). If you have a delegate set, this can be `nil`.
 	 - parameter callback: Closure run after printing is done
 	 */
-	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
+	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatPrintView, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
 		// If we have a delegate connected, let's gather the screenplay from there, otherwise we'll use the ones provided at init
@@ -79,7 +82,7 @@ class BeatNativePrinting:NSView {
 		paginateAndRender()
 	}
 	
-	@objc convenience init(window:NSWindow, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatNativePrinting, AnyObject?) -> ()) {
+	@objc convenience init(window:NSWindow, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatPrintView, AnyObject?) -> ()) {
 		self.init(window: window, operation: operation, settings: delegate.exportSettings, delegate: delegate, screenplays: nil, callback: callback)
 	}
 	
@@ -104,12 +107,20 @@ class BeatNativePrinting:NSView {
 		range.pointee = NSMakeRange(1, self.numberOfPages)
 		return true
 	}
-	
+		
+	/// This is the phase where macOS printing will request the bounds of the printed area. Here we'll remove all subviews and then add the page view as sub view before returning the rect. We'll also be able to add its contents to the outline, because we'll know the page number.
 	override func rectForPage(_ page: Int) -> NSRect {
 		self.subviews.removeAll()
-
+		
 		let pageView = self.pageViews[page - 1] // -1 because this is an array index
 		self.addSubview(pageView)
+		self.layoutSubtreeIfNeeded()
+		
+		// This is the most reliable place to find out the outline position.
+		if operation == .toPDF {
+			let items = pageView.pdfDestinations(withPageIndex: page - 1)
+			outline.append(contentsOf: items)
+		}
 		
 		return NSMakeRect(0, 0, self.frame.width, self.frame.height)
 	}
@@ -192,11 +203,16 @@ class BeatNativePrinting:NSView {
 		else { return }
 		
 		if (self.operation != .toPrint) {
-			print("PDF operation finished")
 			guard let url = self.url else {
 				print("ERROR: No PDF file found")
 				return
 			}
+			
+			// The print operation was successful. Let's create the PDF outline.
+			if self.operation == .toPDF {
+				BeatRenderer.createOutlineForPDF(at: url, outline: self.outline)
+			}
+			
 			
 			self.url?.stopAccessingSecurityScopedResource()
 			
@@ -241,8 +257,8 @@ class BeatNativePrinting:NSView {
 	
 	func getURLforPDF() -> URL? {
 		var filename = "Untitled"
-		if self.delegate != nil {
-			filename = self.delegate!.fileNameString()
+		if let delegate {
+			filename = delegate.fileNameString()
 		}
 
 		let saveDialog = NSSavePanel()
@@ -253,14 +269,9 @@ class BeatNativePrinting:NSView {
 			// If we are running this from a document, let's use a sheet
 			saveDialog.beginSheetModal(for: self.window!) { value in
 				let response = value as NSApplication.ModalResponse
-				
-				if (response == .OK) {
-					self.url = saveDialog.url
-				}
-				else {
-					self.url = nil
-				}
+				self.url = (response == .OK) ? saveDialog.url : nil
 			}
+			
 			return self.url
 			
 		} else {
