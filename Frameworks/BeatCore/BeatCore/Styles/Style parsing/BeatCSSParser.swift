@@ -18,7 +18,7 @@ public final class CssParser {
 	var styles:[String:RenderStyle] = [:]
     var lineHeight = BeatStyles.lineHeight // default line height
         
-    var documentSettings:BeatDocumentSettings?
+    weak var documentSettings:BeatDocumentSettings?
 	
 	/// Parses the CSS file string into an array of CSS styles.
 	/// - Parameter fileContent: CSS file content.
