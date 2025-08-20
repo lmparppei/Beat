@@ -23,6 +23,9 @@
     #define BXItalicFontMask 0x00000001
     #define BXBoldFontMask 0x00000002
 
+    #define BXFontWeightRegular UIFontWeightRegular
+    #define BXFontWeightBold UIFontWeightBold
+
 #else
     #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
     #define BXFontDescriptor NSFontDescriptor
@@ -31,6 +34,9 @@
 
     #define BXItalicFontMask NSItalicFontMask
     #define BXBoldFontMask NSBoldFontMask
+
+    #define BXFontWeightRegular NSFontWeightRegular
+    #define BXFontWeightBold NSFontWeightBold
 #endif
 
 
