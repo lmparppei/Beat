@@ -763,6 +763,14 @@
 
 #pragma mark - Editor methods
 
+- (void)removeAllTags
+{
+    NSTextStorage* textStorage = self.delegate.textStorage;
+    [textStorage removeAttribute:BeatTagging.attributeKey range:NSMakeRange(0, textStorage.length)];
+    
+    [self.delegate.getTextView textViewNeedsDisplay];
+}
+
 /// Tags a range in editor with tag type, taking the tag definition name from selected range.
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type
 {
