@@ -1466,8 +1466,14 @@ static NSDictionary* patterns;
     // After we've gathered all the elements, lets iterate them once more to determine where blocks end.
     for (NSDictionary<NSString*,NSArray<Line*>*>* element in self.titlePage) {
         NSArray<Line*>* lines = element.allValues.firstObject;
-        lines.firstObject.beginsTitlePageBlock = true;
-        lines.lastObject.endsTitlePageBlock = true;
+        Line* firstLine = lines.firstObject;
+        Line* lastLine = lines.lastObject;
+        
+        // I've seen a weird issue with NSStrings being inserted here. No idea how and why, but… yeah. This is an emergency fix.
+        if ([firstLine isKindOfClass:Line.class])
+            firstLine.beginsTitlePageBlock = true;
+        if ([lastLine isKindOfClass:Line.class])
+            lastLine.endsTitlePageBlock = true;
     }
     
     return self.titlePage;
