@@ -126,7 +126,6 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 
 /// UIInputView that displays custom suggestions, as well as leading and trailing actions.
 open class InputAssistantView: UIInputView {
-	
 	public var fullActions:[InputAssistantAction] = []
 	
 	/// Returns the number of currently visible suggestions
@@ -207,6 +206,9 @@ open class InputAssistantView: UIInputView {
 		self.dataSource = self.dSource
 		
 		self.delegate = inputAssistantDelegate
+		
+		// iOS 26 won't have an opaque background
+		self.layer.backgroundColor = UIColor.black.withAlphaComponent(0.85).cgColor
 	}
 	
 	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
