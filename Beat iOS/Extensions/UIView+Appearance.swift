@@ -26,4 +26,16 @@
 		
 		return dark
 	}
+	
+	@objc func getViewController() -> UIViewController? {
+		var responder:UIResponder? = self.next
+		while responder != nil {
+			if responder!.isKind(of: UIViewController.self) {
+				return responder as? UIViewController
+			}
+			responder = responder?.next
+		}
+		
+		return nil
+	}
 }
