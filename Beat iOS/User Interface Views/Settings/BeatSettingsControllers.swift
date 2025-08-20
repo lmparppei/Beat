@@ -11,7 +11,8 @@ import BeatThemes
 
 extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 	@IBAction func openSettings(_ sender:AnyObject?) {
-		if let vc = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as? BeatSettingsViewController {
+		let storyboard = UIStoryboard(name: "SettingViews", bundle: .main)
+		if let vc = storyboard.instantiateViewController(withIdentifier: "Settings") as? BeatSettingsViewController {
 			vc.modalPresentationStyle = .formSheet
 			vc.delegate = self
 			self.present(vc, animated: true)
@@ -30,7 +31,8 @@ extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 		}
 		
 		//Configure the presentation controller
-		let popoverContentController = self.storyboard?.instantiateViewController(withIdentifier: "QuickSettings") as? BeatSettingsViewController
+		let storyboard = UIStoryboard(name: "SettingViews", bundle: .main)
+		let popoverContentController = storyboard.instantiateViewController(withIdentifier: "QuickSettings") as? BeatSettingsViewController
 		popoverContentController?.modalPresentationStyle = .popover
 		popoverContentController?.delegate = self
 		
