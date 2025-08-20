@@ -136,6 +136,7 @@
 
 -(void)setup
 {
+	self.usesAutomaticRowHeights = true;
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
 }
 
@@ -247,6 +248,11 @@
  }
  }
  */
+
+- (void)reloadItem:(id)item
+{
+	[super reloadItem:item];
+}
 
 
 -(void)reloadWithChanges:(OutlineChanges*)changes
@@ -404,7 +410,8 @@
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
 	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
+	//view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
+	view.textField.stringValue = ((OutlineScene*)item).stringForDisplay;
 	
 	[view configureWithDelegate:self.editorDelegate scene:item outlineView:self];
 	
@@ -460,7 +467,6 @@
 	return self.editorDelegate.parser.outline;
 }
 
-
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
 	if (_filteredOutline.count > 0) return NO;
@@ -492,21 +498,21 @@
 	return YES;
 }
 
+
 /*
- // View based setup
- -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
- _editing = NO;
- if (![item isKindOfClass:[OutlineScene class]]) return;
- 
- OutlineScene *scene = item;
- NSString *newValue = [(NSAttributedString*)object string];
- if (scene.type != section || newValue == 0) return;
- 
- newValue = [NSString stringWithFormat:@"# %@", newValue];
- 
- [self replaceRange:scene.line.textRange withString:newValue];
- }
- */
+-(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+	_editing = NO;
+	if (![item isKindOfClass:[OutlineScene class]]) return;
+	
+	OutlineScene *scene = item;
+	NSString *newValue = [(NSAttributedString*)object string];
+	if (scene.type != section || newValue == 0) return;
+	
+	newValue = [NSString stringWithFormat:@"# %@", newValue];
+	
+	[self replaceRange:scene.line.textRange withString:newValue];
+}
+*/
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
 {
@@ -688,9 +694,7 @@
 	
 	for (OutlineScene* scene in self.editorDelegate.outline) {
 		if ([_filters match:scene]) [_filteredOutline addObject:scene];
-	}
-	
-	NSLog(@" -> filtered %@", _filteredOutline);
+	}	
 }
 
 #pragma mark - Advanced Filtering
