@@ -14,7 +14,7 @@ import OSLog
     public var styles:[String:RenderStyle] = [:]
     public var editorStyles:[String:RenderStyle] = [:]
     //public var settings:BeatExportSettings?
-    public var documentSettings:BeatDocumentSettings?
+    public weak var documentSettings:BeatDocumentSettings?
     
     var stylesheet:String?
     
@@ -41,7 +41,7 @@ import OSLog
             stylesheet.append("\n\n" + additionalStyles)
 
             styles = CssParser().parse(fileContent: stylesheet, documentSettings: self.documentSettings)
-        }
+        }        
     }
     
     /// Reloads the given style

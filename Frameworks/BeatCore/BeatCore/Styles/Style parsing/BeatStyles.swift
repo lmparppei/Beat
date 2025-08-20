@@ -35,7 +35,7 @@ public class BeatStyles:NSObject {
     /// Currently loaded styles
     private var _loadedStyles:[String:BeatStylesheet] = [:]
     private var _documentStyles:[UUID:[String:BeatStylesheet]] = [:]
-    
+        
     /// Returns stylesheet dictionary with `name: url`
     var stylesheets:[String:URL] {
         // Return cached sheet names
@@ -111,6 +111,10 @@ public class BeatStyles:NSObject {
         }
          
         return stylesheet
+    }
+    
+    @objc public func closeDocument(delegate:BeatDocumentDelegate) {
+        _documentStyles.removeValue(forKey: delegate.uuid())
     }
     
     
