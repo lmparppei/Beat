@@ -79,7 +79,7 @@ let js = "<script>" + Beat.appAssetAsString("Sortable.js") + "</script>"
 
 let additionalCSS = ""
 if (Beat.iOS()) {
-	additionalCSS = "#print, #zoom { display: none; }"
+	additionalCSS = "#print, #zoom { display: none; } #contextMenu { font-size: 110%; } "
 }
 
 let current = (Beat.currentScene != null) ? Beat.currentScene.line.uuidString() : null
@@ -119,7 +119,6 @@ Beat.onTextChange(function (outlineChanges) {
 	// Otherwise we'll send set the timer.
 	let time = 1.5
 	if (Beat.container != undefined && Beat.container.displayed) time = 0.0;
-	
 	timer = Beat.timer(time, () => {
 		refreshHTML()
 	})
@@ -314,6 +313,9 @@ Beat.custom = {
 	restart: () => {
 		Beat.restart()
 	},
+	refresh: () => {
+		refreshHTML()
+	},
 	scrollToLine: (uuid) => {
 		let line = Beat.currentParser.lineWithUUID(uuid)
 		
@@ -483,10 +485,9 @@ Beat.custom = {
 				break
 			}
 		}
-		if (scene == null) return;
 		
 		// Get full range
-		let endPosition = scene.position + scene.length
+		let endPosition = (scene != null) ? (scene.position + scene.length) : Beat.getText().length
 		
 		// Check that the scene has a valid prefix, if not, add . to force a heading
 		let prefix = text.substr(0, 3).toLowerCase()
@@ -494,12 +495,57 @@ Beat.custom = {
 		if (allowed.indexOf(prefix) != 0) text = "." + text;
 		
 		// Make sure the line is empty, if not, add preceding line breaks
+		let precedingLine = endPosition > 0 ? Beat.lineAtPosition(endPosition - 1) : null
 		let line = Beat.lineAtPosition(endPosition)
-		if (line.length > 0) text = "\n\n" + text;
 		
-		text += "\n\n"
+		if (line.length > 0) text = "\n" + text;
+		if (precedingLine?.length > 0) text = "\n" + text;
+		
+		text += "\n\n\n"
 		
 		Beat.addString(text, endPosition)
+	},
+	
+	getNewCard: (uuid) => {
+		/*
+		 "<div class='item card {{color}} {{selected}} {{isOmitted}}' color='{{color}}' uuid='{{uuid}}' position='{{range.location}}' length='{{range.length}}'><div class='card-content'>\
+				 <div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div>\
+					 <div class='title'>{{ stringForDisplay }}</div></div>\
+						 <div class='card-container'>\
+							 {{ synopsisList }}\
+							 {{ noteList }}\
+							 <div class='content'>{{ text }}</div>\
+						 </div>\
+						 <div class='editButton'>✎</div>\
+						 <div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
+					 </div>\
+					 <div class='addScene'></div>\
+				 </div>"
+		 */
+		let card = templates.scene.withData({
+			stringForDisplay: "",
+			sceneNumber: "",
+			text: "",
+			color: "",
+			isOmitted: "placeholder",
+			selected: "",
+			range: { location: -1, length: 0 },
+			synopsisList: [],
+			storylineList: [],
+			noteList: [],
+			pages: "",
+			eights: ""
+		})
+		let cardJSON = JSON.stringify(card)
+		
+		window.runJS(`addCard("${uuid}", ${cardJSON})`)
+	},
+	
+	addSceneOnMobile: (uuid) => {
+		Beat.prompt("Add scene", "", "INT./EXT.", "", (string) => {
+			if (string == "" || !string) return;
+			Beat.custom.addScene(uuid, string)
+		})
 	}
 }
 

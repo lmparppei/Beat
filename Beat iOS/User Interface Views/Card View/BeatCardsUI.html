@@ -16,6 +16,8 @@
 			
 			let sortable
 
+			let disabled = false
+			
 			let colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta']
 			let colorName = ['#color.none#', '#color.red#', '#color.blue#', '#color.green#', '#color.pink#', '#color.brown#', '#color.cyan#', '#color.orange#', '#color.magenta#'];
 
@@ -43,6 +45,12 @@
 				}
 			}
 
+			function disable() {
+				disabled = true
+				const spinner = document.querySelector("#spinner")
+				spinner.className = "visible"
+			}
+			
 			function updateSelection(selected, scroll, instant = false) {
 				let items = document.querySelectorAll(".item")
 				for (let i=0; i<items.length; i++) {
@@ -144,57 +152,78 @@
 						}
 					}
 					
-					content += "<div onclick='contextMenu.addSynopsis()' class='menuItem'>+ synopsis</div>"
+					// No synopsis editing on iOS
+					if (!iOS) content += "<div onclick='contextMenu.addSynopsis()' class='menuItem'>+ synopsis</div>"
+					
+					// macOS has a more elegant way of adding new scenes
+					if (iOS) content += "<div onclick='contextMenu.addSceneOnMobile()' class='menuItem'>+ #cards.addScene#</div>"
 					
 					contextMenu.menu.innerHTML = content;
 					document.body.appendChild(contextMenu.menu);
 				}
 
-				contextMenu.toggle = function (e) {
+				contextMenu.toggle = (e) => {
 					if (contextMenu.menu == null) contextMenu.init();
 					
-					if (contextMenu.open == true) {
+					if (contextMenu.open) {
 						contextMenu.close()
 					} else {
-						let uuid
-						let target = e.target
-
-						// Find the actual target scene
-						while (target != null) {
-							let uuid = target.getAttribute("uuid")
-							if (uuid != null) {
-								contextMenu.target = target;
-								contextMenu.uuid = uuid
-								break;
-							}
-
-							target = target.parentNode;
-						}
-
-						// Do nothign if there's no actual target
-						if (contextMenu.target == null) return;
-
-						var coordinates = getPosition(e)
-						contextMenu.menu.style.left = coordinates.x + "px"
-						contextMenu.menu.style.top = coordinates.y + "px"
-						contextMenu.open = true
-
-
-						contextMenu.target = e.target
-						
-						contextMenu.menu.className = "visible"
-
-						// Avoid overflow
-						if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
-							contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px"
-						}
-
-						if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
-							contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px"
-						}
+						contextMenu.show(e)
 					}
 				}
-
+				
+				// e can be either an event or a div
+				contextMenu.show = (e) => {
+					let target, coordinates;
+					
+					if (!iOS) {
+						target = e.target;
+						
+						// Find the actual target scene, just in case
+						while (target) {
+							const uuid = target.getAttribute("uuid");
+							if (uuid) {
+								contextMenu.target = target;
+								contextMenu.uuid = uuid;
+								break;
+							}
+							target = target.parentNode;
+						}
+						
+						if (!contextMenu.target) return;
+						coordinates = getPosition(e);
+						
+					} else {
+						if (!e) return;
+						target = e;
+						
+						const uuid = target.getAttribute("uuid");
+						contextMenu.target = target;
+						contextMenu.uuid = uuid
+						
+						const rect = target.getBoundingClientRect();
+						coordinates = {
+							x: window.scrollX + rect.x,
+							y: window.scrollY + rect.bottom
+						};
+					}
+					
+					// Position and show the menu
+					contextMenu.menu.style.left = coordinates.x + "px";
+					contextMenu.menu.style.top = coordinates.y + "px";
+					contextMenu.menu.className = "visible";
+					contextMenu.open = true;
+					
+					// Avoid overflow
+					if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
+						contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px";
+					}
+					
+					if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
+						contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px";
+					}
+				}
+				
 				contextMenu.close = function () {
 					if (contextMenu.menu == null) return;
 					
@@ -203,13 +232,16 @@
 				}
 
 				contextMenu.setColor = function (color) {
+					//disable()
+					
 					let uuid = contextMenu.target.getAttribute("uuid")
-				
 					Beat.call((uuid, color) => {
 						Beat.custom.setColor(uuid, color)
 					}, contextMenu.uuid, color)
 
 					contextMenu.close()
+					
+					//if (iOS) Beat.call("Beat.custom.refresh()")
 				}
 				
 				contextMenu.addSynopsis = function () {
@@ -218,6 +250,27 @@
 					contextMenu.close()
 					
 					addEditableSynopsis(card)
+				}
+				
+				contextMenu.addSceneOnMobile = () => {
+					contextMenu.close()
+					
+					let uuid = contextMenu.uuid
+					if (uuid == null) return;
+					
+					Beat.call((uuid) => {
+						Beat.custom.addSceneOnMobile(uuid)
+					}, uuid)
+					/*
+					Beat.log("Trying to prompt...")
+					let title = Beat.prompt("#cards.addScenePrompt#", "", "INT. ")
+					Beat.log(" -> " + title)
+					if (title == null || title == "") return;
+					
+					Beat.call((uuid, title) => {
+						Beat.custom.addScene(uuid, title)
+					}, prevUuid, title)
+					 */
 				}
 
 				contextMenu.open = false
@@ -274,9 +327,40 @@
 						
 			function addScene(card) {
 				let uuid = card.getAttribute("uuid")
+				/*
 				Beat.call((uuid, card) => {
 					Beat.custom.addScene(uuid, card)
 				}, uuid, "New Scene")
+				*/
+				
+				// Now we need to request card code from the host plugin
+				let newCard = Beat.call((uuid) => {
+					Beat.custom.getNewCard(uuid)
+				}, uuid)
+			}
+			
+			// uuid: the card after which to add the new placeholder card, 
+			function addCard(uuid, html) {
+				let precedingCard = document.querySelector(`.card[uuid="${uuid}"]`)
+				let nextCard = precedingCard.nextSibling
+				
+				// We need to support old browser,so here's a little trickery
+				const div = document.createElement("div")
+				div.innerHTML = html
+				const card = div.firstChild
+				
+				card.setAttribute("prevUuid", uuid)
+				
+				if (nextCard != null) {
+					precedingCard.parentNode.insertBefore(card, nextCard)
+				} else {
+					console.log("No next card")
+					precedingCard.parentNode.appendChild(card)
+				}
+				
+				editTitle(card)
+				
+				/* console.log("Preceding: ", precedingCard) */
 			}
 			
 		</script>
@@ -297,13 +381,16 @@
 			   <button onclick='zoomIn()'>+</button>
 			</div>
 		</div>
-
+		<div id='spinner'><span class="loader"></span></div>
 		<div id='container'>
 			{{html}}
 		</div>
 
 		<script>
 			const container = document.getElementById('container')
+			
+			let touchedCard = null
+			let touchStartTime = null
 			
 			function load(html) {
 				var scrollPos = document.body.scrollTop
@@ -314,6 +401,11 @@
 				
 				document.body.scrollTop = scrollPos
 
+				if (disabled) {
+					disabled = false
+					const spinner = document.querySelector("#spinner")
+					spinner.className = ""
+				}
 			}
 
 			// Updates
@@ -323,18 +415,42 @@
 
 				document.body.ontouchmove = () => {
 					touching = true
+					touchedCard = null
 				}
+				
+				let sections = document.querySelectorAll(".section")
+				sections.forEach((section) => {
+					section.onclick = () => { contextMenu.close() }
+					section.ontouchstart = () => { contextMenu.close() }
+				})
 				
 				cards.forEach((card) => {
 					let uuid = card.getAttribute("uuid")
 
 					// Tap for iOS
 					card.ontouchend = () => {
-						if (!touching) {
+						touchedCard = null
+						
+						if (!touching && !contextMenu.open) {
 							scrollToLine(uuid);
 							Beat.call("Beat.custom.returnToEditor()");
 						}
 						touching = false
+					}
+					
+					card.ontouchstart = () => {
+						if (contextMenu.open) {
+							contextMenu.close()
+							return
+						}
+						
+						touchedCard = card
+						setTimeout(() => {
+							if (touchedCard == null) return;
+							
+							// Show context menu - not right now
+							contextMenu.toggle(card)
+						}, 1000)
 					}
 					
 					// Update click
@@ -343,7 +459,6 @@
 						
 						// In non-container mode we'll scroll to the line, and on iOS we'll close the view
 						if (iOS || mode == modes.window) {
-							Beat.log("Scrolling to" + uuid)
 							scrollToLine(uuid);
 							if (iOS) Beat.call("Beat.custom.returnToEditor()");
 						}
@@ -385,8 +500,18 @@
 				})
 				
 				document.getElementById("container").onclick = () => {
+					contextMenu.close();
+				}
+				
+				/*
+				document.getElementById("container").ontouchstart = () => {
 					if (contextMenu.open) contextMenu.close();
 				}
+				
+				document.getElementById("container").ontouchend = () => {
+					if (contextMenu.open) contextMenu.close();
+				}
+				 */
 			}
 						
 			function editCard(card) {
@@ -396,6 +521,43 @@
 					addEditableSynopsis(card)
 				} else {
 					editFirstSynopsis(card)
+				}
+			}
+			
+			function editTitle(card) {
+				let title = card.querySelector(".title")
+				title.contentEditable = true
+				title.focus()
+				
+				title.onkeydown = (e) => {
+					let remove = false
+					
+					if (e.keyCode == 13) {
+						// Commit
+						let prevUuid = card.getAttribute("prevUuid")
+						remove = true
+
+						// Add the new scene
+						if (title.innerText.length > 0) {
+							Beat.call((prevUuid, card) => {
+								Beat.custom.addScene(prevUuid, card)
+							}, prevUuid, title.innerText)
+						}
+						
+					} else if (e.keyCode == 27) {
+						remove = true
+					}
+					
+					// We'll remove the card in any case. If esc was pressed, nothing will happen, and on enter the app will be adding a real card anyway.
+					if (remove) {
+						e.preventDefault()
+						title.blur()
+						card.parentNode.removeChild(card)
+					}
+				}
+				
+				title.onblur = () => {
+					card.parentNode.removeChild(card)
 				}
 			}
 			

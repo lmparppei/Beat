@@ -48,6 +48,25 @@ body {
 
 }
 
+#spinner {
+	display: flex;
+	display: none;
+	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
+	width: 100%;
+	
+	justify-content: center;
+	align-items: center;
+	
+	background-color: rgba(0,0,0,.5);
+	pointer-events: none;
+	z-index: 255;
+}
+#spinner.visible {
+	display: flex;
+}
+
+
 
 /* FILTERS ################################################ */
 
@@ -81,6 +100,13 @@ body {
 
 	position: relative;
 	background: transparent !important;
+}
+.card.placeholder {
+	opacity: 0.8
+}
+.placeholder .card-content {
+	background: white !important;
+	box-shadow: 0 0 0px 5px white;
 }
 
 .editButton {
@@ -340,7 +366,7 @@ ul {
 	opacity: 0;
 	background: var(--blue);
 	
-	display: none;
+	/* display: none; */
 }
 .addScene:hover {
 	opacity: 1;
@@ -528,3 +554,23 @@ li.note { color: black !important; }
 
 	border-radius: .5em;
 }
+
+.loader {
+	width: 48px;
+	height: 48px;
+	border: 5px solid #FFF;
+	border-bottom-color: transparent;
+	border-radius: 50%;
+	display: inline-block;
+	box-sizing: border-box;
+	animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+} 
