@@ -189,7 +189,7 @@
 		return;
 	}
 	
-	[self.context evaluateScript:script];
+    if (script.length > 0) [self.context evaluateScript:script];
 }
 
 
@@ -217,12 +217,14 @@
         self.container.pluginName = self.pluginName;
     }
     
-	[self runScript:plugin.script];
+    if (plugin.script.length > 0) [self runScript:plugin.script];
 }
 
 /// Runs the JavaScript string
 - (void)runScript:(NSString*)pluginString
 {
+    if (pluginString == nil) return;
+    
 	//pluginString = [self preprocess:pluginString];
 	[self.context evaluateScript:pluginString];
 	
