@@ -111,7 +111,16 @@ extension BeatUITextView {
 	
 	func inputMenu() -> InputAssistantAction {
 		return InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
-			UIMenu(title:"Macro", children: [
+			UIMenu(title:"", options:[.displayInline], children: [
+				UIAction(title: "Find & Replace…", handler: { _ in
+					self.findAndReplace(nil)
+				}),
+				UIAction(title: "Find…", handler: { _ in
+					self.find(nil)
+				})
+			]),
+			
+			UIMenu(title:"Macros", children: [
 				UIAction(title: "New Macro", handler: { _ in
 					self.editorDelegate?.formattingActions.makeMacro(self)
 				}),
@@ -129,7 +138,7 @@ extension BeatUITextView {
 				}),
 			].reversed()),
 			
-			UIMenu(title:"", options: [.displayInline], children: [
+			UIMenu(title:"Markers", children: [
 				UIMenu(title: "Marker With Color...", children: [
 					UIAction(title: "Pink", image: UIImage(named: "color.pink"),  handler: { (_) in
 						self.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
@@ -155,7 +164,7 @@ extension BeatUITextView {
 				}),
 			]),
 			
-			UIMenu(title: "Outline", children: [
+			UIMenu(title: "Outline Elements", children: [
 				UIAction(title: "Add Synopsis (=)", handler: { _ in
 					self.addSynopsis()
 				}),
@@ -164,7 +173,7 @@ extension BeatUITextView {
 				})
 			]),
 			
-			UIMenu(title: "Transition...", children: [
+			UIMenu(title: "Transitions", children: [
 				UIAction(title: "FADE IN", handler: { (_) in
 					self.editorDelegate?.textActions.addNewParagraph("> FADE IN")
 				}),
@@ -180,17 +189,19 @@ extension BeatUITextView {
 				
 			]),
 			
-			UIAction(title: "Make Centered", handler: { (_) in
-				self.editorDelegate?.formattingActions.makeCentered(self)
-			}),
-			UIAction(title: "Omit", handler: { (_) in
-				self.editorDelegate?.formattingActions.makeOmitted(self)
-			}),
-			UIAction(title: "Note", handler: { (_) in
-				self.editorDelegate?.formattingActions.makeNote(self)
-			}),
+			UIMenu(title: "", options: [.displayInline], children: [
+				UIAction(title: "Make Centered", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeCentered(self)
+				}),
+				UIAction(title: "Omit", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeOmitted(self)
+				}),
+				UIAction(title: "Note", handler: { (_) in
+					self.editorDelegate?.formattingActions.makeNote(self)
+				})
+			]),
 			
-			UIMenu(title:"Force element...", children: [
+			UIMenu(title:"Force element", children: [
 				UIAction(title: "Scene heading", handler: { (_) in
 					self.editorDelegate?.formattingActions.forceHeading(self)
 				}),
@@ -218,7 +229,7 @@ extension BeatUITextView {
 				UIAction(image: UIImage(systemName: "underline"), handler: { (_) in
 					self.editorDelegate?.formattingActions.makeUnderlined(nil)
 				})
-			]),
+			])
 		]))
 	}
 	
