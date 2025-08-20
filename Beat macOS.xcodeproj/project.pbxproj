@@ -78,7 +78,7 @@
 		B6125FD42CD3D1D8009AE189 /* BeatSpellCheckingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B9CEE728EAFDBD00EB9F6B /* BeatSpellCheckingUtils.swift */; };
 		B6125FD52CD3D1D8009AE189 /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B617655C2BA5A19C00F18417 /* ColorCheckbox.m */; };
 		B6125FD62CD3D1D8009AE189 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B616518A29FC491C00D20882 /* ScrollView.m */; };
-		B6125FD72CD3D1D8009AE189 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */; };
+		B6125FD72CD3D1D8009AE189 /* BeatPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */; };
 		B6125FD82CD3D1D8009AE189 /* BeatDonationPlea.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EA73882B162D15001D43BB /* BeatDonationPlea.swift */; };
 		B6125FD92CD3D1D8009AE189 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765392BA59EB200F18417 /* NSArray+Additions.m */; };
 		B6125FDA2CD3D1D8009AE189 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765512BA59F3700F18417 /* RoundedButton.m */; };
@@ -629,6 +629,18 @@
 		B6D761A12E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
 		B6D761A22E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
 		B6D761A32E06BEB400DA46DA /* Document+Scrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */; };
+		B6D791662E434A0F00186B3E /* DiffViewerTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791652E434A0F00186B3E /* DiffViewerTextView.swift */; };
+		B6D791672E434A0F00186B3E /* DiffViewerTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791652E434A0F00186B3E /* DiffViewerTextView.swift */; };
+		B6D791682E434A0F00186B3E /* DiffViewerTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791652E434A0F00186B3E /* DiffViewerTextView.swift */; };
+		B6D7916A2E434A2A00186B3E /* DiffScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791692E434A2A00186B3E /* DiffScrollerView.swift */; };
+		B6D7916B2E434A2A00186B3E /* DiffScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791692E434A2A00186B3E /* DiffScrollerView.swift */; };
+		B6D7916C2E434A2A00186B3E /* DiffScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791692E434A2A00186B3E /* DiffScrollerView.swift */; };
+		B6D7916E2E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7916D2E434A4F00186B3E /* DiffViewerStatusView.swift */; };
+		B6D7916F2E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7916D2E434A4F00186B3E /* DiffViewerStatusView.swift */; };
+		B6D791702E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7916D2E434A4F00186B3E /* DiffViewerStatusView.swift */; };
+		B6D791722E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791712E434A6F00186B3E /* DiffTimestampMenu.swift */; };
+		B6D791732E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791712E434A6F00186B3E /* DiffTimestampMenu.swift */; };
+		B6D791742E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D791712E434A6F00186B3E /* DiffTimestampMenu.swift */; };
 		B6DBB2BC2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
 		B6DBB2BD2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
 		B6DBB2BE2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */; };
@@ -655,9 +667,9 @@
 		B6E38951270DDE130067DD0C /* analysis.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D4260BA8D600463AD8 /* analysis.png */; };
 		B6E66791292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E66790292C29BA007A4108 /* BeatUserDefaultCheckbox.swift */; };
 		B6E66792292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E66790292C29BA007A4108 /* BeatUserDefaultCheckbox.swift */; };
-		B6E91E3B2B68303000EDB066 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */; };
-		B6E91E3C2B68303000EDB066 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */; };
-		B6E91E3D2B68303000EDB066 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */; };
+		B6E91E3B2B68303000EDB066 /* BeatPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */; };
+		B6E91E3C2B68303000EDB066 /* BeatPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */; };
+		B6E91E3D2B68303000EDB066 /* BeatPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */; };
 		B6EA73812B152A0A001D43BB /* BeatPlugins.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */; };
 		B6EA73822B152A0A001D43BB /* BeatPlugins.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B680B7C72A6EC44C00FCD805 /* BeatPlugins.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6EA73852B15330D001D43BB /* Release notes.md in Resources */ = {isa = PBXBuildFile; fileRef = B6EA73842B15330D001D43BB /* Release notes.md */; };
@@ -1183,6 +1195,10 @@
 		B6D70AAB2C8C655600295AB6 /* Document+QuickSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document+QuickSettings.swift"; sourceTree = "<group>"; };
 		B6D7619F2E06BEB400DA46DA /* Document+Scrolling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Document+Scrolling.h"; sourceTree = "<group>"; };
 		B6D761A02E06BEB400DA46DA /* Document+Scrolling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Document+Scrolling.m"; sourceTree = "<group>"; };
+		B6D791652E434A0F00186B3E /* DiffViewerTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffViewerTextView.swift; sourceTree = "<group>"; };
+		B6D791692E434A2A00186B3E /* DiffScrollerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffScrollerView.swift; sourceTree = "<group>"; };
+		B6D7916D2E434A4F00186B3E /* DiffViewerStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffViewerStatusView.swift; sourceTree = "<group>"; };
+		B6D791712E434A6F00186B3E /* DiffTimestampMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffTimestampMenu.swift; sourceTree = "<group>"; };
 		B6DBB2BB2D775769008327EF /* BeatRevisionMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRevisionMenuItem.swift; sourceTree = "<group>"; };
 		B6DCA85A272187E600CBE9BC /* BeatSegmentedControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedControl.h; sourceTree = "<group>"; };
 		B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSegmentedControl.m; sourceTree = "<group>"; };
@@ -1195,13 +1211,12 @@
 		B6E0E1032AC5D48200948752 /* BeatTemplateMenuProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTemplateMenuProvider.swift; sourceTree = "<group>"; };
 		B6E3246624B515670001273F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B6E66790292C29BA007A4108 /* BeatUserDefaultCheckbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatUserDefaultCheckbox.swift; sourceTree = "<group>"; };
-		B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNativePrinting.swift; sourceTree = "<group>"; };
+		B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPrintView.swift; sourceTree = "<group>"; };
 		B6EA73842B15330D001D43BB /* Release notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Release notes.md"; sourceTree = "<group>"; };
 		B6EA73882B162D15001D43BB /* BeatDonationPlea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDonationPlea.swift; sourceTree = "<group>"; };
 		B6EA738B2B1631E4001D43BB /* BeatAdhocLicense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatAdhocLicense.swift; sourceTree = "<group>"; };
 		B6EAC18925E67CCF00C23384 /* BeatTagButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagButton.h; sourceTree = "<group>"; };
 		B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagButton.m; sourceTree = "<group>"; };
-		B6EAEDBB267A686800BBD2A2 /* Index Card Window.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "Index Card Window.beatPlugin"; sourceTree = "<group>"; };
 		B6EAEDBF267A687900BBD2A2 /* CardWindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = CardWindow.html; sourceTree = "<group>"; };
 		B6ED94512E37DE7600D76982 /* NSView+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Appearance.swift"; sourceTree = "<group>"; };
 		B6EE9B2A2C57DECF00834243 /* Sortable.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Sortable.min.js; sourceTree = "<group>"; };
@@ -1461,7 +1476,6 @@
 			isa = PBXGroup;
 			children = (
 				B629DBB1259CE3230007EA4E /* About Plugins.md */,
-				B6EAEDBB267A686800BBD2A2 /* Index Card Window.beatPlugin */,
 				B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */,
 				B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */,
 			);
@@ -1705,6 +1719,10 @@
 			isa = PBXGroup;
 			children = (
 				B6311EF02D68DF6200712CFE /* DiffViewerView.swift */,
+				B6D791692E434A2A00186B3E /* DiffScrollerView.swift */,
+				B6D791652E434A0F00186B3E /* DiffViewerTextView.swift */,
+				B6D791712E434A6F00186B3E /* DiffTimestampMenu.swift */,
+				B6D7916D2E434A4F00186B3E /* DiffViewerStatusView.swift */,
 				B60DC6F32D9701DD00B6B133 /* DiffViewer.storyboard */,
 				B657EDE82D71F8FD008BD165 /* CommitMessagePopover.swift */,
 			);
@@ -1723,7 +1741,7 @@
 		B6467AAF2899502E00231B25 /* Renderer and Views */ = {
 			isa = PBXGroup;
 			children = (
-				B6E91E3A2B68303000EDB066 /* BeatNativePrinting.swift */,
+				B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */,
 			);
 			path = "Renderer and Views";
 			sourceTree = "<group>";
@@ -2768,9 +2786,10 @@
 				B617655E2BA5A19D00F18417 /* ColorCheckbox.m in Sources */,
 				B6FA1ECE2CF336EE002737A8 /* RTFPrintView.swift in Sources */,
 				B6EA738C2B1631E4001D43BB /* BeatAdhocLicense.swift in Sources */,
-				B6E91E3C2B68303000EDB066 /* BeatNativePrinting.swift in Sources */,
+				B6E91E3C2B68303000EDB066 /* BeatPrintView.swift in Sources */,
 				B616518F29FC491C00D20882 /* ScrollView.m in Sources */,
 				B617653D2BA59EB200F18417 /* NSArray+Additions.m in Sources */,
+				B6D791672E434A0F00186B3E /* DiffViewerTextView.swift in Sources */,
 				B61765562BA59F3700F18417 /* RoundedButton.m in Sources */,
 				B617653F2BA59EB200F18417 /* TKSplitHandle.m in Sources */,
 				B68D9CCE2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */,
@@ -2843,6 +2862,7 @@
 				B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B6BC40472C0E4F4A0055DBCE /* BeatTagReportView.swift in Sources */,
 				B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */,
+				B6D7916C2E434A2A00186B3E /* DiffScrollerView.swift in Sources */,
 				B654B5A02E3AAEC400AEDAE0 /* Document+UI.m in Sources */,
 				B617658C2BA5A2AB00F18417 /* BeatTimerView.m in Sources */,
 				B66CDF1D28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
@@ -2865,6 +2885,7 @@
 				B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */,
 				B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */,
 				B6F547472B9B240800379064 /* BeatTextView+ForceElement.m in Sources */,
+				B6D791732E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */,
 				B623D15A29391F3400B5F0CA /* BeatPreviewController.swift in Sources */,
 				B6D70A9E2C8C519B00295AB6 /* BeatLineTypeView.swift in Sources */,
 				B62CD511279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
@@ -2872,6 +2893,7 @@
 				B62BA4C12BBB52B30055FE1A /* BeatTextView+FocusMode.m in Sources */,
 				B6DBB2BC2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */,
 				B67B07222E1BBC86004345D4 /* BeatTextView+MouseEvents.m in Sources */,
+				B6D7916F2E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */,
 				B656E0012A4EE7FB00CEAEA4 /* BeatCharacterEditor.swift in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
 				B69C74E12773D9CA0022D9D5 /* NSImage+ProportionalScaling.m in Sources */,
@@ -2921,9 +2943,10 @@
 				B6125FD52CD3D1D8009AE189 /* ColorCheckbox.m in Sources */,
 				B6FA1ECD2CF336EE002737A8 /* RTFPrintView.swift in Sources */,
 				B6125FD62CD3D1D8009AE189 /* ScrollView.m in Sources */,
-				B6125FD72CD3D1D8009AE189 /* BeatNativePrinting.swift in Sources */,
+				B6125FD72CD3D1D8009AE189 /* BeatPrintView.swift in Sources */,
 				B6125FD82CD3D1D8009AE189 /* BeatDonationPlea.swift in Sources */,
 				B6125FD92CD3D1D8009AE189 /* NSArray+Additions.m in Sources */,
+				B6D791682E434A0F00186B3E /* DiffViewerTextView.swift in Sources */,
 				B6125FDA2CD3D1D8009AE189 /* RoundedButton.m in Sources */,
 				B6125FDB2CD3D1D8009AE189 /* TKSplitHandle.m in Sources */,
 				B6125FDC2CD3D1D8009AE189 /* NSView+Visibility.swift in Sources */,
@@ -2996,6 +3019,7 @@
 				B61260152CD3D1D8009AE189 /* BeatClipView.m in Sources */,
 				B61260162CD3D1D8009AE189 /* BeatTagReportView.swift in Sources */,
 				B61260172CD3D1D8009AE189 /* BeatEditorButton.m in Sources */,
+				B6D7916A2E434A2A00186B3E /* DiffScrollerView.swift in Sources */,
 				B654B59E2E3AAEC400AEDAE0 /* Document+UI.m in Sources */,
 				B61260182CD3D1D8009AE189 /* BeatTimerView.m in Sources */,
 				B61260192CD3D1D8009AE189 /* BeatPrintDialog.m in Sources */,
@@ -3018,6 +3042,7 @@
 				B61260292CD3D1D8009AE189 /* BeatComparison.m in Sources */,
 				B612602A2CD3D1D8009AE189 /* BeatTagButton.m in Sources */,
 				B612602B2CD3D1D8009AE189 /* BeatTextView+ForceElement.m in Sources */,
+				B6D791742E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */,
 				B612602C2CD3D1D8009AE189 /* BeatPreviewController.swift in Sources */,
 				B612602D2CD3D1D8009AE189 /* BeatLineTypeView.swift in Sources */,
 				B612602E2CD3D1D8009AE189 /* BeatLaunchScreenButton.swift in Sources */,
@@ -3025,6 +3050,7 @@
 				B61260302CD3D1D8009AE189 /* BeatTextView+FocusMode.m in Sources */,
 				B6DBB2BE2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */,
 				B67B07242E1BBC86004345D4 /* BeatTextView+MouseEvents.m in Sources */,
+				B6D7916E2E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */,
 				B61260312CD3D1D8009AE189 /* BeatCharacterEditor.swift in Sources */,
 				B61260322CD3D1D8009AE189 /* RecentFiles.m in Sources */,
 				B61260332CD3D1D8009AE189 /* NSImage+ProportionalScaling.m in Sources */,
@@ -3074,9 +3100,10 @@
 				B617655F2BA5A19D00F18417 /* ColorCheckbox.m in Sources */,
 				B6FA1ECC2CF336EE002737A8 /* RTFPrintView.swift in Sources */,
 				B616519029FC491C00D20882 /* ScrollView.m in Sources */,
-				B6E91E3D2B68303000EDB066 /* BeatNativePrinting.swift in Sources */,
+				B6E91E3D2B68303000EDB066 /* BeatPrintView.swift in Sources */,
 				B6767ACD2B169786005AE9A8 /* BeatDonationPlea.swift in Sources */,
 				B617653E2BA59EB200F18417 /* NSArray+Additions.m in Sources */,
+				B6D791662E434A0F00186B3E /* DiffViewerTextView.swift in Sources */,
 				B61765572BA59F3700F18417 /* RoundedButton.m in Sources */,
 				B61765402BA59EB200F18417 /* TKSplitHandle.m in Sources */,
 				B68D9CCF2C6294D100FCC9BE /* NSView+Visibility.swift in Sources */,
@@ -3149,6 +3176,7 @@
 				B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B6BC40482C0E4F4A0055DBCE /* BeatTagReportView.swift in Sources */,
 				B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */,
+				B6D7916B2E434A2A00186B3E /* DiffScrollerView.swift in Sources */,
 				B654B59F2E3AAEC400AEDAE0 /* Document+UI.m in Sources */,
 				B617658D2BA5A2AB00F18417 /* BeatTimerView.m in Sources */,
 				B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
@@ -3171,6 +3199,7 @@
 				B68B607B260B849300463AD8 /* BeatComparison.m in Sources */,
 				B68B607C260B849300463AD8 /* BeatTagButton.m in Sources */,
 				B6F547482B9B240800379064 /* BeatTextView+ForceElement.m in Sources */,
+				B6D791722E434A6F00186B3E /* DiffTimestampMenu.swift in Sources */,
 				B623D15B29391F3400B5F0CA /* BeatPreviewController.swift in Sources */,
 				B6D70A9F2C8C519B00295AB6 /* BeatLineTypeView.swift in Sources */,
 				B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
@@ -3178,6 +3207,7 @@
 				B62BA4C22BBB52B30055FE1A /* BeatTextView+FocusMode.m in Sources */,
 				B6DBB2BD2D775769008327EF /* BeatRevisionMenuItem.swift in Sources */,
 				B67B07232E1BBC86004345D4 /* BeatTextView+MouseEvents.m in Sources */,
+				B6D791702E434A4F00186B3E /* DiffViewerStatusView.swift in Sources */,
 				B656E0022A4EE7FB00CEAEA4 /* BeatCharacterEditor.swift in Sources */,
 				B68B6081260B849300463AD8 /* RecentFiles.m in Sources */,
 				B69C74E22773D9CA0022D9D5 /* NSImage+ProportionalScaling.m in Sources */,
@@ -3188,7 +3218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6E91E3B2B68303000EDB066 /* BeatNativePrinting.swift in Sources */,
+				B6E91E3B2B68303000EDB066 /* BeatPrintView.swift in Sources */,
 				B6B85FDD2A22506A00C7713A /* BeatPreviewController.swift in Sources */,
 				B6B85FBE2A224E3100C7713A /* PreviewViewController.m in Sources */,
 				B655AE9D2B5081CC004C7CEF /* BeatQuickLookTextView.swift in Sources */,
@@ -3697,7 +3727,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133464;
+				CURRENT_PROJECT_VERSION = 133468;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3717,7 +3747,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.1.0;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3742,7 +3772,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133464;
+				CURRENT_PROJECT_VERSION = 133468;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -3763,7 +3793,7 @@
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.1.0;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3789,7 +3819,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133464;
+				CURRENT_PROJECT_VERSION = 133468;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3804,7 +3834,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
@@ -3833,7 +3863,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133464;
+				CURRENT_PROJECT_VERSION = 133468;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -3847,7 +3877,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.12;
+				MARKETING_VERSION = 2.1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.BeatQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";

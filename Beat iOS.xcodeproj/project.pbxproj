@@ -61,6 +61,7 @@
 		B64AD62E2B2F900600EBD63A /* BeatThumbnailProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B64AD6262B2F900600EBD63A /* BeatThumbnailProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B64AD6352B2F915900EBD63A /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6342B2F915900EBD63A /* BeatParsing.framework */; };
 		B64AD6392B2F916100EBD63A /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64AD6382B2F916100EBD63A /* BeatCore.framework */; };
+		B64BFAC72E4DBC71000742EA /* 0.3.2.html in Resources */ = {isa = PBXBuildFile; fileRef = B64BFAC62E4DBC71000742EA /* 0.3.2.html */; };
 		B64C92562CBA7E6D0024CC37 /* 0.1.14.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C92552CBA7E6D0024CC37 /* 0.1.14.html */; };
 		B64C92582CBDBC270024CC37 /* 0.1.15.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C92572CBDBC270024CC37 /* 0.1.15.html */; };
 		B64C925A2CC1CEA60024CC37 /* 0.1.16.html in Resources */ = {isa = PBXBuildFile; fileRef = B64C92592CC1CEA60024CC37 /* 0.1.16.html */; };
@@ -136,6 +137,8 @@
 		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
 		B6D4F0032C58E01000A8884E /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = B6D4F0022C58E01000A8884E /* Sortable.js */; };
+		B6D791762E43A43500186B3E /* 0.3.1.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D791752E43A43500186B3E /* 0.3.1.html */; };
+		B6D7917C2E44E89500186B3E /* SettingViews.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D7917B2E44E89500186B3E /* SettingViews.storyboard */; };
 		B6DAAC952D74C13400FF6BD6 /* 0.2.8.html in Resources */ = {isa = PBXBuildFile; fileRef = B6DAAC942D74C13400FF6BD6 /* 0.2.8.html */; };
 		B6DEA4812BC45A3900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47E2BC45A2900F15208 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
 		B6DEA4822BC45A3900F15208 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */; };
@@ -258,6 +261,7 @@
 		B64AD62B2B2F900600EBD63A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B64AD6342B2F915900EBD63A /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B64AD6382B2F916100EBD63A /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64BFAC62E4DBC71000742EA /* 0.3.2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.2.html; sourceTree = "<group>"; };
 		B64C92552CBA7E6D0024CC37 /* 0.1.14.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.14.html; sourceTree = "<group>"; };
 		B64C92572CBDBC270024CC37 /* 0.1.15.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.15.html; sourceTree = "<group>"; };
 		B64C92592CC1CEA60024CC37 /* 0.1.16.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.16.html; sourceTree = "<group>"; };
@@ -342,6 +346,8 @@
 		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D4F0022C58E01000A8884E /* Sortable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sortable.js; sourceTree = "<group>"; };
+		B6D791752E43A43500186B3E /* 0.3.1.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.1.html; sourceTree = "<group>"; };
+		B6D7917A2E44E89500186B3E /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/SettingViews.storyboard; sourceTree = "<group>"; };
 		B6DAAC942D74C13400FF6BD6 /* 0.2.8.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.8.html; sourceTree = "<group>"; };
 		B6DEA4792BC45A2800F15208 /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
 		B6DEA47A2BC45A2800F15208 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
@@ -489,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
+				B6D7917B2E44E89500186B3E /* SettingViews.storyboard */,
 				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
 				B64FA4A82DA55E590098F448 /* ThemeEditor.storyboard */,
 			);
@@ -545,6 +552,8 @@
 				B6C51B4D2DF755C10093965F /* 0.2.12.html */,
 				B67B07192E1AB593004345D4 /* 0.2.13.html */,
 				B654B5AC2E3B8F9800AEDAE0 /* 0.3.0.html */,
+				B6D791752E43A43500186B3E /* 0.3.1.html */,
+				B64BFAC62E4DBC71000742EA /* 0.3.2.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -986,8 +995,10 @@
 				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
 				B61914D02C0497EA0079C828 /* BeatStatistics.beatPlugin in Resources */,
 				B61073952DB689E4005AD11B /* 0.2.11.html in Resources */,
+				B6D791762E43A43500186B3E /* 0.3.1.html in Resources */,
 				B686FFC62971BC7E00789C8D /* PreviewStyles-iOS.css in Resources */,
 				B64C92582CBDBC270024CC37 /* 0.1.15.html in Resources */,
+				B64BFAC72E4DBC71000742EA /* 0.3.2.html in Resources */,
 				B69FF9AD2D4F7EA8001D36E8 /* 0.2.7.html in Resources */,
 				B65B56E92D40284A008BB43F /* 0.2.4.html in Resources */,
 				B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */,
@@ -996,6 +1007,7 @@
 				B631487C2CB69C6C001EE70E /* BeatPatchNoteTemplate.html in Resources */,
 				B6DAAC952D74C13400FF6BD6 /* 0.2.8.html in Resources */,
 				B62D16402BFE3596000EFEE5 /* Beat-iOS-76x76.png in Resources */,
+				B6D7917C2E44E89500186B3E /* SettingViews.storyboard in Resources */,
 				B67B071A2E1AB593004345D4 /* 0.2.13.html in Resources */,
 				B64C92562CBA7E6D0024CC37 /* 0.1.14.html in Resources */,
 				B628E7392D86DC3000A3FBCD /* 0.2.9.html in Resources */,
@@ -1108,6 +1120,14 @@
 				B6CB9700282FEB6700C7AFC7 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		B6D7917B2E44E89500186B3E /* SettingViews.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6D7917A2E44E89500186B3E /* Main.storyboard */,
+			);
+			name = SettingViews.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1232,7 +1252,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 80;
+				CURRENT_PROJECT_VERSION = 85;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1242,7 +1262,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.3.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
@@ -1268,7 +1288,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 80;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1277,7 +1297,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.3.2;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1305,7 +1325,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 80;
+				CURRENT_PROJECT_VERSION = 85;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1327,7 +1347,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.3.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1363,7 +1383,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 80;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1380,7 +1400,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.3.2;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;

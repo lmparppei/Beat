@@ -144,6 +144,8 @@
 		B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6F59D412C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */; };
 		B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */; };
+		B6F84CF12E3D33A700A23129 /* OutlineItemProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F84CEF2E3D33A700A23129 /* OutlineItemProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6F84CF22E3D33A700A23129 /* OutlineItemProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F84CF02E3D33A700A23129 /* OutlineItemProvider.m */; };
 		B6FA1E212CEA8A2A002737A8 /* Stageplay.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E1F2CEA8A2A002737A8 /* Stageplay.beatCSS */; };
 		B6FA1E222CEA8A2A002737A8 /* Stageplay-editor.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6FA1E202CEA8A2A002737A8 /* Stageplay-editor.beatCSS */; };
 		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -290,6 +292,8 @@
 		B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotepad.m; sourceTree = "<group>"; };
 		B6F59D402C6E82A400AB8FAE /* BeatMarkdownTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMarkdownTextStorage.swift; sourceTree = "<group>"; };
 		B6F59D422C6E830D00AB8FAE /* BeatFontExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontExtensions.swift; sourceTree = "<group>"; };
+		B6F84CEF2E3D33A700A23129 /* OutlineItemProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineItemProvider.h; sourceTree = "<group>"; };
+		B6F84CF02E3D33A700A23129 /* OutlineItemProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineItemProvider.m; sourceTree = "<group>"; };
 		B6FA1E1F2CEA8A2A002737A8 /* Stageplay.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = Stageplay.beatCSS; sourceTree = "<group>"; };
 		B6FA1E202CEA8A2A002737A8 /* Stageplay-editor.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Stageplay-editor.beatCSS"; sourceTree = "<group>"; };
 		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
@@ -488,6 +492,8 @@
 			children = (
 				B676DD2B2BA8AC7700F7DBDA /* OutlineViewItem.h */,
 				B676DD2A2BA8AC7600F7DBDA /* OutlineViewItem.m */,
+				B6F84CEF2E3D33A700A23129 /* OutlineItemProvider.h */,
+				B6F84CF02E3D33A700A23129 /* OutlineItemProvider.m */,
 			);
 			path = "Data representations";
 			sourceTree = "<group>";
@@ -737,6 +743,7 @@
 				B68C0F66299D845A0031AE6B /* BeatAttributedStringExtensions.swift in Headers */,
 				B680B7D42A6EC6AE00FCD805 /* NSString+VersionNumber.h in Headers */,
 				B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */,
+				B6F84CF12E3D33A700A23129 /* OutlineItemProvider.h in Headers */,
 				B6F59D3F2C6E7D3600AB8FAE /* BeatNotepad.h in Headers */,
 				B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */,
 				B67C2CF32A2D1AD000B88B0F /* BeatFontSet.h in Headers */,
@@ -896,6 +903,7 @@
 				B6311EE52D68797B00712CFE /* NSMutableDictionary+DMPExtensions.m in Sources */,
 				B6311EE62D68797B00712CFE /* DiffMatchPatch.m in Sources */,
 				B6311F032D6B1E5D00712CFE /* BeatVersionControl.m in Sources */,
+				B6F84CF22E3D33A700A23129 /* OutlineItemProvider.m in Sources */,
 				B6311EE72D68797B00712CFE /* NSString+UnicharUtilities.m in Sources */,
 				B6311EE82D68797B00712CFE /* NSString+JavaSubstring.m in Sources */,
 				B6311EE92D68797B00712CFE /* NSString+UriCompatibility.m in Sources */,
