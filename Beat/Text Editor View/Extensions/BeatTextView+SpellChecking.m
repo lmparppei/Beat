@@ -65,6 +65,9 @@
 		[super checkTextInRange:range types:checkingTypes options:options];
 		return;
 	}
+
+	// Don't go out of range here
+	if (range.length == 0 || NSMaxRange(range) > self.text.length) return;
  
 	// Do more complicated spell checking
 	[self.textStorage enumerateAttribute:@"representedLine" inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
