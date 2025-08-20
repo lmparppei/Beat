@@ -70,3 +70,5 @@ extension BeatDocumentViewController {
 		present(vc, animated: true)
 	}
 }
+
+

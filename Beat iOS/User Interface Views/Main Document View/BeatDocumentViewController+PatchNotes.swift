@@ -15,12 +15,16 @@ import WebKit
 			  let buildNumber = Int(buildNumberStr)
 		else { return }
 		
+		print("-> BUILD", buildNumber)
+		
 		let lastRunVersion = UserDefaults.standard.integer(forKey: "lastRunVersion")
+		
 		if buildNumber > lastRunVersion && lastRunVersion > 0 {
-			UserDefaults.standard.set(buildNumber, forKey: "lastRunVersion")
 			let viewController = PatchNotesViewController()
 			self.present(viewController, animated: true)
 		}
+		
+		UserDefaults.standard.set(buildNumber, forKey: "lastRunVersion")
 	}
 }
 
