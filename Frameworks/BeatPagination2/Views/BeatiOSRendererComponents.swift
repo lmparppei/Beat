@@ -4,6 +4,18 @@
 //
 //  Created by Lauri-Matti Parppei on 22.1.2024.
 //
+/**
+ 
+ This is a collection of small extensions and classes for iOS to support certain TextKit 1-like things and to ensure real PDF creation.
+ For some incomprehensible reason printing a tet view in iOS won't create a real PDF, but instead rasterizes it, save for *some* elements.
+ It doesn't make any sense, but these extensions take some pain out of it.
+ 
+ Most of these "fixes" are essentially hacks to avoid some (undocumented) weirdness and bugs in TextKit 2. There are many inconsistencies
+ and things that seem just blatantly broken, and it's unclear if those are intended behaviors or not.
+ 
+ If Apple fixes any of them, my fixes and hacks might get broken. 
+ 
+ */
 
 import BeatCore
 import BeatParsing
@@ -154,6 +166,8 @@ extension BeatPaginationPageView:NSTextLayoutManagerDelegate {
     }
 }
 
+/// Text fragment which draws revision markers and ensures that we're drawing in the correct position in a true PDF.
+/// This is essentially a hack and is cooked up using trial and error, and might be bound to break if Apple fixes some bugs in TextKit 2.
 public class BeatRenderingTextFragment:NSTextLayoutFragment {
     public func draw(at point: CGPoint, origin:CGPoint, in context: CGContext) {
         var actualPoint = point
@@ -163,7 +177,8 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
         super.draw(at: actualPoint, in: context)
         
         let pageView = self.textLayoutManager?.delegate as? BeatPaginationPageView
-        let visibleRevisions = BeatRevisions.everyRevisionIndex()
+        //let visibleRevisions = BeatRevisions.everyRevisionIndex()
+        let visibleRevisions = pageView?.settings.revisions ?? BeatRevisions.everyRevisionIndex()
         
         guard let container = self.textLayoutManager?.textContainer,
               let contentManager = textLayoutManager?.textContentManager
@@ -235,6 +250,7 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
         }
     }
     
+    /// For some reason we need to draw fragments using _zero_ origin to make the show up in the correct position on page.
     override public func draw(at point: CGPoint, in context: CGContext) {
         draw(at: point, origin:CGPointZero, in: context)
     }
