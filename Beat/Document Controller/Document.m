@@ -154,6 +154,9 @@
 
 	self.previewController.pagination.finishedPagination = nil;
 	
+	// Remove local styles from memory to avoid retain cycles
+	[self forgetStyles];
+	
 	// Unload all plugins
 	[self.pluginAgent unloadPlugins];
 	
@@ -195,11 +198,11 @@
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
 	self.currentScene = nil;
-	self.outlineView.filters = nil;
-	
+
 	self.outlineView = nil;
-	
+	self.outlineView.filters = nil;
 	self.outlineView.filteredOutline = nil;
+	
 	self.tagging = nil;
 	self.review = nil;
 	

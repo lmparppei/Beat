@@ -158,7 +158,6 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		// are a lot of items.
 		let numberOfRows = min(self.tableView.numberOfRows, maxResults)
 		let height = (tableView.rowHeight + tableView.intercellSpacing.height) * CGFloat(numberOfRows)
-		print("HEIGHT: ", height, " / rows",numberOfRows)
 		
 		let frame = CGRectMake(0.0, 0.0, popoverWidth, height)
 		tableView.enclosingScrollView?.frame = frame

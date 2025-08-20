@@ -28,7 +28,6 @@ import BeatParsing
 		let dark = UIView.shouldAppearAsDark(view: cell, apply: true)
 		
 		if let scene = delegate.parser.outline[indexPath.row] as? OutlineScene {
-			print(" - dark: ", dark, scene.string)
 			let string = OutlineViewItem.withScene(scene,
 												   currentScene: OutlineScene(),
 												   sceneNumber: BeatUserDefaults().getBool(BeatSettingShowSceneNumbersInOutline),

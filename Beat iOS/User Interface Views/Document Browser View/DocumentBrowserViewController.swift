@@ -103,10 +103,11 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		importAndPresentTemplate(url)
 	}
     
+	
     
 	// MARK: - UIDocumentBrowserViewControllerDelegate
     
-    func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
+    @objc func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
 		let storyboard = UIStoryboard(name: "Main", bundle: nil)
 		let templateVC = storyboard.instantiateViewController(identifier: "TemplateCollectionViewController") as TemplateCollectionViewController
 		templateVC.importHandler = importHandler

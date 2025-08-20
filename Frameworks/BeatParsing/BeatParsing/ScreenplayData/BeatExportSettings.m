@@ -100,7 +100,8 @@
     return self;
 }
 
-- (BeatPaperSize)paperSize {
+- (BeatPaperSize)paperSize
+{
 	// Check paper size
 #if TARGET_OS_IOS
 	if (_paperSize == NSNotFound) {
