@@ -101,6 +101,11 @@ class BeatPageThumbnailView:NSCollectionView {
 	}
 		
 	override func reloadData() {
+		if let superview = self.superview, superview.frame.width == 0 {
+			// Don't reload invisible views
+			return
+		}
+		
 		let layout = self.collectionViewLayout as? NSCollectionViewFlowLayout
 		
 		// Update page size

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension BeatPreviewController {
+public extension BeatPreviewController {
 	@IBAction func showPreviewOptions(sender:NSButton) {
 		self.optionsPopover = NSPopover()
 		let options = BeatPreviewOptions()
@@ -17,5 +17,17 @@ extension BeatPreviewController {
 		self.optionsPopover?.contentViewController = options
 		self.optionsPopover?.behavior = .transient
 		self.optionsPopover?.show(relativeTo: sender.bounds, of: sender, preferredEdge: .maxY)
+	}
+	
+	@IBAction func toggleThumbnailView(sender:NSButton) {
+		guard let constraint = self.thumbnailViewConstraint else { return }
+		if constraint.constant > 0 {
+			print(" ---> hide")
+			BeatUserDefaults.shared().save(true, forKey: "hideThumbnailView")
+			setThumbnailViewHidden(true)
+		} else {
+			BeatUserDefaults.shared().save(false, forKey: "hideThumbnailView")
+			setThumbnailViewHidden(false)
+		}
 	}
 }
