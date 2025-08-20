@@ -6,6 +6,7 @@
 //
 
 #import "BeatPlugin+Modals.h"
+#import <BeatPlugins/BeatPlugins-Swift.h>
 
 @implementation BeatPlugin (Modals)
 
@@ -160,8 +161,9 @@
  @param info Further info  displayed under the title
  @param placeholder Placeholder string for text input
  @param defaultText Default value for text input
+ @param callback Callback when not presenting in sync
  */
-- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
+- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText callback:(JSValue*)callback
 {
 #if !TARGET_OS_IOS
     if (!NSThread.isMainThread) {
@@ -190,8 +192,52 @@
     } else {
         return nil;
     }
+    
 #else
-    NSLog(@"WARNING: Beat.prompt missing on iOS");
+    NSLog(@"WARNING: Most Beat.prompt functionality is missing on iOS");
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:prompt message:info preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = placeholder;
+    }];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [callback callWithArguments:@[alert.textFields.firstObject.text]];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        [callback callWithArguments:nil];
+    }]];
+    
+    if (self.container != nil) {
+        UIViewController* vc = [self.container getViewController];
+        [vc presentViewController:alert animated:false completion:^{  }];
+    }
+        
+    /*
+     let alert = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
+
+             alert.addTextField { (textField) in
+                 textField.text = defaultText
+             }
+
+             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action) in
+                 if let text = alert.textFields?.first?.text {
+                     completionHandler(text)
+                 } else {
+                     completionHandler(defaultText)
+                 }
+
+             }))
+
+             alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
+
+                 completionHandler(nil)
+
+             }))
+
+             self.present(alert, animated: true, completion: nil)
+     */
+    
     return @"";
 #endif
 }

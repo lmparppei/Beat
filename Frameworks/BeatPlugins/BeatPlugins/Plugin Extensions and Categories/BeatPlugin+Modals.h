@@ -15,7 +15,7 @@
 JSExportAs(alert, - (void)alert:(NSString*)title withText:(NSString*)info);
 /// Displays a text input prompt.
 /// - returns String value. Value is `nil` if the user pressed cancel.
-JSExportAs(prompt, - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText);
+JSExportAs(prompt, - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText callback:(JSValue*)callback);
 /// Displays a confirmation modal. Returns `true` if the user pressed OK.
 JSExportAs(confirm, - (bool)confirm:(NSString*)title withInfo:(NSString*)info);
 /// Displays a dropdown prompt with a list of strings. Returns the selected string. Return value is `nil` if the user pressed cancel.
