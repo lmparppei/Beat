@@ -1,0 +1,245 @@
+/*
+  Localizable.strings
+  Beat
+
+  Created by Lauri-Matti Parppei on 2.1.2022.
+  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
+*/
+
+
+"general.yes" = "是";
+"general.no" = "否";
+"general.OK" = "好的";
+"general.ok" = "好的";
+"general.cancel" = "取消";
+"general.undo" = "撤销";
+"general.redo" = "重做";
+"general.close" = "关闭";
+"general.untitled" = "未命名";
+"app.manual" = "手册";
+"app.patchNotes" = "更新说明";
+"general.revert" = "恢复";
+
+"plugins.errorRunningScript" = "脚本运行出错";
+"plugins.input.select" = "选择...";
+
+"launch.newDocument.subtitle" = "开始一个新的空白项目";
+"launch.tutorial.subtitle" = "如果您是新手，请从这里开始 Beat";
+"launch.templates.subtitle" = "学习 Beat，快速开始！";
+
+"unlock_document.title" = "解除文档锁定";
+"unlock_document.confirm" = "您确定要解除文档锁定并允许更改吗?";
+
+"language.alert" = "需要重新启动";
+"language.informative" = "您需要重新启动 Beat 才能使语言更改生效。";
+
+"plugins.library" = "插件库";
+"plugins.installed" = "已安装";
+"plugins.download" = "下载";
+"plugins.update" = "更新";
+"plugins.version" = "版本";
+"plugins.updateAvailable" = "更新可用";
+"plugins.currentVersion" = "目前已安装";
+"plugins.compatibilityWarning" = "<b>警告</b>：此插件可能与您的 Beat 版本不兼容。为确保其正常工作，请从 App Store 下载最新版本后继续使用。";
+
+"plugins.libraryWelcome" = "<p> 以下是 Beat  官方的插件精选。已启用(选中)的插件将在<b>工具</b>菜单下显示。灰色插件表示尚未安装。点击它们的标签进行安装并了解更多插件信息。</p>\
+<p class='small gray'>点击文件夹图标手动管理插件。你也可以用 JavaScript 编写自己的插件。&mdash; 在 Beat 网站了解更多信息。</p>";
+
+"storyline.placeholder" = "新的故事线名称";
+"storyline.add" = "新建故事线...";
+
+"gender.other" = "其它";
+"gender.woman" = "女性";
+"gender.man" = "男性";
+"gender.unspecified" = "未知";
+
+"gender.other.plural" = "其它";
+"gender.woman.plural" = "女性";
+"gender.man.plural" = "男性";
+"gender.unspecified.plural" = "未知";
+
+"lock.clickToUnlock" = "单击解除锁定";
+"lock.documentLocked" = "文档已被锁定";
+
+
+"statistics.lines" = "对白";
+"statistics.scenes" = "场景";
+
+"statisticsPanel.title" = "剧本统计";
+"statisticsPanel.averageSceneLength" = "平均场景长度";
+"statisticsPanel.shortForPages" = "页";
+"statisticsPanel.longestScene" = "最长场景";
+"statisticsPanel.stats.words" = "单词";
+"statisticsPanel.stats.scenes" = "场景";
+"statisticsPanel.stats.characters" = "角色";
+"statisticsPanel.linesByGender" = "按性别划分台词";
+"statisticsPanel.setGenderInfo" = "给左侧的角色设置性别";
+"statisticsPanel.linesPerCharacter" = "每个角色的台词";
+"statisticsPanel.locations" = "地点";
+"statisticsPanel.locations.interior" = "室内";
+"statisticsPanel.locations.exterior" = "室外";
+"statisticsPanel.locations.other" = "其它";
+"statisticsPanel.noDialogue" = "无对白";
+
+"print.print" = "打印";
+"print.createPDF" = "创建 PDF";
+"print.pdfButton" = "创建 PDF";
+"print.printButton" = "打印";
+"print.pdfButton" = "PDF";
+
+"cardView.noScenes" = "无场景";
+"cardView.noScenesInformation" = "当您创作一些场景时，它们将在此视图中以卡片形式呈现";
+"cardView.print" = "打印";
+
+"color.none" = "无";
+"color.red" = "红色";
+"color.green" = "绿色";
+"color.blue" = "蓝色";
+"color.pink" = "粉色";
+"color.yellow" = "黄色";
+"color.brown" = "棕色";
+"color.cyan" = "青色";
+"color.orange" = "橘色";
+"color.magenta" = "品红色";
+"color.purple" = "紫色";
+"color.salmon" = "浅橙色";
+"color.rose" = "玫瑰色";
+"color.goldenrod" = "金橘色";
+"color.buff" = "米色";
+"color.cherry" = "樱桃色";
+
+"revision.1" = "第一版";
+"revision.2" = "第二版";
+"revision.3" = "第三版";
+"revision.4" = "第四版";
+"revision.5" = "第五版";
+"revision.6" = "第六版";
+"revision.7" = "第七版";
+"revision.8" = "第八版";
+
+"revisionMode.reviseLine" = "当前行标记为修订";
+"revisionMode.reviseSelection" = "选中部分标记为修订";
+"revisionMode.clearSelection" = "选中部分清除修订";
+"revisionMode.clearLine" = "当前行清除修订";
+
+"revisions.commitPrompt.title" = "提交所有修订";
+"revisions.commitPrompt.text" = "这将清除所有修订标记并移除所有标记为删除的范围。您确定要继续吗？";
+
+"mode.taggingMode" = "标记模式";
+"mode.reviewMode" = "审阅模式";
+
+"backup.revertToSaved" = "恢复到已保存状态";
+"backup.backupVault" = "打开备份库...";
+
+"backup.reverting.title" = "恢复文件";
+"backup.reverting.message" = "恢复到早期版本时，任何未保存的更改都将丢失。";
+
+"editor.setSceneNumber" = "设置场景编号";
+"editor.setSceneNumber.info" = "自定义场景编号（为无数字编号的场景设置，可以包含字母或空格。）";
+
+"force.character" = "角色";
+"force.heading" = "场景标题";
+"force.action" = "动作";
+"force.lyrics" = "歌词";
+
+"editor.goToSceneNumber.message" = "转到场景编号...";
+"editor.goToSceneNumber.placeholder" = "例如 123";
+
+"export.prefix" = "导出";
+"import.prefix" = "倒入";
+
+"timer.reset" = "重置";
+"timer.start" = "开始";
+"timer.charactersRemoved" = "已删除字符";
+"timer.charactersTyped" = "已输入字符";
+
+
+/* Tutorials */
+
+"templates.tutorials" = "教程";
+"templates.templates" = "模板";
+
+"templates.tutorial.title" = "教程";
+"templates.tutorial.description" = "Beat 快速入门指南！";
+
+"templates.outliningTutorial.title" = "大纲教程";
+"templates.outliningTutorial.description" = "学习更多高级大纲技巧";
+
+"templates.comicBook.title" = "漫画书";
+"templates.comicBook.description" = "一个简明的漫画书模板";
+
+"templates.onePageSynopsis.title" = "单页故事梗概";
+"templates.onePageSynopsis.description" = "起草一个浓缩版的故事";
+
+"templates.threeActOutline.title" = "三幕大纲";
+"templates.threeActOutline.description" = "经典的 8 个序列故事结构";
+
+"templates.novel-tutorial.title" = "小说教程";
+"templates.novel-tutorial.description" = "在 Beat 中开始创作小说";
+
+"templates.novel.title" = "小说";
+"templates.novel.description" = "基本小说模板";
+
+
+/* Selection / information */
+
+"textView.information.selection" = "选中项";
+"textView.information.document" = "文档";
+"textView.information.pages" = "页（所有）";
+"textView.information.page" = "页（当前）";
+"textView.information.characters" = "字符";
+"textView.information.words" = "单词";
+
+"export.includeInvisibleElements" = "包含不可见的元素";
+"export.printSections" = "选中项";
+"export.printSynopsis" = "梗概";
+"export.printNotes" = "注释";
+"export.printSceneNumbers" = "场景编号";
+
+"templates.showTutorialsAndTemplates" = "显示教程和模板...";
+
+"revisions.downgrade.title" = "修订降级";
+"revisions.downgrade.info" = "此操作将所选修订版本降级为第一版，较高版本将随之调整。这在您已达到最高版本级别并且希望删除较低级别标记时非常有用。";
+
+"revisions.downgrade.from" = "降级后的最低修订版本：";
+
+"revisions.convert.title" = "转换/删除修订标记";
+"revisions.convert.info" = "所选修订版本将被转换为另一个版本。如果您将目标版本留空，则所选修订将被删除。";
+
+"revisions.convert.from" = "当前版本";
+"revisions.convert.to" = "目标版本";
+
+"revisions.convert.remove" = "（删除）";
+"revisions.convert.onlySelectedRange" = "仅在选定范围内";
+
+"license.title" = "输入捐赠密钥";
+"license.info" = "感谢您的捐赠！请在下方粘贴您收到的密钥。";
+
+/* Outline setings */
+
+"outline.settings" = "大纲设置";
+"outline.settings.synopses" = "概要";
+"outline.settings.headings" = "场景标题";
+"outline.settings.sceneNumbers" = "场景编号";
+"outline.settings.notes" = "注释";
+"outline.settings.markers" = "标记";
+"outline.settings.snapshots" = "显示快照";
+
+"character.editor.age" = "年龄";
+"character.editor.biography" = "人物介绍";
+"character.editor.lines" = "台词";
+
+"backup.browseVersions" = "浏览版本...";
+
+"quickSettings.novelLineHeightMultiplier" = "行距";
+
+"tag.cast" = "角色";
+"tag.prop" = "道具";
+"tag.costume" = "服装";
+"tag.makeup" = "化妆";
+"tag.vfx" = "视效";
+"tag.sfx" = "特效";
+"tag.music" = "音乐";
+"tag.animal" = "动物";
+"tag.extras" = "其它";
+"tag.vehicle" = "车辆";

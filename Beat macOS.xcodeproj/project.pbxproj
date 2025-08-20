@@ -866,6 +866,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		523592462C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
+		523592472C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Document.strings"; sourceTree = "<group>"; };
+		523592482C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Launch Screen.strings"; sourceTree = "<group>"; };
+		523592492C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatAboutScreen.strings"; sourceTree = "<group>"; };
+		5235924A2C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatPreferencesPanel.strings"; sourceTree = "<group>"; };
+		5235924B2C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/ThemeEditor.strings"; sourceTree = "<group>"; };
+		5235924C2C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatQuickSettings.strings"; sourceTree = "<group>"; };
+		5235924D2C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatSceneHeadingSearch.strings"; sourceTree = "<group>"; };
+		5235924E2C6B75BA00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatTitlePageEditor.strings"; sourceTree = "<group>"; };
+		5235924F2C6B75BB00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatTimerWindow.strings"; sourceTree = "<group>"; };
+		523592502C6B75BB00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatPrintDialog.strings"; sourceTree = "<group>"; };
+		523592512C6B75BB00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/BeatEpisodePrinter.strings"; sourceTree = "<group>"; };
+		523592522C6B75BB00631499 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B138B57319E1C973000489C4 /* Beat Ad Hoc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Ad Hoc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B138B57A19E1C973000489C4 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; wrapsLines = 0; };
 		B138B61E19E1D6A7000489C4 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -2467,6 +2480,7 @@
 				fi,
 				sv,
 				sl,
+				"zh-Hans",
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			packageReferences = (
@@ -3257,6 +3271,7 @@
 				B606FDC72817F09E00D89CD6 /* fi */,
 				B65E03D729AE18D600927056 /* sv */,
 				B67C73BB2B3721D5002BD12F /* sl */,
+				523592502C6B75BB00631499 /* zh-Hans */,
 			);
 			name = BeatPrintDialog.xib;
 			sourceTree = "<group>";
@@ -3268,6 +3283,7 @@
 				B607519628CB27AB00F4E68F /* fi */,
 				B65E03DC29AE18D600927056 /* sv */,
 				B67C73BF2B3721FF002BD12F /* sl */,
+				5235924D2C6B75BA00631499 /* zh-Hans */,
 			);
 			name = BeatSceneHeadingSearch.xib;
 			sourceTree = "<group>";
@@ -3288,6 +3304,7 @@
 				B62BA4CB2BBBEEE70055FE1A /* fi */,
 				B62BA4CC2BBBEEEA0055FE1A /* sl */,
 				B62BA4CD2BBBEEED0055FE1A /* sv */,
+				523592472C6B75BA00631499 /* zh-Hans */,
 			);
 			name = Document.xib;
 			sourceTree = "<group>";
@@ -3299,6 +3316,7 @@
 				B65BBF7D280C3FD800FCA23E /* fi */,
 				B65E03D929AE18D600927056 /* sv */,
 				B67C73B52B37219C002BD12F /* sl */,
+				523592492C6B75BA00631499 /* zh-Hans */,
 			);
 			name = BeatAboutScreen.xib;
 			sourceTree = "<group>";
@@ -3310,6 +3328,7 @@
 				B66716C92971D1B5005B8C55 /* fi */,
 				B65E03DD29AE18D600927056 /* sv */,
 				B67C73CD2B37227C002BD12F /* sl */,
+				5235924B2C6B75BA00631499 /* zh-Hans */,
 			);
 			name = ThemeEditor.xib;
 			sourceTree = "<group>";
@@ -3321,6 +3340,7 @@
 				B6763E50278221F300284907 /* en */,
 				B65E03DF29AE18D600927056 /* sv */,
 				B67C73B32B37215B002BD12F /* sl */,
+				523592522C6B75BB00631499 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3332,6 +3352,7 @@
 				B6763E8427822DE900284907 /* fi */,
 				B65E03DE29AE18D600927056 /* sv */,
 				B67C73C52B372230002BD12F /* sl */,
+				5235924E2C6B75BA00631499 /* zh-Hans */,
 			);
 			name = BeatTitlePageEditor.xib;
 			sourceTree = "<group>";
@@ -3343,6 +3364,7 @@
 				B6763E902782317A00284907 /* fi */,
 				B65E03D629AE18D600927056 /* sv */,
 				B67C73B72B3721AC002BD12F /* sl */,
+				523592512C6B75BB00631499 /* zh-Hans */,
 			);
 			name = BeatEpisodePrinter.xib;
 			sourceTree = "<group>";
@@ -3354,6 +3376,7 @@
 				B6763EA82782545400284907 /* fi */,
 				B65E03DB29AE18D600927056 /* sv */,
 				B67C73B92B3721C5002BD12F /* sl */,
+				5235924A2C6B75BA00631499 /* zh-Hans */,
 			);
 			name = BeatPreferencesPanel.xib;
 			sourceTree = "<group>";
@@ -3365,6 +3388,7 @@
 				B67F75A22B1F31130028D009 /* fi */,
 				B67F75A32B1F31170028D009 /* sv */,
 				B67C73C32B372222002BD12F /* sl */,
+				5235924F2C6B75BB00631499 /* zh-Hans */,
 			);
 			name = BeatTimerWindow.xib;
 			sourceTree = "<group>";
@@ -3376,6 +3400,7 @@
 				B698DCE52A4B96A100D8C5C4 /* fi */,
 				B698DCE72A4B96A300D8C5C4 /* sv */,
 				B67C73BD2B3721E5002BD12F /* sl */,
+				5235924C2C6B75BA00631499 /* zh-Hans */,
 			);
 			name = BeatQuickSettings.xib;
 			sourceTree = "<group>";
@@ -3395,6 +3420,7 @@
 				B6763E4627820BF600284907 /* fi */,
 				B65E03D529AE18D600927056 /* sv */,
 				B67C73CB2B37226D002BD12F /* sl */,
+				523592462C6B75BA00631499 /* zh-Hans */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -3406,6 +3432,7 @@
 				B6D37F882A2A25560069C515 /* fi */,
 				B6D37F8A2A2A25A90069C515 /* sv */,
 				B67C73C92B37225A002BD12F /* sl */,
+				523592482C6B75BA00631499 /* zh-Hans */,
 			);
 			name = "Launch Screen.storyboard";
 			sourceTree = "<group>";
