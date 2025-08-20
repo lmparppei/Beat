@@ -14,17 +14,17 @@
 #import <BeatCore/BeatCore-Swift.h>
 
 #if TARGET_OS_IOS
-	#import <UIKit/UIKit.h>
-	#define BXFont UIFont
-	#define BXColor UIColor
-	#define BXFontWeightRegular UIFontWeightRegular
-	#define BXFontWeightBold UIFontWeightBold
+#import <UIKit/UIKit.h>
+#define BXFont UIFont
+#define BXColor UIColor
+#define BXFontWeightRegular UIFontWeightRegular
+#define BXFontWeightBold UIFontWeightBold
 #else
-	#import <Cocoa/Cocoa.h>
-	#define BXFont NSFont
-	#define BXColor NSColor
-	#define BXFontWeightRegular NSFontWeightRegular
-	#define BXFontWeightBold NSFontWeightBold
+#import <Cocoa/Cocoa.h>
+#define BXFont NSFont
+#define BXColor NSColor
+#define BXFontWeightRegular NSFontWeightRegular
+#define BXFontWeightBold NSFontWeightBold
 #endif
 
 
@@ -63,12 +63,28 @@
             return (dark) ? theme.outlineSynopsis.darkColor : theme.outlineSynopsis.lightColor;
             break;
         default:
+#if TARGET_OS_OSX
             return (dark) ? theme.outlineItem.darkColor : theme.outlineItem.lightColor;
+#else
+            return UIColor.labelColor;
+#endif
     }
 }
 
++ (OutlineItemOptions)optionsWithSceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark
+{
+    OutlineItemOptions options = OutlineItemIncludeHeading;
+    if (includeSceneNumber) options |= OutlineItemIncludeSceneNumber;
+    if (includeSynopsis) options |= OutlineItemIncludeSynopsis;
+    if (includeNotes) options |= OutlineItemIncludeNotes;
+    if (includeMarkers) options |= OutlineItemIncludeMarkers;
+    if (dark) options |= OutlineItemDarkMode;
+    
+    return options;
+}
+
 /// Returns an attributed string for outline view
- + (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark
++ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark
 {
     OutlineItemOptions options = OutlineItemIncludeHeading;
     if (includeSceneNumber) options |= OutlineItemIncludeSceneNumber;
@@ -100,9 +116,9 @@
         ];
         
         NSAttributedString* aStr = [NSAttributedString createWithBlocks:blocks font:[BXFont systemFontOfSize:fontSize] textColor:color symbolColor:color paragraphStyle:markerStyle];
-            
-            [resultString appendAttributedString:aStr];
-        }
+        
+        [resultString appendAttributedString:aStr];
+    }
 }
 
 + (void)appendNotes:(bool)dark resultString:(NSMutableAttributedString *)resultString scene:(OutlineScene * _Nonnull)scene {
@@ -139,14 +155,14 @@
             
             NSMutableAttributedString* noteLineCopy = noteLine.mutableCopy;
             NSMutableParagraphStyle* noSpacingStyle = noteStyle.mutableCopy;
-                noSpacingStyle.paragraphSpacingBefore = 0.0;
-                
-                [noteLineCopy addAttribute:NSParagraphStyleAttributeName value:noSpacingStyle range:rangeWithoutFirstLine];
-                noteLine = noteLineCopy;
-            }
+            noSpacingStyle.paragraphSpacingBefore = 0.0;
             
-            [resultString appendAttributedString:noteLine];
+            [noteLineCopy addAttribute:NSParagraphStyleAttributeName value:noSpacingStyle range:rangeWithoutFirstLine];
+            noteLine = noteLineCopy;
         }
+        
+        [resultString appendAttributedString:noteLine];
+    }
 }
 
 + (void)appendSynopsis:(bool)dark resultString:(NSMutableAttributedString *)resultString scene:(OutlineScene * _Nonnull)scene {
@@ -173,31 +189,31 @@
             NSForegroundColorAttributeName: synopsisColor,
             NSParagraphStyleAttributeName: synopsisStyle
         }];
-            
-            #if !TARGET_OS_IOS
-                [synopsisLine applyFontTraits:NSItalicFontMask range:NSMakeRange(0, synopsisLine.length)];
-            #endif
-            
-            [resultString appendAttributedString:synopsisLine];
-        }
+        
+#if !TARGET_OS_IOS
+        [synopsisLine applyFontTraits:NSItalicFontMask range:NSMakeRange(0, synopsisLine.length)];
+#endif
+        
+        [resultString appendAttributedString:synopsisLine];
+    }
 }
 
 + (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current options:(OutlineItemOptions)options
 {
-	Line *line = scene.line;
-	if (line == nil) { return NSMutableAttributedString.new; }
+    Line *line = scene.line;
+    if (line == nil) { return NSMutableAttributedString.new; }
     
     bool dark = (options & OutlineItemDarkMode) != 0;
     // Relative heights render background differently (when future generations come along)
     /*
-    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights] && scene.color.length > 0 && scene.type == heading) {
-        BXColor* c = [BeatColors color:scene.color];
-        if (c != nil) dark = c.isDarkAsBackground;
-    } */
-		
-	NSMutableAttributedString *resultString = NSMutableAttributedString.new;
-	
-	// Get the string, trim and strip any formatting. Only add the actual heading if a heading is wanted.
+     if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights] && scene.color.length > 0 && scene.type == heading) {
+     BXColor* c = [BeatColors color:scene.color];
+     if (c != nil) dark = c.isDarkAsBackground;
+     } */
+    
+    NSMutableAttributedString *resultString = NSMutableAttributedString.new;
+    
+    // Get the string, trim and strip any formatting. Only add the actual heading if a heading is wanted.
     bool includeHeading = (options & OutlineItemIncludeHeading) != 0;
     NSString* rawString = @"";
     // Add heading if not toggled off and this is a scene. Sections will always have headings.
@@ -205,15 +221,15 @@
         rawString = [scene.stringForDisplay stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
         rawString = [rawString stringByReplacingOccurrencesOfString:@"*" withString:@"" options:0 range:NSMakeRange(0, rawString.length)];
     }
-	
-	NSString *string = rawString;
     
-	// Set item color
-	BXColor *itemColor;
-	if (line.color && !line.omitted) itemColor = [BeatColors color:line.color];
-	
-	// Style the item
-	if (line.type == heading) {
+    NSString *string = rawString;
+    
+    // Set item color
+    BXColor *itemColor;
+    if (line.color && !line.omitted) itemColor = [BeatColors color:line.color];
+    
+    // Style the item
+    if (line.type == heading) {
         CGFloat fontSize = [OutlineViewItem fontSizeForType:line.type];
         BXFont *font = [BXFont systemFontOfSize:fontSize weight:BXFontWeightRegular];
         
@@ -229,23 +245,24 @@
             if (line.omitted) string = [NSString stringWithFormat:@"(%@)", string];
         }
         
-		// Only include scene number if it's requested
+        // Only include scene number if it's requested
         bool includeSceneNumber = (options & OutlineItemIncludeSceneNumber) != 0;
-		NSString *sceneNumber = (!line.omitted && includeSceneNumber) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
-		NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
+        NSString *sceneNumber = (!line.omitted && includeSceneNumber) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
+        NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
             NSForegroundColorAttributeName: [OutlineViewItem elementColor:OutlineElementTypeSceneNumber dark:dark],
-			NSFontAttributeName: font
-		}];
-		
+            NSFontAttributeName: font
+        }];
+        
         BXColor *sceneColor = (itemColor != nil) ? itemColor : [OutlineViewItem elementColor:OutlineElementTypeDefault dark:dark];
-		NSAttributedString *body = [NSAttributedString.alloc initWithString:string attributes:@{
+        
+        NSAttributedString *body = [NSAttributedString.alloc initWithString:string attributes:@{
             NSForegroundColorAttributeName: (!line.omitted) ? sceneColor : [OutlineViewItem elementColor:OutlineElementTypeOmitted dark:dark],
-			NSFontAttributeName: font
-		}];
-			
-		[resultString appendAttributedString:header];
-		[resultString appendAttributedString:body];
-	} else if (line.type == section && string.length > 0) {
+            NSFontAttributeName: font
+        }];
+        
+        [resultString appendAttributedString:header];
+        [resultString appendAttributedString:body];
+    } else if (line.type == section && string.length > 0) {
         CGFloat fontSize = [OutlineViewItem fontSizeForType:line.type];
         BXFont *font = [BXFont systemFontOfSize:fontSize weight:BXFontWeightBold];
         
@@ -254,26 +271,26 @@
             NSForegroundColorAttributeName: color,
             NSFontAttributeName: font
         }];
-	}
-	
-	// Append rest of the elements
-	if ((options & OutlineItemIncludeSynopsis) != 0) {
+    }
+    
+    // Append rest of the elements
+    if ((options & OutlineItemIncludeSynopsis) != 0) {
         [self appendSynopsis:dark resultString:resultString scene:scene];
-	}
+    }
     if ((options & OutlineItemIncludeNotes) != 0) {
         [self appendNotes:dark resultString:resultString scene:scene];
     }
-	if ((options & OutlineItemIncludeMarkers) != 0) {
+    if ((options & OutlineItemIncludeMarkers) != 0) {
         [self appendMarkers:resultString scene:scene];
-	}
+    }
     
     // Let's remove first line break if needed
     if (!includeHeading && resultString.length > 0) {
         unichar c = [resultString.string characterAtIndex:0];
         if (c == '\n') resultString = [resultString attributedSubstringFromRange:NSMakeRange(1, resultString.length - 1)].mutableCopy;
     }
-
-	return resultString;
+    
+    return resultString;
 }
 
 @end
