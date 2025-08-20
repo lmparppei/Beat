@@ -76,6 +76,7 @@
             NSString* content = [line.string substringWithRange:contentRange];
             
             BeatNoteData* note = [BeatNoteData withNote:content range:noteRange];
+            note.line = line;
             [line.noteData addObject:note];
             [line.noteRanges addIndexesInRange:noteRange];
             
@@ -235,7 +236,6 @@
                 [l.noteData removeAllObjects];
             }
             
-        
             if (!cancel) {
                 if (idx > affectedLines.firstIndex) {
                     [noteContent appendString:@"\n"];
@@ -243,6 +243,7 @@
                     BeatNoteData* note = [BeatNoteData withNote:@"" range:range];
                     note.multiline = true;
                     note.color = color;
+                    note.line = l;
                     
                     if (idx != affectedLines.firstIndex && idx < affectedLines.lastIndex) [l.noteData addObject:note];
                     else if (idx == affectedLines.lastIndex) [l.noteData insertObject:note atIndex:0];
@@ -266,6 +267,7 @@
     BeatNoteData* note = [BeatNoteData withNote:noteContent range:NSMakeRange(position, firstLine.length - position)];
     note.multiline = true;
     note.color = color;
+    note.line = firstLine;
     
     [firstLine.noteData addObject:note];
 }
