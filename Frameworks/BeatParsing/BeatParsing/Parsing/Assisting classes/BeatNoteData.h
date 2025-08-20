@@ -17,6 +17,8 @@ typedef NS_ENUM(NSUInteger, NoteType) {
     NoteTypeColor
 };
 
+@class Line;
+
 @protocol BeatNoteDataExports<JSExport>
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic, readonly) NSString* color;
@@ -32,7 +34,9 @@ typedef NS_ENUM(NSUInteger, NoteType) {
 @property (nonatomic, readonly) NSString* content;
 @property (nonatomic) NSString* color;
 @property (nonatomic, readonly) NSRange range;
+@property (nonatomic) NSRange globalRange;
 @property (nonatomic) bool multiline;
+@property (nonatomic, weak) Line* line;
 + (BeatNoteData*)withNote:(NSString*)text range:(NSRange)range;
 @end
 
