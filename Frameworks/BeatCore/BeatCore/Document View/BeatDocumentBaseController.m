@@ -227,6 +227,12 @@
     [self resetPreview];
 }
 
+/// Forgets local styles for this document
+- (void)forgetStyles
+{
+    [BeatStyles.shared closeDocumentWithDelegate:(id<BeatEditorDelegate>)self];
+}
+
 /// Returns the __default__ line height for editor view as defined in styles. This value is used by the layout manager for some drawing operations, which is not that good.
 /// We should rather use actual line heights from the attributed string.
 - (CGFloat)editorLineHeight

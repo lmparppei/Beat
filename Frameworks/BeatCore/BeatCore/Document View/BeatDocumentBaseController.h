@@ -41,6 +41,11 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSArray<OutlineScene*>* _Nonnull)outline;
 - (NSString* _Nullable)displayName;
+
+NS_ASSUME_NONNULL_BEGIN
+JSExportAs(addAttribute, - (void)addAttribute:(NSString* _Nonnull)key value:(id _Nonnull)value range:(NSRange)range);
+JSExportAs(removeAttribute, - (void)removeAttribute:(NSString* _Nonnull)key range:(NSRange)range);
+NS_ASSUME_NONNULL_END
 @end
 
 @protocol BeatPluginInstance
@@ -335,6 +340,7 @@ NS_ASSUME_NONNULL_END
 - (void)reloadStyles;
 - (void)resetStyles;
 - (CGFloat)editorLineHeight;
+- (void)forgetStyles;
 
 /// Only sets the stylesheet. Does NOT reload or reformat anything.
 - (void)setStylesheet:(NSString* _Nonnull)name;
