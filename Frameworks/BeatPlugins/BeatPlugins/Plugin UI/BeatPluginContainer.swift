@@ -20,17 +20,21 @@ import UXKit
     var onViewDidHide: JSValue? { get set }
     var displayed:Bool { get }
     var additionalHeaders:String { get set }
-
+        
     func setHTML(_ html:String)
     func runJS(_ js:String, _ callback:JSValue?)
     func closePanel(_ sender:AnyObject?)
 }
 
 @objc public protocol BeatPluginContainer:BeatHTMLView, BeatPluginContainerExports, BeatPluginContainerInstance {
-    var pluginName:String { get set }
-    var pluginOptions:[String:AnyObject] { get set }
-    var webView:BeatPluginWebView? { get set }
-    var delegate:BeatPluginDelegate? { get set }
+    @objc var pluginName:String { get set }
+    @objc var pluginOptions:[String:AnyObject] { get set }
+    @objc var webView:BeatPluginWebView? { get set }
+    @objc var delegate:BeatPluginDelegate? { get set }
+    
+#if os(iOS)
+    @objc func getViewController() -> UIViewController?
+#endif
     
     func containerViewDidHide()
     func load()
@@ -117,7 +121,21 @@ import UXKit
         self.host = nil
         self.webView = nil
     }
+    
+    #if os(iOS)
+    @objc public func getViewController() -> UIViewController? {
+        var responder:UIResponder? = self.next
+        while responder != nil {
+            if responder!.isKind(of: UIViewController.self) {
+                return responder as? UIViewController
+            }
+            responder = responder?.next
+        }
         
+        return nil
+    }
+    #endif
+    
     /// Adds web view to the container
     func setupWebView(html:String, headers:String) {
         // Don't do this twice (can happen on iOS when the view controller is already created)
@@ -218,6 +236,17 @@ import UXKit
         
         container?.setup()
         container?.load()
+        
+        container?.displayed = true
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        container?.displayed = true
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        container?.displayed = false
     }
 }
 

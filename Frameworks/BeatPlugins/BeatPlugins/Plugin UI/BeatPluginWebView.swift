@@ -35,7 +35,7 @@ import UIKit
     weak var host:BeatPlugin? { get set }
 }
 
-@objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports, WKNavigationDelegate {
+@objc public class BeatPluginWebView:WKWebView, BeatPluginWebViewExports, WKNavigationDelegate, WKUIDelegate {
     @objc weak public var host:BeatPlugin?
     /// The folder URL provided by plugin host (if applicable)
     var baseURL:URL?
@@ -85,6 +85,8 @@ import UIKit
         webView.setHTML(content)
         webView.navigationDelegate = webView
         
+        webView.uiDelegate = webView
+        
         return webView
     }
     
@@ -93,7 +95,7 @@ import UIKit
     deinit {
         purge()
     }
-    
+        
     @objc public func purge() {
         guard let url = self.tempURL else { return }
         do {
@@ -194,4 +196,10 @@ import UIKit
 	}
     #endif
     
+    #if os(iOS)
+    public func webView(_ webView: WKWebView, contextMenuConfigurationForElement elementInfo: WKContextMenuElementInfo, completionHandler: @escaping @MainActor (UIContextMenuConfiguration?) -> Void) {
+        completionHandler(nil)
+    }
+    
+    #endif
 }
