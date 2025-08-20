@@ -124,3 +124,6 @@
 "menuItem.paragraphPagination.avoid" = "Avoid Breaking Actions";
 
 "menuItem.editTheme" = "Customize Colors...";
+
+"cards.addScene" = "Add New Scene Here";
+"cards.addScenePrompt" = "Heading For New Scene";
