@@ -45,7 +45,7 @@
 }
 
 /// Updates scene numbers for scenes. Autonumbered will get incremented automatically.
-/// - note: the arrays can contain __both__ `OutlineScene` or `Line` items to be able to update line content individually without building an outline.
+/// - note: the arrays can contain __both__ `OutlineScene` or `Line` items to be able to update line content individually without building an outline. This causes a lot of inconvenient stuff, but... this is how we do it  for now. The problem here is that the forced and auto-numbered values are not in order.
 - (void)updateSceneNumbers:(NSArray*)autoNumbered forcedNumbers:(NSSet*)forcedNumbers
 {
     static NSArray* postfixes;
@@ -64,7 +64,7 @@
             // This was a plain Line object
             line = item;
         }
-        
+                
         if (line.omitted) {
             line.sceneNumber = @"";
             continue;
@@ -278,6 +278,9 @@
             [scene.markers addObject:@{
                 @"description": (line.markerDescription) ? line.markerDescription : @"",
                 @"color": (line.marker) ? line.marker : @"",
+                @"range": [NSValue valueWithRange:line.markerRange],
+                @"globalRange": [NSValue valueWithRange:NSMakeRange(line.position + line.markerRange.location, line.markerRange.length)],
+                @"line": [NSValue valueWithNonretainedObject:line]
             }];
         }
     }
@@ -334,22 +337,28 @@
 /// Rebuilds the outline hierarchy (section depths) and calculates scene numbers.
 - (void)updateOutlineHierarchy
 {
+    
     NSUInteger sectionDepth = 0;
     NSMutableArray *sectionPath = NSMutableArray.new;
     OutlineScene* currentSection;
     
     NSMutableArray* autoNumbered = NSMutableArray.new;
     NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
-        
+            
     for (OutlineScene* scene in self.outline) {
         scene.children = NSMutableArray.new;
         scene.parent = nil;
         
+        scene.line.autoNumbered = false;
+        
+        // There are two types of "scenes", sections and actual scenes. Handle sections first.
         if (scene.type == section) {
             if (sectionDepth < scene.line.sectionDepth) {
+                // Sections are nesting. When we encounter a deeper section, let's make that the parent,
                 scene.parent = sectionPath.lastObject;
                 [sectionPath addObject:scene];
             } else {
+                // Higher-level section encountered. Find the previous level from section path.
                 while (sectionPath.count > 0) {
                     OutlineScene* prevSection = sectionPath.lastObject;
                     [sectionPath removeLastObject];
@@ -373,8 +382,12 @@
             currentSection = scene;
         } else {
             // Manage scene numbers
-            if (scene.line.sceneNumberRange.length > 0) [forcedNumbers addObject:scene.sceneNumber];
-            else [autoNumbered addObject:scene];
+            if (scene.line.sceneNumberRange.length > 0) {
+                [forcedNumbers addObject:scene.sceneNumber];
+            } else {
+                scene.line.autoNumbered = true;
+                [autoNumbered addObject:scene];
+            }
             
             // Update section depth for scene
             scene.sectionDepth = sectionDepth;
@@ -382,9 +395,8 @@
         }
         
         // Add this object to the children of its parent
-        if (scene.parent) {
+        if (scene.parent)
             [scene.parent.children addObject:scene];
-        }
     }
     
     // Do the actual scene number update.
@@ -395,6 +407,7 @@
     }
     self.outlineChanges = nil;
 }
+
 
 /// NOTE: This method is used by line preprocessing to avoid recreating the outline. It has some overlapping functionality with `updateOutlineHierarchy` and `updateSceneNumbers:forcedNumbers:`.
 - (void)updateSceneNumbersInLines
