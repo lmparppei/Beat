@@ -38,16 +38,16 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	
 	@objc weak var editorDelegate:BeatEditorDelegate?
 	
-	var hiddenRevisions:IndexSet {
+	var hiddenRevisions:[Int] {
 		guard let revisionSwitches = self.revisionSwitches else { return [] }
-		var hiddenRevisions = IndexSet()
+		var hiddenRevisions:[Int] = []
 		
 		for revision in revisionSwitches {
 			if !revision.isChecked {
-				hiddenRevisions.insert(revision.tag)
+				//hiddenRevisions.insert(revision.tag)
+				hiddenRevisions.append(revision.tag)
 			}
 		}
-		print(" ... hidden revisions from buttons:", hiddenRevisions)
 		
 		return hiddenRevisions
 	}
@@ -76,7 +76,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		refreshPreview()
 		
 		// Toggle revisions
-		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? NSIndexSet ?? NSIndexSet()
+		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? [Int] ?? []
 		print("Hidden revisions:", hiddenRevisions)
 		for revision in revisionSwitches ?? [] {
 			revision.isChecked = !hiddenRevisions.contains(revision.tag)
@@ -123,7 +123,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	
 	@IBAction func toggleRevision(sender:UIButton?) {
 		self.editorDelegate?.documentSettings.set(DocSettingHiddenRevisions, as: self.hiddenRevisions)
-		print("Stored revisions:", self.editorDelegate?.documentSettings.get(DocSettingHiddenRevisions))
+		refreshPreview()
 	}
 	
 	/// Refresh the underlying document
@@ -214,7 +214,9 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 	}
 	
 	// MARK: - Paywall
+	// This was an idiotic
 	/*
+	
 	func checkPaywall() {
 		Task {
 			let unlocked = await BeatSubscriptionsManager.shared.unlocked()
