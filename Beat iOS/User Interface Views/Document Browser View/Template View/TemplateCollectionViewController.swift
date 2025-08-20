@@ -26,27 +26,34 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 		}
 		
 		let url = cell.url
-		var targetUrl:URL?
 		var filename = url?.lastPathComponent
+		var targetUrl:URL?
 		
-		// Because the templates are in another bundle, we'll need to copy it first
 		if let productName = cell.product {
 			filename = productName
 		}
 		
-		if let originalUrl = url, filename != nil {
-			targetUrl = URL(filePath: NSTemporaryDirectory()).appending(component: filename!)
+		// Because the templates are in another bundle, we'll need to copy it first
+		if let originalUrl = url, let filename {
+			targetUrl = URL(filePath: NSTemporaryDirectory()).appending(component: filename)
 			
-			// Copy the template file to temp directory
-			do {
-				try FileManager.default.copyItem(at: originalUrl, to: targetUrl!)
-			} catch {
-				errorMessage = "Couldn't copy the template"
+			if let targetUrl {
+				// First make sure there's no existing temp file with this name
+				if FileManager.default.fileExists(atPath: targetUrl.path()) {
+					try? FileManager.default.removeItem(at: targetUrl)
+				}
+				
+				// Copy the template file to temp directory
+				do {
+					try FileManager.default.copyItem(at: originalUrl, to: targetUrl)
+				} catch {
+					errorMessage = "Couldn't copy the template: \(error)"
+				}
 			}
 		}
 		
 		if targetUrl != nil {
-			// Copy the file and open it
+			// Copy the file to the final destination and open it
 			self.importHandler?(targetUrl, .copy)
 			didPickTemplate = true
 		} else {
