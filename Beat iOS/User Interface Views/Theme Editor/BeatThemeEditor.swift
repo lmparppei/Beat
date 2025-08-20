@@ -50,6 +50,8 @@ class BeatThemeEditor:UITableViewController {
 			button.resetColor()
 		}
 		
+		ThemeManager.shared().saveTheme()
+		
 		scheduleUpdate(time: 0.0)
 	}
 	
