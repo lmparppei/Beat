@@ -96,7 +96,7 @@ character {
     width-a4: 38ch;
     width-us: 40ch;
     
-    margin-left: 20ch;
+    margin-left: 19ch;
     margin-top: 1l;
     
     trim: true;
@@ -106,7 +106,7 @@ parenthetical {
     width-a4: 28ch;
     width-us: 28ch;
     
-    margin-left: 16ch;
+    margin-left: 15ch;
     margin-top: 0;
     
     trim:true;
@@ -117,7 +117,7 @@ dialogue {
     width-us: 35ch;
     
     margin-top: 0;
-    margin-left: 11ch;
+    margin-left: 10ch;
     
     trim: true;
 }
@@ -187,7 +187,7 @@ shot {
 }
 
 titlePageTitle {
-    margin-top: 23l;
+    margin-top: 20l;
     margin-bottom: 2l;
     text-align: center;
     uppercase: true;
