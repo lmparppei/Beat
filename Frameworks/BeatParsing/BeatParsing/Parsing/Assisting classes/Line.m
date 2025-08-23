@@ -389,8 +389,6 @@
     return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-
-
 #pragma mark - Section depth
 
 - (NSUInteger)sectionDepth
