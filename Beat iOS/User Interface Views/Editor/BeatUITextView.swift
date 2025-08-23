@@ -37,7 +37,7 @@ import BeatParsing
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
 	@IBOutlet weak var enclosingScrollView:BeatScrollView!
 	@IBOutlet weak var pageView:UIView!
-	
+		
 	/// Modifier flags are set during key press events and cleared afterwards. This helps with macOS class interop.
 	@objc public var modifierFlags:UIKeyModifierFlags = []
 	/// The input assistant view on top of keyboard
@@ -53,6 +53,9 @@ import BeatParsing
 	var mobileKeyboardManager:KeyboardManager?
 	
 	var mobileDismissButton:UIBarButtonItem?
+	
+	@IBOutlet weak var viewController:UIViewController?
+	var lastOffsetY:CGFloat = 0.0
 		
 	var inputAssistantMode:BeatInputAssistantMode = .writing {
 		didSet {
@@ -575,6 +578,21 @@ extension BeatUITextView: UIScrollViewDelegate {
 		self.editorDelegate?.formattingActions.addCue()
 	}
 	
+	
+	//Delegate Methods
+	func scrollViewWillBeginDragging(_ scrollView: UIScrollView){
+		lastOffsetY = scrollView.contentOffset.y
+	}
+	
+	func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView){
+		/*
+		let hide = scrollView.contentOffset.y > self.lastOffsetY
+		if let vc = self.getViewController() {
+			let nc = vc.navigationController
+			vc.navigationController?.setToolbarHidden(hide, animated: true)
+		}
+		*/
+	}
 }
 
 
