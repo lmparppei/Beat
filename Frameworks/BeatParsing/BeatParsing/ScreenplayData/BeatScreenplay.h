@@ -21,4 +21,6 @@
 +(instancetype)from:(ContinuousFountainParser*)parser;
 +(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings;
 
+- (NSString*)titlePageTextForField:(NSString*)field;
+
 @end

@@ -31,4 +31,19 @@
     return screenplay;
 }
 
+- (NSString*)titlePageTextForField:(NSString*)field
+{
+    for (NSDictionary<NSString*, NSArray<NSString*>*>* dict in self.titlePage) {
+        NSString* key = (NSString*)dict.allKeys.firstObject;
+        if (key == nil) continue;
+        
+        if ([key.lowercaseString isEqualToString:field]) {
+            NSArray<NSString*>* strings = dict.allValues.firstObject;
+            return [strings componentsJoinedByString:@"\n"];
+        }
+    }
+    
+    return nil;
+}
+
 @end
