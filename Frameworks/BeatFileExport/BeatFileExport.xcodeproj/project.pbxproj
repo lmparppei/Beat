@@ -30,6 +30,8 @@
 		B62D16332BFE2254000EFEE5 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D162F2BFE2254000EFEE5 /* FDXImport.m */; };
 		B62D16342BFE2254000EFEE5 /* FDXImport.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D16302BFE2254000EFEE5 /* FDXImport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62D16362BFE23FB000EFEE5 /* BeatFileImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */; };
+		B64BFAF12E5A08AC000742EA /* BeatEPubExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64BFAF02E5A08A5000742EA /* BeatEPubExport.swift */; };
+		B64BFAF42E5A0924000742EA /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = B64BFAF32E5A0924000742EA /* ZIPFoundation */; };
 		B658DCCD2CE5E9BF00DDDBDE /* BeatImportModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B658DCCA2CE5E9BF00DDDBDE /* BeatImportModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B658DCD02CE5EDB800DDDBDE /* BeatExportProgressPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B658DCCF2CE5EDAD00DDDBDE /* BeatExportProgressPanel.swift */; };
 		B658DCD22CE5EF7800DDDBDE /* BeatExportProgressModal.xib in Resources */ = {isa = PBXBuildFile; fileRef = B658DCD12CE5EF7800DDDBDE /* BeatExportProgressModal.xib */; platformFilters = (macos, ); };
@@ -70,6 +72,7 @@
 		B62D162F2BFE2254000EFEE5 /* FDXImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
 		B62D16302BFE2254000EFEE5 /* FDXImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
 		B62D16352BFE23FB000EFEE5 /* BeatFileImportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFileImportManager.swift; sourceTree = "<group>"; };
+		B64BFAF02E5A08A5000742EA /* BeatEPubExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatEPubExport.swift; sourceTree = "<group>"; };
 		B658DCCA2CE5E9BF00DDDBDE /* BeatImportModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatImportModule.h; sourceTree = "<group>"; };
 		B658DCCF2CE5EDAD00DDDBDE /* BeatExportProgressPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatExportProgressPanel.swift; sourceTree = "<group>"; };
 		B658DCD12CE5EF7800DDDBDE /* BeatExportProgressModal.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatExportProgressModal.xib; sourceTree = "<group>"; };
@@ -97,6 +100,7 @@
 				B6A97C952BF0BE4200414878 /* BeatCore.framework in Frameworks */,
 				B6A97C992BF0BE4800414878 /* BeatPagination2.framework in Frameworks */,
 				B62D16212BFE20DD000EFEE5 /* UnzipKit.framework in Frameworks */,
+				B64BFAF42E5A0924000742EA /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +219,14 @@
 			path = Highland;
 			sourceTree = "<group>";
 		};
+		B64BFAEF2E5A089B000742EA /* ePub */ = {
+			isa = PBXGroup;
+			children = (
+				B64BFAF02E5A08A5000742EA /* BeatEPubExport.swift */,
+			);
+			path = ePub;
+			sourceTree = "<group>";
+		};
 		B658DCC92CE5E86D00DDDBDE /* PDF */ = {
 			isa = PBXGroup;
 			children = (
@@ -284,6 +296,7 @@
 		B6A97C892BF0BDDD00414878 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				B64BFAEF2E5A089B000742EA /* ePub */,
 				B6A97C842BF0BDDD00414878 /* Final Draft */,
 				B6A97C872BF0BDDD00414878 /* Outline */,
 				B6DC61512D182CC600ED708A /* RTF */,
@@ -379,6 +392,9 @@
 				Base,
 			);
 			mainGroup = B6A97C6C2BF0BDB600414878;
+			packageReferences = (
+				B64BFAF22E5A0924000742EA /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
 			productRefGroup = B6A97C772BF0BDB600414878 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -418,6 +434,7 @@
 				B62D160D2BFE209C000EFEE5 /* FadeInImport.m in Sources */,
 				B6A97C8C2BF0BDDD00414878 /* BeatFDXExport.m in Sources */,
 				B658DCD02CE5EDB800DDDBDE /* BeatExportProgressPanel.swift in Sources */,
+				B64BFAF12E5A08AC000742EA /* BeatEPubExport.swift in Sources */,
 				B62D161F2BFE20CD000EFEE5 /* HTMLNode.m in Sources */,
 				B6A97C902BF0BDDD00414878 /* OutlineExtractor.m in Sources */,
 				B62D160A2BFE2097000EFEE5 /* OSFImport.m in Sources */,
@@ -663,6 +680,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B64BFAF22E5A0924000742EA /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B64BFAF32E5A0924000742EA /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B64BFAF22E5A0924000742EA /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B6A97C6D2BF0BDB600414878 /* Project object */;
 }

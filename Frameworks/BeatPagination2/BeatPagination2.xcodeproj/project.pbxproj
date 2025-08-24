@@ -48,20 +48,8 @@
 		B6D7917D2E45EDE800186B3E /* BeatRenderer+Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatRenderer+Outline.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B6D791862E45F05400186B3E /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			platformFiltersByRelativePath = {
-				BeatiOSRendererComponents.swift = (
-					ios,
-				);
-			};
-			target = B663A69829F1C3940036FE6B /* BeatPagination2 */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B6D7917F2E45EF2200186B3E /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B6D791862E45F05400186B3E /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+		B6D7917F2E45EF2200186B3E /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
