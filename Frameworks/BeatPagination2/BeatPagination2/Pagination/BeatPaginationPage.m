@@ -51,6 +51,19 @@
     return page;
 }
 
+/// Custom page number getter. Iterates each line, which is not optimal, but this is how it goes.
+- (NSString *)customPageNumber
+{
+    NSString* customPageNumber = nil;
+    
+    for (Line* line in self.lines) {
+        NSString* forcedPageNumber = line.forcedPageNumber;
+        if (forcedPageNumber != nil) customPageNumber = forcedPageNumber;
+    }
+    
+    return customPageNumber;
+}
+
 /**
  This method returns page content as `NSAttributedString`. classes which comply to the protocol.
  */
@@ -443,7 +456,13 @@
 
 - (NSString*)pageNumberForPrinting
 {
-    return (self.customPageNumber == nil) ? [NSString stringWithFormat:@"%lu", self.pageNumber] : self.customPageNumber;
+    NSString* customPageNumber = self.customPageNumber;
+    NSString* pageNumber;
+    
+    if (customPageNumber == nil) pageNumber = [NSString stringWithFormat:@"%lu.", self.pageNumber];
+    else pageNumber = customPageNumber.trim;
+    
+    return pageNumber;
 }
 
 @end
