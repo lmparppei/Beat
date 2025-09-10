@@ -1,6 +1,6 @@
 # Beat
 
-An elegant screenwriting app for macOS and iOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
+An elegant screenwriting app for macOS and iOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **fully open source** under GPL.
 
 [Official website](https://www.beat-app.fi/)  
 [Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)   
@@ -75,11 +75,13 @@ You can help to keep the project alive by subscribing to the Patreon. However, t
 
 ## Post-mortem
 
-**Beat is an anti-capitalist venture**. 
+**Beat is an anti-capitalist venture**, and will stay free (as in freedom) and open source forever. I'm sorry it's only available for Apple devices, which waters down the anti-capitalist stance.
 
-Beat will stay free and open source forever. I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Don't steal it from an individual, though.
+I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free or affordable screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Apple's phones fit into your pocket even more nicely, if you know what I mean. Don't steal from an individual, though.
 
-If you are here just to steal some code for your own Fountain editor, note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
+**HOWEVER:** To fund the development, the binary for iOS release is currently distributed with a single lifetime fee. This is because Finnish law doesn't allow me to receive donations for my work, and because the iOS port was created due to popular demand. It is open source, though, so you can compile it yourself and install it on your own device. 
+
+If you are here just to steal some code for your own Fountain editor, do note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
 
 The app has been cooked up through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and myself. All apologies.
 
