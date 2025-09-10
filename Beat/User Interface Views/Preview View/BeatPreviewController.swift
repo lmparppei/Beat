@@ -37,8 +37,10 @@ fileprivate let sidebarWidth = 158.0
 	
 	public override func awakeFromNib() {
 		super.awakeFromNib()
-		if let hideThumbnailView = BeatUserDefaults.shared().get("hideThumbnailView") as? Bool {
-			setThumbnailViewHidden(hideThumbnailView)
+		if #available(macOS 12.0, *) {
+			if let hideThumbnailView = BeatUserDefaults.shared().get("hideThumbnailView") as? Bool {
+				setThumbnailViewHidden(hideThumbnailView)
+			}
 		}
 	}
 	
