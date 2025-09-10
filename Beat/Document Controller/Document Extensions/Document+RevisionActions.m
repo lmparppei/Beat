@@ -36,6 +36,23 @@
 	[self.documentSettings setBool:DocSettingRevisionMode as:self.revisionMode];
 }
 
+- (IBAction)toggleVisibleRevision:(NSMenuItem*)sender
+{
+	NSInteger i = sender.tag;
+	NSMutableArray<NSNumber*>* hiddenRevisions = ((NSArray*)[self.documentSettings get:DocSettingHiddenRevisions]).mutableCopy;
+	if (hiddenRevisions == nil) hiddenRevisions = NSMutableArray.new;
+	
+	if ([hiddenRevisions containsObject:@(i)]) {
+		[hiddenRevisions removeObject:@(i)];
+	} else {
+		[hiddenRevisions addObject:@(i)];
+	}
+	[self.documentSettings set:DocSettingHiddenRevisions as:hiddenRevisions];
+	
+	[self resetPreview];
+	[self updateLayout];
+}
+
 - (IBAction)markAddition:(id)sender
 {
 	if (self.contentLocked) return;

@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Document (RevisionActions)
 
+- (IBAction)toggleVisibleRevision:(NSMenuItem*)sender;
+
 @end
 
 NS_ASSUME_NONNULL_END
