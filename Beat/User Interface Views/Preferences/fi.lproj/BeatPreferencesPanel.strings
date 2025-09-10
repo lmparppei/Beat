@@ -49,7 +49,7 @@
 "Wyn-hc-s1G.title" = "Editorin fontti";
 
 /* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
-"Yuw-0s-K2b.title" = "1 rivi";
+"Yuw-0s-K2b.title" = "1";
 
 /* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
 "Zfa-HM-161.title" = "Alleviivattu";
@@ -61,7 +61,7 @@
 "d0m-zv-bHH.title" = "Ehdota kohtausotsikoita ja hahmoja";
 
 /* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
-"fan-Jn-FOW.title" = "2 riviä";
+"fan-Jn-FOW.title" = "2";
 
 /* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
 "fxb-nx-hJp.title" = "Sulkee automaattisesti sulkeet ja hakasulkeet, kuten () ja [[]]";

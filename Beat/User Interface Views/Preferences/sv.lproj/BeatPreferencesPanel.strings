@@ -47,7 +47,7 @@
 "F0z-JX-Cv5.title" = "Inställningar";
 
 /* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
-"fan-Jn-FOW.title" = "2 rader";
+"fan-Jn-FOW.title" = "2";
 
 /* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
 "fxb-nx-hJp.title" = "Stänger automatiskt element som () och [[]]";
@@ -143,7 +143,7 @@
 "yHb-oc-ujO.title" = "Stil på scenhuvuden";
 
 /* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
-"Yuw-0s-K2b.title" = "1 rad";
+"Yuw-0s-K2b.title" = "1";
 
 /* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
 "Zfa-HM-161.title" = "Understruken";

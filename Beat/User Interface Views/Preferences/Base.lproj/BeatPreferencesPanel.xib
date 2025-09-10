@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -118,7 +118,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Courier Prime" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VTU-wq-qyb" id="iTa-Q6-mMB">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="message"/>
                                                 <menu key="menu" id="Tvv-S2-AYI">
                                                     <items>
                                                         <menuItem title="Courier Prime" state="on" id="VTU-wq-qyb"/>
@@ -144,7 +144,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="tHb-q9-LBS">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="message"/>
                                                 <menu key="menu" id="INh-rm-kVw"/>
                                             </popUpButtonCell>
                                             <connections>
@@ -241,7 +241,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Small" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VQS-1g-QZ6" id="3RH-A7-bPE">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="message"/>
                                                 <menu key="menu" id="2Y0-wg-179">
                                                     <items>
                                                         <menuItem title="Small" state="on" id="VQS-1g-QZ6"/>
@@ -298,7 +298,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DFt-in-f1B">
-                                            <rect key="frame" x="46" y="253" width="142" height="17"/>
+                                            <rect key="frame" x="36" y="247" width="128" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Heading Style" usesSingleLineMode="YES" id="yHb-oc-ujO">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -306,36 +306,12 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0Se-qY-uTA">
-                                            <rect key="frame" x="207" y="253" width="152" height="17"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Heading Spacing" usesSingleLineMode="YES" id="EHa-PH-tc4">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" id="aHV-Ph-6Mp" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="46" y="205" width="140" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Zfa-HM-161">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleUnderline"/>
-                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="toggleUserSetting:" target="-2" id="JRL-1c-oxL"/>
-                                            </connections>
-                                        </button>
                                         <popUpButton verticalHuggingPriority="750" id="OOl-ZM-PBd">
                                             <rect key="frame" x="280" y="432" width="165" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="A4" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="7Xj-J1-Y92" id="fza-OB-xeP">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="message"/>
                                                 <menu key="menu" id="35c-4Z-EDc">
                                                     <items>
                                                         <menuItem title="A4" state="on" id="7Xj-J1-Y92"/>
@@ -360,25 +336,10 @@
                                             <rect key="frame" x="20" y="420" width="524" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
-                                        <button verticalHuggingPriority="750" id="2IJ-xC-SPZ" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="46" y="227" width="140" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MPF-7c-b3u">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleBold"/>
-                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="toggleUserSetting:" target="-2" id="ebD-eZ-eHV"/>
-                                            </connections>
-                                        </button>
                                         <button identifier="1" verticalHuggingPriority="750" id="IO7-Hz-k6N">
-                                            <rect key="frame" x="207" y="227" width="150" height="18"/>
+                                            <rect key="frame" x="166" y="215" width="33" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="radio" title="1 line" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Yuw-0s-K2b">
+                                            <buttonCell key="cell" type="radio" title="1" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Yuw-0s-K2b">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -387,9 +348,9 @@
                                             </connections>
                                         </button>
                                         <button identifier="2" verticalHuggingPriority="750" id="BHk-g1-cy2">
-                                            <rect key="frame" x="207" y="205" width="150" height="18"/>
+                                            <rect key="frame" x="205" y="215" width="52" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="radio" title="2 lines" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="fan-Jn-FOW">
+                                            <buttonCell key="cell" type="radio" title="2" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="fan-Jn-FOW">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -409,7 +370,7 @@
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <clipView key="contentView" drawsBackground="NO" id="zRm-l9-A1E">
                                                             <rect key="frame" x="0.0" y="0.0" width="524" height="165"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textView editable="NO" selectable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="0Zp-cK-fHI">
                                                                     <rect key="frame" x="0.0" y="0.0" width="524" height="165"/>
@@ -440,6 +401,66 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                     </scrollView>
+                                                    <button hidden="YES" verticalHuggingPriority="750" id="aHV-Ph-6Mp" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                                        <rect key="frame" x="18" y="19" width="140" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Zfa-HM-161">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleUnderline"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="toggleUserSetting:" target="-2" id="JRL-1c-oxL"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" verticalHuggingPriority="750" id="2IJ-xC-SPZ" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                                        <rect key="frame" x="18" y="41" width="140" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MPF-7c-b3u">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleBold"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="toggleUserSetting:" target="-2" id="ebD-eZ-eHV"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" verticalHuggingPriority="750" id="Qw6-SX-toL" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                                        <rect key="frame" x="380" y="19" width="164" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MKe-sW-nsP">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleUnderline"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="toggleUserSetting:" target="-2" id="3GR-47-oYI"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button hidden="YES" verticalHuggingPriority="750" id="sJl-dG-Pi3" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                                        <rect key="frame" x="380" y="41" width="164" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="mSK-8B-nEj">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleBold"/>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="toggleUserSetting:" target="-2" id="sKI-Dy-KSk"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                             </view>
                                             <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -498,7 +519,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="6Ft-FT-OHl">
-                                            <rect key="frame" x="373" y="253" width="166" height="17"/>
+                                            <rect key="frame" x="279" y="247" width="166" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Shot Heading Style" usesSingleLineMode="YES" id="6OX-Qw-Due">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -506,36 +527,6 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" id="Qw6-SX-toL" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="373" y="206" width="164" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Underlined" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MKe-sW-nsP">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleUnderline"/>
-                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="toggleUserSetting:" target="-2" id="3GR-47-oYI"/>
-                                            </connections>
-                                        </button>
-                                        <button verticalHuggingPriority="750" id="sJl-dG-Pi3" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="373" y="228" width="164" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Bolded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="mSK-8B-nEj">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleBold"/>
-                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="toggleUserSetting:" target="-2" id="sKI-Dy-KSk"/>
-                                            </connections>
-                                        </button>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ZOh-FL-VML">
                                             <rect key="frame" x="18" y="0.0" width="528" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
@@ -577,6 +568,79 @@
                                             </userDefinedRuntimeAttributes>
                                             <connections>
                                                 <action selector="toggleActionPagination:" target="-2" id="ltE-Ab-wjv"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fA-xA-EeK" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="161" y="237" width="40" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" bezelStyle="rounded" image="bold" catalog="system" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="EeE-Xd-dkw">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleBold"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleUserSetting:" target="-2" id="Ary-bY-3Bv"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lDa-iZ-NFN" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="191" y="237" width="40" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" bezelStyle="rounded" image="underline" catalog="system" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="674-aU-eaU">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="headingStyleUnderline"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleUserSetting:" target="-2" id="4zd-4X-7v8"/>
+                                            </connections>
+                                        </button>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0Se-qY-uTA">
+                                            <rect key="frame" x="36" y="216" width="128" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Heading Spacing" usesSingleLineMode="YES" id="EHa-PH-tc4">
+                                                <font key="font" usesAppearanceFont="YES"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nr6-hH-mnu" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="422" y="237" width="40" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" bezelStyle="rounded" image="bold" catalog="system" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="J96-Jl-tCb">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleBold"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleUserSetting:" target="-2" id="Tct-hE-7nz"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iRK-kU-tc6" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
+                                            <rect key="frame" x="452" y="237" width="40" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" bezelStyle="rounded" image="underline" catalog="system" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="ekL-13-8SD">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="userDefaultKey" value="shotStyleUnderline"/>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="toggleUserSetting:" target="-2" id="HiU-PQ-emk"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -632,7 +696,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Large" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VlM-Fm-k1u" id="1tD-Jc-yvi">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
+                                                <font key="font" metaFont="message"/>
                                                 <menu key="menu" id="ZQT-Ix-MQ9">
                                                     <items>
                                                         <menuItem title="Large" state="on" id="VlM-Fm-k1u" customClass="BeatMenuItemWithFloat" customModule="Beat" customModuleProvider="target">
@@ -866,8 +930,10 @@
     </objects>
     <resources>
         <image name="SettingIcon_black" width="370" height="370"/>
+        <image name="bold" catalog="system" width="11" height="12"/>
         <image name="bubbles.and.sparkles" catalog="system" width="17" height="15"/>
         <image name="doc" catalog="system" width="14" height="16"/>
         <image name="folder" catalog="system" width="18" height="14"/>
+        <image name="underline" catalog="system" width="11" height="14"/>
     </resources>
 </document>

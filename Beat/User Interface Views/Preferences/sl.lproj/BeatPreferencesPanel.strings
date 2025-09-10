@@ -84,7 +84,7 @@
 "YEd-uH-lo0.title" = "Ogromna";
 
 /* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
-"Yuw-0s-K2b.title" = "1 vrstica";
+"Yuw-0s-K2b.title" = "1";
 
 /* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
 "Zfa-HM-161.title" = "Podčrtano";
@@ -102,7 +102,7 @@
 "e3i-cN-mWC.title" = "Pokaži ločila strani (poskusno)";
 
 /* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
-"fan-Jn-FOW.title" = "2 vrstici";
+"fan-Jn-FOW.title" = "2";
 
 /* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
 "fxb-nx-hJp.title" = "Samodejno zapre elemente, kot sta () in [[]]";
