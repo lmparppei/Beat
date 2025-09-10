@@ -145,7 +145,10 @@
 			noThingPleaseSaveItem.enabled = NO;
 			[menuItem.submenu addItem:noThingPleaseSaveItem];
 		}
-		
+	}
+	else if ([menuItem isKindOfClass:BeatVisibleRevisionMenuItem.class]) {
+		NSArray<NSNumber*>* indices = [self.documentSettings get:DocSettingHiddenRevisions];
+		[(BeatVisibleRevisionMenuItem*)menuItem validateWithVisibleRevisions:indices];
 	}
 	
 	return valid;
