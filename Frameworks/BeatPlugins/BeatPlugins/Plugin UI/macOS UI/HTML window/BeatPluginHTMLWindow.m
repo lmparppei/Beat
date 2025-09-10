@@ -9,16 +9,25 @@
 #import "BeatPluginHTMLWindow.h"
 #import "BeatPlugin.h"
 #import <BeatPlugins/BeatPlugins-Swift.h>
+#import <math.h>   // for isnan()
+
 
 @interface BeatPluginHTMLWindow ()
 @end
 
 @implementation BeatPluginHTMLWindow
 
+
+
 -(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height headers:(NSString*)headers host:(BeatPlugin*)host
 {
+    if (isnan(width) || isnan(height)) {
+        width = 300.0; height = 300.0;
+    }
+    
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
-	
+    //if (frame.size.width == NAN) frame.size.width = NSScreen.mainScreen.frame.size.width;
+    
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
 	
 	// Make the window aware of the plugin host
@@ -211,6 +220,11 @@
 }
 
 - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
+    if (isnan(x) || isnan(y) || isnan(width) || isnan(height)) {
+        [self.host log:@"Error setting window frame. One of the values was NaN"];
+        return;
+    }
+    
 	@try {
 		NSRect frame = (NSRect){ x, y, width, height };
 		[self setFrame:frame display:YES];
