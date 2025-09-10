@@ -228,7 +228,7 @@
     while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
-        // The dictionary value is always a two-item array with [pageNumber<Strinrg>, pageBreakPosition<Float>]
+        // The dictionary value is always a two-item array with [pageNumber<String>, pageBreakPosition<Float>]
         NSArray* values = [_pageBreaksMap objectForKey:line];
         
         // Page number
@@ -246,8 +246,7 @@
         
         // Draw page numbers
         if (pageNumber > 0) {
-            NSString* pNumber = [NSString stringWithFormat:@"%@.",pageNumber];
-            [pNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
+            [pageNumber drawInRect:CGRectMake(CGRectGetMaxX(r) + inset.width - 60.0, inset.height + r.origin.y, 30.0, (CGFloat)self.editorDelegate.editorLineHeight) withAttributes:@{
                 NSFontAttributeName: self.editorDelegate.fonts.regular,
                 NSForegroundColorAttributeName: pageNumberColor,
                 NSParagraphStyleAttributeName: self.pageNumberStyle
@@ -315,7 +314,7 @@
         NSArray* revisionGenerations = BeatRevisions.revisionGenerations;
         bgColors = [NSMutableDictionary dictionaryWithCapacity:revisionGenerations.count];
     }
-    
+        
     CGSize inset = self.inset;
     CGFloat documentWidth = _editorDelegate.documentWidth;
     
