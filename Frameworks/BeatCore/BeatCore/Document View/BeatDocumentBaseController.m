@@ -150,7 +150,7 @@
     NSString* content = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
     
     NSInteger length = [self.documentSettings getInt:DocSettingTextLengthAtSave];
-    if (length > 0 && length != content.length) {
+    if (length > 0 && length != content.length && length+1 != content.length) {
         [self showDataHealthWarningIfNeeded];
     }
     
