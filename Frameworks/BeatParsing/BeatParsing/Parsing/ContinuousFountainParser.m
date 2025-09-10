@@ -43,6 +43,7 @@
 #import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
+#import <BeatParsing/ContinuousFountainParser+Macros.h>
 #import <BeatParsing/NSArray+BinarySearch.h>
 #import "ContinuousFountainParser+Notes.h"
 #import <BeatParsing/NSString+CharacterControl.h>
@@ -68,10 +69,6 @@
 
 // Cached line set for UUID creation
 @property (nonatomic) NSArray* cachedLines;
-
-@property (nonatomic) BeatMacroParser* macros;
-
-@property (nonatomic) bool macrosNeedUpdate;
 
 @property (nonatomic) NSArray<ParsingRule*>* parsingRules;
 
@@ -812,46 +809,6 @@ static NSDictionary* patterns;
     for (; index < self.lines.count; index++) {
         Line* line = self.lines[index];
         line.position -= amount;
-    }
-}
-
-#pragma mark - Macros
-
-- (void)updateMacros
-{
-    self.macrosNeedUpdate = false;
-    
-    BeatMacroParser* parser = BeatMacroParser.new;
-    NSArray* lines = self.safeLines;
-    
-    for (NSInteger i=0; i<lines.count; i++) {
-        Line* l = lines[i];
-        if (l.type == section && l.sectionDepth == 1) [parser resetPanel];
-        if (l.macroRanges.count == 0) continue;
-        
-        [self resolveMacrosOn:l parser:parser];
-        if (l.isOutlineElement || l.type == synopse) {
-            [self addUpdateToOutlineAtLine:l didChangeType:false];
-        }
-    }
-}
-
-/// TODO: Move this to line object maybe?
-- (void)resolveMacrosOn:(Line*)line parser:(BeatMacroParser*)macroParser
-{
-    NSDictionary* macros = line.macros;
-    line.resolvedMacros = NSMutableDictionary.new;
-    
-    NSArray<NSValue*>* keys = [macros.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSValue*  _Nonnull obj1, NSValue*  _Nonnull obj2) {
-        if (obj1.rangeValue.location > obj2.rangeValue.location) return true;
-        return false;
-    }];
-    
-    for (NSValue* range in keys) {
-        NSString* macro = macros[range];
-        id value = [macroParser parseMacro:macro];
-        
-        if (value != nil) line.resolvedMacros[range] = [NSString stringWithFormat:@"%@", value];
     }
 }
 

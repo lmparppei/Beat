@@ -16,6 +16,7 @@
 #import <BeatParsing/OutlineChanges.h>
 
 @class OutlineScene;
+@class BeatMacroParser;
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 /// Document settings object
@@ -138,6 +139,13 @@
 - (NSString*)screenplayForSaving;
 /// Can be used for handling issues with orphaned dialogue.
 - (void)ensureDialogueParsingFor:(Line*)line;
+
+
+#pragma mark - Macro handling
+
+@property (nonatomic) BeatMacroParser* macros;
+@property (nonatomic) bool macrosNeedUpdate;
+
 
 #pragma mark - Boneyard
 
