@@ -109,7 +109,7 @@ class BeatPluginMenuManager:NSObject, NSMenuDelegate {
 				displayName = String(format: "%@ %@...", BeatLocalization.localizedString(forKey: "import.prefix"), displayName.replacingOccurrences(of: "Import ", with: ""))
 			}
 			
-			let item = BeatPluginMenuItem(title: displayName, pluginName: displayName, type: plugin.type)
+			let item = BeatPluginMenuItem(title: displayName, pluginName: plugin.name, type: plugin.type)
 			item.state = .off
 			
 			// Set correct target for standalone plugins
