@@ -733,6 +733,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Foreground color attributes
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
+    // Any fully omitted text is just invisible
 	if (line.omitted && !line.isNote) {
         [self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
 		return;
@@ -798,7 +799,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		NSRange range = note.range;
 		BXColor* color = themeManager.commentColor;
 		
-		if (note.color) {
+        if (note.type == NoteTypePageNumber) {
+            color = [BeatColors color:@"purple"];
+        } else if (note.color) {
 			BXColor* c = [BeatColors color:note.color];
 			if (c != nil) color = c;
 		}
