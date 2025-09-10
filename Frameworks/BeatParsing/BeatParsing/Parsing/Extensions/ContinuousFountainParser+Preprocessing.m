@@ -40,15 +40,18 @@
 {
     return [ContinuousFountainParser preprocessForPrintingWithLines:lines documentSettings:documentSettings exportSettings:nil screenplay:nil];
 }
+
+/// Handles an array of lines and preprocesses them for pagination/rendering module according to document settings. Macros are applied, effectively empty lines are stripped away, forced page numbers and paragraph break rules are applied and so on.
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
 {
     // Create a copy of parsed lines
-    NSMutableArray *preprocessedLines = NSMutableArray.array;
+    NSMutableArray<Line*>* preprocessedLines = NSMutableArray.array;
     Line *precedingLine;
     BeatMacroParser* macros = BeatMacroParser.new;
         
     NSString* queuedPageNumber = nil;
     
+    // First we'll skip non-printable lines and apply macros.
     for (Line* line in lines) {
         // Stop at boneyard
         if (line.isBoneyardSection) break;
@@ -113,6 +116,11 @@
         precedingLine = l;
     }
     
+    // Let's see if a page number remains in queue. We'll apply that to the last preprocessed line.
+    if (queuedPageNumber != nil) {
+        preprocessedLines.lastObject.forcedPageNumber = queuedPageNumber;
+    }
+    
     // Get scene number offset from the delegate/document settings
     NSInteger sceneNumber = 1;
     if ([documentSettings getInt:DocSettingSceneNumberStart] > 1) {
@@ -120,10 +128,12 @@
         if (sceneNumber < 1) sceneNumber = 1;
     }
     
-    // The array for printable elements
-    NSMutableArray *linesToPrint = NSMutableArray.new;
-    Line *previousLine;
+    // Array for the final printable elements
+    NSMutableArray<Line*>* linesToPrint = [NSMutableArray.alloc initWithCapacity:preprocessedLines.count];
     queuedPageNumber = nil;
+
+    // Previously handled line, not necessarily previously added line.
+    Line *previousLine;
     
     for (Line *line in preprocessedLines) {
         // Fix a weird bug for first line
@@ -142,8 +152,9 @@
         if (line.isNonPrinting &&
             !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
             // The previous line has to inherit the page number IF it's not a line break
-            if (previousLine != nil && previousLine.type != pageBreak && queuedPageNumber != nil) {
-                previousLine.forcedPageNumber = queuedPageNumber;
+            Line* previousPrintedLine = linesToPrint.lastObject;
+            if (previousPrintedLine != nil && previousPrintedLine.type != pageBreak && queuedPageNumber != nil) {
+                previousPrintedLine.forcedPageNumber = queuedPageNumber;
                 queuedPageNumber = nil;
             }
             
@@ -179,7 +190,7 @@
         if (line.type == dualDialogueCharacter) {
             [self findAndSetDualDialogueSiblingIn:linesToPrint];
         }
-        
+
         // We can safely nil the queued page number here
         queuedPageNumber = nil;
         
@@ -188,7 +199,6 @@
         previousLine = line;
     }
 
-        
     return linesToPrint;
 }
 
