@@ -507,6 +507,17 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
 	Line* line = self.lineQueue[idx];
     
+    // Some lines might produce new items, which means we'll replace that line with the new components
+    if (line.resolvedMacros.count > 0) {
+        NSArray* components = [self getProducedLinesFor:line];
+        
+        if (components.count > 0) {
+            [self.lineQueue removeObjectAtIndex:idx];
+            [self.lineQueue insertObjects:components atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(idx, components.count)]];
+            line = self.lineQueue[idx];
+        }
+    }
+    
 	NSMutableArray<Line*>* block = [NSMutableArray arrayWithObject:line];
 	
 	if (line.isAnyCharacter) {
@@ -549,10 +560,11 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		i += 1;
 		
 		// Skip empty lines, and break when the next line type is not the one we expected
-		if (l.type == empty || l.string.length == 0) { continue; }
-		if (l.type == expectedType) {
-			if (l.beginsNewParagraph) {
-                // centered and lyric elements might begin a new block
+        if (l.type == empty || l.string.length == 0) {
+            continue;
+        } else if (l.type == expectedType) {
+            // centered and lyric elements might begin a new block
+            if (l.beginsNewParagraph) {
                 break;
             }
             
@@ -596,12 +608,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     if (elements.count > 0) {
         BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
         [_currentPage addBlock:block];
-    }
-    
-    _currentPage.customPageNumber = nil;
-    for (Line* line in _currentPage.lines) {
-        NSString* pgNumber = line.forcedPageNumber;
-        if (pgNumber != nil) _currentPage.customPageNumber = pgNumber;
     }
     
 	[self.pages addObject:_currentPage];
@@ -930,5 +936,39 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
         return BeatParagraphPaginationModeDefault;
     }
 }
+
+- (NSArray<Line*>*)getProducedLinesFor:(Line*)line
+{
+    // We need to check if this line actually produces multiple lines
+    NSAttributedString* attrStr = [line attributedStringForOutputWith:self.settings];
+    NSInteger lineBreakIndex = [attrStr.string rangeOfString:@"\n"].location;
+    
+    NSMutableArray<Line*>* components = NSMutableArray.new;
+    while (lineBreakIndex != NSNotFound) {
+        NSInteger lineBreakIndex = [attrStr.string rangeOfString:@"\n"].location;
+        bool stop = false;
+        Line* newLine;
+        if (lineBreakIndex == NSNotFound) {
+            newLine = [Line.alloc initWithString:[Line attributedStringToFountain:attrStr] type:line.type];
+            stop = true;
+        } else {
+            NSAttributedString* head = [attrStr attributedSubstringFromRange:NSMakeRange(0, lineBreakIndex)];
+            newLine = [Line.alloc initWithString:[Line attributedStringToFountain:head] type:line.type];
+            // Move on to next part of the attributed string
+            attrStr = [attrStr attributedSubstringFromRange:NSMakeRange(lineBreakIndex+1, attrStr.length - lineBreakIndex - 1)];
+        }
+        
+        if (newLine != nil) {
+            [newLine resetFormatting];
+            newLine.beginsNewParagraph = true;
+            [components addObject:newLine];
+        }
+        
+        if (stop) break;
+    }
+    
+    return components;
+}
+
 
 @end
