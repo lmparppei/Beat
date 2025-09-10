@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="n1j-v5-5jA">
+    <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Screenplay-->
+        <scene sceneID="dkP-xk-x6W">
+            <objects>
+                <viewController storyboardIdentifier="DocumentViewController" extendedLayoutIncludesOpaqueBars="YES" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p8x-tU-OOV">
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
+                            </containerView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="top" secondItem="SIE-Uh-Zny" secondAttribute="top" id="J80-Q2-U3n">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                            </constraint>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="leading" secondItem="SIE-Uh-Zny" secondAttribute="leading" id="QaA-3E-ufM"/>
+                            <constraint firstItem="p8x-tU-OOV" firstAttribute="trailing" secondItem="SIE-Uh-Zny" secondAttribute="trailing" id="tYN-pd-ZaO"/>
+                            <constraint firstAttribute="bottom" secondItem="p8x-tU-OOV" secondAttribute="bottom" id="vlJ-Fz-wNq"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" title="Screenplay" largeTitleDisplayMode="never" style="editor" id="G7J-RW-q00">
+                        <leftBarButtonItems>
+                            <barButtonItem title="Documents" image="folder" catalog="system" id="M6l-mf-X0i">
+                                <connections>
+                                    <action selector="dismissDocumentViewController:" destination="M2k-L8-Olo" id="laP-4I-ttz"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Toggle Sidebar" image="sidebar.left" catalog="system" id="ZWy-f9-0tx">
+                                <connections>
+                                    <action selector="toggleSidebar:" destination="M2k-L8-Olo" id="bKe-Uz-jzv"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                        <rightBarButtonItems>
+                            <barButtonItem image="ellipsis.circle" catalog="system" id="b7L-my-Myg"/>
+                            <barButtonItem title="Done" hidden="YES" id="sGw-3b-Nxf">
+                                <connections>
+                                    <action selector="endEditing:" destination="M2k-L8-Olo" id="cGb-eS-g1l"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Settings" id="57u-GR-Hn4" customClass="BeatAdaptiveNavigationBarButton" customModule="Beat" customModuleProvider="target">
+                                <imageReference key="image" image="gearshape.fill" catalog="system" symbolScale="default"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="hideOnPhone" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="Fc6-Ih-5Qm"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Index Cards" id="dzN-hd-2vt" customClass="BeatAdaptiveNavigationBarButton" customModule="Beat" customModuleProvider="target">
+                                <imageReference key="image" image="square.grid.2x2.fill" catalog="system" symbolScale="default"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="hideOnPhone" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="openQuickSettings:" destination="M2k-L8-Olo" id="hP3-VJ-FlA"/>
+                                    <segue destination="UZW-Mv-jzT" kind="show" identifier="Cards" id="vuS-8l-2Ks"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Preview" id="HYO-k9-O7y" customClass="BeatAdaptiveNavigationBarButton" customModule="Beat" customModuleProvider="target">
+                                <imageReference key="image" image="eye.fill" catalog="system" symbolScale="default"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="hideOnPhone" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="togglePreview:" destination="M2k-L8-Olo" id="NJY-XZ-TvD"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <connections>
+                        <outlet property="dismissKeyboardButton" destination="sGw-3b-Nxf" id="HQY-ki-as6"/>
+                        <outlet property="screenplayButton" destination="b7L-my-Myg" id="QO6-NY-3nm"/>
+                        <outlet property="splitViewContainer" destination="p8x-tU-OOV" id="Qaf-fN-91e"/>
+                        <outlet property="titleBar" destination="G7J-RW-q00" id="muY-Lo-xAP"/>
+                        <outlet property="topContainerConstraint" destination="J80-Q2-U3n" id="Rnb-jv-xky"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1745" y="65"/>
+        </scene>
+        <!--Preview-->
+        <scene sceneID="LHN-S5-hsX">
+            <objects>
+                <viewController storyboardIdentifier="Preview" title="Preview" id="VDS-CY-Eht" customClass="BeatPageViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JDo-k1-H6O">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" id="cyo-S7-1ID">
+                                <rect key="frame" x="407" y="595" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" id="iqI-cQ-HrT" customClass="BeatPageScrollView" customModule="Beat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <viewLayoutGuide key="contentLayoutGuide" id="tnE-0j-8dx"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="G0z-pt-eIc"/>
+                            </scrollView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
+                                <rect key="frame" x="784" y="112" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
+                                    <backgroundConfiguration key="background" cornerRadius="50">
+                                        <color key="backgroundColor" white="0.20889136899999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </backgroundConfiguration>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="dismissPreviewViewWithSender:" destination="VDS-CY-Eht" eventType="primaryActionTriggered" id="det-sQ-RQr"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="5jb-A6-DN2"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" title="Preview" largeTitleDisplayMode="never" id="dR7-Av-ZNU">
+                        <barButtonItem key="leftBarButtonItem" title="Page Element Settings" image="doc.badge.gearshape.fill" catalog="system" style="plain" id="fYN-6w-PuY"/>
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="qiH-nG-6vi">
+                            <connections>
+                                <action selector="closePreviewWithSender:" destination="VDS-CY-Eht" id="5A1-m4-orv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="pageSettingsButton" destination="fYN-6w-PuY" id="giw-CL-6xH"/>
+                        <outlet property="pageView" destination="iqI-cQ-HrT" id="31d-iR-ihS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2609" y="829"/>
+        </scene>
+        <!--Beat Editor View Controller-->
+        <scene sceneID="uc1-BM-eyz">
+            <objects>
+                <viewController autoresizesArchivedViewToFullSize="NO" automaticallyAdjustsScrollViewInsets="NO" id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Hy9-v8-qGf">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
+                                <viewLayoutGuide key="contentLayoutGuide" id="rfN-X6-xBn"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="Nsp-L4-g4d"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ekZ-mD-PCq"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <navigationItem key="navigationItem" id="6Ln-I5-Eq2"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="pageView" destination="Vhw-po-PCx" id="MbL-75-X0g"/>
+                        <outlet property="scrollView" destination="ETx-UJ-JkA" id="X93-hT-RHe"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eTe-Gf-Vv9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4207.9136690647483" y="1909.5477386934674"/>
+        </scene>
+        <!--Beat Editor Split View Controller-->
+        <scene sceneID="Obe-C1-u81">
+            <objects>
+                <splitViewController storyboardIdentifier="EditorSplitView" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <segue destination="oKi-z9-sBS" kind="relationship" relationship="masterViewController" id="GOe-pF-LL9"/>
+                        <segue destination="mW7-Bd-vZL" kind="relationship" relationship="detailViewController" id="IaK-da-DPO"/>
+                    </connections>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rBZ-hV-1nr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2609" y="1564"/>
+        </scene>
+        <!--Beat Sidebar View Controller-->
+        <scene sceneID="9rO-4Y-XEo">
+            <objects>
+                <tableViewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="16" estimatedRowHeight="16" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="1210"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="separatorColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="fJ4-Xi-prg" rowHeight="14" style="IBUITableViewCellStyleDefault" id="fUD-Q2-mxf" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="50" width="350" height="14"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fUD-Q2-mxf" id="7l8-8n-f4d" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
+                                    <rect key="frame" x="100" y="0.0" width="250" height="14"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fJ4-Xi-prg">
+                                            <rect key="frame" x="16" y="0.0" width="218" height="14"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <connections>
+                                        <outlet property="textField" destination="fJ4-Xi-prg" id="3bj-Z1-gvN"/>
+                                    </connections>
+                                </tableViewCellContentView>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </tableViewCell>
+                        </prototypes>
+                    </tableView>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" id="I7h-LD-beH"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bo0-Gi-KDE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4207.9136690647483" y="1246.7336683417086"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="pkw-U7-AzC">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="oKi-z9-sBS" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="nAh-EZ-1Yr">
+                        <rect key="frame" x="100" y="0.0" width="0.0" height="0.0"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="rootViewController" id="gFt-vh-1Yc"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="K8k-iF-fgx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3458" y="1247"/>
+        </scene>
+        <!--Beat Navigation Controller-->
+        <scene sceneID="vJ4-FX-LsW">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" id="n1j-v5-5jA" customClass="BeatNavigationController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="JT7-eO-PGz">
+                        <rect key="frame" x="0.0" y="24" width="834" height="50"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <navigationBarAppearance key="compactAppearance"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Yej-qc-tWD">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
+                    <connections>
+                        <segue destination="M2k-L8-Olo" kind="relationship" relationship="rootViewController" id="diZ-JU-CtS"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dpN-fA-ldJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1040" y="65"/>
+        </scene>
+        <!--Index Card View-->
+        <scene sceneID="J4j-ml-5FK">
+            <objects>
+                <viewController storyboardIdentifier="Cards" title="Index Card View" id="UZW-Mv-jzT" customClass="BeatPluginContainerViewController" customModule="BeatPlugins" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XsT-vL-ctF">
+                        <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
+                                <rect key="frame" x="0.0" y="0.0" width="834" height="1136"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
+                                </connections>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="bKv-DM-jPu"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="lPf-zz-Wp5" firstAttribute="trailing" secondItem="bKv-DM-jPu" secondAttribute="trailing" id="Gpi-ac-L6p"/>
+                            <constraint firstItem="lPf-zz-Wp5" firstAttribute="top" secondItem="XsT-vL-ctF" secondAttribute="top" id="fWi-84-ftg"/>
+                            <constraint firstAttribute="bottom" secondItem="lPf-zz-Wp5" secondAttribute="bottom" id="k5z-UL-GcP"/>
+                            <constraint firstItem="lPf-zz-Wp5" firstAttribute="leading" secondItem="XsT-vL-ctF" secondAttribute="leading" id="w9X-dg-TgO"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="0Ui-oi-hTO">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="FKz-1N-oX2"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="container" destination="lPf-zz-Wp5" id="TtV-cb-Wa5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iR4-kY-YYF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2450" y="65"/>
+        </scene>
+        <!--Create PDF-->
+        <scene sceneID="ZxL-Wj-Jkf">
+            <objects>
+                <tableViewController storyboardIdentifier="ExportSettingsTable" title="Create PDF" automaticallyAdjustsScrollViewInsets="NO" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" keyboardDismissMode="onDrag" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb" customClass="TPKeyboardAvoidingTableView">
+                        <rect key="frame" x="0.0" y="0.0" width="676" height="844"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <sections>
+                            <tableViewSection headerTitle="Preview" id="NRM-a2-2LR">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="326" id="aCt-Yg-lhN">
+                                        <rect key="frame" x="0.0" y="55.5" width="676" height="326"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aCt-Yg-lhN" id="Lh9-i3-ece">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="326"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bYr-tN-kfM">
+                                                    <rect key="frame" x="670" y="135.5" width="166" height="54"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                </view>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pnt-Ym-Xg1" customClass="PDFView">
+                                                    <rect key="frame" x="0.0" y="0.0" width="676" height="326"/>
+                                                    <subviews>
+                                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="VPG-ke-5bp">
+                                                            <rect key="frame" x="328" y="153" width="20" height="20"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                        </activityIndicatorView>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Pnt-Ym-Xg1" firstAttribute="top" secondItem="Lh9-i3-ece" secondAttribute="top" id="0Qt-5h-0NH"/>
+                                                <constraint firstAttribute="trailing" secondItem="Pnt-Ym-Xg1" secondAttribute="trailing" id="cxi-Zm-ckR"/>
+                                                <constraint firstAttribute="bottom" secondItem="Pnt-Ym-Xg1" secondAttribute="bottom" id="gua-Mc-ugF"/>
+                                                <constraint firstItem="Pnt-Ym-Xg1" firstAttribute="leading" secondItem="Lh9-i3-ece" secondAttribute="leading" id="vvV-Qw-u5z"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Basic Settings" id="rN0-KM-z31">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="6Mt-Kf-Tyf">
+                                        <rect key="frame" x="0.0" y="437.5" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6Mt-Kf-Tyf" id="tny-UM-U9c">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Y5c-36-KGp">
+                                                    <rect key="frame" x="20" y="11" width="519" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="XLb-yV-UnT" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Scene Numbers"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="redrawTextView" value="YES"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="80E-eN-knT"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NpY-wm-OZj">
+                                        <rect key="frame" x="0.0" y="481" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NpY-wm-OZj" id="lLU-rr-q28">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paper Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Srs-ve-AYD">
+                                                    <rect key="frame" x="20" y="11" width="399" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="gh2-pi-ILw">
+                                                    <rect key="frame" x="500" y="6" width="155" height="32"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                                    <segments>
+                                                        <segment title="A4"/>
+                                                        <segment title="US Letter"/>
+                                                    </segments>
+                                                    <connections>
+                                                        <action selector="togglePaperSize:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="1vd-ML-dMH"/>
+                                                    </connections>
+                                                </segmentedControl>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Scene Headings" id="Fib-N7-hu1">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="xAX-4R-fPE">
+                                        <rect key="frame" x="0.0" y="580.5" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xAX-4R-fPE" id="nG1-dD-84e">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bolded" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9JD-eB-aMS">
+                                                    <rect key="frame" x="20" y="11" width="519" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="Z3a-gl-jqf" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="headingStyleBold"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="gp7-Yb-VuH"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="DNv-SW-2Lx">
+                                        <rect key="frame" x="0.0" y="624" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DNv-SW-2Lx" id="WNq-K1-3nY">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Underlined" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uzg-si-Fvs">
+                                                    <rect key="frame" x="20" y="11" width="519" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="BLS-CE-7qL" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="headingStyleUnderline"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="C88-Go-KmL"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="slY-Sd-n4S">
+                                        <rect key="frame" x="0.0" y="667.5" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="slY-Sd-n4S" id="DcY-e9-cfb">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading Spacing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2bc-pY-Rnx">
+                                                    <rect key="frame" x="20" y="11" width="399" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="BSJ-yG-6AA">
+                                                    <rect key="frame" x="536" y="7" width="119" height="32"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                                    <segments>
+                                                        <segment title="2 lines"/>
+                                                        <segment title="1 line"/>
+                                                    </segments>
+                                                    <connections>
+                                                        <action selector="toggleSpacingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="SZQ-HP-guY"/>
+                                                    </connections>
+                                                </segmentedControl>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Advanced — Revisions" id="Yv8-mh-xoT">
+                                <string key="footerTitle">Select revision generations you want to have highlighted with markers. If you haven't used revisions, you can leave this untouched.</string>
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="168" id="B4D-fq-NIz">
+                                        <rect key="frame" x="0.0" y="774.5" width="676" height="168"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="B4D-fq-NIz" id="txa-Em-pSW">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="168"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cd7-mI-FG8">
+                                                    <rect key="frame" x="20" y="5" width="328" height="163"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
+                                                    <subviews>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="flC-DG-4Nx" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="blue"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="d1x-Hu-7I7"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="jzm-M1-rpn" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="39" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="pink"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="3xj-Nh-usQ"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1st" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="n7h-7b-H86">
+                                                            <rect key="frame" x="49" y="5" width="73" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2nd" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Gf4-3S-nan">
+                                                            <rect key="frame" x="49" y="44" width="73" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vWI-Un-g1h" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="78" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="yellow"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="MQa-Bd-aju"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3rd" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="IFT-9s-wii">
+                                                            <rect key="frame" x="49" y="83" width="73" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="83f-ff-3Bj" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="117" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="green"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="ECS-O3-ICk"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jh5-fa-k3F">
+                                                            <rect key="frame" x="49" y="122" width="73" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </view>
+                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5zd-VH-QgG">
+                                                    <rect key="frame" x="348" y="5" width="307" height="163"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES"/>
+                                                    <subviews>
+                                                        <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vHY-h3-yHb" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="goldenrod"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="8oc-AX-nrE"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="70M-Bi-O8F" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="39" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="buff"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="O3c-Oi-2fS"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="X6O-rE-pSj">
+                                                            <rect key="frame" x="50" y="5" width="63" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="6th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kTI-rp-WjF">
+                                                            <rect key="frame" x="50" y="44" width="63" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="b7E-G4-pZd" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="78" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="rose"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="iea-2B-IhX"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xul-DA-rer">
+                                                            <rect key="frame" x="50" y="82" width="63" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="qGk-kR-MVa" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="0.0" y="117" width="32" height="32"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="tintColor" systemColor="systemPinkColor"/>
+                                                            <state key="normal" title="Button"/>
+                                                            <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="userSetting" value="showiOSWelcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="alertName" value="welcomeScreen"/>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="tintName" value="cherry"/>
+                                                            </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="toggleRevisionWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="BUe-Zl-oK3"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="8th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="djV-yg-tSX">
+                                                            <rect key="frame" x="50" y="122" width="63" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </view>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Advanced — Invisible elements" footerTitle="Includes selected invisible elements in your printout." id="TaO-aF-sl5">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="uK9-uA-bSU">
+                                        <rect key="frame" x="0.0" y="1034" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uK9-uA-bSU" id="nJz-Is-x6g">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Q79-Vo-Xvk" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Sections"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Ufv-ha-Ec1"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Sections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xUa-d2-ptJ">
+                                                    <rect key="frame" x="20" y="11" width="574" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="T98-YH-OcS">
+                                        <rect key="frame" x="0.0" y="1077.5" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="T98-YH-OcS" id="tY2-xQ-a5K">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="ncs-aU-t6r" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Synopsis"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="Sw5-Ey-raa"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Synopsis" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hzi-ti-rtG">
+                                                    <rect key="frame" x="20" y="11" width="574" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="lou-S8-ZDK">
+                                        <rect key="frame" x="0.0" y="1121" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lou-S8-ZDK" id="GVy-EO-j8Y">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <switch opaque="NO" tag="2" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="W2U-dT-KWo" customClass="BeatUserSettingSwitch" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="609" y="6" width="49" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="setting" value="Print Notes"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <connections>
+                                                        <action selector="toggleSettingWithSender:" destination="p0B-o5-lkK" eventType="primaryActionTriggered" id="0OH-TG-LKU"/>
+                                                    </connections>
+                                                </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jk1-en-hR5">
+                                                    <rect key="frame" x="20" y="11" width="574" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Advanced — Header" id="Vlm-16-I5d">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="6ih-xA-pVG">
+                                        <rect key="frame" x="0.0" y="1232.5" width="676" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6ih-xA-pVG" id="Lac-jg-0l4">
+                                            <rect key="frame" x="0.0" y="0.0" width="676" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Header Text" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vHn-hV-C9v">
+                                                    <rect key="frame" x="20" y="11" width="184" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Version, revision, ..." textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" id="E1Z-yy-qVe">
+                                                    <rect key="frame" x="211" y="5" width="444" height="34"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                    <connections>
+                                                        <action selector="editHeader:" destination="p0B-o5-lkK" eventType="valueChanged" id="0ie-dg-ebP"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="p0B-o5-lkK" id="AVU-Xi-sVD"/>
+                            <outlet property="delegate" destination="p0B-o5-lkK" id="QDg-LF-VhX"/>
+                        </connections>
+                    </tableView>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <navigationItem key="navigationItem" title="Create PDF" id="3VY-hR-VZS">
+                        <barButtonItem key="leftBarButtonItem" title="Back" image="chevron.left" catalog="system" style="plain" id="hKH-tk-Owk">
+                            <connections>
+                                <action selector="close:" destination="p0B-o5-lkK" id="D1V-1r-37E"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Save" style="done" id="DGg-WA-1nn">
+                            <connections>
+                                <action selector="savePDF:" destination="p0B-o5-lkK" id="nZG-Fu-PFK"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <size key="freeformSize" width="676" height="918"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="VPG-ke-5bp" id="48C-GP-HfZ"/>
+                        <outlet property="header" destination="E1Z-yy-qVe" id="cxD-UX-4YH"/>
+                        <outlet property="paperSize" destination="gh2-pi-ILw" id="DM8-7W-yff"/>
+                        <outlet property="previewView" destination="Pnt-Ym-Xg1" id="xWc-cu-gb9"/>
+                        <outlet property="printNotes" destination="W2U-dT-KWo" id="UGc-3K-NiX"/>
+                        <outlet property="printSceneNumbers" destination="XLb-yV-UnT" id="3od-lq-XaG"/>
+                        <outlet property="printSections" destination="ncs-aU-t6r" id="fdg-nt-Hkb"/>
+                        <outlet property="printSynopsis" destination="ncs-aU-t6r" id="Kiz-YL-rXM"/>
+                        <outlet property="sceneHeadingBolded" destination="Z3a-gl-jqf" id="Ys7-va-Tz9"/>
+                        <outlet property="sceneHeadingSpacing" destination="BSJ-yG-6AA" id="UiI-I6-PIn"/>
+                        <outlet property="sceneHeadingUnderlined" destination="BLS-CE-7qL" id="H8t-aj-m0z"/>
+                        <outlet property="temporaryView" destination="bYr-tN-kfM" id="qrx-ZO-H9W"/>
+                        <outletCollection property="revisionSwitches" destination="flC-DG-4Nx" collectionClass="NSMutableArray" id="dta-pd-Ix0"/>
+                        <outletCollection property="revisionSwitches" destination="jzm-M1-rpn" collectionClass="NSMutableArray" id="kSg-zu-QdJ"/>
+                        <outletCollection property="revisionSwitches" destination="vWI-Un-g1h" collectionClass="NSMutableArray" id="dkD-R2-jhx"/>
+                        <outletCollection property="revisionSwitches" destination="83f-ff-3Bj" collectionClass="NSMutableArray" id="NE9-3G-91Y"/>
+                        <outletCollection property="revisionSwitches" destination="vHY-h3-yHb" collectionClass="NSMutableArray" id="IKF-aQ-TJr"/>
+                        <outletCollection property="revisionSwitches" destination="70M-Bi-O8F" collectionClass="NSMutableArray" id="hUr-tg-BtK"/>
+                        <outletCollection property="revisionSwitches" destination="b7E-G4-pZd" collectionClass="NSMutableArray" id="xHw-IC-pCB"/>
+                        <outletCollection property="revisionSwitches" destination="qGk-kR-MVa" collectionClass="NSMutableArray" id="rdf-eq-sq1"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5mG-Vs-h0d" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1485.611510791367" y="2123.1155778894472"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="eA9-vR-ovT">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="mW7-Bd-vZL" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="biR-Nf-7sv">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="rootViewController" id="JMA-IZ-ra3"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1pi-MT-sLa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3458" y="1910"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="checkmark.square.fill" catalog="system" width="128" height="114"/>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
+        <image name="doc.badge.gearshape.fill" catalog="system" width="120" height="128"/>
+        <image name="ellipsis.circle" catalog="system" width="128" height="123"/>
+        <image name="eye.fill" catalog="system" width="128" height="80"/>
+        <image name="folder" catalog="system" width="128" height="96"/>
+        <image name="gearshape.fill" catalog="system" width="128" height="123"/>
+        <image name="sidebar.left" catalog="system" width="128" height="93"/>
+        <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
+        <image name="xmark.circle.fill" width="40" height="40"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiarySystemGroupedBackgroundColor">
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

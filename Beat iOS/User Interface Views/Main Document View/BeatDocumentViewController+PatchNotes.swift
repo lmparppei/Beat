@@ -15,8 +15,6 @@ import WebKit
 			  let buildNumber = Int(buildNumberStr)
 		else { return }
 		
-		print("-> BUILD", buildNumber)
-		
 		let lastRunVersion = UserDefaults.standard.integer(forKey: "lastRunVersion")
 		
 		if buildNumber > lastRunVersion && lastRunVersion > 0 {

@@ -198,8 +198,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	}
 	
 	func presentFountain(at documentURL:URL) {
-		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! BeatDocumentViewController
+		let storyboard = UIStoryboard(name: "Document", bundle: nil)
+		let documentViewController = storyboard.instantiateViewController(withIdentifier: "DocumentViewController") as! BeatDocumentViewController
 		
 		documentViewController.document = iOSDocument(fileURL: documentURL)
 		documentViewController.documentBrowser = self
@@ -209,8 +209,6 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 			navigationController.modalPresentationStyle = .fullScreen
 			self.present(navigationController, animated: true, completion: nil)
 		}
-	}
-	
-	// MARK: - Beta notification
+	}	
 }
 

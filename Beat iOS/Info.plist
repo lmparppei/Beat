@@ -36,6 +36,21 @@
 	<dict/>
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string>BeatDocument 256</string>
+			<key>CFBundleURLName</key>
+			<string>fi.KAPITAN.Beat-iOS.launch</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>beat</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>fi.KAPITAN.Beat.editing</string>

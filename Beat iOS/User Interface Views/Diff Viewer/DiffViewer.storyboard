@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="LLq-nW-E1W">
+            <objects>
+                <navigationController id="Fex-Aa-Jvs" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="193-y6-7xX">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="OfX-3o-odV" kind="relationship" relationship="rootViewController" id="Cwk-XR-qUG"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="weu-XU-I9k" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1432" y="-14"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="vU3-Vr-DeU">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="73Z-Yr-EVO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController id="OfX-3o-odV" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gx9-ni-Vqc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" changesSelectionAsPrimaryAction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rVP-g7-mQh">
+                                <rect key="frame" x="16" y="796" width="175" height="22"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <menu key="menu" id="cgT-nj-Bb0">
+                                    <children>
+                                        <command title="Item 1" id="f3J-Gb-6DN"/>
+                                        <command title="Item 2" id="IfB-J6-R4E"/>
+                                    </children>
+                                </menu>
+                                <state key="normal" title="SDF" image="chevron.up.chevron.down" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="gray" buttonSize="small"/>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="C0z-kn-hrQ">
+                                <rect key="frame" x="16" y="162" width="361" height="620"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" changesSelectionAsPrimaryAction="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H1p-Bm-Dcr">
+                                <rect key="frame" x="202" y="796" width="175" height="22"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <menu key="menu" id="T6e-q4-1qp">
+                                    <children>
+                                        <command title="Item 1" id="c2D-2N-zI2"/>
+                                        <command title="Item 2" id="0oG-AE-alJ"/>
+                                    </children>
+                                </menu>
+                                <state key="normal" title="SDF" image="chevron.up.chevron.down" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="gray" buttonSize="small"/>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6n4-N6-jtC"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="UEf-ik-diE">
+                        <nil key="title"/>
+                        <barButtonItem key="leftBarButtonItem" title="Done" id="UPf-w0-9qv"/>
+                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="TkO-RZ-Fje">
+                            <rect key="frame" x="146" y="5.6666666666666679" width="101" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segments>
+                                <segment title="" image="arrow.left.arrow.right" catalog="system"/>
+                                <segment title="" image="text.document" catalog="system"/>
+                            </segments>
+                        </segmentedControl>
+                    </navigationItem>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="-573.28244274809163" y="-14.084507042253522"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.left.arrow.right" catalog="system" width="120" height="128"/>
+        <image name="chevron.up.chevron.down" catalog="system" width="109" height="128"/>
+        <image name="text.document" catalog="system" width="115" height="128"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

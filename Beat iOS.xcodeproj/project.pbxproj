@@ -117,11 +117,14 @@
 		B6A97CA52BF0C62B00414878 /* BeatDocumentViewController+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
 		B6C51B4E2DF755C10093965F /* 0.2.12.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C51B4D2DF755C10093965F /* 0.2.12.html */; };
+		B6C597B42E66370100418587 /* ThumbnailProvider.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6C597B32E66370100418587 /* ThumbnailProvider.xcassets */; };
+		B6C597C42E6EA28000418587 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6C597C32E6EA28000418587 /* Main.storyboard */; };
+		B6C597CB2E6EA48C00418587 /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6C597CA2E6EA48C00418587 /* DiffViewer.storyboard */; };
 		B6C7AA8A2BB3113E00A43284 /* BeatShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C7AA892BB3113E00A43284 /* BeatShareSheetController.swift */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
 		B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */; };
-		B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */; };
+		B6CB96FC282FEB6600C7AFC7 /* Document.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FA282FEB6500C7AFC7 /* Document.storyboard */; };
 		B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */; };
 		B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */; };
 		B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */; };
@@ -324,12 +327,15 @@
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
 		B6C51B4D2DF755C10093965F /* 0.2.12.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.12.html; sourceTree = "<group>"; };
+		B6C597B32E66370100418587 /* ThumbnailProvider.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ThumbnailProvider.xcassets; sourceTree = "<group>"; };
+		B6C597C22E6EA28000418587 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B6C597CA2E6EA48C00418587 /* DiffViewer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DiffViewer.storyboard; sourceTree = "<group>"; };
 		B6C7AA892BB3113E00A43284 /* BeatShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatShareSheetController.swift; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
 		B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSDocument.swift; sourceTree = "<group>"; };
-		B6CB96FB282FEB6600C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B6CB96FB282FEB6600C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Document.storyboard; sourceTree = "<group>"; };
 		B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B6CB9700282FEB6700C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B6CB9702282FEB6700C7AFC7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -494,7 +500,8 @@
 		B61FD0642A69309F00A40883 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
-				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
+				B6C597C32E6EA28000418587 /* Main.storyboard */,
+				B6CB96FA282FEB6500C7AFC7 /* Document.storyboard */,
 				B6D7917B2E44E89500186B3E /* SettingViews.storyboard */,
 				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
 				B64FA4A82DA55E590098F448 /* ThemeEditor.storyboard */,
@@ -627,6 +634,7 @@
 			children = (
 				B64AD6292B2F900600EBD63A /* ThumbnailProvider.swift */,
 				B64AD62B2B2F900600EBD63A /* Info.plist */,
+				B6C597B32E66370100418587 /* ThumbnailProvider.xcassets */,
 			);
 			path = BeatThumbnailProvider;
 			sourceTree = "<group>";
@@ -758,6 +766,14 @@
 			path = "Preview View";
 			sourceTree = "<group>";
 		};
+		B6C597C62E6EA3F600418587 /* Diff Viewer */ = {
+			isa = PBXGroup;
+			children = (
+				B6C597CA2E6EA48C00418587 /* DiffViewer.storyboard */,
+			);
+			path = "Diff Viewer";
+			sourceTree = "<group>";
+		};
 		B6CB96F1282FEB6500C7AFC7 /* Beat iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -793,6 +809,7 @@
 				B6AD9ACB2B80001D00E80E0C /* Preview View */,
 				B61FD0572A66BEF000A40883 /* Outline View */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
+				B6C597C62E6EA3F600418587 /* Diff Viewer */,
 				B619DE5B29F80D92007D1838 /* Document Browser View */,
 				B6A79B692B80C89F003FF931 /* Settings */,
 				B61914CC2C0497DE0079C828 /* Statistics */,
@@ -946,6 +963,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C597B42E66370100418587 /* ThumbnailProvider.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -992,7 +1010,7 @@
 				B6964D9C2D7F1E6F00F034A4 /* Beat-FadeIn.png in Resources */,
 				B6964D9D2D7F1E6F00F034A4 /* Beat-FDX.png in Resources */,
 				B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */,
-				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
+				B6CB96FC282FEB6600C7AFC7 /* Document.storyboard in Resources */,
 				B61914D02C0497EA0079C828 /* BeatStatistics.beatPlugin in Resources */,
 				B61073952DB689E4005AD11B /* 0.2.11.html in Resources */,
 				B6D791762E43A43500186B3E /* 0.3.1.html in Resources */,
@@ -1003,6 +1021,8 @@
 				B65B56E92D40284A008BB43F /* 0.2.4.html in Resources */,
 				B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */,
 				B67969CC2D359E9E00435A38 /* 0.2.2.html in Resources */,
+				B6C597C42E6EA28000418587 /* Main.storyboard in Resources */,
+				B6C597CB2E6EA48C00418587 /* DiffViewer.storyboard in Resources */,
 				B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */,
 				B631487C2CB69C6C001EE70E /* BeatPatchNoteTemplate.html in Resources */,
 				B6DAAC952D74C13400FF6BD6 /* 0.2.8.html in Resources */,
@@ -1106,12 +1126,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */ = {
+		B6C597C32E6EA28000418587 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6C597C22E6EA28000418587 /* Main.storyboard */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B6CB96FA282FEB6500C7AFC7 /* Document.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				B6CB96FB282FEB6600C7AFC7 /* Base */,
 			);
-			name = Main.storyboard;
+			name = Document.storyboard;
 			sourceTree = "<group>";
 		};
 		B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */ = {
