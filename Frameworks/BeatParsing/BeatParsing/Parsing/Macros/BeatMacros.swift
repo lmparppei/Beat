@@ -12,7 +12,7 @@
  The code has been cooked up in a day or two, so it's not the cleanest approach, but works :------)
  
  There are three types of macros: `string`, `serial` (which can be `series` for compatibility with Highland) and `date`.
- String macros require a definition, whereas serials start at `1 ` by default:
+ String macros require a definition, whereas serials start at `1` by default:
  
  __String macros__
  Definition: `{{ macroName = Hello world }}`
@@ -41,14 +41,16 @@ import Foundation
     
     var macros: [String: BeatMacro] = [:]
     var panel = BeatMacro(name: "panel", type: .panel, value: 0)
+    var references = BeatMacro(name: "ref", type: .reference, value: [String]())
     
-    let typeNames = ["string", "serial", "series", "number", "date", "panel"]
+    let typeNames = ["string", "serial", "series", "number", "date", "panel", "ref", "references"]
     
     
-    /// Resolves the given macro content and returns the resulting value. `{{` and `}}` are removed automatically, so you can also provide a generic macro for weird tricks, not just the macro range from a line.
+    /// Resolves the given macro content and returns the resulting value. At `Line` level, this is called for each macro range, passing the strings in those ranges. `{{` and `}}` are removed automatically. You can also provide pure macro strings to do weird tricks.
     @objc public func parseMacro(_ macro: String) -> AnyObject? {
         // Remove {{, }} and leading/trailing whitespace
         let trimmedMacro = macro.replacingOccurrences(of: "{{", with: "").replacingOccurrences(of: "}}", with: "").trimmingCharacters(in: .whitespaces)
+        
         // Separate in two (if applicable)
         let components = trimmedMacro.split(separator: "=").map { $0.trimmingCharacters(in: .whitespaces) }
         
@@ -57,12 +59,18 @@ import Foundation
         
         var varName = ""
         var typeName = "string"
+        var parameters = ""
         var subValue = -1
         
         if let leftSide = components.first?.components(separatedBy: " ") {
             if leftSide.count > 1, let t = leftSide.first?.lowercased().trimmingCharacters(in: .whitespaces) {
                 if typeNames.contains(t) { typeName = t }
-                varName = leftSide[1]
+                
+                if typeName == "date" || typeName == "ref" {
+                    parameters = leftSide[1..<leftSide.count].joined(separator: " ")
+                } else {
+                    varName = leftSide[1]
+                }
             } else {
                 varName = leftSide.first!
             }
@@ -84,20 +92,29 @@ import Foundation
         }
         
         // Don't let empty macro names through
-        if varName == "" { print("Invalid macro"); return nil; }
+        if varName == "", typeName != "date", typeName != "ref", typeName != "references" { print("Invalid macro"); return nil; }
         
-        // Dates and panels don't work as other macros
-        if varName == "date" || varName == "panel" {
+        // Dates and panels don't work as other macros. They can be called just as keywords, {{panel}} or {{date}}, so in these cases we'll make the var name TYPE name and leave actual var name empty.
+        if varName == "date" || varName == "panel" || varName == "references" {
             typeName = varName
             varName = ""
         }
-        
-        var varType = BeatMacro.typeName(for: typeName)
+                
+        // Let's create/fetch the macro now
         let macro:BeatMacro
+        var varType = BeatMacro.typeName(for: typeName)
         
         if typeName == "panel" {
+            // Panel is a global variable/keyword
             macro = panel
-        } else if varType != .date {
+        } else if typeName == "ref" {
+            macro = references
+        } else if typeName == "references" {
+            macro = BeatMacro(name: "references", type: .references, value: references.value)
+        } else if varType == .date {
+            // Create a date macro
+            macro = BeatMacro(name: "date", type: .date, value: parameters)
+        } else {
             // If the macro doesn't exist, create it
             if macros[varName] == nil {
                 macros[varName] = BeatMacro(name: varName, type: varType, value: nil)
@@ -106,12 +123,10 @@ import Foundation
             // Retrieve macro type
             macro = macros[varName]!
             varType = macro.type
-        } else {
-            // Create a date macro
-            macro = BeatMacro(name: "date", type: .date, value: nil)
         }
 
-        if components.count > 1 {
+        // Handle the right side (meaning anything after =)
+        if components.count > 1, macro.type != .reference {
             let rightSide = components[1]
             
             if varType == .serial || varType == .number {
@@ -121,8 +136,17 @@ import Foundation
                 macro.value = rightSide
             }
         } else if varType == .date {
-            // When defining a date, the type/name convention doesn't work as usual
-            macro.value = varName
+            // We have handled date parameters earlier, but... uh
+            macro.value = parameters
+        } else if varType == .reference {
+            var items = macro.value as? [String] ?? []
+            // We'll support using = just to be friendly
+            if components.count > 1 { parameters = components[1] }
+            
+            items.append(parameters)
+            macro.value = items
+        } else if varType == .references {
+            // do nothing
         } else {
             // If this value is UNDEFINED but printed, we'll assign a value
             if macro.value == nil {
@@ -139,23 +163,7 @@ import Foundation
             }
         }
         
-        if macro.type == .string {
-            return macro.stringValue
-        } else if macro.type == .date {
-            let df = DateFormatter()
-            var format = macro.value as? String ?? ""
-            if (format.count == 0) { format = "d.M.Y" }
-            
-            df.dateFormat = format
-            return df.string(from: Date()) as NSString
-        } else {
-            if subValue == -1 {
-                return macro.intValue
-            } else {
-                return NSNumber(integerLiteral: macro.subValues[subValue] ?? -1)
-            }
-            
-        }
+        return macro.resolvedValue(subValue: subValue)
     }
     
     @objc public func resetPanel() {
@@ -164,9 +172,8 @@ import Foundation
 }
 
 @objc enum MacroType:Int {
-    case string, serial, number, date, panel
+    case string, serial, number, date, panel, reference, references
 }
-
 
 class BeatMacro {
     var type:MacroType
@@ -174,7 +181,9 @@ class BeatMacro {
     var value:Any? {
         didSet {
             // Reset sub value whenever the value is changed
-            if self.type == .serial { subValues = [:] }
+            if self.type == .serial {
+                subValues = [:]
+            }
         }
     }
     
@@ -196,6 +205,38 @@ class BeatMacro {
         self.name = name
     }
     
+    func resolvedValue(subValue:Int) -> AnyObject? {
+        if type == .string {
+            return stringValue
+        } else if type == .date {
+            let df = DateFormatter()
+            var format = value as? String ?? ""
+            if (format.count == 0) { format = "d.M.Y" }
+            
+            df.dateFormat = format
+            return df.string(from: Date()) as NSString
+        } else if type == .reference {
+            let items = value as? [String] ?? []
+            return "[\(items.count)]" as NSString
+        } else if type == .references {
+            let items = value as? [String] ?? []
+            var text = ""
+            
+            for i in items.indices {
+                let ref = items[i]
+                text += "[\(i+1)] \(ref)\n"
+            }
+            
+            return text as NSString
+        } else {
+            if subValue == -1 {
+                return intValue
+            } else {
+                return NSNumber(integerLiteral: subValues[subValue] ?? -1)
+            }
+        }
+    }
+    
     func incrementValue(subValue:Int = -1) {
         if var n = value as? Int, subValue == -1 {
             n += 1
@@ -210,7 +251,6 @@ class BeatMacro {
         }
     }
 
-    
     class func typeName(for string:String) -> MacroType {
         // Check type
         switch string {
@@ -222,6 +262,10 @@ class BeatMacro {
             return .date
         case "panel":
             return .number
+        case "ref":
+            return .reference
+        case "references":
+            return .references
         default:
             return .string
         }
