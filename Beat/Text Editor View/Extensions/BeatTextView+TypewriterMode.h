@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)typewriterScroll;
 /// Toggles the typewriter mode from menu
 - (IBAction)toggleTypewriterMode:(id)sender;
+ 
 @end
 
 NS_ASSUME_NONNULL_END

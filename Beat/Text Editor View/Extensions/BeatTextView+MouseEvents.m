@@ -14,8 +14,9 @@
 
 #pragma mark - Mouse events
 
-- (void)scrollWheel:(NSEvent *)event
+-(void)scrollWheel:(NSEvent *)event
 {
+	// If the user scrolls, let's ignore any other scroll behavior
 	if (event.phase == NSEventPhaseBegan || event.phase == NSEventPhaseChanged) self.scrolling = YES;
 	else if (event.phase == NSEventPhaseEnded) self.scrolling = NO;
 	

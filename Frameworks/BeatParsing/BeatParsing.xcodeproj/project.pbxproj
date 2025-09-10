@@ -79,6 +79,8 @@
 		B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */; };
 		B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F6228F0285D00657F5F /* BeatExportSettings.m */; };
 		B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F6328F0285D00657F5F /* BeatExportSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6C597B72E66F3AD00418587 /* ContinuousFountainParser+Macros.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C597B52E66F3AD00418587 /* ContinuousFountainParser+Macros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6C597B82E66F3AD00418587 /* ContinuousFountainParser+Macros.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C597B62E66F3AD00418587 /* ContinuousFountainParser+Macros.m */; };
 		B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6C629BB2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */; };
 		B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -164,6 +166,8 @@
 		B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatScreenplay.m; sourceTree = "<group>"; };
 		B6B37F6228F0285D00657F5F /* BeatExportSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatExportSettings.m; sourceTree = "<group>"; };
 		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
+		B6C597B52E66F3AD00418587 /* ContinuousFountainParser+Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Macros.h"; sourceTree = "<group>"; };
+		B6C597B62E66F3AD00418587 /* ContinuousFountainParser+Macros.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ContinuousFountainParser+Macros.m"; sourceTree = "<group>"; };
 		B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSCharacterSet+BadControlCharacters.h"; sourceTree = "<group>"; };
 		B6C629B92A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCharacterSet+BadControlCharacters.m"; sourceTree = "<group>"; };
 		B6D1E50E2C456D020014D16B /* ContinuousFountainParser+Omissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContinuousFountainParser+Omissions.h"; sourceTree = "<group>"; };
@@ -367,6 +371,8 @@
 				B694016A2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.m */,
 				B6DBB2C02D778F93008327EF /* ContinuousFountainParser+Lookup.h */,
 				B6DBB2C12D778F93008327EF /* ContinuousFountainParser+Lookup.m */,
+				B6C597B52E66F3AD00418587 /* ContinuousFountainParser+Macros.h */,
+				B6C597B62E66F3AD00418587 /* ContinuousFountainParser+Macros.m */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -401,6 +407,7 @@
 				B694016B2B46C21C00B8A624 /* ContinuousFountainParser+Preprocessing.h in Headers */,
 				B61A4E942D22068900CE761C /* Line+SplitAndJoin.h in Headers */,
 				B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */,
+				B6C597B72E66F3AD00418587 /* ContinuousFountainParser+Macros.h in Headers */,
 				B699E7BE2A39AF0E001476EF /* NSString+EMOEmoji.h in Headers */,
 				B6737DEA2CD2642E00644D98 /* NSArray+BinarySearch.h in Headers */,
 				B6C629BA2A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h in Headers */,
@@ -511,6 +518,7 @@
 				B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */,
 				B6DBB2C32D778F93008327EF /* ContinuousFountainParser+Lookup.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
+				B6C597B82E66F3AD00418587 /* ContinuousFountainParser+Macros.m in Sources */,
 				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
 				B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */,
 				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,

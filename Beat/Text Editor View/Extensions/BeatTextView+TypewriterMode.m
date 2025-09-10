@@ -18,7 +18,6 @@
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingTypewriterMode];
 }
-
 - (void)setTypewriterMode:(bool)typewriterMode
 {
 	[BeatUserDefaults.sharedDefaults saveBool:typewriterMode forKey:BeatSettingTypewriterMode];
@@ -71,6 +70,5 @@
 	
 	[self.superview.animator setBoundsOrigin:bounds.origin];
 }
-
 
 @end
