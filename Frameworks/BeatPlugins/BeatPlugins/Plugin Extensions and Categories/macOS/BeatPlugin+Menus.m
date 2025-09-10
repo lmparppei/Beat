@@ -35,7 +35,8 @@
     }
 }
 
-- (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>* _Nullable)items {
+- (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>* _Nullable)items
+{
     BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
     
     for (BeatPluginControlMenuItem* item in items) {
@@ -54,7 +55,8 @@
     return menu;
 }
 
-- (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items {
+- (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items
+{
     NSMenuItem* topItem = [NSMenuItem.alloc initWithTitle:name action:nil keyEquivalent:@""];
     
     BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
@@ -64,12 +66,19 @@
     return topItem;
 }
 
-- (NSMenuItem*)separatorMenuItem {
+- (NSMenuItem*)separatorMenuItem
+{
     return [NSMenuItem separatorItem];
 }
 
-- (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
+- (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method
+{
     return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
+}
+
+- (NSMenu*)getMainMenu
+{
+    return NSApplication.sharedApplication.mainMenu;
 }
 
 #endif

@@ -17,6 +17,8 @@
 #if TARGET_OS_OSX
     - (NSMenuItem*)separatorMenuItem;
     - (void)refreshMenus;
+    - (NSMenu*)getMainMenu;
+
     JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
     JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
     JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
