@@ -28,6 +28,9 @@ class ThumbnailProvider: QLThumbnailProvider {
 			let size = CGSizeMake(request.maximumSize.height * 0.694, request.maximumSize.height)
 			
 			let reply = QLThumbnailReply(contextSize: size, currentContextDrawing: { () -> Bool in
+				guard let font = UIFont(name: "Courier", size: size.height / 28) else {
+					return false
+				}
 				
 				var title = titlePage.stringFor("title")
 				if (title.count == 0) { title = "Untitled" }
@@ -39,25 +42,27 @@ class ThumbnailProvider: QLThumbnailProvider {
 				let authors = titlePage.stringFor("authors")
 				if (authors.count > 0) { title += "\n\n" + authors }
 				
-				if let font = UIFont(name: "Courier", size: size.height / 30) {
-					let pStyle = NSMutableParagraphStyle()
-					pStyle.alignment = .center
-					
-					let attrs:[NSAttributedString.Key : Any] = [
-						NSAttributedString.Key.font: font,
-						NSAttributedString.Key.foregroundColor: UIColor.black,
-						NSAttributedString.Key.paragraphStyle: pStyle
-					]
-					
-					let titleStr = NSAttributedString(string: title, attributes: attrs)
-					titleStr.draw(in: CGRectMake(size.width * 0.2, size.height * 0.3, size.width * 0.6, 150.0))
-					
-					
-					// Return true if the thumbnail was successfully drawn inside this block.
-					return true
+				let pStyle = NSMutableParagraphStyle()
+				pStyle.alignment = .center
+				
+				let attrs:[NSAttributedString.Key : Any] = [
+					NSAttributedString.Key.font: font,
+					NSAttributedString.Key.foregroundColor: UIColor.black,
+					NSAttributedString.Key.paragraphStyle: pStyle
+				]
+				
+				let titleStr = NSAttributedString(string: title, attributes: attrs)
+				titleStr.draw(in: CGRectMake(size.width * 0.2, size.height * 0.25, size.width * 0.6, 150.0))
+								
+				// Draw icon at the bottom
+				if let image = UIImage(named: "icon") {
+					let rect = CGRect(x: size.width * 0.025, y: size.height - 40 - size.height * 0.025, width: 40, height: 40)
+					image.draw(in: rect)
 				} else {
-					return false
+					print("No image found")
 				}
+				
+				return true
 			})
 			
 			handler(reply, nil)
