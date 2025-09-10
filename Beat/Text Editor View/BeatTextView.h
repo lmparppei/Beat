@@ -88,6 +88,9 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 /// This is set `true` while the user is scrolling the view
 @property (nonatomic) bool scrolling;
 
+/// A shorthand to return `true` when selection is at end. Use this to avoid going out of range when setting typing attributes.
+@property (nonatomic) bool selectionAtEnd;
+
 #pragma mark Layout and positioning
 
 + (CGFloat)linePadding;

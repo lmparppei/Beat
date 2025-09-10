@@ -40,6 +40,7 @@
 #import "BeatTextView+MouseEvents.h"
 #import "BeatTextView+FocusMode.h"
 #import "BeatTextView+TypewriterMode.h"
+#import "BeatTextView+SelectionEvents.h"
 
 #import "BeatPasteboardItem.h"
 #import "Beat-Swift.h"
@@ -72,9 +73,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 /// Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
-
-/// A shorthand to return `true` when selection is at end. Use this to avoid going out of range when setting typing attributes.
-@property (nonatomic) bool selectionAtEnd;
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
@@ -405,71 +403,15 @@ NSString *keyCodeToString(uint16_t keyCode) {
 }
 
 
-#pragma mark - Selection events
-
-/**
- 
- There are TWO different didChangeSelection listeners, here and in Document.
- This one deals with text editor events, such as tagging, typewriter scroll,
- closing autocomplete and displaying reviews.
- 
- The one in Document handles other UI-related stuff, such as updating views
- that are hooked into the parsed screenplay contents, and also updates plugins.
- 
- */
-- (void)didChangeSelection:(NSNotification *)notification
+-(NSRect)adjustScroll:(NSRect)newVisible
 {
-	// Skip event when needed
-	if (_editorDelegate.skipSelectionChangeEvent) {
-		_editorDelegate.skipSelectionChangeEvent = NO;
-		return;
-	}
-		
-	// If selection moves by more than just one character, hide autocomplete
-	if ((self.selectedRange.location - self.lastPos) > 1) {
-		if (self.popoverController.isShown) [self setAutomaticTextCompletionEnabled:NO];
-		[self closePopovers];
-	}
-	
-	// Show tagging/review options for selected range
-	
-	switch (_editorDelegate.mode) {
-		case TaggingMode:
-			// Show tag list
-			[self showTagSelector];
-			break;
-		case ReviewMode:
-			// Show review editor
-			[_editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
-			break;
-		default:
-			[self selectionEvents];
-			break;
-	}
-}
-
-- (bool)selectionAtEnd {
-	return (self.selectedRange.location == self.string.length);
-}
-
-- (void)selectionEvents {
-	// TODO: I could/should make this one a registered event, too.
-	
-	// Don't go out of range. We can't check for attributes at the last index.
-	NSUInteger pos = self.selectedRange.location;
-	if (NSMaxRange(self.selectedRange) >= self.string.length) pos = self.string.length - 1;
-	if (pos < 0) pos = 0;
-	
-	// Review items
-	if (self.string.length > 0) {
-		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
-		if (reviewItem && !reviewItem.emptyReview) {
-			[_editorDelegate.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
-			[self.window makeFirstResponder:self];
-		} else {
-			[_editorDelegate.review closePopover];
+	if (self.typewriterMode && !_scrolling && self.selectionAtEnd) {
+		if (self.selectedRange.location == self.string.length) {
+			return self.enclosingScrollView.documentVisibleRect;
 		}
 	}
+	
+	return [super adjustScroll:newVisible];
 }
 
 
@@ -586,15 +528,6 @@ Line *cachedRectLine;
 
 
 #pragma mark - Scrolling
-
--(NSRect)adjustScroll:(NSRect)newVisible
-{
-	if (self.typewriterMode && !_scrolling && self.string.length) {
-		return self.enclosingScrollView.documentVisibleRect;
-	}
-	
-	return [super adjustScroll:newVisible];
-}
 
 - (void)scrollPoint:(NSPoint)point
 {
