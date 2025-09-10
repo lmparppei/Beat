@@ -7,6 +7,7 @@
 //
 
 #import "Document+SceneActions.h"
+#import "Document+Scrolling.h"
 
 @implementation Document (SceneActions)
 
@@ -50,6 +51,38 @@
 	Line * sectionLine = [self.parser previousOutlineItemOfType:section from:self.selectedRange.location depth:line.sectionDepth];
 	if (sectionLine != nil) [self scrollToLine:sectionLine];
 	else if (line != nil) [self scrollToLine:line];
+}
+
+- (IBAction)nextCharacterCue:(id)sender
+{
+	Line* line = self.currentLine;
+	NSInteger i = [self.parser indexOfLine:line];
+	if (line.isAnyCharacter) i++;
+	
+	while (i < self.parser.lines.count) {
+		Line* l = self.parser.lines[i];
+		if (l.isAnyCharacter) {
+			[self selectAndScrollTo:NSMakeRange(l.position, 0)];
+			break;
+		}
+		i++;
+	}
+}
+
+- (IBAction)previousCharacterCue:(id)sender
+{
+	Line* line = self.currentLine;
+	NSInteger i = [self.parser indexOfLine:line];
+	if (line.isAnyCharacter) i--;
+	
+	while (i >= 0) {
+		Line* l = self.parser.lines[i];
+		if (l.isAnyCharacter) {
+			[self scrollToRange:NSMakeRange(l.position, 0)];
+			break;
+		}
+		i--;
+	}
 }
 
 @end
