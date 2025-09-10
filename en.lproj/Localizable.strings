@@ -333,3 +333,6 @@
 "dataHealth.warning.informative" = "The file has revisions, reviews or tags, which have been moved out of place, probably because the file was edited outside of Beat.\n\nIt's not dangerous, but previous ranges might not make sense anymore";
 "dataHealth.warning.ignore" = "Ignore";
 "dataHealth.warning.remove" = "Remove All Ranges";
+
+"export.includeRevisions" = "Include Revision Markers";
+

@@ -282,3 +282,5 @@
 
 "pagination.paragraphPaginationMode.default" = "Sivuta toimintakappaleet (Oletus)";
 "pagination.paragraphPaginationMode.avoid" = "Vältä toiminnan jakamista eri sivuille";
+
+"export.includeRevisions" = "Sisällytä korjausmerkinnät";
