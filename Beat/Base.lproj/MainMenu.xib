@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -315,6 +315,19 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="xpK-TY-ggI"/>
+                                        <menuItem title="Previous Character Cue" keyEquivalent="" id="0th-O8-jro">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                                            <connections>
+                                                <action selector="previousCharacterCue:" target="-1" id="aTb-75-74y"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Character Cue" keyEquivalent="" id="TDv-ix-y7m">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                                            <connections>
+                                                <action selector="nextCharacterCue:" target="-1" id="kkd-0b-9Cj"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="n5m-dt-T6L"/>
                                         <menuItem title="Previous Section" keyEquivalent="" id="zTa-Mk-4pe">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
                                             <connections>
@@ -1017,7 +1030,7 @@ DQ
                                     <action selector="markRemoval:" target="-1" id="vmU-Md-MKX"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Clear Selected Markers" keyEquivalent="k" id="hrl-ti-1fN">
+                            <menuItem title="Clear Selected Revisions" keyEquivalent="k" id="hrl-ti-1fN">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
@@ -1517,6 +1530,12 @@ DQ
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="ZmM-TD-kN8"/>
             </connections>
         </customObject>
+        <menuItem title="Previous Scene" keyEquivalent="" id="HhV-2K-Ogx">
+            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+            <connections>
+                <action selector="previousScene:" target="-1" id="FAU-AK-bXa"/>
+            </connections>
+        </menuItem>
     </objects>
     <resources>
         <image name="color.blue" width="15" height="15"/>
