@@ -21,10 +21,18 @@
 	[self updateEditorMode];
 }
 
+BeatEditorMode currentMode;
+
 - (void)setMode:(BeatEditorMode)mode
 {
-	self.mode = mode;
+	//[super setValue:@(mode) forKey:@"mode"];
+	currentMode = mode;
 	[self updateEditorMode];
+}
+
+- (BeatEditorMode)mode
+{
+	return currentMode;
 }
 
 - (void)updateEditorMode
