@@ -103,6 +103,8 @@ NSString* const BeatSettingRelativeOutlineHeights       = @"relativeOutlineHeigh
 
 NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationMode";
 
+NSString* const BeatSettingHideThumbnailView            = @"hideThumbnailView";
+
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -189,7 +191,9 @@ NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationM
         
         BeatSettingRelativeOutlineHeights: @[BeatSettingRelativeOutlineHeights, @NO],
         
-        BeatSettingParagraphPaginationMode: @[BeatSettingParagraphPaginationMode, @0]
+        BeatSettingParagraphPaginationMode: @[BeatSettingParagraphPaginationMode, @0],
+        
+        BeatSettingHideThumbnailView: @[BeatSettingHideThumbnailView, @NO]
 	};
 }
 
@@ -221,8 +225,7 @@ NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationM
 				NSString *str = value;
 				
 				if ([str isEqualToString:@"YES"] || [str isEqualToString:@"NO"]) {
-					if ([str isEqualToString:@"YES"]) value = @YES;
-					else value = @NO;
+                    value = ([str isEqualToString:@"YES"]) ? @YES : @NO;
 				}
 				
 				// Use default when the string is empty
@@ -301,8 +304,10 @@ NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationM
 	
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
-	
+    if (values == nil) return nil;
+    
 	NSString *settingKey = values[0];
+    
 	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
 		return values[1];
 	} else {
