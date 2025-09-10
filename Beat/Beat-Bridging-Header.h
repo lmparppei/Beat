@@ -23,6 +23,7 @@
 #import "Document+ThemesAndAppearance.h"
 #import "Document+WindowManagement.h"
 #import "Document+Menus.h"
+#import "Document+RevisionActions.h"
 
 #import "BeatNotepadView.h"
 #import "BeatPrintDialog.h"
