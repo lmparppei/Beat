@@ -14,7 +14,8 @@ typedef NS_ENUM(NSUInteger, NoteType) {
     NoteTypeNormal = 0,
     NoteTypeMarker,
     NoteTypeBeat,
-    NoteTypeColor
+    NoteTypeColor,
+    NoteTypePageNumber
 };
 
 @class Line;

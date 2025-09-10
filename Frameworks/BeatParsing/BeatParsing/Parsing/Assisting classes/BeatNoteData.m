@@ -33,6 +33,8 @@
         type = NoteTypeColor;
     } else if ([lowercaseText rangeOfString:@"beat"].location == 0 || [lowercaseText rangeOfString:@"storyline"].location == 0) {
         type = NoteTypeBeat;
+    } else if ([lowercaseText rangeOfString:@"page "].location == 0) {
+        type = NoteTypePageNumber;
     } else if ([lowercaseText containsString:@":"]) {
         // Check if this note has a color assigned to it, ie. [[red: Hello World]]
         NSInteger i = [lowercaseText rangeOfString:@":"].location;
@@ -89,6 +91,8 @@
             return @"marker";
         case NoteTypeBeat:
             return @"beat";
+        case NoteTypePageNumber:
+            return @"page";
         default:
             return @"";
     }
