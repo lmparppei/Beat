@@ -11,8 +11,13 @@
 
 @implementation Line (AttributedStrings)
 
+- (NSString*)attributedStringToFountain:(NSAttributedString *)attrStr
+{
+    return [Line attributedStringToFountain:attrStr];
+}
+
 /// Converts an FDX-style attributed string back to Fountain
-- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr
++ (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr
 {
     // NOTE! This only works with the FDX attributed string
     NSMutableString *result = NSMutableString.string;
@@ -131,7 +136,7 @@
         [string addBeatStyleAttr:@"RemovalSuggestion" range:range];
     }];
         
-    // Add macro attributes
+    // Add macro attributes. We store RESOLVED macro values as ranges, and the actual values are replaced only when rendering to a __printed__ attributed string. (See attributedStringForPrinting)
     if (self.macroRanges.count > 0) {
         for (NSValue* r in self.macros.allKeys) {
             NSString* resolvedMacro = self.resolvedMacros[r];
@@ -222,8 +227,15 @@
     [result.copy enumerateAttribute:@"Macro" inRange:NSMakeRange(0,result.length) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         if (value == nil) return;
         NSDictionary* attrs = [result attributesAtIndex:range.location effectiveRange:nil];
-        NSAttributedString* resolved = [NSAttributedString.alloc initWithString:value attributes:attrs];
-        [result replaceCharactersInRange:range withAttributedString:resolved];
+        
+        // We'll create an intermediate Line object here to parse any possible formatting inside the macro. This is a little convoluted solution, but this is how it works for now, he he.
+        Line* macroLine = [Line withString:(NSString*)value type:action];
+        [macroLine resetFormatting];
+        
+        NSMutableAttributedString* attributedMacro = [macroLine attributedStringForOutputWith:settings].mutableCopy;
+        [attributedMacro addAttributes:attrs range:NSMakeRange(0, attributedMacro.length)];
+        
+        [result replaceCharactersInRange:range withAttributedString:attributedMacro];
     }];
         
     return result;

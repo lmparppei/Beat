@@ -22,6 +22,8 @@
 - (NSAttributedString*)attributedString;
 /// An attributed string with macros resolved and formatting ranges removed
 - (NSAttributedString*)attributedStringForOutputWith:(BeatExportSettings*)settings;
+/// Transforms a Beat/FDX-style attributed string back to a Fountain string.
++ (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr;
 
 /// Returns and caches the line with attributes.
 /// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
