@@ -13,30 +13,23 @@
 #import <BeatDynamicColor/BeatDynamicColor.h>
 
 #define SHADOW_WIDTH 20
-#define SHADOW_OPACITY 0.0125
+#define SHADOW_OPACITY 0.05;
 
 @interface MarginView ()
 @property (nonatomic) CALayer *paper;
 @property (weak) ThemeManager *themeManager;
 @property (nonatomic) NSSize oldSize;
-
-/*
-@property (nonatomic) CGColorRef darkPaper;
-@property (nonatomic) CGColorRef lightPaper;
-
-@property (nonatomic) CGColorRef darkBackground;
-@property (nonatomic) CGColorRef lightBackground;
-*/
- 
 @end
 
 @implementation MarginView
 
--(void)awakeFromNib {
+-(void)awakeFromNib
+{
 	self.themeManager = ThemeManager.sharedManager;
 }
 
-- (void)viewWillDraw {
+- (void)viewWillDraw
+{
 	self.wantsLayer = YES;
 	CGFloat marginWidth = (_editor.getTextView.textContainerInset.width) * self.editor.magnification;
 	
@@ -57,9 +50,9 @@
 		}
 		
 		_paper.masksToBounds = NO;
-		_paper.shadowOpacity = .05;
+		_paper.shadowOpacity = SHADOW_OPACITY;
 		_paper.shadowColor = NSColor.blackColor.CGColor;
-		_paper.shadowRadius = 20;
+		_paper.shadowRadius = SHADOW_WIDTH;
 		
 		[self.layer addSublayer:_paper];
 	}
@@ -94,6 +87,11 @@
 		self.layer.backgroundColor = _themeManager.marginColor.lightColor.CGColor;
 	}
 
+	// Remove shadow if needed
+	NSColor* mColor = _editor.isDark ? ThemeManager.sharedManager.marginColor.darkColor : ThemeManager.sharedManager.marginColor.lightColor;
+	NSColor* bColor = _editor.isDark ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
+	self.paper.shadowOpacity = ([mColor isEqualTo:bColor]) ? 0.0 : SHADOW_OPACITY;
+	
 	[CATransaction commit];
 }
 

@@ -229,8 +229,7 @@ FORWARD(localizedColorNameComponent, NSString *)
 	
 	CGColorSpaceRelease(colorSpaceRGB);
 	
-	if ([lightColor isEqual:lightOther] && [darkColor isEqual:darkOther]) return YES;
-	else return NO;
+    return ([lightColor isEqual:lightOther] && [darkColor isEqual:darkOther]);
 }
 
 - (NSArray*)valuesAsRGB {
