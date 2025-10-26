@@ -163,4 +163,10 @@
 /// Set `NSUUID` identifiers for lines in corresponding indices.
 - (void)setIdentifiers:(NSArray*)uuids;
 
+
+#pragma mark -
+
+@property (nonatomic) NSMapTable* uuidTable;
+@property (nonatomic) NSMapTable* outlineUuidTable;
+
 @end

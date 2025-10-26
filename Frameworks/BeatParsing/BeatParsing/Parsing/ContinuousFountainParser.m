@@ -211,6 +211,21 @@ static NSDictionary* patterns;
         if (!line) continue;
         
         NSString* string = line.string;
+        /*
+        // This won't work, because we need to keep editor + parser in sync. Alternatives need to be stored to settings.
+        if (line.versions.count > 0) {
+            // Update current version
+            [line storeVersion];
+            //We need to have methods for serializing index sets
+            NSDictionary* versionDict = @{
+                @"current": @(line.currentVersion),
+                @"versions": line.versionsForSerialization
+            };
+            NSData* versionData = [NSJSONSerialization dataWithJSONObject:versionDict options:0 error:nil];
+            NSString* versionString = [NSString stringWithFormat:@"\/** ALTERNATIVES: %@ *\/", [NSString.alloc initWithData:versionData encoding:NSUTF8StringEncoding]];
+            
+            string = [string stringByAppendingString:versionString];
+        }*/
     
         // Append to full content
         [content appendString:string];
@@ -243,7 +258,9 @@ static NSDictionary* patterns;
 - (void)parseText:(NSString*)text
 {
     if (text == nil) text = @"";
-    text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]; // Replace MS Word/Windows line breaks with macOS ones
+    
+    // Replace MS Word/Windows line breaks with macOS ones
+    text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
     
     // Split the text by line breaks
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
@@ -258,8 +275,9 @@ static NSDictionary* patterns;
         @autoreleasepool {
             NSInteger index = _lines.count;
             Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
-            [self.lines addObject:line]; //Add to lines array
+            [self.lines addObject:line];
             
+            // Initial parsing
             [self parseTypeAndFormattingForLine:line atIndex:index];
             
             // Quick fix for mistaking an ALL CAPS action for a character cue
@@ -570,7 +588,8 @@ static NSDictionary* patterns;
     // Notify delegate
     [self.delegate lineWasRemoved:line];
     
-    // Reset cached line
+    // Reset all caches
+    [self.uuidTable removeObjectForKey:line.uuidString];
     _lastEditedLine = nil;
     if (line == _prevLineAtLocation) _prevLineAtLocation = nil;
 }
@@ -1589,8 +1608,7 @@ static NSDictionary* patterns;
 	else return self.outline.copy;
 }
 
-/// Returns a map with the UUID as key to identify actual line objects.
-/// TODO: Maybe convert this into a map table?
+/// Returns a fully built map with the UUID as key to identify actual line objects. Note that this BUILDS the full map every time. If you are looking for a specific line at runtime, use `lineWithUUID:`.
 - (NSMapTable<NSUUID*, Line*>*)uuidsToLines
 {
     @synchronized (self.lines) {
@@ -1607,9 +1625,6 @@ static NSDictionary* patterns;
 
         // Create UUID map with strong UUID references to weak line objects.
         NSMapTable<NSUUID*, Line*>* uuidTable = [NSMapTable.alloc initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:lines.count];
-
-        // Create UUID array. This method is usually used by background methods, so we'll need to create a copy of the line array.
-        // NSMutableDictionary* uuids = [NSMutableDictionary.alloc initWithCapacity:lines.count];
         
         for (Line* line in lines) {
             if (line == nil) continue;
