@@ -44,7 +44,9 @@ NSString* const BeatSettingAutosave 					= @"autosave";
 NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
 NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
 NSString* const BeatSettingAutocomplete 				= @"autocomplete";
-NSString* const BeatSettingUseSansSerif 				= @"useSansSerif";
+//NSString* const BeatSettingUseSansSerif 				= @"useSansSerif";
+NSString* const BeatSettingFontStyle                    = @"fontStyle";
+
 NSString* const BeatSettingMagnification 				= @"magnification";
 NSString* const BeatSettingAutomaticLineBreaks 			= @"autoLineBreaks";
 NSString* const BeatSettingUpdatePluginsAutomatically 	= @"updatePluginsAutomatically";
@@ -91,6 +93,7 @@ NSString* const BeatSettingiOSShowWelcomeScreen         = @"showiOSWelcomeScreen
 NSString* const BeatSettingPhoneFontSize                = @"phoneFontSize";
 
 NSString* const BeatSettingDarkMode                     = @"Dark Mode";
+NSString* const BeatSettingForcedAppearance             = @"Forced Appearance";
 NSString* const BeatSettingLineTypeView                 = @"lineTypeView";
 
 NSString* const BeatSettingSectionFontType              = @"sectionFontType";
@@ -132,9 +135,11 @@ NSString* const BeatSettingHideThumbnailView            = @"hideThumbnailView";
 		BeatSettingTypewriterMode: @[TYPEWRITER_KEY, @NO],
 		BeatSettingAutosave: @[AUTOSAVE_KEY, @NO],
 		BeatSettingAutocomplete: @[AUTOCOMPLETE_KEY, @YES],
-		BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
+		//BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
+        BeatSettingFontStyle: @[BeatSettingFontStyle, @0],
         
         BeatSettingDarkMode: @[BeatSettingDarkMode, @NO],
+        BeatSettingForcedAppearance: @[BeatSettingForcedAppearance, @0],
 
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],

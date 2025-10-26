@@ -20,7 +20,11 @@ extern NSString * const BeatSettingAutosave;
 extern NSString * const BeatSettingTypewriterMode;
 extern NSString * const BeatSettingHideFountainMarkup;
 extern NSString * const BeatSettingAutocomplete;
-extern NSString * const BeatSettingUseSansSerif;
+//extern NSString * const BeatSettingUseSansSerif;
+
+/// 0: Serif, 1: Sans Serif, 2: Courier New / fall back to 0
+extern NSString * const BeatSettingFontStyle;
+
 extern NSString * const BeatSettingMagnification;
 extern NSString * const BeatSettingAutomaticLineBreaks;
 extern NSString * const BeatSettingUpdatePluginsAutomatically;
@@ -66,6 +70,7 @@ extern NSString* const BeatSettingiOSShowWelcomeScreen;
 extern NSString* const BeatSettingPhoneFontSize;
 
 extern NSString* const BeatSettingDarkMode;
+extern NSString* const BeatSettingForcedAppearance;
 extern NSString* const BeatSettingLineTypeView;
 
 extern NSString* const BeatSettingSectionFontType;
@@ -79,6 +84,7 @@ extern NSString* const BeatSettingRelativeOutlineHeights;
 extern NSString* const BeatSettingParagraphPaginationMode;
 
 extern NSString* const BeatSettingHideThumbnailView;
+
 
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
