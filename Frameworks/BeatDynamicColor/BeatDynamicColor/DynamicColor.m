@@ -379,12 +379,19 @@ FORWARD(CGColor, CGColorRef)
 	return [self.effectiveColor colorWithAlphaComponent:alpha];
 }
 
-- (BOOL)isEqual:(id)color {
-	UIColor *other = convertColorToRGBSpace(color);
+- (BOOL)isEqual:(id)color
+{
+    UIColor* other;
+    if ([color isKindOfClass:DynamicColor.class]) {
+        other = ((DynamicColor*)color).effectiveColor;
+    } else {
+        other = color;
+    }
+    
+	other = convertColorToRGBSpace(other);
 	UIColor *current = convertColorToRGBSpace(self.effectiveColor);
 	
-	if ([other isEqual:current]) return YES;
-	else return NO;
+    return [other isEqual:current];
 }
 
 UIColor *(^convertColorToRGBSpace)(UIColor*) = ^(UIColor *color) {
