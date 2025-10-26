@@ -81,6 +81,7 @@
 "statisticsPanel.locations.exterior" = "Eksterier";
 "statisticsPanel.locations.other" = "Drugo";
 "statisticsPanel.noDialogue" = "Ni dialoga";
+"statisticspanel.numberOfPages" = "Strani";
 
 "print.print" = "Natisni";
 "print.createPDF" = "Ustvari PDF";

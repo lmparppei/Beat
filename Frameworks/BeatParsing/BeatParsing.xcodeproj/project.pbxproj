@@ -89,6 +89,7 @@
 		B6DBB2C32D778F93008327EF /* ContinuousFountainParser+Lookup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DBB2C12D778F93008327EF /* ContinuousFountainParser+Lookup.m */; };
 		B6DC61542D1834BB00ED708A /* ParsingRule.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DC61522D1834BB00ED708A /* ParsingRule.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DC61532D1834BB00ED708A /* ParsingRule.m */; };
+		B6F9ED7B2E9FAF9C00DE450F /* BeatWeakLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F9ED7A2E9FAF9C00DE450F /* BeatWeakLine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,6 +178,7 @@
 		B6DC61522D1834BB00ED708A /* ParsingRule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParsingRule.h; sourceTree = "<group>"; };
 		B6DC61532D1834BB00ED708A /* ParsingRule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ParsingRule.m; sourceTree = "<group>"; };
 		B6F5A94F2B7B6C0500758F48 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
+		B6F9ED7A2E9FAF9C00DE450F /* BeatWeakLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatWeakLine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -354,6 +356,7 @@
 				B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */,
 				B67FDA352D5A7F9700967DA0 /* NSMutableAttributedString+BeatAttributes.h */,
 				B67FDA362D5A7F9700967DA0 /* NSMutableAttributedString+BeatAttributes.m */,
+				B6F9ED7A2E9FAF9C00DE450F /* BeatWeakLine.swift */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
 				B6C597B82E66F3AD00418587 /* ContinuousFountainParser+Macros.m in Sources */,
 				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
+				B6F9ED7B2E9FAF9C00DE450F /* BeatWeakLine.swift in Sources */,
 				B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */,
 				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,
 				B61A4E892D21923800CE761C /* Line+AttributedStrings.m in Sources */,

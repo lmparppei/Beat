@@ -145,11 +145,6 @@
 /* (No Comment) */
 "general.untitled" = "Namnlös";
 
-/* Localizable.strings
-  Beat
-
-  Created by Lauri-Matti Parppei on 2.1.2022.
-  Copyright © 2022 Lauri-Matti Parppei. All rights reserved. */
 "general.yes" = "Ja";
 
 /* (No Comment) */
@@ -254,6 +249,8 @@
 
 /* (No Comment) */
 "statisticsPanel.linesByGender" = "Repliker per genus";
+
+"statisticsPanel.numberOfPages" = "Sidor";
 
 /* (No Comment) */
 "statisticsPanel.linesPerCharacter" = "Repliker per karaktär";
@@ -408,6 +405,8 @@
 "character.editor.addAlias" = "Tillsätt alias...";
 
 "backup.browseVersions" = "Visa versioner...";
+"backup.saved" = "Sparat";
+"backup.revertAction" = "Återgå";
 
 "quickSettings.novelLineHeightMultiplier" = "Mellanrum";
 "quickSettings.novelLineHeightMultiplier" = "Textjustering";
@@ -469,7 +468,5 @@
 "tagManager.tab.report" = "Rapporter";
 
 "tagManager.windowTitle" = "Tagghanterare";
-
-
 
 "export.includeRevisions" = "Skriv ut revisionsmarkeringar";
