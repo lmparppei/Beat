@@ -45,7 +45,8 @@ static NSString *centeredStart = @"> ";
 static NSString *centeredEnd = @" <";
 
 
--(instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate {
+-(instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate
+{
     self = [super init];
     if (self) {
         self.delegate = delegate;
@@ -62,7 +63,8 @@ static NSString *centeredEnd = @" <";
 
 /// Restores caret position after changing something in the text view.
 /// @note Does nothing on macOS.
-- (void)restorePositionForChangeAt:(NSInteger)index length:(NSInteger)length originalRange:(NSRange)range {
+- (void)restorePositionForChangeAt:(NSInteger)index length:(NSInteger)length originalRange:(NSRange)range
+{
 #if TARGET_OS_IOS
     // We'll only do this on iOS
     
@@ -134,6 +136,7 @@ static NSString *centeredEnd = @" <";
 {
     [self addString:string atIndex:index skipAutomaticLineBreaks:false];
 }
+
 /// Adds a string at the given index. When adding text with line breaks, you can skip automatic line breaks.
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks
 {
@@ -152,9 +155,9 @@ static NSString *centeredEnd = @" <";
     [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
 }
 
-
 /// Removes a range. This is here for backwards-compatibility.
-- (void)removeAt:(NSUInteger)index length:(NSUInteger)length {
+- (void)removeAt:(NSUInteger)index length:(NSUInteger)length
+{
     [self replaceRange:NSMakeRange(index, length) withString:@""];
 }
 
@@ -419,7 +422,6 @@ static NSString *centeredEnd = @" <";
 #else
     shiftPressed = self.delegate.inputModifierFlags & UIKeyModifierShift;
 #endif
-    
     
     if (currentLine.string.length > 0 && !shiftPressed) {
         // Add double breaks for outline element lines
@@ -881,6 +883,36 @@ static NSString *centeredEnd = @" <";
     // Remove or change current symbol
     NSRange forcedRange = NSMakeRange(currentLine.position, currentLine.numberOfPrecedingFormattingCharacters);
     [self replaceRange:forcedRange withString:symbol];
+}
+
+
+#pragma mark - Dialogue block actions
+
+/// This is used for navigating inside a dialogue block, for example when pressing enter inside character cue extension or parenthetical line
+/// @returns `true` if something happened, `false` if not.
+- (BOOL)moveToNextDialogueLineOrAddNew
+{
+    Line* currentLine = self.delegate.currentLine;
+    NSRange affectedRange = self.delegate.selectedRange;
+    
+    if ((currentLine.isAnyCharacter || currentLine.isAnyParenthetical) &&
+        [self.delegate.text positionInsideParentheticals:affectedRange.location]) {
+        Line* nextLine = [self.delegate.parser nextLine:currentLine];
+        
+        if (nextLine.length == 0) {
+            [self addString:@"\n" atIndex:affectedRange.location + 1];
+            [self.textView setSelectedRange:NSMakeRange(affectedRange.location + 2, 0)];
+        } else if (nextLine != nil) {
+            self.textView.selectedRange = NSMakeRange(nextLine.position, 0);
+        }
+        
+        self.delegate.currentLine.type = (currentLine.isDualDialogue) ? dualDialogue : dialogue;
+        [self.delegate.formatting formatCurrentLine];
+        
+        return true;
+    }
+    
+    return false;
 }
 
 @end

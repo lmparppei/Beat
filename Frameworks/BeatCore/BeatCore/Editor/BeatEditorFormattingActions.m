@@ -191,7 +191,6 @@ static NSString *macroSymbolClose = @"}}";
 - (void)addOrEditCharacterExtension
 {
     Line * currentLine = self.delegate.currentLine;
-    NSLog(@"Current line: %@", currentLine);
     if (!currentLine.isAnyCharacter) return;
     
     if (currentLine.hasExtension) {

@@ -42,6 +42,9 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 - (NSArray<OutlineScene*>* _Nonnull)outline;
 - (NSString* _Nullable)displayName;
 
+@property (nonatomic, readonly) BeatStylesheet* _Nonnull styles;
+@property (nonatomic, readonly) BeatStylesheet* _Nonnull editorStyles;
+
 NS_ASSUME_NONNULL_BEGIN
 JSExportAs(addAttribute, - (void)addAttribute:(NSString* _Nonnull)key value:(id _Nonnull)value range:(NSRange)range);
 JSExportAs(removeAttribute, - (void)removeAttribute:(NSString* _Nonnull)key range:(NSRange)range);
@@ -220,7 +223,7 @@ NS_ASSUME_NONNULL_END
 
 - (NSAttributedString * _Nonnull)getAttributedText;
 - (NSAttributedString * _Nonnull)attributedString;
-@property (atomic) NSAttributedString*  _Nullable attrTextCache;
+@property (nonatomic) NSAttributedString*  _Nullable attrTextCache;
 
 
 #pragma mark - Text actions
@@ -248,7 +251,8 @@ NS_ASSUME_NONNULL_END
 
 //@property (nonatomic) BeatFonts* _Nonnull fonts;
 @property (nonatomic) BeatFontSet* _Nonnull fonts;
-@property (nonatomic) bool useSansSerif;
+//@property (nonatomic) bool useSansSerif;
+@property (nonatomic) NSInteger fontStyle;
 @property (nonatomic) bool hideFountainMarkup;
 
 /// Loads the current fonts defined by stylesheet.

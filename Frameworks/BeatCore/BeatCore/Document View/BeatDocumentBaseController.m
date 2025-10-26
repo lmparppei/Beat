@@ -355,6 +355,7 @@
 
 
 #pragma mark - Scene lookup
+// These lookup methods are very antiquated. There are convenience methods for each of these.
 
 - (OutlineScene*)currentScene
 {
@@ -386,48 +387,6 @@
         }
         
         prevScene = scene;
-    }
-    
-    return nil;
-}
-
-- (OutlineScene*)getPreviousScene
-{
-    NSArray *outline = self.parser.safeOutline;
-    if (outline.count == 0) return nil;
-    
-    NSInteger lineIndex = [self.parser indexOfLine:self.currentLine] ;
-    if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-    
-    for (NSInteger i = lineIndex - 1; i >= 0; i--) {
-        Line* line = self.parser.lines[i];
-        
-        if (line.type == heading || line.type == section) {
-            for (OutlineScene *scene in outline) {
-                if (scene.line == line) return scene;
-            }
-        }
-    }
-    
-    return nil;
-}
-
-- (OutlineScene*)getNextScene
-{
-    NSArray *outline = self.parser.safeOutline;
-    if (outline.count == 0) return nil;
-    
-    NSInteger lineIndex = [self.parser indexOfLine:self.currentLine] ;
-    if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-    
-    for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
-        Line* line = self.parser.lines[i];
-        
-        if (line.type == heading || line.type == section) {
-            for (OutlineScene *scene in outline) {
-                if (scene.line == line) return scene;
-            }
-        }
     }
     
     return nil;
@@ -716,12 +675,19 @@
     if (!NSThread.isMainThread) attrStr = self.attrTextCache;
     else attrStr = self.textView.textStorage;
     
-    return (attrStr != nil) ? attrStr : NSAttributedString.new;
+    return (attrStr != nil) ? attrStr.copy : NSAttributedString.new;
 }
 
 - (NSAttributedString*)attributedString
 {
     return [self getAttributedText];
+}
+
+- (void)setAttrTextCache:(NSAttributedString *)attrTextCache
+{
+    NSMutableAttributedString* a = attrTextCache.mutableCopy;
+    if (a != nil) [a removeAttribute:BeatRepresentedLineKey range:NSMakeRange(0, a.length)];
+    _attrTextCache = a;
 }
 
 
@@ -775,6 +741,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
+    [self bakeRevisions];
+    
     // For async saving & thread safety, make a copy of the lines array
     NSAttributedString *attrStr = self.getAttributedText;
     NSString* content = self.parser.screenplayForSaving;
@@ -872,6 +840,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     else return _fonts;
 }
 
+- (NSInteger)fontStyle
+{
+    return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle];
+}
+
+/*
 - (bool)useSansSerif
 {
     return [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
@@ -880,11 +854,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 {
     [BeatUserDefaults.sharedDefaults saveBool:useSansSerif forKey:BeatSettingUseSansSerif];
 }
-
-- (void)fontDidLoad
-{
-    // Override in OS-specific implementation
-}
+*/
 
 /// Returns current default font point size
 - (CGFloat)fontSize
@@ -895,15 +865,18 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (BeatFontType)fontType
 {
     bool variableWidth = self.editorStyles.variableFont;
-    bool sansSerif = self.useSansSerif;
+    NSInteger fontStyle = self.fontStyle;
     BeatFontType type = BeatFontTypeFixed;
     
     if (variableWidth) {
-        type = (sansSerif) ? BeatFontTypeVariableSansSerif : BeatFontTypeVariableSerif;
+        if (fontStyle == 0 || fontStyle == 2) type = BeatFontTypeVariableSerif;
+        else if (fontStyle == 1) type = BeatFontTypeVariableSansSerif;
     } else {
-        type = (sansSerif) ? BeatFontTypeFixedSansSerif : BeatFontTypeFixed;
+        if (fontStyle == 0) type = BeatFontTypeFixed;
+        else if (fontStyle == 1) type = BeatFontTypeFixedSansSerif;
+        else if (fontStyle == 2) type = BeatFontTypeFixedNew;
     }
-    
+
     return type;
 }
 

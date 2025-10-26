@@ -15,7 +15,8 @@
 
 @implementation BeatAutocomplete 
 
-- (void)collectCharacterNames {
+- (void)collectCharacterNames
+{
 	/*
 	 
 	 So let me elaborate a bit. This is currently two systems upon each
@@ -57,7 +58,7 @@
 			
 			// Add character to list
 			if (character && ![characterList containsObject:character]) {
-				[characterList addObject:character];
+				[characterList addObject:character.copy]; // We're copying the string because I'm hunting memory leaks. Shouldn't be an issue here though.
 			}
 		}
 	}
@@ -83,7 +84,8 @@
 
 }
 
-- (void)collectHeadings {
+- (void)collectHeadings
+{
     if (_sceneHeadings == nil) _sceneHeadings = NSMutableArray.new;
     [_sceneHeadings removeAllObjects];
     
@@ -108,7 +110,8 @@
     [_sceneHeadings sortUsingSelector:@selector(compare:)];
 }
 
-- (void)autocompleteOnCurrentLine {
+- (void)autocompleteOnCurrentLine
+{
 	Line *currentLine = self.delegate.currentLine;
 	
 	// We'll only autocomplete when cursor is at the end of line.
@@ -132,7 +135,8 @@
 
 #pragma mark - Autocomplete delegate method (forwarded from document)
 
-- (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange {
+- (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange
+{
     NSMutableArray *matches = NSMutableArray.new;
     NSMutableArray *allSuggestions = NSMutableArray.new;
     
@@ -201,7 +205,8 @@
 }
 
 
-NSString *sceneHeadingPrefix(NSString *originalString) {
+NSString *sceneHeadingPrefix(NSString *originalString)
+{
     // Forced scene heading
     if (originalString.length > 0 && [originalString characterAtIndex:0] == '.') {
         return [originalString substringFromIndex:1];

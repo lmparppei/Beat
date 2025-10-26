@@ -95,6 +95,10 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (void)forceLineType:(LineType)lineType;
 - (void)forceLineType:(LineType)type range:(NSRange)cursorLocation;
 
+/// This is used for navigating inside a dialogue block, for example when pressing enter inside character cue extension or parenthetical line
+/// @returns `true` if something happened, `false` if not.
+- (BOOL)moveToNextDialogueLineOrAddNew;
+
 @end
 
 

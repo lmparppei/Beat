@@ -164,7 +164,6 @@ typedef void (^BeatChangeListener)(NSRange);
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value;
 
-
 #pragma mark - Editor item visibility
 
 @property (nonatomic) bool showSceneNumberLabels;
@@ -266,10 +265,8 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark - Printing stuff for macOS
 
 #if TARGET_OS_OSX
-- (CGFloat)sidebarWidth;
 - (NSPrintInfo*)printInfo;
 - (id)document;
-- (void)releasePrintDialog;
 #endif
 
 

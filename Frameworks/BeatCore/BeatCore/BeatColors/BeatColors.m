@@ -181,6 +181,8 @@
     CGRect rect = CGRectMake(padding, padding, w - 2 * padding, h - 2 * padding);
     NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:w / 2 yRadius:h / 2];
     
+    if (image.size.width == 0 || image.size.height == 0) return image;
+    
     [image lockFocus];
     [color setFill];
     [path fill];

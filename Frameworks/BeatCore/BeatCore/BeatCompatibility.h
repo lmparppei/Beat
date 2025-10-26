@@ -24,6 +24,14 @@
 
     #define __OS_KIT <UIKit/UIKit.h>
 
+    #define BXFontDescriptorSymbolicTraits UIFontDescriptorSymbolicTraits
+    #define BXFontDescriptor UIFontDescriptor
+    #define BXFontDescriptorTraitBold UIFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic UIFontDescriptorTraitItalic
+
+    #define BXItalicFontMask 0x00000001
+    #define BXBoldFontMask 0x00000002
+
 #else
 
     #define BXColor NSColor
@@ -39,6 +47,14 @@
 
     #define BXChangeType NSDocumentChangeType
     #define BXChangeDone NSChangeDone
+
+    #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
+    #define BXFontDescriptor NSFontDescriptor
+    #define BXFontDescriptorTraitBold NSFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic NSFontDescriptorTraitItalic
+
+    #define BXItalicFontMask NSItalicFontMask
+    #define BXBoldFontMask NSBoldFontMask
 
     #define __OS_KIT <AppKit/AppKit.h>
 
