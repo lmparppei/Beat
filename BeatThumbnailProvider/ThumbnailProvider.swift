@@ -51,6 +51,12 @@ class ThumbnailProvider: QLThumbnailProvider {
 					NSAttributedString.Key.paragraphStyle: pStyle
 				]
 				
+				// First draw a white background (to fix a weird bug on iOS 26)
+				let rect = CGRectMake(0, 0, size.width, size.height)
+				UIColor.white.setFill()
+				UIRectFill(rect)
+				
+				// Then draw text
 				let titleStr = NSAttributedString(string: title, attributes: attrs)
 				titleStr.draw(in: CGRectMake(size.width * 0.2, size.height * 0.25, size.width * 0.6, 150.0))
 								
