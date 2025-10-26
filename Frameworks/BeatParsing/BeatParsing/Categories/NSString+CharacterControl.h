@@ -44,4 +44,6 @@
 /// Check for Devanagari text. This is used by FDX export.
 - (BOOL)containsHindi;
 
+- (BOOL)positionInsideParentheticals:(NSInteger)position;
+
 @end

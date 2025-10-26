@@ -55,19 +55,13 @@
 			change = false;
 		}
 		
-		// When on a parenthetical, don't split it when pressing enter, but move downwards to next dialogue block element
-		// Note: This logic is a bit faulty. We should probably just move on next line regardless of next character
-		else if (currentLine.isAnyParenthetical && self.selectedRange.length == 0) {
-			if (self.text.length >= affectedCharRange.location + 1) {
-				unichar chr = [self.text characterAtIndex:affectedCharRange.location];
-				if (chr == ')') {
-					NSInteger lineIndex = [self.parser indexOfLine:currentLine];
-					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
-					if (lineIndex < self.parser.lines.count) [self.formatting formatLine:self.parser.lines[lineIndex]];
-					
-					[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
-					change = false;
-				}
+		// When on a parenthetical or char extension, don't split it when pressing enter, but move downwards to next dialogue block element
+		else if ((currentLine.isAnyParenthetical || currentLine.isAnyCharacter) &&
+				 self.selectedRange.length == 0 && self.text.length >= affectedCharRange.location + 1) {
+			unichar chr = [self.text characterAtIndex:affectedCharRange.location];
+			if (chr == ')') {
+				[self.textActions moveToNextDialogueLineOrAddNew];
+				change = false;
 			}
 		}
 		// Process line break after a forced character input
@@ -109,6 +103,21 @@
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
 {
 	if (self.documentIsLoading) return;
+	
+	// Some attributes are only added for undo/redo actions. This is highly, highly WIP.
+	if ((self.undoManager.isUndoing || self.undoManager.isRedoing) && delta > 0 &&
+		mask_contains(editedMask, NSTextStorageEditedCharacters) && mask_contains(editedMask, NSTextStorageEditedAttributes)) {
+		NSRange additionRange = NSMakeRange(editedRange.location, editedRange.length);
+		
+		[textStorage.copy enumerateAttribute:BeatRepresentedLineKey inRange:additionRange options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+			Line* oldLine = ((BeatWeakLine*)value).line;
+			if (oldLine == nil) return;
+			
+			Line* line = [self.parser lineAtPosition:range.location];
+			line.versions = oldLine.versions.mutableCopy;
+			line.currentVersion = oldLine.currentVersion;
+		}];
+	}
 	
 	if (editedMask & NSTextStorageEditedCharacters) {
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
@@ -201,17 +210,6 @@
 	}
 }
 
-/*
-- (NSInteger)textView:(NSTextView *)textView shouldSetSpellingState:(NSInteger)value range:(NSRange)affectedCharRange
-{
-	if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingIgnoreSpellCheckingInDialogue]) {
-		Line* line = [self.parser lineAtPosition:affectedCharRange.location];
-		if (line.isAnyDialogue) return 0;
-	}
-	
-	return 1;
-}
-*/
 
 #pragma mark - Character input
 
@@ -246,7 +244,14 @@
 	Line *currentLine = self.currentLine;
 	
 	if (currentLine.isAnyCharacter && currentLine.string.length > 0) {
-		[self.formattingActions addOrEditCharacterExtension];
+		if ([self.text positionInsideParentheticals:self.selectedRange.location]) {
+			[self.textActions moveToNextDialogueLineOrAddNew];
+		} else {
+			[self.formattingActions addOrEditCharacterExtension];
+		}
+	} else if (currentLine.isAnyDialogue && currentLine.string.length == 0) {
+		[self.textActions addString:@"()" atIndex:currentLine.position];
+		self.selectedRange = NSMakeRange(currentLine.position+1, 0);
 	} else {
 		[self forceCharacterInput];
 	}

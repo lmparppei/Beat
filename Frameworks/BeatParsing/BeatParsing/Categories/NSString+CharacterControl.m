@@ -358,4 +358,12 @@
     return range.location != NSNotFound;
 }
 
+- (BOOL)positionInsideParentheticals:(NSInteger)position
+{
+    NSInteger open = [self rangeOfString:@"(" options:NSBackwardsSearch range:NSMakeRange(0, position)].location;
+    NSInteger close = [self rangeOfString:@")" options:0 range:NSMakeRange(position, self.length - position)].location;
+    
+    return (open != NSNotFound && close != NSNotFound && open <= position && close >= position);
+}
+
 @end
