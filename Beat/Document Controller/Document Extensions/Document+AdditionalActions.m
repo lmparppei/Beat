@@ -14,6 +14,7 @@
 #import "Beat-Swift.h"
 #import "BeatTimer.h"
 #import "BeatTitlePageEditor.h"
+#import "BeatTextView+Zooming.h"
 
 @implementation Document (AdditionalActions)
 
@@ -31,7 +32,21 @@
 }
 
 
-#pragma mark - Card view
+#pragma mark - Toggling views
+
+#pragma mark Preview view
+
+- (IBAction)preview:(id)sender
+{
+	if (self.currentTab != self.nativePreviewTab) {
+		[self.previewController renderOnScreen];
+		[self showTab:self.nativePreviewTab];
+	} else {
+		[self returnToEditor];
+	}
+}
+
+#pragma mark Card view
 
 - (IBAction)toggleCards: (id)sender {
 	if (self.currentTab != self.cardsTab) {
@@ -79,13 +94,19 @@
 }
 
 
+#pragma mark - Select stylesheet
+
+- (IBAction)selectStylesheet:(BeatMenuItemWithStylesheet*)sender
+{
+	[self setStylesheetAndReformat:sender.stylesheet];
+}
+
 
 #pragma mark - Selecting fonts
 
 - (IBAction)selectSerif:(id)sender
 {
-	NSMenuItem* item = sender;
-	[BeatUserDefaults.sharedDefaults saveBool:(item.state == NSOnState) forKey:BeatSettingUseSansSerif];
+	[BeatUserDefaults.sharedDefaults saveInteger:0 forKey:BeatSettingFontStyle];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc reloadFonts];
@@ -94,10 +115,16 @@
 
 - (IBAction)selectSansSerif:(id)sender
 {
-	NSMenuItem* item = sender;
-	bool sansSerif = (item.state != NSOnState);
+	[BeatUserDefaults.sharedDefaults saveInteger:1 forKey:BeatSettingFontStyle];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc reloadFonts];
+	}
+}
 
-	[BeatUserDefaults.sharedDefaults saveBool:sansSerif forKey:BeatSettingUseSansSerif];
+- (IBAction)selectCourierNew:(id)sender
+{
+	[BeatUserDefaults.sharedDefaults saveInteger:2 forKey:BeatSettingFontStyle];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc reloadFonts];
@@ -117,9 +144,11 @@
 	self.textView.needsDisplay = true;
 }
 
+
 #pragma mark - Hiding markup
 
-- (IBAction)toggleHideFountainMarkup:(id)sender {
+- (IBAction)toggleHideFountainMarkup:(id)sender
+{
 	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingHideFountainMarkup];
 	self.hideFountainMarkup = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHideFountainMarkup];
 	
