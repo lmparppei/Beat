@@ -36,6 +36,8 @@
 #import <Carbon/Carbon.h> // For keyboard input source functions
 
 #import "BeatTextView.h"
+#import "BeatTextView+CopyPaste.h"
+#import "BeatTextView+Zooming.h"
 #import "BeatTextView+Popovers.h"
 #import "BeatTextView+MouseEvents.h"
 #import "BeatTextView+FocusMode.h"
@@ -215,6 +217,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self setupPopovers];
 	
 	// Make the text view first responder at start
+	NSLog(@"SETUP");
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
 	
 	// Setup focus mode
@@ -593,130 +596,11 @@ Line *cachedRectLine;
 
 
 #pragma mark - Zooming
-/**
- We are using `scaleUnitSquareToSize:` rather than magnifying the scroll view, because this way, we can avoid positioning weirdness when zooming very close.
- It's a bit convoluted, but works.
- */
 
-- (void)setupZoom
-{
-	// This resets the zoom to the saved setting
-	self.zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
-	
-	_scaleFactor = 1.0;
-	[self setScaleFactor:_zoomLevel adjustPopup:false];
-	[self.editorDelegate updateLayout];
-}
-
-- (void)resetZoom
-{
-	[BeatUserDefaults.sharedDefaults resetToDefault:BeatSettingMagnification];
-	CGFloat zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
-	[self adjustZoomLevel:zoomLevel];
-}
-
-
-/// Adjust zoom by a delta value
-- (void)adjustZoomLevelBy:(CGFloat)value
-{
-	CGFloat newMagnification = _zoomLevel + value;
-	[self adjustZoomLevel:newMagnification];
-}
-
-/// Sets the `zoomLevel` ivar. Does NOT enforce redrawing and layout.
+/// Sets the `zoomLevel` ivar. Does NOT enforce redrawing and layout. This is not in a category because we need to clamp the instance variable.
 - (void)setZoomLevel:(CGFloat)zoomLevel
 {
 	_zoomLevel = clamp(zoomLevel, 0.8, 3.2);
-}
-
-/// Set zoom level for the editor view, automatically clamped
-- (void)adjustZoomLevel:(CGFloat)level
-{
-	if (_scaleFactor == 0) _scaleFactor = _zoomLevel;
-	CGFloat oldMagnification = _zoomLevel;
-	
-	if (oldMagnification != level) {
-		self.zoomLevel = level;
-		
-		// Save scroll position
-		NSPoint scrollPosition = self.enclosingScrollView.contentView.documentVisibleRect.origin;
-		
-		[self setScaleFactor:_zoomLevel adjustPopup:false];
-		[self.editorDelegate updateLayout];
-		
-		// Scale and apply the scroll position
-		scrollPosition.y = scrollPosition.y * _zoomLevel;
-		[self.enclosingScrollView.contentView scrollToPoint:scrollPosition];
-		[self.editorDelegate ensureLayout];
-		
-		[self setNeedsDisplay:YES];
-		[self.enclosingScrollView setNeedsDisplay:YES];
-		
-		// For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
-		NSRect clipFrame = self.enclosingScrollView.contentView.frame;
-		clipFrame.size.height = self.enclosingScrollView.contentView.superview.frame.size.height * _zoomLevel;
-		self.enclosingScrollView.contentView.frame = clipFrame;
-		
-		[self.editorDelegate ensureLayout];
-	}
-	
-	[self setInsets];
-	[_editorDelegate updateLayout];
-	[self ensureCaret];
-}
-
-/// `zoom:true` zooms in, `zoom:false` zooms out
-- (void)zoom:(bool)zoomIn
-{
-	CGFloat newMagnification = _zoomLevel;
-	if (zoomIn) newMagnification += 0.05;
-	else newMagnification -= 0.05;
-	
-	[self adjustZoomLevel:newMagnification];
-	
-	// Save adjusted zoom level
-	[BeatUserDefaults.sharedDefaults saveFloat:_zoomLevel forKey:BeatSettingMagnification];
-}
-
-/// Sets a new scale factor
-- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
-{
-	CGFloat oldScaleFactor = _scaleFactor;
-	
-	if (_scaleFactor != newScaleFactor)
-	{
-		NSSize curDocFrameSize, newDocBoundsSize;
-		NSView *clipView = self.superview;
-		
-		_scaleFactor = newScaleFactor;
-		
-		// Get the frame.  The frame must stay the same.
-		curDocFrameSize = clipView.frame.size;
-		
-		// The new bounds will be frame divided by scale factor
-		newDocBoundsSize.width = curDocFrameSize.width;
-		newDocBoundsSize.height = curDocFrameSize.height / newScaleFactor;
-		
-		NSRect newFrame = NSMakeRect(0, 0, newDocBoundsSize.width, newDocBoundsSize.height);
-		clipView.frame = newFrame;
-	}
-	
-	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
-	
-	// Set minimum size for text view when Outline view size is dragged
-	[_editorDelegate setSplitHandleMinSize:(self.documentWidth - BeatTextView.linePadding * 2) * _zoomLevel];
-}
-
-/// Actually scales the view
-- (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
-{
-	// Thank you, Mark Munz @ stackoverflow
-	CGFloat scaler = newScale / oldScale;
-	
-	[self scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
-	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
-	
-	_scaleFactor = newScale;
 }
 
 double clamp(double d, double min, double max)
@@ -724,149 +608,6 @@ double clamp(double d, double min, double max)
 	const double t = d < min ? min : d;
 	return t > max ? max : t;
 }
-
-
-#pragma mark - Copy-paste
-
-- (NSAttributedString*)attributedStringForPasteboardFromRange:(NSRange)range
-{
-	// We create both a plaintext string & a custom pasteboard object
-	NSMutableAttributedString* attrString = [self.attributedString attributedSubstringFromRange:range].mutableCopy;
-	
-	// Remove the represented line, because it can't be encoded
-	if (attrString.length) [attrString removeAttribute:@"representedLine" range:NSMakeRange(0, attrString.length)];
-	
-	return attrString;
-}
-
--(void)copy:(id)sender {
-	NSPasteboard* pboard = NSPasteboard.generalPasteboard;
-	[pboard clearContents];
-	
-	NSAttributedString* attrString = [self attributedStringForPasteboardFromRange:self.selectedRange];
-	
-	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:attrString];
-	[pboard writeObjects:@[item, attrString.string]];
-}
-
-- (NSArray<NSPasteboardType>*)acceptableDragTypes
-{
-	NSMutableArray* types = [NSMutableArray arrayWithArray:[super acceptableDragTypes]];
-	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
-	return types;
-}
-
--(NSArray<NSPasteboardType>*)writablePasteboardTypes
-{
-	NSMutableArray* types = [NSMutableArray arrayWithArray:[super writablePasteboardTypes]];
-	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
-	return types;
-}
-
--(NSArray<NSPasteboardType>*)readablePasteboardTypes
-{
-	NSMutableArray* types = [NSMutableArray arrayWithArray:[super readablePasteboardTypes]];
-	[types insertObject:BeatPasteboardItem.pasteboardType atIndex:0];
-	// No idea why these are not availableby default
-	[types insertObject:@"public.utf16-plain-text" atIndex:1];
-	[types insertObject:@"public.utf8-plain-text" atIndex:2];
-	return types;
-}
-
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSPasteboardType)type
-{
-	if ([type isEqualToString:BeatPasteboardItem.pasteboardType]) {
-		[pboard clearContents];
-		
-		// Get attributed string
-		NSAttributedString* attrStr = [self attributedStringForPasteboardFromRange:self.selectedRange];
-		
-		BeatPasteboardItem* item = [BeatPasteboardItem.alloc initWithAttrString:attrStr];
-		[pboard writeObjects:@[item]];
-		return true;
-	}
-	
-	return [super writeSelectionToPasteboard:pboard type:type];
-}
-
-- (void)draggingEnded:(id<NSDraggingInfo>)sender
-{
-	NSPasteboard *pasteboard = [sender draggingPasteboard];
-	NSArray<NSPasteboardType> *types = [pasteboard types];
-	
-	// If we've dragged a Beat pasteboard value, let's replace our selection with the correct attributed string.
-	if ([types containsObject:BeatPasteboardItem.pasteboardType]) {
-		BeatPasteboardItem *item = [pasteboard readObjectsForClasses:@[BeatPasteboardItem.class] options:nil][0];
-		if (item.attrString) {
-			[self.textStorage replaceCharactersInRange:self.selectedRange withAttributedString:item.attrString];
-		}
-	}
-}
-
--(void)paste:(id)sender
-{
-	NSPasteboard *pasteboard = NSPasteboard.generalPasteboard;
-	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
-	
-	NSInteger length = 0;
-	
-	// See if we can read anything from the pasteboard
-	if ([pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]]) {
-		// We know for a fact that if the data originated from beat, the FIRST item will be
-		// the custom object we created when copying. So let's just pick the first one of the
-		// readable objects.
-		
-		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:@{}];
-		id obj = objectsToPaste[0];
-				
-		if ([obj isKindOfClass:NSString.class]) {
-			// Plain text
-			NSString* result = [BeatPasteboardItem sanitizeString:obj];
-			[self.editorDelegate.textActions replaceRange:self.selectedRange withString:result];
-			length = result.length;
-		} else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
-			// Paste custom Beat pasteboard data
-			BeatPasteboardItem *pastedItem = obj;
-			NSAttributedString *str = pastedItem.attrString;
-			
-			[self.editorDelegate.textActions replaceRange:self.selectedRange withAttributedString:str];
-			length = str.length;
-		} else {
-			// If everything else fails, try normal paste
-			[super paste:sender];
-		}
-	}
-	
-	//[(BeatLayoutManager*)self.layoutManager ensureLayoutForLinesInRange:NSMakeRange(location, length)];
-	
-	// If we didn't call super, the text view might not scroll back to caret
-	[self scrollRangeToVisible:self.selectedRange];
-}
-
-/*
-/// This is a bit convoluted method. It checks the current pasteboard items and prioritizes the internal Beat type.
-- (id)readablePasteboardItem
-{
-	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
-	NSArray *objects = [NSPasteboard.generalPasteboard readObjectsForClasses:classArray options:@{}];
-	
-	id itemToPaste;
-	
-	// Iterate from first to last if we can see a Beat-compatible pasteboard item in the board
-	for (NSInteger i=objects.count-1; i>=0; i--) {
-		id item = objects[i];
-		
-		if ([item isKindOfClass:BeatPasteboardItem.class]) {
-			itemToPaste = item; break;
-		} else if ([item isKindOfClass:NSString.class]) {
-			itemToPaste = item;
-		}
-	}
-	
-	if (itemToPaste == nil) itemToPaste = objects[0];
-	return itemToPaste;
-}
- */
 
 
 #pragma mark - Validate menu items
@@ -877,7 +618,6 @@ double clamp(double d, double min, double max)
 		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:BeatUserDefaults.sharedDefaults],
 	];
 }
-
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {

@@ -70,8 +70,9 @@
 	if (range.length == 0 || NSMaxRange(range) > self.text.length) return;
  
 	// Do more complicated spell checking
-	[self.textStorage enumerateAttribute:@"representedLine" inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		Line* line = (Line*)value;
+	[self.textStorage enumerateAttribute:BeatRepresentedLineKey inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		Line* line = ((BeatWeakLine*)value).line;
+		if (line == nil) return;
 
 		// Skip spell checking for this range
 		if (line.isAnyDialogue && ignoreDialogue)

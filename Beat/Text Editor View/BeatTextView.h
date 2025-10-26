@@ -105,11 +105,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 @property (nonatomic) NSTextFinder* textFinder;
 
-- (void)setupZoom;
-- (void)resetZoom;
-- (void)zoom:(bool)zoomIn;
-- (void)adjustZoomLevel:(CGFloat)level;
-
 /// Calculates the insets to make content centered
 - (CGFloat)setInsets;
 
