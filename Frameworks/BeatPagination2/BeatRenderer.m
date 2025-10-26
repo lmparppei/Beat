@@ -45,7 +45,18 @@
 - (BeatFontSet*)fonts
 {
     BeatStylesheet* stylesheet = self.settings.styles;
-    BeatFontSet* fonts = (stylesheet) ? [BeatFontManager.shared fontsFor:stylesheet.page.fontType] : BeatFontManager.shared.defaultFonts;
+    BeatFontSet* fonts;
+    
+    if (stylesheet == nil) {
+        fonts = BeatFontManager.shared.defaultFonts;
+    } else {
+        BeatFontType type = stylesheet.page.fontType;
+        // This is a silly hack because everything is not exactly harmonized yet.
+        if (type == BeatFontTypeFixed && [BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle] == 2) type = BeatFontTypeFixedNew;
+        fonts = [BeatFontManager.shared fontsFor:type];
+    }
+    
+
     return fonts;
 }
 
@@ -60,7 +71,8 @@
     [self.lineTypeAttributes removeAllObjects];
 }
 
-- (BeatStylesheet*)styles {
+- (BeatStylesheet*)styles
+{
     BeatStylesheet* sheet = nil;
     if ([self.settings.styles isKindOfClass:BeatStylesheet.class] && self.settings.styles != nil) {
         sheet = self.settings.styles;
