@@ -22,4 +22,14 @@ extension UIViewController {
 
 		viewController.didMove(toParent: self)
 	}
+	
+	@objc func removeChildren() {
+		if self.children.count > 0 {
+			for vc in self.children {
+				vc.willMove(toParent: nil)
+				vc.view.removeFromSuperview()
+				vc.removeFromParent()
+			}
+		}
+	}
 }

@@ -22,6 +22,8 @@ extension BeatUITextView {
 		
 	/// Called when setting up the view and adjusting paper size
 	@objc func resizePaper() {
+		guard let pageView else { return }
+		
 		var frame = pageView.frame
 		frame.origin.x = 0.0
 		frame.origin.y = 0.0
@@ -42,7 +44,8 @@ extension BeatUITextView {
 			mobileViewResize()
 			return
 		}
-
+		guard let pageView else { return }
+		
 		guard let enclosingScrollView = self.enclosingScrollView else {
 			print("WARNING: No scroll view set for text view")
 			return
@@ -70,7 +73,7 @@ extension BeatUITextView {
 		
 		// Calculate page view size
 		let width = floor(self.documentWidth + self.insets.left + self.insets.right)
-		let height = floor(self.pageView.frame.size.height)
+		let height = floor(pageView.frame.size.height)
 
 		// Page view size is scaled
 		frame.size.width = zoom * width
@@ -94,21 +97,23 @@ extension BeatUITextView {
 			updateMobileScale()
 			return
 		}
+		guard let pageView, let enclosingScrollView else { return }
 		
 		let newSize = sizeThatFits(CGSize(width: self.documentWidth, height: CGFloat.greatestFiniteMagnitude))
 		let inset = self.textContainerInset
 		
 		self.frame.size = newSize
-		self.enclosingScrollView.contentSize = CGSize(width: contentSize.width + inset.left + inset.right, height: contentSize.height + inset.top + inset.bottom)
+		enclosingScrollView.contentSize = CGSize(width: contentSize.width + inset.left + inset.right, height: contentSize.height + inset.top + inset.bottom)
 		
 		// Calculate initial page view size
 		let width = floor(self.documentWidth + self.insets.left + self.insets.right)
 		let zoom = enclosingScrollView.zoomScale
-		self.pageView.frame.origin.x = 0.0
-		self.pageView.frame.size.width = width * zoom
+		pageView.frame.origin.x = 0.0
+		pageView.frame.size.width = width * zoom
 	}
 	
 	@objc func resizeScrollViewContent() {
+		guard let enclosingScrollView else { return }
 		let layoutManager = self.layoutManager
 		let inset = self.textContainerInset
 		
@@ -126,22 +131,22 @@ extension BeatUITextView {
 			lastLineY = abs(lastLineRect.maxY)
 		}
 		
-		let factor = self.enclosingScrollView.zoomScale
+		let factor = enclosingScrollView.zoomScale
 		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
 		
 		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
 								height: (contentSize.height + inset.top + inset.bottom) * factor)
 
-		if scrollSize.height * factor < self.enclosingScrollView.frame.height {
-			scrollSize.height = self.enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
+		if scrollSize.height * factor < enclosingScrollView.frame.height {
+			scrollSize.height = enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
 		}
 		
-		let heightNow = self.enclosingScrollView.contentSize.height
+		let heightNow = enclosingScrollView.contentSize.height
 		
 		// Adjust the size to fit, if the size differs more than 5.0 points
 		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
 			scrollSize.height += 12.0
-			self.enclosingScrollView.contentSize = scrollSize
+			enclosingScrollView.contentSize = scrollSize
 		}	
 	}
 

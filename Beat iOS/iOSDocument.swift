@@ -19,13 +19,15 @@ import QuickLook
 }
 
 class iOSDocument: UIDocument {
-    
+    	
 	@objc var rawText:String = ""
 	@objc var settings:BeatDocumentSettings = BeatDocumentSettings()
 	@objc var delegate:iOSDocumentDelegate?
 	@objc var parser:ContinuousFountainParser {
 		return self.delegate?.parser ?? ContinuousFountainParser()
 	}
+	
+	@objc var closing = false
 	
 	override var description: String {
 		return fileURL.deletingPathExtension().lastPathComponent
@@ -59,12 +61,29 @@ class iOSDocument: UIDocument {
 			rawText = rawText.stringByReplacing(range: range, withString: "")
 		}
 		
+		if var recentFiles:[URL] = BeatUserDefaults.shared().get("Recent Files") as? [URL] {
+			recentFiles.insert(self.fileURL, at: 0)
+			recentFiles = Array(recentFiles.prefix(10))
+			BeatUserDefaults.shared().save(recentFiles, forKey: "Recent Files")
+		}
+		
+		
 		//setupHandoff()
     }
 	
 	override func close() async -> Bool {
 		self.userActivity?.resignCurrent()
-		return await super.close()
+		
+		let closed = await super.close()
+		
+		if let vc = delegate as? BeatDocumentViewController {
+			vc.unloadViews()
+		}
+		
+		//self.delegate = nil
+
+		return closed
+		
 	}
 		
 	@objc func rename(newName:String) {

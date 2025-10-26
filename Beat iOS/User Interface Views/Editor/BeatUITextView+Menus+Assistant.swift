@@ -110,124 +110,125 @@ extension BeatUITextView {
 	}
 	
 	func inputMenu() -> InputAssistantAction {
+
 		return InputAssistantAction(image: UIImage(systemName: "filemenu.and.selection")!, menu: UIMenu(title: "", children: [
 			UIMenu(title:"", options:[.displayInline], children: [
-				UIAction(title: "Find & Replace…", handler: { _ in
-					self.findAndReplace(nil)
+				UIAction(title: "Find & Replace…", handler: { [weak self] _ in
+					self?.findAndReplace(nil)
 				}),
-				UIAction(title: "Find…", handler: { _ in
-					self.find(nil)
+				UIAction(title: "Find…", handler: { [weak self] _ in
+					self?.find(nil)
 				})
 			]),
 			
 			UIMenu(title:"Macros", children: [
-				UIAction(title: "New Macro", handler: { _ in
-					self.editorDelegate?.formattingActions.makeMacro(self)
+				UIAction(title: "New Macro", handler: { [weak self] _ in
+					self?.editorDelegate?.formattingActions.makeMacro(self)
 				}),
-				UIAction(title: "Panel", subtitle: "Auto-incrementing number, resets at top-level sections", handler: { _ in
-					self.editorDelegate?.textActions.add("{{ panel }}", at: UInt(self.selectedRange.location))
+				UIAction(title: "Panel", subtitle: "Auto-incrementing number, resets at top-level sections", handler: { [weak self] _ in
+					self?.editorDelegate?.textActions.add("{{ panel }}", at: UInt(self?.selectedRange.location ?? 0))
 				}),
-				UIAction(title: "Date", subtitle: "Automatic date", handler: { _ in
-					self.editorDelegate?.textActions.add("{{ date YYYY-MM-dd }}", at: UInt(self.selectedRange.location))
+				UIAction(title: "Date", subtitle: "Automatic date", handler: { [weak self] _ in
+					self?.editorDelegate?.textActions.add("{{ date YYYY-MM-dd }}", at: UInt(self?.selectedRange.location ?? 0))
 				}),
-				UIAction(title: "Define Text Macro", subtitle: "Definition for any text", handler: { _ in
-					self.editorDelegate?.textActions.add("{{ name = value }}", at: UInt(self.selectedRange.location))
+				UIAction(title: "Define Text Macro", subtitle: "Definition for any text", handler: { [weak self] _ in
+					self?.editorDelegate?.textActions.add("{{ name = value }}", at: UInt(self?.selectedRange.location ?? 0))
 				}),
-				UIAction(title: "Define Serial Number", subtitle: "Auto-incrementing number", handler: { _ in
-					self.editorDelegate?.textActions.add("{{ serial name = 1 }}", at: UInt(self.selectedRange.location))
+				UIAction(title: "Define Serial Number", subtitle: "Auto-incrementing number", handler: { [weak self] _ in
+					self?.editorDelegate?.textActions.add("{{ serial name = 1 }}", at: UInt(self?.selectedRange.location ?? 0))
 				}),
 			].reversed()),
 			
 			UIMenu(title:"Markers", children: [
 				UIMenu(title: "Marker With Color...", children: [
-					UIAction(title: "Pink", image: UIImage(named: "color.pink"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
+					UIAction(title: "Pink", image: UIImage(named: "color.pink"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker pink:New marker]]", caretPosition: -2)
 					}),
-					UIAction(title: "Orange", image: UIImage(named: "color.orange"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker orange:New marker]]", caretPosition: -2)
+					UIAction(title: "Orange", image: UIImage(named: "color.orange"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker orange:New marker]]", caretPosition: -2)
 					}),
-					UIAction(title: "Purple", image: UIImage(named: "color.purple"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker purple:New marker]]", caretPosition: -2)
+					UIAction(title: "Purple", image: UIImage(named: "color.purple"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker purple:New marker]]", caretPosition: -2)
 					}),
-					UIAction(title: "Blue", image: UIImage(named: "color.blue"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker blue:New marker]]", caretPosition: -2)
+					UIAction(title: "Blue", image: UIImage(named: "color.blue"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker blue:New marker]]", caretPosition: -2)
 					}),
-					UIAction(title: "Green", image: UIImage(named: "color.green"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker green:New marker]]", caretPosition: -2)
+					UIAction(title: "Green", image: UIImage(named: "color.green"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker green:New marker]]", caretPosition: -2)
 					}),
-					UIAction(title: "Red", image: UIImage(named: "color.red"),  handler: { (_) in
-						self.editorDelegate?.textActions.addNewParagraph("[[marker red:New marker]]", caretPosition: -2)
+					UIAction(title: "Red", image: UIImage(named: "color.red"),  handler: { [weak self] (_) in
+						self?.editorDelegate?.textActions.addNewParagraph("[[marker red:New marker]]", caretPosition: -2)
 					}),
 				]),
-				UIAction(title: "Add Marker", handler: { (_) in
-					self.editorDelegate?.textActions.addNewParagraph("[[marker New marker]]", caretPosition: -2)
+				UIAction(title: "Add Marker", handler: { [weak self] (_) in
+					self?.editorDelegate?.textActions.addNewParagraph("[[marker New marker]]", caretPosition: -2)
 				}),
 			]),
 			
 			UIMenu(title: "Outline Elements", children: [
-				UIAction(title: "Add Synopsis (=)", handler: { _ in
-					self.addSynopsis()
+				UIAction(title: "Add Synopsis (=)", handler: { [weak self] _ in
+					self?.addSynopsis()
 				}),
-				UIAction(title: "Add Section (#)", image: UIImage(named: "Shortcut.Synopsis"), handler: { _ in
-					self.addSection()
+				UIAction(title: "Add Section (#)", image: UIImage(named: "Shortcut.Synopsis"), handler: { [weak self] _ in
+					self?.addSection()
 				})
 			]),
 			
 			UIMenu(title: "Transitions", children: [
-				UIAction(title: "FADE IN", handler: { (_) in
-					self.editorDelegate?.textActions.addNewParagraph("> FADE IN")
+				UIAction(title: "FADE IN", handler: { [weak self] (_) in
+					self?.editorDelegate?.textActions.addNewParagraph("> FADE IN")
 				}),
-				UIAction(title: "CUT TO:", handler: { (_) in
-					self.editorDelegate?.textActions.addNewParagraph("CUT TO:")
+				UIAction(title: "CUT TO:", handler: { [weak self] (_) in
+					self?.editorDelegate?.textActions.addNewParagraph("CUT TO:")
 				}),
-				UIAction(title: "DISSOLVE TO:", handler: { (_) in
-					self.editorDelegate?.textActions.addNewParagraph("DISSOLVE TO:")
+				UIAction(title: "DISSOLVE TO:", handler: { [weak self] (_) in
+					self?.editorDelegate?.textActions.addNewParagraph("DISSOLVE TO:")
 				}),
-				UIAction(title: "FADE OUT", handler: { (_) in
-					self.editorDelegate?.textActions.addNewParagraph("> FADE OUT")
+				UIAction(title: "FADE OUT", handler: { [weak self] (_) in
+					self?.editorDelegate?.textActions.addNewParagraph("> FADE OUT")
 				}),
 				
 			]),
 			
 			UIMenu(title: "", options: [.displayInline], children: [
-				UIAction(title: "Make Centered", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeCentered(self)
+				UIAction(title: "Make Centered", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeCentered(self)
 				}),
-				UIAction(title: "Omit", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeOmitted(self)
+				UIAction(title: "Omit", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeOmitted(self)
 				}),
-				UIAction(title: "Note", handler: { (_) in
-					self.editorDelegate?.formattingActions.makeNote(self)
+				UIAction(title: "Note", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeNote(self)
 				})
 			]),
 			
 			UIMenu(title:"Force element", children: [
-				UIAction(title: "Scene heading", handler: { (_) in
-					self.editorDelegate?.formattingActions.forceHeading(self)
+				UIAction(title: "Scene heading", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.forceHeading(self)
 				}),
-				UIAction(title: "Action", handler: { (_) in
-					self.editorDelegate?.formattingActions.forceAction(self)
+				UIAction(title: "Action", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.forceAction(self)
 				}),
-				UIAction(title: "Character", handler: { (_) in
-					self.editorDelegate?.formattingActions.forceCharacter(self)
+				UIAction(title: "Character", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.forceCharacter(self)
 				}),
-				UIAction(title: "Transition", handler: { (_) in
-					self.editorDelegate?.formattingActions.forceTransition(self)
+				UIAction(title: "Transition", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.forceTransition(self)
 				}),
-				UIAction(title: "Lyrics", handler: { (_) in
-					self.editorDelegate?.formattingActions.forceLyrics(self)
+				UIAction(title: "Lyrics", handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.forceLyrics(self)
 				}),
 			]),
 			
 			UIMenu(title:"", options: [.displayInline], preferredElementSize: .small, children: [
-				UIAction(image: UIImage(systemName: "bold"), handler: { (_) in
-					self.editorDelegate?.formattingActions.makeBold(self)
+				UIAction(image: UIImage(systemName: "bold"), handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeBold(self)
 				}),
-				UIAction(image: UIImage(systemName: "italic"), handler: { (_) in
-					self.editorDelegate?.formattingActions.makeItalic(self)
+				UIAction(image: UIImage(systemName: "italic"), handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeItalic(self)
 				}),
-				UIAction(image: UIImage(systemName: "underline"), handler: { (_) in
-					self.editorDelegate?.formattingActions.makeUnderlined(nil)
+				UIAction(image: UIImage(systemName: "underline"), handler: { [weak self] (_) in
+					self?.editorDelegate?.formattingActions.makeUnderlined(nil)
 				})
 			])
 		]))
@@ -502,14 +503,14 @@ extension BeatUITextView {
 		
 		if line.isAnyDialogue() || line.type == .action {
 			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
-				UIAction(image: UIImage(named: "button_bold")) { _ in
-					self.editorDelegate?.formattingActions.makeBold(nil)
+				UIAction(image: UIImage(named: "button_bold")) { [weak self] _ in
+					self?.editorDelegate?.formattingActions.makeBold(nil)
 				},
-				UIAction(image: UIImage(named: "button_italic")) { _ in
-					self.editorDelegate?.formattingActions.makeItalic(nil)
+				UIAction(image: UIImage(named: "button_italic")) { [weak self] _ in
+					self?.editorDelegate?.formattingActions.makeItalic(nil)
 				},
-				UIAction(image: UIImage(systemName: "underline")) { _ in
-					self.editorDelegate?.formattingActions.makeUnderlined(nil)
+				UIAction(image: UIImage(systemName: "underline")) { [weak self] _ in
+					self?.editorDelegate?.formattingActions.makeUnderlined(nil)
 				}
 			])
 			
@@ -517,13 +518,13 @@ extension BeatUITextView {
 		}
 		
 		if self.selectedRange.length > 0 {
-			let revisionMenu = UIMenu(subtitle: "Revisions", image: UIImage(systemName: "asterisk"), options: [], children: [
-				UIAction(title: "Mark As Revised") { _ in
-					self.editorDelegate?.revisionTracking.markerAction(.addition)
+			let revisionMenu = UIMenu(title: "Revisions", image: UIImage(systemName: "asterisk"), options: [], children: [
+				UIAction(title: "Mark As Revised") { [weak self] _ in
+					self?.editorDelegate?.revisionTracking.markerAction(.addition)
 				},
 				UIMenu(options: [.destructive, .displayInline], children: [
-					UIAction(title: "Clear Revisions") { _ in
-						self.editorDelegate?.revisionTracking.markerAction(.none)
+					UIAction(title: "Clear Revisions") { [weak self] _ in
+						self?.editorDelegate?.revisionTracking.markerAction(.none)
 					}
 				])
 			])
@@ -532,38 +533,50 @@ extension BeatUITextView {
 		}
 		
 		let textIO = editorDelegate?.textActions
-		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
-			UIAction(title: "Omit Scene") { _ in
-				self.editorDelegate?.formattingActions.omitScene(nil)
-			},
-			UIAction(title: "Make Non-Numbered") { _ in
-				self.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
-			},
-			UIAction(image: UIImage(named:"color.red")) { _ in
-				textIO?.setColor("red", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.blue")) { _ in
-				textIO?.setColor("blue", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.green")) { _ in
-				textIO?.setColor("green", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.pink")) { _ in
-				textIO?.setColor("pink", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.brown")) { _ in
-				textIO?.setColor("brown", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.cyan")) { _ in
-				textIO?.setColor("cyan", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.orange")) { _ in
-				textIO?.setColor("orange", for: self.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.magenta")) { _ in
-				textIO?.setColor("magenta", for: self.editorDelegate?.currentScene)
+		
+		let colors:[String] = ["Red", "Blue", "Green", "Pink", "Brown", "Cyan", "Orange", "Magenta"]
+		var colorItems:[UIAction] = []
+		for color in colors {
+			let colorKey = "color.\(color.lowercased())"
+			let action = UIAction(title: color, image: UIImage(named: colorKey)) { [weak self] _ in
+				textIO?.setColor(colorKey, for: self?.editorDelegate?.currentScene)
 			}
-		])
+			colorItems.append(action)
+		}
+		let sceneMenu = UIMenu(title: "Scene...", options: [], children: colorItems)
+		/*
+		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
+			UIAction(title: "Omit Scene") { [weak self] _ in
+				self?.editorDelegate?.formattingActions.omitScene(nil)
+			},
+			UIAction(title: "Make Non-Numbered") { [weak self] _ in
+				self?.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
+			},
+			UIAction(title: "Red", image: UIImage(named:"color.red")) { [weak self] _ in
+				textIO?.setColor("red", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.blue")) { [weak self] _ in
+				textIO?.setColor("blue", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.green")) { [weak self] _ in
+				textIO?.setColor("green", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.pink")) { [weak self] _ in
+				textIO?.setColor("pink", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.brown")) { [weak self] _ in
+				textIO?.setColor("brown", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.cyan")) { [weak self] _ in
+				textIO?.setColor("cyan", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.orange")) { [weak self] _ in
+				textIO?.setColor("orange", for: self?.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"color.magenta")) { [weak self] _ in
+				textIO?.setColor("magenta", for: self?.editorDelegate?.currentScene)
+			}
+		])*/
 		
 		actions.append(sceneMenu)
 				

@@ -39,8 +39,10 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 			
 			if let targetUrl {
 				// First make sure there's no existing temp file with this name
-				if FileManager.default.fileExists(atPath: targetUrl.path()) {
-					try? FileManager.default.removeItem(at: targetUrl)
+				do {
+					try FileManager.default.removeItem(at: targetUrl)
+				} catch {
+					print("Removing failed: \(error)")
 				}
 				
 				// Copy the template file to temp directory

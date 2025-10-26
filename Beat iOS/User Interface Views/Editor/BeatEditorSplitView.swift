@@ -22,11 +22,13 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 	@objc public weak var editorDelegate:BeatEditorDelegate?
 	
 	@objc public weak var editorView:BeatEditorViewController? {
+		guard self.viewControllers.count > 1 else { return nil }
 		let nav = self.viewControllers[1] as? UINavigationController
 		return nav?.viewControllers.first as? BeatEditorViewController
 	}
 	
 	@objc public weak var sidebar:BeatSidebarViewController? {
+		guard self.viewControllers.count > 0 else { return nil }
 		let nav = self.viewControllers[0] as? UINavigationController
 		return nav?.viewControllers.first as? BeatSidebarViewController
 	}
@@ -65,6 +67,16 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 	
 	func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
 		//
+	}
+	
+	override func removeFromParent() {
+		self.editorView?.editorDelegate = nil
+		self.editorView?.pageView = nil
+		self.editorView?.scrollView = nil
+		
+		super.removeFromParent()
+		
+		self.viewControllers.removeAll()
 	}
 	
 }

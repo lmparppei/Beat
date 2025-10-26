@@ -9,6 +9,8 @@
 import UIKit
 
 class BeatPageView:UIView {
+	@objc var shadowOpacity:CGFloat = 0.2
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -16,6 +18,14 @@ class BeatPageView:UIView {
 		layer.shadowColor = UIColor.black.cgColor
 		layer.shadowOpacity = 0.2
 		layer.shadowOffset = .zero
+	}
+	
+	deinit {
+		print("Deinit page view")
+	}
+	
+	@objc func toggleShadow(_ value:Bool) {
+		self.shadowOpacity = value ? 0.2 : 0
 	}
 }
 

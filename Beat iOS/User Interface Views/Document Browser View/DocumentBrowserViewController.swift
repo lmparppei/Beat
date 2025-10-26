@@ -40,13 +40,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         allowsDocumentCreation = true
         allowsPickingMultipleItems = false
-        
-		overrideUserInterfaceStyle = .dark
 		
-        // Update the style of the UIDocumentBrowserViewController
-        browserUserInterfaceStyle = .dark
-        view.tintColor = .white
-				
 		if (!welcomeScreenShown) {
 			showWelcomeScreen()
 		}
@@ -98,7 +92,10 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	/// Forces the creation of a new document. Assumes that BeatCore has a file called `New Document.fountain`.
 	public func newDocument() {
 		// TODO: This name should come from a string catalogue.
-		guard let url = Bundle(for: BeatTemplates.self).url(forResource: "New Document", withExtension: "fountain") else { return }
+		guard let url = Bundle(for: BeatTemplates.self).url(forResource: "New Document", withExtension: "fountain") else {
+			print("No template for new document")
+			return
+		}
 		
 		importAndPresentTemplate(url)
 	}
@@ -129,7 +126,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
-		let alert = UIAlertController(title: "Error Opening Document", message: "Something went wrong when opening the file. Send a screenshot of this message to the developer:\n\(error.debugDescription)" , preferredStyle: .alert)
+		let alert = UIAlertController(title: "Error Opening Document", message: "Something went wrong when opening the file.\n\(error.debugDescription.description)" , preferredStyle: .alert)
 		
 		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in alert.dismiss(animated: true) }))
 

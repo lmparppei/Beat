@@ -11,7 +11,7 @@ import BeatCore
 import BeatParsing
 
 @objc class BeatOutlineDataSource:NSObject, UITableViewDataSource {
-	var delegate:BeatEditorDelegate
+	weak var delegate:BeatEditorDelegate?
 	
 	init(delegate: BeatEditorDelegate) {
 		self.delegate = delegate
@@ -20,10 +20,12 @@ import BeatParsing
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return delegate.parser.outline.count
+		return delegate?.parser.outline.count ?? 0
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		guard let delegate else { return UITableViewCell() }
+		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 		let dark = UIView.shouldAppearAsDark(view: cell, apply: true)
 		

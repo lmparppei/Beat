@@ -199,7 +199,7 @@ class BeatSettingsViewController:UITableViewController {
 			// ?
 		}
 	}
-	
+		
 	@IBAction func toggleStylesheet(_ sender:BeatSegmentedStylesheetControl) {
 		let styles = sender.stylesheets.split(separator: ",")
 		let stylesheetName = String(styles[sender.selectedSegmentIndex])
@@ -288,8 +288,8 @@ class BeatSettingsViewController:UITableViewController {
 	}
 	
 	@IBAction func toggleFontStyle(_ sender:UISegmentedControl) {
-		let sansSerif = (sender.selectedSegmentIndex == 1)
-		BeatUserDefaults.shared().save(sansSerif, forKey: BeatSettingUseSansSerif)
+		// This is a little hacky. 0 = serif, 1 = sans serif, 2 = courier new
+		BeatUserDefaults.shared().save(sender.selectedSegmentIndex, forKey: BeatSettingFontStyle)
 		
 		self.delegate?.reloadStyles()
 		self.delegate?.formatting.formatAllLines()

@@ -35,8 +35,8 @@ import BeatParsing
 @objc class BeatUITextView: UITextView, BeatTextEditor, UIEditMenuInteractionDelegate {
 	
 	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
-	@IBOutlet weak var enclosingScrollView:BeatScrollView!
-	@IBOutlet weak var pageView:UIView!
+	@IBOutlet weak var enclosingScrollView:BeatScrollView?
+	@IBOutlet weak var pageView:UIView?
 		
 	/// Modifier flags are set during key press events and cleared afterwards. This helps with macOS class interop.
 	@objc public var modifierFlags:UIKeyModifierFlags = []
@@ -140,6 +140,30 @@ import BeatParsing
 		self.textContainer.replaceLayoutManager(customLayoutManager)
 	}
 	
+	deinit {
+		print("Deinit text view")
+	}
+	
+	@objc func unload() {
+		self.resignFirstResponder()
+
+		NotificationCenter.default.removeObserver(self)
+		self.gestureRecognizers?.removeAll()
+
+		self.mobileKeyboardManager = nil
+
+		self.pageView = nil
+				
+		self.assistantView?.dataSource = nil
+		self.assistantView?.dSource = nil
+		self.assistantView?.detach(from: self)
+		self.assistantView = nil
+				
+		self.inputAccessoryView = nil
+		self.inputView = nil
+		self.reloadInputViews()
+	}
+	
 	
 	// MARK: - Layout manager
 	
@@ -166,7 +190,7 @@ import BeatParsing
 		// Delegates
 		enclosingScrollView?.delegate = self
 		
-		self.enclosingScrollView.keyboardDismissMode = .onDrag
+		self.enclosingScrollView?.keyboardDismissMode = .onDrag
 		
 		// Text container setup
 		self.textContainer.widthTracksTextView = false
@@ -205,7 +229,7 @@ import BeatParsing
 		}
 		
 		// Set a new frame for this view for mobile mode
-		if mobileMode, let contentView = self.enclosingScrollView.superview {
+		if mobileMode, let contentView = self.enclosingScrollView?.superview {
 			self.frame = CGRectMake(0.0, 0.0, contentView.frame.width, contentView.frame.height)
 			self.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
 			
@@ -297,12 +321,13 @@ import BeatParsing
 			super.scrollRangeToVisible(range)
 			return
 		}
+		guard let enclosingScrollView else { return }
 		
 		// Current bounds
-		let bounds = self.enclosingScrollView.bounds
+		let bounds = enclosingScrollView.bounds
 		
 		// The *actually* visible frame (why won't iOS give this automatically?)
-		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - self.enclosingScrollView.adjustedContentInset.bottom - self.enclosingScrollView.contentInset.bottom)
+		let visible = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, bounds.height - enclosingScrollView.adjustedContentInset.bottom - enclosingScrollView.contentInset.bottom)
 		
 		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
@@ -311,11 +336,11 @@ import BeatParsing
 		// Account for top margin
 		selectionRect.origin.y += self.textContainerInset.top
 		
-		let scaledRect = convert(selectionRect, to: self.enclosingScrollView)
+		let scaledRect = convert(selectionRect, to: enclosingScrollView)
 		
 		// If the rect is not visible, scroll to that range
 		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			self.enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
 		}
 		
 	}
@@ -472,6 +497,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+		guard let pageView else { return }
 		var x = (scrollView.frame.width - pageView.frame.width) / 2
 		if (x < 0) { x = 0; }
 				
@@ -495,11 +521,11 @@ extension BeatUITextView: UIScrollViewDelegate {
 		self.scaleView(view: self, scale: scale)
 		self.scaleLayer(layer: self.layer, scale: scale)
 		
-		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
-			self.pageView.frame.origin.x = frame.origin.x
+		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) { [weak self] in
+			self?.pageView?.frame.origin.x = frame.origin.x
 			
-			self.enclosingScrollView.zoomScale = zoom
-			self.resizeScrollViewContent()
+			self?.enclosingScrollView?.zoomScale = zoom
+			self?.resizeScrollViewContent()
 		} completion: { _ in
 			
 		}
