@@ -16,6 +16,7 @@
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSArray<Line*>*)linesForScene:(OutlineScene*)scene;
 - (Line *)lineWithUUID:(NSString *)uuid;
+- (OutlineScene*)sceneWithUUID:(NSString*)uuid;
 
 - (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;

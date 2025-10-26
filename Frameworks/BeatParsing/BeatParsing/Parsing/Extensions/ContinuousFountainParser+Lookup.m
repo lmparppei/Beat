@@ -38,7 +38,9 @@ NSInteger previousSceneIndex = NSNotFound;
     }
     
     // Let's use binary search here. It's much slower in short documents, but about 20-30 times faster in longer ones.
-    NSInteger index = [self.lines binarySearchForItem:line integerValueFor:@"position"];
+    // We are using integer value for `position` to very quickly verify that this is the item. Position is unique for each item, and if for some odd reason the
+    // actual pointer has changed, we are satisfied with *any* object with this position.
+    NSInteger index = [self.lines binarySearchForItem:line matchingIntegerValueFor:@"position"];
     previousLineIndex = index;
 
     return index;
@@ -191,11 +193,43 @@ NSUInteger prevLineAtLocationIndex = 0;
     return indexRange;
 }
 
+/// Returns a scene with given UUID. We are using a map table to avoid O(n) time.
+- (OutlineScene*)sceneWithUUID:(NSString*)uuid
+{
+    NSDate* d=NSDate.new;
+    if (self.outlineUuidTable == nil) self.outlineUuidTable = NSMapTable.strongToWeakObjectsMapTable;
+    
+    OutlineScene* cachedScene = [self.uuidTable objectForKey:uuid];
+    if (cachedScene != nil && cachedScene.line != nil) {
+        return cachedScene;
+    }
+    
+    for (OutlineScene* scene in self.outline) {
+        if ([scene.line.uuidString isEqualToString:uuid]) {
+            [self.outlineUuidTable setObject:scene forKey:uuid];
+            return scene;
+        }
+    }
+    
+    return nil;
+}
+
+/// Returns a line with given UUID. We are using a map table to avoid O(n) time.
 - (Line *)lineWithUUID:(NSString *)uuid
 {
+    if (self.uuidTable == nil) self.uuidTable = NSMapTable.strongToWeakObjectsMapTable;
+        
+    // First check our UUID table
+    Line* cachedResult = [self.uuidTable objectForKey:uuid];
+    if (cachedResult != nil) return cachedResult;
+    
     for (Line* line in self.lines) {
-        if ([line.uuidString isEqualToString:uuid]) return line;
+        if ([line.uuidString isEqualToString:uuid]) {
+            [self.uuidTable setObject:line forKey:uuid];
+            return line;
+        }
     }
+    
     return nil;
 }
 
