@@ -12,6 +12,7 @@ import BeatDynamicColor
     @objc public var backgroundColor: DynamicColor!
     @objc public var selectionColor: DynamicColor!
     @objc public var textColor: DynamicColor!
+    @objc public var dialogueColor: DynamicColor!
     @objc public var headingColor: DynamicColor!
     @objc public var invisibleTextColor: DynamicColor!
     @objc public var caretColor: DynamicColor!
@@ -51,6 +52,7 @@ import BeatDynamicColor
             "marginColor": "Margin",
             "selectionColor": "Selection",
             "textColor": "Text",
+            "dialogueColor": "Dialogue",
             "headingColor": "Heading",
             "commentColor": "Comment",
             "invisibleTextColor": "InvisibleText",
@@ -72,7 +74,7 @@ import BeatDynamicColor
             "outlineSceneNumber": "OutlineSceneNumber",
             "outlineSection": "OutlineSection",
             "outlineSynopsis": "OutlineSynopsis",
-            "outlineNote": "OutlineNote"
+            "outlineNote": "OutlineNote",
         ]
     }
     

@@ -325,6 +325,7 @@
 - (DynamicColor*)marginColor { return _theme.marginColor; }
 - (DynamicColor*)selectionColor { return _theme.selectionColor; }
 - (DynamicColor*)textColor { return _theme.textColor; }
+- (DynamicColor*)dialogueColor { return _theme.dialogueColor; }
 - (DynamicColor*)headingColor { return _theme.headingColor; }
 - (DynamicColor*)invisibleTextColor { return _theme.invisibleTextColor; }
 - (DynamicColor*)caretColor { return _theme.caretColor; }
