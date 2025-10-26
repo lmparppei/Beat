@@ -653,6 +653,16 @@
 	return value;
 }
 
+- (id)getRawUserDefault:(NSString*)settingName
+{
+    return [BeatUserDefaults.sharedDefaults get:settingName];
+}
+
+- (void)setRawUserDefault:(NSString*)settingName value:(id)value
+{
+    [BeatUserDefaults.sharedDefaults save:value forKey:settingName];
+}
+
 
 
 #pragma mark - Tagging interface
@@ -890,6 +900,8 @@
     [self.delegate resetStyles];
 }
 
+- (BeatStylesheet*)editorStyles { return self.delegate.editorStyles; }
+- (BeatStylesheet*)styles { return self.delegate.styles; }
 
 
 #pragma mark - Return revised ranges
@@ -919,6 +931,7 @@
 #pragma mark - TextView access
 
 #if TARGET_OS_OSX
+/// Please, move this elsewhere
 - (void)setZoomLevel:(CGFloat)zoomLevel
 {
     [self.delegate setZoom:zoomLevel];

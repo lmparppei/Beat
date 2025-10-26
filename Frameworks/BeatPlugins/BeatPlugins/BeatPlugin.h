@@ -47,6 +47,7 @@
 @class OutlineScene;
 @class BeatTextIO;
 @class BeatSpeak;
+@class BeatStylesheet;
 
 @class BeatPluginAgent;
 
@@ -118,6 +119,10 @@ JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName
 JSExportAs(setUserDefault, - (void)setUserDefault:(NSString*)settingName setting:(id)value);
 /// Returns a user default (`key`)
 JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
+/// Returns a non-prefixed user default value
+JSExportAs(getRawUserDefault, - (id)getRawUserDefault:(NSString*)settingName);
+/// Stores a non-prefixed user default value
+JSExportAs(setRawUserDefault,- (void)setRawUserDefault:(NSString*)settingName value:(id)value);
 
 
 #pragma mark Listeners
@@ -207,6 +212,9 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 /// Resets the preview and clears pagination
 - (void)resetPreview;
 - (void)resetStyles;
+- (BeatStylesheet*)editorStyles;
+- (BeatStylesheet*)styles;
+
 
 #pragma mark Reformatting
 JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)len);
