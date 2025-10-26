@@ -47,10 +47,6 @@
 //@objc var hideFountainMarkup: Bool = false
 @property (nonatomic) bool closing;
 
-/// Split view. Defined in storyboard segue.
-@property (nonatomic, weak) BeatEditorSplitViewController* editorSplitView;
-@property (nonatomic, weak) IBOutlet UIView* splitViewContainer;
-
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* topContainerConstraint;
 
 @end
@@ -146,7 +142,7 @@
 	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
 	
 	// Embed the editor split view
-	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Document" bundle:nil];
 	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
 	[self embed:splitView inView:self.splitViewContainer];
 	[splitView loadView];
@@ -209,7 +205,10 @@
 	
 	//[self appearanceChanged:nil];
 	[self displayPatchNotesIfNeeded];
+	
+	//typing = [SimulatedTyping.alloc initWithTextView:self.textView];
 }
+SimulatedTyping* typing;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -342,25 +341,63 @@
 
 - (IBAction)dismissDocumentViewController:(id)sender
 {
-	[self unloadViews];
+	[self dismissViewControllerAnimated:true completion:^{
+		[self.document closeWithCompletionHandler:nil];
+	}];
 }
 
+/// This is called by `iOSDocument` after closing the document
 - (void)unloadViews
 {
-	self.previewView = nil;
-	
-	self.previewController.pagination.finishedPagination = nil;
-	self.previewController.pagination = nil;
-	[self.textView removeFromSuperview];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
 	
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container unload];
 	}
 	[self.registeredPluginContainers removeAllObjects];
 	
-	[self dismissViewControllerAnimated:true completion:^{
-		[self.document closeWithCompletionHandler:nil];
-	}];
+	self.review = nil;
+	self.revisionTracking = nil;
+	self.tagging = nil;
+
+	[self forgetStyles];
+	[self.pluginAgent unloadPlugins];
+	
+	self.navigationItem.titleMenuProvider = nil;
+	self.navigationItem.rightBarButtonItems = nil;
+	self.navigationItem.leftBarButtonItem = nil;
+
+	[self.userActivity invalidate];
+	
+	[self.registeredViews removeAllObjects];
+	[self.registeredOutlineViews removeAllObjects];
+	[self.registeredSelectionObservers removeAllObjects];
+		
+	self.formatting = nil;
+	self.runningPlugins = nil;
+	self.parser = nil;
+	self.outlineView = nil;
+	self.contentBuffer = nil;
+	self.documentBrowser = nil;
+	self.formattingActions = nil;
+	self.textActions = nil;
+	self.autocomplete = nil;
+	
+	[self.textView unload];
+	
+	[self.previewView clear];
+	[self.previewView removeFromParentViewController];
+	self.previewView = nil;
+		
+	[self removeChildren];
+	self.editorSplitView = nil;
+	
+	// These have to be nulled to kill any retained line references
+	self.formattedTextBuffer = NSMutableAttributedString.new;
+	self.attrTextCache = NSMutableAttributedString.new;
+	
+	self.document = nil;
 }
 
 - (void)ensureLayout
@@ -456,6 +493,8 @@
 	self.textView.backgroundColor = (isDark) ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
 	
 	[self.formatting refreshRevisionTextColors];
+	
+	[self.pageView toggleShadow:[_scrollView.backgroundColor isEqual:self.textView.backgroundColor]];
 }
 
 
@@ -558,10 +597,6 @@ bool editorWasActive = false;
 - (void)setTypingAttributes:(NSDictionary*)attrs {
 	_typingAttributes = attrs;
 	//self.textView.typingAttributes = attrs;
-}
-
-- (void)setAutomaticTextCompletionEnabled:(BOOL)value {
-	// Does nothing on iOS for now
 }
 
 

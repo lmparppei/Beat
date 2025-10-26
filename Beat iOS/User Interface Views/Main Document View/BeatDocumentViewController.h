@@ -16,23 +16,28 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatUITextView;
 @class BeatiOSOutlineView;
 @class BeatScrollView;
+@class BeatEditorSplitViewController;
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
-@property (nonatomic) iOSDocument* document;
+@property (nonatomic) iOSDocument* _Nullable document;
 @property (weak, readonly) BXWindow* documentWindow;
 
-@property (nonatomic) UIDocumentBrowserViewController *documentBrowser;
+@property (nonatomic, weak) UIDocumentBrowserViewController* _Nullable documentBrowser;
 
 /// Main scroll view
-@property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
+@property (nonatomic) IBOutlet BeatScrollView* _Nullable scrollView;
+
+/// Split view. Defined in storyboard segue.
+@property (nonatomic, weak) BeatEditorSplitViewController* _Nullable editorSplitView;
+@property (nonatomic, weak) IBOutlet UIView* _Nullable splitViewContainer;
 
 /// Main editor view
-@property (nonatomic) BeatUITextView* textView;
+@property (nonatomic, weak) BeatUITextView* _Nullable textView;
 /// Sidebar outline view
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 
-@property (nonatomic) BeatEditorFormattingActions* formattingActions;
+@property (nonatomic) BeatEditorFormattingActions* _Nullable formattingActions;
 
 // Editor flags
 @property (nonatomic) bool revisionMode;
@@ -57,6 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)togglePreview:(id _Nullable)sender;
 - (IBAction)toggleCards:(id _Nullable)sender;
 - (IBAction)toggleNotepad:(id _Nullable)sender;
+
+/// This is called by `iOSDocument` after closing the document
+- (void)unloadViews;
 
 @end
 

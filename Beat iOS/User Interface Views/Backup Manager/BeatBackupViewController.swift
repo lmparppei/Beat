@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 @objc protocol BeatBackupViewControllerDelegate:BeatEditorDelegate {
-	var documentBrowser:UIDocumentBrowserViewController { get }
+	weak var documentBrowser:UIDocumentBrowserViewController? { get }
 }
 
 class BeatBackupViewController: UIViewController {

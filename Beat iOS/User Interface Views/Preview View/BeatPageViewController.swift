@@ -20,7 +20,7 @@ import BeatCore
 	@IBOutlet weak var pageSettingsButton:UIBarButtonItem?
 	@objc public weak var delegate:BeatEditorDelegate?
 	
-	public var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
+	public weak var dataSource: BeatPagination2.BeatPreviewPageViewDataSource? {
 		didSet {
 			self.pageView?.dataSource = dataSource
 		}
@@ -31,10 +31,12 @@ import BeatCore
 		super.viewWillAppear(animated)
 		self.becomeFirstResponder()
 	}
+	
 	public override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		self.pageView?.becomeFirstResponder()
 	}
+	
 	public override func didMove(toParent parent: UIViewController?) {
 		super.didMove(toParent: parent)
 	
@@ -152,7 +154,7 @@ import BeatCore
 
 @objc open class BeatPageScrollView: UIScrollView, UIScrollViewDelegate {
 	/// Data source provide the views and number of pages
-    @IBOutlet public var dataSource:BeatPreviewPageViewDataSource?
+    @IBOutlet public weak var dataSource:BeatPreviewPageViewDataSource?
 	@IBOutlet weak var activityIndicator:UIActivityIndicatorView?
 	
 	/// Container view for pages

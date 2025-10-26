@@ -128,10 +128,15 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 open class InputAssistantView: UIInputView {
 	public var fullActions:[InputAssistantAction] = []
 	
+	deinit {
+		print("Input assistant deinit")
+		self.keyboardAppearanceObserver = nil
+	}
+	
 	/// Returns the number of currently visible suggestions
 	@objc
 	public var numberOfSuggestions:Int {
-		return self.suggestionsCollectionView.numberOfItems(inSection: 0)
+		return self.suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0
 	}
 	
 	/// Actions to display on the leading side of the suggestions.
@@ -151,7 +156,7 @@ open class InputAssistantView: UIInputView {
 	
 	/// Set this to provide data to the input assistant view
 	public weak var dataSource: InputAssistantViewDataSource? {
-		didSet { suggestionsCollectionView.reloadData() }
+		didSet { suggestionsCollectionView?.reloadData() }
 	}
 	
 	public var fullMenu:[InputAssistantAction] = []
@@ -166,7 +171,7 @@ open class InputAssistantView: UIInputView {
 	private let trailingStackView: UIStackView
 	
 	/// Collection view, with a horizontally scrolling set of suggestions.
-	private let suggestionsCollectionView: InputAssistantCollectionView
+	private var suggestionsCollectionView: InputAssistantCollectionView?
 		
 	
 	public init(editorDelegate:BeatEditorDelegate, inputAssistantDelegate:InputAssistantViewDelegate?) {
@@ -174,17 +179,26 @@ open class InputAssistantView: UIInputView {
 		self.trailingStackView = UIStackView()
 		self.suggestionsCollectionView = InputAssistantCollectionView()
 		
+		guard let suggestionsCollectionView else { super.init(); return }
+		
 		super.init(frame: .init(origin: .zero, size: .init(width: 0, height: 55)), inputViewStyle: .default)
 		
-		self.suggestionsCollectionView.inputAssistantView = self
-		self.suggestionsCollectionView.delegate = self
+		self.suggestionsCollectionView?.inputAssistantView = self
+		self.suggestionsCollectionView?.delegate = self
 		
 		for stackView in [leadingStackView, trailingStackView] {
+			// A little nicer rounded capsules for iOS 26 items
+			if #available(iOS 26.0, *) {
+				stackView.cornerConfiguration = .capsule()
+				stackView.backgroundColor = .black.withAlphaComponent(0.8)
+			}
+			
 			stackView.spacing = 0.0
 			stackView.distribution = .equalCentering
 			stackView.alignment = .center
 			stackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 			stackView.tintColor = .white
+			
 			updateActions([], stackView)
 		}
 
@@ -196,25 +210,30 @@ open class InputAssistantView: UIInputView {
 		containerStackView.alignment = .fill
 		containerStackView.axis = .horizontal
 		containerStackView.distribution = .equalCentering
-
+				
 		// Stretch to fill bounds
 		containerStackView.frame = self.bounds
 		self.addSubview(containerStackView)
 		containerStackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		
+		NSLayoutConstraint.activate([
+			containerStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+		])
+
 		
 		self.dSource = AutocompletionDataSource(editorDelegate: editorDelegate)
 		self.dataSource = self.dSource
 		
 		self.delegate = inputAssistantDelegate
 		
-		// iOS 26 won't have an opaque background
-		self.layer.backgroundColor = UIColor.black.withAlphaComponent(0.85).cgColor
+		// iOS 26 won't have an opaque background, but we want it for usability's sake
+		// self.layer.backgroundColor = UIColor.black.withAlphaComponent(0.85).cgColor
 	}
 	
 	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 	
 	public func reloadData() {
-		guard let delegate else { return }
+		guard let delegate, let suggestionsCollectionView else { return }
 
 		suggestionsCollectionView.reloadData()
 		
@@ -226,7 +245,7 @@ open class InputAssistantView: UIInputView {
 	}
 
 	/// The keyboard appearance of the attached text input
-	internal var keyboardAppearance: UIKeyboardAppearance = .default {
+	internal var keyboardAppearance: UIKeyboardAppearance? = .default {
 		didSet {
 			switch keyboardAppearance {
 			case .dark: self.tintColor = .white
@@ -234,6 +253,7 @@ open class InputAssistantView: UIInputView {
 			}
 		}
 	}
+	
 	private var keyboardAppearanceObserver: NSKeyValueObservation?
 
 	/// Attach the inputAssistant to the given UITextView.
@@ -253,6 +273,31 @@ open class InputAssistantView: UIInputView {
 		keyboardAppearanceObserver = textInput.observe(\UITextView.keyboardAppearance) { [weak self] textInput, _ in
 			self?.keyboardAppearance = textInput.keyboardAppearance
 		}
+	}
+	
+	public func detach(from textInput:UITextView) {
+		NotificationCenter.default.removeObserver(self)
+		if let suggestionsCollectionView {
+			NotificationCenter.default.removeObserver(suggestionsCollectionView)
+		}
+		
+		self.leadingActions.removeAll()
+		self.trailingActions.removeAll()
+		
+		self.suggestionsCollectionView?.dataSource = nil
+		self.dataSource = nil
+		self.dSource = nil
+		
+		self.suggestionsCollectionView?.delegate = nil
+		self.suggestionsCollectionView?.dataSource = nil
+		self.suggestionsCollectionView?.inputAssistantView = nil
+		self.suggestionsCollectionView?.widthConstraint?.isActive = false
+		self.suggestionsCollectionView?.widthConstraint = nil
+		self.suggestionsCollectionView?.removeFromSuperview()
+		self.suggestionsCollectionView = nil
+		
+		self.keyboardAppearanceObserver?.invalidate()
+		self.keyboardAppearanceObserver = nil		
 	}
 
 	open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -276,7 +321,7 @@ open class InputAssistantView: UIInputView {
 			for action in actions {
 				let button = UIButton(type: .system)
 				if action.title.count > 0 { button.setTitle(action.title, for: .normal) }
-				
+								
 				if let image = action.image {
 					let width = (image.size.width / image.size.height) * 25
 					button.setImage(image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
@@ -307,21 +352,24 @@ open class InputAssistantView: UIInputView {
 extension InputAssistantView: UICollectionViewDelegate {
 	/// Manually trigger selection in the suggestions list.
 	@objc public func selectItem(at index:Int) {
-		if self.suggestionsCollectionView.numberOfItems(inSection: 0) > 0 {
-			self.collectionView(self.suggestionsCollectionView, didSelectItemAt: IndexPath(item: index, section: 0))
+		guard let suggestionsCollectionView else { return }
+		if suggestionsCollectionView.numberOfItems(inSection: 0) > 0 {
+			self.collectionView(suggestionsCollectionView, didSelectItemAt: IndexPath(item: index, section: 0))
 		}
 	}
 	
 	/// Select a suggestion item using hardware keyboard
 	@objc public func selectHighlightedItem() {
-		let index = self.suggestionsCollectionView.highlightedItem
+		guard let suggestionsCollectionView else { return }
+		let index = suggestionsCollectionView.highlightedItem
 		guard index >= 0 else { return }
 		
 		selectItem(at: index)
 	}
 	
 	@objc public func deselectHighlightedItem() {
-		self.suggestionsCollectionView.highlightedItem = -1
+		guard let suggestionsCollectionView else { return }
+		suggestionsCollectionView.highlightedItem = -1
 	}
 	
 	/// Collection view delegate method for picking items. Sent forward to input assistant view delegate.
@@ -335,15 +383,15 @@ extension InputAssistantView: UICollectionViewDelegate {
 	}
 	
 	public func highlightNextSuggestion() {
-		self.suggestionsCollectionView.highlightNext()
+		self.suggestionsCollectionView?.highlightNext()
 	}
 	
 	public func highlightPreviousSuggestion() {
-		self.suggestionsCollectionView.highlightPrevious()
+		self.suggestionsCollectionView?.highlightPrevious()
 	}
 	
 	var highlightedSuggestion:Int {
-		return self.suggestionsCollectionView.highlightedItem
+		return self.suggestionsCollectionView?.highlightedItem ?? 0
 	}
 }
 

@@ -16,7 +16,7 @@ class BeatAdaptiveNavigationBarButton:UIBarButtonItem {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		var device = UIDevice.current.userInterfaceIdiom
+		let device = UIDevice.current.userInterfaceIdiom
 		
 		if hideOnPhone && device == .phone { self.isHidden = true }
 		if hideOnPad && device == .pad { self.isHidden = true }

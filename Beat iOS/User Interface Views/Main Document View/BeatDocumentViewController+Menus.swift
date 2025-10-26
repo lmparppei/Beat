@@ -21,6 +21,8 @@ extension BeatDocumentViewController {
 	/// Sets up the rename/document menu
 	@objc func setupTitleMenus() {
 		// Basic iPad menu scheme
+		guard let document else { return }
+		
 		let documentProperties = UIDocumentProperties(url: document.fileURL)
 		if let itemProvider = NSItemProvider(contentsOf: document.fileURL) {
 			documentProperties.dragItemsProvider = { _ in
@@ -55,7 +57,7 @@ extension BeatDocumentViewController {
 			UIDeferredMenuElement.uncached { [weak self] completion in
 				let items:[UIMenuElement] = [
 					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.addTitlePage"), image: UIImage(systemName: "info"), handler: { (_) in
-						self?.formattingActions.addTitlePage(self)
+						self?.formattingActions?.addTitlePage(self)
 					}),
 					// Scene Numbering
 					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering"), image: UIImage(systemName: "number"), children: [
@@ -63,10 +65,10 @@ extension BeatDocumentViewController {
 							self?.firstSceneNumberPrompt()
 						}),
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.lockSceneNumbers"), image: UIImage(systemName: "lock"), handler: { (_) in
-							self?.formattingActions.lockSceneNumbers(self)
+							self?.formattingActions?.lockSceneNumbers(self)
 						}),
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.unlockSceneNumbers"), image: UIImage(systemName: "lock.open"), handler: { (_) in
-							self?.formattingActions.unlockSceneNumbers(self)
+							self?.formattingActions?.unlockSceneNumbers(self)
 						}),
 					]),
 					// Pagination options

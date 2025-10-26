@@ -23,7 +23,7 @@ class InputAssistantCollectionView: UICollectionView {
     var widthConstraint: NSLayoutConstraint?
     
     /// Label to display when there are no suggestions
-    private let noSuggestionsLabel = UILabel()
+	private var noSuggestionsLabel:UILabel? = UILabel()
     
     init() {
         let layout = UICollectionViewFlowLayout()
@@ -41,10 +41,12 @@ class InputAssistantCollectionView: UICollectionView {
         delaysContentTouches = false
         dataSource = self
         
-        noSuggestionsLabel.textAlignment = .center
-        noSuggestionsLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        noSuggestionsLabel.textColor = UIColor.darkGray
-        addSubview(noSuggestionsLabel)
+        noSuggestionsLabel?.textAlignment = .center
+        noSuggestionsLabel?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        noSuggestionsLabel?.textColor = UIColor.darkGray
+		if let noSuggestionsLabel {
+			addSubview(noSuggestionsLabel)
+		}
         
         widthConstraint = self.widthAnchor.constraint(equalToConstant: 0)
         widthConstraint?.priority = .defaultLow
@@ -53,6 +55,10 @@ class InputAssistantCollectionView: UICollectionView {
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+	override func removeFromSuperview() {
+		self.noSuggestionsLabel = nil
+	}
+	
     override func reloadData() {
         super.reloadData()
 
@@ -60,14 +66,15 @@ class InputAssistantCollectionView: UICollectionView {
         // since the self sizing cells can cause a crash when scrolling back after a reloadData.
         contentOffset = .zero
 		
-        noSuggestionsLabel.text = self.inputAssistantView?.dataSource?.textForEmptySuggestionsInInputAssistantView()
-        noSuggestionsLabel.isHidden = self.numberOfItems(inSection: 0) > 0
+        noSuggestionsLabel?.text = self.inputAssistantView?.dataSource?.textForEmptySuggestionsInInputAssistantView()
+        noSuggestionsLabel?.isHidden = self.numberOfItems(inSection: 0) > 0
 		
 		highlightedItem = -1
     }
     
     override var contentSize: CGSize {
         didSet {
+			guard let noSuggestionsLabel else { return }
             // If there is no data, make the width the width of the no suggestions label.
             // Otherwise, it should be equal to the content size of the collectionView
             if !noSuggestionsLabel.isHidden {
@@ -117,13 +124,14 @@ extension InputAssistantCollectionView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Suggestion", for: indexPath) as! InputAssistantCollectionViewCell
-        
-        guard let inputAssistantView = inputAssistantView, let name = inputAssistantView.dataSource?.inputAssistantView(inputAssistantView, nameForSuggestionAtIndex: indexPath.row) else {
+		
+        guard let inputAssistantView = inputAssistantView,
+			  let name = inputAssistantView.dataSource?.inputAssistantView(inputAssistantView, nameForSuggestionAtIndex: indexPath.row) else {
             fatalError("No suggestion name found at index.")
         }
 
-        cell.label.text = name
-        cell.keyboardAppearance = inputAssistantView.keyboardAppearance
+        cell.label.text = String(name)
+		cell.keyboardAppearance = inputAssistantView.keyboardAppearance ?? .dark
         
         return cell
     }
@@ -185,4 +193,9 @@ private class InputAssistantCollectionViewCell: UICollectionViewCell {
         self.backgroundColor = isHighlighted ? self.highlightedBackgroundColor : self.keyboardAppearanceBackgroundColor
         //self.label.textColor = isHighlighted ? .black : .white
     }
+	
+	override func removeFromSuperview() {
+		super.removeFromSuperview()
+		print("Suggestion removed")
+	}
 }
