@@ -25,6 +25,7 @@
 
 + (BeatRevisionItem*)type:(RevisionType)type generation:(NSInteger)level
 {
+    if (type == RevisionRemovalSuggestion) level = -1;
     return [BeatRevisionItem.alloc initWithType:type generation:level];
 }
 
@@ -40,6 +41,9 @@
 
 -(void)encodeWithCoder:(NSCoder *)coder {
 	[coder encodeInteger:self.type forKey:@"type"];
+    if (self.generationLevel == NSNotFound) {
+        self.generationLevel = -1;
+    }
 	[coder encodeInteger:self.generationLevel forKey:@"generationLevel"];
 }
 
