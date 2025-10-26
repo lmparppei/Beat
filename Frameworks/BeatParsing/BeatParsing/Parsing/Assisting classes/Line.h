@@ -276,6 +276,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// - warning: This method **DOES NOT** replace anything, but instead returns the text and possible revisions of the line. You will need to handle the actual replacement yourself in editor.
 - (NSDictionary*)switchVersion:(NSInteger)amount;
 - (void)addVersion;
+- (void)storeVersion;
+/// Returns line versions ready to be serialized to JSON.
+- (NSArray*)versionsForSerialization;
 
 #pragma mark Generated metadata
 

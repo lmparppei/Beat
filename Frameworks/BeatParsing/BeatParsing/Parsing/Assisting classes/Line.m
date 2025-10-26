@@ -86,6 +86,9 @@
         _uuid = NSUUID.UUID;
         
         _originalString = string;
+        
+        // Here we also need to catch possible alternatives
+        // [self readAlternativesAndCleanString];
     }
     return self;
 }
@@ -124,7 +127,6 @@
     }
     return self;
 }
-
 
 
 #pragma mark - Thread-safe getters
@@ -212,7 +214,7 @@
     newLine.noteData = self.noteData;
     
     newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
-    
+        
     return newLine;
 }
 
@@ -295,6 +297,103 @@
     self.currentVersion = self.versions.count - 1;
 }
 
+/*
+/// Reads possible line alternatives in the line `** ALTERNATIVES: ... *` and cleans that text up as well. This is unnecessarily complex and won't work, beacuse we need to keep editor and text in sync, so the user KNOWS what they are saving.
+- (void)readAlternativesAndCleanString
+{
+    NSRange rangeOfVersionData = [self.string rangeOfString:@"\/** ALTERNATIVES: "];
+    if (rangeOfVersionData.location == NSNotFound) return;
+    
+    // Remove the alternative data
+    self.string = [self.string substringToIndex:rangeOfVersionData.location];
+        
+    // Get the alternative data
+    NSString* versionData = [self.string substringFromIndex:NSMaxRange(rangeOfVersionData)];
+    // Remove the * at the end
+    NSInteger lastStar = [versionData locationOfLastOccurenceOf:'*'];
+    if (lastStar < versionData.length && [versionData characterAtIndex:lastStar+1] == '/') {
+        versionData = [versionData substringToIndex:lastStar];
+    }
+    
+    NSData* d = [versionData dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* e;
+    NSDictionary* versionDict = [NSJSONSerialization JSONObjectWithData:d options:0 error:&e];
+    
+    if (e != nil) {
+        NSLog(@"!!! Error reading version data: %@", e);
+        return;
+    }
+    
+    self.currentVersion = ((NSNumber*)versionDict[@"current"]).intValue;
+    
+    NSArray<NSDictionary*>* alternatives = versionDict[@"versions"];
+    NSMutableArray<NSDictionary*>* versions = NSMutableArray.new;
+    
+    for (NSDictionary* alt in alternatives) {
+        NSString* text = alt[@"text"];
+        NSDictionary* jsonRevisions = alt[@"revisions"];
+        
+        NSMutableDictionary<NSNumber*,NSMutableIndexSet*>* revisions = NSMutableDictionary.new;
+        
+        for (NSString* key in jsonRevisions.allKeys) {
+            // These arrays contain ranges as two-number arrays: [loc, len]
+            NSArray<NSArray*>* values = jsonRevisions[key];
+            NSMutableIndexSet* indices = NSMutableIndexSet.new;
+            NSInteger generation = key.integerValue;
+            
+            for (NSArray<NSNumber*>* value in values) {
+                if (value.count < 2) continue;
+                NSNumber* loc = value[0];
+                NSNumber* len = value[1];
+                
+                NSRange range = NSMakeRange(loc.intValue, len.intValue);
+                [indices addIndexesInRange:range];
+            }
+            
+            revisions[@(generation)] = indices;
+        }
+        
+        [versions addObject:@{
+            @"text": text,
+            @"revisions": revisions
+        }];
+    }
+    
+    self.versions = versions;
+}
+*/
+
+/// Returns line versions ready to be serialized to JSON.
+- (NSArray*)versionsForSerialization
+{
+    NSMutableArray* versions = [NSMutableArray.alloc initWithCapacity:self.versions.count];
+    
+    for (NSDictionary* v in self.versions.copy) {
+        NSMutableDictionary<NSString*,id>* version = v.mutableCopy;
+        
+        NSDictionary* originalRanges = (NSDictionary*)version[@"revisions"];
+        NSMutableDictionary<NSString*, NSArray<NSArray<NSNumber*>*>*>* revisedRanges = [NSMutableDictionary.alloc initWithCapacity:originalRanges.count];
+        
+        for (NSNumber* key in originalRanges.allKeys) {
+            NSIndexSet* indices = originalRanges[key];
+            NSMutableArray<NSArray<NSNumber*>*>* ranges = NSMutableArray.new;
+            
+            [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+                [ranges addObject:@[@(range.location), @(range.length)]];
+            }];
+                        
+            revisedRanges[key.stringValue] = ranges; // The key has to be explicitly a string for JSON serialization to work
+        }
+        
+        version[@"revisions"] = revisedRanges;
+        
+        [versions addObject:version];
+    }
+    
+    return versions;
+}
+
+/// Converts revi
 
 #pragma mark - Strip formatting
 
