@@ -94,15 +94,17 @@ class BeatLaunchScreenButton: NSButtonCell {
 				color = color.withAlphaComponent(1.0)
 			}
 			
-			scaledImage.lockFocus()
-			color.set()
-			
-			let imageRect:NSRect = NSMakeRect(0, 0, scaledImage.size.width, scaledImage.size.height)
-			imageRect.fill(using: NSCompositingOperation.sourceAtop)
-			scaledImage.unlockFocus()
-			
-			let iRect = NSMakeRect(0 + 2, 0 + 2, scaledImage.size.width, scaledImage.size.height)
-			scaledImage.draw(in: iRect)
+			if scaledImage.size != NSSize.zero {
+				scaledImage.lockFocus()
+				color.set()
+				
+				let imageRect:NSRect = NSMakeRect(0, 0, scaledImage.size.width, scaledImage.size.height)
+				imageRect.fill(using: NSCompositingOperation.sourceAtop)
+				scaledImage.unlockFocus()
+				
+				let iRect = NSMakeRect(0 + 2, 0 + 2, scaledImage.size.width, scaledImage.size.height)
+				scaledImage.draw(in: iRect)
+			}
 		})
 	}
 
@@ -145,15 +147,17 @@ class BeatLaunchScreenButton: NSButtonCell {
 				}
 			}
 			
-			newImage.lockFocus()
-			
-			var thumbnailRect:NSRect = NSZeroRect
-			thumbnailRect.origin = thumbnailPoint
-			thumbnailRect.size.width = scaleWidth
-			thumbnailRect.size.height = scaleHeight
-			
-			sourceImage.draw(in: thumbnailRect, from: NSRect.zero, operation: NSCompositingOperation.sourceOver, fraction: 1.0)
-			newImage.unlockFocus()
+			if newImage.size != NSSize.zero {
+				newImage.lockFocus()
+				
+				var thumbnailRect:NSRect = NSZeroRect
+				thumbnailRect.origin = thumbnailPoint
+				thumbnailRect.size.width = scaleWidth
+				thumbnailRect.size.height = scaleHeight
+				
+				sourceImage.draw(in: thumbnailRect, from: NSRect.zero, operation: NSCompositingOperation.sourceOver, fraction: 1.0)
+				newImage.unlockFocus()
+			}
 		}
 		
 		return newImage

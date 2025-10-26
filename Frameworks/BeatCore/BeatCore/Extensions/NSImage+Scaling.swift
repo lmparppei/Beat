@@ -15,6 +15,10 @@ public extension NSImage {
             let symbolConfiguration = self.symbolConfiguration
             
             var tintedSymbolImage = self.copy() as! NSImage
+            if tintedSymbolImage.size == NSSize.zero {
+                return tintedSymbolImage
+            }
+            
             tintedSymbolImage.lockFocus()
             
             // Apply the tint color
