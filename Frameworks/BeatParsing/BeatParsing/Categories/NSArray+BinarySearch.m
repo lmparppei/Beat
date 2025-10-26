@@ -9,7 +9,7 @@
 
 @implementation NSArray (BinarySearch)
 
-- (NSUInteger)binarySearchForItem:(id)targetItem integerValueFor:(NSString*)key
+- (NSUInteger)binarySearchForItem:(id)targetItem matchingIntegerValueFor:(NSString*)key
 {
     NSInteger min = 0;
     NSInteger max = self.count - 1;
@@ -25,6 +25,29 @@
         if (value == targetValue || item == targetItem) {
             return idx;
         } else if (value < targetValue) {
+            min = idx + 1;
+        } else {
+            max = idx - 1;
+        }
+    }
+    
+    return NSNotFound;
+}
+
+- (NSUInteger)binarySearchWithLocation:(NSInteger)location inLocationOfRangeValueFor:(NSString*)key
+{
+    NSInteger min = 0;
+    NSInteger max = self.count - 1;
+    
+    while (min <= max) {
+        NSInteger idx = min + (max - min) / 2;
+        id item = self[idx];
+        
+        NSRange range = ((NSNumber*)[item valueForKey:key]).rangeValue;
+        
+        if (NSLocationInRange(location, range)) {
+            return idx;
+        } else if (range.location < location) {
             min = idx + 1;
         } else {
             max = idx - 1;
