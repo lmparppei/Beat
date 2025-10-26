@@ -457,9 +457,12 @@
 		if (statistics == null) statistics = { avgLength: { pages: 0, eights: 0 }, longestScene: { pages: 0, eights: 0 }, words: 0, glyphs: 0 };
 
 		let html = ""
-			
-		html += "<p>#statisticsPanel.averageSceneLength#: <b>" + statistics.avgLength?.pages + " " + getEight(statistics.avgLength?.eights * 8) + "</b> #statisticsPanel.shortForPages#<br>";
-		html += "#statisticsPanel.longestScene#: <b>" + statistics.longestScene?.pages + " " + getEight(statistics.longestScene?.eights * 8) + "</b> #statisticsPanel.shortForPages#</p>";
+		
+		html += "<p>"
+		html += "#statisticsPanel.numberOfPages#: <b>" + statistics.numberOfPages + "</b><br>"
+		html += "#statisticsPanel.averageSceneLength#: <b>" + statistics.avgLength?.pages + " " + getEight(statistics.avgLength?.eights * 8) + "</b> #statisticsPanel.shortForPages#<br>";
+		html += "#statisticsPanel.longestScene#: <b>" + statistics.longestScene?.pages + " " + getEight(statistics.longestScene?.eights * 8) + "</b> #statisticsPanel.shortForPages#"
+		html += "</p>";
 		
 		html += "<p class='statsSmall'><b>" + statistics.scenes + "</b> #statisticsPanel.stats.scenes#<br>"+
 				   "<b>" + statistics.words + "</b> #statisticsPanel.stats.words#<br><b>" + statistics.glyphs + "</b> #statisticsPanel.stats.characters#</p>";
@@ -672,7 +675,6 @@
 		sceneBar.innerHTML = "";
 
 		var total = scenes.interior + scenes.exterior + scenes.other;
-		console.log("TOTAL:", total, scenes)
 
 		var data = [
 			scenes.interior / total * 100,

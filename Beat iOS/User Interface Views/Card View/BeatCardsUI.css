@@ -127,6 +127,17 @@ body {
 	visibility: visible;
 }
 
+span.wordCount {
+	display: inline-block;
+	font-size: .35em;
+	color: #999;
+	margin-top: auto;
+	margin-left: 2em;
+	padding: 0.2em 0.5em 0.2em 0.5em;
+	background: #2a2a2a;
+	border-radius: 5px;
+}
+
 @supports not (aspect-ratio: 2.5/2) {
 	
 	.card {

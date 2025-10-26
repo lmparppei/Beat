@@ -48,8 +48,6 @@ ui = ui.replaceAll("%colorOther%", colors.other)
        .replaceAll("%colorMan%", colors.man)
        .replaceAll("%defaultData%", json)
 
-Beat.log("PANEL OPEN")
-
 let panel = Beat.htmlPanel(ui, 800, 600, () => {
     Beat.end()
 })
@@ -110,6 +108,7 @@ function createJSON() {
             words: words,
             glyphs: glyphs,
             scenes: Beat.scenes().length,
+            numberOfPages: Beat.currentPagination().numberOfPages,
             avgLength: {
                 pages: avgLength[0],
                 eights: avgLength[1]
