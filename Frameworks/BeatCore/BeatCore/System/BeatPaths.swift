@@ -47,4 +47,21 @@ import Foundation
         let result = NSTemporaryDirectory() + "\(prefix)-\(uuid.uuidString)"
         return result
     }
+    
+    /*
+     - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
+     {
+         NSUUID* uuid = NSUUID.new;
+         NSURL* result = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@.%@", prefix, uuid.UUIDString, prefix]]];
+
+         return result;
+     }
+
+     */
+    
+    @objc public class func urlForTemporaryFile(prefix:String) -> URL {
+        let uuid = NSUUID()
+        return URL(fileURLWithPath: NSTemporaryDirectory() + "\(prefix)-\(uuid.uuidString).\(prefix)")
+        
+    }
 }
