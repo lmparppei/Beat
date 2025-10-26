@@ -84,10 +84,10 @@
 		valid = (self.selectedRange.length > 0);
 	}
 	else if (action == @selector(selectSansSerif:)) {
-		menuItem.state = (self.useSansSerif) ? NSOnState : NSOffState;
+		menuItem.state = (self.fontStyle == 1) ? NSOnState : NSOffState;
 	}
 	else if (action == @selector(selectSerif:)) {
-		menuItem.state = (!self.useSansSerif) ? NSOnState : NSOffState;
+		menuItem.state = (self.fontStyle == 0) ? NSOnState : NSOffState;
 	}
 	else if (action == @selector(toggleDarkMode:)) {
 		menuItem.state = (self.isDark) ? NSOnState : NSOffState;

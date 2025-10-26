@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, BeatFontType) {
     BeatFontTypeFixed = 0,
+    BeatFontTypeFixedNew,
     BeatFontTypeFixedSansSerif,
     BeatFontTypeVariableSerif,
     BeatFontTypeVariableSansSerif,

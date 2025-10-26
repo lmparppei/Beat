@@ -36,6 +36,13 @@ private struct BeatFontSetTemplate {
                                   italic: "CourierPrime-Italic",
                                   boldItalic: "CourierPrime-BoldItalic"),
         
+        "mono serif new": BeatFontSetTemplate(name: "Courier New",
+                                        regular: "Courier New",
+                                        regularAlternative: "CourierNew",
+                                        bold: "Courier New Bold",
+                                        italic: "Courier New Italic",
+                                        boldItalic: "Courier New Bold Italic"),
+        
         "mono sans serif": BeatFontSetTemplate(name: "Courier Prime Sans",
                                        regular: "Courier Prime Sans",
                                        regularAlternative: "CourierPrimeSans",
@@ -60,6 +67,7 @@ private struct BeatFontSetTemplate {
     
     let typeToTypeName:[BeatFontType:String] = [
         .fixed: "mono serif",
+        .fixedNew: "mono serif new",
         .fixedSansSerif: "mono sans serif",
         .variableSerif: "variable serif",
         .variableSansSerif: "variable sans serif"
@@ -105,7 +113,7 @@ private struct BeatFontSetTemplate {
         let font = BeatFontSet.name(template.name,
                                  size: 12.0,
                                  scale: scale,
-                                    regular: regularName,
+                                 regular: regularName,
                                  bold: template.bold,
                                  italic: template.italic,
                                  boldItalic: template.boldItalic,
