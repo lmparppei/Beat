@@ -15,6 +15,7 @@
  */
 
 #import "BeatLayoutManager.h"
+#import <BeatParsing/BeatParsing-Swift.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore-Swift.h>
@@ -22,7 +23,7 @@
 #import <BeatDynamicColor/BeatDynamicColor.h>
 //#import <BeatPagination2/BeatPagination2.h>
 #import <CoreText/CoreText.h>
-
+#import "BeatEditorFormatting.h"
 
 #import "BeatRevisions.h"
 
@@ -97,8 +98,8 @@
     BeatLineTypeSet* lineTypes = [BeatLineTypeSet.alloc initWithTypes:@[@(heading), @(section), @(pageBreak)]];
     
     // Enumerate lines in drawn range
-    [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-        Line* line = (Line*)value;
+    [self.textStorage enumerateAttribute:BeatRepresentedLineKey inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        Line* line = ((BeatWeakLine*)value).line;
         if (line == nil) return;
         
         // Do nothing if this line is not a marker or a heading
@@ -333,6 +334,7 @@
         // Calculate character range here already. We also get usedRect for free.
         NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
         __block NSInteger revisionLevel = -1;
+        __block RevisionType revisionType = RevisionNone;
         
         [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
             
@@ -356,7 +358,7 @@
             CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
             aRect.origin.x += inset.width;
             aRect.origin.y += inset.height;
-            /*
+            
             if (attrs[@"BeatFolded"]) {
                 CGRect openDisclosure = CGRectMake(aRect.origin.x - 40.0, aRect.origin.y, 30.0, aRect.size.height);
                 [BXColor.redColor setFill];
@@ -364,7 +366,6 @@
                 
                 return;
             }
-            */
              
             if (review != nil && !review.emptyReview) {
                 if (bgColors[@"review"] == nil) {
@@ -418,6 +419,7 @@
             
             // Make note if this line has a revision which is higher than current level
             if ((revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) && (revision.generationLevel > revisionLevel)) {
+                revisionType = RevisionAddition;
                 revisionLevel = revision.generationLevel;
             }
             
@@ -442,7 +444,7 @@
         }];
         
         // If we found a revision, let's draw a marker for it
-        if (revisionLevel >= 0) {
+        if (revisionLevel >= 0 && revisionLevel != NSNotFound) {
             CGFloat deviceOffset = 0.0;
             
 #if TARGET_OS_IOS
@@ -455,6 +457,9 @@
                                      inset.height + usedRect.origin.y - Y_OFFSET,
                                      22,
                                      usedRect.size.height + 1.0);
+            
+            // Make sure we are not going out of range
+            if (revisionLevel > BeatRevisions.revisionGenerations.count) revisionLevel = BeatRevisions.revisionGenerations.lastIndex;
             
             NSAttributedString* symbol = [self markerFor:BeatRevisions.revisionGenerations[revisionLevel]];
             
@@ -549,8 +554,8 @@
 		_sceneNumberStyle.minimumLineHeight = self.editorDelegate.editorLineHeight;
 	}
 		
-	[self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		Line* line = (Line*)value;
+	[self.textStorage enumerateAttribute:BeatRepresentedLineKey inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        Line* line = ((BeatWeakLine*)value).line;
 		if (line == nil || line.type != heading) return;
 		
 		NSRange headingRange = NSMakeRange(line.position, 1);
@@ -971,11 +976,13 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     
     if (attrs[@"BeatFolded"]) {
         lineFragmentRect->size.height = 0.0;
-    } else if (attrs[@"representedLine"]) {
-        Line* line = attrs[@"representedLine"];
-        RenderStyle* style = [self.editorDelegate.editorStyles forLine:line];
-        if (style.lineFragmentMultiplier != 1.0) {
-            lineFragmentRect->size.height *= style.lineFragmentMultiplier;
+    } else if (attrs[BeatRepresentedLineKey]) {
+        Line* line = ((BeatWeakLine*)attrs[BeatRepresentedLineKey]).line;
+        if (line != nil) {
+            RenderStyle* style = [self.editorDelegate.editorStyles forLine:line];
+            if (style.lineFragmentMultiplier != 1.0) {
+                lineFragmentRect->size.height *= style.lineFragmentMultiplier;
+            }
         }
     }
         

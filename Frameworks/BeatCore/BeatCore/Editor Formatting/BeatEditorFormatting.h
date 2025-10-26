@@ -26,6 +26,8 @@ typedef enum {
 
 @interface BeatEditorFormatting : NSObject
 
+extern NSString* const BeatRepresentedLineKey;
+
 @property (weak, nonatomic) id<BeatEditorDelegate> delegate;
 @property (nonatomic) bool didProcessForcedCharacterCue;
 
@@ -42,6 +44,8 @@ typedef enum {
 
 /// Forces reformatting of each line
 - (void)formatAllLines;
+/// Formats currently selected line
+- (void)formatCurrentLine;
 /// Formats a single line
 - (void)formatLine:(Line*)line;
 /// Formats a single line (for the first time if set)

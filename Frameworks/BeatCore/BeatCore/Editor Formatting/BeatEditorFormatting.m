@@ -38,7 +38,7 @@
 @implementation BeatEditorFormatting
 
 static NSString *underlinedSymbol = @"_";
-static NSString* const BeatRepresentedLineKey = @"representedLine";
+NSString* const BeatRepresentedLineKey = @"representedLine";
 
 /// This initializer can be used for formatting the text beforehand. If you are NOT using an editor delegate, remember to set `.staticParser` as well.
 -(instancetype)initWithTextStorage:(NSMutableAttributedString*)textStorage
@@ -333,6 +333,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Format a single line
 
+- (void)formatCurrentLine
+{
+    [self formatLine:self.delegate.currentLine];
+}
+
 /// Formats a single line in editor
 - (void)formatLine:(Line*)line
 {
@@ -381,16 +386,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[attributes removeObjectForKey:BeatReview.attributeKey];
 	[attributes removeObjectForKey:BeatRepresentedLineKey];
     
-	// Store the represented line
+	// Store the represented line. We need an additional weak container to reliably avoid retain cycles.
 	NSRange representedRange;
 	if (range.length > 0) {
-		Line* representedLine = [textStorage attribute:BeatRepresentedLineKey atIndex:line.position longestEffectiveRange:&representedRange inRange:range];
+        BeatWeakLine* weakLine = [textStorage attribute:BeatRepresentedLineKey atIndex:line.position longestEffectiveRange:&representedRange inRange:range];
+        Line* representedLine = weakLine.line;
 		if (representedLine != line || representedRange.length != range.length) {
-			[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
+			[textStorage addAttribute:BeatRepresentedLineKey value:[BeatWeakLine withLine:line] range:fullRange];
 		}
 	} else {
 		forceFont = true;
-		newAttributes[BeatRepresentedLineKey] = line;
+        newAttributes[BeatRepresentedLineKey] = [BeatWeakLine withLine:line];
 	}
 		    
     // Foreground color
@@ -740,7 +746,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
     
 	// Set the base font color
-    [self setForegroundColor:themeManager.textColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
+    if (line.isAnySortOfDialogue) {
+        [self setForegroundColor:themeManager.dialogueColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
+    } else {
+        [self setForegroundColor:themeManager.textColor line:line range:NSMakeRange(0, line.length) textStorage:textStorage];
+    }
 	
 	// Heading elements can be colorized using [[COLOR COLORNAME]],
 	// so let's respect that first
