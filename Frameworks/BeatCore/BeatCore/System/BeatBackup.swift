@@ -68,6 +68,7 @@ public class BeatBackup:NSObject {
 		return BeatBackup.defaultURL.appendingPathComponent("Autosave/")
 	}
 	
+    /// Resolves a scoped bookmark or creates one
 	class func resolve(url:URL, key:String) -> URL? {
 		if let bookmark = BeatBackup.hasBookmark(for: url, key: key) {
 			var stale = false
@@ -160,10 +161,13 @@ public class BeatBackup:NSObject {
 		return backup(documentURL: documentURL, name: name, autosave: true)
 	}
     
+    
+    /// Does a single backup of the given document.
+    /// - Parameter documentURL URL for the saved document (or temporary URL for autosaved copies)
+    /// - Parameter name Last filename component for the document
+    /// - Parameter autosave  Set `true` if this is called to do _autosave_ (non-saved state) and not a backup (when saving the document)
 	@objc public class func backup (documentURL:URL, name:String, autosave:Bool = false) -> Bool {
-		let fm = FileManager.default
-
-		let date = documentURL.modificationDate
+        let fm = FileManager.default
 		var backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
 		
 		// If we are outside the sandbox, start accessing resources
@@ -173,17 +177,19 @@ public class BeatBackup:NSObject {
 				backupFolderURL = (autosave) ? BeatBackup.defaultAutosaveURL : BeatBackup.defaultURL
 			}
 		}
-		
+
+        // Create backup file filename + final URL
 		let prefix = (autosave) ? "Autosave" : "Backup"
-		
-		if (date == nil) { return false }
-		
+				
+        let date = documentURL.modificationDate ?? Date()
 		let dateFormatter = BeatBackup.formatter
-		let backupName = name + BeatBackup.separator + dateFormatter.string(from: date!) + ".fountain"
-		
+		let backupName = name + BeatBackup.separator + dateFormatter.string(from: date) + ".fountain"
+
+        var backupURL = URL(fileURLWithPath: backupFolderURL.path)
+        backupURL.appendPathComponent(backupName)
+        
+        //
 		var result = false
-		var backupURL = URL(fileURLWithPath: backupFolderURL.path)
-		backupURL.appendPathComponent(backupName)
 				
 		do {
 			// Make sure the folder exists
@@ -191,22 +197,20 @@ public class BeatBackup:NSObject {
 				try fm.createDirectory(at: backupURL, withIntermediateDirectories: true)
 			}
 
+            // If the file exists, we need to replace it, otherwise it's enough to just copy it to the URL
 			if (fm.fileExists(atPath: backupURL.path)) {
-				//_ = try fm.removeItem(at: backupURL)
+                // First move the file to a temp URL
 				let tempURL = URL(fileURLWithPath: BeatPaths.pathForTemporaryFile(withPrefix: prefix))
-
 				try fm.copyItem(at: documentURL, to: tempURL)
-				try fm.replaceItem(at: backupURL, withItemAt: tempURL, backupItemName: name, resultingItemURL: nil)
 
+				try fm.replaceItem(at: backupURL, withItemAt: tempURL, backupItemName: name, resultingItemURL: nil)
 				result = true
 			} else {
 				try fm.copyItem(at: documentURL, to: backupURL)
 				result = true
 			}
-
 		} catch let error as NSError {
-			print("Backup failed", error)
-			result = false
+			print("⚠️ Backup failed", error)
 		}
 		
 		if (result == true) {
@@ -249,6 +253,7 @@ public class BeatBackup:NSObject {
         #endif
 	}
 
+    /// - Parameter autosavedCopies Set `true` if this is called to get _autosaved_ (non-saved state) files and not backups (versions created when saving the document)
 	@objc public class func getBackups(autosavedCopies:Bool = false) -> Dictionary<String, Array<BeatBackupFile>>? {
 		var backupFiles:[String: Array<BeatBackupFile>] = Dictionary()
 		let url = (autosavedCopies) ? BeatBackup.autosaveURL : BeatBackup.backupURL
@@ -285,7 +290,7 @@ public class BeatBackup:NSObject {
 				backupFiles[actualName]?.append(backup)
 			}
 		} catch let error as NSError {
-			print("Can't open backup folder", error)
+			print("⚠️ Can't open backup folder", error)
 		}
 		
 		return backupFiles
@@ -295,35 +300,40 @@ public class BeatBackup:NSObject {
 		BeatBackup.manageBackups(url: url, autosave: true)
 	}
 	
+    /// Manages backups. We'll keep a set number of newest backups (`self.backupCount`) on disk and remove the older ones.
+    /// - Parameter url URL for the backup storage (required as this is a static func)
+    /// - Parameter autosave Set `true` if this is called to do an _autosave_ (non-saved state) and not a backup (when saving a document)
 	class func manageBackups(url:URL, autosave:Bool = false) {
-		// Keep maximum of 10 versions of backups and 20 versions of autosaves
 		let backupCount = (autosave) ? autosaveCopies : backupCopies
 		
 		let fm = FileManager.default
-		let backups = BeatBackup.getBackups(autosavedCopies: autosave)
+        guard let backups = BeatBackup.getBackups(autosavedCopies: autosave) else {
+            print("No backups available, no cleanup needed.")
+            return
+        }
 		
-		if (backups == nil) { return }
-		
-		for name in backups!.keys {
-			var versions = backups![name]
-			if (versions == nil) { continue }
+		for name in backups.keys {
+            guard var versions = backups[name] else {
+                continue
+            }
 			
-			versions!.sort { backup1, backup2 in
-				(backup1.date < backup2.date)
-			}
+			versions.sort { $0.date < $1.date }
 			
-			if (versions!.count > backupCount) {
-				while (versions!.count > backupCount) {
-					let oldVersion = versions!.first
-					do {
-						versions?.removeFirst()
-						try fm.removeItem(at: URL(fileURLWithPath: oldVersion!.path))
-					} catch let error as NSError { print("Error removing backup", oldVersion?.path ?? "(none)", error) }
+			if (versions.count > backupCount) {
+				while (versions.count > backupCount) {
+                    guard let oldVersion = versions.first, let path = oldVersion.path else { continue }
+                    do {
+                        versions.removeFirst()
+                        try fm.removeItem(at: URL(fileURLWithPath: path))
+                    } catch let error as NSError {
+                        print("Error removing backup", path, error)
+                    }
 				}
 			}
 		}
 	}
 	
+    /// Maybe this shouldn't be here?
 	class func selectBackupFolder() {
         #if os(macOS)
 		let openPanel = NSOpenPanel()
