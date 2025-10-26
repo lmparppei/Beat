@@ -13,6 +13,8 @@
  
  Also handles pinch-zooming.
  
+ The hiding code is SILLY and should be fixed.
+ 
  */
 
 #import <BeatThemes/BeatThemes.h>
@@ -21,6 +23,7 @@
 #import "BeatTextView.h"
 #import "Beat-Swift.h"
 #import "BeatTextView.h"
+#import "BeatTextView+Zooming.h"
 
 @interface ScrollView()
 @property (nonatomic) NSGestureRecognizer *recognizer;
@@ -28,7 +31,7 @@
 
 @implementation ScrollView
 
-#define HIDE_INTERVAL 6.0
+#define HIDE_INTERVAL 5.0
 #define TIMER_HIDE_INTERVAL 5.0
 
 - (instancetype)init {
@@ -103,9 +106,11 @@
 		[self hideTimer];
 	}
 }
+
 - (void)hideButtons {
 	[_buttonView.animator setAlphaValue:0.0];
 }
+
 - (void)hideTimer {
 	[_timerView.animator setAlphaValue:0.0];
 }
@@ -116,6 +121,7 @@
 - (void)showTimer {
 	[_timerView.animator setAlphaValue:1.0];
 }
+
 - (void)timerDidStart {
 	[self showTimer];
 	[_timerMouseMoveTimer invalidate];
@@ -124,7 +130,7 @@
 
 - (void)mouseMoved:(NSEvent *)event {
 	[super mouseMoved:event];
-	
+
 	// Show upper buttons
 	[self showButtons];
 	[_mouseMoveTimer invalidate];

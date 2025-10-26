@@ -70,6 +70,7 @@
 
 "statistics.lines" = "lines";
 "statistics.scenes" = "scenes";
+"statisticsPanel.numberOfPages" = "Pages";
 
 "statisticsPanel.title" = "Screenplay Statistics";
 "statisticsPanel.averageSceneLength" = "Average scene length";
@@ -136,6 +137,9 @@
 
 "backup.revertToSaved" = "Revert To Saved";
 "backup.backupVault" = "Open Backup Vault...";
+"backup.browseVersions" = "Browse versions...";
+"backup.saved" = "Saved";
+"backup.revertAction" = "Revert";
 
 "backup.reverting.title" = "Revert File";
 "backup.reverting.message" = "Any unsaved changes will be lost when reverting to an earlier version.";
@@ -335,4 +339,7 @@
 "dataHealth.warning.remove" = "Remove All Ranges";
 
 "export.includeRevisions" = "Include Revision Markers";
+
+
+
 

@@ -13,7 +13,7 @@
  */
 
 #import "BeatBrowserView.h"
-#import "BeatAppDelegate.h"
+#import "BeatAppDelegate+Templates.h"
 #import <Webkit/Webkit.h>
 
 @interface BeatBrowserView ()

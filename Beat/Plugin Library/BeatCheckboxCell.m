@@ -63,9 +63,13 @@
 	else [_pluginManager disablePlugin:self.name];
 }
 
-- (NSImage*)buttonBackground:(NSColor*)color size:(CGSize)size {
+- (NSImage*)buttonBackground:(NSColor*)color size:(CGSize)size
+{
 	size = NSMakeSize(200, 200);
 	NSImage *image = [[NSImage alloc] initWithSize:size];
+	
+	if (image.size.width == 0 || image.size.height == 0) return image;
+	
 	[image lockFocus];
 	[color drawSwatchInRect:(NSRect){ 0, 0, size.width, size.height }];
 	[image unlockFocus];

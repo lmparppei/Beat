@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -35,10 +35,10 @@
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="Launch screen logo" id="cqK-NM-Eok"/>
                                 </imageView>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
-                                    <rect key="frame" x="40" y="163" width="173" height="37"/>
+                                    <rect key="frame" x="36" y="161" width="173" height="35"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="beat" allowsEditingTextAttributes="YES" id="IhX-oQ-xOK">
-                                        <font key="font" size="35" name="Courier"/>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="(beat)" allowsEditingTextAttributes="YES" id="IhX-oQ-xOK">
+                                        <font key="font" size="35" name="CourierPrime"/>
                                         <color key="textColor" white="0.62776227679999996" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
@@ -66,8 +66,9 @@
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
                                     <rect key="frame" x="41" y="62" width="236" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2025. Released under GPL license. No animal products were consumed when creating this app." id="Vew-4a-6k0">
+                                    <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" id="Vew-4a-6k0">
                                         <font key="font" size="10" name="HelveticaNeue"/>
+                                        <string key="title">© Kaikki on haurasta Oy &amp; Lauri-Matti Parppei 2019–2025. Released under GPL license. No animal products were consumed when creating this app.</string>
                                         <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>

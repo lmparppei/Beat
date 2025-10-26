@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,6 +18,7 @@
                 <outlet property="backupUseCustom" destination="sRv-r1-TUu" id="ner-gH-1vS"/>
                 <outlet property="backupUseDefault" destination="5Lw-3n-rPc" id="nMo-rY-3Oy"/>
                 <outlet property="defaultPageSize" destination="OOl-ZM-PBd" id="fxe-zL-gpN"/>
+                <outlet property="fontStyle" destination="b7A-fE-zyc" id="M6g-m0-4M8"/>
                 <outlet property="headingSpacing1" destination="IO7-Hz-k6N" id="kgE-0i-OlE"/>
                 <outlet property="headingSpacing2" destination="BHk-g1-cy2" id="CHZ-to-mfu"/>
                 <outlet property="hideFountainMarkup" destination="zb1-5Z-ZFC" id="LqH-52-9Md"/>
@@ -38,7 +39,6 @@
                 <outlet property="synopsisFontTypeSerif" destination="hyi-Nh-uA2" id="U9j-8Q-qhv"/>
                 <outlet property="tabView" destination="vYj-Wj-ba8" id="ieg-AQ-lKV"/>
                 <outlet property="updatePluginsAutomatically" destination="fcm-jg-Qcc" id="nb5-Bo-sSL"/>
-                <outlet property="useSansSerif" destination="b7A-fE-zyc" id="oNQ-yj-Wju"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -122,7 +122,8 @@
                                                 <menu key="menu" id="Tvv-S2-AYI">
                                                     <items>
                                                         <menuItem title="Courier Prime" state="on" id="VTU-wq-qyb"/>
-                                                        <menuItem title="Courier Prime Sans" id="w8y-6i-bdp"/>
+                                                        <menuItem title="Courier Prime Sans" tag="1" id="w8y-6i-bdp"/>
+                                                        <menuItem title="Courier New" tag="2" id="7TH-Zu-8EY"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
@@ -542,9 +543,6 @@
                                             <buttonCell key="cell" type="radio" title="Break actions between pages" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="ay2-Q6-PKT">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.pageNumberingMode.anyContent"/>
-                                                </userDefinedRuntimeAttributes>
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.paragraphPaginationMode.default"/>
@@ -559,9 +557,6 @@
                                             <buttonCell key="cell" type="radio" title="Avoid breaking actions" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="3jQ-Fb-lPg">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.pageNumberingMode.firstScene"/>
-                                                </userDefinedRuntimeAttributes>
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="pagination.paragraphPaginationMode.avoid"/>
@@ -589,9 +584,10 @@
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lDa-iZ-NFN" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="191" y="237" width="40" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="push" bezelStyle="rounded" image="underline" catalog="system" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="674-aU-eaU">
+                                            <buttonCell key="cell" type="push" bezelStyle="rounded" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="674-aU-eaU">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                                 <font key="font" metaFont="system"/>
+                                                <imageReference key="image" image="underline" catalog="system" symbolScale="default" renderingMode="template"/>
                                             </buttonCell>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="boolean" keyPath="resetPreview" value="YES"/>

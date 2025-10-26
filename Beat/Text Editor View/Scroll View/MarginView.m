@@ -70,7 +70,6 @@
 	
 	// Set background paper size
 	CGFloat documentWidth = (_editor.documentWidth) * _editor.magnification;
-	//CGFloat marginWidth = (_editor.inset - WHITESPACE) * _editor.magnification;
 	CGFloat x = (self.frame.size.width - documentWidth) / 2;
 	if (x < 0) x = 0.0;
 	

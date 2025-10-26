@@ -31,7 +31,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *autocomplete;
 @property (nonatomic, weak) IBOutlet NSButton *showMarkersInScrollbar;
 
-@property (nonatomic, weak) IBOutlet NSPopUpButton *useSansSerif;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *fontStyle;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *defaultPageSize;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *language;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *outlineFontSizeModifier;
@@ -164,6 +164,7 @@
 		}
 	}
 	
+	 
 	[self setupLanguages];
 	
 	[self.window.toolbar setSelectedItemIdentifier:@"General"];
@@ -328,7 +329,7 @@
 			if ([sender isKindOfClass:NSPopUpButton.class]) {
 				// Dropdown
 				NSPopUpButton *button = sender;
-				[BeatUserDefaults.sharedDefaults saveInteger:[button.itemArray indexOfObject:button.selectedItem] forKey:key];
+				[BeatUserDefaults.sharedDefaults saveInteger:button.indexOfSelectedItem forKey:key];
 			}
 			else if ([sender isKindOfClass:NSButton.class]) {
 				// Button

@@ -10,6 +10,7 @@
 #import <BeatThemes/BeatThemes.h>
 #import "BeatEditorButton.h"
 #import "BeatAppDelegate.h"
+#import "BeatAppDelegate+DarkMode.h"
 #import <BeatCore/BeatColors.h>
 
 IB_DESIGNABLE

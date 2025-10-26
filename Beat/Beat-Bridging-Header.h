@@ -18,6 +18,9 @@
 
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
+#import "BeatAppDelegate+DarkMode.h"
+#import "BeatAppDelegate+AdditionalViews.h"
+#import "BeatAppDelegate+Templates.h"
 
 #import "Document.h"
 #import "Document+ThemesAndAppearance.h"

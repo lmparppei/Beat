@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,7 +21,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="610" height="284"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </view>
-                        <toolbar key="toolbar" implicitIdentifier="F2EEC002-9FF7-42BD-94E9-2EE9A7616026" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="E5O-OO-d4u">
+                        <toolbar key="toolbar" implicitIdentifier="F2EEC002-9FF7-42BD-94E9-2EE9A7616026" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="E5O-OO-d4u">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="DBFD872D-18E4-411C-981D-A1597AD11763" label="Edit Tags" paletteLabel="Edit Tags" selectable="YES" id="PMF-BV-tw4">
                                     <imageReference key="image" image="tag.fill" catalog="system" symbolScale="medium"/>

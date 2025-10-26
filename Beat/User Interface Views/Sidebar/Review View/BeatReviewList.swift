@@ -71,15 +71,17 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		reviewTree = [:]
 		
 		self.string = self.editorDelegate?.attributedString()
+		guard let string else { return }
 		
-		string?.enumerateAttribute(NSAttributedString.Key(rawValue: BeatReview.attributeKey().rawValue), in: NSMakeRange(0, string?.length ?? 0), using: { value, range, stop in
+		string.enumerateAttribute(NSAttributedString.Key(rawValue: BeatReview.attributeKey().rawValue), in: NSMakeRange(0, string.length), using: { value, range, stop in
 			let review:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
+			let clampedRange = range.clamped(to: string.length)
 			
-			if (!review.emptyReview) {
-				let str = string?.attributedSubstring(from: range)
+			if (!review.emptyReview && clampedRange.length > 0) {
+				let str = string.attributedSubstring(from: clampedRange)
 				let content = review.string
 				
-				let listItem:ReviewListItem = ReviewListItem(content: content! as String, snippet: str?.string ?? "", range: range, keywords: review.keywords)
+				let listItem:ReviewListItem = ReviewListItem(content: content! as String, snippet: str.string, range: clampedRange, keywords: review.keywords)
 				reviewList.add(listItem)
 			}
 		})
@@ -112,15 +114,16 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		DispatchQueue.global().async { [weak self] in
 			self?.fetchReviews()
 			DispatchQueue.main.sync { [weak self] in
-				self?.reloadData()
+				guard let self else { return }
+				self.reloadData()
 				
-				if (self?.reviewList.count ?? 0 > 0) {
-					self?.placeholderView?.isHidden = true
+				if (self.reviewList.count > 0) {
+					self.placeholderView?.isHidden = true
 				} else {
-					self?.placeholderView?.isHidden = false
+					self.placeholderView?.isHidden = false
 				}
 				
-				self?.enclosingScrollView?.contentView.bounds = bounds!
+				self.enclosingScrollView?.contentView.bounds = bounds!
 			}
 		}
 	}

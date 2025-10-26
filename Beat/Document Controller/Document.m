@@ -70,9 +70,6 @@
  
 */
 
-#define AUTOSAVE_INTERVAL 10.0
-#define AUTOSAVE_INPLACE_INTERVAL 60.0
-
 #import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
@@ -84,6 +81,7 @@
 
 #import "Document.h"
 #import "Document+WindowManagement.h"
+#import "Document+Autosave.h"
 #import "Document+SceneActions.h"
 #import "Document+Menus.h"
 #import "Document+AdditionalActions.h"
@@ -97,8 +95,11 @@
 #import "Document+UI.h"
 #import "Document+InitialFormatting.h"
 
+#import "BeatTextView+Zooming.h"
+
 #import "ScrollView.h"
 #import "BeatAppDelegate.h"
+#import "BeatAppDelegate+DarkMode.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "SceneCards.h"
@@ -111,7 +112,7 @@
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 
-@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate, TKSplitHandleDelegate>
 
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
@@ -121,12 +122,9 @@
 
 /// Autocompletion class which delivers us character names and scene headings
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
-/// Print dialog has to be retained in memory when processing the PDF
-@property (nonatomic) BeatPrintDialog *printDialog;
+
 /// Preview controller handles updating the preview view
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
-
-@property (weak) NSTimer *autosaveTimer;
 
 @property (weak) IBOutlet NSTouchBar *touchBar;
 
@@ -134,7 +132,9 @@
 
 
 // WARNING!!!
-// We're suppressing protocol warnings because we're conforming to the main delegate using multiple categories
+/// We're suppressing protocol warnings because we're conforming to the main delegate using multiple categories. This is not wise, but whatever.
+/// The reasoning behind this is also bad, because when I learned what protocols were, I went all in and made a "safe" protocol for interacting with the main editor window. Since a lot of stuff has been moved into their own cross-platform classes, but still, there's a ton of functionality that I want to be available with a single protocol on both systems. This is why BeatEditorDelegate (also badly named, I know) has become useful. Two entirely different classes (`UIDocumentViewController` and `NSDocument`) can now be used as the heart of the app, allowing the other classes to interact with it no matter the OS.
+/// I still should have split it into multiple protocols, but whatever. Too late now.
 #pragma clang diagnostic ignored "-Wprotocol"
 @implementation Document
 
@@ -235,9 +235,9 @@
 		[self close];
 	} else {
 		[super restoreDocumentWindowWithIdentifier:identifier state:state completionHandler:completionHandler];
-		if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
 	}
 }
+
 
 /// - note: This is a total mess. We should use a similar class as iOS uses for the actual `NSDocument` and initialize our parser/document settings there.
 /// This is here purely for legacy reasons, as it's how old macOS apps used to do things by default. Nowadays there are better ways to achieve the same thing, but unfortunately it would require a lot of refactoring at a very deep level, hence we are stuck with doing things in a very clunky way for now.
@@ -337,6 +337,51 @@
 {
 	[super revertToText:text];
 	[self setupDocument];
+	[self addToChangeCount];
+}
+
+
+#pragma mark - Writing data
+
+- (BOOL)writeSafelyToURL:(NSURL *)url ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError *__autoreleasing  _Nullable *)outError
+{
+	bool result = [super writeSafelyToURL:url ofType:typeName forSaveOperation:saveOperation error:outError];
+	
+	if (result && (saveOperation == NSSaveOperation || saveOperation == NSSaveAsOperation)) {
+		NSString* name = self.fileNameString;
+		if (name != nil) {
+			bool backup = [BeatBackup backupWithDocumentURL:url name:name autosave:false];
+			if (!backup) NSLog(@"Backup failed");
+		}
+	}
+	
+	return result;
+}
+
+
+#pragma mark - Reverting to versions
+
+-(void)revertDocumentToSaved:(id)sender
+{
+	if (!self.fileURL) return;
+	[self readDocumentWithURL:self.fileURL typeName:@"com.kapitanFI.fountain"];
+}
+
+-(BOOL)revertToContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
+{
+	[self readDocumentWithURL:url typeName:typeName];
+	return YES;
+}
+
+- (void)readDocumentWithURL:(NSURL*)url typeName:(NSString*)typeName
+{
+	NSData *data = [NSData dataWithContentsOfURL:url];
+	_revertedTo = url;
+	self.documentIsLoading = YES;
+	
+	[self readFromData:data ofType:typeName error:nil reverting:YES];
+	
+	[self setupDocument];
 }
 
 
@@ -413,8 +458,8 @@
 	// We are re-initializing the parser here for some reason. Do we need to?
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
 	
-	[self updateChangeCount:NSChangeCleared];
-	[self updateChangeCount:NSChangeDone];
+	if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
+	//[self updateChangeCount:NSChangeCleared];
 	[self.undoManager removeAllActions];
 	
 	// Put any previously loaded text into the text view when it's loaded
@@ -447,7 +492,7 @@
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
 				
 	// Init autosave
-	[self initAutosave];
+	[self setupAutosave];
 		
 	// Lock status
 	if ([self.documentSettings getBool:DocSettingLocked]) [self lock];
@@ -487,6 +532,8 @@
 	if (self.fileURL == nil && self.text.length == 0 && [BeatUserDefaults.sharedDefaults getBool:BeatSettingAddTitlePageByDefault]) {
 		[self.formattingActions addTitlePage:nil];
 	}
+	
+	[self.textView.window makeFirstResponder:self.textView];
 }
 
 -(void)awakeFromNib
@@ -515,11 +562,13 @@
 	
 #pragma mark - Misc document stuff
 
--(void)setValue:(id)value forUndefinedKey:(NSString *)key {
+-(void)setValue:(id)value forUndefinedKey:(NSString *)key
+{
 	//NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
 }
 
--(id)valueForUndefinedKey:(NSString *)key {
+-(id)valueForUndefinedKey:(NSString *)key
+{
 	//NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
 	return nil;
 }
@@ -629,10 +678,6 @@
 
 - (CGFloat)magnification { return self.textView.zoomLevel; }
 
-- (void)setSplitHandleMinSize:(CGFloat)value
-{
-	self.splitHandle.topOrRightMinSize = value;
-}
 
 - (void)ensureLayout
 {
@@ -648,50 +693,7 @@
 }
 
 
-
-#pragma mark - Reverting to versions
-
--(void)revertDocumentToSaved:(id)sender
-{
-	if (!self.fileURL) return;
-	[self readDocumentWithURL:self.fileURL typeName:@"com.kapitanFI.fountain"];
-}
-
--(BOOL)revertToContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError
-{
-	[self readDocumentWithURL:url typeName:typeName];
-	return YES;
-}
-
-- (void)readDocumentWithURL:(NSURL*)url typeName:(NSString*)typeName
-{
-	NSData *data = [NSData dataWithContentsOfURL:url];
-	_revertedTo = url;
-	self.documentIsLoading = YES;
-	
-	[self readFromData:data ofType:typeName error:nil reverting:YES];
-	
-	[self setupDocument];
-}
-
-
 #pragma mark - Print & Export
-
-- (IBAction)openPrintPanel:(id)sender {
-	self.attrTextCache = [self getAttributedText];
-	self.printDialog = [BeatPrintDialog showForPrinting:self];
-}
-
-- (IBAction)openPDFPanel:(id)sender {
-	self.attrTextCache = [self getAttributedText];
-	self.printDialog = [BeatPrintDialog showForPDF:self];
-}
-
-- (void)releasePrintDialog { _printDialog = nil; }
-
-- (void)printDialogDidFinishPreview:(void (^)(void))block {
-	block();
-}
 
 - (IBAction)exportFile:(id)sender
 {
@@ -702,11 +704,14 @@
 
 # pragma mark - Undo
 
-- (IBAction)undoEdit:(id)sender {
+- (IBAction)undoEdit:(id)sender
+{
 	[self.undoManager undo];
 	[self ensureLayout];
 }
-- (IBAction)redoEdit:(id)sender {
+
+- (IBAction)redoEdit:(id)sender
+{
 	[self.undoManager redo];
 	[self ensureLayout];
 }
@@ -763,7 +768,9 @@
 
 
 
-#pragma mark - Text I/O
+#pragma mark - Text view methods
+
+// These are here just to meet protocol demands
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value
 {
@@ -789,24 +796,6 @@
 }
 
 
-
-# pragma  mark - Fonts
-
-/// Called for any OS-specific stuff after fonts were loaded
-- (void)fontDidLoad
-{
-	self.textView.font = self.fonts.regular;
-}
-
-
-#pragma mark - Select stylesheet
-
-- (IBAction)selectStylesheet:(BeatMenuItemWithStylesheet*)sender
-{
-	[self setStylesheetAndReformat:sender.stylesheet];
-}
-
-
 #pragma mark - Return to editor from any subview
 
 - (void)returnToEditor {
@@ -817,17 +806,11 @@
 
 #pragma mark - Preview
 
-- (IBAction)preview:(id)sender
+/// A shorthand which helps the preview view determine if it's being shown. Used on both iOS and macOS and should behave in a similar manner.
+- (BOOL)previewVisible
 {
-	if (self.currentTab != _nativePreviewTab) {
-		[self.previewController renderOnScreen];
-		[self showTab:_nativePreviewTab];
-	} else {
-		[self returnToEditor];
-	}
+	return (self.currentTab == _nativePreviewTab);
 }
-
-- (BOOL)previewVisible { return (self.currentTab == _nativePreviewTab); }
 
 - (void)cancelOperation:(id) sender
 {
@@ -857,43 +840,6 @@
  
  */
 
-#pragma  mark - Sidebar methods
-
-- (BOOL)sidebarVisible
-{
-	return !self.splitHandle.bottomOrLeftViewIsCollapsed;
-}
-
-- (CGFloat)sidebarWidth
-{
-	return self.splitHandle.bottomOrLeftView.frame.size.width;
-}
-
-
-
-#pragma mark - Sidebar
-
-/// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
-
-- (IBAction)toggleSidebar:(id)sender
-{
-	[self toggleSidebarView:sender];
-}
-
-- (IBAction)showWidgets:(id)sender {
-	if (!self.sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabs selectTabViewItem:self.tabWidgets];
-}
-
-
-/*
- 
- I'm very good with plants
- while my friends are away
- they let me keep the soil moist.
- 
- */
-
 
 #pragma mark - Paper size
 
@@ -904,106 +850,20 @@
 }
 
 
-#pragma mark - Autosave
+#pragma  mark - Sidebar methods
 
-/*
- Beat has *three* kinds of autosave: autosave vault, saving in place and automatic macOS autosave.
- */
-
-- (BOOL)autosave
+- (BOOL)sidebarVisible
 {
-	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingAutosave];
-}
-
-+ (BOOL)autosavesInPlace { return NO; }
-
-+ (BOOL)autosavesDrafts { return YES; }
-
-+ (BOOL)preservesVersions {
-	// Versions are only supported from 12.0+ because of a strange bug in older macOSs
-	// WHY IS THIS BUGGY? It works but produces weird error messages.
-	//if (@available(macOS 13.0, *)) return YES;
-	// else return NO;
-	return NO;
-}
-
-- (BOOL)writeSafelyToURL:(NSURL *)url ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError *__autoreleasing  _Nullable *)outError {
-	bool result = [super writeSafelyToURL:url ofType:typeName forSaveOperation:saveOperation error:outError];
-	
-	if (result && (saveOperation == NSSaveOperation || saveOperation == NSSaveAsOperation)) {
-		bool backup = [BeatBackup backupWithDocumentURL:url name:[self fileNameString] autosave:false];
-		if (!backup) NSLog(@"Backup failed");
-	}
-	
-	return result;
-}
-
-- (NSURL *)mostRecentlySavedFileURL;
-{
-	// Before the user chooses where to place a new document, it has an autosaved URL only
-	NSURL *result = [self autosavedContentsFileURL];
-	if (result == nil) result = [self fileURL];
-	return result;
-}
-
-// Custom autosave in place
-- (void)autosaveInPlace {	
-	if (_autosave && self.documentEdited && self.fileURL) {
-		[self saveDocument:nil];
-	} else {
-
-		if ([NSFileManager.defaultManager fileExistsAtPath:self.autosavedContentsFileURL.path]) {
-			bool autosave = [BeatBackup backupWithDocumentURL:self.autosavedContentsFileURL name:self.fileNameString autosave:true];
-			if (!autosave) NSLog(@"AUTOSAVE ERROR");
-		}
-	}
-}
-
-- (NSURL *)autosavedContentsFileURL {
-	NSString *filename = self.fileNameString;
-	NSString* extension = self.fileURL.pathExtension;
-	if (!filename) filename = @"Untitled";
-	if (!extension) extension = @"fountain";
-	
-	NSURL *autosavePath = [self autosavePath];
-	autosavePath = [autosavePath URLByAppendingPathComponent:filename];
-	autosavePath = [autosavePath URLByAppendingPathExtension:extension];
-	
-	return autosavePath;
-}
-
-- (NSURL*)autosavePath {
-	return [BeatAppDelegate appDataPath:@"Autosave"];
-}
-
-- (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
-	self.autosavedContentsFileURL = [self autosavedContentsFileURL];
-	[super autosaveDocumentWithDelegate:delegate didAutosaveSelector:didAutosaveSelector contextInfo:contextInfo];
-	
-	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
-	[self scheduleAutosaving];
-}
-
-- (BOOL)hasUnautosavedChanges {
-	// Always return YES if the file is a draft
-	if (self.fileURL == nil) return YES;
-	else { return [super hasUnautosavedChanges]; }
-}
-
-- (void)initAutosave {
-	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
-}
-
-- (void)saveDocumentAs:(id)sender {
-	[super saveDocumentAs:sender];
-}
-
--(void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation delegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
-	[super runModalSavePanelForSaveOperation:saveOperation delegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
+	return !self.splitHandle.bottomOrLeftViewIsCollapsed;
 }
 
 
 #pragma mark - split view listener
+
+- (void)setSplitHandleMinSize:(CGFloat)value
+{
+	self.splitHandle.topOrRightMinSize = value;
+}
 
 - (void)splitViewDidResize
 {
@@ -1024,13 +884,35 @@
 }
 
 
+
+
+/// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
+- (IBAction)toggleSidebar:(id)sender
+{
+	[self toggleSidebarView:sender];
+}
+
+- (IBAction)showWidgets:(id)sender {
+	if (!self.sidebarVisible) [self toggleSidebarView:nil];
+	[self.sideBarTabs selectTabViewItem:self.tabWidgets];
+}
+
+
+/*
+ 
+ I'm very good with plants
+ while my friends are away
+ they let me keep the soil moist.
+ 
+ */
+
+
 #pragma mark - Widgets
 
 - (void)addWidget:(id)widget {
 	[self.widgetView addWidget:widget];
 	[self showWidgets:nil];
 }
-
 
 
 #pragma mark - For avoiding throttling
@@ -1046,7 +928,7 @@
 #pragma mark - Appearance
 
 /// Because we are supporting forced light/dark mode even on pre-10.14 systems, you can reliably check the appearance with this method.
-- (bool)isDark { return [(BeatAppDelegate *)[NSApp delegate] isDark]; }
+- (bool)isDark { return ((BeatAppDelegate *)NSApp.delegate).isDark; }
 
 
 #pragma mark - Copy

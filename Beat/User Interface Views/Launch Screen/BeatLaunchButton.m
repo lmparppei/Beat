@@ -88,6 +88,7 @@
 	[NSAppearance setCurrentAppearance:controlView.window.effectiveAppearance];
 	
 	NSImage *scaledImage = [image imageByScalingProportionallyToSize:(NSSize){ controlView.frame.size.height - PADDING * 2, controlView.frame.size.height - PADDING * 2 }];
+	if (scaledImage.size.width == 0 || scaledImage.size.height == 0) return;
 	
 	// Colorize the image based on button status
 	NSColor *color = [NSColor.controlTextColor colorWithAlphaComponent:.6];

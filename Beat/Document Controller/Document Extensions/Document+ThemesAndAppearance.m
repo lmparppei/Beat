@@ -8,6 +8,7 @@
 
 #import "Document+ThemesAndAppearance.h"
 #import "BeatAppDelegate.h"
+#import "BeatAppDelegate+DarkMode.h"
 #import "ColorView.h"
 #import <BeatThemes/BeatThemes.h>
 #import "ScrollView.h"
@@ -43,6 +44,7 @@
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
+		NSLog(@"IS DARK: %@", self.isDark ? @"true" : @"false");
 		self.documentWindow.appearance = [NSAppearance appearanceNamed:(self.isDark) ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua];
 		self.documentWindow.viewsNeedDisplay = true;
 	} else {

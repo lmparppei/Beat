@@ -15,7 +15,7 @@
 	NSImage* sourceImage = self;
 	NSImage* newImage = nil;
 	
-	// For invalid images, return empty iage
+	// For invalid images, return empty image
 	if (!sourceImage.isValid) return NSImage.new;
 
 	NSSize imageSize = [sourceImage size];
@@ -53,7 +53,8 @@
 	}
 
 	newImage = [[NSImage alloc] initWithSize:targetSize];
-
+	if (newImage.size.width == 0 || newImage.size.height == 0) return newImage;
+	
 	[newImage lockFocus];
 
 	  NSRect thumbnailRect;

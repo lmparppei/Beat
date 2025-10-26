@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -419,8 +419,8 @@
                                     <action selector="moveSelectedLinesDown:" target="-1" id="C7e-Lv-7NL"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Fold Current Section" hidden="YES" keyEquivalent="F" id="pYf-wS-NRK">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                            <menuItem title="Fold Current Section" hidden="YES" id="pYf-wS-NRK">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="foldCurrentSection:" target="-1" id="26C-yE-TSX"/>
                                 </connections>
@@ -767,7 +767,6 @@ DQ
                                     <action selector="reformatEverything:" target="-1" id="6E8-Py-FLm"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="mN1-gt-Mb1"/>
                             <menuItem title="Match Parentheses" state="on" id="s7C-kV-oq3" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
@@ -1278,7 +1277,7 @@ DQ
                                     <action selector="customizeColors:" target="-1" id="ICN-YS-Hs6"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Font Style" id="f5C-Dm-IC8">
+                            <menuItem title="Font Style" hidden="YES" id="f5C-Dm-IC8">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Font Style" id="zJ5-vm-Omp">
                                     <items>
@@ -1436,13 +1435,6 @@ DQ
                                     <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="c0F-30-f9S"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Enter Donation Key..." hidden="YES" id="lM5-aZ-exA" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="enterLicenseKey:" target="vEX-2F-hcj" id="Mqe-8C-73l"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="ITo-5J-lDM"/>
                             <menuItem title="Discord Community" id="u5m-eu-948" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
@@ -1498,10 +1490,8 @@ DQ
             <connections>
                 <outlet property="backupMenu" destination="7oT-pt-wId" id="Bdm-jJ-X3E"/>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
-                <outlet property="enterLicenseKeyItem" destination="lM5-aZ-exA" id="Ps7-2o-1sK"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
-                <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="pluginMenuManager" destination="c8Z-dk-uIi" id="gUa-of-xAI"/>
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>

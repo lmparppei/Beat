@@ -43,6 +43,9 @@ THE SOFTWARE.
 #import "BeatOutlineView.h"
 #import "BeatTextView.h"
 
+#define AUTOSAVE_INTERVAL 10.0
+#define AUTOSAVE_INPLACE_INTERVAL 60.0
+
 
 @class BeatReview;
 @class BeatWidgetView;
@@ -58,8 +61,9 @@ THE SOFTWARE.
 @class BeatOnOffMenuItem;
 @class BeatModeDisplay;
 @class BeatEditorFormatting;
+@class BeatPrintDialog;
 
-@interface Document : BeatDocumentBaseController <BeatEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, TKSplitHandleDelegate, BeatTimerDelegate>
+@interface Document : BeatDocumentBaseController <BeatEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, BeatTimerDelegate>
 
 /// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
 @property (weak) NSWindow* _Nullable documentWindow;
@@ -95,6 +99,8 @@ THE SOFTWARE.
 
 /// Check for dark mode
 - (bool)isDark;
+
+@property (weak) NSTimer *autosaveTimer;
 
 
 #pragma mark - Applying settings
@@ -196,6 +202,9 @@ THE SOFTWARE.
 
 @property (nonatomic, weak) IBOutlet NSButton* _Nullable quickSettingsButton;
 @property (nonatomic) NSPopover* _Nullable quickSettingsPopover;
+
+/// Print dialog has to be retained in memory when processing the PDF
+@property (nonatomic) BeatPrintDialog* _Nullable printDialog;
 
 
 #pragma mark - Touch bar

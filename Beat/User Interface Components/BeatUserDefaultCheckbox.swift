@@ -11,7 +11,8 @@ import Foundation
 @objc public class BeatUserDefaultCheckbox:NSButton {
 	@IBInspectable public var resetPreview:Bool = false
 	@IBInspectable public var documentSetting:Bool = false
-	
+	@objc @IBInspectable var userDefaultKey:String = ""
+
 	override public func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -21,8 +22,6 @@ import Foundation
 		if value { self.state = .on }
 		else { self.state = .off }
 	}
-	
-	@objc @IBInspectable var userDefaultKey:String = ""
 }
 
 @objc class BeatUserDefaultCheckboxCell:NSButtonCell {

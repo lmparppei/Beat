@@ -22,6 +22,7 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPrintDialog.h"
+#import "Document+Printing.h"
 #import "Beat-Swift.h"
 
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
@@ -185,7 +186,7 @@
 
 	// We have to show the panel here to be able to set the radio buttons, because I can't figure out how to load the window.
 	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
-		[self.documentDelegate releasePrintDialog];
+		[(Document*)self.documentDelegate releasePrintDialog];
 	}];
 }
 
@@ -196,7 +197,7 @@
 	
 	// End sheet in host window and release this dialog
 	[self.documentDelegate.documentWindow endSheet:self.window];
-	[self.documentDelegate releasePrintDialog];
+	[(Document*)self.documentDelegate releasePrintDialog];
 	
 }
 

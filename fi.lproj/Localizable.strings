@@ -59,6 +59,7 @@
 "statistics.lines" = "repliikkiä";
 "statistics.scenes" = "kohtausta";
 
+
 "lock.clickToUnlock" = "Klikkaa avataksesi";
 "lock.documentLocked" = "Dokumentti on lukittu";
 
@@ -77,6 +78,7 @@
 "statisticsPanel.locations.exterior" = "Ulkotila";
 "statisticsPanel.locations.other" = "Muu";
 "statisticsPanel.noDialogue" = "Ei dialogia";
+"statisticsPanel.numberOfPages" = "Sivuja";
 
 "print.print" = "Tulosta";
 "print.createPDF" = "Luo PDF";
@@ -114,6 +116,9 @@
 
 "backup.revertToSaved" = "Viimeksi tallennettu";
 "backup.backupVault" = "Avaa varmuuskopiokansio...";
+
+"backup.saved" = "Tallennettu";
+"backup.revertAction" = "Palauta";
 
 "backup.reverting.title" = "Palauta tiedosto";
 "backup.reverting.message" = "Kaikki tallentamattomat muutokset hävitetään, kun palaat varmuuskopioituun versioon. Haluatko varmasti jatkaa?";

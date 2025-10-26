@@ -24,6 +24,8 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *selectionDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *invisibleTextLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *invisibleTextDark;
+@property (nonatomic, weak) IBOutlet NSColorWell *dialogueTextLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *dialogueTextDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *pageNumberLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *pageNumberDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *commentLight;
@@ -37,7 +39,6 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *macroLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *macroDark;
 
-
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineHighlightLight;
@@ -45,6 +46,8 @@
 
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineSectionLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineSectionDark;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineNoteLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineNoteDark;
 
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineSceneNumberLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineSceneNumberDark;
@@ -110,10 +113,8 @@
  
 - (IBAction)resetToDefault:(id)sender
 {
-	if (_changesMade) {
-		_changesMade = false;
-		[self loadDefaults];
-	}
+	_changesMade = false;
+	[self loadDefaults];
 }
 
 - (void)loadDefaults
@@ -149,6 +150,9 @@
 	[_sectionLight setColor:theme.sectionTextColor.lightColor];
 	[_sectionDark setColor:theme.sectionTextColor.darkColor];
 
+	[_dialogueTextLight setColor:theme.dialogueColor.lightColor];
+	[_dialogueTextDark setColor:theme.dialogueColor.darkColor];
+	
 	[_macroLight setColor:theme.macroColor.lightColor];
 	[_macroDark setColor:theme.macroColor.darkColor];
 	

@@ -8,6 +8,7 @@
 
 #import "BeatNotifications.h"
 #import "BeatAppDelegate.h"
+#import "BeatAppDelegate+Plugins.h"
 
 @interface BeatNotifications ()
 @property (nonatomic) NSMutableArray *shownNotifications;
