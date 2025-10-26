@@ -21,6 +21,10 @@ class BeatLaunchScreenView : NSViewController {
 		self.view.window?.close()
 	}
 	
+	@IBAction func quit(_ sender:Any?) {
+		NSApplication.shared.terminate(nil)
+	}
+	
 	override func awakeFromNib() {
 		self.view.window?.isMovableByWindowBackground = true
 
@@ -91,8 +95,3 @@ class SameWindowStoryboardSegue: NSStoryboardSegue {
 	}
 }
 
-/*
- 
- 
- 
- */
