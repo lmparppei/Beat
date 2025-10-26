@@ -18,6 +18,7 @@
 
 @interface BeatWidgetView ()
 @property (nonatomic) NSMutableArray<BeatPluginUIView*> *widgets;
+@property (nonatomic, weak) id<BeatWidgetViewTabView> tabView;
 @end
 @implementation BeatWidgetView
 
@@ -72,16 +73,23 @@
 	rect.size.height = y + MARGIN;
 	self.enclosingScrollView.documentView.frame = rect;
 	 */
-	
+    
+    [self updateTabViewState];
 	[self setNeedsDisplay:YES];
 }
 
-- (void)removeWidget:(BeatPluginUIView*)widget {
+- (void)removeWidget:(BeatPluginUIView*)widget
+{
 	[_widgets removeObject:widget];
 	[widget removeFromSuperview];
 	
-	//[self repositionWidgets];
+    [self updateTabViewState];
 	[self setNeedsDisplay:YES];
+}
+
+- (void)updateTabViewState
+{
+    [self.tabView updateWidgetTabState];
 }
 
 - (void)repositionWidgets {

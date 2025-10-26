@@ -17,6 +17,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol BeatWidgetViewTabView
+- (void)updateWidgetTabState;
+@end
+
 #if TARGET_OS_IOS
 @interface BeatWidgetView : UIView
 #else
