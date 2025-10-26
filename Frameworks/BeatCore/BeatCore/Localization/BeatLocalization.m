@@ -55,6 +55,11 @@
 	return dictionary;
 }
 
++ (NSString*)key:(NSString *)key
+{
+    return [BeatLocalization localizedStringForKey:key];
+}
+
 + (NSString*)localizedStringForKey:(NSString*)key {
 	NSDictionary *dictionary = [BeatLocalization dictionary];
 	if (dictionary[key]) return dictionary[key];

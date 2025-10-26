@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*)localizeString:(NSString*)string;
 /// Returns only the localized value for given string, and falls back to English if it's not available.
 + (NSString*)localizedStringForKey:(NSString*)key;
+/// Returns only the localized value for given string, and falls back to English if it's not available.
++ (NSString*)key:(NSString*)key;
+
 @end
 
 NS_ASSUME_NONNULL_END
