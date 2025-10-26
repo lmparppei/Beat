@@ -12,6 +12,7 @@
 
 import Foundation
 import BeatParsing
+import JavaScriptCore
 
 // MARK: - Render style
 public enum RenderStyleValueType:Int {
@@ -61,7 +62,36 @@ struct PaginationRule {
     var rule:PaginationRuleType
 }
 
-@objc public class RenderStyle:NSObject {
+@objc public protocol RenderStyleExports:JSExport {
+    @objc var name:String { get }
+    @objc var dynamicStyle:Bool  { get }
+    @objc var initialStyles:[String:Any]  { get }
+    @objc var fontType:BeatFontType  { get }
+    @objc var bold:Bool  { get }
+    @objc var italic:Bool  { get }
+    @objc var underline:Bool  { get }
+    @objc var uppercase:Bool  { get }
+    @objc var textAlign:String  { get }
+    @objc var textAlignment:NSTextAlignment  { get }
+    @objc var visible:Bool { get }
+    @objc var firstPageWithNumber:Int { get }
+    @objc var marginTop:CGFloat { get }
+    @objc var marginLeft:CGFloat { get }
+    @objc var marginLeftA4:CGFloat { get }
+    @objc var marginLeftLetter:CGFloat { get }
+    @objc var marginBottom:CGFloat { get }
+    @objc var marginBottomA4:CGFloat { get }
+    @objc var marginBottomLetter:CGFloat { get }
+    @objc var marginRight:CGFloat { get }
+    @objc var paddingLeft:CGFloat { get }
+    @objc var contentPadding:CGFloat { get }
+    @objc var lineFragmentMultiplier:Double { get }
+    @objc var paginationMode:Int { get }
+    @objc var overrideParagraphPaginationMode:Bool { get }
+    @objc var significantUnits:Int { get }
+}
+
+@objc public class RenderStyle:NSObject, RenderStyleExports {
     // Map property names to types
     public class var types:[String:RenderStyleValueType] { return [
         "text-align": .stringType,
@@ -85,8 +115,17 @@ struct PaginationRule {
         "reformat-following-paragraph-after-type-change": .boolType,
         "disable-automatic-paragraphs": .boolType,
         "pagination-mode": .integerType,
-        "overrideParagraphPaginationMode": .boolType
+        "overrideParagraphPaginationMode": .boolType,
+        "significant-units": .integerType,
     ] }
+    
+    public class var aliases:[String:Any] { return [
+        "pages": 0,
+        "words": 1,
+        "default": 0,
+        "avoid-breaking-actions": 1
+    ] }
+        
 
     @objc public var name:String = ""
     /// `true` if this style was created based on conditional styles
@@ -134,6 +173,8 @@ struct PaginationRule {
     
     @objc public var paginationMode:Int = -1
     @objc public var overrideParagraphPaginationMode:Bool = false
+    
+    @objc public var significantUnits:Int = 0
     
     /// Top margin is isually ignored for elements on top of page. If `forcedMargin` is set `true`, the margin applies on an empty page as well.
     @objc public var forcedMargin = false
@@ -353,6 +394,8 @@ struct PaginationRule {
             return "minimumFontSize"
         case "pagination-mode":
             return "paginationMode"
+        case "significant-units":
+            return "significantUnits"
         default:
             return name
         }

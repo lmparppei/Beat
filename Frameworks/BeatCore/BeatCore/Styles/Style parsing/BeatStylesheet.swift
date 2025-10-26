@@ -8,6 +8,29 @@
 import Foundation
 import BeatParsing
 import OSLog
+import JavaScriptCore
+
+@objc public protocol BeatStylesheetExports:JSExport {
+    @objc var name:String { get }
+    @objc var styles:[String:RenderStyle] { get }
+    
+    @objc func forElement(_ name:String) -> RenderStyle
+    
+    @objc var action:RenderStyle { get }
+    @objc var dialogue:RenderStyle { get }
+    @objc var parenthetical:RenderStyle { get }
+    @objc var character:RenderStyle { get }
+    @objc var titlePageElement:RenderStyle { get }
+    @objc var dualDialogueCharacter:RenderStyle { get }
+    @objc var dualDialogueParenthetical:RenderStyle { get }
+    @objc var dualDialogue:RenderStyle { get }
+    @objc var transition:RenderStyle { get }
+    @objc var document:RenderStyle { get }
+    @objc var section:RenderStyle { get }
+    @objc var heading:RenderStyle { get }
+    @objc var titlePage:RenderStyle { get }
+    @objc var pagination:RenderStyle { get }
+}
 
 @objc public class BeatStylesheet:NSObject, BeatExportStyleProvider {
     @objc public var name = ""
@@ -89,7 +112,7 @@ import OSLog
 
 
 // MARK: Shorthands for the styles
-@objc extension BeatStylesheet {
+@objc extension BeatStylesheet:BeatStylesheetExports {
     @objc public var action:RenderStyle {
         return self.forElement(Line.typeName(.action))
     }

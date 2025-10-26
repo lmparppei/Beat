@@ -225,7 +225,14 @@ public final class CssParser {
             // Enum value
             return enumValue(value: value, key: key)
         } else if type == .integerType {
-            return Int(value)
+            let intValue:Int?
+            // Check aliases first
+            if let i = RenderStyle.aliases[value] as? Int {
+                intValue = i
+            } else {
+                intValue = Int(value)
+            }
+            return intValue
         } else {
             // This is most likely a float value, so let's calculate. The & reference is here just out of lazinesss.
             return floatValue(value: &value, key: key)
