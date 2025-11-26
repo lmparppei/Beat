@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="24006"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -82,7 +82,7 @@
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view" customClass="BeatAutomaticAppearanceView" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
                                                     <subviews>
-                                                        <tabView type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
+                                                        <tabView ambiguous="YES" type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -867,15 +867,29 @@
                                                                         <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
+                                                                            <segmentedControl verticalHuggingPriority="750" id="Xur-35-zN2">
+                                                                                <rect key="frame" x="242" y="3" width="61" height="21"/>
+                                                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                                                <segmentedCell key="cell" controlSize="small" alignment="left" style="separated" trackingMode="selectOne" id="TgN-zS-clX">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <segments>
+                                                                                        <segment image="list.number" catalog="system" width="27" selected="YES"/>
+                                                                                        <segment image="number" catalog="system" width="27" tag="1"/>
+                                                                                    </segments>
+                                                                                </segmentedCell>
+                                                                                <connections>
+                                                                                    <action selector="toggleViewMode:" target="2dB-kI-P7V" id="SqL-Ns-1fP"/>
+                                                                                </connections>
+                                                                            </segmentedControl>
                                                                             <scrollView ambiguous="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="47" horizontalPageScroll="10" verticalLineScroll="47" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="NXs-dI-TE0">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
+                                                                                <rect key="frame" x="0.0" y="30" width="300" height="465"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="uOK-xT-qdV">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="465"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" multipleSelection="NO" autosaveColumns="NO" rowHeight="47" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="InP-FO-2p3" id="2dB-kI-P7V" customClass="BeatReviewList" customModule="Beat" customModuleProvider="target">
-                                                                                            <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
+                                                                                            <rect key="frame" x="0.0" y="0.0" width="300" height="465"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <size key="intercellSpacing" width="14" height="0.0"/>
                                                                                             <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -965,7 +979,7 @@
                                                                                 </scroller>
                                                                             </scrollView>
                                                                             <customView ambiguous="YES" id="z5O-WY-YBm">
-                                                                                <rect key="frame" x="0.0" y="209" width="300" height="106"/>
+                                                                                <rect key="frame" x="0.0" y="224" width="300" height="106"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                                 <subviews>
                                                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="5vY-sS-P8z">
@@ -2196,7 +2210,9 @@
         <image name="color.pink" width="15" height="15"/>
         <image name="color.red" width="15" height="15"/>
         <image name="doc.badge.gearshape" catalog="system" width="16" height="18"/>
+        <image name="list.number" catalog="system" width="16" height="13"/>
         <image name="minus.magnifyingglass" catalog="system" width="16" height="15"/>
+        <image name="number" catalog="system" width="15" height="15"/>
         <image name="plus.magnifyingglass" catalog="system" width="16" height="15"/>
         <image name="sidebar.left" catalog="system" width="18" height="14"/>
         <image name="xmark.circle.fill" catalog="system" width="15" height="15"/>

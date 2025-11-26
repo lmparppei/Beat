@@ -38,7 +38,6 @@
 @property (weak) IBOutlet NSTextField* title;
 @property (weak) IBOutlet NSTextField* headerText;
 @property (weak) IBOutlet NSSegmentedControl* headerAlign;
-@property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
 @property (weak) IBOutlet NSButton *colorCodePages;
 @property (weak) IBOutlet NSView *advancedOptions;
 @property (weak) IBOutlet NSButton* advancedOptionsButton;
@@ -60,6 +59,10 @@
 @property (weak) IBOutlet NSButton* printSections;
 @property (weak) IBOutlet NSButton* printSynopsis;
 @property (weak) IBOutlet NSButton* printNotes;
+
+@property (weak) IBOutlet NSButton* revisionHighlightModeNone;
+@property (weak) IBOutlet NSButton* revisionHighlightModeText;
+@property (weak) IBOutlet NSButton* revisionHighlightModeBackground;
 
 @property (nonatomic) NSString *compareWith;
 
@@ -127,6 +130,11 @@
 	[self.headerAlign setSelectedSegment:[self.documentDelegate.documentSettings getInt:DocSettingHeaderAlignment]];
 	
 	[self toggleAdvancedOptions:_advancedOptionsButton];
+	
+	BeatExportRevisionHighlightMode highlightMode = [self.documentDelegate.documentSettings getInt:DocSettingPrintedRevisionHighlighting];
+	if (highlightMode == 0) self.revisionHighlightModeNone.state = NSOnState;
+	else if (highlightMode == 1) self.revisionHighlightModeText.state = NSOnState;
+	else if (highlightMode == 2) self.revisionHighlightModeBackground.state = NSOnState;
 	
 	//[self.window center];
 }
@@ -344,15 +352,6 @@
 	[self loadPreview];
 }
 
-- (IBAction)setRevisedPageColor:(id)sender
-{
-	NSPopUpButton *menu = sender;
-	NSString *color = menu.selectedItem.title.lowercaseString;
-	
-	[_documentDelegate.documentSettings set:DocSettingRevisedPageColor as:color];
-	[self loadPreview];
-}
-
 - (IBAction)toggleRevision:(id)sender
 {
 	[self.documentDelegate.documentSettings set:DocSettingHiddenRevisions as:self.hiddenRevisions];
@@ -375,10 +374,9 @@
 	// Stop progress indicator
 	[self.progressIndicator stopAnimation:nil];
 	self.pdfView.alphaValue = 1.0;
-
-	// Load the actual PDF into the view
+	
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
-	[_pdfView setDocument:doc];
+	[self.pdfView setDocument:doc];
 	
 	_firstPreview = NO;
 }
@@ -413,6 +411,16 @@
 	[self loadPreview];
 }
 
+
+- (IBAction)toggleRevisionHighlight:(id)sender
+{
+	NSButton* button = sender;
+	if (button != nil) {
+		[self.documentDelegate.documentSettings setInt:DocSettingPrintedRevisionHighlighting as:button.tag];
+		[self loadPreview];
+	}
+
+}
 
 #pragma mark - Header text did change
 

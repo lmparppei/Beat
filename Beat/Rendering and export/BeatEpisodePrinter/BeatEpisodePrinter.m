@@ -29,7 +29,6 @@
 @property (weak) IBOutlet NSButton *radioLetter;
 
 @property (weak) IBOutlet NSButton *colorCodePages;
-@property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
 @end
 
 @implementation BeatEpisodePrinter
@@ -225,13 +224,8 @@
 	NSString *header = (self.headerText.stringValue.length) ? self.headerText.stringValue : @"";
 	
 	bool colorCodePages = NO;
-	NSString *revisedPageColor = @"";
-	if (self.colorCodePages.state == NSOnState) {
-		colorCodePages = YES;
-		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
-	}
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.everyRevisionIndex scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.everyRevisionIndex scene:nil];
 	settings.paperSize = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
 
 	return settings;

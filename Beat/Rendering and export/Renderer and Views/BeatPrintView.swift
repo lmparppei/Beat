@@ -17,6 +17,7 @@ import BeatCore
 import BeatPagination2
 import PDFKit
 
+
 class BeatPrintView:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {
 		case toPreview, toPDF, toPrint
@@ -213,7 +214,7 @@ class BeatPrintView:NSView {
 				BeatRenderer.createOutlineForPDF(at: url, outline: self.outline)
 			}
 			
-			
+
 			self.url?.stopAccessingSecurityScopedResource()
 			
 			callback(self, NSURL(fileURLWithPath: url.relativePath))
@@ -255,6 +256,7 @@ class BeatPrintView:NSView {
 		return url
 	}
 	
+	// TODO: We should probably deliver a URL from the print dialog and keep this class UI-agnostic, or make this an extension
 	func getURLforPDF() -> URL? {
 		var filename = "Untitled"
 		if let delegate {

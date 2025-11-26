@@ -104,7 +104,7 @@
 {
 	if (self.documentIsLoading) return;
 	
-	// Some attributes are only added for undo/redo actions. This is highly, highly WIP.
+	// Some attributes are only added for undo/redo actions, namely the represented line key.
 	if ((self.undoManager.isUndoing || self.undoManager.isRedoing) && delta > 0 &&
 		mask_contains(editedMask, NSTextStorageEditedCharacters) && mask_contains(editedMask, NSTextStorageEditedAttributes)) {
 		NSRange additionRange = NSMakeRange(editedRange.location, editedRange.length);
@@ -120,6 +120,7 @@
 	}
 	
 	if (editedMask & NSTextStorageEditedCharacters) {
+		self.waitingForFormatting = true;
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes. Because macOS Sonoma somehow changed attribute handling, we need to _queue_ those changes and
@@ -233,7 +234,7 @@
 	[self setTypeAndFormat:self.characterInputForLine type:empty];
 }
 
-
+/*
 #pragma mark - Character cues
 // TODO: Move these to text view
 
@@ -265,7 +266,7 @@
 	
 	[self.formattingActions addCue];
 }
-
+*/
 
 
 @end

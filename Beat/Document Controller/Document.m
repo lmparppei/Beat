@@ -515,7 +515,8 @@
 	// Restore previously running plugins
 	[self.pluginAgent restorePlugins];
 	
-	// Reload editor views in background
+	// Reload editor views in background. We need to cache the attributed string here first.
+	[self getAttributedText];
 	[self updateEditorViewsInBackground];
 		
 	// Load plugin containers

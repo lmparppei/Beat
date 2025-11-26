@@ -45,7 +45,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		
 		textField?.delegate = self
 		delegate?.parser.updateOutline() // create a new outline from scratch, just in case
-		//results = delegate?.parser.outline as! [OutlineScene]
+		
 		results = []
 		self.filter("")
 	}
@@ -78,10 +78,12 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	
 	
 	override func keyUp(with event: NSEvent) {
+		var prevent =  false
+		
 		if event.keyCode == 53 {
 			// Close on esc
 			self.closeModal()
-			return
+			prevent = true
 		} else if event.keyCode == 36 {
 			// Select on enter
 			selectScene()
@@ -92,7 +94,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 				if (selected < 0) { selected = tableView!.numberOfRows - 1; }
 				tableView?.selectRowIndexes([selected], byExtendingSelection: false)
 				tableView?.scrollRowToVisible(tableView!.selectedRow)
-				return
+				prevent = true
 			}
 		} else if event.keyCode == 125 {
 			// down
@@ -101,11 +103,13 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 				if (selected >= tableView!.numberOfRows) { selected = 0; }
 				tableView?.selectRowIndexes([selected], byExtendingSelection: false)
 				tableView?.scrollRowToVisible(tableView!.selectedRow)
-				return
+				prevent = true
 			}
 		}
 				
-		super.keyUp(with: event)
+		if !prevent {
+			super.keyUp(with: event)
+		}
 	}
 	
 	func closeModal() {
@@ -127,6 +131,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		self.window = nil
 		self.results = []
 	}
+	
 	
 	// MARK: - Filtering and jumping to scene
 	
@@ -170,7 +175,14 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	}
 	
 	func filter(_ string:String) {
-		guard let delegate else { return }
+		guard let delegate else {
+			BeatConsole.shared().log(toConsole: "NO DELEGATE", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
+			return
+		}
+		
+		BeatConsole.shared().log(toConsole: "    ... filtering with text \(string) (\(string.count))" , pluginName: "BeatSceneHeadingSearch", context: self.delegate)
+		
+		results = []
 		
 		if (string.count == 0) {
 			results = getHeadings()
@@ -198,15 +210,20 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			}
 		}
 		
+		BeatConsole.shared().log(toConsole: "         ... \(results.count) results ", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
+		BeatConsole.shared().log(toConsole: "         ... reloading table view \(self.tableView)", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
+		
 		tableView?.reloadData()
+		BeatConsole.shared().log(toConsole: "             ... reload complete", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 		if (tableView!.numberOfRows > 0) {
 			tableView?.selectRowIndexes([0], byExtendingSelection: false)
 		}
 	}
 	
-	// MARK: - Table view data source and delegate
 	
+	// MARK: - Table view data source and delegate
 	func numberOfRows(in tableView: NSTableView) -> Int {
+		BeatConsole.shared().log(toConsole: "             [delegate] \(results.count) rows", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 		return results.count
 	}
 	
@@ -214,6 +231,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		if (item != nil) {
 			return 0
 		} else {
+			BeatConsole.shared().log(toConsole: "             [delegate] \(results.count) results", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 			return results.count
 		}
 	}
@@ -245,6 +263,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		selectScene()
 		return true
 	}
+	
 	
 	// MARK: - Observe clicks outside the modal
 	private var monitor: Any?

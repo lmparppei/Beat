@@ -11,6 +11,7 @@
 #import "BeatSegmentedControl.h"
 #import "BeatSegmentedCell.h"
 #import "BeatSidebarTabView.h"
+#import "NSImage+ProportionalScaling.h"
 //#import <BeatPlugins/BeatWidgetView.h>
 #import <BeatPlugins/BeatPlugins.h>
 
@@ -21,13 +22,51 @@
 @implementation BeatSegmentedControl
 
 static NSImage* widgetIcon;
+static NSDictionary* segmentImages;
+static NSDictionary* selectedSegmentImages;
 
 - (void)awakeFromNib
 {
 	if (widgetIcon == nil) widgetIcon = [self imageForSegment:self.lastSegment];
-	
+		
+	[self createSegmentImages];
 	[self updateWidgetTabState];
 	[self setSelectedSegment:0];
+	
+	/*
+	// This is a little weird. For some reason Ventura doesn't render the segments correctly, so we need to fix it manually.
+	if (@available(macOS 14.0, *)) {
+		// Do nothing
+	} else if (@available(macOS 13.0, *)) {
+		// Forced dark appearance
+		[self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
+	} else {
+		// On older systems, we'll tint the icons by hand
+		[self createSegmentImages];
+	}
+	 */
+}
+
+- (void)createSegmentImages
+{
+	static dispatch_once_t once;
+
+	dispatch_once(&once, ^
+	{
+		NSMutableDictionary* imgs = NSMutableDictionary.new;
+		NSMutableDictionary* selImgs = NSMutableDictionary.new;
+		
+		for (NSInteger i=0; i<self.segmentCount; i++) {
+			NSImage* segmentImage = [self imageForSegment:i];
+			imgs[@(i)] = [segmentImage tintedImageWithSelection:false];
+			selImgs[@(i)] = [segmentImage tintedImageWithSelection:true];
+			
+			[self setImage:imgs[@(i)] forSegment:i];
+		}
+		
+		segmentImages = imgs;
+		selectedSegmentImages = selImgs;
+	});
 }
 
 - (NSInteger)lastSegment { return self.segmentCount-1; }
@@ -42,6 +81,7 @@ static NSImage* widgetIcon;
 {
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	NSColor *bgColor = (dark) ? ThemeManager.sharedManager.outlineBackground.darkColor : ThemeManager.sharedManager.outlineBackground.lightColor;
+	
 	self.layer.backgroundColor = bgColor.CGColor;
 }
 
@@ -66,6 +106,20 @@ static NSImage* widgetIcon;
 	//[self setSelectedSegment:selectedSegment animate:NO];
 	[super setSelectedSegment:selectedSegment];
 	[self selectTab:nil];
+	
+	[self updateSegmentImages];
+}
+
+- (void)updateSegmentImages
+{
+	for (NSInteger i=0; i<self.segmentCount; i++) {
+		NSImage* img = (i == self.selectedSegment) ? selectedSegmentImages[@(i)] : segmentImages[@(i)];
+		if (i == self.segmentCount-1 && !self.widgetsVisible) {
+			img = nil;
+		}
+		
+		[self setImage:img forSegment:i];
+	}
 }
 
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem

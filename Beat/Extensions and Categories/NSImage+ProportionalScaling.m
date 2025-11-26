@@ -72,4 +72,27 @@
   return newImage;
 }
 
+- (NSImage*)tintedImageWithSelection:(bool)selected
+{
+	NSImage* img = self.copy;
+	
+	NSColor *tint;
+	if (@available(macOS 10.14, *)) {
+		tint = NSColor.controlAccentColor;
+		if (!selected) tint = [NSColor.tertiaryLabelColor colorWithAlphaComponent:.35];
+	} else {
+		// Fallback on earlier versions
+		tint = NSColor.secondaryLabelColor;
+		if (!selected) tint = NSColor.whiteColor;
+	}
+	
+	[img lockFocus];
+	[tint set];
+	NSRect imageRect = {NSZeroPoint, img.size};
+	NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceIn);
+	[img unlockFocus];
+	
+	return img;
+}
+
 @end

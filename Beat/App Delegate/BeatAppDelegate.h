@@ -43,6 +43,7 @@ typedef enum : NSUInteger {
 #pragma mark - Retained views
 
 @property (nonatomic) NSWindow *welcomeWindow;
+@property (nonatomic) NSWindowController *launchWindowController;
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatPreferencesPanel *preferencesPanel;
 @property (nonatomic) BeatAboutScreen *about;

@@ -75,10 +75,21 @@
 	}];
 }
 
+-(void)setupLaunchScreenIfNeeded
+{
+	if (self.launchWindowController == nil) {
+		NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"Launch Screen" bundle:NSBundle.mainBundle];
+		self.launchWindowController = storyboard.instantiateInitialController;
+	}
+}
+
 -(void)showLaunchScreen
 {
 	if (NSDocumentController.sharedDocumentController.documents.count > 0) return;
-	[self showLaunchScreenWithViewControllerName:@"LaunchScreen"];
+
+	[self setupLaunchScreenIfNeeded];
+	
+	[self.launchWindowController showWindow:self.launchWindowController.window];
 }
 
 -(void)showTemplates
@@ -88,36 +99,32 @@
 
 - (void)showLaunchScreenWithViewControllerName:(NSString*)viewControllerName
 {
-	if (self.welcomeWindow == nil) {
-		self.welcomeWindow = [BeatLaunchWindow.alloc initWithContentRect:NSMakeRect(0, 0, 0, 0) styleMask:NSWindowStyleMaskFullSizeContentView | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:false];
-	}
+	[self setupLaunchScreenIfNeeded];
 
 	NSStoryboard* storyboard = [NSStoryboard storyboardWithName:@"Launch Screen" bundle:NSBundle.mainBundle];
 	NSViewController* vc = [storyboard instantiateControllerWithIdentifier:viewControllerName];
+	self.launchWindowController.contentViewController = vc;
 	
-	// Window will update its frame automatically
-	self.welcomeWindow.contentViewController = vc;
+	[self.launchWindowController showWindow:self.launchWindowController.window];
 }
 
 - (void)closeLaunchScreen
 {
-	[self.welcomeWindow close];
-	self.welcomeWindow = nil;
+	[self.launchWindowController close];
+	self.launchWindowController = nil;
 }
 
--(void)windowWillClose:(NSNotification *)notification {
+-(void)windowWillClose:(NSNotification *)notification
+{
 	// Dealloc window controllers on close
-	
 	NSWindow* window = notification.object;
 	
 	if (window == self.episodePrinter.window) {
 		[NSApp stopModal];
 		self.episodePrinter = nil;
-	}
-	else if (window == self.preferencesPanel.window) {
+	} else if (window == self.preferencesPanel.window) {
 		self.preferencesPanel = nil;
-	}
-	else if (window == self.pluginLibrary.window) {
+	} else if (window == self.pluginLibrary.window) {
 		[self.pluginLibrary clearWebView];
 		self.pluginLibrary = nil;
 	}
