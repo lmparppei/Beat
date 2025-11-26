@@ -41,7 +41,8 @@ import Foundation
 		self.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
 		self.estimatedRowHeight = 14.0
 		self.rowHeight = UITableView.automaticDimension
-		
+		self.contentInsetAdjustmentBehavior = .never
+				
 		if let editorDelegate = self.editorDelegate {
 			setup(editorDelegate: editorDelegate)
 		}

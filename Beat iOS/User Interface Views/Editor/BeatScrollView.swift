@@ -11,6 +11,10 @@ import UIKit
 class BeatScrollView: UIScrollView {
 	@objc public var manualScroll = false
 	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+	}
+	
 	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
 		super.scrollRectToVisible(rect, animated: animated)
 	}

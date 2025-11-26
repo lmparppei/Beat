@@ -69,6 +69,8 @@
 "statisticsPanel.locations.other" = "Other";
 "statisticsPanel.noDialogue" = "No dialogue";
 
+"menuItem.inputAssistant" = "Show Input Assistant Bar";
+
 "gender.other" = "Other";
 "gender.woman" = "Woman";
 "gender.man" = "Man";

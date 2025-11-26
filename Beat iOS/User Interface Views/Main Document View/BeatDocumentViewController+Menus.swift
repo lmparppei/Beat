@@ -82,6 +82,13 @@ extension BeatDocumentViewController {
 						})
 					]),
 					UIMenu(options: .displayInline, children: [
+						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.inputAssistant"), state: BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden) ? .off : .on, handler: { _ in
+							if let textView = self?.textView as? BeatUITextView {
+								textView.inputAssistantHidden = !textView.inputAssistantHidden
+							}
+						})
+					]),
+					UIMenu(options: .displayInline, children: [
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.allSettings"), image: UIImage(systemName: "gear"), handler: { (_) in
 							self?.openSettings(self)
 						}),

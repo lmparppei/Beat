@@ -23,14 +23,20 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 	
 	@objc public weak var editorView:BeatEditorViewController? {
 		guard self.viewControllers.count > 1 else { return nil }
-		let nav = self.viewControllers[1] as? UINavigationController
-		return nav?.viewControllers.first as? BeatEditorViewController
+		if let nav = self.viewControllers[1] as? UINavigationController {
+			return nav.viewControllers.first as? BeatEditorViewController
+		} else {
+			return self.viewControllers[1] as? BeatEditorViewController
+		}
 	}
 	
 	@objc public weak var sidebar:BeatSidebarViewController? {
 		guard self.viewControllers.count > 0 else { return nil }
-		let nav = self.viewControllers[0] as? UINavigationController
-		return nav?.viewControllers.first as? BeatSidebarViewController
+		if let nav = self.viewControllers[0] as? UINavigationController {
+			return nav.viewControllers.first as? BeatSidebarViewController
+		} else {
+			return self.viewControllers[0] as? BeatSidebarViewController
+		}
 	}
 	
 	@objc public weak var outlineView:BeatiOSOutlineView? {
@@ -43,7 +49,10 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		self.displayModeButtonVisibility = .never
 		self.showsSecondaryOnlyButton = false
 		
+		self.presentsWithGesture = true
+		
 		self.preferredDisplayMode = .secondaryOnly
+		self.preferredSplitBehavior = .displace
 		self.delegate = self
 	}
 	
@@ -54,7 +63,11 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		editorView?.loadView()
 		sidebar?.loadView()
 		
-		for nc in self.viewControllers as? [UINavigationController] ?? [] {
+		self.primaryBackgroundStyle = .sidebar
+		self.showsSecondaryOnlyButton = true
+	
+		
+		if let nc = self.viewControllers.first as? UINavigationController {
 			nc.navigationBar.isHidden = true
 			nc.navigationBar.removeFromSuperview()
 		}

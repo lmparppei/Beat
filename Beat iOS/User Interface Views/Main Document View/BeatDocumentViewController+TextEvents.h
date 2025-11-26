@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Restores caret position from document settings
 - (void)restoreCaret;
-- (void)handleTabPress;
 
 @end
 

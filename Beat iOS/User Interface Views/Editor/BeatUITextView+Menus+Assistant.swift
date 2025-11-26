@@ -57,14 +57,20 @@ extension BeatUITextView: InputAssistantViewDelegate {
 
 extension BeatUITextView {	
 	func setupInputAssistantButtons() {
-				
+		// A fix for trackpad issues on iOS 26
+		if #available(iOS 26.0, *) {
+			self.assistantView?.backgroundColor = .clear
+		}
+		
 		self.inputAssistantButtons = [
 			.writing: [
-				InputAssistantAction(image: UIImage(systemName: "arrow.backward"), target: self, action: #selector(moveLeft)),
-				InputAssistantAction(image: UIImage(systemName: "arrow.forward"), target: self, action: #selector(moveRight)),
 				InputAssistantAction(image: UIImage(systemName: "bubble.left.fill"), target: self, action: #selector(addCue)),
-				InputAssistantAction(image: UIImage(named: "Shortcut.INT"), target: self, action: #selector(addINT)),
-				InputAssistantAction(image: UIImage(named: "Shortcut.EXT"), target: self, action: #selector(addEXT))
+				InputAssistantAction(image: UIImage(systemName: "plus"), menu: UIMenu(children: [
+					UIAction(title: "Synopsis", image: UIImage(named: "Shortcut.Synopsis"), handler: { [weak self] _ in self?.addSynopsis() }),
+					UIAction(title: "Section", image: UIImage(named: "Shortcut.Section"), handler: { [weak self] _ in self?.addSection() }),
+					UIAction(title: "Exterior Scene", image: UIImage(named: "Shortcut.EXT"), handler: { [weak self] _ in self?.addEXT() }),
+					UIAction(title: "Interior Scene", image: UIImage(named: "Shortcut.INT"), handler: { [weak self] _ in self?.addINT() }),
+				]))
 			],
 			.editing: [
 				InputAssistantAction(image: UIImage(systemName: "arrow.backward"), target: self, action: #selector(moveLeft)),
@@ -105,7 +111,6 @@ extension BeatUITextView {
 		}
 		
 		self.assistantView?.leadingActions = leadingActions
-		
 		self.assistantView?.trailingActions = inputAssistantTrailingButtons[inputAssistantMode] ?? []
 	}
 	
@@ -166,10 +171,10 @@ extension BeatUITextView {
 			]),
 			
 			UIMenu(title: "Outline Elements", children: [
-				UIAction(title: "Add Synopsis (=)", handler: { [weak self] _ in
+				UIAction(title: "Add Synopsis (=)", image: UIImage(named: "Shortcut.Synopsis"), handler: { [weak self] _ in
 					self?.addSynopsis()
 				}),
-				UIAction(title: "Add Section (#)", image: UIImage(named: "Shortcut.Synopsis"), handler: { [weak self] _ in
+				UIAction(title: "Add Section (#)", image: UIImage(named: "Shortcut.Section"), handler: { [weak self] _ in
 					self?.addSection()
 				})
 			]),

@@ -36,6 +36,10 @@ extension BeatDocumentViewController:UIPopoverPresentationControllerDelegate {
 		popoverContentController?.modalPresentationStyle = .popover
 		popoverContentController?.delegate = self
 		
+		if #available(iOS 26.0, *) {
+			buttonFrame.origin.x = self.view.frame.width - 10.0
+		}
+		
 		// Present popover
 		if let popoverPresentationController = popoverContentController?.popoverPresentationController {
 			popoverPresentationController.permittedArrowDirections = .up

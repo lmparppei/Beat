@@ -11,23 +11,6 @@
 
 @implementation BeatDocumentViewController (TextEvents)
 
-/// TODO: Move this to text view?
-- (void)handleTabPress
-{
-	if (self.textView.assistantView.numberOfSuggestions > 0) {
-		//Select the first one
-		[self.textView.assistantView selectItemAt:0];
-		return;
-	}
-	
-	[self.formattingActions addCue];
-	
-	self.characterInputForLine = self.currentLine;
-	self.characterInput = true;
-	
-	[self.textView updateAssistingViews];
-}
-
 - (void)restoreCaret
 {
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
@@ -195,10 +178,7 @@
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
 	// We won't allow tabs to be inserted
-	if ([text isEqualToString:@"\t"]) {
-		[self handleTabPress];
-		return false;
-	}
+	if ([text isEqualToString:@"\t"]) return false;
 	
 	bool undoOrRedo = (self.undoManager.isUndoing || self.undoManager.isRedoing);
 	bool change = true;
@@ -206,27 +186,33 @@
 	Line* currentLine = self.currentLine;
 	
 	// Process line break after a forced character input
-	if ([text isEqualToString:@"\n"] && self.characterInput && self.characterInputForLine) {
-		// If the cue is empty, reset it
-		if (self.characterInputForLine.length == 0) {
-			self.characterInputForLine.type = empty;
-			[self.formatting formatLine:self.characterInputForLine];
-		} else {
-			self.characterInputForLine.forcedCharacterCue = YES;
+	if (!undoOrRedo && [text isEqualToString:@"\n"]) {
+		if (self.characterInput && self.characterInputForLine) {
+			// If the cue is empty, reset it
+			if (self.characterInputForLine.length == 0) {
+				self.characterInputForLine.type = empty;
+				[self.formatting formatLine:self.characterInputForLine];
+			} else {
+				self.characterInputForLine.forcedCharacterCue = YES;
+			}
+		} else if ((currentLine.isAnyParenthetical || currentLine.isAnyCharacter) &&
+				   range.length == 0 &&
+				   [self.text positionInsideParentheticals:range.location] &&
+				   range.location != NSMaxRange(currentLine.textRange)) {
+			// Move on to next line or add a new one instead of breaking this apart
+			[self.textActions moveToNextDialogueLineOrAddNew];
+			change = false;
+		} else if (currentLine != nil && range.length == 0) {
+			// Test if we'll add extra line breaks and exit the method
+			if (currentLine.isAnyCharacter && self.automaticContd) {
+				// Line break after character cue
+				// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
+				if ([self.textActions shouldAddContdIn:range string:text]) change = NO;
+			} else {
+				change = ![self.textActions shouldAddLineBreaks:currentLine range:range];
+			}
 		}
-	}
-	
-	if (!undoOrRedo && self.selectedRange.length == 0 && range.length == 0 && [text isEqualToString:@"\n"] && currentLine != nil) {
-		// Test if we'll add extra line breaks and exit the method
-		if (currentLine.isAnyCharacter && self.automaticContd) {
-			// Line break after character cue
-			// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
-			if ([self.textActions shouldAddContdIn:range string:text]) change = NO;
-		} else {
-			change = ![self.textActions shouldAddLineBreaks:currentLine range:range];
-		}
-	}
-	else if (self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
+	} else if (self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
 		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
 		change = NO;
 	}

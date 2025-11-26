@@ -25,7 +25,7 @@ public struct InputAssistantAction {
 	public weak var target: AnyObject?
 	public let action: Selector?
 	
-	public let menu:UIMenu?
+	public var menu:UIMenu?
 	
 	public init(title:String = "", image: UIImage?, target: AnyObject? = nil, action: Selector? = nil, menu:UIMenu? = nil) {
 		self.image = image; self.target = target; self.action = action; self.title = title; self.menu = menu;
@@ -99,8 +99,9 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 			if currentResults.count == 0 && line.length == 0 {
 				// Display every character
 				currentResults = self.autocompletion.characterNames.swiftArray()
-			} else if ((currentResults.count > 0 && currentResults.first! == line.string) ||
-					(currentResults.count == 0 && line.length > 0)) {
+			} else if (delegate.selectedRange.length == 0 &&
+					   ((currentResults.count > 0 && currentResults.first! == line.string) ||
+						(currentResults.count == 0 && line.length > 0))) {
 				// If results were empty and/or there was a single result which is the same as the current line, show extensions
 				showExtensions = true
 			}
@@ -122,160 +123,150 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 }
 
 
-// MARK: - Input assistant view
+// MARK: - Input assistant toolbar
 
-/// UIInputView that displays custom suggestions, as well as leading and trailing actions.
-open class InputAssistantView: UIInputView {
-	public var fullActions:[InputAssistantAction] = []
+/// UIToolbar that displays custom suggestions, as well as leading and trailing actions.
+open class InputAssistantView: UIToolbar {
+	public var fullActions: [InputAssistantAction] = []
 	
 	deinit {
-		print("Input assistant deinit")
+		print("Input assistant toolbar deinit")
 		self.keyboardAppearanceObserver = nil
+		self.dSource = nil
 	}
 	
 	/// Returns the number of currently visible suggestions
 	@objc
-	public var numberOfSuggestions:Int {
+	public var numberOfSuggestions: Int {
 		return self.suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0
 	}
 	
 	/// Actions to display on the leading side of the suggestions.
 	public var leadingActions: [InputAssistantAction] = [] {
 		didSet {
-			self.updateActions(leadingActions, leadingStackView)
+			self.updateToolbarItems()
 		}
 	}
 	
 	/// Actions to display on the trailing side of the suggestions
 	public var trailingActions: [InputAssistantAction] = [] {
-		didSet { self.updateActions(trailingActions, trailingStackView) }
+		didSet {
+			self.updateToolbarItems()
+		}
 	}
 	
-	/// Set this to receive notifications when things happen in the assistant view.
-	public weak var delegate: InputAssistantViewDelegate?
+	/// Set this to receive notifications when things happen in the assistant toolbar.
+	public weak var assistantDelegate: InputAssistantViewDelegate?
 	
-	/// Set this to provide data to the input assistant view
+	/// Set this to provide data to the input assistant toolbar
 	public weak var dataSource: InputAssistantViewDataSource? {
-		didSet { suggestionsCollectionView?.reloadData() }
+		didSet {
+			suggestionsCollectionView?.reloadData()
+			updateToolbarItems()
+		}
 	}
 	
-	public var fullMenu:[InputAssistantAction] = []
-	public var rightMenu:[InputAssistantAction] = []
-	
-	var dSource:AutocompletionDataSource?
-	
-	/// Stack view on the leading side of the collection view. Contains actions.
-	private let leadingStackView: UIStackView
-	
-	/// Stack view on the trailing side of the collection view. Contains actions.
-	private let trailingStackView: UIStackView
+	/// Auto completion data source
+	var dSource: AutocompletionDataSource?
 	
 	/// Collection view, with a horizontally scrolling set of suggestions.
 	private var suggestionsCollectionView: InputAssistantCollectionView?
-		
 	
-	public init(editorDelegate:BeatEditorDelegate, inputAssistantDelegate:InputAssistantViewDelegate?) {
-		self.leadingStackView = UIStackView()
-		self.trailingStackView = UIStackView()
-		self.suggestionsCollectionView = InputAssistantCollectionView()
+	/// Container view for the collection view (used as custom bar button item)
+	private var suggestionsContainerView: UIView?
+	
+	/// Bar button item that holds the suggestions collection view
+	private var suggestionsBarItem: UIBarButtonItem?
+	
+	public init(editorDelegate: BeatEditorDelegate, inputAssistantDelegate: InputAssistantViewDelegate?) {
+		super.init(frame: .init(origin: .zero, size: .init(width: 0, height: 55)))
 		
-		guard let suggestionsCollectionView else { super.init(); return }
-		
-		super.init(frame: .init(origin: .zero, size: .init(width: 0, height: 55)), inputViewStyle: .default)
-		
-		self.suggestionsCollectionView?.inputAssistantView = self
-		self.suggestionsCollectionView?.delegate = self
-		
-		for stackView in [leadingStackView, trailingStackView] {
-			// A little nicer rounded capsules for iOS 26 items
-			if #available(iOS 26.0, *) {
-				stackView.cornerConfiguration = .capsule()
-				stackView.backgroundColor = .black.withAlphaComponent(0.8)
-			}
-			
-			stackView.spacing = 0.0
-			stackView.distribution = .equalCentering
-			stackView.alignment = .center
-			stackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-			stackView.tintColor = .white
-			
-			updateActions([], stackView)
-		}
-
-		// suggestions stretch to fill
-		suggestionsCollectionView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-		
-		// The stack views are embedded into a container, which lays them out horizontally
-		let containerStackView = UIStackView(arrangedSubviews: [leadingStackView, suggestionsCollectionView, trailingStackView])
-		containerStackView.alignment = .fill
-		containerStackView.axis = .horizontal
-		containerStackView.distribution = .equalCentering
+		self.assistantDelegate = inputAssistantDelegate
 				
-		// Stretch to fill bounds
-		containerStackView.frame = self.bounds
-		self.addSubview(containerStackView)
-		containerStackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		// Set up suggestions collection view
+		setupSuggestionsView()
 		
-		NSLayoutConstraint.activate([
-			containerStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-		])
-
-		
+		// Initialize data source (what's the trick here? retain issues?)
 		self.dSource = AutocompletionDataSource(editorDelegate: editorDelegate)
 		self.dataSource = self.dSource
 		
-		self.delegate = inputAssistantDelegate
-		
-		// iOS 26 won't have an opaque background, but we want it for usability's sake
-		// self.layer.backgroundColor = UIColor.black.withAlphaComponent(0.85).cgColor
+		// Initial toolbar setup
+		updateToolbarItems()
 	}
 	
-	public required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+	public required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	private func setupSuggestionsView() {
+		// Create collection view
+		let collectionView = InputAssistantCollectionView()
+		collectionView.inputAssistantView = self
+		collectionView.delegate = self
+		collectionView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+		collectionView.translatesAutoresizingMaskIntoConstraints = false
+		
+		// Create container view
+		let containerView = UIView()
+		containerView.translatesAutoresizingMaskIntoConstraints = false
+		containerView.addSubview(collectionView)
+		
+		// Set up constraints
+		NSLayoutConstraint.activate([
+			collectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+			collectionView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+			collectionView.topAnchor.constraint(equalTo: containerView.topAnchor),
+			collectionView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+			containerView.heightAnchor.constraint(equalToConstant: 44)
+		])
+		
+		self.suggestionsCollectionView = collectionView
+		self.suggestionsContainerView = containerView
+		
+		// Create bar button item with the container
+		self.suggestionsBarItem = UIBarButtonItem(customView: containerView)
+	}
 	
 	public func reloadData() {
-		guard let delegate, let suggestionsCollectionView else { return }
-
-		suggestionsCollectionView.reloadData()
+		guard let suggestionsCollectionView else { return }
 		
-		if suggestionsCollectionView.numberOfItems(inSection: 0) > 0, delegate.shouldShowSuggestions() {
-			self.leadingStackView.isHidden = true
-		} else {
-			self.leadingStackView.isHidden = false
-		}
+		suggestionsCollectionView.reloadData()
+		updateToolbarItems()
 	}
-
+	
 	/// The keyboard appearance of the attached text input
 	internal var keyboardAppearance: UIKeyboardAppearance? = .default {
 		didSet {
 			switch keyboardAppearance {
-			case .dark: self.tintColor = .white
-			default: self.tintColor = .black
+			case .dark:
+				self.tintColor = .white
+				self.barTintColor = .black.withAlphaComponent(0.85)
+			default:
+				self.tintColor = .black
+				self.barTintColor = .white.withAlphaComponent(0.85)
 			}
 		}
 	}
 	
 	private var keyboardAppearanceObserver: NSKeyValueObservation?
-
+	
 	/// Attach the inputAssistant to the given UITextView.
 	public func attach(to textInput: UITextView) {
 		self.keyboardAppearance = textInput.keyboardAppearance
-
+		
 		// Hide default undo/redo/etc buttons
 		textInput.inputAssistantItem.leadingBarButtonGroups = []
 		textInput.inputAssistantItem.trailingBarButtonGroups = []
-
-		// Disable built-in autocomplete
-		// textInput.autocorrectionType = .no
-
-		// Add the input assistant view as an accessory view
+		
+		// Add the input assistant toolbar as an accessory view
 		textInput.inputAccessoryView = self
-
+		
 		keyboardAppearanceObserver = textInput.observe(\UITextView.keyboardAppearance) { [weak self] textInput, _ in
 			self?.keyboardAppearance = textInput.keyboardAppearance
 		}
 	}
 	
-	public func detach(from textInput:UITextView) {
+	public func detach(from textInput: UITextView) {
 		NotificationCenter.default.removeObserver(self)
 		if let suggestionsCollectionView {
 			NotificationCenter.default.removeObserver(suggestionsCollectionView)
@@ -296,54 +287,94 @@ open class InputAssistantView: UIInputView {
 		self.suggestionsCollectionView?.removeFromSuperview()
 		self.suggestionsCollectionView = nil
 		
+		self.suggestionsContainerView?.removeFromSuperview()
+		self.suggestionsContainerView = nil
+		self.suggestionsBarItem = nil
+		
 		self.keyboardAppearanceObserver?.invalidate()
-		self.keyboardAppearanceObserver = nil		
-	}
-
-	open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-		super.traitCollectionDidChange(previousTraitCollection)
-		updateActions(leadingActions, leadingStackView)
-		updateActions(trailingActions, trailingStackView)
+		self.keyboardAppearanceObserver = nil
 	}
 	
-	/// Remove existing actions, and add new ones to the given leading/trailing stack view.
-	private func updateActions(_ actions: [InputAssistantAction], _ stackView: UIStackView) {
-		for view in stackView.arrangedSubviews {
-			view.removeFromSuperview()
-		}
-
-		if actions.isEmpty {
-			let emptyView = UIView()
-			emptyView.widthAnchor.constraint(equalToConstant: 0).isActive = true
-			stackView.addArrangedSubview(emptyView)
-		} else {
-			let itemWidth: CGFloat = self.traitCollection.horizontalSizeClass == .regular ? 60 : 40
-			for action in actions {
-				let button = UIButton(type: .system)
-				if action.title.count > 0 { button.setTitle(action.title, for: .normal) }
-								
-				if let image = action.image {
-					let width = (image.size.width / image.size.height) * 25
-					button.setImage(image.scaled(toSize: CGSize(width: width, height: 25)), for: .normal)
+	open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
+		updateToolbarItems()
+	}
+	
+	/// Update the toolbar items based on current actions and suggestions visibility
+	private func updateToolbarItems() {
+		var items: [UIBarButtonItem] = []
+		
+		// Determine if we should show suggestions
+		let hasSuggestions = (suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0) > 0
+		let shouldShowSuggestions = hasSuggestions && (assistantDelegate?.shouldShowSuggestions() ?? false)
+		
+		if shouldShowSuggestions {
+			// ONLY show suggestions - full width
+			if let suggestionsBarItem, let containerView = suggestionsContainerView {
+				// Set full width for suggestions
+				let totalWidth = UIScreen.main.bounds.width - 16 // some padding
+				
+				// Remove any existing width constraints
+				containerView.constraints.forEach { constraint in
+					if constraint.firstAttribute == .width {
+						constraint.isActive = false
+					}
 				}
 				
-				// Add target
-				if let target = action.target, let action = action.action {
-					button.addTarget(target, action: action, for: .touchUpInside)
-				}
-				
-				// Add menu if available
-				if let menu = action.menu {
-					button.menu = menu
-					button.showsMenuAsPrimaryAction = true
-				}
-
-				// If possible, the button should be at least 40px wide for a good sized tap target
-				let widthConstraint = button.widthAnchor.constraint(equalToConstant: itemWidth)
-				widthConstraint.priority = .defaultHigh
+				let widthConstraint = containerView.widthAnchor.constraint(equalToConstant: totalWidth)
+				widthConstraint.priority = .required
 				widthConstraint.isActive = true
 				
-				stackView.addArrangedSubview(button)
+				items.append(suggestionsBarItem)
+			}
+		} else {
+			// Show leading and trailing actions (no suggestions)
+			
+			// Leading actions
+			if !leadingActions.isEmpty {
+				let leadingButtons = createBarButtonItems(from: leadingActions)
+				items.append(contentsOf: leadingButtons)
+			}
+			
+			// Flexible space between leading and trailing
+			items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+			
+			// Trailing actions
+			if !trailingActions.isEmpty {
+				let trailingButtons = createBarButtonItems(from: trailingActions)
+				items.append(contentsOf: trailingButtons)
+			}
+		}
+		
+		self.setItems(items, animated: false)
+	}
+	
+	/// Create UIBarButtonItems from InputAssistantActions
+	private func createBarButtonItems(from actions: [InputAssistantAction]) -> [UIBarButtonItem] {
+		return actions.map { action in
+			if action.title.count > 0 {
+				// Text button
+				let barItem = UIBarButtonItem(title: action.title, style: .plain, target: nil, action: nil)
+				
+				if let menu = action.menu {
+					barItem.menu = menu
+				}
+				
+				return barItem
+			} else if let image = action.image {
+				// Image button
+				let width = (image.size.width / image.size.height) * 25
+				let scaledImage = image.scaled(toSize: CGSize(width: width, height: 25))
+				let barItem = UIBarButtonItem(image: scaledImage, style: .plain, target: nil, action: nil)
+				
+				if let menu = action.menu {
+					barItem.menu = menu
+				}
+				
+				return barItem
+			} else {
+				// Fallback empty item
+				return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 			}
 		}
 	}
@@ -378,7 +409,7 @@ extension InputAssistantView: UICollectionViewDelegate {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		
 		if let item = self.dataSource?.inputAssistantView(self, nameForSuggestionAtIndex: indexPath.last ?? NSNotFound) as? String {
-			self.delegate?.inputAssistantView(self, didSelectSuggestion: item)
+			self.assistantDelegate?.inputAssistantView(self, didSelectSuggestion: item)
 		}
 	}
 	
@@ -400,15 +431,3 @@ extension InputAssistantView: UIInputViewAudioFeedback {
 	public var enableInputClicksWhenVisible: Bool { return true }
 }
 
-
-extension UIImage {
-	/// Scales the image to the given CGSize
-	func scaled(toSize size: CGSize) -> UIImage {
-		if self.size == size { return self }
-				
-		let newImage = UIGraphicsImageRenderer(size: size).image { context in
-			self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-		}
-		return newImage.withRenderingMode(self.renderingMode)
-	}
-}

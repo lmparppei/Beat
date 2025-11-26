@@ -108,10 +108,9 @@ import BeatParsing
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
 		
-		// Set up assistant view
-		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: textView)
-		textView.assistantView?.attach(to: textView)
-		
+		//
+		textView.setupInputAssistant()
+				
 		// The same object will be responsible for all of these delegations
 		textView.editorDelegate = editorDelegate as? BeatTextEditorDelegate
 		textView.delegate = editorDelegate as? UITextViewDelegate
@@ -165,6 +164,36 @@ import BeatParsing
 	}
 	
 	
+	
+	// MARK: - Input assistant
+	
+	var inputAssistantHidden: Bool = BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden) {
+		didSet {
+			BeatUserDefaults.shared().save(inputAssistantHidden, forKey:BeatSettingInputAssistantHidden)
+			
+			if inputAssistantHidden {
+				self.assistantView?.detach(from: self)
+				self.assistantView = nil
+			} else {
+				showInputAssistant()
+			}
+		}
+	}
+
+	func setupInputAssistant() {
+		if !inputAssistantHidden {
+			showInputAssistant()
+		}
+	}
+	
+	func showInputAssistant() {
+		// Set up assistant view
+		guard let editorDelegate else { return }
+		self.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: self)
+		self.assistantView?.attach(to: self)
+	}
+	
+	
 	// MARK: - Layout manager
 	
 	/// Returns TextKit 1 layout manager
@@ -177,7 +206,6 @@ import BeatParsing
 		return nil
 	}
 
-	
 	
 	// MARK: - Setup
 	
@@ -203,8 +231,7 @@ import BeatParsing
 		// Text view behavior
 		self.smartDashesType = .no
 		self.smartQuotesType = .no
-		self.smartInsertDeleteType = .no
-		self.keyboardAppearance = .dark
+		self.smartInsertDeleteType = .no		
 		
 		resizePaper()
 		resize()
@@ -340,7 +367,7 @@ import BeatParsing
 		
 		// If the rect is not visible, scroll to that range
 		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			//enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
 		}
 		
 	}
@@ -535,6 +562,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 		guard let key = presses.first?.key else { return }
 		
 		// First check possible assistant view status and move highlight if needed
+		// Normal tab presses are caught later
 		if let assistantView, assistantView.numberOfSuggestions > 0,
 		   key.modifierFlags.rawValue == 0 || key.modifierFlags == .shift {
 			var preventSuper = false
@@ -591,9 +619,12 @@ extension BeatUITextView: UIScrollViewDelegate {
 	
 	func handleTabPress() {
 		guard let line = self.editorDelegate?.currentLine else { return }
-		
+					
 		if line.isAnyCharacter(), line.length > 0 {
 			self.editorDelegate?.formattingActions.addOrEditCharacterExtension()
+		} else if line.isAnyDialogue() && line.length == 0 {
+			self.editorDelegate?.textActions.add("()", at: UInt(line.position), skipAutomaticLineBreaks: true)
+			self.setSelectedRange(NSMakeRange(line.position+1, 0))
 		} else {
 			forceCharacterInput()
 		}
@@ -666,4 +697,11 @@ extension BeatUITextView:KeyboardManagerDelegate {
 	}
 }
 
-
+/*
+ 
+ mutta pian se on ohi
+ enää tää yksi ovi
+ vaikk' sen takana saattaa olla
+ vielä tuhansia ovii
+ 
+ */

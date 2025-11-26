@@ -136,18 +136,26 @@
 	[delegate checkDarkMode];
 	
 	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
+	self.navigationController.hidesBarsOnSwipe = true;
+	self.navigationController.hidesBottomBarWhenPushed = true;
 	
 	// Setup plugin support
 	self.runningPlugins = NSMutableDictionary.new;
 	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
 	
 	// Embed the editor split view
+	self.editorSplitView = self.childViewControllers.firstObject;
+	[self.editorSplitView loadView];
+	
+	/*
 	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Document" bundle:nil];
 	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
 	[self embed:splitView inView:self.splitViewContainer];
 	[splitView loadView];
+	 self.editorSplitView = splitView;
+	 */
 	
-	self.editorSplitView = splitView;
+	
 	
 	// Setup the split view
 	[self setupEditorViews];
@@ -508,7 +516,6 @@ SimulatedTyping* typing;
 		if (self.editorSplitView.sidebar.viewIfLoaded.window) {
 			[self.editorSplitView showColumn:UISplitViewControllerColumnSecondary];
 		} else {
-			//[self.outlineProvider update];
 			[self.editorSplitView showColumn:UISplitViewControllerColumnPrimary];
 			shown = true;
 		}
@@ -579,7 +586,7 @@ bool editorWasActive = false;
 	
 	UINavigationController* nc = [UINavigationController.alloc initWithRootViewController:vc];
 	[self presentViewController:nc animated:true completion:^{
-		NSLog(@"ok");
+		
 	}];
 }
 
