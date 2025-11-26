@@ -10,6 +10,7 @@
  Move **any** overlapping code here when possible, and leave only UI- and OS-specific stuff in the main implementations.
  
  Because of legacy code, macOS uses `Document` directly, rather than `NSViewController`, resulting in a silly target conditional below.
+ 
  I'll fix this one day. That day isn't today.
  
  */
@@ -254,6 +255,7 @@ NS_ASSUME_NONNULL_END
 //@property (nonatomic) bool useSansSerif;
 @property (nonatomic) NSInteger fontStyle;
 @property (nonatomic) bool hideFountainMarkup;
+@property (nonatomic) bool waitingForFormatting;
 
 /// Loads the current fonts defined by stylesheet.
 - (void)loadFonts;

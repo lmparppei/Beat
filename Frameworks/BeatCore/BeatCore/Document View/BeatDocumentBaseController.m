@@ -435,16 +435,19 @@
 - (void)applyFormatChanges
 {
     [self.formatting applyFormatChanges];
+    self.waitingForFormatting = false;
 }
 
 - (void)reformatAllLines
 {
     [self.formatting reformatLinesAtIndices:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.lines.count)]];
+    self.waitingForFormatting = false;
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices
 {
     [self.formatting reformatLinesAtIndices:indices];
+    self.waitingForFormatting = false;
 }
 
 
@@ -458,6 +461,12 @@
 - (void)updateTheme
 {
     NSLog(@"WARNING: Override updateTheme in OS-specific implementation");
+}
+
+- (void)setWaitingForFormatting:(bool)waitingForFormatting
+{
+    _waitingForFormatting = waitingForFormatting;
+    
 }
 
 - (void)updateThemeAndReformat:(NSArray*)types
@@ -672,10 +681,14 @@
 - (NSAttributedString *)getAttributedText
 {
     NSAttributedString* attrStr;
-    if (!NSThread.isMainThread) attrStr = self.attrTextCache;
-    else attrStr = self.textView.textStorage;
+    if (!NSThread.isMainThread) {
+        attrStr = self.attrTextCache.copy;
+    } else {
+        attrStr = self.textView.textStorage.copy;
+        self.attrTextCache = attrStr;
+    }
     
-    return (attrStr != nil) ? attrStr.copy : NSAttributedString.new;
+    return (attrStr != nil) ? attrStr : NSAttributedString.new;
 }
 
 - (NSAttributedString*)attributedString
@@ -787,7 +800,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     [self.documentSettings set:DocSettingHeadingUUIDs as:self.parser.outlineUUIDs];
     
     // Save caret position
-    [self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
+    if (NSThread.isMainThread) {
+        [self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
+    }
     
     #if TARGET_OS_OSX
         [self unblockUserInteraction];

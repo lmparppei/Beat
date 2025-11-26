@@ -100,6 +100,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
         else break;
     }
     
+    self.delegate.waitingForFormatting = false;
+    
     [parser.changedIndices removeAllIndexes];
 }
 
