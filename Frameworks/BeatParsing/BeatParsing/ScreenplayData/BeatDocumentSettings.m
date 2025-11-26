@@ -31,7 +31,7 @@ NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";
 NSString * const DocSettingTags = @"Tags";
 NSString * const DocSettingLocked = @"Locked";
-NSString * const DocSettingRevisedPageColor = @"Revised Page Color";
+
 NSString * const DocSettingRevisionMode = @"Revision Mode";
 NSString * const DocSettingColorCodePages = @"Color-code Pages";
 NSString * const DocSettingCaretPosition = @"Caret Position";
@@ -57,7 +57,8 @@ NSString * const DocSettingCharacterData = @"CharacterData";
 NSString * const DocSettingPrintSceneNumbers = @"Print Scene Numbers";
 NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
 NSString * const DocSettingPrintSections = @"Print Sections";
-NSString * const DocSettingPrintNotes    = @"Print Notes";
+NSString * const DocSettingPrintNotes = @"Print Notes";
+NSString * const DocSettingPrintedRevisionHighlighting = @"Revision Highlighting";
 
 NSString * const DocSettingStylesheet    = @"Stylesheet";
 

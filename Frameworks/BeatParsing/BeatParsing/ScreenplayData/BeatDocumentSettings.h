@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const DocSettingRevisions;
 extern NSString * const DocSettingHiddenRevisions;
-extern NSString * const DocSettingRevisedPageColor;
 extern NSString * const DocSettingColorCodePages;
 extern NSString * const DocSettingRevisionColor;
 extern NSString * const DocSettingRevisionLevel;
@@ -53,6 +52,7 @@ extern NSString * const DocSettingPrintSceneNumbers;
 extern NSString * const DocSettingPrintSynopsis;
 extern NSString * const DocSettingPrintSections;
 extern NSString * const DocSettingPrintNotes;
+extern NSString * const DocSettingPrintedRevisionHighlighting;
 
 extern NSString * const DocSettingStylesheet;
 

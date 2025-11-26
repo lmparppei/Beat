@@ -18,7 +18,34 @@
 
 #import <BeatParsing/BeatPaperSizing.h>
 
+typedef NS_ENUM(NSUInteger, BeatExportOperation) {
+    ForPrint = 0,
+    ForPreview,
+    ForQuickLook
+};
+
+typedef NS_ENUM(NSUInteger, BeatExportRevisionHighlightMode) {
+    BeatExportRevisionHighlightNone = 0,
+    BeatExportRevisionHighlightColor,
+    BeatExportRevisionHighlightBackground
+};
+
+// For future generations
+typedef NS_OPTIONS(NSUInteger, BeatExportSettingIncludedElementMask) {
+    BeatExportSettingIncludeNotes       = 1 << 0,
+    BeatExportSettingIncludeSynopsis    = 1 << 1,
+    BeatExportSettingIncludeSections    = 1 << 2
+};
+
 NS_ASSUME_NONNULL_BEGIN
+
+// These will be used for the new dictionary-based setting delivery in the future
+FOUNDATION_EXPORT NSString *const BeatExportSettingOperation;
+FOUNDATION_EXPORT NSString *const BeatExportSettingPrintSceneNumbers;
+FOUNDATION_EXPORT NSString *const BeatExportSettingStyles;
+FOUNDATION_EXPORT NSString *const BeatExportSettingHidePageNumbers;
+FOUNDATION_EXPORT NSString *const BeatExportSettingDocumentSettings;
+FOUNDATION_EXPORT NSString *const BeatExportSettingInvisibleElements;
 
 @class OutlineScene;
 @class BeatDocumentSettings;
@@ -41,21 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BeatPaperSize)pageSize;
 @end
 
-typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
-	ForPrint = 0,
-	ForPreview,
-	ForQuickLook
-};
-
 @interface BeatExportSettings : NSObject
 
 @property (nonatomic, weak) id<BeatExportSettingDelegate> delegate;
-@property (nonatomic) BeatHTMLOperation operation;
-@property (nonatomic) NSString * _Nullable pageRevisionColor;
-@property (nonatomic) bool coloredPages;
+@property (nonatomic) BeatExportOperation operation;
 
 @property (nonatomic) NSString* header;
 @property (nonatomic) NSInteger headerAlignment;
+
+@property (nonatomic) BeatExportSettingIncludedElementMask invisibleElements;
 
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
@@ -84,15 +105,17 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 
 @property (nonatomic) NSInteger firstPageNumber;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers;
+@property (nonatomic) BeatExportRevisionHighlightMode revisionHighlightMode;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions;
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene;
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate;
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene;
+
++ (BeatExportSettings*)operation:(BeatExportOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate;
 
 - (BeatPaperSize)paperSize; /// Get page size. For safety reasons, the value is checked from the actual print settings
 

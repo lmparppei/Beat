@@ -12,23 +12,32 @@
 
 @implementation BeatExportSettings
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:nil scene:@"" coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
+NSString *const BeatExportSettingOperation = @"operation";
+NSString *const BeatExportSettingPrintSceneNumbers = @"printSceneNumbers";
+NSString *const BeatExportSettingStyles = @"styles";
+NSString *const BeatExportSettingHidePageNumbers = @"hidePageNumbers";
+NSString *const BeatExportSettingDocumentSettings = @"documentSettings";
+NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
+
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:nil scene:@"" hidePageNumbers:false];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:@"" coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:@"" hidePageNumbers:false];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:scene coloredPages:NO revisedPageColor:@"" hidePageNumbers:false];
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:scene hidePageNumbers:false];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisions:revisions scene:nil coloredPages:coloredPages revisedPageColor:revisedPagecolor hidePageNumbers:false];
++ (BeatExportSettings*)operation:(BeatExportOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene
+{
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisions:revisions scene:nil hidePageNumbers:false];
 }
 
--(instancetype)initWithOperation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPageColor hidePageNumbers:(bool)hidePageNumbers {
+-(instancetype)initWithOperation:(BeatExportOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSIndexSet*)revisions scene:(NSString* _Nullable )scene hidePageNumbers:(bool)hidePageNumbers
+{
 	self = [super init];
 	
 	if (self) {
@@ -39,8 +48,6 @@
         
         _revisions = revisions.copy;
 		_printNotes = printNotes;
-		_coloredPages = coloredPages;
-		_pageRevisionColor = revisedPageColor.copy;
 		_paperSize = NSNotFound;
         
         _hidePageNumbers = hidePageNumbers;
@@ -53,10 +60,10 @@
 	return self;
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
++ (BeatExportSettings*)operation:(BeatExportOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
     return [BeatExportSettings.alloc initWithOperation:operation delegate:delegate];
 }
-- (BeatExportSettings*)initWithOperation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate
+- (BeatExportSettings*)initWithOperation:(BeatExportOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate
 {
     self = super.init;
     
@@ -76,10 +83,7 @@
         _printSceneNumbers = delegate.printSceneNumbers;
         _hidePageNumbers = delegate.hidePageNumbers;
         _revisions = delegate.shownRevisions;
-        
-        _coloredPages = false;
-        _pageRevisionColor = @"";
-        
+                
         _paperSize = delegate.pageSize;
                 
         _fileName = delegate.fileNameString;
@@ -87,17 +91,56 @@
         _firstPageNumber = [delegate.documentSettings getInt:DocSettingFirstPageNumber];
         
         // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings. Probably a bytemask?
-        id<BeatExportStyleProvider> styles = self.styles;
-        NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
+        [self applyInvisibleElementSettings];
         
-        if ([delegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes = true;
-        if ([delegate.documentSettings getBool:DocSettingPrintSections] || styles.shouldPrintSections) [additionalTypes addIndex:section];
-        if ([delegate.documentSettings getBool:DocSettingPrintSynopsis] || styles.shouldPrintSynopses) [additionalTypes addIndex:synopse];
-        
-        _additionalTypes = additionalTypes;
+        _revisionHighlightMode = [delegate.documentSettings getInt:DocSettingPrintedRevisionHighlighting];
     }
     
     return self;
+}
+
+- (BeatExportSettings*)initWithSettings:(NSDictionary*)settings
+{
+    NSLog(@"!!! Warning: Don't use this method, not done yet :-)");
+    
+    self = [super init];
+    
+    if (self) {
+        _operation = (BeatExportOperation)((NSNumber*)settings[BeatExportSettingOperation]).unsignedIntValue;
+        _styles = settings[BeatExportSettingStyles];
+        _hidePageNumbers = ((NSNumber*)settings[BeatExportSettingHidePageNumbers]).boolValue;
+        _printSceneNumbers = ((NSNumber*)settings[BeatExportSettingPrintSceneNumbers]).boolValue;
+        
+        _documentSettings = settings[BeatExportSettingDocumentSettings];
+        _firstPageNumber = [self.documentSettings getInt:DocSettingFirstPageNumber];
+                
+        NSNumber* invisibleElements = settings[BeatExportSettingInvisibleElements];
+        self.invisibleElements = invisibleElements.unsignedIntValue;
+        
+        [self applyInvisibleElementSettings];
+    }
+    
+    return self;
+}
+
+- (void)applyInvisibleElementSettings
+{
+    id<BeatExportStyleProvider> styles = self.styles;
+    NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
+    
+    if (self.invisibleElements & BeatExportSettingIncludeNotes)
+        _printNotes = true;
+    if (self.invisibleElements & BeatExportSettingIncludeSections)
+        [additionalTypes addIndex:section];
+    if (self.invisibleElements & BeatExportSettingIncludeSynopsis)
+        [additionalTypes addIndex:synopse];
+    
+    // We also support setting these through raw document settings
+    if ([self.documentSettings getBool:DocSettingPrintNotes]) _printNotes = true;
+    if ([self.documentSettings getBool:DocSettingPrintSections] || styles.shouldPrintSections) [additionalTypes addIndex:section];
+    if ([self.documentSettings getBool:DocSettingPrintSynopsis] || styles.shouldPrintSynopses) [additionalTypes addIndex:synopse];
+    
+    _additionalTypes = additionalTypes;
 }
 
 - (BeatPaperSize)paperSize
