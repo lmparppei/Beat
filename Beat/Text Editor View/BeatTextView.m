@@ -132,6 +132,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	self.usesFindBar = true;
 	self.usesFindPanel = false;
+	self.enclosingScrollView.autohidesScrollers = true;
 }
 
 /// Loads and sets up our custom layout manager, `BeatLayoutManager`
@@ -217,7 +218,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self setupPopovers];
 	
 	// Make the text view first responder at start
-	NSLog(@"SETUP");
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
 	
 	// Setup focus mode
@@ -258,11 +258,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return nil;
 }
 
--(void)setBounds:(NSRect)bounds {
+-(void)setBounds:(NSRect)bounds
+{
 	[super setBounds:bounds];
 }
 
--(void)setFrame:(NSRect)frame {
+-(void)setFrame:(NSRect)frame
+{
 	// There is a strange bug (?) in macOS Monterey which causes some weird sizing errors.
 	// This is a duct-tape fix. Sorry for anyone reading this.
 	
@@ -342,7 +344,7 @@ NSString *keyCodeToString(uint16_t keyCode) {
 
 	BOOL shouldComplete = YES;
 	BOOL preventDefault = NO;
-
+	
 	if ((self.popoverController.isShown || self.infoPopover.isShown) && event.keyCode == 53) {
 		// Esc key pressed when popovers are visible
 		[self closePopovers];
@@ -367,7 +369,7 @@ NSString *keyCodeToString(uint16_t keyCode) {
 			case 48: {
 				// If there are no flags, we'll send the tab key to delegate. It should rather be handled here though.
 				NSUInteger flags = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
-				if (flags == 0 || flags == NSEventModifierFlagCapsLock) [self.editorDelegate handleTabPress];
+				if (flags == 0 || flags == NSEventModifierFlagCapsLock) [self handleTabPress];
 				
 				// We'll never allow tab to be inserted
 				preventDefault = YES;
@@ -420,7 +422,8 @@ NSString *keyCodeToString(uint16_t keyCode) {
 
 #pragma mark - Autocomplete & data source
 
-- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+- (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index
+{
 	if ([self.delegate respondsToSelector:@selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)]) {
 		return [self.delegate textView:self completions:@[] forPartialWordRange:charRange indexOfSelectedItem:index];
 	}
@@ -431,8 +434,8 @@ NSString *keyCodeToString(uint16_t keyCode) {
 
 #pragma mark - Setting insets on resize
 
--(void)viewDidEndLiveResize {
-	//[super viewDidEndLiveResize];
+-(void)viewDidEndLiveResize
+{
 	[self setInsets];
 }
 

@@ -83,10 +83,22 @@
 	[self.popoverController reloadData];
 		
 	// Display the matches
-	[self.popoverController displayWithRange:substringRange items:matches callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
+	[self.popoverController displayWithRange:substringRange items:matches callback:^BOOL(NSString * _Nonnull string, NSInteger index, uint16_t keyCode) {
+		// If this block returns TRUE, any default keyboard events are cancelled (like return or tab)
+		// We'll return 48 for tab every time
+		BOOL preventDefault = (keyCode == 48);
+		
 		[self insertAutocompletionString:string];
-		// This block returns false so that we can press enter for a new paragraph after autocompleting a line, or tab to stay on that line.
-		return false;
+		
+		Line* currentLine = self.editorDelegate.currentLine;
+		
+		if (currentLine.isAnyCharacter) {
+			// Avoid being weird with enter presses when editing / adding cue extensions.
+			Line* nextLine = [self.editorDelegate.parser nextLine:currentLine];
+			if (nextLine.length > 0 || self.selectedRange.location < NSMaxRange(currentLine.textRange)) preventDefault = true;
+		}
+		
+		return preventDefault;
 	}];
 	
 	[self.popoverController selectRowWithIndex:index];
@@ -95,19 +107,25 @@
 /// Called from popover controller block to insert the selected string at current line.
 - (void)insertAutocompletionString:(NSString*)string
 {
-	NSInteger beginningOfWord;
-	
-	Line* currentLine = self.editorDelegate.currentLine;
-	if (currentLine) {
-		NSInteger locationInString = self.selectedRange.location - currentLine.position;
-		beginningOfWord = self.selectedRange.location - locationInString;
+	NSRange range;
+	// IF the string is something wrapped in parentheses AND we're inside parentheses, we'll replace just that range.
+	// This is a little convoluted, but bear with me.
+	if (string.wrappedInParentheses && [self.text positionInsideParentheticals:self.selectedRange.location]) {
+		range = [self.text parentheticalRangeAt:self.selectedRange.location];
 	} else {
-		beginningOfWord = self.selectedRange.location - self.partialText.length;
+		NSInteger beginningOfWord;
+		Line* currentLine = self.editorDelegate.currentLine;
+		if (currentLine) {
+			NSInteger locationInString = self.selectedRange.location - currentLine.position;
+			beginningOfWord = self.selectedRange.location - locationInString;
+		} else {
+			beginningOfWord = self.selectedRange.location - self.partialText.length;
+		}
+		
+		range = NSMakeRange(beginningOfWord, self.partialText.length);
 	}
-	
-	NSRange range = NSMakeRange(beginningOfWord, self.partialText.length);
-	
-	if ([self shouldChangeTextInRange:range replacementString:string]) {
+		
+	if (range.location != NSNotFound && [self shouldChangeTextInRange:range replacementString:string]) {
 		[self replaceCharactersInRange:range withString:string];
 		[self didChangeText];
 		[self setAutomaticTextCompletionEnabled:NO];

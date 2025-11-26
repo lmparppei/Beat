@@ -28,7 +28,7 @@
 	if (self.selectedRange.length < 1) return;
 	
 	// Open tag menu
-	[self.popoverController displayWithRange:self.selectedRange items:BeatTagging.styledTagsForMenu callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
+	[self.popoverController displayWithRange:self.selectedRange items:BeatTagging.styledTagsForMenu callback:^BOOL(NSString * _Nonnull string, NSInteger index, uint16_t keyCode) {
 		// Get the selected tag item
 		__block BeatTagType type = NoTag;
 		
@@ -60,7 +60,7 @@
 				NSArray* matches = [items arrayByAddingObjectsFromArray:possibleMatches];
 				
 				// Display a new popover
-				[self.popoverController displayWithRange:self.selectedRange items:matches callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
+				[self.popoverController displayWithRange:self.selectedRange items:matches callback:^BOOL(NSString * _Nonnull string, NSInteger index, uint16_t keyCode) {
 					[self selectTagDefinition:string row:index type:type];
 					return true;
 				}];

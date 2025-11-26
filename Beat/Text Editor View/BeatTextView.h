@@ -49,16 +49,17 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @property (nonatomic) bool skipSelectionChangeEvent;
 
 @property (nonatomic) BeatReview* review;
+@property (nonatomic, weak) BeatEditorFormattingActions* formattingActions;
 
 @property (readonly) NSRange lastChangedRange;
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 
-@property (nonatomic) BeatEditorFormatting* formatting;
+//@property (nonatomic) BeatEditorFormatting* formatting;
 
 - (bool)isDark;
 - (void)showLockStatus;
-- (void)handleTabPress;
+//- (void)handleTabPress;
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (CGFloat)lineHeight;

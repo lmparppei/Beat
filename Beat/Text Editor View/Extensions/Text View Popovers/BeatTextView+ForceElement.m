@@ -20,7 +20,7 @@
 
 - (void)showForceElementMenu
 {
-	[self.popoverController displayWithRange:self.selectedRange items:self.forceableTypes.allKeys callback:^BOOL(NSString * _Nonnull string, NSInteger index) {
+	[self.popoverController displayWithRange:self.selectedRange items:self.forceableTypes.allKeys callback:^BOOL(NSString * _Nonnull string, NSInteger index, uint16_t keyCode) {
 		[self forceLineTypeWithName:string];
 		// Prevent default
 		return true;

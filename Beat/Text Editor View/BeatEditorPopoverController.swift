@@ -40,7 +40,7 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 	var popover:NSPopover = NSPopover()
 	var tableView:NSTableView = NSTableView()
 	
-	var callback:((_ string:String, _ row:Int) -> Bool)?
+	var callback:((_ string:String, _ row:Int, _ keyCode:UInt16) -> Bool)?
 	var doNotClose = false
 	
 	init(delegate:BeatEditorPopoverDelegate) {
@@ -107,7 +107,7 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 	}
 	
 	/// Displays the popover menu in given range. If the callback returns `true` the default behavior of enter key will be prevented.
-	func display(range:NSRange, items:[Any], callback:@escaping (_ string:String, _ row:Int) -> Bool) {
+	func display(range:NSRange, items:[Any], callback:@escaping (_ string:String, _ row:Int, _ keyCode:UInt16) -> Bool) {
 		self.close() // First always close the possible existing view
 				
 		guard let textView = self.textView,
@@ -212,7 +212,7 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		return BeatEditorPopoverTableRowView()
 	}
 	
-	func pickPopoverItem() -> Bool {
+	func pickPopoverItem(keyCode:UInt16) -> Bool {
 		let string:String
 		let item = self.items[self.tableView.selectedRow]
 
@@ -229,13 +229,13 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		doNotClose = false
 		
 		// Ask the delegate whether we should prevent default or not.
-		let preventDefault = self.callback?(string, tableView.selectedRow) ?? true
+		let preventDefault = self.callback?(string, tableView.selectedRow, keyCode) ?? true
 		return preventDefault
 	}
 	
 	
 	// MARK: - Handle editor key presses
-	
+	/// Returns a boolean indicating if the default behavior should be prevented
 	@objc func keyPressed(keyCode:UInt16) -> Bool {
 		var preventDefault = false
 		
@@ -246,12 +246,9 @@ class BeatEditorPopoverController:NSObject, NSTableViewDataSource, NSTableViewDe
 		} else if (keyCode == 126) {
 			// Up key
 			moveUp(); preventDefault = true
-		} else if (keyCode == 48) {
-			// Tab
-			preventDefault = pickPopoverItem()
-		} else if (keyCode == 36) {
-			// Return
-			preventDefault = pickPopoverItem()
+		} else if (keyCode == 48 || keyCode == 36) {
+			// Tab or return
+			preventDefault = pickPopoverItem(keyCode: keyCode)
 		}
 				
 		return preventDefault
