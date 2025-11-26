@@ -1,0 +1,411 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B66F1CD52ED5F599005EB432 /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD12ED5F599005EB432 /* BeatCore.framework */; };
+		B66F1CD62ED5F599005EB432 /* BeatCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD12ED5F599005EB432 /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66F1CD72ED5F599005EB432 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD22ED5F599005EB432 /* BeatDynamicColor.framework */; };
+		B66F1CD82ED5F599005EB432 /* BeatDynamicColor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD22ED5F599005EB432 /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66F1CD92ED5F599005EB432 /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD32ED5F599005EB432 /* BeatPagination2.framework */; };
+		B66F1CDA2ED5F599005EB432 /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD32ED5F599005EB432 /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66F1CDF2ED5F599005EB432 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CDE2ED5F599005EB432 /* PDFKit.framework */; };
+		B66F1CE02ED5F603005EB432 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD42ED5F599005EB432 /* BeatParsing.framework */; };
+		B66F1CE12ED5F603005EB432 /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1CD42ED5F599005EB432 /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66F1CE42ED5F795005EB432 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = B66F1CE32ED5F795005EB432 /* ArgumentParser */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B66F1CC42ED5F54F005EB432 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		B66F1CDD2ED5F599005EB432 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				B66F1CDA2ED5F599005EB432 /* BeatPagination2.framework in Embed Frameworks */,
+				B66F1CE12ED5F603005EB432 /* BeatParsing.framework in Embed Frameworks */,
+				B66F1CD82ED5F599005EB432 /* BeatDynamicColor.framework in Embed Frameworks */,
+				B66F1CD62ED5F599005EB432 /* BeatCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B66F1CC62ED5F54F005EB432 /* Beat CLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Beat CLI"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CD12ED5F599005EB432 /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CD22ED5F599005EB432 /* BeatDynamicColor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDynamicColor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CD32ED5F599005EB432 /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CD42ED5F599005EB432 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CDE2ED5F599005EB432 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B66F1CC82ED5F54F005EB432 /* Beat CLI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Beat CLI";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B66F1CC32ED5F54F005EB432 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B66F1CE42ED5F795005EB432 /* ArgumentParser in Frameworks */,
+				B66F1CE02ED5F603005EB432 /* BeatParsing.framework in Frameworks */,
+				B66F1CD92ED5F599005EB432 /* BeatPagination2.framework in Frameworks */,
+				B66F1CD72ED5F599005EB432 /* BeatDynamicColor.framework in Frameworks */,
+				B66F1CDF2ED5F599005EB432 /* PDFKit.framework in Frameworks */,
+				B66F1CD52ED5F599005EB432 /* BeatCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B66F1CBD2ED5F54F005EB432 = {
+			isa = PBXGroup;
+			children = (
+				B66F1CC82ED5F54F005EB432 /* Beat CLI */,
+				B66F1CD02ED5F599005EB432 /* Frameworks */,
+				B66F1CC72ED5F54F005EB432 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B66F1CC72ED5F54F005EB432 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B66F1CC62ED5F54F005EB432 /* Beat CLI */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B66F1CD02ED5F599005EB432 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B66F1CDE2ED5F599005EB432 /* PDFKit.framework */,
+				B66F1CD12ED5F599005EB432 /* BeatCore.framework */,
+				B66F1CD22ED5F599005EB432 /* BeatDynamicColor.framework */,
+				B66F1CD32ED5F599005EB432 /* BeatPagination2.framework */,
+				B66F1CD42ED5F599005EB432 /* BeatParsing.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B66F1CC52ED5F54F005EB432 /* Beat CLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B66F1CCD2ED5F54F005EB432 /* Build configuration list for PBXNativeTarget "Beat CLI" */;
+			buildPhases = (
+				B66F1CC22ED5F54F005EB432 /* Sources */,
+				B66F1CC32ED5F54F005EB432 /* Frameworks */,
+				B66F1CC42ED5F54F005EB432 /* CopyFiles */,
+				B66F1CDD2ED5F599005EB432 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B66F1CC82ED5F54F005EB432 /* Beat CLI */,
+			);
+			name = "Beat CLI";
+			packageProductDependencies = (
+				B66F1CE32ED5F795005EB432 /* ArgumentParser */,
+			);
+			productName = "Beat CLI";
+			productReference = B66F1CC62ED5F54F005EB432 /* Beat CLI */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B66F1CBE2ED5F54F005EB432 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2610;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					B66F1CC52ED5F54F005EB432 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+				};
+			};
+			buildConfigurationList = B66F1CC12ED5F54F005EB432 /* Build configuration list for PBXProject "Beat CLI" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B66F1CBD2ED5F54F005EB432;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B66F1CE22ED5F795005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				B66F1D152ED605F9005EB432 /* XCLocalSwiftPackageReference "FontsPackage" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B66F1CC72ED5F54F005EB432 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B66F1CC52ED5F54F005EB432 /* Beat CLI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B66F1CC22ED5F54F005EB432 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B66F1CCB2ED5F54F005EB432 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B66F1CCC2ED5F54F005EB432 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		B66F1CCE2ED5F54F005EB432 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "fi.kapitan.beat-cli";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B66F1CCF2ED5F54F005EB432 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "fi.kapitan.beat-cli";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B66F1CC12ED5F54F005EB432 /* Build configuration list for PBXProject "Beat CLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66F1CCB2ED5F54F005EB432 /* Debug */,
+				B66F1CCC2ED5F54F005EB432 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B66F1CCD2ED5F54F005EB432 /* Build configuration list for PBXNativeTarget "Beat CLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66F1CCE2ED5F54F005EB432 /* Debug */,
+				B66F1CCF2ED5F54F005EB432 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B66F1D152ED605F9005EB432 /* XCLocalSwiftPackageReference "FontsPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = FontsPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B66F1CE22ED5F795005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B66F1CE32ED5F795005EB432 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B66F1CE22ED5F795005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B66F1CBE2ED5F54F005EB432 /* Project object */;
+}
