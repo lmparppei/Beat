@@ -113,34 +113,46 @@
 - (void)autocompleteOnCurrentLine
 {
 	Line *currentLine = self.delegate.currentLine;
-	
-	// We'll only autocomplete when cursor is at the end of line.
-	if (_delegate.selectedRange.location != NSMaxRange(currentLine.textRange)) {
+    NSRange range = _delegate.selectedRange;
+    
+    // We'll only autocomplete at ends of the line, except with characters, where we have some special rules
+	if (range.location < NSMaxRange(currentLine.textRange) && !currentLine.isAnyCharacter) {
 		[_delegate setAutomaticTextCompletionEnabled:NO];
 		return;
 	}
 
+    bool autocomplete = false;
+    
 	if (currentLine.isAnyCharacter || currentLine.forcedCharacterCue) {
-		if (_characterNames.count == 0) [self collectCharacterNames];
-		[_delegate setAutomaticTextCompletionEnabled:YES];
+        
+        if (range.location == NSMaxRange(currentLine.textRange)) {
+            if (_characterNames.count == 0) [self collectCharacterNames];
+            autocomplete = true;
+        } else if ([currentLine.string positionInsideParentheticals:self.delegate.selectedRange.location - currentLine.position]) {
+            autocomplete = true;
+        }
 	} else if (currentLine.type == heading) {
 		if (_sceneHeadings.count == 0) [self collectHeadings];
-		[_delegate setAutomaticTextCompletionEnabled:YES];
+        autocomplete = true;
 	} else {
 		[_characterNames removeAllObjects];
 		[_sceneHeadings removeAllObjects];
-		[_delegate setAutomaticTextCompletionEnabled:NO];
+        autocomplete = false;
 	}
+    
+    [_delegate setAutomaticTextCompletionEnabled:autocomplete];
 }
 
 #pragma mark - Autocomplete delegate method (forwarded from document)
 
 - (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange
 {
+    Line *currentLine = self.delegate.currentLine;
+    if (currentLine.string == nil) return @[];
+    
     NSMutableArray *matches = NSMutableArray.new;
     NSMutableArray *allSuggestions = NSMutableArray.new;
     
-    Line *currentLine = self.delegate.currentLine;
     NSString* stringToSearch = [_delegate.text substringWithRange:charRange].uppercaseString;
     NSString* prefix = @"";
     
@@ -181,22 +193,30 @@
     }
     
     // If no matches were found and the line is a character cue, provide a list of extensions
-    if (matches.count == 0 && currentLine.isAnyCharacter && ![currentLine.string containsString:@"("] &&
-        currentLine.length > 0 && currentLine.lastCharacter == ' ') {
-        NSString* name = [currentLine.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-        NSArray* extensions = @[[NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd]], @"(V.O.)", @"(O.S.)"];
-        
-        NSMutableArray* cueExtensions = NSMutableArray.new;
-        [cueExtensions addObject:name]; // Add the plain name as first option
-        
-        for (NSString* extension in extensions) {
-            [cueExtensions addObject:[NSString stringWithFormat:@"%@ %@", name, extension]];
+    if (currentLine.isAnyCharacter && matches.count == 0) {
+        if (![currentLine.string containsString:@"("] && currentLine.length > 0 && currentLine.lastCharacter == ' ') {
+            NSString* name = [currentLine.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+            NSArray* extensions = self.characterExtensions;
+            
+            NSMutableArray* cueExtensions = NSMutableArray.new;
+            [cueExtensions addObject:name]; // Add the plain name as first option
+            
+            for (NSString* extension in extensions) {
+                [cueExtensions addObject:[NSString stringWithFormat:@"%@ %@", name, extension]];
+            }
+            
+            return cueExtensions;
+        } else if ([currentLine.string positionInsideParentheticals:NSMaxRange(charRange) - currentLine.position]) {
+            return self.characterExtensions;
         }
-        
-        return cueExtensions;
     }
     
     return matches;
+}
+
+- (NSArray<NSString*>*)characterExtensions
+{
+    return @[[NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd]], @"(V.O.)", @"(O.S.)"];
 }
 
 - (NSArray *)completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index

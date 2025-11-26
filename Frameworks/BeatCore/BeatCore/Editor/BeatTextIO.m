@@ -900,10 +900,11 @@ static NSString *centeredEnd = @" <";
         Line* nextLine = [self.delegate.parser nextLine:currentLine];
         
         if (nextLine.length == 0) {
-            [self addString:@"\n" atIndex:affectedRange.location + 1];
-            [self.textView setSelectedRange:NSMakeRange(affectedRange.location + 2, 0)];
+            NSInteger i = NSMaxRange(currentLine.textRange);
+            [self addString:@"\n" atIndex:i];
+            [self.textView setSelectedRange:NSMakeRange(i + 1, 0)];
         } else if (nextLine != nil) {
-            self.textView.selectedRange = NSMakeRange(nextLine.position, 0);
+            self.textView.selectedRange = NSMakeRange(NSMaxRange(nextLine.textRange), 0);
         }
         
         self.delegate.currentLine.type = (currentLine.isDualDialogue) ? dualDialogue : dialogue;
