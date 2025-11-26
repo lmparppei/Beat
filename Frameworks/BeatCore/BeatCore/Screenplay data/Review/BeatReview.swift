@@ -33,6 +33,7 @@ public protocol BeatReviewInterface {
     @objc public var keywords:[String] {
         if string.range(of: "#").location == NSNotFound { return [] }
         
+		// Regexes are highly inefficient, but a lookup is only used if a hash symbol is found
         let pattern = "#(\\w+)"
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: [])

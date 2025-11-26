@@ -170,7 +170,7 @@ public protocol BeatReviewDelegate: AnyObject {
 
 }
 
-@objc public class BeatReviewEditorViewBase:UXViewController, BeatReviewDelegate, UXTextViewDelegate {
+@objc public class BeatReviewEditorViewBase:UXViewController, BeatReviewDelegate, UXTextViewDelegate, NSTextStorageDelegate {
     @IBOutlet weak var textView:BeatReviewTextView?
     @IBOutlet weak var editButton:UXButton?
     @IBOutlet weak var deleteButton:UXButton?
@@ -180,6 +180,8 @@ public protocol BeatReviewDelegate: AnyObject {
     var shown:Bool = false
     
     var editorContentSize:CGSize { return CGSizeMake(250, 160) }
+    
+    private let hashtagRegex = try! NSRegularExpression(pattern: "#[A-Za-z0-9_]+")
     
     var editable = false {
         didSet { updateEditorMode() }
@@ -289,6 +291,7 @@ extension BeatReviewEditorViewBase {
         // Load content from the review
         textView?.text = item.string as? String ?? ""
                 
+        highlightHashtags()
         updateEditorMode()
         
         #if os(macOS)
@@ -388,14 +391,41 @@ extension BeatReviewEditorViewBase {
     public func textDidChange(_ notification: Notification) {
         item.string = textView?.text as? NSString
         delegate?.saveReview(item: item)
+        highlightHashtags()
     }
-    
+        
     func setContentSize(_ size:CGSize) {
         #if os(macOS)
         delegate?.popover?.contentSize = size
         #elseif os(iOS)
         self.preferredContentSize = size
         #endif
+    }
+    
+    private func highlightHashtags() {
+        guard let textView, let defaultFont = textView.font, let textStorage = self.textView?.textStorage else { return } // NB: Text storage nullabity is different on iOS/macOS
+        
+        // Remove old attributes first (only for bold attribute)
+        textStorage.beginEditing()
+        
+        textStorage.removeAttribute(.font, range: NSRange(location: 0, length: textStorage.length))
+        
+        // Apply the default font
+        textStorage.addAttribute(.font, value: defaultFont,
+                                 range: NSRange(location: 0, length: textStorage.length))
+        
+        // Find all hashtags
+        let string = textStorage.string
+        let matches = hashtagRegex.matches(in: string,
+                                           range: NSRange(location: 0, length: string.utf16.count))
+        
+        // Bold hashtags
+        let boldFont = BXFont.boldSystemFont(ofSize: defaultFont.pointSize)
+        for match in matches {
+            textStorage.addAttribute(.font, value: boldFont, range: match.range)
+        }
+        
+        textStorage.endEditing()
     }
 }
 

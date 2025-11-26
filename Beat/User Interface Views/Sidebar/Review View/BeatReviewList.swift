@@ -42,6 +42,8 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	var reviewTree:[String:[ReviewListItem]] = [:]
 	var timer:Timer = Timer()
 	
+	var loaded = false
+	
 	var viewMode:BeatReviewListMode = .list
 	
 	@IBOutlet var placeholderView:NSView?
@@ -66,14 +68,21 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		}
 	}
 	
+	@IBAction func toggleViewMode(_ sender: Any) {
+		if let sender = sender as? NSSegmentedControl {
+			viewMode = (sender.selectedSegment == 0) ? .list : .keywords
+			reload()
+		}
+	}
+	
 	func fetchReviews() {
 		reviewList.removeAllObjects()
 		reviewTree = [:]
 		
-		self.string = self.editorDelegate?.attributedString()
-		guard let string else { return }
+		guard let string = self.editorDelegate?.attributedString() else { print("Warning: No string for fetching reviews"); return }
+		self.string = string
 		
-		string.enumerateAttribute(NSAttributedString.Key(rawValue: BeatReview.attributeKey().rawValue), in: NSMakeRange(0, string.length), using: { value, range, stop in
+		string.enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, string.length), using: { value, range, stop in
 			let review:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
 			let clampedRange = range.clamped(to: string.length)
 			
@@ -87,21 +96,25 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		})
 		
 		if self.viewMode == .keywords {
-			for item in reviewList {
-				if let review = item as? ReviewListItem {
-					let keywords = review.keywords
+			updateKeywordTree()
+		}
+	}
+	
+	func updateKeywordTree() {
+		for item in reviewList {
+			if let review = item as? ReviewListItem {
+				let keywords = review.keywords
 
-					if keywords.count > 0 {
-						keywords.forEach { keyword in
-							var items:[ReviewListItem] = (reviewTree[keyword] != nil) ? reviewTree[keyword]! : []
-							items.append(review)
-							reviewTree[keyword] = items
-						}
-					} else {
-						var list = (reviewTree["none"] != nil) ? reviewTree["none"]! : []
-						list.append(review)
-						reviewTree["none"] = list
+				if keywords.count > 0 {
+					keywords.forEach { keyword in
+						var items:[ReviewListItem] = (reviewTree[keyword] != nil) ? reviewTree[keyword]! : []
+						items.append(review)
+						reviewTree[keyword] = items
 					}
+				} else {
+					var list = (reviewTree["_"] != nil) ? reviewTree["_"]! : []
+					list.append(review)
+					reviewTree["_"] = list
 				}
 			}
 		}
@@ -109,10 +122,22 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	
 	func reload() {
 		guard let _ = self.editorDelegate?.attributedString().copy() as? NSAttributedString else { return }
+		
 		let bounds = self.enclosingScrollView?.contentView.bounds
+		
+		var collapsedSections:IndexSet = []
+		if viewMode == .keywords {
+			for i in 0..<self.numberOfChildren(ofItem: nil) {
+				guard let item = self.item(atRow: i) else { continue }
+				if !self.isItemExpanded(item) {
+					collapsedSections.insert(i)
+				}
+			}
+		}
 		
 		DispatchQueue.global().async { [weak self] in
 			self?.fetchReviews()
+			
 			DispatchQueue.main.sync { [weak self] in
 				guard let self else { return }
 				self.reloadData()
@@ -123,7 +148,21 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 					self.placeholderView?.isHidden = false
 				}
 				
-				self.enclosingScrollView?.contentView.bounds = bounds!
+				if let restoredBounds = bounds {
+					self.enclosingScrollView?.contentView.bounds = restoredBounds
+				}
+				
+				// Restore collapsed items
+				if viewMode == .keywords {
+					for i in 0..<self.numberOfChildren(ofItem: nil) {
+						if !collapsedSections.contains(i), let child = self.child(i, ofItem: nil) {
+							let row = self.row(forItem: child)
+							if let item = self.item(atRow: row) {
+								self.expandItem(item)
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -162,8 +201,10 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	
 	func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
 		if viewMode == .list {
+			// Just return the index on the review list
 			return reviewList[index]
 		} else {
+			// We need to return either the review OR the main keyword name from the tree
 			if item != nil, let keyword = item as? String {
 				return reviewTree[keyword]![index]
 			} else {
@@ -188,17 +229,6 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 		return nil
 	}
 	
-	/*
-	override func view(atColumn column: Int, row: Int, makeIfNecessary: Bool) -> NSView? {
-		let item:ReviewListItem = outlineView(self, objectValueFor: <#T##NSTableColumn?#>, byItem: <#T##Any?#>)
-		
-		let view = self.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ReviewCell"), owner: nil) as! NSTableCellView
-		view.textField?.stringValue =
-		
-		return view
-	}
-	 */
-	
 	func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
 		var view:NSTableCellView
 		
@@ -207,7 +237,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 			view.textField?.stringValue = review.content
 		} else if let keyword = item as? String {
 			view = self.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ReviewKeywordCell"), owner: nil) as! BeatReviewCellView
-			view.textField?.stringValue = keyword == "none" ? "(none)" : ("#"+keyword)
+			view.textField?.stringValue = keyword == "_" ? BeatLocalization.localizedString(forKey: "review.keyword.none") : ("#"+keyword)
 
 		} else {
 			view = self.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ReviewCell"), owner: nil) as! BeatReviewCellView
