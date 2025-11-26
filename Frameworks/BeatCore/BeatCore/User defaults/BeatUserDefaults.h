@@ -85,6 +85,8 @@ extern NSString* const BeatSettingParagraphPaginationMode;
 
 extern NSString* const BeatSettingHideThumbnailView;
 
+extern NSString* const BeatSettingInputAssistantHidden;
+
 
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;

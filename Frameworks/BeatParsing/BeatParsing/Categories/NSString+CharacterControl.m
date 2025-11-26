@@ -358,12 +358,30 @@
     return range.location != NSNotFound;
 }
 
+- (BOOL)wrappedInParentheses
+{
+    if (self.length < 2) return false;
+    return ([self characterAtIndex:0] == '(' && [self characterAtIndex:self.length-1] == ')');
+}
+
 - (BOOL)positionInsideParentheticals:(NSInteger)position
 {
+    if (position < 0 || position > self.length) return false;
+    
     NSInteger open = [self rangeOfString:@"(" options:NSBackwardsSearch range:NSMakeRange(0, position)].location;
     NSInteger close = [self rangeOfString:@")" options:0 range:NSMakeRange(position, self.length - position)].location;
     
     return (open != NSNotFound && close != NSNotFound && open <= position && close >= position);
+}
+
+- (NSRange)parentheticalRangeAt:(NSInteger)position
+{
+    NSInteger open = [self rangeOfString:@"(" options:NSBackwardsSearch range:NSMakeRange(0, position)].location;
+    NSInteger close = [self rangeOfString:@")" options:0 range:NSMakeRange(position, self.length - position)].location;
+    
+    if (open == NSNotFound || close == NSNotFound) return NSMakeRange(NSNotFound, 0);
+    
+    return NSMakeRange(open, close-open+1);
 }
 
 @end

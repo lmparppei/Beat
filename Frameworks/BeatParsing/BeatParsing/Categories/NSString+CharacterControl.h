@@ -46,4 +46,8 @@
 
 - (BOOL)positionInsideParentheticals:(NSInteger)position;
 
+- (NSRange)parentheticalRangeAt:(NSInteger)position;
+
+- (BOOL)wrappedInParentheses;
+
 @end

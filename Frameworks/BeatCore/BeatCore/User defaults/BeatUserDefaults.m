@@ -107,6 +107,7 @@ NSString* const BeatSettingRelativeOutlineHeights       = @"relativeOutlineHeigh
 NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationMode";
 
 NSString* const BeatSettingHideThumbnailView            = @"hideThumbnailView";
+NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
 
 
 + (BeatUserDefaults*)sharedDefaults

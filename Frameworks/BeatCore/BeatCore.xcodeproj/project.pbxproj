@@ -63,6 +63,19 @@
 		B663B3BA2AFA69CE007217E3 /* BeatDocumentBaseController.h in Headers */ = {isa = PBXBuildFile; fileRef = B663B3B82AFA69CE007217E3 /* BeatDocumentBaseController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = B663B3B92AFA69CE007217E3 /* BeatDocumentBaseController.m */; };
 		B663B3C02AFA7FF7007217E3 /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */; };
+		B66F1D032ED603E5005EB432 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFC2ED603E5005EB432 /* Courier Prime.ttf */; };
+		B66F1D042ED603E5005EB432 /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFE2ED603E5005EB432 /* Courier Prime Sans Bold.ttf */; };
+		B66F1D052ED603E5005EB432 /* LibertinusSerif-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CF72ED603E5005EB432 /* LibertinusSerif-Italic.otf */; };
+		B66F1D062ED603E5005EB432 /* LibertinusSerif-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CF52ED603E5005EB432 /* LibertinusSerif-Bold.otf */; };
+		B66F1D072ED603E5005EB432 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFB2ED603E5005EB432 /* Courier Prime Italic.ttf */; };
+		B66F1D082ED603E5005EB432 /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1D002ED603E5005EB432 /* Courier Prime Sans.ttf */; };
+		B66F1D092ED603E5005EB432 /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CF92ED603E5005EB432 /* Courier Prime Bold Italic.ttf */; };
+		B66F1D0A2ED603E5005EB432 /* NotoEmoji.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1D012ED603E5005EB432 /* NotoEmoji.ttf */; };
+		B66F1D0B2ED603E5005EB432 /* LibertinusSerif-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CF62ED603E5005EB432 /* LibertinusSerif-BoldItalic.otf */; };
+		B66F1D0C2ED603E5005EB432 /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFF2ED603E5005EB432 /* Courier Prime Sans Italic.ttf */; };
+		B66F1D0D2ED603E5005EB432 /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFD2ED603E5005EB432 /* Courier Prime Sans Bold Italic.ttf */; };
+		B66F1D0E2ED603E5005EB432 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CFA2ED603E5005EB432 /* Courier Prime Bold.ttf */; };
+		B66F1D0F2ED603E5005EB432 /* LibertinusSerif-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B66F1CF82ED603E5005EB432 /* LibertinusSerif-Regular.otf */; };
 		B6743BFA2B31A6830081041C /* Tutorial iOS.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6743BF92B31A6100081041C /* Tutorial iOS.fountain */; };
 		B6743BFB2B31A6850081041C /* New Document.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6743BF62B319ECE0081041C /* New Document.fountain */; };
 		B676DD262BA8772000F7DBDA /* Novel Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */; };
@@ -218,6 +231,19 @@
 		B663B3B82AFA69CE007217E3 /* BeatDocumentBaseController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentBaseController.h; sourceTree = "<group>"; };
 		B663B3B92AFA69CE007217E3 /* BeatDocumentBaseController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentBaseController.m; sourceTree = "<group>"; };
 		B663B3BC2AFA7FF3007217E3 /* BeatPlugins.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPlugins.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1CF52ED603E5005EB432 /* LibertinusSerif-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Bold.otf"; sourceTree = "<group>"; };
+		B66F1CF62ED603E5005EB432 /* LibertinusSerif-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-BoldItalic.otf"; sourceTree = "<group>"; };
+		B66F1CF72ED603E5005EB432 /* LibertinusSerif-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Italic.otf"; sourceTree = "<group>"; };
+		B66F1CF82ED603E5005EB432 /* LibertinusSerif-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LibertinusSerif-Regular.otf"; sourceTree = "<group>"; };
+		B66F1CF92ED603E5005EB432 /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold Italic.ttf"; sourceTree = "<group>"; };
+		B66F1CFA2ED603E5005EB432 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
+		B66F1CFB2ED603E5005EB432 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
+		B66F1CFC2ED603E5005EB432 /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime.ttf"; sourceTree = "<group>"; };
+		B66F1CFD2ED603E5005EB432 /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold Italic.ttf"; sourceTree = "<group>"; };
+		B66F1CFE2ED603E5005EB432 /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold.ttf"; sourceTree = "<group>"; };
+		B66F1CFF2ED603E5005EB432 /* Courier Prime Sans Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Italic.ttf"; sourceTree = "<group>"; };
+		B66F1D002ED603E5005EB432 /* Courier Prime Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans.ttf"; sourceTree = "<group>"; };
+		B66F1D012ED603E5005EB432 /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B6743BF62B319ECE0081041C /* New Document.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "New Document.fountain"; sourceTree = "<group>"; };
 		B6743BF92B31A6100081041C /* Tutorial iOS.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Tutorial iOS.fountain"; sourceTree = "<group>"; };
 		B676DD252BA8771F00F7DBDA /* Novel Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Novel Tutorial.fountain"; sourceTree = "<group>"; };
@@ -493,6 +519,26 @@
 			path = "Screenplay data";
 			sourceTree = "<group>";
 		};
+		B66F1D022ED603E5005EB432 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				B66F1CF52ED603E5005EB432 /* LibertinusSerif-Bold.otf */,
+				B66F1CF62ED603E5005EB432 /* LibertinusSerif-BoldItalic.otf */,
+				B66F1CF72ED603E5005EB432 /* LibertinusSerif-Italic.otf */,
+				B66F1CF82ED603E5005EB432 /* LibertinusSerif-Regular.otf */,
+				B66F1CF92ED603E5005EB432 /* Courier Prime Bold Italic.ttf */,
+				B66F1CFA2ED603E5005EB432 /* Courier Prime Bold.ttf */,
+				B66F1CFB2ED603E5005EB432 /* Courier Prime Italic.ttf */,
+				B66F1CFC2ED603E5005EB432 /* Courier Prime.ttf */,
+				B66F1CFD2ED603E5005EB432 /* Courier Prime Sans Bold Italic.ttf */,
+				B66F1CFE2ED603E5005EB432 /* Courier Prime Sans Bold.ttf */,
+				B66F1CFF2ED603E5005EB432 /* Courier Prime Sans Italic.ttf */,
+				B66F1D002ED603E5005EB432 /* Courier Prime Sans.ttf */,
+				B66F1D012ED603E5005EB432 /* NotoEmoji.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		B676DD292BA8AC5C00F7DBDA /* Data representations */ = {
 			isa = PBXGroup;
 			children = (
@@ -569,6 +615,7 @@
 		B6B61BBB29F9C3970098D94D /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				B66F1D022ED603E5005EB432 /* Fonts */,
 				B663A6D529F1C47B0036FE6B /* BeatFonts.h */,
 				B663A6D429F1C47A0036FE6B /* BeatFonts.m */,
 				B67C2CF12A2D1AD000B88B0F /* BeatFontSet.h */,
@@ -821,6 +868,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				B682C2682B30FBD60027511A /* Templates And Tutorials.plist in Resources */,
+				B66F1D032ED603E5005EB432 /* Courier Prime.ttf in Resources */,
+				B66F1D042ED603E5005EB432 /* Courier Prime Sans Bold.ttf in Resources */,
+				B66F1D052ED603E5005EB432 /* LibertinusSerif-Italic.otf in Resources */,
+				B66F1D062ED603E5005EB432 /* LibertinusSerif-Bold.otf in Resources */,
+				B66F1D072ED603E5005EB432 /* Courier Prime Italic.ttf in Resources */,
+				B66F1D082ED603E5005EB432 /* Courier Prime Sans.ttf in Resources */,
+				B66F1D092ED603E5005EB432 /* Courier Prime Bold Italic.ttf in Resources */,
+				B66F1D0A2ED603E5005EB432 /* NotoEmoji.ttf in Resources */,
+				B66F1D0B2ED603E5005EB432 /* LibertinusSerif-BoldItalic.otf in Resources */,
+				B66F1D0C2ED603E5005EB432 /* Courier Prime Sans Italic.ttf in Resources */,
+				B66F1D0D2ED603E5005EB432 /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B66F1D0E2ED603E5005EB432 /* Courier Prime Bold.ttf in Resources */,
+				B66F1D0F2ED603E5005EB432 /* LibertinusSerif-Regular.otf in Resources */,
 				B6D15A642AF9790A00DAB66D /* Styles.beatCSS in Resources */,
 				B682C2662B30FBD60027511A /* Comic Book Template.fountain in Resources */,
 				B682C2692B30FBD60027511A /* Tutorial.fountain in Resources */,

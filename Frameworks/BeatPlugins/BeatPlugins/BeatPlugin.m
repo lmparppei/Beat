@@ -151,7 +151,8 @@
  - note: This can be used to import JavaScript either from inside the plugin container or from the app bundle. JS modules inside the app bundle should be required **without** `.js` extension.
  
  */
-- (void)setupRequire {
+- (void)setupRequire
+{
 	// Thank you, ocodo on stackoverflow.
 	// Based on https://github.com/kasper/phoenix
 	BeatPlugin * __weak weakSelf = self;
@@ -918,7 +919,8 @@
 	[BeatRevisions bakeRevisionsIntoLines:lines text:self.delegate.getAttributedText];
 }
 
-- (NSDictionary*)revisedRanges {
+- (NSDictionary*)revisedRanges
+{
     return self.delegate.revisionTracking.revisedRanges;
 }
 

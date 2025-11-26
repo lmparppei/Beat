@@ -42,6 +42,8 @@
 }
 
 
+#pragma mark - Helper methods
+
 - (BeatFontSet*)fonts
 {
     BeatStylesheet* stylesheet = self.settings.styles;
@@ -83,8 +85,13 @@
     return sheet;
 }
 
-/// Returns a long attributed string, rather than paginated content. Not compatible with iOS.
-- (NSAttributedString*)renderContent:(NSArray<BeatPaginationPage*>*)pages {
+
+#pragma mark - Rendering interface
+
+/// Returns a single, long attributed string for all pages, rather than paginated content.
+/// @warning Not compatible with iOS.
+- (NSAttributedString*)renderContent:(NSArray<BeatPaginationPage*>*)pages
+{
     NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
     for (BeatPaginationPage* page in pages) {
         for (BeatPaginationBlock* block in page.blocks) {
@@ -96,8 +103,10 @@
     return attrStr;
 }
 
-/// Returns pages rendered as `NSAttributedString` objects. Not compatible with iOS.
-- (NSArray<NSAttributedString*>*)renderPages:(NSArray<BeatPaginationPage*>*)pages {
+/// Returns pages rendered as `NSAttributedString` objects.
+/// @warning Not compatible with iOS. Can't remember why, probably because of TextBlock compatibility issues.
+- (NSArray<NSAttributedString*>*)renderPages:(NSArray<BeatPaginationPage*>*)pages
+{
     NSMutableArray<NSAttributedString*>* renderedPages = NSMutableArray.new;
     
     for (BeatPaginationPage* page in pages) {
@@ -108,7 +117,9 @@
     return renderedPages;
 }
 
-- (NSAttributedString*)renderPage:(BeatPaginationPage*)page {
+/// Renders one full page of paginated content
+- (NSAttributedString*)renderPage:(BeatPaginationPage*)page
+{
     NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
     
     for (BeatPaginationBlock* block in page.blocks) {
@@ -122,7 +133,9 @@
 }
 
 
-- (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage {
+/// Renders the whole paginated block and returns an attributed string
+- (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage
+{
     if (block.renderedString == nil) {
         if (block.dualDialogueContainer) {
             // Render dual dialogue block
@@ -141,9 +154,8 @@
                 }
                 
                 // Do a sweep for emojis
-                if (lineStr.string.emo_containsEmoji) {
+                if (lineStr.string.emo_containsEmoji)
                     lineStr = [self emojiFontsFor:lineStr];
-                }
                 
                 [attrStr appendAttributedString:lineStr];
             } }
@@ -155,12 +167,16 @@
     return block.renderedString;
 }
 
-/// Renders a single line, probably outside of screenplay context
-- (NSAttributedString*)renderLine:(Line*)line {
+
+#pragma mark - Rendering actual content
+
+/// Renders a single line, probably __outside__ of screenplay context. Used for debugging and preview effects.
+- (NSAttributedString*)renderLine:(Line*)line
+{
     return [self renderLine:line ofBlock:nil dualDialogueElement:false firstElementOnPage:false];
 }
 
-/// Renders a single line
+/// Renders a single line into an attributed string.
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage
 {
     // Some elements won't be rendered
@@ -248,7 +264,30 @@
     
     // Add hyperlink for the represented line
     if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
-        [attributedString addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, attributedString.length - 1)];
+        NSRange lineRange = NSMakeRange(0, attributedString.length - 1);
+        [attributedString addAttribute:NSLinkAttributeName value:line range:lineRange];
+        [attributedString addAttribute:@"LineType" value:@(line.type) range:lineRange];
+    }
+    
+    // Now we'll color revisions if needed
+    if (_settings.revisionHighlightMode > 0) {
+        [attributedString enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+            if (value == nil) return;
+            
+            NSInteger level = ((NSNumber*)value).intValue;
+            if (value == 0 || level >= BeatRevisions.revisionGenerations.count) return;
+            
+            BeatRevisionGeneration* gen = BeatRevisions.revisionGenerations[level];
+            BXColor* c = [BeatColors color:gen.color];
+            NSRange clampedRange = CLAMP_RANGE(range, attributedString.length);
+            
+            if (_settings.revisionHighlightMode == BeatExportRevisionHighlightColor) {
+                [attributedString addAttribute:NSForegroundColorAttributeName value:c range:clampedRange];
+            } else if (_settings.revisionHighlightMode == BeatExportRevisionHighlightBackground) {
+                c = [c colorWithAlphaComponent:0.2];
+                [attributedString addAttribute:NSBackgroundColorAttributeName value:c range:clampedRange];
+            }
+        }];
     }
         
     // Trim the line if needed
@@ -298,8 +337,12 @@
 #endif
 }
 
+
+#pragma mark Scene heading block
+
 #if TARGET_OS_OSX
-/// Adds scene numbers to a heading block
+/// Adds scene numbers to a heading block.
+/// macOS and iOS require different code, because iOS doesn't support `NSTextTable`.
 - (NSMutableAttributedString*)renderHeading:(Line*)line content:(NSMutableAttributedString*)content firstElementOnPage:(bool)firstElementOnPage
 {
     // Get render settings
@@ -374,6 +417,8 @@
     return attrStr;
 }
 #else
+/// Adds scene numbers to a heading block.
+/// macOS and iOS require different code, because iOS doesn't support `NSTextTable`, so we are using a custom text attachment instead.
 - (NSMutableAttributedString*)renderHeading:(Line*)line content:(NSMutableAttributedString*)content firstElementOnPage:(bool)firstElementOnPage
 {
     // Get render settings
@@ -440,23 +485,12 @@
 }
 #endif
 
-/// Returns an empty character cue with zero height.
-/// - note This is a total hack, and might not work in the future. 
-- (NSAttributedString * _Nonnull)emptyCharacterCueWith:(NSDictionary *)attrs
-{
-    NSMutableDictionary* a = attrs.mutableCopy;
-    NSMutableParagraphStyle* s = ((NSParagraphStyle*)a[NSParagraphStyleAttributeName]).mutableCopy;
-    s.lineHeightMultiple = 0.0; s.maximumLineHeight = 0.0; s.minimumLineHeight = 0.0; s.lineSpacing = 0.0;
-    
-    a[NSParagraphStyleAttributeName] = s;
-    a[NSFontAttributeName] = [BXFont systemFontOfSize:0.00000000001];
-    
-    return [NSAttributedString.alloc initWithString:@"\n" attributes:a];
-}
+
+#pragma mark Dialogue containers and extra blocks
 
 #if TARGET_OS_OSX
 /// Render a block with left/right columns. This block will know the contents of both columns.
-/// @note: macOS version uses `NSTextTable` which is available only in TextKit1 on macOS
+/// @note: macOS version uses `NSTextTable` which is available only in TextKit1 on macOS.
 - (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock {
     // Create table
     CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
@@ -515,8 +549,9 @@
 }
 #else
 /// Render a block with left/right columns. This block will know the contents of both columns.
-/// @warning: This iOS version requires TextKit 2, and won't work in TextKit 1
-- (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock {
+/// @warning: This iOS version requires TextKit 2, and won't work in TextKit 1. We are using a custom text attachment to display table-like content.
+- (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock
+{
     CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
     CGFloat cellWidth = width / 2;
     
@@ -546,7 +581,22 @@
 }
 #endif
 
-#pragma mark - Page number block
+/// Returns an empty character cue with zero height.
+/// - note This is a total hack, and might not work in the future.
+- (NSAttributedString * _Nonnull)emptyCharacterCueWith:(NSDictionary *)attrs
+{
+    NSMutableDictionary* a = attrs.mutableCopy;
+    NSMutableParagraphStyle* s = ((NSParagraphStyle*)a[NSParagraphStyleAttributeName]).mutableCopy;
+    s.lineHeightMultiple = 0.0; s.maximumLineHeight = 0.0; s.minimumLineHeight = 0.0; s.lineSpacing = 0.0;
+    
+    a[NSParagraphStyleAttributeName] = s;
+    a[NSFontAttributeName] = [BXFont systemFontOfSize:0.00000000001];
+    
+    return [NSAttributedString.alloc initWithString:@"\n" attributes:a];
+}
+
+
+#pragma mark Page number block
 
 #if TARGET_OS_OSX
 - (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page
@@ -982,3 +1032,17 @@
 }
 
 @end
+/*
+ 
+ on niin yksinkertaista
+ uskotella olevansa päivä joka ei milloinkaan laske
+ olla kaukaisten hailakkain vuorten takaa nouseva
+ säteinen paiste
+ 
+ on niin vaikeaa
+ myöntää olevansa vain satunnainen kuiskaus
+ olla päivänkajo joka aina likempänä kuin aamua
+ on hiipuvaa
+ iltaa
+ 
+ */

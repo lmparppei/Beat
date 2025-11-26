@@ -85,8 +85,8 @@
 {
     NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
         
-    // Make (forced) character names uppercase
-    if (self.type == character || self.type == dualDialogueCharacter) {
+    // Make non-forced chacter cues uppercase. This should happen automatically, but in some character sets maybe not?
+    if ((self.type == character || self.type == dualDialogueCharacter) && self.numberOfPrecedingFormattingCharacters == 0) {
         NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
         if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
     }

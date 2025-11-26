@@ -250,6 +250,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic, readonly) BeatStylesheet* editorStyles;
 @property (nonatomic, readonly) BeatStylesheet* styles;
 @property (nonatomic, readonly) BeatEditorFormatting* formatting;
+@property (nonatomic) bool waitingForFormatting;
 
 /// Forces full reload of editor styles and invalidates preview.
 - (void)reloadStyles;
