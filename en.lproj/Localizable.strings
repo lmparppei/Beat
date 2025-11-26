@@ -340,6 +340,9 @@
 
 "export.includeRevisions" = "Include Revision Markers";
 
+"export.highlightRevisions" = "Highlight Revisions";
+"export.highlightRevisions.none" = "None";
+"export.highlightRevisions.text" = "Text Color";
+"export.highlightRevisions.background" = "Background Color";
 
-
-
+"review.keyword.none" = "No #keywords";

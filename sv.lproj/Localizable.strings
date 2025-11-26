@@ -470,3 +470,10 @@
 "tagManager.windowTitle" = "Tagghanterare";
 
 "export.includeRevisions" = "Skriv ut revisionsmarkeringar";
+"export.highlightRevisions" = "Visa revisioner med";
+
+"export.highlightRevisions.none" = "Ingen";
+"export.highlightRevisions.text" = "Textfärg";
+"export.highlightRevisions.background" = "Bakgrundsfärg";
+
+"review.keyword.none" = "Inga #taggar";

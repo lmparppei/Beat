@@ -289,3 +289,10 @@
 "pagination.paragraphPaginationMode.avoid" = "Vältä toiminnan jakamista eri sivuille";
 
 "export.includeRevisions" = "Sisällytä korjausmerkinnät";
+"export.highlightRevisions" = "Korosta korjaukset";
+
+"export.highlightRevisions.none" = "Ei mitään";
+"export.highlightRevisions.text" = "Tekstin väri";
+"export.highlightRevisions.background" = "Taustaväri";
+
+"review.keyword.none" = "Ei #avainsanoja";
