@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B66F1CC52ED5F54F005EB432"
-               BuildableName = "Beat CLI"
-               BlueprintName = "Beat CLI"
-               ReferencedContainer = "container:Beat CLI.xcodeproj">
+               BlueprintIdentifier = "B66F1D1E2ED74D3B005EB432"
+               BuildableName = "beat-cli"
+               BlueprintName = "beat-cli"
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,15 +45,15 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B66F1CC52ED5F54F005EB432"
-            BuildableName = "Beat CLI"
-            BlueprintName = "Beat CLI"
-            ReferencedContainer = "container:Beat CLI.xcodeproj">
+            BlueprintIdentifier = "B66F1D1E2ED74D3B005EB432"
+            BuildableName = "beat-cli"
+            BlueprintName = "beat-cli"
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "pdf /Users/lmp/Desktop/Testi.fountain /Users/lmp/Desktop/Testi.pdf"
+            argument = "pdf --help"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -68,10 +68,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B66F1CC52ED5F54F005EB432"
-            BuildableName = "Beat CLI"
-            BlueprintName = "Beat CLI"
-            ReferencedContainer = "container:Beat CLI.xcodeproj">
+            BlueprintIdentifier = "B66F1D1E2ED74D3B005EB432"
+            BuildableName = "beat-cli"
+            BlueprintName = "beat-cli"
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -434,6 +434,12 @@
 		B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */; };
 		B66E2CC229EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */; };
 		B66E2CC329EF1C0F00E0A232 /* BeatDocumentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */; };
+		B66F1D272ED74D44005EB432 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66F1D262ED74D44005EB432 /* PDFKit.framework */; };
+		B66F1D282ED74D52005EB432 /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1DC298C60C80011449D /* BeatCore.framework */; };
+		B66F1D2B2ED74D56005EB432 /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6EE29F1C6300036FE6B /* BeatPagination2.framework */; };
+		B66F1D2D2ED74D61005EB432 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B604C8DC290CF7E400CBB32D /* BeatParsing.framework */; };
+		B66F1D332ED74DF6005EB432 /* BeatPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E91E3A2B68303000EDB066 /* BeatPrintView.swift */; };
+		B66F1D362ED74EE8005EB432 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = B66F1D352ED74EE8005EB432 /* ArgumentParser */; };
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B6730A8D2E99AA2C00BA1315 /* Document+Autosave.m in Sources */ = {isa = PBXBuildFile; fileRef = B6730A8C2E99AA2C00BA1315 /* Document+Autosave.m */; };
 		B6730A8E2E99AA2C00BA1315 /* Document+Autosave.m in Sources */ = {isa = PBXBuildFile; fileRef = B6730A8C2E99AA2C00BA1315 /* Document+Autosave.m */; };
@@ -872,6 +878,15 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B66F1D1D2ED74D3B005EB432 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		B67F75732B1735410028D009 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1099,6 +1114,8 @@
 		B66CDF1A28170EE300EF4137 /* BeatPrintDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintDialog.h; sourceTree = "<group>"; };
 		B66CDF1B28170EE300EF4137 /* BeatPrintDialog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintDialog.m; sourceTree = "<group>"; };
 		B66E2CC129EF1C0F00E0A232 /* BeatDocumentWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentWindow.swift; sourceTree = "<group>"; };
+		B66F1D1F2ED74D3B005EB432 /* beat-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "beat-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66F1D262ED74D44005EB432 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CardView.js; sourceTree = "<group>"; };
 		B6706DDB2804B49700978689 /* BeatReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatReview.swift; sourceTree = "<group>"; };
 		B670E20A24BF689A006375BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1341,6 +1358,10 @@
 		B6FF82D327EB1D4E00D32A2F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B66F1D202ED74D3B005EB432 /* beat-cli */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "beat-cli"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		B138B57019E1C973000489C4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -1382,6 +1403,18 @@
 				B61260412CD3D1D8009AE189 /* UnzipKit.framework in Frameworks */,
 				B61260422CD3D1D8009AE189 /* QuickLook.framework in Frameworks */,
 				B61260432CD3D1D8009AE189 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66F1D1C2ED74D3B005EB432 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B66F1D2B2ED74D56005EB432 /* BeatPagination2.framework in Frameworks */,
+				B66F1D2D2ED74D61005EB432 /* BeatParsing.framework in Frameworks */,
+				B66F1D272ED74D44005EB432 /* PDFKit.framework in Frameworks */,
+				B66F1D362ED74EE8005EB432 /* ArgumentParser in Frameworks */,
+				B66F1D282ED74D52005EB432 /* BeatCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1434,6 +1467,7 @@
 				B68B60CF260BA8D600463AD8 /* Manual */,
 				B67801C728C68F23004A7AE0 /* BeatTests */,
 				B6B85FBB2A224E3100C7713A /* BeatQuickLook */,
+				B66F1D202ED74D3B005EB432 /* beat-cli */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B6A61293256C106800E4AF92 /* Libraries */,
 				B138B57419E1C973000489C4 /* Products */,
@@ -1448,6 +1482,7 @@
 				B68B60C5260B849300463AD8 /* Beat.app */,
 				B6B85FB92A224E3000C7713A /* BeatQuickLook.appex */,
 				B61260912CD3D1D8009AE189 /* Beat.app */,
+				B66F1D1F2ED74D3B005EB432 /* beat-cli */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1492,6 +1527,7 @@
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B66F1D262ED74D44005EB432 /* PDFKit.framework */,
 				B6A3E9442EA7DD27009E48AB /* FoundationModels.framework */,
 				B6A97C9C2BF0C0DA00414878 /* BeatFileExport.framework */,
 				B621D1C02A803EC700D072E6 /* BeatDynamicColor.framework */,
@@ -2498,6 +2534,29 @@
 			productReference = B61260912CD3D1D8009AE189 /* Beat.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B66F1D1E2ED74D3B005EB432 /* beat-cli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B66F1D252ED74D3B005EB432 /* Build configuration list for PBXNativeTarget "beat-cli" */;
+			buildPhases = (
+				B66F1D1B2ED74D3B005EB432 /* Sources */,
+				B66F1D1C2ED74D3B005EB432 /* Frameworks */,
+				B66F1D1D2ED74D3B005EB432 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B66F1D202ED74D3B005EB432 /* beat-cli */,
+			);
+			name = "beat-cli";
+			packageProductDependencies = (
+				B66F1D352ED74EE8005EB432 /* ArgumentParser */,
+			);
+			productName = "beat-cli";
+			productReference = B66F1D1F2ED74D3B005EB432 /* beat-cli */;
+			productType = "com.apple.product-type.tool";
+		};
 		B68B6021260B849300463AD8 /* Beat AppStore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B68B60C2260B849300463AD8 /* Build configuration list for PBXNativeTarget "Beat AppStore" */;
@@ -2544,7 +2603,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Beat;
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = "Lauri-Matti Parppei";
 				TargetAttributes = {
@@ -2559,6 +2618,9 @@
 								enabled = 0;
 							};
 						};
+					};
+					B66F1D1E2ED74D3B005EB432 = {
+						CreatedOnToolsVersion = 26.1.1;
 					};
 					B68B6021260B849300463AD8 = {
 						ProvisioningStyle = Automatic;
@@ -2584,6 +2646,7 @@
 			packageReferences = (
 				B6C9677C296C8542003648AD /* XCRemoteSwiftPackageReference "Sparkle" */,
 				B6253BA62BF4C04800E22236 /* XCRemoteSwiftPackageReference "UXKit" */,
+				B66F1D342ED74EE8005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
@@ -2593,6 +2656,7 @@
 				B68B6021260B849300463AD8 /* Beat AppStore */,
 				B6125FAF2CD3D1D8009AE189 /* Beat For Organizations */,
 				B6B85FB82A224E3000C7713A /* BeatQuickLook */,
+				B66F1D1E2ED74D3B005EB432 /* beat-cli */,
 			);
 		};
 /* End PBXProject section */
@@ -3198,6 +3262,14 @@
 				B61260312CD3D1D8009AE189 /* BeatCharacterEditor.swift in Sources */,
 				B61260322CD3D1D8009AE189 /* RecentFiles.m in Sources */,
 				B61260332CD3D1D8009AE189 /* NSImage+ProportionalScaling.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66F1D1B2ED74D3B005EB432 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B66F1D332ED74DF6005EB432 /* BeatPrintView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3875,6 +3947,59 @@
 			};
 			name = Release;
 		};
+		B66F1D232ED74D3B005EB432 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B66F1D242ED74D3B005EB432 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		B68B60C3260B849300463AD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4079,6 +4204,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		B66F1D252ED74D3B005EB432 /* Build configuration list for PBXNativeTarget "beat-cli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66F1D232ED74D3B005EB432 /* Debug */,
+				B66F1D242ED74D3B005EB432 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B68B60C2260B849300463AD8 /* Build configuration list for PBXNativeTarget "Beat AppStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4108,6 +4242,14 @@
 				minimumVersion = 1.0.2;
 			};
 		};
+		B66F1D342ED74EE8005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.2;
+			};
+		};
 		B6C9677C296C8542003648AD /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -4119,6 +4261,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B66F1D352ED74EE8005EB432 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B66F1D342ED74EE8005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
 		B6C9677D296C8542003648AD /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B6C9677C296C8542003648AD /* XCRemoteSwiftPackageReference "Sparkle" */;

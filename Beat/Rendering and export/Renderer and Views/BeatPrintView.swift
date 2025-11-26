@@ -20,7 +20,7 @@ import PDFKit
 
 class BeatPrintView:NSView {
 	@objc enum BeatPrintingOperation:NSInteger {
-		case toPreview, toPDF, toPrint
+		case toPreview, toPDF, toPrint, toFile
 	}
 	
 	var delegate:BeatEditorDelegate?
@@ -31,7 +31,7 @@ class BeatPrintView:NSView {
 	var screenplays:[BeatScreenplay]
 	var callback:(BeatPrintView, AnyObject?) -> ()
 	var progressPanel:NSPanel = NSPanel(contentRect: NSMakeRect(0, 0, 350, 30), styleMask: [.docModalWindow], backing: .buffered, defer: false)
-	var host:NSWindow
+	var host:NSWindow?
 	var operation:BeatPrintingOperation = .toPrint
 	
 	var pageViews:[BeatPaginationPageView] = []
@@ -51,7 +51,7 @@ class BeatPrintView:NSView {
 	 - parameter screenplays: An array of screenplay objects (containing title page and lines). If you have a delegate set, this can be `nil`.
 	 - parameter callback: Closure run after printing is done
 	 */
-	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatPrintView, AnyObject?) -> ()) {
+	@objc init(window:NSWindow?, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatPrintView, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
 		// If we have a delegate connected, let's gather the screenplay from there, otherwise we'll use the ones provided at init
@@ -83,7 +83,7 @@ class BeatPrintView:NSView {
 		paginateAndRender()
 	}
 	
-	@objc convenience init(window:NSWindow, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatPrintView, AnyObject?) -> ()) {
+	@objc convenience init(window:NSWindow?, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatPrintView, AnyObject?) -> ()) {
 		self.init(window: window, operation: operation, settings: delegate.exportSettings, delegate: delegate, screenplays: nil, callback: callback)
 	}
 	
@@ -186,12 +186,11 @@ class BeatPrintView:NSView {
 				printOperation.showsProgressPanel = (self.operation != .toPreview)
 				printOperation.showsPrintPanel = (self.operation == .toPrint)
 				
-				// Run print operation
-				if self.operation == .toPrint {
-					printOperation.runModal(for: self.host, delegate: self, didRun: nil, contextInfo: nil)
+				// Run print operation. The operations need to run asynchronously.
+				if self.operation == .toPrint, let host = self.host {
+					printOperation.runModal(for: host, delegate: self, didRun: nil, contextInfo: nil)
 				} else {
-					// PDF operations have to run asynchronously
-					printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
+					printOperation.runModal(for: self.host ?? NSWindow(), delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
 				}
 			}
 		}
