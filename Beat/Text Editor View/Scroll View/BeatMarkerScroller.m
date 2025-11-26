@@ -18,6 +18,11 @@
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;
 @property (nonatomic) NSMutableArray *labels;
+
+@property (nonatomic) CGFloat previousValue;
+@property (nonatomic) CGFloat pendingValue;
+@property (nonatomic) BOOL updateScheduled;
+
 @end
 @implementation BeatMarkerScroller
 
@@ -49,7 +54,8 @@
 	[self addTrackingArea:trackingArea];
 }
 
--(void)updateTrackingAreas {
+-(void)updateTrackingAreas
+{
 	[super updateTrackingAreas];
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
 																options:(NSTrackingMouseEnteredAndExited |
@@ -60,7 +66,33 @@
 	[self addTrackingArea:trackingArea];
 }
 
-- (NSBezierPath*)triangle:(CGFloat)y {
+- (BOOL)shouldAutoHide
+{
+	return ![[NSUserDefaults.standardUserDefaults stringForKey:@"AppleShowScrollBars"] isEqualToString:@"Always"];
+}
+
+
+- (void)setFloatValue:(float)aFloat
+{
+	[super setFloatValue:aFloat];
+	
+	/** On macOS 26+, even the slightest attribute changes can trigger a scroll event, so we need to double-check the values so we are not flickering the scroller in and out of view.
+	`.waitingForFormatting` is set on macOS when characters in text storage were edited, and then reset at `applyFormattingChanges` */
+	
+	if (!self.editorDelegate.waitingForFormatting && _previousValue != aFloat) {
+		_previousValue = aFloat;
+	
+		[self.animator setAlphaValue:1.0f];
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadeOutIfNeeded) object:nil];
+		[self performSelector:@selector(fadeOutIfNeeded) withObject:nil afterDelay:1.5f];
+	}
+}
+
+
+#pragma mark - Drawing
+
+- (NSBezierPath*)triangle:(CGFloat)y
+{
 	CGFloat width = self.frame.size.width;
 	
 	NSBezierPath *path = NSBezierPath.bezierPath;
@@ -71,7 +103,8 @@
 	return path;
 }
 
-- (NSBezierPath*)marker:(CGFloat)y {
+- (NSBezierPath*)marker:(CGFloat)y
+{
 	CGFloat width = self.frame.size.width;
 	
 	NSBezierPath *path = [NSBezierPath bezierPath];
@@ -118,64 +151,18 @@
 	[self drawKnob];
 }
 
-/*
-- (void)showLabels {
-	_labels = NSMutableArray.array;
-	
-	for (NSDictionary *marker in _markers) {
-		NSColor *color = [BeatColors color:marker[@"color"]];
-		
-		if (color) {
-			CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
-			NSPopover *popover = [self newLabelWithString:marker[@"color"] y:y];
-			[popover showRelativeToRect:(NSRect){ 0, y, self.frame.size.width, 1 } ofView:self preferredEdge:NSRectEdgeMinX];
-			[_labels addObject:popover];
-		}
-	}
-	
-}
-
-- (void)hideLabels {
-	for (NSPopover* popover in _labels) {
-		[popover close];
-	}
-	
-	[_labels removeAllObjects];
-}
-
-- (NSPopover*)newLabelWithString:(NSString*)string y:(CGFloat)y {
-	NSTextField *label = [NSTextField labelWithString:string];
-	label.controlSize = NSControlSizeMini;
-	label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
-
-	NSView *contentView = [NSView.alloc initWithFrame:NSMakeRect(300, y, label.attributedStringValue.size.width + 20, label.attributedStringValue.size.height * 1.5)];
-	[contentView addSubview:label];
-	
-	NSViewController *contentViewController = [[NSViewController alloc] init];
-	[contentViewController setView:contentView];
-		
-	// Autocomplete popover
-	NSPopover *popover = [[NSPopover alloc] init];
-	
-	if (@available(macOS 10.14, *)) popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-	
-	//popover.animates = NO;
-	popover.contentViewController = contentViewController;
-	
-	return popover;
-}
-*/
-
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
 	// Do nothing
 }
 
+
+#pragma mark - Mouse events
+
 - (void)mouseExited:(NSEvent *)theEvent
 {
 	[super mouseExited:theEvent];
-	// [self hideLabels];
-	[self fadeOut];
+	[self fadeOutIfNeeded];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -186,9 +173,7 @@
 		[self.animator setAlphaValue:1.0f];
 	} completionHandler:^{
 	}];
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadeOut) object:nil];
-	
-	//if (_labels.count == 0) [self showLabels];
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadeOutIfNeeded) object:nil];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -197,16 +182,13 @@
 	self.alphaValue = 1.0f;
 }
 
-- (void)setFloatValue:(float)aFloat
-{
-	[super setFloatValue:aFloat];
-	[self.animator setAlphaValue:1.0f];
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadeOut) object:nil];
-	[self performSelector:@selector(fadeOut) withObject:nil afterDelay:1.5f];
-}
 
-- (void)fadeOut
+#pragma mark - Fade Out
+
+- (void)fadeOutIfNeeded
 {
+	if (!self.shouldAutoHide) return;
+	
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
 		context.duration = 0.3f;
 		[self.animator setAlphaValue:0.0f];
@@ -214,9 +196,10 @@
 	}];
 }
 
+#pragma mark - Sizing
+
 +(CGFloat)scrollerWidthForControlSize:(NSControlSize)controlSize scrollerStyle:(NSScrollerStyle)scrollerStyle{
 	return [super scrollerWidthForControlSize:controlSize scrollerStyle:scrollerStyle];
-	//return 15;
 }
 
 /*
