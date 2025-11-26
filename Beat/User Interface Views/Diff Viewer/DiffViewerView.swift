@@ -69,6 +69,7 @@ class DiffViewerViewController: NSViewController {
 	@IBOutlet private weak var commitButton: NSButton?
 	@IBOutlet private weak var generateRevisionsButton: NSButton?
 	@IBOutlet private weak var restoreButton:NSButton?
+	@IBOutlet private weak var viewModeControl:NSSegmentedControl?
 	
 	@IBOutlet private weak var actionTabs:NSTabView?
 	
@@ -107,7 +108,7 @@ class DiffViewerViewController: NSViewController {
 		}
 		
 		// All views to enable
-		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton]
+		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton, viewModeControl]
 		// A subset of views that should be enabled for mixed state (not full VC, just external files)
 		let mixedStateViews = [textView, otherVersionMenu, generateRevisionsButton]
 		let viewsToHideInMixedState = [currentVersionMenu, statusView]
