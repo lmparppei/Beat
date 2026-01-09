@@ -1,3 +1,16 @@
+
+@media print {
+	#mainContainer {
+		display: block !important;
+	}
+	#menuContainer, #menu {
+		display: none !important;
+	}
+	section {
+		max-width: 100%;
+	}
+}
+
 body {
 	margin: 0rem;
 	background-color: #f5f5f5;

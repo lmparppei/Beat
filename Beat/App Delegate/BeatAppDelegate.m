@@ -34,7 +34,9 @@
 
 #define APPNAME @"Beat"
 
-@interface BeatAppDelegate () <BeatThemeDelegate>
+@interface BeatAppDelegate () <BeatThemeDelegate> {
+	bool awoken;
+}
 
 @property (nonatomic) BeatNotifications *notifications;
 
@@ -83,6 +85,8 @@
 
 - (void)awakeFromNib
 {
+	if (awoken) return;
+	
 	NSLog(@"(beat) %@ / %@ - %@ distribution",
 		  NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"],
 		  NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"],
@@ -98,6 +102,8 @@
 	[self.pluginMenuManager setup];
 	// Populate style menu
 	[self.styleMenuManager setup];
+	
+	awoken = true;
 }
 
 + (NSString*)distribution

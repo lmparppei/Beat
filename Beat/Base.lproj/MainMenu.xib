@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -377,10 +377,9 @@
                                     <action selector="paste:" target="-1" id="dcI-Bn-pVe"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Paste and Match Style" hidden="YES" keyEquivalent="V" id="NLE-HM-5a7">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                            <menuItem title="Paste Without Formatting" keyEquivalent="V" id="NLE-HM-5a7">
                                 <connections>
-                                    <action selector="pasteAsPlainText:" target="-1" id="4Po-3S-Z2n"/>
+                                    <action selector="pasteWithoutFormatting:" target="-1" id="15r-ik-BKD"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Delete" id="niE-Hd-2rL">

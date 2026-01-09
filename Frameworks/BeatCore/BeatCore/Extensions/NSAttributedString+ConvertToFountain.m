@@ -22,13 +22,12 @@
                                                  NSRange paragraphRange,
                                                  NSRange enclosingRange,
                                                  BOOL * _Nonnull stop) {
-
         NSAttributedString* paragraphStr = [self attributedSubstringFromRange:paragraphRange];
         NSMutableString* str = NSMutableString.new;
         
         [paragraphStr enumerateAttributesInRange:NSMakeRange(0, paragraphStr.length) options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
             NSString* t = [paragraphStr.string substringWithRange:range];
-            if (t.length == 0) return;
+            if (range.length == 0 || t.length == 0) return;
             
             NSMutableString* formatting = NSMutableString.new;
             BXFont* font = attrs[NSFontAttributeName];
