@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start;
 - (bool)running;
 @end
+
 @interface BeatPluginTimer : NSObject <BeatPluginTimerExports>
 +(BeatPluginTimer*)scheduledTimerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer * _Nonnull))block;
 - (void)invalidate;

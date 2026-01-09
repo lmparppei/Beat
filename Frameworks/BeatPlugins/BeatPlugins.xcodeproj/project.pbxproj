@@ -11,6 +11,16 @@
 		B621170C2A6ECF460053228F /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B680B79C2A6EBEE900FCD805 /* Plugin HTML template.html */; };
 		B62117102A6FEE700053228F /* BeatPluginHTMLPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B621170F2A6FEE700053228F /* BeatPluginHTMLPanel.swift */; platformFilters = (macos, ); };
 		B62117142A6FFBFF0053228F /* BeatPluginHTMLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62117132A6FFBFF0053228F /* BeatPluginHTMLViewController.swift */; platformFilter = ios; };
+		B63D40E82EE06E9D003771CF /* BeatPlugin+Threading.h in Headers */ = {isa = PBXBuildFile; fileRef = B63D40E62EE06E9D003771CF /* BeatPlugin+Threading.h */; };
+		B63D40E92EE06E9D003771CF /* BeatPlugin+Threading.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D40E72EE06E9D003771CF /* BeatPlugin+Threading.m */; };
+		B63D40EC2EE07039003771CF /* BeatPlugin+Import_Export.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D40EB2EE07039003771CF /* BeatPlugin+Import_Export.m */; };
+		B63D40ED2EE07039003771CF /* BeatPlugin+Import_Export.h in Headers */ = {isa = PBXBuildFile; fileRef = B63D40EA2EE07039003771CF /* BeatPlugin+Import_Export.h */; };
+		B63D40F02EE070C3003771CF /* BeatPlugin+Timer.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D40EF2EE070C3003771CF /* BeatPlugin+Timer.m */; };
+		B63D40F12EE070C3003771CF /* BeatPlugin+Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = B63D40EE2EE070C3003771CF /* BeatPlugin+Timer.h */; };
+		B63D40F42EE071B4003771CF /* BeatPlugin+Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D40F32EE071B4003771CF /* BeatPlugin+Logging.m */; };
+		B63D40F52EE071B4003771CF /* BeatPlugin+Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = B63D40F22EE071B4003771CF /* BeatPlugin+Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B63D40F82EE0728D003771CF /* BeatPlugin+UserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D40F72EE0728D003771CF /* BeatPlugin+UserDefaults.m */; };
+		B63D40F92EE0728D003771CF /* BeatPlugin+UserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B63D40F62EE0728D003771CF /* BeatPlugin+UserDefaults.h */; };
 		B657116B2CF51D4D00051427 /* BeatPlugin+Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = B657116A2CF51D4D00051427 /* BeatPlugin+Parser.m */; };
 		B657116C2CF51D4D00051427 /* BeatPlugin+Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = B65711692CF51D4D00051427 /* BeatPlugin+Parser.h */; };
 		B658DC782CDB79CB00DDDBDE /* BeatNativePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B658DC772CDB79C800DDDBDE /* BeatNativePlugin.swift */; };
@@ -96,6 +106,16 @@
 		B621170A2A6ECEB30053228F /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/PDFKit.framework; sourceTree = DEVELOPER_DIR; };
 		B621170F2A6FEE700053228F /* BeatPluginHTMLPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginHTMLPanel.swift; sourceTree = "<group>"; };
 		B62117132A6FFBFF0053228F /* BeatPluginHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginHTMLViewController.swift; sourceTree = "<group>"; };
+		B63D40E62EE06E9D003771CF /* BeatPlugin+Threading.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Threading.h"; sourceTree = "<group>"; };
+		B63D40E72EE06E9D003771CF /* BeatPlugin+Threading.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Threading.m"; sourceTree = "<group>"; };
+		B63D40EA2EE07039003771CF /* BeatPlugin+Import_Export.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Import_Export.h"; sourceTree = "<group>"; };
+		B63D40EB2EE07039003771CF /* BeatPlugin+Import_Export.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Import_Export.m"; sourceTree = "<group>"; };
+		B63D40EE2EE070C3003771CF /* BeatPlugin+Timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Timer.h"; sourceTree = "<group>"; };
+		B63D40EF2EE070C3003771CF /* BeatPlugin+Timer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Timer.m"; sourceTree = "<group>"; };
+		B63D40F22EE071B4003771CF /* BeatPlugin+Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Logging.h"; sourceTree = "<group>"; };
+		B63D40F32EE071B4003771CF /* BeatPlugin+Logging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Logging.m"; sourceTree = "<group>"; };
+		B63D40F62EE0728D003771CF /* BeatPlugin+UserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+UserDefaults.h"; sourceTree = "<group>"; };
+		B63D40F72EE0728D003771CF /* BeatPlugin+UserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+UserDefaults.m"; sourceTree = "<group>"; };
 		B65711692CF51D4D00051427 /* BeatPlugin+Parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatPlugin+Parser.h"; sourceTree = "<group>"; };
 		B657116A2CF51D4D00051427 /* BeatPlugin+Parser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatPlugin+Parser.m"; sourceTree = "<group>"; };
 		B658DC772CDB79C800DDDBDE /* BeatNativePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNativePlugin.swift; sourceTree = "<group>"; };
@@ -241,6 +261,16 @@
 				B6DBB2CD2D7E1ED6008327EF /* BeatPlugin+HTMLViews.m */,
 				B6964D922D7E21AB00F034A4 /* BeatPlugin+Windows.h */,
 				B6964D932D7E21AB00F034A4 /* BeatPlugin+Windows.m */,
+				B63D40E62EE06E9D003771CF /* BeatPlugin+Threading.h */,
+				B63D40E72EE06E9D003771CF /* BeatPlugin+Threading.m */,
+				B63D40EA2EE07039003771CF /* BeatPlugin+Import_Export.h */,
+				B63D40EB2EE07039003771CF /* BeatPlugin+Import_Export.m */,
+				B63D40EE2EE070C3003771CF /* BeatPlugin+Timer.h */,
+				B63D40EF2EE070C3003771CF /* BeatPlugin+Timer.m */,
+				B63D40F22EE071B4003771CF /* BeatPlugin+Logging.h */,
+				B63D40F32EE071B4003771CF /* BeatPlugin+Logging.m */,
+				B63D40F62EE0728D003771CF /* BeatPlugin+UserDefaults.h */,
+				B63D40F72EE0728D003771CF /* BeatPlugin+UserDefaults.m */,
 			);
 			path = "Plugin Extensions and Categories";
 			sourceTree = "<group>";
@@ -439,14 +469,18 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B63D40E82EE06E9D003771CF /* BeatPlugin+Threading.h in Headers */,
 				B692D1012A6EBB9400574D72 /* BeatPlugins.h in Headers */,
+				B63D40ED2EE07039003771CF /* BeatPlugin+Import_Export.h in Headers */,
 				B680B7CD2A6EC51400FCD805 /* BeatSpeak.h in Headers */,
 				B680B7CA2A6EC4F400FCD805 /* BeatPluginManager.h in Headers */,
 				B69A97652D1313B500DD2B77 /* BeatPlugin+Widgets.h in Headers */,
+				B63D40F92EE0728D003771CF /* BeatPlugin+UserDefaults.h in Headers */,
 				B680B78C2A6EBC3A00FCD805 /* BeatPluginUI.h in Headers */,
 				B6DBB2CF2D7E1ED6008327EF /* BeatPlugin+HTMLViews.h in Headers */,
 				B657116C2CF51D4D00051427 /* BeatPlugin+Parser.h in Headers */,
 				B680B7862A6EBC2300FCD805 /* BeatPluginUIView.h in Headers */,
+				B63D40F12EE070C3003771CF /* BeatPlugin+Timer.h in Headers */,
 				B680B78F2A6EBC5900FCD805 /* BeatModalAccessoryView.h in Headers */,
 				B6964D942D7E21AB00F034A4 /* BeatPlugin+Windows.h in Headers */,
 				B680B78D2A6EBC3A00FCD805 /* BeatPluginUICheckbox.h in Headers */,
@@ -463,6 +497,7 @@
 				B680B7882A6EBC2C00FCD805 /* BeatPluginUIDropdown.h in Headers */,
 				B69A97602D130E4300DD2B77 /* BeatPlugin+Menus.h in Headers */,
 				B680B7CB2A6EC4F400FCD805 /* BeatPlugin.h in Headers */,
+				B63D40F52EE071B4003771CF /* BeatPlugin+Logging.h in Headers */,
 				B6DBB2C72D7E14AA008327EF /* BeatPlugin+TextHighlighting.h in Headers */,
 				B680B78B2A6EBC3A00FCD805 /* BeatPluginUITextField.h in Headers */,
 				B680B7CE2A6EC51400FCD805 /* BeatPluginTimer.h in Headers */,
@@ -546,6 +581,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B69A97642D1313B500DD2B77 /* BeatPlugin+Widgets.m in Sources */,
+				B63D40F82EE0728D003771CF /* BeatPlugin+UserDefaults.m in Sources */,
 				B62117102A6FEE700053228F /* BeatPluginHTMLPanel.swift in Sources */,
 				B6F6E4982CF7805E008AB346 /* BeatPlugin+Printing.m in Sources */,
 				B657116B2CF51D4D00051427 /* BeatPlugin+Parser.m in Sources */,
@@ -561,6 +597,8 @@
 				B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */,
 				B680B79A2A6EBEBD00FCD805 /* BeatPluginTimer.m in Sources */,
 				B6F6E4902CF7767D008AB346 /* BeatPlugin+Modals.m in Sources */,
+				B63D40F42EE071B4003771CF /* BeatPlugin+Logging.m in Sources */,
+				B63D40E92EE06E9D003771CF /* BeatPlugin+Threading.m in Sources */,
 				B680B77A2A6EBBFD00FCD805 /* BeatPluginUI.m in Sources */,
 				B6F6E4932CF77774008AB346 /* BeatPlugin+Editor.m in Sources */,
 				B658DC782CDB79CB00DDDBDE /* BeatNativePlugin.swift in Sources */,
@@ -580,9 +618,11 @@
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
 				B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */,
 				B6F6E49B2CF78236008AB346 /* BeatPlugin+FileIO.m in Sources */,
+				B63D40F02EE070C3003771CF /* BeatPlugin+Timer.m in Sources */,
 				B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */,
 				B680B7842A6EBBFD00FCD805 /* BeatPluginWebView.swift in Sources */,
 				B680B7822A6EBBFD00FCD805 /* BeatPluginUIDropdown.m in Sources */,
+				B63D40EC2EE07039003771CF /* BeatPlugin+Import_Export.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
