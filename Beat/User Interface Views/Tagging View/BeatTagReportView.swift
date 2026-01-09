@@ -23,12 +23,18 @@ class BeatTagReportView:NSViewController, BeatTagManagerView, NSOutlineViewDeleg
 	var checked:[BeatTagType] = []
 	private var reportType:TagReportType = .sceneVsTags
 	
+	var awoken = false
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		typeList?.dataSource = self
-		typeList?.delegate = self
 		
-		self.typeList?.reloadData()
+		if !awoken {
+			typeList?.dataSource = self
+			typeList?.delegate = self
+			
+			self.typeList?.reloadData()
+			awoken = true
+		}
 	}
 		
 	func reload() {

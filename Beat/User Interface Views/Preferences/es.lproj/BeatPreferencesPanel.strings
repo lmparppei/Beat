@@ -1,0 +1,222 @@
+/* Class = "NSToolbarItem"; label = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.label" = "Sistema";
+
+/* Class = "NSToolbarItem"; paletteLabel = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.paletteLabel" = "Sistema";
+
+/* Class = "NSTextFieldCell"; title = "Split dialogue indicator"; ObjectID = "0oB-rC-ac3"; */
+"0oB-rC-ac3.title" = "Indicador de diálogo dividido";
+
+/* Class = "NSButtonCell"; title = "Automatically update plugins"; ObjectID = "1mF-I3-loO"; */
+"1mF-I3-loO.title" = "Actualizar automáticamente Plugins";
+
+/* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.label" = "General";
+
+/* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.paletteLabel" = "General";
+
+/* Class = "NSToolbarItem"; label = "Advanced"; ObjectID = "2Og-yp-uDM"; */
+"2Og-yp-uDM.label" = "Avanzado";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Advanced Formatting"; ObjectID = "2Og-yp-uDM"; */
+"2Og-yp-uDM.paletteLabel" = "Formateo avanzado";
+
+/* Class = "NSButtonCell"; title = "Avoid breaking actions"; ObjectID = "3jQ-Fb-lPg"; */
+"3jQ-Fb-lPg.title" = "Evitar dividir acciones";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
+"3O7-zn-jUw.title" = "US Letter";
+
+/* Class = "NSButtonCell"; title = "Automatic CONT'D extensions"; ObjectID = "5Bc-al-gWv"; */
+"5Bc-al-gWv.title" = "Extensiones CONT'D automáticas";
+
+/* Class = "NSTextFieldCell"; title = "Language"; ObjectID = "5o4-U4-n7H"; */
+"5o4-U4-n7H.title" = "Idioma";
+
+/* Class = "NSTextFieldCell"; title = "Shot Heading Style"; ObjectID = "6OX-Qw-Due"; */
+"6OX-Qw-Due.title" = "Estilo de encabezado de plano";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis Font"; ObjectID = "7KQ-9f-i8A"; */
+"7KQ-9f-i8A.title" = "Fuente de la sinopsis";
+
+/* Class = "NSMenuItem"; title = "Courier New"; ObjectID = "7TH-Zu-8EY"; */
+"7TH-Zu-8EY.title" = "Courier New";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
+"7Xj-J1-Y92.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "Show scene numbers"; ObjectID = "a44-hn-h2m"; */
+"a44-hn-h2m.title" = "Mostrar números de escena";
+
+/* Class = "NSButtonCell"; title = "Break actions between pages"; ObjectID = "ay2-Q6-PKT"; */
+"ay2-Q6-PKT.title" = "Dividir acciones entre páginas";
+
+/* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "Br1-nj-6zn"; */
+"Br1-nj-6zn.title" = "Salto de párrafo automático";
+
+/* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
+"d0m-zv-bHH.title" = "Autocompletar encabezamientos de escena y personajes";
+
+/* Class = "NSTextFieldCell"; title = "Outline Font Size"; ObjectID = "dtT-V5-EVi"; */
+"dtT-V5-EVi.title" = "Tamaño de fuente de la estructura";
+
+/* Class = "NSButtonCell"; title = "Show Page Separators (experimental)"; ObjectID = "e3i-cN-mWC"; */
+"e3i-cN-mWC.title" = "Mostrar separadores de página (experimental)";
+
+/* Class = "NSButtonCell"; title = "Automatically add title page"; ObjectID = "EbP-vJ-jSl"; */
+"EbP-vJ-jSl.title" = "Añadir automáticamente página de título";
+
+/* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
+"EHa-PH-tc4.title" = "Espaciado de encabezamiento";
+
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Preferencias";
+
+/* Class = "NSButtonCell"; title = "2"; ObjectID = "fan-Jn-FOW"; */
+"fan-Jn-FOW.title" = "2";
+
+/* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
+"fxb-nx-hJp.title" = "Cierre automático de elementos como () and [[]]";
+
+/* Class = "NSButtonCell"; title = "Match parentheses"; ObjectID = "Gir-t4-vbC"; */
+"Gir-t4-vbC.title" = "Comprobar paréntesis";
+
+/* Class = "NSTextFieldCell"; title = "Plugins"; ObjectID = "gW4-1f-ZbP"; */
+"gW4-1f-ZbP.title" = "Plugins";
+
+/* Class = "NSToolbarItem"; label = "Formatting"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.label" = "Formato";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Formatting"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.paletteLabel" = "Formato";
+
+/* Class = "NSButtonCell"; title = "Automatically hide Fountain markup"; ObjectID = "KAa-hh-Rua"; */
+"KAa-hh-Rua.title" = "Ocultar automáticamente el formato Fountain";
+
+/* Class = "NSTextFieldCell"; title = "Invisible Element Formatting"; ObjectID = "KQX-J5-sUQ"; */
+"KQX-J5-sUQ.title" = "Formateo de elementos invisibles";
+
+/* Class = "NSButtonCell"; title = "Use default"; ObjectID = "kU3-zB-g60"; */
+"kU3-zB-g60.title" = "Usar configuración por defecto";
+
+/* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
+"lzW-qc-hjs.title" = "Comportamiento del editor";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
+"Mb6-nH-PQK.label" = "Vista";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "MKe-sW-nsP"; */
+"MKe-sW-nsP.title" = "Subrayado";
+
+/* Class = "NSMenuItem"; title = "Big"; ObjectID = "MNC-PG-DYp"; */
+"MNC-PG-DYp.title" = "Grande";
+
+/* Class = "NSButtonCell"; title = "Custom"; ObjectID = "moV-CN-wy9"; */
+"moV-CN-wy9.title" = "Personalizado";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "MPF-7c-b3u"; */
+"MPF-7c-b3u.title" = "En negrita";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "mSK-8B-nEj"; */
+"mSK-8B-nEj.title" = "En negrita";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "nPj-JD-7vH"; */
+"nPj-JD-7vH.label" = "Ítem 3";
+
+/* Class = "NSTextFieldCell"; title = "Default Paper Size"; ObjectID = "nUl-8Q-mMa"; */
+"nUl-8Q-mMa.title" = "Tamaño de papel predeterminado";
+
+/* Class = "NSTextFieldCell"; title = "Editor View"; ObjectID = "O3D-76-kt4"; */
+"O3D-76-kt4.title" = "Vista de editor";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "ok7-BF-Eme"; */
+"ok7-BF-Eme.label" = "Tabulación";
+
+/* Class = "NSButtonCell"; title = "Select..."; ObjectID = "OWc-Ih-dLg"; */
+"OWc-Ih-dLg.title" = "Seleccionar…";
+
+/* Class = "NSButtonCell"; title = "Courier"; ObjectID = "PUh-9p-3fX"; */
+"PUh-9p-3fX.title" = "Courier";
+
+/* Class = "NSMenuItem"; title = "Medium"; ObjectID = "qmO-nZ-aNY"; */
+"qmO-nZ-aNY.title" = "Medio";
+
+/* Class = "NSTextFieldCell"; title = "Backup vault location"; ObjectID = "ROG-62-Evk"; */
+"ROG-62-Evk.title" = "Ubicación de carpeta de copias de seguridad";
+
+/* Class = "NSButtonCell"; title = "Courier"; ObjectID = "SwG-cV-cfD"; */
+"SwG-cV-cfD.title" = "Courier";
+
+/* Class = "NSTextFieldCell"; title = "Section Font Size"; ObjectID = "tpt-4c-5wZ"; */
+"tpt-4c-5wZ.title" = "Tamaño de fuente de sección";
+
+/* Class = "NSTextFieldCell"; title = "Action Pagination"; ObjectID = "Ua4-bb-eBe"; */
+"Ua4-bb-eBe.title" = "Paginación de acción";
+
+/* Class = "NSTextFieldCell"; title = "Continued character cue extension"; ObjectID = "Ump-3W-bbM"; */
+"Ump-3W-bbM.title" = "Mostrar (CONT’D) en diálogos interrumpidos";
+
+/* Class = "NSButtonCell"; title = "Helvetica (default)"; ObjectID = "UOH-ge-3Tb"; */
+"UOH-ge-3Tb.title" = "Helvetica (por defecto)";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "V8X-hl-rUl"; */
+"V8X-hl-rUl.title" = "Box";
+
+/* Class = "NSButtonCell"; title = "Helvetica (default)"; ObjectID = "vh8-c4-8fT"; */
+"vh8-c4-8fT.title" = "Helvetica (por defecto)";
+
+/* Class = "NSMenuItem"; title = "Large"; ObjectID = "VlM-Fm-k1u"; */
+"VlM-Fm-k1u.title" = "Grande";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "vls-Bk-euL"; */
+"vls-Bk-euL.label" = "Vista";
+
+/* Class = "NSTextFieldCell"; title = "⚠️ For now, these settings won't show up in editor, just in preview and PDF"; ObjectID = "vNs-hq-JbK"; */
+"vNs-hq-JbK.title" = "Por ahora, estos ajustes no se mostrarán en el editor, solo en la vista previa y en el PDF";
+
+/* Class = "NSMenuItem"; title = "Small"; ObjectID = "VQS-1g-QZ6"; */
+"VQS-1g-QZ6.title" = "Pequeño";
+
+/* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
+"VTU-wq-qyb.title" = "Courier Prime";
+
+/* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
+"w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
+"WAb-8C-Sjl.title" = "Medio";
+
+/* Class = "NSTextFieldCell"; title = "Section Font"; ObjectID = "wK3-T2-CKe"; */
+"wK3-T2-CKe.title" = "Fuente de la sección";
+
+/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Editor de fuente";
+
+/* Class = "NSTextFieldCell"; title = "Note: These settings only affect screenplay formatting"; ObjectID = "XEa-I5-p3i"; */
+"XEa-I5-p3i.title" = "Nota: Estos ajustes solo afectan al formato del guion";
+
+/* Class = "NSMenuItem"; title = "Same as Content"; ObjectID = "XRs-W3-DcU"; */
+"XRs-W3-DcU.title" = "Igual que el contenido";
+
+/* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
+"xYL-rJ-JMw.title" = "Mostrar colores de escena en la barra de desplazamiento";
+
+/* Class = "NSTextFieldCell"; title = "Note: These settings only affect screenplay formatting"; ObjectID = "y4x-ys-zeh"; */
+"y4x-ys-zeh.title" = "Importante: Estos ajustes solo modifican el formato del guion";
+
+/* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
+"yde-p1-D3O.title" = "Mostrar números de página";
+
+/* Class = "NSMenuItem"; title = "Very big"; ObjectID = "YEd-uH-lo0"; */
+"YEd-uH-lo0.title" = "Muy grande";
+
+/* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
+"yHb-oc-ujO.title" = "Estilo de encabezamiento";
+
+/* Class = "NSButtonCell"; title = "1"; ObjectID = "Yuw-0s-K2b"; */
+"Yuw-0s-K2b.title" = "1";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
+"Zfa-HM-161.title" = "Subrayado";
+

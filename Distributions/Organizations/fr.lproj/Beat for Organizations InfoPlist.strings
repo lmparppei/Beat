@@ -1,0 +1,15 @@
+/* Bundle display name */
+"CFBundleDisplayName" = "Beat";
+
+/* Bundle name */
+"CFBundleName" = "Beat";
+
+/* No comment provided by engineer. */
+"Fountain script" = "Scénario Fountain";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "© 2019-2023 Lauri-Matti Parppei. D'après Writer, © 2016 Hendrik Noeller. Distribué sous licence GPL.";
+
+/* No comment provided by engineer. */
+"Text File" = "Fichier texte";
+

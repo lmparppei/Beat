@@ -44,8 +44,14 @@ import BeatCore
 		let provider = OutlineItemProvider(scene: scene, dark: dark)
 		setupStackView()
 		
-		// Add scene heading
-		textField?.attributedStringValue = provider.heading()
+		// Add scene heading. For sections, heading is always visible.
+		if provider.options.contains(.includeHeading) || scene.type == .section {
+			textField?.isHidden = false
+			textField?.attributedStringValue = provider.heading()
+ 		} else {
+			textField?.isHidden = true
+			textField?.stringValue = ""
+		}
 		
 		// Add all items
 		provider.items().forEach { item in

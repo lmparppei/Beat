@@ -1,0 +1,114 @@
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0hH-er-0kR"; */
+"0hH-er-0kR.title" = "Cancelar";
+
+/* Class = "NSTextFieldCell"; title = "Scene Number"; ObjectID = "2l8-ae-CH8"; */
+"2l8-ae-CH8.title" = "Número de escena";
+
+/* Class = "NSTextFieldCell"; title = "Macro"; ObjectID = "6e2-bt-Jog"; */
+"6e2-bt-Jog.title" = "Macro";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis"; ObjectID = "7vv-ql-pEx"; */
+"7vv-ql-pEx.title" = "Sinopsis";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "8db-n5-9bh"; */
+"8db-n5-9bh.label" = "Editor";
+
+/* Class = "NSButtonCell"; title = "Save"; ObjectID = "aZc-lr-r9i"; */
+"aZc-lr-r9i.title" = "Guardar";
+
+/* Class = "NSTextFieldCell"; title = "Paper"; ObjectID = "B8Z-S8-DXC"; */
+"B8Z-S8-DXC.title" = "Papel";
+
+/* Class = "NSTextFieldCell"; title = "Background"; ObjectID = "BS2-mF-IoS"; */
+"BS2-mF-IoS.title" = "Fondo";
+
+/* Class = "NSTextFieldCell"; title = "Section"; ObjectID = "cTA-xN-AxG"; */
+"cTA-xN-AxG.title" = "Sección";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "DDr-T3-GTD"; */
+"DDr-T3-GTD.title" = "Oscuro";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "DI5-MO-BfR"; */
+"DI5-MO-BfR.title" = "Claro";
+
+/* Class = "NSTextFieldCell"; title = "Woman"; ObjectID = "e7b-TI-SvW"; */
+"e7b-TI-SvW.title" = "Mujer";
+
+/* Class = "NSTextFieldCell"; title = "Other"; ObjectID = "eoU-fi-QOQ"; */
+"eoU-fi-QOQ.title" = "Otro";
+
+/* Class = "NSWindow"; title = "Customize Colors"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Personalizar colores";
+
+/* Class = "NSTextFieldCell"; title = "Genders"; ObjectID = "Ghh-a5-XuU"; */
+"Ghh-a5-XuU.title" = "Géneros";
+
+/* Class = "NSTextFieldCell"; title = "Dialogue"; ObjectID = "gMk-M9-Ydz"; */
+"gMk-M9-Ydz.title" = "Diálogo";
+
+/* Class = "NSTextFieldCell"; title = "Note: Some changes may require reopening documents"; ObjectID = "j5y-Wf-te4"; */
+"j5y-Wf-te4.title" = "Nota: Algunos cambios podrían requerir volver a abrir los documentos.";
+
+/* Class = "NSTextFieldCell"; title = "Man"; ObjectID = "jaw-Da-IBj"; */
+"jaw-Da-IBj.title" = "Hombre";
+
+/* Class = "NSTextFieldCell"; title = "Margin"; ObjectID = "jiK-x1-9Kb"; */
+"jiK-x1-9Kb.title" = "Margen";
+
+/* Class = "NSTabViewItem"; label = "Sidebar"; ObjectID = "jya-PU-GI5"; */
+"jya-PU-GI5.label" = "Barra lateral";
+
+/* Class = "NSTextFieldCell"; title = "Text"; ObjectID = "KtE-ZB-M0o"; */
+"KtE-ZB-M0o.title" = "Texto";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "lFB-D9-I3Z"; */
+"lFB-D9-I3Z.title" = "Claro";
+
+/* Class = "NSTextFieldCell"; title = "Scene Heading"; ObjectID = "m4g-GO-jjO"; */
+"m4g-GO-jjO.title" = "Encabezado de escena";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "MhL-0X-jUG"; */
+"MhL-0X-jUG.title" = "Números de página";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis"; ObjectID = "mKl-Sz-vq1"; */
+"mKl-Sz-vq1.title" = "Sinopsis";
+
+/* Class = "NSButtonCell"; title = "Reset to Default"; ObjectID = "neE-Mb-Rip"; */
+"neE-Mb-Rip.title" = "Restablecer a valores por defecto";
+
+/* Class = "NSTextFieldCell"; title = "Scene"; ObjectID = "NFp-0j-8TG"; */
+"NFp-0j-8TG.title" = "Escena";
+
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "omc-Qp-Wls"; */
+"omc-Qp-Wls.title" = "Nota";
+
+/* Class = "NSTextFieldCell"; title = "Invisible Text"; ObjectID = "pol-nH-YUx"; */
+"pol-nH-YUx.title" = "Texto invisible";
+
+/* Class = "NSTextFieldCell"; title = "Section"; ObjectID = "QCU-q7-Dab"; */
+"QCU-q7-Dab.title" = "Sección";
+
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "r3S-jp-Pwd"; */
+"r3S-jp-Pwd.title" = "Nota";
+
+/* Class = "NSTextFieldCell"; title = "Omitted Scene"; ObjectID = "rMb-4q-N2D"; */
+"rMb-4q-N2D.title" = "Escena omitida";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "TbH-8k-B7K"; */
+"TbH-8k-B7K.title" = "Oscuro";
+
+/* Class = "NSTextFieldCell"; title = "Selection"; ObjectID = "vMr-Yo-A4o"; */
+"vMr-Yo-A4o.title" = "Selección";
+
+/* Class = "NSTextFieldCell"; title = "Customize Colors"; ObjectID = "W10-WX-mev"; */
+"W10-WX-mev.title" = "Personalizar colores";
+
+/* Class = "NSTextFieldCell"; title = "Unspec."; ObjectID = "Whr-tU-Und"; */
+"Whr-tU-Und.title" = "Sin especificar";
+
+/* Class = "NSTextFieldCell"; title = "Highlight"; ObjectID = "ZgE-Rl-TTE"; */
+"ZgE-Rl-TTE.title" = "Resaltar";
+
+/* Class = "NSTextFieldCell"; title = "Caret"; ObjectID = "zHa-4e-Vuo"; */
+"zHa-4e-Vuo.title" = "Cursor";
+

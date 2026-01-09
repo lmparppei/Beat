@@ -1,0 +1,78 @@
+/* Class = "NSWindow"; title = "(beat)"; ObjectID = "2Z6-qA-C1I"; */
+"2Z6-qA-C1I.title" = "(beat)";
+
+/* Class = "NSTextFieldCell"; title = "© Kaikki on haurasta Oy 2019–2025"; ObjectID = "b0H-0Y-Klb"; */
+"b0H-0Y-Klb.title" = "© Kaikki on haurasta Oy 2019–2025";
+
+/* Class = "NSTextFieldCell"; title = "Released under GPL license"; ObjectID = "b4P-Uh-CmK"; */
+"b4P-Uh-CmK.title" = "Distribué sous license GPL";
+
+/* Class = "NSButtonCell"; title = "→ Beat Website"; ObjectID = "cWD-Ub-2Sa"; */
+"cWD-Ub-2Sa.title" = "→ Site de Beat";
+
+/* Class = "NSTextFieldCell"; title = "Date"; ObjectID = "d9P-af-E8t"; */
+"d9P-af-E8t.title" = "Date";
+
+/* Class = "NSButtonCell"; title = "New Screenplay"; ObjectID = "DbX-Gm-m0E"; */
+"DbX-Gm-m0E.title" = "Nouveau scénario";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "EmU-yf-ihA"; */
+"EmU-yf-ihA.title" = "Zone";
+
+/* Class = "NSTextFieldCell"; title = "Filename"; ObjectID = "EY0-Ql-hX0"; */
+"EY0-Ql-hX0.title" = "Nom de fichier";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "FRr-J8-xuv"; */
+"FRr-J8-xuv.title" = "Étiquette";
+
+/* Class = "NSButtonCell"; title = "Tutorials & Templates"; ObjectID = "HWI-6m-SnF"; */
+"HWI-6m-SnF.title" = "Tutoriaux et modèles";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Jjh-as-7aM"; */
+"Jjh-as-7aM.title" = "Cellule de tableau";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "JWP-tG-3rC"; */
+"JWP-tG-3rC.title" = "Étiquette";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "lpM-8A-vqw"; */
+"lpM-8A-vqw.title" = "Cellule de texte";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "MfA-sY-vfO"; */
+"MfA-sY-vfO.title" = "Cellule de texte";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "OFy-2u-sio"; */
+"OFy-2u-sio.title" = "Cellule de tableau";
+
+/* Class = "NSButtonCell"; title = "→ Discord Community"; ObjectID = "osl-e8-t6d"; */
+"osl-e8-t6d.title" = "→ Communauté Discord";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "Smg-6c-mQH"; */
+"Smg-6c-mQH.title" = "Zone";
+
+/* Class = "NSTextFieldCell"; title = "Tutorials & Templates"; ObjectID = "u0S-ze-FnT"; */
+"u0S-ze-FnT.title" = "Tutoriaux et modèles";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "uau-QP-8yL"; */
+"uau-QP-8yL.title" = "Version";
+
+/* Class = "NSTextFieldCell"; title = "Learn Beat"; ObjectID = "UjG-qn-mj6"; */
+"UjG-qn-mj6.title" = "Apprendre Beat";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "upO-fb-u7s"; */
+"upO-fb-u7s.title" = "Cellule de texte";
+
+/* Class = "NSButtonCell"; title = "Browse..."; ObjectID = "w3a-gm-hjm"; */
+"w3a-gm-hjm.title" = "Explorer...";
+
+/* Class = "NSButtonCell"; title = "Button"; ObjectID = "Wvt-te-p5O"; */
+"Wvt-te-p5O.title" = "Bouton";
+
+/* Class = "NSTextFieldCell"; title = "Templates"; ObjectID = "XSB-VA-eAB"; */
+"XSB-VA-eAB.title" = "Modèle";
+
+/* Class = "NSTextFieldCell"; title = "No recent screenplays"; ObjectID = "Zf8-Dc-Df3"; */
+"Zf8-Dc-Df3.title" = "Aucun scénario récent";
+
+/* Class = "NSButtonCell"; title = "→ Support Beat"; ObjectID = "ZFK-os-h00"; */
+"ZFK-os-h00.title" = "→ Soutenir Beat";
+

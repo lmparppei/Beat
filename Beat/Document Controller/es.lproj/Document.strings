@@ -1,0 +1,279 @@
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "2lb-aO-myG"; */
+"2lb-aO-myG.title" = "Red";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "2UR-53-QPX"; */
+"2UR-53-QPX.title" = "Cyan";
+
+/* Class = "NSTextFieldCell"; title = "Label"; ObjectID = "3Ma-cQ-Q5S"; */
+"3Ma-cQ-Q5S.title" = "Label";
+
+/* Class = "NSTextFieldCell"; title = "Notepad"; ObjectID = "4ZQ-iA-Rxf"; */
+"4ZQ-iA-Rxf.title" = "Notepad";
+
+/* Class = "NSMenuItem"; title = "Clear Revisions"; ObjectID = "6SY-H3-Ej1"; */
+"6SY-H3-Ej1.title" = "Clear Revisions";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "8n7-A7-WU4"; */
+"8n7-A7-WU4.title" = "Green";
+
+/* Class = "NSSearchFieldCell"; placeholderString = "Scene Heading"; ObjectID = "8pP-ME-BEt"; */
+"8pP-ME-BEt.placeholderString" = "Scene Heading";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "8rC-im-g9Q"; */
+"8rC-im-g9Q.title" = "Pink";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "8rU-6s-EUe"; */
+"8rU-6s-EUe.title" = "Brown";
+
+/* Class = "NSMenuItem"; title = "Collapse All"; ObjectID = "9Hu-ZZ-R2Y"; */
+"9Hu-ZZ-R2Y.title" = "Collapse All";
+
+/* Class = "NSMenuItem"; title = "Track Storyline"; ObjectID = "9RQ-zI-QP5"; */
+"9RQ-zI-QP5.title" = "Track Storyline";
+
+/* Class = "NSTabViewItem"; label = "Cards"; ObjectID = "798-ya-EGc"; */
+"798-ya-EGc.label" = "Cards";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "aEe-qy-xc9"; */
+"aEe-qy-xc9.title" = "Cyan";
+
+/* Class = "NSMenuItem"; title = "Color"; ObjectID = "Afp-fN-Tl7"; */
+"Afp-fN-Tl7.title" = "Color";
+
+/* Class = "NSTextFieldCell"; title = "Document is locked"; ObjectID = "aMy-cb-lJ3"; */
+"aMy-cb-lJ3.title" = "Document is locked";
+
+/* Class = "NSMenuItem"; title = "Omit Scene"; ObjectID = "ANY-cT-k2w"; */
+"ANY-cT-k2w.title" = "Omit Scene";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "bJU-Vk-ZPT"; */
+"bJU-Vk-ZPT.title" = "Blue";
+
+/* Class = "NSMenuItem"; title = "Mark as Revised"; ObjectID = "BqD-vz-DpD"; */
+"BqD-vz-DpD.title" = "Mark as Revised";
+
+/* Class = "NSMenu"; title = "Scene Color"; ObjectID = "cAg-Ag-Ivb"; */
+"cAg-Ag-Ivb.title" = "Scene Color";
+
+/* Class = "NSButtonCell"; title = "Exit"; ObjectID = "cfc-Bs-BT3"; */
+"cfc-Bs-BT3.title" = "Exit";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "cGw-JR-l1k"; */
+"cGw-JR-l1k.title" = "Pink";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "D3I-np-42U"; */
+"D3I-np-42U.title" = "Red";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibExternalAccessibilityDescription" = "Show Print Preview";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Print Preview"; ObjectID = "DOv-x4-OK1"; */
+"DOv-x4-OK1.ibShadowedToolTip" = "Show Print Preview";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "DSO-Sl-dKH"; */
+"DSO-Sl-dKH.title" = "Text Cell";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "DTa-fe-iE0"; */
+"DTa-fe-iE0.title" = "Text Cell";
+
+/* Class = "NSTextFieldCell"; title = "???"; ObjectID = "dxt-PX-eFi"; */
+"dxt-PX-eFi.title" = "???";
+
+/* Class = "NSTextFieldCell"; title = "Refresh for an anti-lateral thought"; ObjectID = "ebZ-HO-Ch9"; */
+"ebZ-HO-Ch9.title" = "Refresh for an anti-lateral thought";
+
+/* Class = "NSTabViewItem"; label = "Notepad"; ObjectID = "ELh-pn-Go0"; */
+"ELh-pn-Go0.label" = "Notepad";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "EzC-hd-0ex"; */
+"EzC-hd-0ex.title" = "Blue";
+
+/* Class = "NSMenuItem"; title = "Add Section"; ObjectID = "fAX-F7-N9t"; */
+"fAX-F7-N9t.title" = "Add Section";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "fE1-Z4-bDc"; */
+"fE1-Z4-bDc.title" = "Cyan";
+
+/* Class = "NSPopoverTouchBarItem"; collapsedRepresentationLabel = "💡"; ObjectID = "GmR-Ks-GH7"; */
+"GmR-Ks-GH7.collapsedRepresentationLabel" = "💡";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "IfA-Gs-aGd"; */
+"IfA-Gs-aGd.title" = "Brown";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Printout Settings"; ObjectID = "jz3-nY-ADB"; */
+"jz3-nY-ADB.ibShadowedToolTip" = "Printout Settings";
+
+/* Class = "NSMenuItem"; title = "Move to Notepad"; ObjectID = "K3n-Te-7ny"; */
+"K3n-Te-7ny.title" = "Move to Notepad";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "KUg-Bv-fNP"; */
+"KUg-Bv-fNP.title" = "Magenta";
+
+/* Class = "NSTextFieldCell"; title = "No Reviews"; ObjectID = "KZo-wr-Yqv"; */
+"KZo-wr-Yqv.title" = "No Reviews";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Go to scene..."; ObjectID = "L0v-T6-wwt"; */
+"L0v-T6-wwt.ibExternalAccessibilityDescription" = "Go to scene...";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Go to scene..."; ObjectID = "L0v-T6-wwt"; */
+"L0v-T6-wwt.ibShadowedToolTip" = "Go to scene...";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "L4N-og-10d"; */
+"L4N-og-10d.label" = "Item 3";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "LeM-Df-kg2"; */
+"LeM-Df-kg2.title" = "Table View Cell";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "LgM-Xa-gig"; */
+"LgM-Xa-gig.title" = "None";
+
+/* Class = "NSTextFieldCell"; title = "Once you add review notes to the screenplay, you'll see them listed here"; ObjectID = "M5R-75-VTw"; */
+"M5R-75-VTw.title" = "Once you add review notes to the screenplay, you'll see them listed here";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "N2F-gE-zqw"; */
+"N2F-gE-zqw.title" = "None";
+
+/* Class = "NSTextFieldCell"; title = "Filter Scenes"; ObjectID = "NAI-kd-UO5"; */
+"NAI-kd-UO5.title" = "Filter Scenes";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "ndy-dL-efa"; */
+"ndy-dL-efa.title" = "Red";
+
+/* Class = "NSTextFieldCell"; title = "Character"; ObjectID = "NLd-GN-ebP"; */
+"NLd-GN-ebP.title" = "Character";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "o1x-nn-5KN"; */
+"o1x-nn-5KN.label" = "Item 3";
+
+/* Class = "NSTabViewItem"; label = "Outline"; ObjectID = "O5H-I2-RI4"; */
+"O5H-I2-RI4.label" = "Outline";
+
+/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "oH2-ys-rL1"; */
+"oH2-ys-rL1.label" = "Item 3";
+
+/* Class = "NSTextFieldCell"; title = "Line type display"; ObjectID = "olz-bR-9Tn"; */
+"olz-bR-9Tn.title" = "Line type display";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Print Preview"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibExternalAccessibilityDescription" = "Show Print Preview";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Quick Settings"; ObjectID = "piN-SW-wNh"; */
+"piN-SW-wNh.ibShadowedToolTip" = "Quick Settings";
+
+/* Class = "NSTextFieldCell"; title = "Mode Indicator"; ObjectID = "pmw-EE-q6r"; */
+"pmw-EE-q6r.title" = "Mode Indicator";
+
+/* Class = "NSMenuItem"; title = "Expand All"; ObjectID = "ps4-nn-ia5"; */
+"ps4-nn-ia5.title" = "Expand All";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "PtV-0l-a6v"; */
+"PtV-0l-a6v.title" = "Orange";
+
+/* Class = "NSTextFieldCell"; title = "Color"; ObjectID = "pXN-uS-1oE"; */
+"pXN-uS-1oE.title" = "Color";
+
+/* Class = "NSMenuItem"; title = "Mark for Removal"; ObjectID = "qyR-1a-dcy"; */
+"qyR-1a-dcy.title" = "Mark for Removal";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "S2S-kO-ppA"; */
+"S2S-kO-ppA.title" = "Orange";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "sdd-NC-jo7"; */
+"sdd-NC-jo7.title" = "Box";
+
+/* Class = "NSTabViewItem"; label = "Text"; ObjectID = "stc-hX-uX6"; */
+"stc-hX-uX6.label" = "Text";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibExternalAccessibilityDescription" = "Show Timeline";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Timeline"; ObjectID = "SU7-uh-HJD"; */
+"SU7-uh-HJD.ibShadowedToolTip" = "Toggle Timeline";
+
+/* Class = "NSMenuItem"; title = "Show Word / Page Count"; ObjectID = "syr-XT-LEZ"; */
+"syr-XT-LEZ.title" = "Mostrar contador de palabras / páginas";
+
+/* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "TEo-XN-bNc"; */
+"TEo-XN-bNc.label" = "Ítem 2";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Tgw-Yg-2i4"; */
+"Tgw-Yg-2i4.title" = "Celda de vista de tabla";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "tLV-bS-9E1"; */
+"tLV-bS-9E1.title" = "Verde";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Printout Settings"; ObjectID = "u0f-Cg-wvv"; */
+"u0f-Cg-wvv.ibShadowedToolTip" = "Ajustes de impresión";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "uIu-iR-xUP"; */
+"uIu-iR-xUP.title" = "Magenta";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Outline view"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibExternalAccessibilityDescription" = "Vista de estructura";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Toggle Sidebar"; ObjectID = "ULq-c1-qrj"; */
+"ULq-c1-qrj.ibShadowedToolTip" = "Mostrar/ocultar barra lateral";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "Uq4-Ad-AU8"; */
+"Uq4-Ad-AU8.title" = "Marrón";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "uq9-i5-BtV"; */
+"uq9-i5-BtV.title" = "Naranja";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Filters"; ObjectID = "vzo-na-BYD"; */
+"vzo-na-BYD.ibShadowedToolTip" = "Mostrar filtros";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "X1d-1b-z0n"; */
+"X1d-1b-z0n.title" = "Ninguno";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[0] = "Outline"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[0]" = "Estructura";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[1] = "Notepad"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[1]" = "Cuaderno de notas";
+
+/* Class = "NSSegmentedCell"; XGD-xP-WxX.ibShadowedToolTips[2] = "Characters and Dialogue"; ObjectID = "XGD-xP-WxX"; */
+"XGD-xP-WxX.ibShadowedToolTips[2]" = "Personajes y diálogo";
+
+/* Class = "NSMenuItem"; title = "Scene Color"; ObjectID = "xjT-UK-F6b"; */
+"xjT-UK-F6b.title" = "Color de escena";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "xmV-DE-c1g"; */
+"xmV-DE-c1g.title" = "Azul";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "xOd-HO-29H"; */
+"xOd-HO-29H.title" = "Ventana";
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xYu-On-Cas"; */
+"xYu-On-Cas.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
+"Y9s-uT-czv.title" = "Verde";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "Ypu-rU-vo4"; */
+"Ypu-rU-vo4.title" = "Celda de texto";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "ysj-J5-Omg"; */
+"ysj-J5-Omg.title" = "Celda de vista de tabla";
+
+/* Class = "NSMenuItem"; title = "Review Selection"; ObjectID = "z15-hg-1Mt"; */
+"z15-hg-1Mt.title" = "Revisar selección";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "zgD-aV-dKT"; */
+"zgD-aV-dKT.title" = "Celda de texto";
+
+/* Class = "NSButton"; ibExternalAccessibilityDescription = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibExternalAccessibilityDescription" = "Mostrar tarjetas de índice";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Show Index Cards"; ObjectID = "ZL1-eS-Zb2"; */
+"ZL1-eS-Zb2.ibShadowedToolTip" = "Mostrar tarjetas de índice";
+
+/* Class = "NSTextFieldCell"; title = "Tagging"; ObjectID = "Zo3-K1-aDo"; */
+"Zo3-K1-aDo.title" = "Etiquetado";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "zQk-vQ-7L3"; */
+"zQk-vQ-7L3.title" = "Celda de vista de tabla";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "Zu3-Fk-iUY"; */
+"Zu3-Fk-iUY.title" = "Rosa";
+

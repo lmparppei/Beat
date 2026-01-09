@@ -96,6 +96,10 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>fi.KAPITAN.Beat.editing</string>
+	</array>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
 	<key>UTImportedTypeDeclarations</key>
@@ -155,10 +159,6 @@
 				</array>
 			</dict>
 		</dict>
-	</array>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>fi.KAPITAN.Beat.editing</string>
 	</array>
 </dict>
 </plist>

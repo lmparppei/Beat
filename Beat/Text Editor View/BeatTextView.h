@@ -134,6 +134,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 #pragma mark - Common methods
 
 - (void)setup;
+- (void)didFinishLoading;
 
 #pragma mark - Scrolling
 

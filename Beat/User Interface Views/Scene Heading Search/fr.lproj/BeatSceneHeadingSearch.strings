@@ -1,0 +1,15 @@
+/* Class = "NSTextFieldCell"; title = "1"; ObjectID = "7Pq-ee-6u6"; */
+"7Pq-ee-6u6.title" = "1";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Scene Number, Title, Page Number..."; ObjectID = "DIT-bV-SYv"; */
+"DIT-bV-SYv.placeholderString" = "Numéro de scène, titre, numéro de page...";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Fenêtre";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "UT1-Q6-QTH"; */
+"UT1-Q6-QTH.title" = "Cellule de tableau";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "wbc-8K-IMw"; */
+"wbc-8K-IMw.title" = "Cellule de texte";
+

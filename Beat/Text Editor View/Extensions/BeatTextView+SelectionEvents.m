@@ -8,6 +8,7 @@
 
 #import "BeatTextView+SelectionEvents.h"
 #import "BeatTextView+Popovers.h"
+#import "BeatTextView+TypewriterMode.h"
 #import "Beat-Swift.h"
 
 @implementation BeatTextView (SelectionEvents)
@@ -79,6 +80,18 @@
 			[self.editorDelegate.review closePopover];
 		}
 	}
+}
+
+- (void)moveToBeginningOfDocument:(id)sender
+{
+	[super moveToBeginningOfDocument:sender];
+	if (self.typewriterMode) [self typewriterScroll];
+}
+
+- (void)moveToEndOfDocument:(id)sender
+{
+	[super moveToEndOfDocument:sender];
+	if (self.typewriterMode) [self typewriterScroll];
 }
 
 @end

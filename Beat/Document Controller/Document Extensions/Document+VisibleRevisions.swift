@@ -9,9 +9,13 @@
 import Foundation
 import BeatCore
 
+var awoken = false
+
 class BeatVisibleRevisionsMenu:NSMenu, NSMenuDelegate {
 	override func awakeFromNib() {
 		super.awakeFromNib()
+		
+		guard !awoken else { return }
 		
 		self.delegate = self
 		
@@ -26,6 +30,8 @@ class BeatVisibleRevisionsMenu:NSMenu, NSMenuDelegate {
 			
 			self.addItem(item)
 		}
+		
+		awoken = true
 	}
 }
 

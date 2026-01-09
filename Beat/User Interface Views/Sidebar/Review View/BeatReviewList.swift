@@ -48,11 +48,17 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	
 	@IBOutlet var placeholderView:NSView?
 	
+	var awoken = false
+	
 	override func awakeFromNib() {
+		super.awakeFromNib()
+		guard !awoken else { return }
+		
 		self.delegate = self
 		self.dataSource = self
 		
 		self.editorDelegate?.register(self)
+		awoken = true
 	}
 	
 	func reloadInBackground() {

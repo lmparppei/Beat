@@ -15,7 +15,9 @@
 //#import <BeatPlugins/BeatWidgetView.h>
 #import <BeatPlugins/BeatPlugins.h>
 
-@interface BeatSegmentedControl () <BeatWidgetViewTabView>
+@interface BeatSegmentedControl () <BeatWidgetViewTabView> {
+	bool awoken;
+}
 @property (nonatomic, weak) IBOutlet BeatWidgetView* widgetView;
 @end
 
@@ -27,24 +29,30 @@ static NSDictionary* selectedSegmentImages;
 
 - (void)awakeFromNib
 {
+	[super awakeFromNib];
+	if (awoken) return;
+	
 	if (widgetIcon == nil) widgetIcon = [self imageForSegment:self.lastSegment];
 		
 	[self createSegmentImages];
 	[self updateWidgetTabState];
 	[self setSelectedSegment:0];
 	
-	/*
+	awoken = true;
+	
+	
 	// This is a little weird. For some reason Ventura doesn't render the segments correctly, so we need to fix it manually.
 	if (@available(macOS 14.0, *)) {
 		// Do nothing
-	} else if (@available(macOS 13.0, *)) {
-		// Forced dark appearance
-		[self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
 	} else {
-		// On older systems, we'll tint the icons by hand
-		[self createSegmentImages];
+		if (@available(macOS 13.0, *)) {
+			// Forced dark appearance
+			[self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
+		} else {
+			// On older systems, we'll tint the icons by hand
+			[self createSegmentImages];
+		}
 	}
-	 */
 }
 
 - (void)createSegmentImages

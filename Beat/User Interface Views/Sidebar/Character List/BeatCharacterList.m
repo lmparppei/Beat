@@ -62,7 +62,9 @@
 
 @end
 
-@interface BeatCharacterList () <NSPopoverDelegate, BeatCharacterListDelegate>
+@interface BeatCharacterList () <NSPopoverDelegate, BeatCharacterListDelegate> {
+	bool awoken;
+}
 @property (nonatomic, weak) IBOutlet NSTabView *masterTabView;
 @property (nonatomic, weak) IBOutlet BeatPieGraph *graphView;
 @property (nonatomic) NSDictionary<NSString*, BeatCharacter*> *characters;
@@ -95,7 +97,11 @@
 }
 
 -(void)awakeFromNib {
+	[super awakeFromNib];
+	if (awoken) return;
+	
 	[self.editorDelegate registerEditorView:self];
+	awoken = true;
 }
 
 #pragma mark - Drawing

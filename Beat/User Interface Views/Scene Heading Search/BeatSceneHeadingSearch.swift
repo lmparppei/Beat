@@ -37,7 +37,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	override init(window: NSWindow?) {
 		super.init(window: window)
 	}
-	
+		
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -47,7 +47,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		delegate?.parser.updateOutline() // create a new outline from scratch, just in case
 		
 		results = []
-		self.filter("")
+		self.filter(self.textField?.stringValue ?? "")
 	}
 	
 	override func windowDidLoad() {
@@ -68,14 +68,17 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	
 	
 	func controlTextDidChange(_ obj: Notification) {
-		filter(textField?.stringValue ?? "")
+		guard let sender = obj.object as? NSTextField, sender == textField else {
+			return
+		}
+		
+		filter(sender.stringValue)
 	}
 	
 	func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
 		// Don't perform up and down commands
 		return commandSelector == #selector(moveUp(_:)) || commandSelector == #selector(moveDown(_:))
 	}
-	
 	
 	override func keyUp(with event: NSEvent) {
 		var prevent =  false
@@ -176,11 +179,8 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	
 	func filter(_ string:String) {
 		guard let delegate else {
-			BeatConsole.shared().log(toConsole: "NO DELEGATE", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 			return
 		}
-		
-		BeatConsole.shared().log(toConsole: "    ... filtering with text \(string) (\(string.count))" , pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 		
 		results = []
 		
@@ -209,12 +209,9 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 				results.append(BeatSceneHeadingSearchResult(scene: scene))
 			}
 		}
-		
-		BeatConsole.shared().log(toConsole: "         ... \(results.count) results ", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
-		BeatConsole.shared().log(toConsole: "         ... reloading table view \(self.tableView)", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
-		
+				
 		tableView?.reloadData()
-		BeatConsole.shared().log(toConsole: "             ... reload complete", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
+
 		if (tableView!.numberOfRows > 0) {
 			tableView?.selectRowIndexes([0], byExtendingSelection: false)
 		}
@@ -223,7 +220,6 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	
 	// MARK: - Table view data source and delegate
 	func numberOfRows(in tableView: NSTableView) -> Int {
-		BeatConsole.shared().log(toConsole: "             [delegate] \(results.count) rows", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 		return results.count
 	}
 	
@@ -231,7 +227,6 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		if (item != nil) {
 			return 0
 		} else {
-			BeatConsole.shared().log(toConsole: "             [delegate] \(results.count) results", pluginName: "BeatSceneHeadingSearch", context: self.delegate)
 			return results.count
 		}
 	}

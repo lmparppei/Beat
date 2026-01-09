@@ -16,7 +16,7 @@
 {
 	OutlineScene *currentScene = self.currentScene;
 	NSInteger sceneIndex = [self.parser indexOfScene:currentScene];
-	if (sceneIndex == NSNotFound) return;
+	//if (sceneIndex == NSNotFound) return;
 	
 	// Update any registered outline views
 	for (id<BeatSceneOutlineView>view in self.registeredOutlineViews) {

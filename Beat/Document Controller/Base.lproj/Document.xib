@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="24006"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -82,7 +82,7 @@
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view" customClass="BeatAutomaticAppearanceView" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
                                                     <subviews>
-                                                        <tabView ambiguous="YES" type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
+                                                        <tabView type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -886,7 +886,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="uOK-xT-qdV">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="465"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" multipleSelection="NO" autosaveColumns="NO" rowHeight="47" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="InP-FO-2p3" id="2dB-kI-P7V" customClass="BeatReviewList" customModule="Beat" customModuleProvider="target">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="465"/>
@@ -1432,6 +1432,7 @@
                                                                     <outlet property="localHeightConstraint" destination="Sog-Rc-GyL" id="Fku-kw-bPO"/>
                                                                     <outlet property="sceneMenu" destination="4zR-Lb-D4A" id="uDO-pv-fHW"/>
                                                                     <outlet property="storylinePopup" destination="lvS-YQ-1vp" id="yB2-ZV-uC1"/>
+                                                                    <outlet property="toggleButton" destination="SU7-uh-HJD" id="cE9-KT-S5c"/>
                                                                 </connections>
                                                             </view>
                                                         </subviews>

@@ -1,0 +1,42 @@
+/* Class = "NSTextFieldCell"; title = "Dark Mode"; ObjectID = "1tE-QT-xSi"; */
+"1tE-QT-xSi.title" = "Modo oscuro";
+
+/* Class = "NSMenuItem"; title = "First"; ObjectID = "a5T-li-azw"; */
+"a5T-li-azw.title" = "Primera";
+
+/* Class = "NSTextFieldCell"; title = "Revision Mode"; ObjectID = "aWw-HG-atC"; */
+"aWw-HG-atC.title" = "Modo de revisión";
+
+/* Class = "NSTextFieldCell"; title = "Review Mode"; ObjectID = "FcR-V7-PTU"; */
+"FcR-V7-PTU.title" = "Modo de revisión";
+
+/* Class = "NSTextFieldCell"; title = "Revision"; ObjectID = "iOg-5U-Rwp"; */
+"iOg-5U-Rwp.title" = "Revisión";
+
+/* Class = "NSTextFieldCell"; title = "Scene Numbers"; ObjectID = "nWf-Cv-Juj"; */
+"nWf-Cv-Juj.title" = "Números de escena";
+
+/* Class = "NSTextFieldCell"; title = "Paper Size"; ObjectID = "Rt1-qW-ihD"; */
+"Rt1-qW-ihD.title" = "Tamaño del papel";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "sqm-in-rbh"; */
+"sqm-in-rbh.title" = "Números de página";
+
+/* Class = "NSMenuItem"; title = "Third"; ObjectID = "v0U-lZ-E3A"; */
+"v0U-lZ-E3A.title" = "Tercera";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "vON-wx-6tU"; */
+"vON-wx-6tU.title" = "A4";
+
+/* Class = "NSMenuItem"; title = "Fourth"; ObjectID = "Wg2-ho-wkf"; */
+"Wg2-ho-wkf.title" = "Cuarta";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "xjh-Yu-ZRp"; */
+"xjh-Yu-ZRp.title" = "US Letter";
+
+/* Class = "NSTextFieldCell"; title = "Quick Settings"; ObjectID = "Xx5-eT-SRb"; */
+"Xx5-eT-SRb.title" = "Ajustes rápidos";
+
+/* Class = "NSMenuItem"; title = "Second"; ObjectID = "yzY-bO-hOh"; */
+"yzY-bO-hOh.title" = "Segunda";
+

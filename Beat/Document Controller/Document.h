@@ -119,6 +119,12 @@ THE SOFTWARE.
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
 
 
+#pragma mark - Preview controller
+
+/// Preview controller handles updating the preview view. It conforms to `BeatPreviewControllerInstance`.
+@property (nonatomic) IBOutlet BeatPreviewController<BeatPreviewControllerInstance>* _Nonnull previewController;
+
+
 #pragma mark - Window controls
 
 @property (nonatomic, weak) NSWindow* _Nullable currentKeyWindow;

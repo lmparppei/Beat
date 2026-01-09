@@ -68,7 +68,9 @@
 static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalog.colorPicker";
 
 #pragma mark - Autocompleting
-@interface BeatTextView () <NSTextFinderClient, BeatTextEditor>
+@interface BeatTextView () <NSTextFinderClient, BeatTextEditor> {
+	bool awoken;
+}
 
 /// Touch bar view
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
@@ -167,6 +169,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)awakeFromNib
 {
+	[super awakeFromNib];
+	if (awoken) return;
+	
 	// We are connecting the editor delegate via IBOutlet, so we need to forward it to layout manager here.
 	if ([self.layoutManager isKindOfClass:BeatLayoutManager.class]) {
 		((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
@@ -182,13 +187,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 	// Register dragged types
 	[self registerForDraggedTypes:@[BeatPasteboardItem.pasteboardType]];
-		
-	// Observer for selection change. It's posted to text view delegate as well, but we'll handle
-	// popovers etc. here.
+	
+	// Observer for selection change. It's posted to text view delegate as well, but we'll handle popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeLanguage:) name:@"BeatLanguageChangedNotification" object:nil];
 	
 	// For future generations
 	[self setupMinimap];
+	
+	awoken = false;
 }
 
 /// General setup. Call from editor instance.
@@ -227,6 +235,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self setupValidationItems];
 }
 
+- (void)didFinishLoading
+{
+	[self didChangeLanguage:nil];
+}
+
 -(void)removeFromSuperview
 {
 	[self.popoverController.tableView removeFromSuperview];
@@ -240,7 +253,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Window interactions
 
-- (NSTouchBar*)makeTouchBar {
+- (NSTouchBar*)makeTouchBar
+{
 	[NSApp setAutomaticCustomizeTouchBarMenuItemEnabled:NO];
 	
 	if (@available(macOS 10.15, *)) {
@@ -322,7 +336,10 @@ NSString *keyCodeToString(uint16_t keyCode) {
 
 -(void)keyUp:(NSEvent *)event
 {
-	if (self.typewriterMode) [self typewriterScroll];
+	if (self.typewriterMode) {
+		if (event.keyCode != kVK_PageUp && event.keyCode != kVK_PageDown)
+			[self typewriterScroll];
+	}
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -720,7 +737,7 @@ double clamp(double d, double min, double max)
 
 
 
-#pragma mark - Make compatible with iOS stuff
+#pragma mark - iOS/macOS compatibility
 
 -(NSString *)text { return self.string; }
 - (void)setText:(NSString *)text { self.string = text; }
@@ -775,6 +792,31 @@ double clamp(double d, double min, double max)
 	}
 	
 	return markers;
+}
+
+#pragma mark - Language selection
+
+- (void)didChangeLanguage:(NSNotification *)notification
+{
+	NSString* language = [BeatUserDefaults.sharedDefaults get:BeatSpellCheckingLanguage];
+	
+	if ([language isEqualToString:@"auto"] || [language isEqualToString:@""] || language == nil) {
+		// Detect
+		NSLinguisticTagger* tagger = [NSLinguisticTagger.alloc initWithTagSchemes:@[NSLinguisticTagSchemeLanguage] options:0];
+		tagger.string = self.string;
+		
+		[NSSpellChecker.sharedSpellChecker setLanguage:tagger.dominantLanguage];
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		NSSpellChecker *checker = NSSpellChecker.sharedSpellChecker;
+		[checker checkSpellingOfString:self.string
+							startingAt:0
+							  language:nil
+								  wrap:YES
+				inSpellDocumentWithTag:self.spellCheckerDocumentTag
+							 wordCount:NULL];
+	});
 }
 
 

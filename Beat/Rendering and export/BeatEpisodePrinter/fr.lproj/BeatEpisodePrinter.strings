@@ -1,0 +1,51 @@
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "1Is-Bl-rL9"; */
+"1Is-Bl-rL9.placeholderString" = "Révision, Version, ...";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "2Bh-O5-Oxn"; */
+"2Bh-O5-Oxn.title" = "Vert";
+
+/* Class = "NSTextFieldCell"; title = "Drag & drop or select episodes on the list to print or export them all at once"; ObjectID = "Aqq-zf-yJ2"; */
+"Aqq-zf-yJ2.title" = "Glisser-déposer ou sélectionner les épisodes d'une liste à imprimer ou tout exporter en un lot";
+
+/* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "Atu-PM-dGd"; */
+"Atu-PM-dGd.title" = "Inclure l'En-tête";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "BIV-mZ-62a"; */
+"BIV-mZ-62a.title" = "Coder en couleur la page révisée";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "bQK-wT-qQj"; */
+"bQK-wT-qQj.title" = "Format de page";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "DmN-tZ-Tpy"; */
+"DmN-tZ-Tpy.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "EFX-sj-v43"; */
+"EFX-sj-v43.title" = "Lettre US";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "iUS-rk-GG1"; */
+"iUS-rk-GG1.title" = "Annuler";
+
+/* Class = "NSButtonCell"; title = "Export"; ObjectID = "lEy-FZ-CzA"; */
+"lEy-FZ-CzA.title" = "Exporter";
+
+/* Class = "NSTextFieldCell"; title = "Print Episodes"; ObjectID = "PcO-zY-RPh"; */
+"PcO-zY-RPh.title" = "Imprimer les épisodes";
+
+/* Class = "NSWindow"; title = "Print Episodes"; ObjectID = "pUI-V4-DPE"; */
+"pUI-V4-DPE.title" = "Imprimer les épisodes";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "Q5H-ek-O4w"; */
+"Q5H-ek-O4w.title" = "Rouge";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "QM5-Ek-2Bv"; */
+"QM5-Ek-2Bv.title" = "Cellule de tableau";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "U6J-Oq-wzB"; */
+"U6J-Oq-wzB.title" = "Cellule de texte";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "Uju-KM-S5e"; */
+"Uju-KM-S5e.title" = "Orange";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "znR-bf-oyK"; */
+"znR-bf-oyK.title" = "Cyan";
+

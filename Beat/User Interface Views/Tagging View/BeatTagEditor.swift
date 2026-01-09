@@ -39,6 +39,11 @@ class BeatTagEditor:NSViewController, BeatTagManagerView, NSOutlineViewDataSourc
 		NotificationCenter.default.addObserver(self, selector: #selector(tagsDidChange), name: NSNotification.Name(BeatTagging.notificationName()), object: nil)
 	}
 	
+	deinit {
+		NotificationCenter.default.removeObserver(self)
+	}
+	
+	
 	// Reload tags when they were modified in editor
 	@objc func tagsDidChange(_ notification:NSNotification?) {
 		if let doc = notification?.object as? BeatEditorDelegate, doc.uuid() == self.delegate?.uuid() {

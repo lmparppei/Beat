@@ -208,9 +208,9 @@ class BeatPageThumbnailProvider:NSObject, NSCollectionViewDataSource, NSCollecti
 	}
 }
 
-extension NSView {
+@objc extension NSView {
 	
-	func imageRepresentation(size: CGSize) -> NSImage? {
+	@objc func imageRepresentation(size: CGSize) -> NSImage? {
 		let size = self.bounds.size
 		let imgSize = size
 		

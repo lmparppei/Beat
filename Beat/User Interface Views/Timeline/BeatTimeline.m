@@ -46,6 +46,8 @@
 
 @interface BeatTimeline ()
 
+@property (nonatomic, weak) IBOutlet NSButton* toggleButton;
+
 // Interface
 @property (nonatomic, weak) IBOutlet NSPopUpButton *storylinePopup;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *localHeightConstraint;
@@ -412,6 +414,12 @@
 		selectedItem = [self timelineItemFor:selectedScene];
 	}
 	
+	// Nothing to do here. Deselect all and return.
+	if (selectedItem == nil) {
+		[self deselectAll];
+		return;
+	}
+	
 	// Select item
 	if (selectedItem) {
 		[selectedItem select];
@@ -647,10 +655,7 @@
 	self.visible = !self.visible;
 	if (self.visible) [self show]; else [self hide];
 
-	NSButton* button = (NSButton*)sender;
-	if (button != nil) {
-		button.state = (self.visible) ? NSOnState : NSOffState;
-	}
+	self.toggleButton.state = (self.visible) ? NSOnState : NSOffState;
 }
 
 - (void)show

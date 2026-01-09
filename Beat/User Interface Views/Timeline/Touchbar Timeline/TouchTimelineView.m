@@ -304,8 +304,7 @@
 
 - (void)selectItem:(NSInteger)index
 {
-	if (index >= self.items.count) return;
-	else if (index < 0) return;
+	if (index >= self.items.count || index < 0) return;
 	
     NSDictionary *item = [self.items objectAtIndex:index];
     if (item) {
@@ -314,7 +313,8 @@
     }
 }
 
-- (void)didSelectItem:(NSInteger)item {
+- (void)didSelectItem:(NSInteger)item
+{
 	OutlineScene* scene = self.delegate.parser.outline[item];
 	if (scene != nil) {
 		[self.delegate setSelectedRange:scene.line.textRange];

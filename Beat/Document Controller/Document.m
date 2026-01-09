@@ -123,9 +123,6 @@
 /// Autocompletion class which delivers us character names and scene headings
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
-/// Preview controller handles updating the preview view
-@property (nonatomic) IBOutlet BeatPreviewController *previewController;
-
 @property (weak) IBOutlet NSTouchBar *touchBar;
 
 @end
@@ -528,6 +525,7 @@
 	self.documentIsLoading = NO;
 
 	self.textView.editable = true;
+	[self.textView didFinishLoading];
 	
 	// Add title page for new documents if needed
 	if (self.fileURL == nil && self.text.length == 0 && [BeatUserDefaults.sharedDefaults getBool:BeatSettingAddTitlePageByDefault]) {

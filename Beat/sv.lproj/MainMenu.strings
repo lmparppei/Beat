@@ -355,7 +355,7 @@
 "NJj-Ow-1UU.title" = "Helskärmsläge";
 
 /* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "NLE-HM-5a7"; */
-"NLE-HM-5a7.title" = "Klistra in och matcha formatering";
+"NLE-HM-5a7.title" = "Klistra utan formatering";
 
 /* Class = "NSMenuItem"; title = "Show Spelling and Grammar"; ObjectID = "NLP-m6-wMr"; */
 "NLP-m6-wMr.title" = "Visa stavning och grammatik";

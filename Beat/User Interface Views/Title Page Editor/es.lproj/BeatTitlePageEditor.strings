@@ -1,0 +1,57 @@
+/* Class = "NSTextFieldCell"; title = "Title Page"; ObjectID = "1Q2-hX-DF9"; */
+"1Q2-hX-DF9.title" = "Página de título";
+
+/* Class = "NSButtonCell"; title = "Apply"; ObjectID = "9cX-7q-PTH"; */
+"9cX-7q-PTH.title" = "Aplicar";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "a7k-zg-GLv"; */
+"a7k-zg-GLv.title" = "Cancelar";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Anything noteworthy"; ObjectID = "adx-JA-UZb"; */
+"adx-JA-UZb.placeholderString" = "Algo destacable";
+
+/* Class = "NSTextFieldCell"; title = "Author(s)"; ObjectID = "bb6-po-oAF"; */
+"bb6-po-oAF.title" = "Autor(es)";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "cvA-uO-RfQ"; */
+"cvA-uO-RfQ.title" = "Box";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Version, Date..."; ObjectID = "Dal-JX-aCz"; */
+"Dal-JX-aCz.placeholderString" = "Versión, fecha…";
+
+/* Class = "NSTextFieldCell"; title = "Draft Date"; ObjectID = "fV3-Dd-fql"; */
+"fV3-Dd-fql.title" = "Fecha del borrador";
+
+/* Class = "NSTextFieldCell"; title = "Notes"; ObjectID = "GLL-uy-Zta"; */
+"GLL-uy-Zta.title" = "Notas";
+
+/* Class = "NSTextFieldCell"; title = "Title"; ObjectID = "IfO-1A-aco"; */
+"IfO-1A-aco.title" = "Título";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Firstname Lastname"; ObjectID = "KMW-03-qsW"; */
+"KMW-03-qsW.placeholderString" = "Nombre Apellidos";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Script Title"; ObjectID = "L18-jD-fGA"; */
+"L18-jD-fGA.placeholderString" = "Título del guion";
+
+/* Class = "NSTextFieldCell"; placeholderString = "e-mail, phone, ..."; ObjectID = "LuQ-dX-czZ"; */
+"LuQ-dX-czZ.placeholderString" = "correo electrónico, teléfono…";
+
+/* Class = "NSTextFieldCell"; title = "Credit line"; ObjectID = "NoI-DQ-e7G"; */
+"NoI-DQ-e7G.title" = "Créditos";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Based on..."; ObjectID = "qnS-Lr-H1v"; */
+"qnS-Lr-H1v.placeholderString" = "Basado en…";
+
+/* Class = "NSTextFieldCell"; title = "Contact"; ObjectID = "TC7-0N-c9w"; */
+"TC7-0N-c9w.title" = "Contacto";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Written by, Por, Par, Av..."; ObjectID = "UPj-Lx-y6u"; */
+"UPj-Lx-y6u.placeholderString" = "Escrito por…";
+
+/* Class = "NSTextFieldCell"; title = "Source"; ObjectID = "xg7-rM-bI8"; */
+"xg7-rM-bI8.title" = "Fuente";
+
+/* Class = "NSWindow"; title = "Window"; ObjectID = "xyF-9z-N9Z"; */
+"xyF-9z-N9Z.title" = "Ventana";
+

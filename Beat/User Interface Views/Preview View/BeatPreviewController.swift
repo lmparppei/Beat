@@ -35,13 +35,17 @@ fileprivate let sidebarWidth = 158.0
 	
 	var changedIndices:NSMutableIndexSet = NSMutableIndexSet()
 	
+	var awoken = false
 	public override func awakeFromNib() {
 		super.awakeFromNib()
+		guard !awoken else { return }
+		
 		if #available(macOS 12.0, *) {
 			if let hideThumbnailView = BeatUserDefaults.shared().get("hideThumbnailView") as? Bool {
 				setThumbnailViewHidden(hideThumbnailView)
 			}
 		}
+		awoken = true
 	}
 	
 	@objc override public func reload(with pagination: BeatPagination) {

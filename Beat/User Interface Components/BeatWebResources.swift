@@ -52,7 +52,6 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 		#endif
 		
 		if let url = URL(string: "https://www.beat-app.fi/patch-notes/" + version.replacingOccurrences(of: ".", with: "-") + suffix) {
-			print("Show url:", url)
 			self.browser.showBrowser(url, withTitle: NSLocalizedString("app.patchNotes", comment: ""), width: 550, height: 640, onTop: true)
 		}	
 	}

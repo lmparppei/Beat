@@ -1,0 +1,760 @@
+/* (No Comment) */
+"about.build" = "Compilación";
+
+/* (No Comment) */
+"about.version" = "Versión";
+
+/* (No Comment) */
+"app.manual" = "Manual";
+
+/* (No Comment) */
+"app.patchNotes" = "Notas actualización";
+
+/* (No Comment) */
+"backup.backupVault" = "Abrir almacén copias seguridad…";
+
+/* (No Comment) */
+"backup.browseVersions" = "Explorar versiones…";
+
+/* (No Comment) */
+"backup.revertAction" = "Restaurar";
+
+/* (No Comment) */
+"backup.reverting.message" = "¿Perder los cambios no guardados al volver a una versión anterior?";
+
+/* (No Comment) */
+"backup.reverting.title" = "Restaurar archivo";
+
+/* (No Comment) */
+"backup.revertToSaved" = "Revertir a versión guardada";
+
+/* (No Comment) */
+"backup.saved" = "Guardado";
+
+/* (No Comment) */
+"cardView.noScenes" = "Sin escenas";
+
+/* (No Comment) */
+"cardView.noScenesInformation" = "Cuando escribas algunas escenas, se mostrarán como tarjetas en esta vista";
+
+/* (No Comment) */
+"cardView.print" = "Imprimir";
+
+/* (No Comment) */
+"character.editor.addAlias" = "Añadir Alias";
+
+/* (No Comment) */
+"character.editor.age" = "Edad";
+
+/* (No Comment) */
+"character.editor.biography" = "Biografía";
+
+/* (No Comment) */
+"character.editor.highlight" = "Color de resaltado";
+
+/* (No Comment) */
+"character.editor.lines" = "Lineas";
+
+/* (No Comment) */
+"color.blue" = "Azul";
+
+/* (No Comment) */
+"color.brown" = "Marrón";
+
+/* (No Comment) */
+"color.buff" = "Buff";
+
+/* (No Comment) */
+"color.cherry" = "Cereza";
+
+/* (No Comment) */
+"color.cyan" = "Cián";
+
+/* (No Comment) */
+"color.goldenrod" = "Dorado";
+
+/* (No Comment) */
+"color.green" = "Verde";
+
+/* (No Comment) */
+"color.magenta" = "Magenta";
+
+/* (No Comment) */
+"color.none" = "Ninguno";
+
+/* (No Comment) */
+"color.orange" = "Naranja";
+
+/* (No Comment) */
+"color.pink" = "Rosa";
+
+/* (No Comment) */
+"color.purple" = "Morado";
+
+/* (No Comment) */
+"color.red" = "Rojo";
+
+/* (No Comment) */
+"color.rose" = "Rosa palo";
+
+/* (No Comment) */
+"color.salmon" = "Salmón";
+
+/* (No Comment) */
+"color.yellow" = "Amarillo";
+
+/* (No Comment) */
+"dataHealth.warning.ignore" = "Ignorar";
+
+/* (No Comment) */
+"dataHealth.warning.informative" = "El archivo tiene revisiones, revisiones o etiquetas que se han desubicado, probablemente porque el archivo fue editado fuera de Beat. No es peligroso, pero los rangos anteriores podrían no tener sentido.";
+
+/* (No Comment) */
+"dataHealth.warning.remove" = "Eliminar todos los rangos";
+
+/* (No Comment) */
+"dataHealth.warning.title" = "Rangos no sincronizados";
+
+/* (No Comment) */
+"documentSettings.firstPageNumber" = "Número de la primera página";
+
+/* (No Comment) */
+"documentSettings.firstSceneNumber" = "Número de la primera escena";
+
+/* (No Comment) */
+"documentSettings.novelContentAlignment" = "Alineación";
+
+/* (No Comment) */
+"documentSettings.novelLineHeightMultiplier" = "Interlineado";
+
+/* (No Comment) */
+"documentSettings.pageNumberingMode" = "Número de página empieza por…";
+
+/* (No Comment) */
+"documentSettings.pageSize" = "Tamaño de página";
+
+/* (No Comment) */
+"documentSettings.style" = "Estilo";
+
+/* (No Comment) */
+"documentSettings.title" = "Ajustes del documento";
+
+/* (No Comment) */
+"editor.goToSceneNumber.message" = "Ir a la escena número…";
+
+/* (No Comment) */
+"editor.goToSceneNumber.placeholder" = "ej. 123";
+
+/* (No Comment) */
+"editor.setSceneNumber" = "Asignar número a escena";
+
+/* (No Comment) */
+"editor.setSceneNumber.info" = "Número de escena personalizado (puede incluir letras, o pulsa espacio para una escena sin número de escena)";
+
+/* (No Comment) */
+"export.includeInvisibleElements" = "Incluye elementos invisibles";
+
+/* (No Comment) */
+"export.includeRevisions" = "Incluye marcadores de revisión";
+
+/* (No Comment) */
+"export.prefix" = "Exportar";
+
+/* (No Comment) */
+"export.printNotes" = "Notas";
+
+/* (No Comment) */
+"export.printSceneNumbers" = "Números de escena";
+
+/* (No Comment) */
+"export.printSections" = "Secciones";
+
+/* (No Comment) */
+"export.printSynopsis" = "Sinopsis";
+
+/* (No Comment) */
+"force.action" = "Acción";
+
+/* (No Comment) */
+"force.character" = "Personaje";
+
+/* (No Comment) */
+"force.heading" = "Encabezado de escena";
+
+/* (No Comment) */
+"force.lyrics" = "Letra de canción";
+
+/* (No Comment) */
+"gender.man" = "Hombre";
+
+/* (No Comment) */
+"gender.man.plural" = "Hombres";
+
+/* (No Comment) */
+"gender.other" = "Otro";
+
+/* (No Comment) */
+"gender.other.plural" = "Otros";
+
+/* (No Comment) */
+"gender.unspecified" = "Sin especificar";
+
+/* (No Comment) */
+"gender.unspecified.plural" = "Sin especficar";
+
+/* (No Comment) */
+"gender.woman" = "Mujer";
+
+/* (No Comment) */
+"gender.woman.plural" = "Mujeres";
+
+/* Cancel */
+"general.cancel" = "Cancelar";
+
+/* (No Comment) */
+"general.close" = "Cerrar";
+
+/* (No Comment) */
+"general.new" = "Nuevo";
+
+/* (No Comment) */
+"general.no" = "No";
+
+/* OK */
+"general.ok" = "OK";
+
+/* (No Comment) */
+"general.OK" = "OK";
+
+/* (No Comment) */
+"general.redo" = "Rehacer";
+
+/* (No Comment) */
+"general.revealInFinder" = "Muestra en el escritorio";
+
+/* (No Comment) */
+"general.revert" = "Revierte";
+
+/* (No Comment) */
+"general.selectAll" = "Selecciona todo";
+
+/* (No Comment) */
+"general.undo" = "Deshacer";
+
+/* (No Comment) */
+"general.untitled" = "Sin título";
+
+/* Localizable.strings
+  Beat
+
+  Created by Lauri-Matti Parppei on 2.1.2022.
+  Copyright © 2022 Lauri-Matti Parppei. All rights reserved. */
+"general.yes" = "Sí";
+
+/* (No Comment) */
+"import.prefix" = "Importar";
+
+/* (No Comment) */
+"language.alert" = "Necesario reiniciar";
+
+/* (No Comment) */
+"language.informative" = "Reiniciar Beat para que los cambios surtan efectos";
+
+/* (No Comment) */
+"launch.newDocument.subtitle" = "Crea un nuevo proyecto en blanco";
+
+/* (No Comment) */
+"launch.templates.subtitle" = "¡Descubre Beat y empieza de inmediato!";
+
+/* (No Comment) */
+"launch.tutorial.subtitle" = "Empieza por aquí si eres nuevo en Beat";
+
+/* (No Comment) */
+"license.info" = "¡Muchas gracias por tu aportación! Copia y pega la clave que recibiste a continuación.";
+
+/* (No Comment) */
+"license.title" = "Introduce la clave de aportación";
+
+/* (No Comment) */
+"lock.clickToUnlock" = "Clic para desbloquear";
+
+/* (No Comment) */
+"lock.documentLocked" = "El documento está bloqueado";
+
+/* (No Comment) */
+"mode.reviewMode" = "Modo de revisión";
+
+/* (No Comment) */
+"mode.taggingMode" = "Modo de etiquetado";
+
+/* Outline setings */
+"outline.settings" = "Ajustes del esquema";
+
+/* (No Comment) */
+"outline.settings.headings" = "Encabezamientos de escena";
+
+/* (No Comment) */
+"outline.settings.markers" = "Marcadores";
+
+/* (No Comment) */
+"outline.settings.notes" = "Notas";
+
+/* (No Comment) */
+"outline.settings.sceneNumbers" = "Números de escena";
+
+/* (No Comment) */
+"outline.settings.snapshots" = "Mostrar capturas";
+
+/* (No Comment) */
+"outline.settings.synopses" = "Sinopsis";
+
+/* (No Comment) */
+"pagination.forcedNote" = "Nota: Con este ajuste, todas las páginas permanecerán sin numerar hasta el primer salto de página (===)";
+
+/* (No Comment) */
+"pagination.pageNumberingMode.anyContent" = "Cualquier contenido";
+
+/* (No Comment) */
+"pagination.pageNumberingMode.firstScene" = "Primera escena";
+
+/* (No Comment) */
+"pagination.pageNumberingMode.forcedPageBreak" = "Primer salto de página forzado";
+
+/* (No Comment) */
+"pagination.paragraphPaginationMode.avoid" = "Evitar dividir acciones";
+
+/* (No Comment) */
+"pagination.paragraphPaginationMode.default" = "Dividir acciones entre páginas (predeterminado)";
+
+/* (No Comment) */
+"plugins.compatibilityWarning" = "<b>Advertencia</b>: Es posible que este plugin no sea compatible con tu versión de Beat. Para asegurarte de que funcione, descarga la última versión desde la App Store antes de continuar.";
+
+/* (No Comment) */
+"plugins.currentVersion" = "Actualmente instalado";
+
+/* (No Comment) */
+"plugins.download" = "Descarga";
+
+/* (No Comment) */
+"plugins.errorRunningScript" = "Error ejecutando script";
+
+/* (No Comment) */
+"plugins.input.select" = "Selecciona…";
+
+/* (No Comment) */
+"plugins.installed" = "Instalado";
+
+/* (No Comment) */
+"plugins.library" = "Biblioteca de plugins";
+
+/* (No Comment) */
+"plugins.libraryWelcome" = "<p>Una selección de plugins oficiales para Beat. Los plugins activados (marcados) se mostrarán en el menú <b>Herramientas</b>. Los plugins sobreados aún no están instalados. Haz clic en su etiqueta para instalarlos y obtener más información.</p>\n<p class='small gray'>Haz clic en el icono de la carpeta para gestionar tus plugins manualmente. Puedes escribir tus propios plugins usando JavaScript &mdash; obtén más información en el sitio web de Beat.</p>";
+
+/* (No Comment) */
+"plugins.update" = "Actualizar";
+
+/* (No Comment) */
+"plugins.updateAvailable" = "Actualización disponible";
+
+/* (No Comment) */
+"plugins.version" = "Versión";
+
+/* (No Comment) */
+"print.createPDF" = "Crear PDF";
+
+/* (No Comment) */
+"print.pdfButton" = "PDF";
+
+/* (No Comment) */
+"print.print" = "Imprimir";
+
+/* (No Comment) */
+"print.printButton" = "Imprimir";
+
+/* (No Comment) */
+"quickSettings.novelContentAlignment" = "Alineación";
+
+/* (No Comment) */
+"quickSettings.novelLineHeightMultiplier" = "Interlineado";
+
+/* (No Comment) */
+"revision.1" = "Primera";
+
+/* (No Comment) */
+"revision.2" = "Segunda";
+
+/* (No Comment) */
+"revision.3" = "Tercera";
+
+/* (No Comment) */
+"revision.4" = "Cuarta";
+
+/* (No Comment) */
+"revision.5" = "Quinta";
+
+/* (No Comment) */
+"revision.6" = "Sexta";
+
+/* (No Comment) */
+"revision.7" = "Séptima";
+
+/* (No Comment) */
+"revision.8" = "Octava";
+
+/* (No Comment) */
+"revisionMode.clearLine" = "Borrar marcadores de revisión en la línea";
+
+/* (No Comment) */
+"revisionMode.clearSelection" = "Borrar marcadores de revisión en la selección";
+
+/* (No Comment) */
+"revisionMode.reviseLine" = "Marca la línea actual como revisada";
+
+/* (No Comment) */
+"revisionMode.reviseSelection" = "Marca la selección actual como revisada";
+
+/* (No Comment) */
+"revisions.commitPrompt.text" = "Esto borrará todos los marcadores de revisión y eliminará todos los rangos marcados para su eliminación. ¿Estás seguro de que quieres continuar?";
+
+/* (No Comment) */
+"revisions.commitPrompt.title" = "Aceptar todas las revisiones";
+
+/* (No Comment) */
+"revisions.convert.from" = "Generación actual";
+
+/* (No Comment) */
+"revisions.convert.info" = "La generación de revisiones seleccionada se convertirá a otra generación. Si dejas la generación de destino vacía, las revisiones seleccionadas se eliminarán.";
+
+/* (No Comment) */
+"revisions.convert.onlySelectedRange" = "Solo en el rango seleccionado";
+
+/* (No Comment) */
+"revisions.convert.remove" = "(eliminar)";
+
+/* (No Comment) */
+"revisions.convert.title" = "Convertir/Eliminar marcadores de revisión";
+
+/* (No Comment) */
+"revisions.convert.to" = "Generación de destino";
+
+/* (No Comment) */
+"revisions.downgrade.from" = "Revisión más baja después de la degradación:";
+
+/* (No Comment) */
+"revisions.downgrade.info" = "Esta operación degrada la generación de revisión seleccionada para que se convierta en la primera generación, y las generaciones superiores le siguen. Esto es útil cuando has alcanzado el nivel de generación más alto y quieres eliminar marcas de niveles inferiores.";
+
+/* (No Comment) */
+"revisions.downgrade.title" = "Degradar revisiones";
+
+/* (No Comment) */
+"spelling.ignoreDialogue.text" = "Puede que necesites volver a abrir el documento para que los cambios surtan efecto.";
+
+/* (No Comment) */
+"spelling.ignoreDialogue.title" = "Ignorar corrección ortográfica en el diálogo";
+
+/* lines */
+"statistics.lines" = "líneas";
+
+/* scenes */
+"statistics.scenes" = "escenas";
+
+/* (No Comment) */
+"statisticsPanel.averageSceneLength" = "Extensión media de la escena";
+
+/* (No Comment) */
+"statisticsPanel.linesByGender" = "Líneas por género";
+
+/* (No Comment) */
+"statisticsPanel.linesPerCharacter" = "Líneas por personaje";
+
+/* (No Comment) */
+"statisticsPanel.locations" = "Localizaciones";
+
+/* (No Comment) */
+"statisticsPanel.locations.exterior" = "Exterior";
+
+/* (No Comment) */
+"statisticsPanel.locations.interior" = "Interior";
+
+/* (No Comment) */
+"statisticsPanel.locations.other" = "Otro";
+
+/* (No Comment) */
+"statisticsPanel.longestScene" = "Escena más extensa";
+
+/* (No Comment) */
+"statisticsPanel.noDialogue" = "Sin diálogo";
+
+/* (No Comment) */
+"statisticsPanel.numberOfPages" = "Páginas";
+
+/* (No Comment) */
+"statisticsPanel.setGenderInfo" = "Establecer género para los personajes a la izquierda";
+
+/* (No Comment) */
+"statisticsPanel.shortForPages" = "págs";
+
+/* (No Comment) */
+"statisticsPanel.stats.characters" = "personajes";
+
+/* (No Comment) */
+"statisticsPanel.stats.scenes" = "escenas";
+
+/* (No Comment) */
+"statisticsPanel.stats.words" = "palabras";
+
+/* (No Comment) */
+"statisticsPanel.title" = "Estadísticas del guion";
+
+/* (No Comment) */
+"storyline.add" = "Añadir trama…";
+
+/* (No Comment) */
+"storyline.placeholder" = "Nombre de la nueva trama";
+
+/* (No Comment) */
+"tag.animal" = "Animal";
+
+/* (No Comment) */
+"tag.cast" = "Reparto";
+
+/* (No Comment) */
+"tag.costume" = "Vestuario";
+
+/* (No Comment) */
+"tag.extras" = "Extras";
+
+/* (No Comment) */
+"tag.makeup" = "Maquillaje";
+
+/* (No Comment) */
+"tag.music" = "Música";
+
+/* (No Comment) */
+"tag.none" = "Ninguno";
+
+/* (No Comment) */
+"tag.prop" = "Atrezzo";
+
+/* (No Comment) */
+"tag.setDesign" = "Diseño de decorados";
+
+/* (No Comment) */
+"tag.sfx" = "Efectos especiales";
+
+/* (No Comment) */
+"tag.stunt" = "Escena de riesgo / Especialista";
+
+/* (No Comment) */
+"tag.vehicle" = "Vehículo";
+
+/* (No Comment) */
+"tag.vfx" = "VFX";
+
+/* (No Comment) */
+"tagManager.createReport" = "Crear informe de etiquetas";
+
+/* (No Comment) */
+"tagManager.list.warning.noTypes" = "Añade primero una o más etiquetas";
+
+/* (No Comment) */
+"tagManager.rename" = "Renombrar";
+
+/* (No Comment) */
+"tagManager.report.create" = "Crear";
+
+/* (No Comment) */
+"tagManager.report.listScenesByTag" = "Lista de escenas por etiqueta";
+
+/* (No Comment) */
+"tagManager.report.sceneByScene" = "Escena por escena";
+
+/* (No Comment) */
+"tagManager.report.sceneByScene.details" = "Listar tipos de etiquetas seleccionadas, seguidas de las escenas que las contienen";
+
+/* (No Comment) */
+"tagManager.report.screenplay" = "Guion";
+
+/* (No Comment) */
+"tagManager.report.screenplay.details" = "Crear un documento nuevo con todas las escenas que contengan cualquiera de los tipos de etiquetas seleccionados";
+
+/* (No Comment) */
+"tagManager.tab.edit" = "Editar etiquetas";
+
+/* (No Comment) */
+"tagManager.tab.report" = "Informes de etiquetas";
+
+/* (No Comment) */
+"tagManager.windowTitle" = "Gestor de etiquetas";
+
+/* (No Comment) */
+"templates.comicBook.description" = "Una simple plantilla de comic/novela gráfica";
+
+/* (No Comment) */
+"templates.comicBook.title" = "Comic/Novela gráfica";
+
+/* (No Comment) */
+"templates.novel-tutorial.description" = "Empieza a escribir novelas con Beat";
+
+/* (No Comment) */
+"templates.novel-tutorial.title" = "Tutorial de novela";
+
+/* (No Comment) */
+"templates.novel.description" = "Plantilla básica de novela";
+
+/* (No Comment) */
+"templates.novel.title" = "Novela";
+
+/* (No Comment) */
+"templates.onePageSynopsis.description" = "Redacta una versión condensada de tu historia";
+
+/* (No Comment) */
+"templates.onePageSynopsis.title" = "Sinopsis de una página";
+
+/* (No Comment) */
+"templates.outliningTutorial.description" = "Aprende trucos de estructura más avanzados";
+
+/* (No Comment) */
+"templates.outliningTutorial.title" = "Tutorial de estructura";
+
+/* (No Comment) */
+"templates.showTutorialsAndTemplates" = "Muestra tutoriales y plantillas";
+
+/* (No Comment) */
+"templates.templates" = "Plantillas";
+
+/* (No Comment) */
+"templates.threeActOutline.description" = "La estructura clásica en ocho secuencias";
+
+/* (No Comment) */
+"templates.threeActOutline.title" = "Estructura en tres actos";
+
+/* (No Comment) */
+"templates.tutorial.description" = "Guía rápida de Beat!";
+
+/* (No Comment) */
+"templates.tutorial.title" = "Tutorial";
+
+/* Tutorials */
+"templates.tutorials" = "Tutoriales";
+
+/* (No Comment) */
+"textView.information.characters" = "Personajes";
+
+/* (No Comment) */
+"textView.information.document" = "Documento";
+
+/* (No Comment) */
+"textView.information.page" = "Página";
+
+/* (No Comment) */
+"textView.information.pages" = "Páginas";
+
+/* Selection / information */
+"textView.information.selection" = "Selección";
+
+/* (No Comment) */
+"textView.information.words" = "Palabras";
+
+/* (No Comment) */
+"timer.charactersRemoved" = "Personajes eliminados";
+
+/* (No Comment) */
+"timer.charactersTyped" = "Número de carácteres";
+
+/* (No Comment) */
+"timer.reset" = "Restablecer";
+
+/* (No Comment) */
+"timer.start" = "Inicio";
+
+/* (No Comment) */
+"type.action" = "Acción";
+
+/* (No Comment) */
+"type.centered" = "Centrado";
+
+/* (No Comment) */
+"type.character" = "Entrada de personaje";
+
+/* (No Comment) */
+"type.dialogue" = "Diálogo";
+
+/* (No Comment) */
+"type.dualDialogue" = "Diálogo doble";
+
+/* (No Comment) */
+"type.dualDialogueCharacter" = "Entrada de diálogo doble";
+
+/* (No Comment) */
+"type.dualDialogueParenthetical" = "Acotación de diálogo doble";
+
+/* (No Comment) */
+"type.empty" = "Vacío";
+
+/* (No Comment) */
+"type.heading" = "Encabezado de escena";
+
+/* (No Comment) */
+"type.lyrics" = "Letra de canción";
+
+/* (No Comment) */
+"type.multiple" = "(Múltiples líneas)";
+
+/* (No Comment) */
+"type.pageBreak" = "Salto de página";
+
+/* (No Comment) */
+"type.parenthetical" = "Acotación";
+
+/* (No Comment) */
+"type.section" = "Sección";
+
+/* (No Comment) */
+"type.shot" = "Plano / Mini encabezado";
+
+/* (No Comment) */
+"type.synopsis" = "Sinopsis";
+
+/* (No Comment) */
+"type.titlePageAuthor" = "Autor";
+
+/* (No Comment) */
+"type.titlePageContact" = "Información de contacto";
+
+/* (No Comment) */
+"type.titlePageCredit" = "Créditos";
+
+/* (No Comment) */
+"type.titlePageDraftDate" = "Fecha de borrador";
+
+/* (No Comment) */
+"type.titlePageSource" = "Fuente";
+
+/* (No Comment) */
+"type.titlePageTitle" = "Título";
+
+/* (No Comment) */
+"type.titlePageUnknown" = "Página de título";
+
+/* (No Comment) */
+"type.transition" = "Transición";
+
+/* (No Comment) */
+"unlock_document.confirm" = "¿Estás segur@ de que quieres desbloquear el documento y permitir cambios?";
+
+/* (No Comment) */
+"unlock_document.title" = "Desbloquear documento";
+
+/* (No Comment) */
+"versionControl.addExternalFile" = "Abrir archivo…";
+
+/* (No Comment) */
+"versionControl.base" = "Base";
+
+/* (No Comment) */
+"versionControl.current" = "Actual";
+
+/* (No Comment) */
+"versionControl.noVersionControl" = "Sin control de versiones";
+

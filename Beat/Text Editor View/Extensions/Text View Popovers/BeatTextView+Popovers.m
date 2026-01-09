@@ -138,6 +138,8 @@
 /// Displays selection info
 - (IBAction)showInfo:(id)sender
 {
+	BeatPreviewController* previewController = (BeatPreviewController*)self.editorDelegate.previewController;
+	
 	bool wholeDocument = NO;
 	NSRange range = self.selectedRange;
 	

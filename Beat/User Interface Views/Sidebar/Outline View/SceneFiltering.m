@@ -8,6 +8,7 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "SceneFiltering.h"
+#import <BeatCore/OutlineItemProvider.h>
 
 @interface SceneFiltering()
 
@@ -90,10 +91,10 @@
 {
 	NSInteger matches = 0;
 	
-	if (self.text.length && [scene.string.lowercaseString containsString:self.text.lowercaseString]) {
+	if (self.text.length > 0 && [self matchesAnyContentIn:scene]) {
 		matches++;
 	}
-	if (self.character.length && [scene.characters containsObject:self.character]) {
+	if (self.character.length > 0 && [scene.characters containsObject:self.character]) {
 		matches++;
 	}
 	if (self.colors.count > 0 && [self.colors containsObject:scene.color.lowercaseString]) {
@@ -103,19 +104,38 @@
 		matches++;
 	}
 	
-	if (matches == self.numberOfFilters) return true;
-	else return false;
+	return (matches == self.numberOfFilters);
 }
 
-
-/*
- 
- jag vill spola tillbaka
- Super 8
- vi måste få ett lyckligare slut
- gör Super 8 -moll
- till Technicolor Gold
- 
- */
+/// Returns `true` if any _displayed_ elements of the outline item contain the search string.
+- (bool)matchesAnyContentIn:(OutlineScene*)scene
+{
+	// First check just the heading
+	if ([scene.string.lowercaseString containsString:self.text.lowercaseString]) return true;
+	
+	NSMutableString* string = scene.string.mutableCopy;
+	
+	OutlineItemOptions options = OutlineItemProvider.options;
+	
+	if (mask_contains(options, OutlineItemIncludeSynopsis)) {
+		for (Line* synopsis in scene.synopsis) {
+			[string appendFormat:@"%@\n", synopsis.stringForDisplay];
+		}
+	}
+	
+	if (mask_contains(options, OutlineItemIncludeMarkers)) {
+		for (NSDictionary* marker in scene.markers) {
+			[string appendFormat:@"%@\n", (marker[@"description"] != nil) ? marker[@"description"] : @""];
+		}
+	}
+	
+	if (mask_contains(options, OutlineItemIncludeNotes)) {
+		for (BeatNoteData* note in scene.notes) {
+			[string appendFormat:@"%@\n", note.content];
+		}
+	}
+		
+	return [string containsString:self.text];
+}
 
 @end

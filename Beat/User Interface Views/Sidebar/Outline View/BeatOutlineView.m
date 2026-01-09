@@ -22,7 +22,9 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 
-@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate, BeatSceneOutlineView>
+@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate, BeatSceneOutlineView> {
+	bool awoken;
+}
 
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 
@@ -77,6 +79,10 @@
 //    And yes, FUCK YOU APPLE. Go fuck yourselves with all the pink washing.
 //    STOP THE GENOCIDE IN PALESTINE AND END UYGHUR SLAVE CAMPS.
 //    SEIZE THE MEANS OF PRODUCTION.
+//
+//    New Year 2026 edit: You fuckers broke everything in macOS 26 and I could
+//    forgive that UNLESS YOU WERE AGAIN COMPLICIT IN NEW FUCKING GENOCIDES.
+//    FUCK YOU. FREE PALESTINE. END SLAVE LABOUR. UNIONIZE NOW.
 
 
 //    So, back to the code:
@@ -113,6 +119,9 @@
 
 -(void)awakeFromNib
 {
+	[super awakeFromNib];
+	if (awoken) return; // Look at this fucking shit. MacOS 26 can call awakeFromNib infinitely so we need tricks like this. Get your act together, Apple.
+	
 	self.delegate = self;
 	self.dataSource = self;
 		
@@ -131,7 +140,8 @@
 	
 	// Register this view
 	[self.editorDelegate registerSceneOutlineView:self];
-
+	
+	awoken = true;
 }
 
 -(void)setup
@@ -215,39 +225,16 @@
 {
 	if (self.dragging || self.editing) return;
 	
-	OutlineScene* scene = self.editorDelegate.parser.outline[index];
-	[self scrollToScene:scene];
+	if (index != NSNotFound) {
+		OutlineScene* scene = self.editorDelegate.parser.outline[index];
+		[self scrollToScene:scene];
+	}
 	
 	self.needsDisplay = true;
 }
 
 
 #pragma mark - Reload data
-
-/*
- // For those who come after.
- -(void)reloadDiffedOutline {
- NSArray* outline = self.outline;
- 
- if (@available(macOS 10.15, *)) {
- NSOrderedCollectionDifference* diff = [outline differenceFromArray:self.cachedOutline];
- 
- for (OutlineScene* removed in diff.removals) {
- NSLog(@"Removed: %@", removed);
- }
- 
- for (OutlineScene* inserted in diff.insertions) {
- NSLog(@"Added: %@", inserted);
- }
- 
- self.cachedOutline = outline.copy;
- 
- } else {
- [self reloadData];
- return;
- }
- }
- */
 
 - (void)reloadItem:(id)item
 {
@@ -661,7 +648,8 @@
 
 #pragma mark - Outline settings
 
-- (IBAction)openSettings:(NSButton*)sender {
+- (IBAction)openSettings:(NSButton*)sender
+{
 	self.settingsPopover = NSPopover.new;
 	BeatOutlineSettings* settingsViewController = BeatOutlineSettings.new;
 	settingsViewController.outlineDelegate = self;
@@ -690,9 +678,7 @@
 		[_filters resetScenes];
 	}
 
-	NSLog(@"OUTLINE: %@", self.editorDelegate.outline);
-	
-	for (OutlineScene* scene in self.editorDelegate.outline) {
+	for (OutlineScene* scene in self.editorDelegate.parser.outline) {
 		if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}	
 }
@@ -790,14 +776,14 @@
 
 - (IBAction)expandAll:(id)sender
 {
-	for (OutlineScene *scene in self.editorDelegate.outline) {
+	for (OutlineScene *scene in self.editorDelegate.parser.outline) {
 		if ([self isExpandable:scene]) [self expandItem:scene expandChildren:YES];
 	}
 }
 
 - (IBAction)collapseAll:(id)sender
 {
-	for (OutlineScene *scene in self.editorDelegate.outline) {
+	for (OutlineScene *scene in self.editorDelegate.parser.outline) {
 		if ([self isExpandable:scene]) [self collapseItem:scene collapseChildren:YES];
 	}
 }

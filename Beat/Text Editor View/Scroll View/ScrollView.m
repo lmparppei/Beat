@@ -42,7 +42,7 @@
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:trackingArea];
-	
+		
 	self.wantsLayer = NO;
 	
 	// Make the default Y -1000 so we know that it's unchanged

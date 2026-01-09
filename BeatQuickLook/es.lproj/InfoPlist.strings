@@ -1,0 +1,9 @@
+/* Bundle display name */
+"CFBundleDisplayName" = "BeatQuickLook";
+
+/* Bundle name */
+"CFBundleName" = "BeatQuickLook";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
+

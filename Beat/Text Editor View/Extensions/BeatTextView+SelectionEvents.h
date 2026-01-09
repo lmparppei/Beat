@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatTextView (SelectionEvents)
 
+- (void)didChangeSelection:(NSNotification *)notification;
+
 @end
 
 NS_ASSUME_NONNULL_END

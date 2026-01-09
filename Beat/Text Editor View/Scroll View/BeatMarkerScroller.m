@@ -14,6 +14,7 @@
 #import <BeatCore/BeatUserDefaults.h>
 #import "BeatMarkerScroller.h"
 #import "BeatTextView.h"
+#import "Beat-Swift.h"
 
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;
@@ -22,6 +23,9 @@
 @property (nonatomic) CGFloat previousValue;
 @property (nonatomic) CGFloat pendingValue;
 @property (nonatomic) BOOL updateScheduled;
+
+@property (nonatomic) NSImageView* minimapView;
+@property (nonatomic) NSImage* minimap;
 
 @end
 @implementation BeatMarkerScroller
@@ -52,6 +56,12 @@
 																  owner:self
 															   userInfo:nil];
 	[self addTrackingArea:trackingArea];
+	
+	/*
+	self.minimapView = [NSImageView.alloc initWithFrame:CGRectMake(0.0, 0.0, 200.0, self.frame.size.height)];
+	self.minimapView.imageScaling = NSImageScaleProportionallyDown;
+	[self.superview addSubview:self.minimapView];
+	 */
 }
 
 -(void)updateTrackingAreas
@@ -163,12 +173,15 @@
 {
 	[super mouseExited:theEvent];
 	[self fadeOutIfNeeded];
+	
+	self.minimap = nil;
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
 {
 	[super mouseEntered:theEvent];
 	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+		//[self createMinimap];
 		context.duration = 0.1f;
 		[self.animator setAlphaValue:1.0f];
 	} completionHandler:^{
@@ -180,6 +193,16 @@
 {
 	[super mouseMoved:theEvent];
 	self.alphaValue = 1.0f;
+}
+
+- (void)createMinimap
+{
+	if (self.minimap != nil) return;
+	
+	NSTextView* textView = self.editorDelegate.getTextView;
+	NSImage* minimap = [textView imageRepresentationWithSize:self.minimapView.frame.size];
+	self.minimap = minimap;
+	self.minimapView.image = minimap;
 }
 
 

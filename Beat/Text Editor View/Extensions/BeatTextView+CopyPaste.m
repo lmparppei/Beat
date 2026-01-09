@@ -122,16 +122,19 @@
 		// Paste custom Beat pasteboard data
 		BeatPasteboardItem *pastedItem = obj;
 		if (!noFormatting) {
-			NSAttributedString *str = pastedItem.attrString;
-			[self.editorDelegate.textActions replaceRange:self.selectedRange withAttributedString:str];
+			[self.editorDelegate.textActions replaceRange:self.selectedRange withAttributedString:pastedItem.attrString];
 		} else {
-			NSString* str = pastedItem.attrString.string;
-			[self.editorDelegate.textActions replaceRange:self.selectedRange withString:str];
+			[self.editorDelegate.textActions replaceRange:self.selectedRange withString:pastedItem.attrString.string];
 		}
 	} else if ([obj isKindOfClass:NSAttributedString.class]) {
 		// A basic attributed string. We have a category to convert basic inline styles to Fountain and account for spacing.
 		NSAttributedString* attrStr = (NSAttributedString*)obj;
-		NSString* result = attrStr.convertToFountain;
+		NSString* result;
+		if (!noFormatting) {
+			result = attrStr.convertToFountain;
+		} else {
+			result = attrStr.string;
+		}
 		
 		[self.editorDelegate.textActions replaceRange:self.selectedRange withString:result];
 		
