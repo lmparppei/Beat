@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 + (BeatRevisionItem*)type:(RevisionType)type generation:(NSInteger)level;
 - (instancetype)initWithType:(RevisionType)type generation:(NSInteger)level;
 
-- (NSString*)key;
+- (NSString*)keyName;
 - (NSString*)description;
 
 @end

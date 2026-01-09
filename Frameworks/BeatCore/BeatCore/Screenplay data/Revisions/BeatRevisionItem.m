@@ -14,6 +14,9 @@
 
 - (instancetype)initWithType:(RevisionType)type generation:(NSInteger)level
 {
+    // Guard for faulty revision generations
+    if (level >= BeatRevisions.revisionGenerations.count) return nil;
+    
     self = [super init];
     if (self) {
         _type = type;
@@ -30,16 +33,23 @@
 }
 
 /// Returns the key for saving
-- (NSString*)key {
+- (NSString*)keyName
+{
 	if (self.type == RevisionRemovalSuggestion) return @"RemovalSuggestion";
 	else if (self.type == RevisionAddition) return @"Addition";
 	return @"";
 }
 
+- (id)valueForUndefinedKey:(NSString *)key
+{
+    return nil;
+}
+
 
 #pragma mark - Encoding and Copying
 
--(void)encodeWithCoder:(NSCoder *)coder {
+-(void)encodeWithCoder:(NSCoder *)coder
+{
 	[coder encodeInteger:self.type forKey:@"type"];
     if (self.generationLevel == NSNotFound) {
         self.generationLevel = -1;
@@ -47,7 +57,8 @@
 	[coder encodeInteger:self.generationLevel forKey:@"generationLevel"];
 }
 
-- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
+- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder
+{
 	self = [super init];
 
 	if (self) {
@@ -66,7 +77,7 @@
 
 #pragma mark - Debug
 
-- (NSString*)description { return [NSString stringWithFormat:@"Revision: %@ (%lu)", self.key, self.generationLevel]; }
+- (NSString*)description { return [NSString stringWithFormat:@"Revision: %@ (%lu)", self.keyName, self.generationLevel]; }
 
 @end
 /*

@@ -256,7 +256,7 @@
         
         if (item.type != RevisionNone) {
             // Get the range array for given revision type
-            NSMutableArray *values = ranges[item.key];
+            NSMutableArray *values = ranges[item.keyName];
             NSArray *lastItem = values.lastObject;
             
             NSRange lastRange = NSMakeRange(NSNotFound, 0);
@@ -505,7 +505,7 @@
     // Avoid going out of range
     if (NSMaxRange(range) > self.delegate.text.length) return;    
 
-	NSString * change = [self.delegate.text substringWithRange:range];
+	NSString* change = [self.delegate.text substringWithRange:range];
 
 	// Check if this was just a line break
 	if (range.length < 2) {
@@ -516,9 +516,13 @@
 	}
     
     BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:_delegate.revisionLevel];
-    
-	[_delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
-	[_delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:range];
+    if (revision != nil) {
+        bool wasEditing = _delegate.textStorage.isEditing;
+        
+        [_delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
+        [_delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:range];
+        
+    }
 }
 
 
