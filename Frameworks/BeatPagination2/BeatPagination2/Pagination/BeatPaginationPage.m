@@ -29,7 +29,7 @@
     return [BeatPaginationPage.alloc initWithDelegate:delegate blocks:nil pageBreak:nil];
 }
 
--(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate blocks:(NSMutableArray*)blocks pageBreak:(BeatPageBreak*)pageBreak {
+-(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate blocks:(NSMutableArray* _Nullable)blocks pageBreak:(BeatPageBreak*)pageBreak {
     self = [super init];
     
     if (self) {

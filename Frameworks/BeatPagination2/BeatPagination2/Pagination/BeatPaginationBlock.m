@@ -107,12 +107,14 @@
     if (line.type == pageBreak) return 0.0;
         
     // If this is a *dual dialogue column*, we'll need to convert the style.
+    /*
     LineType type = line.type;
     if (self.dualDialogueElement) {
         if (type == dialogue) type = dualDialogue;
         else if (type == character) type = dualDialogueCharacter;
         else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
     }
+    */
 
     BeatPaperSize pageSize = self.delegate.settings.paperSize;
     
@@ -829,15 +831,15 @@
 /// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
 /// @warning: This code uses **TextKit 1**
 - (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line textStorage:(out NSTextStorage**)textStorage
-{
-    LineType type = line.type;
-    
+{    
+    /*
     // If this is a *dual dialogue* column, we'll need to convert the style.
     if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
         if (type == dialogue) type = dualDialogue;
         else if (type == character) type = dualDialogueCharacter;
         else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
     }
+     */
     
     RenderStyle *style = [self.delegate.styles forLine:line];
     

@@ -659,7 +659,7 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
     NSMapTable* uuids = self.uuids;
     
     NSInteger idx = NSNotFound;
-    NSRange range = NSMakeRange(NSNotFound, 0);
+    NSRange range;
     
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
