@@ -658,7 +658,7 @@ static BeatPluginManager *sharedManager;
 }
 
 /// Returns plugin data, which means files and the actual script
-- (BeatPluginData*)pluginWithName:(NSString*)name
+- (BeatPluginData* _Nullable)pluginWithName:(NSString*)name
 {
 	// Uh. Let's reload the plugin array. The user might have installed new ones.
 	[self loadPlugins];

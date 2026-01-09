@@ -16,7 +16,6 @@
 #import <BeatParsing/BeatParsing.h>
 
 #import <BeatPlugins/BeatPluginManager.h>
-#import <BeatPlugins/BeatPluginTimer.h>
 
 
 #if TARGET_OS_OSX
@@ -48,6 +47,7 @@
 @class BeatTextIO;
 @class BeatSpeak;
 @class BeatStylesheet;
+@class BeatPluginTimer;
 
 @class BeatPluginAgent;
 
@@ -114,16 +114,6 @@ JSExportAs(setRawDocumentSetting, - (void)setRawDocumentSetting:(NSString*)setti
 /// Sets a document setting, prefixed by plugin name, so you won't mess up settings for other plugins.
 JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName setting:(id)value);
 
-#pragma mark User settings
-/// Sets a user default (`key`, `value`)
-JSExportAs(setUserDefault, - (void)setUserDefault:(NSString*)settingName setting:(id)value);
-/// Returns a user default (`key`)
-JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
-/// Returns a non-prefixed user default value
-JSExportAs(getRawUserDefault, - (id)getRawUserDefault:(NSString*)settingName);
-/// Stores a non-prefixed user default value
-JSExportAs(setRawUserDefault,- (void)setRawUserDefault:(NSString*)settingName value:(id)value);
-
 
 #pragma mark Listeners
 @property (nonatomic) bool onPreviewFinishedDisabled;
@@ -158,13 +148,6 @@ JSExportAs(setRawUserDefault,- (void)setRawUserDefault:(NSString*)settingName va
 	#endif
 
 
-#pragma mark Logging
-/// Logs given string in developer console
-- (void)log:(NSString*)string;
-/// Opens the console programmatically
-- (void)openConsole;
-
-
 
 #pragma mark - Document utilities
 
@@ -185,19 +168,6 @@ JSExportAs(setRawUserDefault,- (void)setRawUserDefault:(NSString*)settingName va
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 /// Returns all available tag names
 - (NSArray*)availableTags;
-
-
-#pragma mark Multi-threading
-/// Dispatch a block into a background thread
-- (void)async:(JSValue*)callback;
-/// Dispatch a block into the main thread
-- (void)sync:(JSValue*)callback;
-/// Alias for async
-- (void)dispatch:(JSValue*)callback;
-/// Alias for sync
-- (void)dispatch_sync:(JSValue*)callback;
-/// Returns `true` if the current operation happens in main thread
-- (bool)isMainThread;
 
 
 #pragma mark Pagination
@@ -227,10 +197,8 @@ JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)le
 - (BeatSpeak*)speakSynth;
 #endif
 
-
-#pragma mark Timer
-JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
-
+/// Timer array
+@property (nonatomic) NSMutableArray<BeatPluginTimer*>* timers;
 
 #pragma mark Revisions
 @property (nonatomic) BeatRevisions* revisionTracking;
@@ -252,10 +220,6 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 #if TARGET_OS_OSX
 @property (nonatomic, weak, readonly) BeatNotepad* notepad;
 #endif
-
-#pragma mark Import / export plugin handlers
-JSExportAs(importHandler, - (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback);
-JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback);
 
 
 @end
@@ -342,6 +306,7 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 @property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSURL* pluginURL;
 
+
 #pragma mark - The actual JS environment
 
 @property (nonatomic) JSVirtualMachine *vm;
@@ -393,6 +358,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 /// Getter for revision tracking in delegate
 @property (nonatomic) BeatRevisions* revisionTracking;
 
+/// Timer array
+@property (nonatomic) NSMutableArray<BeatPluginTimer*>* timers;
+
 
 #pragma mark UI-side stuff for macOS and iOS
 
@@ -413,8 +381,6 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 
 - (void)loadPluginWithName:(NSString*)name;
 - (void)loadPlugin:(BeatPluginData*)plugin;
-- (void)log:(NSString*)string;
-- (void)reportError:(NSString*)title withText:(NSString*)string;
 - (void)forceEnd;
 
 - (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments;

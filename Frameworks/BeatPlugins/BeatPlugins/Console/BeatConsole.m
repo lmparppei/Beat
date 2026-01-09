@@ -26,7 +26,9 @@
 
 #define ConsolePluginName @"Console"
 
-@interface BeatConsole ()
+@interface BeatConsole () {
+    bool awoken;
+}
 #if !TARGET_OS_IOS
 @property (nonatomic) IBOutlet NSTextView *consoleTextView;
 @property (nonatomic) IBOutlet NSPopUpButton* contextSeletor;
@@ -82,8 +84,11 @@
 -(void)awakeFromNib
 {
     [super awakeFromNib];
-	[self reloadContexts];
-	[self updateTitle];
+    if (!awoken) {
+        [self reloadContexts];
+        [self updateTitle];
+        awoken = true;
+    }
 }
 
 -(void)openConsole
@@ -162,7 +167,7 @@
 - (void)logError:(id)error context:(id)context {
 	[self logError:error context:context pluginName:@""];
 }
-- (void)logError:(id)error context:(id)context pluginName:(NSString*)name
+- (void)logError:(id)error context:(id _Nullable)context pluginName:(NSString*)name
 {
     NSLog(@"ERROR: %@: %@", name, error);
     

@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDelegate:(id<BeatPluginDelegate>)delegate;
 
 - (void)registerPlugin:(id<BeatPluginInstance>)plugin;
-- (void)deregisterPlugin:(id<BeatPluginInstance>)plugin;
+- (void)deregisterPlugin:(id<BeatPluginInstance> _Nullable)plugin;
 
 /// Call this on load to restore plugins that were open when the document was saved. (macOS only for now)
 - (void)restorePlugins;

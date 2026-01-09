@@ -59,6 +59,9 @@ import UXKit
     // Callback is not used in a container, but required for conforming to protocol
     public var callback: JSValue?
     
+    // A quick fix for macOS 26
+    private var awoken = false
+    
     override init(frame frameRect: CGRect) {
         super.init(frame: frameRect)
     }
@@ -158,7 +161,10 @@ import UXKit
     }
     
     override public func awakeFromNib() {
-        setup()
+        if !awoken {
+            setup()
+            awoken = true
+        }
     }
     
     public func load() {

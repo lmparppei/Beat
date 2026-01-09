@@ -81,7 +81,7 @@
     self.delegate.runningPlugins[plugin.pluginName] = (BeatPlugin*)plugin;
 }
 
-- (void)deregisterPlugin:(id<BeatPluginInstance>)plugin
+- (void)deregisterPlugin:(id<BeatPluginInstance> _Nullable)plugin
 {
     [self.delegate.runningPlugins removeObjectForKey:plugin.pluginName];
     plugin = nil;

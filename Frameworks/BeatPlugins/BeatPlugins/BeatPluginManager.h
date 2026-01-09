@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 + (BeatPluginManager*)sharedManager;
 
 - (NSArray<NSString*>*)pluginNames;
-- (BeatPluginData*)pluginWithName:(NSString*)name;
+- (BeatPluginData* _Nullable)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
 - (NSURL*)pluginFolderURL;
 

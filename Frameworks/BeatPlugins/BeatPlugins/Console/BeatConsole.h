@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)openConsole;
 - (void)clearConsole;
 - (void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName context:(id<BeatEditorDelegate> _Nullable)context;
-- (void)logError:(id)error context:(id)context pluginName:(NSString*)name;
+- (void)logError:(id)error context:(id _Nullable)context pluginName:(NSString*)name;
 @end
 
 NS_ASSUME_NONNULL_END

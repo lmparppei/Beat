@@ -34,7 +34,9 @@
 
 @protocol BeatTextChangeObserver;
 
-@interface BeatPlugin (Listeners) <BeatPluginListenerExports, BeatTextChangeObserver>
+
+/// - note: BeatTextChangeObserver protocol is declared in Swift.
+@interface BeatPlugin (Listeners) <BeatPluginListenerExports>
 
 #pragma mark Public event listener methods
 

@@ -16,15 +16,20 @@
 #define MARGIN 5.0
 
 
-@interface BeatWidgetView ()
+@interface BeatWidgetView () {
+    bool awoken;
+}
 @property (nonatomic) NSMutableArray<BeatPluginUIView*> *widgets;
 @property (nonatomic, weak) id<BeatWidgetViewTabView> tabView;
 @end
 @implementation BeatWidgetView
 
 -(void)awakeFromNib {
-	self.postsFrameChangedNotifications = YES;
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(frameDidChange) name:NSViewFrameDidChangeNotification object:self];
+    if (!awoken) {
+        self.postsFrameChangedNotifications = YES;
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(frameDidChange) name:NSViewFrameDidChangeNotification object:self];
+        awoken = true;
+    }
 }
 
 -(BOOL)isFlipped { return YES; }

@@ -27,6 +27,7 @@
 
 // Console component
 #import "BeatConsole.h"
+#import "BeatPluginTimer.h"
 
 // Extensions and categories
 #import "BeatPlugin+Parser.h"
@@ -37,6 +38,11 @@
 #import "BeatPlugin+TextHighlighting.h"
 #import <BeatPlugins/BeatPlugin+HTMLViews.h>
 #import <BeatPlugins/BeatPlugin+Windows.h>
+#import <BeatPlugins/BeatPlugin+Threading.h>
+#import <BeatPlugins/BeatPlugin+Timer.h>
+#import <BeatPlugins/BeatPlugin+Logging.h>
+#import <BeatPlugins/BeatPlugin+Listeners.h>
+#import <BeatPlugins/BeatPlugin+UserDefaults.h>
 
 // Some things are only available on macOS
 #if TARGET_OS_OSX
@@ -56,7 +62,6 @@
 
 @property (nonatomic) BeatPluginData* pluginData;
 
-@property (nonatomic) NSMutableArray *timers;
 @property (nonatomic) NSMutableArray *speakSynths;
 
 @end
@@ -287,7 +292,8 @@
 }
 
 /// Restarts the plugin, clearing it from memory first.
-- (void)restart {
+- (void)restart
+{
     [self end];
     
     if (!self.container) {
@@ -299,6 +305,19 @@
         [self loadPlugin:self.pluginData];
     }
 }
+
+/// Kills all background instances that might have been created by the plugin.
+- (void)stopBackgroundInstances
+{
+    for (BeatPluginTimer *timer in _timers) {
+        [timer invalidate];
+    }
+    [_timers removeAllObjects];
+    _timers = nil;
+    
+    [self killSynths];
+}
+
 
 /// Quits the current plugin. **Required** when using plugins with callbacks.
 - (void)end
@@ -364,15 +383,6 @@
     });
 }
 
-/// Opens plugin developer log
-- (void)openConsole {
-	[BeatConsole.shared openConsole];
-}
-/// Clears plugin log
-- (IBAction)clearConsole:(id)sender {
-	[BeatConsole.shared clearConsole];
-}
-
 /// Check compatibility with Beat version number
 - (bool)compatibleWith:(NSString *)version {
 	return [BeatPluginManager isCompatible:version];
@@ -409,75 +419,13 @@
 #endif
 
 
-#pragma mark - Import/Export callbacks
-
-/** Creates an import handler.
- @param extensions Array of allowed file extensions
- @param callback Callback for handling the actual import. The callback block receives the file contents as string.
-*/
-- (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback {
-	self.importedExtensions = extensions;
-	self.importCallback = callback;
-}
-/// Creates an export handler.
-- (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback {
-	self.exportedExtensions = extensions;
-	self.exportCallback = callback;
-}
-
-
-#pragma mark - Multithreading
-
-/// Shorthand for `dispatch()`
-- (void)async:(JSValue*)callback {
-	[self dispatch:callback];
-}
-/// Shorthand for `dispatch_sync()`
-- (void)sync:(JSValue*)callback {
-	[self dispatch_sync:callback];
-}
-
-/// Runs the given block in a **background thread**
-- (void)dispatch:(JSValue*)callback {
-	[self dispatch:callback priority:0];
-}
-/// Runs the given block in a background thread
-- (void)dispatch:(JSValue*)callback priority:(NSInteger)priority {
-	intptr_t p;
-	
-	switch (priority) {
-		case 1:
-			p = DISPATCH_QUEUE_PRIORITY_BACKGROUND; break;
-		case 2:
-			p = DISPATCH_QUEUE_PRIORITY_LOW; break;
-		case 3:
-			p = DISPATCH_QUEUE_PRIORITY_DEFAULT; break;
-		case 4:
-			p = DISPATCH_QUEUE_PRIORITY_HIGH; break;
-		default:
-			p = DISPATCH_QUEUE_PRIORITY_DEFAULT;
-			break;
-	}
-	
-	dispatch_async(dispatch_get_global_queue(p, 0), ^(void){
-		[callback callWithArguments:nil];
-	});
-}
-/// Runs the given block in **main thread**
-- (void)dispatch_sync:(JSValue*)callback {
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[callback callWithArguments:nil];
-	});
-}
-
-- (bool)isMainThread { return NSThread.isMainThread; }
-
 
 #pragma mark - Speak
 
 #if !TARGET_OS_IOS
-- (BeatSpeak*)speakSynth {
-	if (!_speakSynths) _speakSynths = NSMutableArray.new;	
+- (BeatSpeak*)speakSynth
+{
+	if (!_speakSynths) _speakSynths = NSMutableArray.new;
 	
 	BeatSpeak *synth = BeatSpeak.new;
 	[_speakSynths addObject:synth];
@@ -486,7 +434,8 @@
 }
 #endif
 
-- (void)killSynths {
+- (void)killSynths
+{
     #if !TARGET_OS_IOS
     for (BeatSpeak *synth in _speakSynths) {
         [synth stopSpeaking];
@@ -494,51 +443,6 @@
     [_speakSynths removeAllObjects];
     _speakSynths = nil;
     #endif
-}
-
-
-#pragma mark - Timer
-
-/// Creates a `BeatPluginTimer` object, which fires after the given interval (seconds)
-- (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats
-{
-	BeatPluginTimer *timer = [BeatPluginTimer scheduledTimerWithTimeInterval:seconds repeats:repeats block:^(NSTimer * _Nonnull timer) {
-		[self runCallback:callback withArguments:nil];
-	}];
-	
-	// When adding a new timer, remove references to invalid ones
-	[self cleanInvalidTimers];
-	
-	// Add the new timer to timer array
-	if (!_timers) _timers = [NSMutableArray array];
-	[_timers addObject:timer];
-		
-	return timer;
-}
-
-/// Removes unused timers from memory.
-- (void)cleanInvalidTimers
-{
-	NSMutableArray *timers = NSMutableArray.new;
-	
-	for (int i=0; i < _timers.count; i++) {
-		BeatPluginTimer *timer = _timers[i];
-		if (timer.isValid) [timers addObject:timer];
-	}
-	
-	_timers = timers;
-}
-
-/// Kills all background instances that might have been created by the plugin.
-- (void)stopBackgroundInstances
-{
-	for (BeatPluginTimer *timer in _timers) {
-		[timer invalidate];
-	}
-	[_timers removeAllObjects];
-	_timers = nil;
-	
-    [self killSynths];
 }
 
 
@@ -595,73 +499,12 @@
 }
 
 
-#pragma mark - Logging
-
-/// Logs the given message to plugin developer log
-- (void)log:(NSString*)string
-{
-    if (string == nil) string = @"";
-	
-	#if !TARGET_OS_IOS
-		BeatConsole *console = BeatConsole.shared;
-		if (NSThread.isMainThread) [console logToConsole:string pluginName:(_pluginName != nil) ? _pluginName : @"General" context:self.delegate];
-		else {
-			// Allow logging in background thread
-			dispatch_async(dispatch_get_main_queue(), ^(void){
-				[console logToConsole:string pluginName:self.pluginName context:self.delegate];
-			});
-		}
-	#else
-		NSLog(@"%@: %@", self.pluginName, string);
-	#endif
-}
-
-/// Report a plugin error
-- (void)reportError:(NSString*)title withText:(NSString*)string
-{
-    NSString* msg = [NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string];
-    [BeatConsole.shared logError:msg context:self pluginName:self.pluginName];
-}
-
-
 #pragma mark - Localization
 
 // Localizes the given string
 - (NSString*)localize:(NSString*)string
 {
     return [BeatLocalization localizeString:string];
-}
-
-
-#pragma mark - User settings
-
-/// Defines user setting value for the given key.
-- (void)setUserDefault:(NSString*)settingName setting:(id)value
-{
-	if (!_pluginName) {
-		[self reportError:@"setUserDefault: No plugin name" withText:@"You need to specify plugin name before trying to save settings."];
-		return;
-	}
-	
-	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	[[NSUserDefaults standardUserDefaults] setValue:value forKey:keyName];
-}
-/// Gets  user setting value for the given key.
-- (id)getUserDefault:(NSString*)settingName
-{
-	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	id value = [[NSUserDefaults standardUserDefaults] valueForKey:keyName];
-	return value;
-}
-
-- (id)getRawUserDefault:(NSString*)settingName
-{
-    return [BeatUserDefaults.sharedDefaults get:settingName];
-}
-
-- (void)setRawUserDefault:(NSString*)settingName value:(id)value
-{
-    [BeatUserDefaults.sharedDefaults save:value forKey:settingName];
 }
 
 
@@ -980,6 +823,7 @@
 {
     [self.delegate updateChangeCount:BXChangeDone];
 }
+
 
 @end
 /*
