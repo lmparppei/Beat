@@ -87,6 +87,8 @@ extern NSString* const BeatSettingHideThumbnailView;
 
 extern NSString* const BeatSettingInputAssistantHidden;
 
+extern NSString* const BeatSpellCheckingLanguage;
+
 
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;

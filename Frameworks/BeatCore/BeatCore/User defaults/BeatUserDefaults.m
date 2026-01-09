@@ -109,6 +109,7 @@ NSString* const BeatSettingParagraphPaginationMode      = @"paragraphPaginationM
 NSString* const BeatSettingHideThumbnailView            = @"hideThumbnailView";
 NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
 
+NSString* const BeatSpellCheckingLanguage               = @"spellCheckingLanguage";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -199,7 +200,9 @@ NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
         
         BeatSettingParagraphPaginationMode: @[BeatSettingParagraphPaginationMode, @0],
         
-        BeatSettingHideThumbnailView: @[BeatSettingHideThumbnailView, @NO]
+        BeatSettingHideThumbnailView: @[BeatSettingHideThumbnailView, @NO],
+        
+        BeatSpellCheckingLanguage: @[BeatSpellCheckingLanguage, @""]
 	};
 }
 
@@ -351,20 +354,14 @@ NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
 	NSMutableDictionary *suppressions = [[NSUserDefaults.standardUserDefaults objectForKey:BeatSettingSuppressedAlert] mutableCopy];
 	if (!suppressions) suppressions = NSMutableDictionary.new;
 		
-
 	[suppressions setObject:@(value) forKey:key];
 	[NSUserDefaults.standardUserDefaults setValue:suppressions forKey:BeatSettingSuppressedAlert];
 }
 
 - (void)saveBool:(bool)value forKey:(NSString*)key
 {
-	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
-	NSArray *values = userDefaults[key];
-	
-	if (values) {
-		NSString *settingKey = values[0];
-		[NSUserDefaults.standardUserDefaults setBool:value forKey:settingKey];
-	}
+    NSString *settingKey = [self settingKeyFor:key];
+    [NSUserDefaults.standardUserDefaults setBool:value forKey:settingKey];
 }
 
 /// Toggles a boolean value on/off
@@ -374,35 +371,28 @@ NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
     [self saveBool:!value forKey:key];
 }
 
-
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key
 {
-	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
-	NSArray *values = userDefaults[key];
-	
-	if (values) {
-		NSString *settingKey = values[0];
-		[NSUserDefaults.standardUserDefaults setInteger:value forKey:settingKey];
-	}
+    NSString *settingKey = [self settingKeyFor:key];
+    [NSUserDefaults.standardUserDefaults setInteger:value forKey:settingKey];
 }
 - (void)saveFloat:(CGFloat)value forKey:(NSString*)key
 {
-	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
-	NSArray *values = userDefaults[key];
-	
-	if (values) {
-		NSString *settingKey = values[0];
-		[NSUserDefaults.standardUserDefaults setFloat:value forKey:settingKey];
-	}
+    NSString *settingKey = [self settingKeyFor:key];
+    [NSUserDefaults.standardUserDefaults setFloat:value forKey:settingKey];
 }
-- (void)save:(id)value forKey:(NSString *)key {
-	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
-	NSArray *values = userDefaults[key];
-	
-	if (values) {
-		NSString *settingKey = values[0];
-		[NSUserDefaults.standardUserDefaults setValue:value forKey:settingKey];
-	}
+
+- (void)save:(id)value forKey:(NSString *)key
+{
+    NSString *settingKey = [self settingKeyFor:key];
+    [NSUserDefaults.standardUserDefaults setValue:value forKey:settingKey];
+}
+
+/// Due to some legacy compatibility, we need to do a little trickery and find the *actual* setting key.
+- (NSString*)settingKeyFor:(NSString*)key
+{
+    NSArray *values = BeatUserDefaults.userDefaults[key];
+    return (values != nil) ? values.firstObject : key;
 }
 
 - (void)saveSettingsFrom:(id)target
