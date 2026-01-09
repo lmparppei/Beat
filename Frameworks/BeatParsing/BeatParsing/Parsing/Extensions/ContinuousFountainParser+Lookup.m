@@ -11,9 +11,6 @@
 
 #pragma mark - Line position lookup
 
-NSInteger previousLineIndex = NSNotFound;
-NSInteger previousSceneIndex = NSNotFound;
-
 /// Returns line at given POSITION, not index.
 - (Line*)lineAtIndex:(NSInteger)position
 {
@@ -32,7 +29,7 @@ NSInteger previousSceneIndex = NSNotFound;
 
 - (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines
 {
-    // First check the cached line index
+    // First check the cached line index (N.B.: previousLineIdnex and previousSceneIndex are ivars)
     if (previousLineIndex >= 0 && previousLineIndex < lines.count && line == (Line*)lines[previousLineIndex]) {
         return previousLineIndex;
     }
@@ -196,7 +193,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 /// Returns a scene with given UUID. We are using a map table to avoid O(n) time.
 - (OutlineScene*)sceneWithUUID:(NSString*)uuid
 {
-    NSDate* d=NSDate.new;
     if (self.outlineUuidTable == nil) self.outlineUuidTable = NSMapTable.strongToWeakObjectsMapTable;
     
     OutlineScene* cachedScene = [self.uuidTable objectForKey:uuid];

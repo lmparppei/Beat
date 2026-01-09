@@ -17,24 +17,31 @@
              options:(ParsingOptions)options
        previousTypes:(NSArray<NSNumber *> *)previousTypes
 {
-    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType options:(ParsingOptions)options minimumLength:(NSInteger)minimumLength previousTypes:(NSArray<NSNumber *> *)previousTypes {
-    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType
               length:(NSInteger)length
    allowedWhiteSpace:(NSInteger)allowedWhiteSpace
 {
-    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil  exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:length allowedWhiteSpace:allowedWhiteSpace];
+    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil  exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:length allowedWhiteSpace:allowedWhiteSpace onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType
         exactMatches:(NSArray<NSString*>*)exactMatches
 {
-    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil exactMatches:exactMatches beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil exactMatches:exactMatches beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
+}
+
++ (instancetype)type:(LineType)resultingType
+        exactMatches:(NSArray<NSString*>*)exactMatches
+   allowedWhitespace:(NSInteger)allowedWhitespace
+{
+    return [ParsingRule type:resultingType options:0 minimumLength:0 minimumLengthAtInput:0 previousTypes:nil exactMatches:exactMatches beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:allowedWhitespace onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType
@@ -43,7 +50,7 @@
 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
        previousTypes:(NSArray<NSNumber *> *)previousTypes
 {
-    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:minimumLengthAtInput previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:minimumLengthAtInput previousTypes:previousTypes exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType
@@ -54,7 +61,7 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
  requiredAfterPrefix:(NSArray<NSString *> *)requiredAfterPrefix
 excludedAfterPrefix:(NSArray<NSString *> *)excludedAfterPrefix
 {
-    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:requiredAfterPrefix excludedAfterPrefix:excludedAfterPrefix length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:requiredAfterPrefix excludedAfterPrefix:excludedAfterPrefix length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
 }
 
 + (instancetype)type:(LineType)resultingType
@@ -63,21 +70,39 @@ excludedAfterPrefix:(NSArray<NSString *> *)excludedAfterPrefix
           beginsWith:(NSArray<NSString *> *)beginsWith
             endsWith:(NSArray<NSString *> *)endsWith
 {
-    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0];
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:previousTypes exactMatches:nil beginsWith:beginsWith endsWith:endsWith requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:0];
+}
+
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+          beginsWith:(NSArray<NSString *> *)beginsWith
+       allowedSymbol:(unichar)allowedSymbol
+{
+    return [ParsingRule type:resultingType options:options minimumLength:0 minimumLengthAtInput:0 previousTypes:nil exactMatches:nil beginsWith:beginsWith endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:allowedSymbol];
 }
 
 + (instancetype)type:(LineType)resultingType
              options:(ParsingOptions)options
        minimumLength:(NSInteger)minimumLength
 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
-       previousTypes:(NSArray<NSNumber*>*)previousTypes
-        exactMatches:(NSArray<NSString*>*)exactMatches
-          beginsWith:(NSArray<NSString*>*)beginsWith
-            endsWith:(NSArray<NSString*>*)endsWith
- requiredAfterPrefix:(NSArray<NSString*>*)requiredAfterPrefix
- excludedAfterPrefix:(NSArray<NSString*>*)excludedAfterPrefix
+       allowedSymbol:(unichar)allowedSymbol
+{
+    return [ParsingRule type:resultingType options:options minimumLength:minimumLength minimumLengthAtInput:minimumLengthAtInput previousTypes:nil exactMatches:nil beginsWith:nil endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil length:0 allowedWhiteSpace:0 onlyAllowedSymbol:allowedSymbol];
+}
+
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       minimumLength:(NSInteger)minimumLength
+minimumLengthAtInput:(NSInteger)minimumLengthAtInput
+       previousTypes:(NSArray<NSNumber*>* _Nullable)previousTypes
+        exactMatches:(NSArray<NSString*>* _Nullable)exactMatches
+          beginsWith:(NSArray<NSString*>* _Nullable)beginsWith
+            endsWith:(NSArray<NSString*>* _Nullable)endsWith
+ requiredAfterPrefix:(NSArray<NSString*>* _Nullable)requiredAfterPrefix
+ excludedAfterPrefix:(NSArray<NSString*>* _Nullable)excludedAfterPrefix
               length:(NSInteger)length
    allowedWhiteSpace:(NSInteger)allowedWhiteSpace
+   onlyAllowedSymbol:(unichar)allowedSymbol
 {
     ParsingRule *rule = [[ParsingRule alloc] init];
     rule.resultingType = resultingType;
@@ -100,6 +125,8 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
     rule.nextIsEmpty = mask_contains(options, NextIsEmpty);
     rule.titlePage = mask_contains(options, BelongsToTitlePage);
     
+    rule.allowedSymbol = allowedSymbol;
+    
     NSMutableIndexSet *pTypes = NSMutableIndexSet.new;
     for (NSNumber *typeNumber in previousTypes) {
         [pTypes addIndex:[typeNumber unsignedIntegerValue]];
@@ -113,7 +140,7 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
 {
     bool previousIsEmpty = (previousLine.type == empty);
     bool nextIsEmpty = (previousLine.type == empty);
-    
+  
     // Check length first
     bool isLongEnough = false;
     if (line.length >= self.minimumLength || (delegate.currentLine == line && line.length >= self.minimumLengthAtInput)) {
@@ -165,7 +192,9 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
         // Check required prefix
         (self.beginsWith.count > 0 && ![self matchesPrefix:line]) ||
         // Check required suffix
-        (self.endsWith.count > 0 && ![self matchesSuffix:line])
+        (self.endsWith.count > 0 && ![self matchesSuffix:line]) ||
+        // Contains only the allowed symbol
+        (self.allowedSymbol > 0 && ![self containsOnlyAllowedSymbol:line])
     ) {
         // Nothing passed
         return false;
@@ -218,6 +247,18 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
         if ([trimmedString rangeOfString:suffix].location == trimmedString.length - suffix.length) return true;
     }
     return false;
+}
+
+- (bool)containsOnlyAllowedSymbol:(Line*)line
+{
+    NSString* string = (self.allowsLeadingWhitespace) ? line.string.trim : line.string.copy;
+    
+    for (NSInteger i=0;i<string.length; i++) {
+        unichar c = [string characterAtIndex:i];
+        if (c != _allowedSymbol) return false;
+    }
+    
+    return true;
 }
 
 @end

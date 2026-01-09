@@ -18,8 +18,9 @@ typedef NS_OPTIONS(NSUInteger, ParsingOptions) {
     NextIsEmpty              = 1 << 3,
     AllCapsUntilParentheses  = 1 << 4,
     AllowsLeadingWhitespace  = 1 << 5,
-    RequiresTwoEmptyLines    = 1 << 6,
-    BelongsToTitlePage       = 1 << 7
+    AllowsTrailingWhitespace = 1 << 6,
+    RequiresTwoEmptyLines    = 1 << 7,
+    BelongsToTitlePage       = 1 << 8
 };
 
 @property (nonatomic, assign) LineType resultingType;
@@ -44,6 +45,8 @@ typedef NS_OPTIONS(NSUInteger, ParsingOptions) {
 @property (nonatomic, assign) NSInteger minimumLength;
 @property (nonatomic, assign) NSInteger minimumLengthAtInput;
 
+@property (nonatomic, assign) unichar allowedSymbol;
+
 + (instancetype)type:(LineType)resultingType
              options:(ParsingOptions)options
        previousTypes:(NSArray<NSNumber *> *)previousTypes;
@@ -59,6 +62,10 @@ typedef NS_OPTIONS(NSUInteger, ParsingOptions) {
 
 + (instancetype)type:(LineType)resultingType
         exactMatches:(NSArray<NSString*>*)exactMatches;
+
++ (instancetype)type:(LineType)resultingType
+        exactMatches:(NSArray<NSString*>*)exactMatches
+   allowedWhitespace:(NSInteger)allowedWhitespace;
 
 + (instancetype)type:(LineType)resultingType
              options:(ParsingOptions)options
@@ -84,15 +91,22 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
              options:(ParsingOptions)options
        minimumLength:(NSInteger)minimumLength
 minimumLengthAtInput:(NSInteger)minimumLengthAtInput
-       previousTypes:(NSArray<NSNumber*>*)previousTypes
-        exactMatches:(NSArray<NSString*>*)exactMatches
-          beginsWith:(NSArray<NSString*>*)beginsWith
-            endsWith:(NSArray<NSString*>*)endsWith
- requiredAfterPrefix:(NSArray<NSString*>*)requiredAfterPrefix
- excludedAfterPrefix:(NSArray<NSString*>*)excludedAfterPrefix
-              length:(NSInteger)length
-   allowedWhiteSpace:(NSInteger)allowedWhiteSpace;
+       allowedSymbol:(unichar)allowedSymbol;
 
-- (BOOL)validate:(Line*)line previousLine:(Line*)previousLine nextLine:(Line*)nextLine delegate:(id<ContinuousFountainParserDelegate>)delegate;
++ (instancetype)type:(LineType)resultingType
+             options:(ParsingOptions)options
+       minimumLength:(NSInteger)minimumLength
+minimumLengthAtInput:(NSInteger)minimumLengthAtInput
+       previousTypes:(NSArray<NSNumber*>* _Nullable)previousTypes
+        exactMatches:(NSArray<NSString*>* _Nullable)exactMatches
+          beginsWith:(NSArray<NSString*>* _Nullable)beginsWith
+            endsWith:(NSArray<NSString*>* _Nullable)endsWith
+ requiredAfterPrefix:(NSArray<NSString*>* _Nullable)requiredAfterPrefix
+ excludedAfterPrefix:(NSArray<NSString*>* _Nullable)excludedAfterPrefix
+              length:(NSInteger)length
+   allowedWhiteSpace:(NSInteger)allowedWhiteSpace
+   onlyAllowedSymbol:(unichar)allowedSymbol;
+
+- (BOOL)validate:(Line* _Nonnull)line previousLine:(Line* _Nullable)previousLine nextLine:(Line* _Nullable)nextLine delegate:(id<ContinuousFountainParserDelegate> _Nullable)delegate;
 
 @end

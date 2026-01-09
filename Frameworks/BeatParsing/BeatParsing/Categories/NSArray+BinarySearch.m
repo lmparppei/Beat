@@ -18,8 +18,10 @@
     
     while (min <= max) {
         NSInteger idx = min + (max - min) / 2;
-        id item = self[idx];
+        if (idx >= self.count) return NSNotFound; // Something went horribly wrong, abort
         
+        id item = self[idx];
+                
         NSInteger value = ((NSNumber*)[item valueForKey:key]).integerValue;
         
         if (value == targetValue || item == targetItem) {

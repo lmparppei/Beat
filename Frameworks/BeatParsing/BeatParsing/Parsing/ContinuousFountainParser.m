@@ -133,18 +133,24 @@ static NSDictionary* patterns;
         _nonContinuous = nonContinuous;
         _staticDocumentSettings = settings;
         
+        previousLineIndex = NSNotFound;
+        previousSceneIndex = NSNotFound;
+        
         // Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
         if (_nonContinuous) _staticParser = YES;
         else _staticParser = NO;
         
-        // Parsing rules for the future.
+        // Parsing rules
         _parsingRules = @[
+            [ParsingRule type:empty exactMatches:@[@"", @" "] allowedWhitespace:1],
             [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
             [ParsingRule type:shot options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"!!", @"！！"] endsWith:nil],
             [ParsingRule type:action options:0 previousTypes:nil beginsWith:@[@"!", @"！"] endsWith:nil],
             [ParsingRule type:lyrics options:0 previousTypes:nil beginsWith:@[@"~", @"～"] endsWith:nil],
             [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
             [ParsingRule type:character options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:nil],
+            
+            [ParsingRule type:pageBreak options:(AllowsLeadingWhitespace) minimumLength:3 minimumLengthAtInput:3 allowedSymbol:'='],
             
             [ParsingRule type:section options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"#", @"＃"] endsWith:nil],
             [ParsingRule type:synopse options:0 previousTypes:nil beginsWith:@[@"="] endsWith:nil],
@@ -170,9 +176,7 @@ static NSDictionary* patterns;
             [ParsingRule type:titlePageSource options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"source:"] endsWith:nil],
             [ParsingRule type:titlePageContact options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"contact:"] endsWith:nil],
             [ParsingRule type:titlePageDraftDate options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"draft date:"] endsWith:nil],
-            [ParsingRule type:titlePageUnknown options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:nil endsWith:nil],
-                         
-            [ParsingRule type:empty exactMatches:@[@"", @" "]],
+            [ParsingRule type:titlePageUnknown options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:nil endsWith:nil]
         ];
         
         [self parseText:string];
@@ -280,7 +284,7 @@ static NSDictionary* patterns;
             // Initial parsing
             [self parseTypeAndFormattingForLine:line atIndex:index];
             
-            // Quick fix for mistaking an ALL CAPS action for a character cue
+            // Quick fix for mistaking an ALL CAPS action for a character cue. This only works in linear, static parsing.
             if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
                 previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
                 if (previousLine.type == character) previousLine.type = action;
@@ -658,33 +662,31 @@ static NSDictionary* patterns;
     }
 }
 
-/// Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
-- (void)correctOrphanedDialogueAt:(NSUInteger)index {
-    if (index == 0) return;
+/// Fixes orphaned cues when line breaks are added to dialogue blocks
+- (void)correctOrphanedCueAt:(NSInteger)index
+{
+    Line* line = self.lines[index];
+    if (index == 0 || line.type != empty) return;
     
-    Line *prevLine = self.lines[index - 1]; // Get previous line
-    NSRange selection = (NSThread.isMainThread) ? self.delegate.selectedRange : NSMakeRange(0, 0); // Get selection
+    NSRange selection = (NSThread.isMainThread) ? self.delegate.selectedRange : NSMakeRange(0, 0);
+    BOOL emptyLineFound = false;
     
-    // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
-    if (prevLine.type != empty && prevLine.length == 0 && selection.location != prevLine.position - 1) {
-        NSInteger i = index - 1;
+    for (NSInteger i=index-1; i>=0; i--) {
+        Line* l = self.lines[i];
         
-        while (i >= 0) {
-            Line *l = self.lines[i];
+        if (l.length == 0 || l.type == empty) {
+            if (emptyLineFound) break;
             
-            if (l.length > 0 && l != self.delegate.characterInputForLine && l.numberOfPrecedingFormattingCharacters == 0) {
-                // Not a forced character cue, not the preceding line to selection
-                if (l.type == character && selection.location != NSMaxRange(l.textRange) && !NSLocationInRange(selection.location, l.range)) {
-                    l.type = action;
-                    [self.changedIndices addIndex:i];
-                }
-                break;
-            } else if (l.type != empty && l.length == 0) {
-                l.type = empty;
-                [self.changedIndices addIndex:i];
-            }
-            
-            i -= 1;
+            emptyLineFound = true;
+            continue;
+        } else if (!l.isAnyCharacter) {
+            break;
+        }
+        
+        if (selection.location != NSMaxRange(l.textRange) && !NSLocationInRange(selection.location, l.range)) {
+            l.type = action;
+            [self.changedIndices addIndex:i];
+            break;
         }
     }
 }
@@ -752,7 +754,8 @@ static NSDictionary* patterns;
     }
         
     // Correct orphaned dialogue if needed
-    [self correctOrphanedDialogueAt:index];
+    //[self correctOrphanedDialogueAt:index];
+    [self correctOrphanedCueAt:index];
         
     //If there is a next element, check if it might need a reparse because of a change in type or omit out
     if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
@@ -840,11 +843,13 @@ static NSDictionary* patterns;
 { @autoreleasepool {
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
-    line.type = [self parseLineTypeFor:line atIndex:index];
     
     // In the future we'll replace the previous function with rule-based parsing. This already works, but needs support for FORCED TYPES.
-    //LineType test = [self ruleBasedParsingFor:line atIndex:index];
-    //if (line.type != test) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:test], [Line typeName:line.type], line);
+    LineType testOriginal = [self parseLineTypeFor:line atIndex:index];
+    LineType testNew = [self ruleBasedParsingFor:line atIndex:index];
+    if (testOriginal != testNew) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:testNew], [Line typeName:testOriginal], line);
+    
+    line.type = testNew;
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -977,18 +982,54 @@ static NSDictionary* patterns;
     }
     
     for (ParsingRule* rule in self.parsingRules) {
+        // Ignore disabled types
+        if ([self.delegate.disabledTypes containsIndex:(NSInteger)rule.resultingType]) continue;
+        
         if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
             return rule.resultingType;
         }
     }
+
+    /*
+    // One final try. If the previous line was NOT parsed as a cue, but it *might* be one, we'll change both of them.
+    if (previousLine.type == action
+        && !previousLine.effectivelyEmpty
+        && line.length > 0
+        && !previousLine.forced
+        && previousLine.string.onlyUppercaseUntilParenthesis
+        && [self previousLine:previousLine].type == empty) {
+        
+        // Welcome to UTF-8 hell in ObjC. 94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^'.
+        if (previousLine.string.lastNonWhiteSpaceCharacter == 94) previousLine.type = dualDialogueCharacter;
+        else previousLine.type = character;
+        
+        // Note that the previous line got changed
+        [_changedIndices addIndex:index-1];
+        
+        // We need to do one more silly thing here
+        unichar firstChar = line.string.firstNonWhiteSpaceCharacter;
+        // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
+        bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
+        NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
+        
+        if (firstChar == '(' || [firstSymbol isEqualToString:@"（"]) {
+            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
+        } else {
+            return dialogue;
+        }
+    }
+     */
     
-    if (line.length == 0) return empty;
-    return action;
+    if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
+        return action;
+    } else {
+        return empty;
+    }
 }
 
 
 /// Parses the line type for given line. It *has* to know its line index.
-/// TODO: This bunch of spaghetti should be refactored and split into smaller functions.
+/// TODO: This bunch of spaghetti should be refactored and split into smaller functions. (EDIT 2026: This has already been done using ParseRules)
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index
 { @synchronized (self) {
     Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;

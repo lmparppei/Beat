@@ -403,7 +403,7 @@
     [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
     
     if (self.outlineChanges.hasChanges) {
-        [self.delegate outlineDidUpdateWithChanges:self.outlineChanges];
+        [(id<ContinuousFountainParserOutlineDelegate>)self.delegate outlineDidUpdateWithChanges:self.outlineChanges];
     }
     self.outlineChanges = nil;
 }

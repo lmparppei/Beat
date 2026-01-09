@@ -64,16 +64,12 @@
 		B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3728F0275800657F5F /* RegExCategories.m */; };
 		B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3828F0275800657F5F /* RegExCategories.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F4D28F0279700657F5F /* NSIndexSet+Subset.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */; };
-		B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F5128F0279700657F5F /* NSString+CharacterControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */; };
-		B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4228F0279700657F5F /* NSString+Regex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F5428F0279700657F5F /* NSDictionary+Values.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4328F0279700657F5F /* NSDictionary+Values.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4828F0279700657F5F /* NSString+Regex.m */; };
 		B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */; };
-		B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */; };
 		B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */; };
 		B6B37F6028F027EA00657F5F /* BeatScreenplay.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F5E28F027EA00657F5F /* BeatScreenplay.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */; };
@@ -152,16 +148,12 @@
 		B6B37F3728F0275800657F5F /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		B6B37F3828F0275800657F5F /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+Subset.m"; sourceTree = "<group>"; };
-		B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableString+Regex.h"; sourceTree = "<group>"; };
 		B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CharacterControl.h"; sourceTree = "<group>"; };
 		B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableIndexSet+Lowest.m"; sourceTree = "<group>"; };
-		B6B37F4228F0279700657F5F /* NSString+Regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Regex.h"; sourceTree = "<group>"; };
 		B6B37F4328F0279700657F5F /* NSDictionary+Values.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Values.h"; sourceTree = "<group>"; };
 		B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+Subset.h"; sourceTree = "<group>"; };
-		B6B37F4828F0279700657F5F /* NSString+Regex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Regex.m"; sourceTree = "<group>"; };
 		B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
 		B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CharacterControl.m"; sourceTree = "<group>"; };
-		B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableString+Regex.m"; sourceTree = "<group>"; };
 		B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Values.m"; sourceTree = "<group>"; };
 		B6B37F5E28F027EA00657F5F /* BeatScreenplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatScreenplay.h; sourceTree = "<group>"; };
 		B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatScreenplay.m; sourceTree = "<group>"; };
@@ -342,10 +334,6 @@
 				B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */,
 				B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */,
 				B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */,
-				B6B37F4228F0279700657F5F /* NSString+Regex.h */,
-				B6B37F4828F0279700657F5F /* NSString+Regex.m */,
-				B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */,
-				B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */,
 				B6B37F4328F0279700657F5F /* NSDictionary+Values.h */,
 				B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */,
 				B6C629B82A24E7A3003FB7FD /* NSCharacterSet+BadControlCharacters.h */,
@@ -401,7 +389,6 @@
 				B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */,
 				B6737DF02CD2DBE700644D98 /* ContinuousFountainParser+Notes.h in Headers */,
 				B61A4E882D21923800CE761C /* Line+AttributedStrings.h in Headers */,
-				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
 				B67FDA382D5A7F9700967DA0 /* NSMutableAttributedString+BeatAttributes.h in Headers */,
 				B61A4E902D2201DE00CE761C /* Line+Notes.h in Headers */,
@@ -419,7 +406,6 @@
 				B61A4E7F2D218D4F00CE761C /* Line+Type.h in Headers */,
 				B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */,
 				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
-				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
 				B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */,
 				B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */,
 				B6B37F3528F0212700657F5F /* BeatPaperSizing.h in Headers */,
@@ -511,11 +497,9 @@
 				B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */,
 				B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */,
 				B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */,
-				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
 				B699E7BD2A39AF0E001476EF /* NSString+EMOEmoji.m in Sources */,
 				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
 				B658DC922CDE9E9500DDDBDE /* BeatDocumentSettings+Shorthands.m in Sources */,
-				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
 				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
 				B61A4E8D2D21990B00CE761C /* Line+Storybeats.m in Sources */,
 				B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */,

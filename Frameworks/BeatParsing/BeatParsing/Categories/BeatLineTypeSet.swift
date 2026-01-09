@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ I should have documented this when creating it, but apparently this is just an index set wrapper which makes adding multiple types into an array more convenient. Used only in `BeatLayoutManager`.
+ */
 @objc public class BeatLineTypeSet:NSObject {
     var types:[UInt]
     

@@ -8,7 +8,7 @@
 import Foundation
 
 /**
- This is a wrapper class for represented lines in editor formatting.
+ This is a wrapper class for represented lines in editor.  `BeatEditorFormatting` applies this as value to an attribute, and because attributes can't have weak values, we need a wrapper.
  */
 @objcMembers
 public class BeatWeakLine: NSObject {

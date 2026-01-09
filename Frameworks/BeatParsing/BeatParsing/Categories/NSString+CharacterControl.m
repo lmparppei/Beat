@@ -15,7 +15,7 @@
 
 - (bool)containsOnlyWhitespace
 {
-    NSUInteger length = [self length];
+    NSUInteger length = self.length;
     
     NSCharacterSet* whitespaceSet = NSCharacterSet.whitespaceAndNewlineCharacterSet;
     for (int i = 0; i < length; i++) {

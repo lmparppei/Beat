@@ -9,6 +9,12 @@
 #import <BeatParsing/OutlineChanges.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
+/// This protocol is separated for easier conformance
+@protocol ContinuousFountainParserOutlineDelegate <NSObject>
+/// Notify that the outline was changed
+- (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes;
+@end
+
 @protocol ContinuousFountainParserOutlineExports <JSExport>
 /// Returns a tree structure for the outline. Only top-level elements are included, get the rest using `element.chilren`.
 - (NSArray*)outlineTree;

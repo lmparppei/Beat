@@ -18,6 +18,8 @@
 @class OutlineScene;
 @class BeatMacroParser;
 
+#pragma mark - Parser delegate
+
 @protocol ContinuousFountainParserDelegate <NSObject>
 /// Document settings object
 @property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
@@ -34,13 +36,13 @@
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 /// Forces any changes in parser to be reformatted in editor
 - (void)applyFormatChanges;
-/// Notify that the outline was changed
-- (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes;
 /// Notify that a line was deleted
 - (void)lineWasRemoved:(Line*)line;
 @end
 
-// Plugin compatibility
+
+#pragma mark - Plugin API
+
 @protocol ContinuousFountainParserExports <JSExport>
 @property (readonly) NSMutableArray<Line*>* lines;
 @property (nonatomic, readonly) NSMutableArray <OutlineScene*>* outline;
@@ -68,7 +70,14 @@
 
 @end
 
-@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports>
+
+#pragma mark - Parser
+
+@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports> {
+    NSInteger previousLineIndex;
+    NSInteger previousSceneIndex;
+}
+
 /// Parser delegate. Basically it's the document.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
 /// Every line as object
