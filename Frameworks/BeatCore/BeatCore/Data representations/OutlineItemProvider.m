@@ -6,7 +6,6 @@
 //
 
 #import "OutlineItemProvider.h"
-#import "OutlineViewItem.h"
 
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
@@ -28,7 +27,6 @@
 @end
 
 @interface OutlineItemProvider ()
-@property (nonatomic) OutlineItemOptions options;
 @property (nonatomic) OutlineScene* scene;
 @property (nonatomic) bool dark;
 @end
@@ -42,17 +40,22 @@
         _scene = scene;
         _dark = dark;
         
-        BeatUserDefaults* d = BeatUserDefaults.sharedDefaults;
-        OutlineItemOptions options = 0;
-        if ([d getBool:BeatSettingShowHeadingsInOutline]) options |= OutlineItemIncludeHeading;
-        if ([d getBool:BeatSettingShowSceneNumbers]) options |= OutlineItemIncludeSceneNumber;
-        if ([d getBool:BeatSettingShowNotesInOutline]) options |= OutlineItemIncludeNotes;
-        if ([d getBool:BeatSettingShowSynopsisInOutline]) options |= OutlineItemIncludeSynopsis;
-        if ([d getBool:BeatSettingShowMarkersInOutline]) options |= OutlineItemIncludeMarkers;
-        
-        _options = options;
+        _options = OutlineItemProvider.options;
     }
     return self;
+}
+
++ (OutlineItemOptions)options
+{
+    BeatUserDefaults* d = BeatUserDefaults.sharedDefaults;
+    OutlineItemOptions options = 0;
+    if ([d getBool:BeatSettingShowHeadingsInOutline]) options |= OutlineItemIncludeHeading;
+    if ([d getBool:BeatSettingShowSceneNumbers]) options |= OutlineItemIncludeSceneNumber;
+    if ([d getBool:BeatSettingShowNotesInOutline]) options |= OutlineItemIncludeNotes;
+    if ([d getBool:BeatSettingShowSynopsisInOutline]) options |= OutlineItemIncludeSynopsis;
+    if ([d getBool:BeatSettingShowMarkersInOutline]) options |= OutlineItemIncludeMarkers;
+    
+    return options;
 }
 
 + (CGFloat)fontSizeForType:(LineType)type
@@ -94,7 +97,7 @@
 
 - (NSArray<BeatOutlineItemData*>*)items
 {
-    NSMutableArray<BeatOutlineItemData*>* items = [NSMutableArray.alloc initWithCapacity:15];
+    NSMutableArray<BeatOutlineItemData*>* items = [NSMutableArray.alloc initWithCapacity:10];
     if (mask_contains(_options, OutlineItemIncludeNotes))
         [items addObjectsFromArray:self.notes];
     if (mask_contains(_options, OutlineItemIncludeMarkers))

@@ -17,8 +17,9 @@
 #import <BeatCore/BeatFontSet.h>
 #import <BeatThemes/BeatThemes.h>
 
-// Caregories
+// Categories
 #import <BeatCore/BeatDocumentBaseController+RegisteredViewsAndObservers.h>
+#import <BeatCore/BeatDocumentBaseController+PreviewControl.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
@@ -440,7 +441,7 @@
 
 - (void)reformatAllLines
 {
-    [self.formatting reformatLinesAtIndices:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.lines.count)]];
+    [self.formatting reformatLinesAtIndices:[NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.parser.lines.count)]];
     self.waitingForFormatting = false;
 }
 
@@ -496,70 +497,6 @@
         
         if (reformat) [self.formatting setTextColorFor:line];
     }
-}
-
-
-#pragma mark - Parser shorthands
-
-- (NSMutableArray<Line*>* _Nonnull)lines
-{
-    return _parser.lines;
-}
-
-- (NSArray<OutlineScene*>*)outline
-{
-    if (self.parser.outline == nil) return @[];
-    else return self.parser.outline.copy;
-}
-
-
-#pragma mark - Outline update
-
-- (void)outlineDidUpdateWithChanges:(OutlineChanges*)changes
-{
-    if (changes.hasChanges == false) return;
-    
-    // Redraw scene numbers
-    for (OutlineScene* scene in changes.updated) {
-        if (self.currentLine != scene.line) [self.layoutManager invalidateDisplayForCharacterRange:scene.line.textRange];
-    }
-
-    // Update outline views
-    for (id<BeatSceneOutlineView> view in self.registeredOutlineViews) {
-        [view reloadWithChanges:changes];
-    }
-    
-    // Update plugin agent
-    [(id<BeatPluginAgentInstance>)self.pluginAgent updatePluginsWithOutline:self.parser.outline changes:changes];
-}
-
-
-#pragma mark - Preview creation
-/// - note: The base class has no knowledge of OS-specific implementation of the preview controller.
-
-- (void)createPreviewAt:(NSRange)range
-{
-    [self.previewController createPreviewWithChangedRange:range sync:false];
-}
-
-- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync
-{
-    [self.previewController createPreviewWithChangedRange:range sync:sync];
-}
-
-- (void)invalidatePreview
-{
-    [self.previewController resetPreview];
-}
-
-- (void)invalidatePreviewAt:(NSInteger)index
-{
-    [self.previewController invalidatePreviewAt:NSMakeRange(index, 0)];
-}
-
-- (void)resetPreview
-{
-    [self.previewController resetPreview];
 }
 
 

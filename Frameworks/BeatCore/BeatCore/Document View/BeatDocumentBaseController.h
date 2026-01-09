@@ -46,6 +46,9 @@ typedef NS_ENUM(NSInteger, BeatFontType);
 @property (nonatomic, readonly) BeatStylesheet* _Nonnull styles;
 @property (nonatomic, readonly) BeatStylesheet* _Nonnull editorStyles;
 
+/// DO NOT USE unless you know what you are doing
+- (id _Nonnull)getTextView;
+
 NS_ASSUME_NONNULL_BEGIN
 JSExportAs(addAttribute, - (void)addAttribute:(NSString* _Nonnull)key value:(id _Nonnull)value range:(NSRange)range);
 JSExportAs(removeAttribute, - (void)removeAttribute:(NSString* _Nonnull)key range:(NSRange)range);
@@ -178,11 +181,6 @@ NS_ASSUME_NONNULL_END
 - (OutlineScene* _Nullable)getCurrentSceneWithPosition:(NSInteger)position;
 
 
-#pragma mark - Updating outline views
-
-- (void)outlineDidUpdateWithChanges:(OutlineChanges* _Nullable)changes;
-
-
 #pragma mark - Text view
 
 /// - note: Override this property in OS class.
@@ -289,12 +287,6 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic, readonly) BeatPaginationManager* _Nonnull pagination;
 
 - (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> * _Nonnull)pageBreaks;
-
-- (void)resetPreview;
-- (void)invalidatePreview;
-- (void)invalidatePreviewAt:(NSInteger)index;
-- (void)createPreviewAt:(NSRange)range;
-- (void)createPreviewAt:(NSRange)range sync:(BOOL)sync;
 
 
 #pragma mark - Revisions
