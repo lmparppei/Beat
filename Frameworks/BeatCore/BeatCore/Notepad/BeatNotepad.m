@@ -16,7 +16,9 @@
 #import <BeatCore/BeatColors.h>
 #import <BeatCore/BeatCore-Swift.h>
 
-@interface BeatNotepad() <BeatEditorView>
+@interface BeatNotepad() <BeatEditorView> {
+    bool awoken;
+}
 @property (nonatomic) BeatMarkdownTextStorageDelegate* mdDelegate;
 @property (nonatomic) bool loading;
 @end
@@ -26,15 +28,18 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    [self setColor:@"default"];
-
-    CGFloat fontSize = (self.baseFontSize > 0) ? self.baseFontSize : 12.0;
-    
-    self.mdDelegate = [BeatMarkdownTextStorageDelegate.alloc initWithFontSize:fontSize];
-    self.mdDelegate.textStorage = self.textStorage;
-    self.textStorage.delegate = self.mdDelegate;
-    
-    self.textColor = self.currentColor;
+    if (!awoken) {
+        [self setColor:@"default"];
+        
+        CGFloat fontSize = (self.baseFontSize > 0) ? self.baseFontSize : 12.0;
+        
+        self.mdDelegate = [BeatMarkdownTextStorageDelegate.alloc initWithFontSize:fontSize];
+        self.mdDelegate.textStorage = self.textStorage;
+        self.textStorage.delegate = self.mdDelegate;
+        
+        self.textColor = self.currentColor;
+        awoken = true;
+    }
 }
 
 - (void)setup

@@ -49,11 +49,6 @@
 	return self;
 }
 
--(void)awakeFromNib {
-    [super awakeFromNib];
-
-}
-
 /// Load tags from document settings
 - (void)setup {
 	[self loadTags:[_delegate.documentSettings get:DocSettingTags] definitions:[_delegate.documentSettings get:DocSettingTagDefinitions]];
