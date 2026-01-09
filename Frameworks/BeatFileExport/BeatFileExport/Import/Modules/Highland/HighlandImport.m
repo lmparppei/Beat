@@ -36,15 +36,19 @@
 	
 	NSData *scriptData;
 	NSArray<NSString*> *filesInArchive = [container listFilenames:&error];
-	for (NSString *string in filesInArchive) {
-		// We only gather the ones which are SCRIPTS
-		if ([string rangeOfString:@"fountain"].location != NSNotFound) {
-			scriptData = [container extractDataFromFile:string error:&error];
-			break;
-		}
-	}
-	
-	_script = [[NSString alloc] initWithData:scriptData encoding:NSUTF8StringEncoding];
+    
+    if (filesInArchive.count > 0) {
+        for (NSString *string in filesInArchive) {
+            // We only gather the ones which are SCRIPTS
+            if ([string rangeOfString:@"fountain"].location != NSNotFound) {
+                scriptData = [container extractDataFromFile:string error:&error];
+                break;
+            }
+        }
+        
+        if (scriptData != nil)
+            _script = [[NSString alloc] initWithData:scriptData encoding:NSUTF8StringEncoding];
+    }
 }
 
 - (NSString *)fountain
