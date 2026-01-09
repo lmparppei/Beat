@@ -107,14 +107,14 @@ import BeatParsing
 		// Set up the container views
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
-		
-		//
-		textView.setupInputAssistant()
-				
+						
 		// The same object will be responsible for all of these delegations
 		textView.editorDelegate = editorDelegate as? BeatTextEditorDelegate
 		textView.delegate = editorDelegate as? UITextViewDelegate
 		textView.inputDelegate = editorDelegate as? UITextInputDelegate
+
+		//
+		textView.setupInputAssistant()
 		
 		textView.setup()
 		
@@ -188,7 +188,7 @@ import BeatParsing
 	
 	func showInputAssistant() {
 		// Set up assistant view
-		guard let editorDelegate else { return }
+		guard let editorDelegate else { print("No editor delegate"); return }
 		self.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: self)
 		self.assistantView?.attach(to: self)
 	}
@@ -367,9 +367,8 @@ import BeatParsing
 		
 		// If the rect is not visible, scroll to that range
 		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			//enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
 		}
-		
 	}
 	
 	override func scrollRangeToVisible(_ range: NSRange) {
@@ -485,6 +484,11 @@ import BeatParsing
 		}
 		
 		super.touchesEnded(touches, with: event)
+		
+		// Force selection to stay where user tapped
+		let currentRange = selectedRange
+		unmarkText()
+		selectedRange = currentRange
 	}
 	
 	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -507,7 +511,6 @@ import BeatParsing
 			self.editorDelegate?.textViewDidEndSelection(self, selectedRange: self.selectedRange)
 		}
 	}
-	
 }
 
 
@@ -662,10 +665,6 @@ extension BeatUITextView:UIGestureRecognizerDelegate {
 		}
 
 		return true
-	}
-	
-	private func adjustTouchPoint(_ point: CGPoint) -> CGPoint {
-		return CGPoint(x: point.x / zoomScale, y: point.y / zoomScale)
 	}
 }
 

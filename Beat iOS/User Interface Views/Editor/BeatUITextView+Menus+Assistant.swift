@@ -544,44 +544,11 @@ extension BeatUITextView {
 		for color in colors {
 			let colorKey = "color.\(color.lowercased())"
 			let action = UIAction(title: color, image: UIImage(named: colorKey)) { [weak self] _ in
-				textIO?.setColor(colorKey, for: self?.editorDelegate?.currentScene)
+				textIO?.setColor(color.lowercased(), for: self?.editorDelegate?.currentScene)
 			}
 			colorItems.append(action)
 		}
 		let sceneMenu = UIMenu(title: "Scene...", options: [], children: colorItems)
-		/*
-		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
-			UIAction(title: "Omit Scene") { [weak self] _ in
-				self?.editorDelegate?.formattingActions.omitScene(nil)
-			},
-			UIAction(title: "Make Non-Numbered") { [weak self] _ in
-				self?.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
-			},
-			UIAction(title: "Red", image: UIImage(named:"color.red")) { [weak self] _ in
-				textIO?.setColor("red", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.blue")) { [weak self] _ in
-				textIO?.setColor("blue", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.green")) { [weak self] _ in
-				textIO?.setColor("green", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.pink")) { [weak self] _ in
-				textIO?.setColor("pink", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.brown")) { [weak self] _ in
-				textIO?.setColor("brown", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.cyan")) { [weak self] _ in
-				textIO?.setColor("cyan", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.orange")) { [weak self] _ in
-				textIO?.setColor("orange", for: self?.editorDelegate?.currentScene)
-			},
-			UIAction(image: UIImage(named:"color.magenta")) { [weak self] _ in
-				textIO?.setColor("magenta", for: self?.editorDelegate?.currentScene)
-			}
-		])*/
 		
 		actions.append(sceneMenu)
 				

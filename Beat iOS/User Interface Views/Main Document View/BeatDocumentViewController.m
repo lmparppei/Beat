@@ -17,7 +17,9 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate>
+@interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate> {
+	bool editorWasActive;
+}
 
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
@@ -147,14 +149,15 @@
 	self.editorSplitView = self.childViewControllers.firstObject;
 	[self.editorSplitView loadView];
 	
+	[self.navigationController.navigationBar setTranslucent:true];
+	
 	/*
 	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Document" bundle:nil];
 	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
 	[self embed:splitView inView:self.splitViewContainer];
 	[splitView loadView];
 	 self.editorSplitView = splitView;
-	 */
-	
+	*/
 	
 	
 	// Setup the split view
@@ -175,7 +178,7 @@
 	self.sidebarConstraint.constant = 0.0;
 	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
-	
+		
 	[self setupDocument];
 }
 
@@ -193,10 +196,10 @@
 	
 	// Do nothing more if we're not loading the document
 	if (!self.documentIsLoading) return;
-	
+		
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
-	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 300.0, 10.0) animated:false];
+	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 1300.0, 10.0) animated:false];
 	
 	// Loading is complete, show page view
 	[self.textView layoutIfNeeded];
@@ -207,7 +210,6 @@
 	// This is not a place of honor. No highly esteemed deed is commemorated here.
 	[self.textView firstResize];
 	[self.textView resize];
-	[self restoreCaret];
 	
 	self.documentIsLoading = false;
 	
@@ -215,6 +217,10 @@
 	[self displayPatchNotesIfNeeded];
 	
 	//typing = [SimulatedTyping.alloc initWithTextView:self.textView];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self restoreCaret];
+	});
 }
 SimulatedTyping* typing;
 
@@ -554,7 +560,6 @@ SimulatedTyping* typing;
 
 #pragma mark - Preview / Pagination
 
-bool editorWasActive = false;
 - (IBAction)togglePreview:(id _Nullable)sender
 {
 	if (![self.navigationController.viewControllers containsObject:self.previewView]) {
@@ -740,7 +745,8 @@ bool editorWasActive = false;
 }
 
 /// Selects the given range and scrolls it into view
-- (void)selectAndScrollTo:(NSRange)range {
+- (void)selectAndScrollTo:(NSRange)range
+{
 	[self focusEditor];
 	
 	self.textView.selectedRange = range;

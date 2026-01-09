@@ -64,15 +64,14 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		sidebar?.loadView()
 		
 		self.primaryBackgroundStyle = .sidebar
-		self.showsSecondaryOnlyButton = true
-	
-		
-		if let nc = self.viewControllers.first as? UINavigationController {
-			nc.navigationBar.isHidden = true
-			nc.navigationBar.removeFromSuperview()
-		}
+		self.navigationController?.navigationBar.isHidden = true
 	}
 	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		hideAllNavigationBars()
+	}
+		
 	@objc public func setup(editorDelegate:BeatEditorDelegate) {
 		self.editorDelegate = editorDelegate
 		self.outlineView?.setup(editorDelegate: editorDelegate)
@@ -90,6 +89,24 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		super.removeFromParent()
 		
 		self.viewControllers.removeAll()
+	}
+		
+	/// Hides all navigation bars in the view controller hierarchy. I think split view automatically adds navigation controllers to the views (?) so we need to programmatically fix this.
+	private func hideAllNavigationBars() {
+		for viewController in viewControllers {
+			if let navController = viewController as? UINavigationController {
+				navController.setNavigationBarHidden(true, animated: false)
+			}
+		}
+	}
+	
+	/// Delegate method to hide any sort of navigation bar when showing view controllers. This VC is embedded in the main document view controller, so we don't want any of these.
+	func splitViewController(_ svc: UISplitViewController,
+							willShow vc: UIViewController,
+							invalidating barButtonItem: UIBarButtonItem) {
+		if let navController = vc as? UINavigationController {
+			navController.setNavigationBarHidden(true, animated: false)
+		}
 	}
 	
 }

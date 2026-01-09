@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="n1j-v5-5jA">
-    <device id="ipad11_0rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
@@ -13,27 +13,23 @@
         <!--Screenplay-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
-                <viewController storyboardIdentifier="DocumentViewController" extendedLayoutIncludesOpaqueBars="YES" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DocumentViewController" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gmX-OC-j8U">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1296"/>
+                            <containerView opaque="NO" contentMode="scaleToFill" id="gmX-OC-j8U">
+                                <rect key="frame" x="1" y="0.0" width="1024" height="1366"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
-                                    <segue destination="huI-7K-Jqd" kind="embed" id="EYw-VT-2eG"/>
+                                    <segue destination="CQ1-ft-LFq" kind="embed" id="8Tb-2a-s3r"/>
                                 </connections>
                             </containerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="gmX-OC-j8U" firstAttribute="top" secondItem="SIE-Uh-Zny" secondAttribute="top" id="Aol-dd-NtN"/>
-                            <constraint firstItem="gmX-OC-j8U" firstAttribute="leading" secondItem="BoZ-jc-2Y8" secondAttribute="leading" id="FTq-wL-Tf1"/>
-                            <constraint firstAttribute="bottom" secondItem="gmX-OC-j8U" secondAttribute="bottom" id="P7o-kv-eRl"/>
-                            <constraint firstItem="gmX-OC-j8U" firstAttribute="trailing" secondItem="BoZ-jc-2Y8" secondAttribute="trailing" id="XmS-Kg-mix"/>
-                        </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <navigationItem key="navigationItem" title="Screenplay" largeTitleDisplayMode="never" style="editor" id="G7J-RW-q00">
                         <leftBarButtonItems>
                             <barButtonItem title="Documents" image="folder" catalog="system" id="M6l-mf-X0i">
@@ -93,28 +89,28 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1744.6043165467627" y="64.95867768595042"/>
+            <point key="canvasLocation" x="1744.3359375" y="64.568081991215223"/>
         </scene>
         <!--Preview-->
         <scene sceneID="LHN-S5-hsX">
             <objects>
                 <viewController storyboardIdentifier="Preview" title="Preview" id="VDS-CY-Eht" customClass="BeatPageViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="JDo-k1-H6O">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" id="cyo-S7-1ID">
-                                <rect key="frame" x="407" y="595" width="20" height="20"/>
+                                <rect key="frame" x="502" y="673" width="20" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" id="iqI-cQ-HrT" customClass="BeatPageScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1210"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <viewLayoutGuide key="contentLayoutGuide" id="tnE-0j-8dx"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="G0z-pt-eIc"/>
                             </scrollView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="784" y="112" width="30" height="30"/>
+                                <rect key="frame" x="974" y="112" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -151,17 +147,17 @@
         <!--Beat Editor View Controller-->
         <scene sceneID="uc1-BM-eyz">
             <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" id="4sm-tP-vUc" customClass="BeatEditorViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Hy9-v8-qGf">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1296"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" maximumZoomScale="1.8999999761581421" id="ETx-UJ-JkA" customClass="BeatScrollView" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1296"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" id="Vhw-po-PCx" customClass="BeatPageView" customModule="Beat" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="834" height="1296"/>
+                                        <rect key="frame" x="95" y="0.0" width="834" height="1366"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -174,6 +170,7 @@
                         <viewLayoutGuide key="safeArea" id="ekZ-mD-PCq"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <navigationItem key="navigationItem" id="6Ln-I5-Eq2"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
@@ -184,64 +181,27 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eTe-Gf-Vv9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3550" y="1944"/>
-        </scene>
-        <!--Beat Editor Split View Controller-->
-        <scene sceneID="Obe-C1-u81">
-            <objects>
-                <splitViewController storyboardIdentifier="EditorSplitView" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" allowDoubleColumnStyle="YES" maximumPrimaryColumnWidth="250" primaryBackgroundStyle="sidebar" id="huI-7K-Jqd" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <nil key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="detailViewController" id="fPQ-7W-4g9"/>
-                        <segue destination="PId-gg-gv4" kind="relationship" relationship="masterViewController" id="vNF-QF-nWK"/>
-                    </connections>
-                </splitViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rBZ-hV-1nr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2609" y="1564"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="3GD-6f-FMd">
-            <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" navigationBarHidden="YES" id="PId-gg-gv4" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Scf-AV-cSB">
-                        <rect key="frame" x="-10" y="-32" width="0.0" height="0.0"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="zQZ-wf-U4s">
-                        <rect key="frame" x="-10" y="-32" width="0.0" height="0.0"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
-                    <connections>
-                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="rootViewController" id="g3s-fc-gp9"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dgT-pM-bSe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3550" y="1191"/>
+            <point key="canvasLocation" x="2865" y="1522"/>
         </scene>
         <!--Beat Sidebar View Controller-->
         <scene sceneID="9rO-4Y-XEo">
             <objects>
-                <tableViewController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" clearsSelectionOnViewWillAppear="NO" id="da5-TV-bCJ" customClass="BeatSidebarViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="16" estimatedRowHeight="16" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="ZX6-VY-JzB" customClass="BeatiOSOutlineView" customModule="Beat" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="250" height="1229"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="1302"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="separatorColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Scene" textLabel="fJ4-Xi-prg" rowHeight="14" style="IBUITableViewCellStyleDefault" id="fUD-Q2-mxf" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="50" width="250" height="14"/>
+                                <rect key="frame" x="0.0" y="50" width="320" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fUD-Q2-mxf" id="7l8-8n-f4d" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="250" height="14"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="14"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fJ4-Xi-prg">
-                                            <rect key="frame" x="16" y="0.0" width="218" height="14"/>
+                                            <rect key="frame" x="16" y="0.0" width="288" height="14"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                             <nil key="textColor"/>
@@ -256,21 +216,21 @@
                             </tableViewCell>
                         </prototypes>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <navigationItem key="navigationItem" id="I7h-LD-beH"/>
+                    <nil key="simulatedTopBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bo0-Gi-KDE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4244" y="1191"/>
+            <point key="canvasLocation" x="2865" y="825"/>
         </scene>
         <!--Beat Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" hidesBarsOnSwipe="YES" id="n1j-v5-5jA" customClass="BeatNavigationController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBarsOnSwipe="YES" id="n1j-v5-5jA" customClass="BeatNavigationController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="JT7-eO-PGz">
-                        <rect key="frame" x="0.0" y="32" width="834" height="54"/>
+                        <rect key="frame" x="0.0" y="24" width="1024" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <navigationBarAppearance key="compactAppearance"/>
                     </navigationBar>
@@ -291,11 +251,11 @@
             <objects>
                 <viewController storyboardIdentifier="Cards" title="Index Card View" id="UZW-Mv-jzT" customClass="BeatPluginContainerViewController" customModule="BeatPlugins" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="XsT-vL-ctF">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1124"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1288"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lPf-zz-Wp5" customClass="BeatPluginContainerView" customModule="BeatPlugins">
-                                <rect key="frame" x="0.0" y="0.0" width="834" height="1124"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1288"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="viewController" destination="UZW-Mv-jzT" id="Dmz-Vl-muz"/>
@@ -322,12 +282,25 @@
             </objects>
             <point key="canvasLocation" x="2450" y="65"/>
         </scene>
+        <!--Beat Editor Split View Controller-->
+        <scene sceneID="lch-IP-Cl5">
+            <objects>
+                <splitViewController allowDoubleColumnStyle="YES" primaryBackgroundStyle="sidebar" id="CQ1-ft-LFq" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="masterViewController" id="Uxe-xP-hoP"/>
+                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="detailViewController" id="u9j-UM-Tc1"/>
+                    </connections>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xu4-04-QfC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1744" y="1152"/>
+        </scene>
         <!--Create PDF-->
         <scene sceneID="ZxL-Wj-Jkf">
             <objects>
                 <tableViewController storyboardIdentifier="ExportSettingsTable" title="Create PDF" automaticallyAdjustsScrollViewInsets="NO" id="p0B-o5-lkK" customClass="BeatExportSettingController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="never" keyboardDismissMode="onDrag" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="M3i-FS-1kb" customClass="TPKeyboardAvoidingTableView">
-                        <rect key="frame" x="0.0" y="0.0" width="676" height="832"/>
+                        <rect key="frame" x="0.0" y="0.0" width="676" height="840"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <sections>
@@ -559,14 +532,14 @@
                                                             </connections>
                                                         </button>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1st" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="n7h-7b-H86">
-                                                            <rect key="frame" x="49" y="5" width="72" height="21"/>
+                                                            <rect key="frame" x="49" y="5" width="71" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2nd" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Gf4-3S-nan">
-                                                            <rect key="frame" x="49" y="44" width="72" height="21"/>
+                                                            <rect key="frame" x="49" y="44" width="71" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                             <nil key="textColor"/>
@@ -588,7 +561,7 @@
                                                             </connections>
                                                         </button>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3rd" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="IFT-9s-wii">
-                                                            <rect key="frame" x="49" y="83" width="72" height="21"/>
+                                                            <rect key="frame" x="49" y="83" width="71" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                             <nil key="textColor"/>
@@ -610,7 +583,7 @@
                                                             </connections>
                                                         </button>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4th" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jh5-fa-k3F">
-                                                            <rect key="frame" x="49" y="122" width="72" height="21"/>
+                                                            <rect key="frame" x="49" y="122" width="71" height="21"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                             <nil key="textColor"/>

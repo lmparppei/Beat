@@ -16,7 +16,7 @@
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
 	if (position < self.text.length) {
 		[self.textView setSelectedRange:NSMakeRange(position, 0)];
-		[self.textView scrollToRange:self.textView.selectedRange];
+		[self.textView scrollRangeToVisible:self.textView.selectedRange];
 	}
 }
 
@@ -41,10 +41,9 @@
 	if (editedMask == NSTextStorageEditedAttributes) {
 		return;
 	} else if (mask_contains(editedMask, NSTextStorageEditedCharacters)) {
-		// First store the edited range and register possible changes to the text
+		// First store the edited range and after that, register possible changes to the text
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
-		// Register changes
 		if (self.revisionMode && self.lastChangedRange.location != NSNotFound) {
 			[self.revisionTracking registerChangesInRange:NSMakeRange(editedRange.location, self.lastChangedRange.length) delta:delta];
 		}
@@ -144,6 +143,8 @@
 	
 	// Show review if needed
 	[self showReviewIfNeeded];
+	
+	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
 }
 
 - (void)textDidChange:(id<UITextInput>)textInput

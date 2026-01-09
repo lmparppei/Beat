@@ -352,30 +352,26 @@ open class InputAssistantView: UIToolbar {
 	/// Create UIBarButtonItems from InputAssistantActions
 	private func createBarButtonItems(from actions: [InputAssistantAction]) -> [UIBarButtonItem] {
 		return actions.map { action in
+			let barItem = UIBarButtonItem(title: nil, style: .plain, target: nil, action: nil)
+			
 			if action.title.count > 0 {
 				// Text button
-				let barItem = UIBarButtonItem(title: action.title, style: .plain, target: nil, action: nil)
-				
-				if let menu = action.menu {
-					barItem.menu = menu
-				}
-				
-				return barItem
+				barItem.title = action.title
 			} else if let image = action.image {
 				// Image button
 				let width = (image.size.width / image.size.height) * 25
 				let scaledImage = image.scaled(toSize: CGSize(width: width, height: 25))
-				let barItem = UIBarButtonItem(image: scaledImage, style: .plain, target: nil, action: nil)
-				
-				if let menu = action.menu {
-					barItem.menu = menu
-				}
-				
-				return barItem
-			} else {
-				// Fallback empty item
-				return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+				barItem.image = scaledImage
 			}
+			
+			if let menu = action.menu {
+				barItem.menu = menu
+			} else {
+				barItem.action = action.action
+				barItem.target = action.target
+			}
+			
+			return barItem
 		}
 	}
 }

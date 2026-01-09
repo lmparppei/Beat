@@ -38,7 +38,13 @@ import Foundation
 		
 		self.delegate = self
 		
-		self.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+		var topInset = UIDevice.current.userInterfaceIdiom == .phone ? 100.0 : 0.0
+		if #available(iOS 26.0, *) { }
+		else {
+			topInset = 100.0
+		}
+				
+		self.contentInset = UIEdgeInsets(top: topInset, left: 0.0, bottom: 0.0, right: 0.0)
 		self.estimatedRowHeight = 14.0
 		self.rowHeight = UITableView.automaticDimension
 		self.contentInsetAdjustmentBehavior = .never
@@ -161,6 +167,11 @@ import Foundation
 	
 	/// Called when the editor selection moved to another scene
 	@objc func didMove(toSceneIndex index: Int) {
+		if index == NSNotFound {
+			self.deselectAll(nil)
+			return
+		}
+		
 		if let scene = self.editorDelegate?.parser.outline[index] as? OutlineScene {
 			self.selectScene(scene)
 		}
