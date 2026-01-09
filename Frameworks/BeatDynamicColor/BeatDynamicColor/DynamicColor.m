@@ -205,7 +205,8 @@ FORWARD(localizedColorNameComponent, NSString *)
     return [self.effectiveColor colorWithSystemEffect:systemEffect];
 }
 
-- (BOOL)isEqualToColor:(DynamicColor *)otherColor {
+- (BOOL)isEqualToColor:(DynamicColor *)otherColor
+{
 	CGColorSpaceRef colorSpaceRGB = CGColorSpaceCreateDeviceRGB();
 	
 	NSColor *(^convertColorToRGBSpace)(NSColor*) = ^(NSColor *color) {
@@ -384,8 +385,10 @@ FORWARD(CGColor, CGColorRef)
     UIColor* other;
     if ([color isKindOfClass:DynamicColor.class]) {
         other = ((DynamicColor*)color).effectiveColor;
-    } else {
+    } else if ([color isKindOfClass:UIColor.class]) {
         other = color;
+    } else {
+        return false;
     }
     
 	other = convertColorToRGBSpace(other);
@@ -420,8 +423,7 @@ UIColor *(^convertColorToRGBSpace)(UIColor*) = ^(UIColor *color) {
 	
 	CGColorSpaceRelease(colorSpaceRGB);
 	
-	if ([lightColor isEqual:lightOther] && [darkColor isEqual:darkOther]) return YES;
-	else return NO;
+    return ([lightColor isEqual:lightOther] && [darkColor isEqual:darkOther]);
 }
 
 - (NSArray*)valuesAsRGB {
