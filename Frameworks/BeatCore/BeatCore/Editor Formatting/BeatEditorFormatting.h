@@ -19,10 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContinuousFountainParser;
 
+/// An extended `LineType` definition to differentiate between paragraph types
 typedef enum {
 	titlePageSubField = typeCount + 1,
 	subSection
 } ParagraphStyleType;
+
 
 @interface BeatEditorFormatting : NSObject
 

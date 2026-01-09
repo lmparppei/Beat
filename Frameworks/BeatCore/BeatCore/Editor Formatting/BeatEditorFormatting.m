@@ -142,7 +142,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     CGFloat leftMargin = elementStyle.marginLeft;
     CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
     
-    // Extended types for title page fields and sections
+    // Extended types for title page fields and sections. This is moderately silly.
     if (line.isTitlePage && line.titlePageKey.length == 0) {
         type = (LineType)titlePageSubField;
     } else if (line.type == section && line.sectionDepth > 1) {
@@ -209,10 +209,11 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     
 	if (line.isAnyParenthetical) style.headIndent += CHR_WIDTH;
 	
-	if (type == titlePageSubField) {
+    // Original type is just an integer enum, so we can safely check it against the extended line types
+	if ((ParagraphStyleType)type == titlePageSubField) {
 		style.firstLineHeadIndent = leftMargin * 1.25;
 		style.headIndent = leftMargin * 1.25;
-	} else if (type == subSection) {
+	} else if ((ParagraphStyleType)type == subSection) {
 		style.paragraphSpacingBefore = styles.page.lineHeight;
 	} else if (type == section) {
 		style.paragraphSpacingBefore = styles.page.lineHeight * 1.5;
