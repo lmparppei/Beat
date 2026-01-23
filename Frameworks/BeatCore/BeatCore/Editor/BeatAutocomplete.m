@@ -161,7 +161,8 @@
         prefix = sceneHeadingPrefix(stringToSearch);
         stringToSearch = [stringToSearch stringByReplacingOccurrencesOfString:prefix withString:@""].trim;
         
-        if (prefix.length > 0) {
+        // Add the dot for non-forced scene heading prefixes (INT will become INT.)
+        if (prefix.length > 0 && ![prefix isEqualToString:@"."]) {
             if (![prefix containsString:@"."]) prefix = [prefix stringByAppendingString:@"."];
             prefix = [NSString stringWithFormat:@"%@ ", prefix];
         }
@@ -229,7 +230,7 @@ NSString *sceneHeadingPrefix(NSString *originalString)
 {
     // Forced scene heading
     if (originalString.length > 0 && [originalString characterAtIndex:0] == '.') {
-        return [originalString substringFromIndex:1];
+        return [originalString substringToIndex:1];
     }
     
     if ([originalString containsString:@" "]) {
