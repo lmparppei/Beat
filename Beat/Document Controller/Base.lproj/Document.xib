@@ -101,7 +101,7 @@
                                                                                         <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="378"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                                            <size key="intercellSpacing" width="0.0" height="8"/>
+                                                                                            <size key="intercellSpacing" width="8" height="8"/>
                                                                                             <color key="backgroundColor" red="0.083609941709999996" green="0.083609941709999996" blue="0.083609941709999996" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                             <color key="gridColor" red="0.32253886010362698" green="0.32253886010362698" blue="0.32253886010362698" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                             <tableColumns>
@@ -117,8 +117,8 @@
                                                                                                     </textFieldCell>
                                                                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                                                     <prototypeCellViews>
-                                                                                                        <tableCellView identifier="SceneView" autoresizesSubviews="NO" id="mpy-KU-4Le" customClass="BeatSceneSnapshotCell" customModule="Beat" customModuleProvider="target">
-                                                                                                            <rect key="frame" x="0.0" y="4" width="300" height="14"/>
+                                                                                                        <tableCellView identifier="SceneView" autoresizesSubviews="NO" id="mpy-KU-4Le" customClass="BeatOutlineViewCell" customModule="Beat" customModuleProvider="target">
+                                                                                                            <rect key="frame" x="4" y="4" width="292" height="14"/>
                                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                             <subviews>
                                                                                                                 <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="akY-Se-xLd" customClass="BeatOutlineStackView" customModule="Beat" customModuleProvider="target">

@@ -9,6 +9,7 @@
 
 @implementation NSArray (BinarySearch)
 
+/// This is absolutely silly. `NSArray` provides a binary search out of the box, but for some reason I have implemented it from scratch.
 - (NSUInteger)binarySearchForItem:(id)targetItem matchingIntegerValueFor:(NSString*)key
 {
     NSInteger min = 0;

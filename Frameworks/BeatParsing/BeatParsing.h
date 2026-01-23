@@ -15,6 +15,7 @@
 #import <BeatParsing/ContinuousFountainParser+Omissions.h>
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/ContinuousFountainParser+Macros.h>
+#import <BeatParsing/ContinuousFountainParser+TitlePage.h>
 
 #import <BeatParsing/Line.h>
 #import <BeatParsing/Line+Type.h>

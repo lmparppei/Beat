@@ -152,9 +152,12 @@
 	
 	NSArray *outline = self.delegate.parser.outline;
 
+	NSInteger i = 0;
+	
 	for (OutlineScene *scene in outline) {
-		if (scene.type == synopse ||
-			(scene.type == section && scene.line.sectionDepth > 3)) {
+		i++;
+		
+		if (scene.type == section && scene.line.sectionDepth > 3) {
 			continue;
 		}
 		
@@ -168,7 +171,7 @@
 			@"color": (scene.color) ? [scene.color lowercaseString] : @"",
 			@"snippet": [self snippet:scene],
 			@"type": scene.line.typeAsString.lowercaseString,
-			@"sceneIndex": @([outline indexOfObject:scene]),
+			@"sceneIndex": @(i),
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 			@"position": [NSNumber numberWithInteger:scene.position],
 			@"lineIndex": [NSNumber numberWithInteger:[_delegate.parser indexOfLine:scene.line]],

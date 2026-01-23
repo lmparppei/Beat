@@ -308,7 +308,8 @@
 }
 
 /// Used to check if this block can be split across pages at all.
-- (NSInteger)pageBreakIndexWithRemainingSpace:(CGFloat)remainingSpace {
+- (NSInteger)pageBreakIndexWithRemainingSpace:(CGFloat)remainingSpace
+{
 	NSIndexSet *indices = [self possiblePageBreakIndices];
 	
 	Line* line = [self findSpillerAt:remainingSpace];
