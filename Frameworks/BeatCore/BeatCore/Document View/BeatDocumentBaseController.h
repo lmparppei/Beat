@@ -169,9 +169,10 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) NSMutableSet<id<BeatSceneOutlineView>>*  _Nullable registeredOutlineViews;
 /// Objects which observe changes to selection.
 @property (nonatomic) NSMutableSet<id<BeatSelectionObserver>>*  _Nullable registeredSelectionObservers;
-/// Views that host plugins
+/// Views which host plugins
 @property (nonatomic) NSMutableArray<id<BeatPluginContainerInstance>>* _Nullable registeredPluginContainers;
-
+/// Views which have to be updated after a pagination operation has finished
+@property (nonatomic) NSMutableArray<id<BeatSceneOutlineView>>* _Nullable registeredPaginationBoundViews;
 
 #pragma mark - Line lookup
 

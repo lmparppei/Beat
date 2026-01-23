@@ -82,6 +82,14 @@ typedef void (^BeatChangeListener)(NSRange);
 //- (void)didMoveToScene:(OutlineScene*)scene;
 - (void)didMoveToSceneIndex:(NSInteger)index;
 @end
+
+/**
+ Every view which uses the outline structure AFTER a pagination has finished should adhere to this protocol. It includes useless stubs, I know, but whatever.
+ */
+@protocol BeatPaginationBoundOutlineView<BeatSceneOutlineView>
+- (BOOL)showsTrueLengths;
+- (void)paginationFinished;
+@end
  
 @protocol BeatEditorDelegate <NSObject, NSCopying, BeatDocumentDelegate>
 
@@ -304,7 +312,8 @@ typedef void (^BeatChangeListener)(NSRange);
 - (void)registerSceneOutlineView:(id<BeatSceneOutlineView>)view;
 /// Updates editor views asynchronously (where applicable)
 - (void)updateEditorViewsInBackground;
-
+/// Registers an outline view which requires pagination info
+- (void)registerPaginationBoundView:(id<BeatPaginationBoundOutlineView>)view;
 - (void)registerSelectionObserver:(id<BeatSelectionObserver>)observer;
 - (void)unregisterSelectionObserver:(id<BeatSelectionObserver>)observer;
 

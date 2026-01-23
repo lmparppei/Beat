@@ -124,7 +124,7 @@
 
 - (bool)hidePageNumbers
 {
-    return false;
+    return [self.documentSettings getBool:DocSettingHidePageNumbers];
 }
 
 - (void)setRevisionLevel:(NSInteger)revisionLevel
