@@ -60,10 +60,6 @@
 
 - (NSInteger)numberOfScenes;
 
-- (NSString*)titlePageAsString;
-- (NSArray<Line*>*)titlePageLines;
-- (NSArray<NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage;
-
 - (NSArray*)safeLines;
 
 @property (nonatomic, weak) Line* boneyardAct;
@@ -140,6 +136,8 @@
 /// Returns thread-safe outline
 - (NSArray*)safeOutline;
 
+/// Currently open key when parsing title pages. (I don't know how to make fileprivate variables in ObjC.)
+@property (nonatomic) NSString *openTitlePageKey;
 
 
 #pragma mark - Preprocess for printing & saving

@@ -138,8 +138,8 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
 
 - (BOOL)validate:(Line*)line previousLine:(Line*)previousLine nextLine:(Line*)nextLine delegate:(id<ContinuousFountainParserDelegate>)delegate
 {
-    bool previousIsEmpty = (previousLine.type == empty);
-    bool nextIsEmpty = (previousLine.type == empty);
+    bool previousIsEmpty = previousLine.effectivelyEmpty || previousLine == nil;
+    bool nextIsEmpty = (nextLine.type == empty);
   
     // Check length first
     bool isLongEnough = false;

@@ -39,14 +39,18 @@
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
+
 #import <BeatParsing/BeatParsing-Swift.h>
 #import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/ContinuousFountainParser+Macros.h>
-#import <BeatParsing/NSArray+BinarySearch.h>
+#import <BeatParsing/ContinuousFountainParser+TitlePage.h>
 #import "ContinuousFountainParser+Notes.h"
+
+#import <BeatParsing/NSArray+BinarySearch.h>
 #import <BeatParsing/NSString+CharacterControl.h>
+
 #import "ParsingRule.h"
 
 #define NEW_OUTLINE YES
@@ -59,25 +63,17 @@
 @property (nonatomic) NSUInteger lastLineIndex;
 /// The range which was edited most recently.
 @property (nonatomic) NSRange editedRange;
-
-// Title page parsing
-@property (nonatomic) NSString *openTitlePageKey;
-@property (nonatomic) NSString *previousTitlePageKey;
-
-// Static parser flag
+/// This is set `true` when we're not parsing the text for the editor but rather for exporting etc.
 @property (nonatomic) bool nonContinuous;
-
-// Cached line set for UUID creation
+/// Cached line set for UUID creation
 @property (nonatomic) NSArray* cachedLines;
 
 @property (nonatomic) NSArray<ParsingRule*>* parsingRules;
 
 @end
 
+
 @implementation ContinuousFountainParser
-
-static NSDictionary* patterns;
-
 
 #pragma mark - Initializers
 
@@ -146,13 +142,13 @@ static NSDictionary* patterns;
             [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
             [ParsingRule type:shot options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"!!", @"！！"] endsWith:nil],
             [ParsingRule type:action options:0 previousTypes:nil beginsWith:@[@"!", @"！"] endsWith:nil],
-            [ParsingRule type:lyrics options:0 previousTypes:nil beginsWith:@[@"~", @"～"] endsWith:nil],
+            [ParsingRule type:lyrics options:(AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"~", @"～"] endsWith:nil],
             [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
             [ParsingRule type:character options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:nil],
             
             [ParsingRule type:pageBreak options:(AllowsLeadingWhitespace) minimumLength:3 minimumLengthAtInput:3 allowedSymbol:'='],
             
-            [ParsingRule type:section options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"#", @"＃"] endsWith:nil],
+            [ParsingRule type:section options:0 previousTypes:nil beginsWith:@[@"#", @"＃"] endsWith:nil],
             [ParsingRule type:synopse options:0 previousTypes:nil beginsWith:@[@"="] endsWith:nil],
             
             [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
@@ -286,7 +282,8 @@ static NSDictionary* patterns;
             
             // Quick fix for mistaking an ALL CAPS action for a character cue. This only works in linear, static parsing.
             if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
-                previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
+                previousLine.type = [self ruleBasedParsingFor:line atIndex:index - 1];
+                //previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
                 if (previousLine.type == character) previousLine.type = action;
             }
             
@@ -844,12 +841,10 @@ static NSDictionary* patterns;
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
     
-    // In the future we'll replace the previous function with rule-based parsing. This already works, but needs support for FORCED TYPES.
-    LineType testOriginal = [self parseLineTypeFor:line atIndex:index];
-    LineType testNew = [self ruleBasedParsingFor:line atIndex:index];
-    if (testOriginal != testNew) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:testNew], [Line typeName:testOriginal], line);
+    // Beat recently migrated to rule-based parsing. You can uncomment the below line to test if there are some issues with parsing.
+    // if ([self parseLineTypeFor:line atIndex:index] != [self ruleBasedParsingFor:line atIndex:index]) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:testNew], [Line typeName:testOriginal], line);
     
-    line.type = testNew;
+    line.type = [self ruleBasedParsingFor:line atIndex:index];
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -897,49 +892,16 @@ static NSDictionary* patterns;
     
     Line* previousLine = (index <= self.lines.count && index > 0) ? self.lines[index-1] : nil;
     
-    line.omittedRanges = [self rangesOfOmitChars:charArray
+    line.omittedRanges = [Line rangesOfOmitChars:charArray
                                         ofLength:length
                                           inLine:line
                                  lastLineOmitOut:previousLine.omitOut
                                      saveStarsIn:excluded];
     
-    line.boldRanges = [self rangesInChars:charArray
-                                 ofLength:length
-                                  between:BOLD_CHAR
-                                      and:BOLD_CHAR
-                               withLength:BOLD_PATTERN_LENGTH
-                         excludingIndices:excluded
-                                     line:line];
-    
-    line.italicRanges = [self rangesInChars:charArray
-                                   ofLength:length
-                                    between:ITALIC_CHAR
-                                        and:ITALIC_CHAR
-                                 withLength:ITALIC_PATTERN_LENGTH
-                           excludingIndices:excluded
-                                       line:line];
-    
-    line.underlinedRanges = [self rangesInChars:charArray
-                                       ofLength:length
-                                        between:UNDERLINE_CHAR
-                                            and:UNDERLINE_CHAR
-                                     withLength:UNDERLINE_PATTERN_LENGTH
-                               excludingIndices:nil
-                                           line:line];
-    
-    line.macroRanges = [self rangesInChars:charArray
-                                  ofLength:length
-                                   between:MACRO_OPEN_CHAR
-                                       and:MACRO_CLOSE_CHAR
-                                withLength:2
-                          excludingIndices:nil
-                                      line:line];
-    
-    // Intersecting indices between bold & italic are boldItalic
-    if (line.boldRanges.count > 0 && line.italicRanges.count > 0) {
-        line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
-    } else {
-        line.boldItalicRanges = NSMutableIndexSet.new;
+    // InlineFormatting class provides inline formatting rules. Earlier we did all of these manually, one-by-one, which was more readable, but this saves space and is much more sensible.
+    for (InlineFormatting* format in InlineFormatting.rangesToFormat) {
+        NSMutableIndexSet* indices = [Line rangesInChars:charArray ofLength:length inLine:line between:format.open and:format.close startLength:format.openLength endLength:format.closeLength excludingIndices:excluded];
+        [line setRanges:indices forFormatting:format.formatType];
     }
     
     if (line.type == heading) {
@@ -989,36 +951,6 @@ static NSDictionary* patterns;
             return rule.resultingType;
         }
     }
-
-    /*
-    // One final try. If the previous line was NOT parsed as a cue, but it *might* be one, we'll change both of them.
-    if (previousLine.type == action
-        && !previousLine.effectivelyEmpty
-        && line.length > 0
-        && !previousLine.forced
-        && previousLine.string.onlyUppercaseUntilParenthesis
-        && [self previousLine:previousLine].type == empty) {
-        
-        // Welcome to UTF-8 hell in ObjC. 94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^'.
-        if (previousLine.string.lastNonWhiteSpaceCharacter == 94) previousLine.type = dualDialogueCharacter;
-        else previousLine.type = character;
-        
-        // Note that the previous line got changed
-        [_changedIndices addIndex:index-1];
-        
-        // We need to do one more silly thing here
-        unichar firstChar = line.string.firstNonWhiteSpaceCharacter;
-        // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
-        bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
-        NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
-        
-        if (firstChar == '(' || [firstSymbol isEqualToString:@"（"]) {
-            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
-        } else {
-            return dialogue;
-        }
-    }
-     */
     
     if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
         return action;
@@ -1027,281 +959,6 @@ static NSDictionary* patterns;
     }
 }
 
-
-/// Parses the line type for given line. It *has* to know its line index.
-/// TODO: This bunch of spaghetti should be refactored and split into smaller functions. (EDIT 2026: This has already been done using ParseRules)
-- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index
-{ @synchronized (self) {
-    Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    Line *nextLine = (line != self.lines.lastObject && index+1 < self.lines.count) ? self.lines[index+1] : nil;
-    
-    NSString *trimmedString = (line.string.length > 0) ? [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] : @"";
-    
-    // Check for everything that is considered as empty
-    bool previousIsEmpty = (previousLine.effectivelyEmpty || index == 0);
-        
-    // Check if this line was forced to become a character cue in editor (by pressing tab)    
-    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
-        line.forcedCharacterCue = NO;
-        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
-        if (line.string.lastNonWhiteSpaceCharacter == 94) return dualDialogueCharacter;
-        else return character;
-    }
-    
-    // Handle empty lines first
-    if (line.length == 0) {
-        if (previousLine.isDialogue || previousLine.isDualDialogue) {
-            // If preceding line is formatted as dialogue BUT it's empty, we'll just return empty.
-            if (previousLine.string.length == 0) return empty;
-            
-            // If preceded by a character cue, always return dialogue
-            if (previousLine.type == character) return dialogue;
-            else if (previousLine.type == dualDialogueCharacter) return dualDialogue;
-            
-            NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0;
-            
-            // If it's any other dialogue line and we're editing it, return dialogue
-            if ((previousLine.isAnyDialogue || previousLine.isAnyParenthetical)
-                && previousLine.length > 0
-                && (nextLine.length == 0 || nextLine == nil)
-                && NSLocationInRange(selection, line.range)) {
-                return (previousLine.isDialogue) ? dialogue : dualDialogue;
-            }
-        }
-        
-        return empty;
-    }
-    
-    // Check forced elements
-    
-    // Find last and first character. Excuse the upcoming mess.
-    // Some elements ignore the leading whitespace, but NOT action, section and synopsis.
-    unichar actualFirstChar = [line.string characterAtIndex:0];
-    NSInteger firstCharIndex = line.string.indexOfFirstNonWhiteSpaceCharacter;
-    if (firstCharIndex == NSNotFound || actualFirstChar == '!' || actualFirstChar == '=' || actualFirstChar == '#') firstCharIndex = 0;
-    NSInteger lastCharIndex = line.string.indexOfLastNonWhiteSpaceCharacter;
-    if (lastCharIndex == NSNotFound) lastCharIndex = line.string.length - 1;
-    
-    unichar firstChar = [line.string characterAtIndex:firstCharIndex];
-    unichar lastChar = [line.string characterAtIndex:lastCharIndex];
-    
-    // Support for full width punctuation. Let's not waste energy by substringing the line unless we actually need to.
-    bool fullWidthPunctuation = (firstChar >= 0xFF01 && firstChar <= 0xFF60);
-    NSString* firstSymbol = (fullWidthPunctuation) ? [line.string substringToIndex:1] : nil;
-    
-    // Also, lets add the first \ as an escape character
-    if (firstChar == '\\') [line.escapeRanges addIndex:firstCharIndex];
-    
-    // Forced whitespace
-    bool containsOnlyWhitespace = line.string.containsOnlyWhitespace; // Save to use again later
-    bool twoSpaces = (firstChar == ' ' && lastChar == ' ' && line.length > 1); // Contains at least two spaces
-    
-    if (containsOnlyWhitespace && !twoSpaces) return empty;
-        
-    // Check forced types
-    if ([trimmedString isEqualToString:@"==="]) {
-        return pageBreak;
-    } else if (firstCharIndex == 0 && (firstChar == '!' || [firstSymbol isEqualToString:@"！"]) ) {
-        // Action or shot
-        if (line.length > 1) {
-            unichar secondChar = [line.string characterAtIndex:1];
-            NSString* secondSymbol = [line.string substringWithRange:NSMakeRange(1, 1)];
-            if (secondChar == '!'  || [secondSymbol isEqualToString:@"！"]) return shot;
-        }
-        return action;
-    } else if (firstChar == '.' && previousIsEmpty) {
-        // '.' forces a heading, but we'll check that it isn't followed by another dot.
-        if (line.length == 1 || (line.length > 1 && [line.string characterAtIndex:1] != '.')) {
-            return heading;
-        }
-    }
-    // ... and then the rest.
-    else if ((firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) && line.string.lastNonWhiteSpaceCharacter == 94 && previousIsEmpty) return dualDialogueCharacter;
-    else if (firstChar == '@' || [firstSymbol isEqualToString:@"＠"]) return character;
-    else if (firstChar == '>' && lastChar == '<') return centered;
-    else if (firstChar == '>') return transitionLine;
-    else if (firstChar == '~' || [firstSymbol isEqualToString:@"～"]) return lyrics;
-    else if (firstChar == '='|| [firstSymbol isEqualToString:@"＝"]) return synopse;
-    else if (firstChar == '#' || [firstSymbol isEqualToString:@"＃"]) return section;
-    else if ((firstChar == '.' || [firstSymbol isEqualToString:@"．"]) && previousIsEmpty) return heading;
-    
-    // Title page
-    if ((previousLine == nil || previousLine.isTitlePage) && !(line.string.containsOnlyUppercase && previousLine == nil)) {
-        LineType titlePageType = [self parseTitlePageLineTypeFor:line previousLine:previousLine lineIndex:index];
-        if (titlePageType != NSNotFound) return titlePageType;
-    }
-    
-    // Dual dialogue
-    if (lastChar == 94 && line.noteRanges.firstIndex != 0 && previousIsEmpty) {
-        // A character line ending in ^ is a dual dialogue character
-        // (94 = ^, we'll compare the numerical value to avoid mistaking Turkish alphabet character Ş as ^)
-        NSString* cue = [line.string substringToIndex:line.length - 1];
-        if (cue.length > 0 && cue.onlyUppercaseUntilParenthesis) {
-            // Note the previous character cue that it's followed by dual dialogue
-            [self makeCharacterAwareOfItsDualSiblingFrom:index];
-            return dualDialogueCharacter;
-        }
-    }
-    else if (previousIsEmpty && line.string.length >= 3 && line != self.delegate.characterInputForLine) {
-        
-        // Check for transitions first
-        if (line.visibleContentIsUppercase && previousIsEmpty) {
-            NSString* transition = [line.string substringFromIndex:line.length - 3];
-            if ([transition isEqualToString:@"TO:"] || [transition isEqualToString:@"IN:"]) return transitionLine;
-        }
-
-        // Handle items which require an empty line before them (and we're not forcing character input)
-        NSString* firstChars = [line.string substringToIndex:3].lowercaseString;
-        
-        // Heading
-        if ([firstChars isEqualToString:@"int"] ||
-            [firstChars isEqualToString:@"ext"] ||
-            [firstChars isEqualToString:@"est"] ||
-            [firstChars isEqualToString:@"i/e"] ||
-            [firstChars isEqualToString:@"e/i"]) {
-            
-            // If it's just under 4 characters, return heading
-            if (line.length < 4) return heading;
-            
-            // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
-            unichar nextChar = [line.string characterAtIndex:3];
-            if (nextChar == '.' || nextChar == ' ' || nextChar == '/') return heading;
-        }
-        
-        // Character
-        if (line.string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
-            // It is possible that this IS NOT A CHARACTER but an all-caps action line
-            if (index + 2 < self.lines.count) {
-                Line* twoLinesOver = (Line*)self.lines[index+2];
-                
-                NSRange selection = self.delegate.selectedRange;
-                
-                // Next line is empty, line after that isn't - and we're not on that particular line
-                bool nextLinesAreEmpty = (nextLine.length == 0 && twoLinesOver.length == 0);
-                //bool selectionOnNextLine = (nextLine.length == 0 && NSLocationInRange(selection.location, nextLine.range));
-                bool selectionOnCurrentLine = NSLocationInRange(selection.location, line.range);
-                
-                if (!selectionOnCurrentLine && nextLinesAreEmpty) {
-                    return action;
-                }
-            }
-            
-            return character;
-        }
-    }
-    else if ((previousLine.isDialogue || previousLine.isDualDialogue) && previousLine.length > 0) {
-        // If the line begins with open parenthesis, it's a parenthetical line
-        if (firstChar == '(') return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
-        // Otherwise it's just dialogue
-        return (previousLine.isDialogue) ? dialogue : dualDialogue;
-    }
-    
-    // If the previous line is UPPERCASE, isn't a forced element, and is preceded by an empty line, and this line isn't empty, it can be a character cue.
-    // Basically we'll make any all-caps lines with < 3 characters character cues and/or make all-caps actions character cues when
-    // the text is changed to have some dialogue follow it.
-    // We're doing this only after everything else has failed.
-    else if (previousLine.type == action
-        && !previousIsEmpty
-        && line.length > 0
-        && !previousLine.forced
-        && previousLine.string.onlyUppercaseUntilParenthesis
-        && [self previousLine:previousLine].type == empty) {
-        
-        // Welcome to UTF-8 hell in ObjC. 94 = ^, we'll use the unichar numerical value to avoid mistaking Turkish alphabet letter 'Ş' as '^'.
-        if (previousLine.string.lastNonWhiteSpaceCharacter == 94) previousLine.type = dualDialogueCharacter;
-        else previousLine.type = character;
-        
-        // Note that the previous line got changed
-        [_changedIndices addIndex:index-1];
-        
-        if (firstChar == '(' || [firstSymbol isEqualToString:@"（"]) {
-            return (previousLine.isDialogue) ? parenthetical : dualDialogueParenthetical;
-        } else {
-            return dialogue;
-        }
-    }
-    
-    // Action is the default
-    return action;
-} }
-
-/// I don't understand any of this.
-- (LineType)parseTitlePageLineTypeFor:(Line*)line previousLine:(Line*)previousLine lineIndex:(NSInteger)index
-{
-    NSString *key = line.titlePageKey;
-    
-    if (key.length > 0) {
-        // This is a keyed title page line (Title: Something)
-        NSString* value = line.titlePageValue;
-        if (value == nil) value = @"";
-        
-        // Store title page data
-        NSMutableDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] }.mutableCopy;
-        [_titlePage addObject:titlePageData];
-        
-        // Set this key as open (in case there are additional title page lines)
-        _openTitlePageKey = key;
-        
-        if ([key isEqualToString:@"title"]) {
-            return titlePageTitle;
-        } else if ([key isEqualToString:@"author"] || [key isEqualToString:@"authors"]) {
-            return titlePageAuthor;
-        } else if ([key isEqualToString:@"credit"]) {
-            return titlePageCredit;
-        } else if ([key isEqualToString:@"source"]) {
-            return titlePageSource;
-        } else if ([key isEqualToString:@"contact"]) {
-            return titlePageContact;
-        } else if ([key isEqualToString:@"contacts"]) {
-            return titlePageContact;
-        } else if ([key isEqualToString:@"contact info"]) {
-            return titlePageContact;
-        } else if ([key isEqualToString:@"draft date"]) {
-            return titlePageDraftDate;
-        } else {
-            return titlePageUnknown;
-        }
-    } else if (previousLine.isTitlePage) {
-        // This is a non-keyed title page line and part of a title page block
-        NSString *key = @"";
-        NSInteger i = index - 1;
-        while (i >= 0) {
-            Line *pl = self.lines[i];
-            if (pl.titlePageKey.length > 0) {
-                key = pl.titlePageKey;
-                break;
-            }
-            i -= 1;
-        }
-        if (key.length > 0) {
-            NSMutableDictionary* dict = _titlePage.lastObject;
-            [(NSMutableArray*)dict[key] addObject:line.string];
-        }
-        
-        return previousLine.type;
-    }
-    
-    return NSNotFound;
-}
-
-/// Notifies character cue that it has a dual dialogue sibling. Used in static parsing, I guess?
-- (void)makeCharacterAwareOfItsDualSiblingFrom:(NSInteger)index
-{
-    NSInteger i = index - 1;
-    while (i >= 0) {
-        Line *prevLine = [self.lines objectAtIndex:i];
-        
-        if (prevLine.type == character) {
-            prevLine.nextElementIsDualDialogue = YES;
-            break;
-        } else if (!prevLine.isDialogueElement && !prevLine.isDualDialogueElement && prevLine.type != empty) {
-            // If we encounter something else than a line of dialogue or an empty line, break the loop.
-            break;
-        }
-        
-        i--;
-    }
-}
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length line:(Line*)line
 {
@@ -1404,225 +1061,6 @@ static NSDictionary* patterns;
     }
     
     return headingColor;
-}
-
-
-
-#pragma mark - Title page
-
-/// Returns the title page lines as string
-- (NSString*)titlePageAsString
-{
-    NSMutableString *string = NSMutableString.new;
-    for (Line* line in self.safeLines) {
-        if (!line.isTitlePage) break;
-        [string appendFormat:@"%@\n", line.string];
-    }
-    return string;
-}
-
-/// Returns just the title page lines
-- (NSArray<Line*>*)titlePageLines
-{
-    NSMutableArray *lines = NSMutableArray.new;
-    for (Line* line in self.safeLines) {
-        if (!line.isTitlePage) break;
-        [lines addObject:line];
-    }
-    
-    return lines;
-}
-
-/// Re-parser the title page and returns a weird array structure: `[ { "key": "value }, { "key": "value }, { "key": "value } ]`.
-/// This is because we want to maintain the order of the keys, and though ObjC dictionaries sometimes stay in the correct order, things don't work like that in Swift.
-- (NSArray<NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage
-{
-    [self.titlePage removeAllObjects];
-    
-    // Store the latest key
-    NSString *key = @"";
-    BeatMacroParser* titlePageMacros = BeatMacroParser.new;
-    
-    // Iterate through lines and break when we encounter a non- title page line
-    for (Line* line in self.safeLines) {
-        if (!line.isTitlePage) break;
-        
-        [self resolveMacrosOn:line parser:titlePageMacros];
-        
-        // Reset flags
-        line.beginsTitlePageBlock = false;
-        line.endsTitlePageBlock = false;
-        
-        // Determine if the line is empty
-        bool empty = false;
-        
-        // See if there is a key present on the line ("Title: ..." -> "Title")
-        if (line.titlePageKey.length > 0) {
-            key = line.titlePageKey.lowercaseString;
-            if ([key isEqualToString:@"author"]) key = @"authors";
-            
-            line.beginsTitlePageBlock = true;
-            
-            NSMutableDictionary* titlePageValue = [NSMutableDictionary dictionaryWithDictionary:@{ key: NSMutableArray.new }];
-            [self.titlePage addObject:titlePageValue];
-            
-            // Add the line into the items of the current line, IF IT'S NOT EMPTY
-            NSString* trimmed = [line.string substringFromIndex:line.titlePageKey.length+1].trim;
-            if (trimmed.length == 0) empty = true;
-        }
-        
-        // Find the correct item in an array of dictionaries
-        // [ { "title": [Line] } , { ... }, ... ]
-        NSMutableArray *items = [self titlePageArrayForKey:key];
-        if (items == nil) continue;
-        
-        // Add the line if it's not empty
-        if (!empty) [items addObject:line];
-    }
-    
-    // After we've gathered all the elements, lets iterate them once more to determine where blocks end.
-    for (NSDictionary<NSString*,NSArray<Line*>*>* element in self.titlePage) {
-        NSArray<Line*>* lines = element.allValues.firstObject;
-        Line* firstLine = lines.firstObject;
-        Line* lastLine = lines.lastObject;
-        
-        // I've seen a weird issue with NSStrings being inserted here. No idea how and why, but… yeah. This is an emergency fix.
-        if ([firstLine isKindOfClass:Line.class])
-            firstLine.beginsTitlePageBlock = true;
-        if ([lastLine isKindOfClass:Line.class])
-            lastLine.endsTitlePageBlock = true;
-    }
-    
-    return self.titlePage;
-}
-
-/// Returns the lines for given title page key. For example,`Title` would return something like `["My Film"]`.
-- (NSMutableArray<Line*>*)titlePageArrayForKey:(NSString*)key
-{
-    for (NSMutableDictionary* d in self.titlePage) {
-        if ([d.allKeys.firstObject isEqualToString:key]) return d[d.allKeys.firstObject];
-    }
-    return nil;
-}
-
-
-#pragma mark - Finding character ranges
-
-- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
-{
-    // Let's use the asym method here, just put in our symmetric delimiters.
-    return [self asymRangesInChars:string ofLength:length between:startString and:endString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
-}
-
-/**
- @note This is a confusing method name, but only because it is based on the old rangesInChars method. However, it's basically the same code, but I've put in the ability to seek ranges between two delimiters that are **not** the same, and can have asymmetrical length.  The original method now just calls this using the symmetrical delimiters.
- */
-- (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
-{
-    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
-    if (length < startLength + delimLength) return indexSet;
-    
-    NSRange range = NSMakeRange(-1, 0);
-    
-    for (NSInteger i=0; i <= length - delimLength; i++) {
-        // If this index is contained in the omit character indexes, skip
-        if ([excludes containsIndex:i]) continue;
-        
-        // First check for escape character
-        if (i > 0) {
-            unichar prevChar = string[i-1];
-            if (prevChar == '\\') {
-                [line.escapeRanges addIndex:i - 1];
-                continue;
-            }
-        }
-        
-        if (range.location == -1) {
-            // Next, see if we can find the whole start string
-            bool found = true;
-            for (NSInteger k=0; k<startLength; k++) {
-                if (i+k >= length) {
-                    break;
-                } else if (startString[k] != string[i+k]) {
-                    found = false;
-                    break;
-                }
-            }
-            
-            if (!found) continue;
-            
-            // Success! We found a matching string
-            range.location = i;
-            
-            // Pass the starting string
-            i += startLength-1;
-            
-        } else {
-            // We have found a range, let's see if we find a closing string.
-            bool found = true;
-            for (NSInteger k=0; k<delimLength; k++) {
-                if (endString[k] != string[i+k]) {
-                    found = false;
-                    break;
-                }
-            }
-            
-            if (!found) continue;
-            
-            // Success, we found a closing string.
-            range.length = i + delimLength - range.location;
-            [indexSet addIndexesInRange:range];
-            
-            // Add the current formatting ranges to future excludes
-            [excludes addIndexesInRange:(NSRange){ range.location, startLength }];
-            [excludes addIndexesInRange:(NSRange){ i, delimLength }];
-            
-            range.location = -1;
-            
-            // Move past the ending string
-            i += delimLength - 1;
-        }
-    }
-    
-    return indexSet;
-}
-
-- (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
-{
-    line.omitIn = lastLineOut;
-    
-    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
-    NSRange range = (line.omitIn) ? NSMakeRange(0, 0) : NSMakeRange(NSNotFound, 0);
-    
-    for (NSUInteger i=0; i < length-1; i++) {
-        if (i+1 > length) break;
-        unichar c1 = string[i];
-        unichar c2 = string[i+1];
-        
-        if (c1 == '/' && c2 == '*' && range.location == NSNotFound) {
-            [stars addIndex:i+1];
-            range.location = i;
-            
-        } else if (c1 == '*' && c2 == '/') {
-            if (range.location == NSNotFound) continue;
-            
-            [stars addIndex:i];
-            
-            range.length = i - range.location + OMIT_PATTERN_LENGTH;
-            [indexSet addIndexesInRange:range];
-            
-            range = NSMakeRange(NSNotFound, 0);
-        }
-    }
-    
-    if (range.location != NSNotFound) {
-        line.omitOut = true;
-        [indexSet addIndexesInRange:NSMakeRange(range.location, line.length - range.location)];
-    } else {
-        line.omitOut = false;
-    }
-    
-    return indexSet;
 }
 
 
