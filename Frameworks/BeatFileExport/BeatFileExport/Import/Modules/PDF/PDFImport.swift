@@ -25,16 +25,16 @@ public class PDFImport:NSObject, BeatFileImportModule {
     public var fountain: String?
     
     var titlePageFound = false
-    // This flag determines whether the upcoming line is not linearly in its correct Y position.
+    /// This flag determines whether the upcoming line is not linearly in its correct Y position.
     var nextLineIsOrphaned = false
-    // Single character height
+    /// Single character height
     var chrHeight = 0.0
-    // Previously found text bounds
+    /// Previously found text bounds
     var previousRect:CGRect = .zero
-    // Flag for checking if we're in the middle of dialogue
+    /// Flag for checking if we're in the middle of dialogue
     var dialogue = false
     
-    // We store the Fountain text into an attributed string, so each line will have its Y coordinate stored as an attribute (yPosition)
+    /// We store the Fountain text into an attributed string, so each line will have its Y coordinate stored as an attribute (yPosition)
     var currentPage:NSMutableAttributedString = NSMutableAttributedString()
 
     var progressModal: BeatProgressModalView?
@@ -44,8 +44,8 @@ public class PDFImport:NSObject, BeatFileImportModule {
     public class func infoTitle() -> String? { return "PDF Import" }
     public class func infoMessage() -> String? { return "Please note that results of PDF import vary. Some screenplays work without a hitch, while others might come out completely garbled. Some pieces of text can be missing, so remember to check twice before trusting the output." }
     
+    /// Initialize and show the modal window
     func showProgressModal() {
-        // Initialize and show the modal window
         #if os(macOS)
         let modal = BeatExportProgressModal(windowNibName: BeatExportProgressModal.windowNibName!)
         #else
@@ -83,12 +83,14 @@ public class PDFImport:NSObject, BeatFileImportModule {
                 }
                 
                 guard let page = pdf.page(at: pageNumber) else { break }
-                // Reset flags
+                
+                // Reset flags at the start of each page
                 self.nextLineIsOrphaned = false
                 self.dialogue = false
                 self.previousRect = CGRect.zero
                 self.currentPage = NSMutableAttributedString()
                 
+                // Reset current line and X position
                 var line = ""
                 var lineX = -1.0
                 
@@ -134,6 +136,7 @@ public class PDFImport:NSObject, BeatFileImportModule {
                         lineX = -1
                     }
                     
+                    // Append the character to the string, unless it's a newline
                     if chr != "\n" && chr != "\r", chr.count > 0 {
                         line += String(chr)
                         if chrBounds.width > 0 {
@@ -157,7 +160,7 @@ public class PDFImport:NSObject, BeatFileImportModule {
             }
             
             
-            // Why do we need to store the variable here?
+            // Why do we need to store the variable here? (2026 edit: what do you mean?)
             self.fountain = self.cleanOutput(text)
             
             let callback = self.callback
