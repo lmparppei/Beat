@@ -51,7 +51,7 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
 		_paperSize = NSNotFound;
         
         _hidePageNumbers = hidePageNumbers;
-        
+                
         if (revisions == nil) revisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1024)];
         
         _headerAlignment = 1;

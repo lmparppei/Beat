@@ -70,6 +70,8 @@ NSString * const DocSettingPageNumberingMode = @"pageNumberingMode";
 
 NSString * const DocSettingTextLengthAtSave = @"Text Length";
 
+NSString * const DocSettingHidePageNumbers = @"Hide Page Numbers";
+
 -(id)init
 {
     return [BeatDocumentSettings.alloc initWithDelegate:nil];
