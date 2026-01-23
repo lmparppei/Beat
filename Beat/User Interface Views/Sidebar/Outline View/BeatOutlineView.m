@@ -22,7 +22,7 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 
-@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate, BeatSceneOutlineView> {
+@interface BeatOutlineView () <NSPopoverDelegate, BeatOutlineSettingDelegate, NSMenuDelegate, BeatPaginationBoundOutlineView> {
 	bool awoken;
 }
 
@@ -107,6 +107,8 @@
 
 @property (nonatomic) NSArray *tree;
 
+@property (nonatomic) NSMutableDictionary<NSString*, NSNumber*>* oldLengths;
+
 @end
 
 @implementation BeatOutlineView
@@ -138,8 +140,9 @@
 	
 	[self hideFilterView];
 	
-	// Register this view
+	// Register this view. We need to have both of these events registered, because they have very different update policies. After pagination, we only update certain items which might have changed in length. See also `showsTrueLengths`.
 	[self.editorDelegate registerSceneOutlineView:self];
+	[self.editorDelegate registerPaginationBoundView:self];
 	
 	awoken = true;
 }
@@ -148,6 +151,9 @@
 {
 	self.usesAutomaticRowHeights = true;
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
+	
+	// Tuleville sukupolville. An die Nachgeborenen. For future generations.
+	//[self setupPageNumberView];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -212,7 +218,12 @@
 	return (self.editorDelegate.sidebarVisible && self.enclosingTabView.tabView.selectedTabViewItem == self.enclosingTabView);
 }
 
-- (void)reloadInBackground { 
+- (BOOL)showsTrueLengths
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights];
+}
+
+- (void)reloadInBackground {
 	// Maybe we don't need this here?
 }
 
@@ -343,6 +354,27 @@
 	[_collapsed removeObject:expandedSection];
 }
 
+- (void)paginationFinished
+{
+	if (!self.showsTrueLengths) return;
+	
+	if (self.oldLengths == nil) self.oldLengths = NSMutableDictionary.new;
+	
+	if (self.oldLengths == nil) self.oldLengths = NSMutableDictionary.new;
+	for (OutlineScene* scene in self.editorDelegate.parser.safeOutline) {
+		NSString* uuid = scene.line.uuidString;
+		
+		NSNumber* oldLength = self.oldLengths[uuid];
+		if (oldLength == nil) oldLength = @(0.0);
+		if ([oldLength isEqualToNumber:@(scene.printedLength)]) continue;
+		
+		self.oldLengths[scene.line.uuidString] = @(scene.printedLength);
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			[self reloadItem:scene];
+		});
+	}
+}
+
 
 #pragma mark - Setting getters
 
@@ -396,9 +428,9 @@
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-	BeatSceneSnapshotCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
+	BeatOutlineViewCell* view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
 	//view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene options:self.options];
-	view.textField.stringValue = ((OutlineScene*)item).stringForDisplay;
+	// view.textField.stringValue = ((OutlineScene*)item).stringForDisplay;
 	
 	[view configureWithDelegate:self.editorDelegate scene:item outlineView:self];
 	
@@ -888,7 +920,7 @@
 	NSInteger row = [self rowAtPoint:point];
 	
 	for (NSInteger i=0; i<self.numberOfRows; i++) {
-		BeatSceneSnapshotCell* cellView = [self viewAtColumn:0 row:i makeIfNecessary:NO];
+		BeatOutlineViewCell* cellView = [self viewAtColumn:0 row:i makeIfNecessary:NO];
 		if (i != row) [cellView closePopover];
 	}
 	
@@ -897,7 +929,7 @@
 - (void)closeSnapshots
 {
 	for (id view in self.visibleSnapshots) {
-		BeatSceneSnapshotCell* snapshot = view;
+		BeatOutlineViewCell* snapshot = view;
 		[snapshot closePopover];
 	}
 	self.visibleSnapshots = @[];
