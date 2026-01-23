@@ -220,6 +220,13 @@
         [attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:NSMakeRange(0, attributedString.length)];
     }
     
+    // Strikethrough for ranges marked for removal
+    [line.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        range = CLAMP_RANGE(range, NSMaxRange(range));
+        [attributedString addAttribute:NSStrikethroughColorAttributeName value:BXColor.blackColor range:range];
+        [attributedString addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
+    }];
+        
     // Remove top margin for first elements on a page (if this behavior isn't overridden)
     if (firstElementOnPage && !style.forcedMargin) {
         NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
@@ -242,16 +249,21 @@
             // Apply inline formatting. Note that attributdString is an inout argument.
             [self applyInlineFormattingWithStyleNames:styleNames range:range attributedString:attributedString];
             
-            if ([styleNames containsObject:@"Note"]) {
+            if ([styleNames containsObject:NOTE_STYLE]) {
                 RenderStyle* noteStyle = [self.styles forElement:@"note"];
                 BXColor* c = [BeatColors color:noteStyle.color];
                 [attributedString addAttribute:NSForegroundColorAttributeName value:(c) ? c : BXColor.grayColor range:range];
             }
             
             // Apply underline if needed
-            if ([styleNames containsObject:@"Underline"]) {
+            if ([styleNames containsObject:UNDERLINE_STYLE]) {
                 [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
                 [attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:range];
+            }
+            
+            // Apply highlight if needed
+            if ([styleNames containsObject:HIGHLIGHT_STYLE]) {
+                [attributedString addAttribute:NSBackgroundColorAttributeName value:[BXColor.systemYellowColor colorWithAlphaComponent:0.9] range:range];
             }
         }
         
@@ -259,7 +271,6 @@
             NSString* color = attrs[BeatRevisions.attributeKey];
             if (color != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
         }
-        
     }];
     
     // Add hyperlink for the represented line
@@ -605,7 +616,7 @@
     NSString* pageNumberString;
     
     // We might skip first page number (in screenplay mode)
-    if (pageNumber < self.styles.page.firstPageWithNumber && page.customPageNumber == nil) {
+    if ((pageNumber < self.styles.page.firstPageWithNumber && page.customPageNumber == nil) || self.settings.hidePageNumbers) {
         pageNumberString = @"\n";
     } else {
         pageNumberString = (page.customPageNumber == nil) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : [NSString stringWithFormat:@"%@\n", page.customPageNumber];
