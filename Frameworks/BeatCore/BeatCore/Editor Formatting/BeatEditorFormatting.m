@@ -411,6 +411,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     if (self.delegate.disableFormatting) {
         newAttributes[NSParagraphStyleAttributeName] = NSParagraphStyle.new;
         newAttributes[NSFontAttributeName] = self.fonts.regular;
+        //newAttributes[NSBackgroundColorAttributeName] = BXColor.clearColor;
+
         [textStorage addAttributes:newAttributes range:fullRange];
         if (!alreadyEditing) [textStorage endEditing];
         self.lineBeingFormatted = nil;
@@ -432,6 +434,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 		if (newAttributes[BeatRepresentedLineKey]) {
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:fullRange];
 		}
+        
 		if (!alreadyEditing) [textStorage endEditing];
         
         [_delegate.getTextView setTypingAttributes:attributes];
@@ -559,7 +562,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 	NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
 	
-	// Remove underline/strikeout
+	// Remove underline/strikeout and background
 	[textStorage addAttribute:NSUnderlineStyleAttributeName value:@0 range:globalRange];
 	[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:globalRange];
 
@@ -591,6 +594,13 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	[line.underlinedRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
 	}];
+    
+    /*
+    [line.highlightRanges enumerateRangesInRange:range options:0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        NSRange globalRange = NSMakeRange(line.position + range.location, range.length);
+        [textStorage addAttribute:NSBackgroundColorAttributeName value:[BXColor.systemYellowColor colorWithAlphaComponent:0.5] range:globalRange];
+    }];
+     */
 }
 
 - (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage
