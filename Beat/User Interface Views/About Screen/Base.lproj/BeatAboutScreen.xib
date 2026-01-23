@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24128" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24128"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -34,7 +34,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="Launch screen logo" id="cqK-NM-Eok"/>
                                 </imageView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
                                     <rect key="frame" x="36" y="161" width="173" height="35"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="(beat)" allowsEditingTextAttributes="YES" id="IhX-oQ-xOK">
@@ -43,7 +43,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Zwe-T1-ZW3">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Zwe-T1-ZW3">
                                     <rect key="frame" x="40" y="122" width="202" height="33"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version" allowsEditingTextAttributes="YES" id="p0n-Zp-SgA">
@@ -63,12 +63,12 @@
                                         <action selector="showAcknowledgements:" target="-2" id="IhF-Ek-n3G"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
                                     <rect key="frame" x="41" y="62" width="236" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" id="Vew-4a-6k0">
                                         <font key="font" size="10" name="HelveticaNeue"/>
-                                        <string key="title">© Kaikki on haurasta Oy &amp; Lauri-Matti Parppei 2019–2025. Released under GPL license. No animal products were consumed when creating this app.</string>
+                                        <string key="title">© Kaikki on haurasta Oy &amp; Lauri-Matti Parppei 2019–2026. Released under GPL license. No animal products were consumed when creating this app.</string>
                                         <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
