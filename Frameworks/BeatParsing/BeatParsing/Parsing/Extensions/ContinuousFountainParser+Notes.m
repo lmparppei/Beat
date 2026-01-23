@@ -276,7 +276,7 @@
 {
     NSArray* lines = self.lines;
     
-    if (idx == NSNotFound) idx = [self.lines indexOfObject:line]; // Get index if needed
+    if (idx == NSNotFound) idx = [self indexOfLine:line]; // Get index if needed
     else if (idx == NSNotFound) return NSNotFound;
     
     NSInteger noteStartLine = NSNotFound;

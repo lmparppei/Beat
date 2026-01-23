@@ -27,6 +27,9 @@
     return [self indexOfLine:line lines:self.safeLines];
 }
 
+NSInteger oldWins = 0;
+NSInteger newWins = 0;
+
 - (NSUInteger)indexOfLine:(Line*)line lines:(NSArray<Line*>*)lines
 {
     // First check the cached line index (N.B.: previousLineIdnex and previousSceneIndex are ivars)
@@ -37,8 +40,19 @@
     // Let's use binary search here. It's much slower in short documents, but about 20-30 times faster in longer ones.
     // We are using integer value for `position` to very quickly verify that this is the item. Position is unique for each item, and if for some odd reason the
     // actual pointer has changed, we are satisfied with *any* object with this position.
-    NSInteger index = [self.lines binarySearchForItem:line matchingIntegerValueFor:@"position"];
+    NSInteger index = [lines binarySearchForItem:line matchingIntegerValueFor:@"position"];
     previousLineIndex = index;
+
+    /*
+    // We could use the native indexOfObject as well. It's marginally faster.
+     
+    NSInteger i = [lines indexOfObject:line inSortedRange:NSMakeRange(0, lines.count) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(Line*  _Nonnull line1, Line*  _Nonnull line2) {
+        if (line1.position < line2.position) return NSOrderedAscending;
+        else if (line1.position > line2.position) return NSOrderedDescending;
+        else return NSOrderedSame;
+    }];
+     */
+    
 
     return index;
 }
@@ -92,7 +106,7 @@
 /// Cached line for location lookup. Needs a better name.
 NSUInteger prevLineAtLocationIndex = 0;
 
-/// Returns the line object at given position (btw, why aren't we using the other method?)
+/// Returns the line object at given position. This uses a circular lookup based on the previous result, which is __much__ more efficient than even a binary search.
 - (Line*)lineAtPosition:(NSInteger)position
 {
     // Let's check the cached line first
@@ -109,18 +123,13 @@ NSUInteger prevLineAtLocationIndex = 0;
     // or backward to avoid unnecessary looping from beginning, which soon becomes very inefficient.
     
     NSUInteger cachedIndex;
+    bool descending = (self.prevLineAtLocation && position < self.prevLineAtLocation.position);
     
-    bool descending = NO;
-    if (self.prevLineAtLocation && position < self.prevLineAtLocation.position) {
-        descending = YES;
-    }
-        
     Line *line = [self findNeighbourIn:lines origin:prevLineAtLocationIndex descending:descending cacheIndex:&cachedIndex block:^BOOL(id item, NSInteger idx) {
         Line *l = item;
-        if (NSLocationInRange(position, l.range)) return YES;
-        else return NO;
+        return NSLocationInRange(position, l.range);
     }];
-    
+        
     if (line) {
         self.prevLineAtLocation = line;
         prevLineAtLocationIndex = cachedIndex;
