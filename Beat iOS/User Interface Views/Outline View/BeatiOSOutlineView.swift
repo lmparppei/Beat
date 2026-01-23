@@ -168,6 +168,7 @@ import Foundation
 	/// Called when the editor selection moved to another scene
 	@objc func didMove(toSceneIndex index: Int) {
 		if index == NSNotFound {
+			
 			self.deselectAll(nil)
 			return
 		}
@@ -273,4 +274,13 @@ class BeatOutlineViewCell:UITableViewCell {
 	}
 	
 	
+}
+
+extension UITableView {
+	func deselectAll(_ sender: Any?) {
+		guard let ips = indexPathsForSelectedRows else { return }
+		for ip in ips {
+			deselectRow(at: ip, animated: false)
+		}
+	}
 }

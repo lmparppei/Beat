@@ -31,6 +31,24 @@
 				<string>public.plain-text</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Fountain Data</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fountain</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.data</string>
+				<string>fi.KAPITAN.fountain</string>
+				<string>io.fountain</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict/>
@@ -94,6 +112,25 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.KAPITAN.fountainData</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fountain</string>
+				</array>
+			</dict>
+			<key>UTTypeDescription</key>
+			<string>Fountain script</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+		</dict>
 	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
@@ -113,6 +150,10 @@
 			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/plain</string>
+				</array>
 				<key>public.filename-extension</key>
 				<array>
 					<string>fountain</string>

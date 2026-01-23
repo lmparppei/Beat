@@ -20,20 +20,9 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 		self.overrideUserInterfaceStyle = .dark
 	}
 
-	func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-		guard let cell = collectionView.cellForItem(at: indexPath) as? BeatTemplateCell else {
-			return false
-		}
-		
-		let url = cell.url
-		var filename = url?.lastPathComponent
-		var targetUrl:URL?
-		
-		if let productName = cell.product {
-			filename = productName
-		}
-		
+	fileprivate func createFileFromTemplate(_ url: URL?, _ filename: String?) {
 		// Because the templates are in another bundle, we'll need to copy it first
+		var targetUrl:URL?
 		if let originalUrl = url, let filename {
 			targetUrl = URL(filePath: NSTemporaryDirectory()).appending(component: filename)
 			
@@ -54,7 +43,7 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 			}
 		}
 		
-		if targetUrl != nil {
+		if let targetUrl {
 			// Copy the file to the final destination and open it
 			self.importHandler?(targetUrl, .copy)
 			didPickTemplate = true
@@ -69,14 +58,37 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 			print(self.errorMessage ?? "(error loading template)")
 		}
 		
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+		guard let cell = collectionView.cellForItem(at: indexPath) as? BeatTemplateCell else {
+			return false
+		}
+		
+		let url = cell.url
+		var filename = url?.lastPathComponent
+		
+		if let productName = cell.product {
+			filename = productName
+		}
+		
+		createFileFromTemplate(url, filename)
+
+		
 		// Dismiss the template controller
 		self.dismiss(animated: true) {
 			
 		}
-
 		return true
 	}
 
+	func setUTIExtendedAttribute(url: URL, uti: String) {
+		let attrName = "com.apple.metadata:kMDItemContentType"
+		let utiBStr = (uti as NSString).utf8String!
+		setxattr(url.path, attrName, utiBStr, strlen(utiBStr), 0, 0)
+	}
+
+	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 		var height = 140.0
 		if UIDevice.current.userInterfaceIdiom == .phone {

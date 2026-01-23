@@ -22,9 +22,17 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		var contentTypes:[UTType]? = []
 		
 		if let fountainUTI = UTType(filenameExtension: "fountain") { contentTypes?.append(fountainUTI) }
+		if let fountainData = UTType(filenameExtension: "fountain", conformingTo: UTType.data) { contentTypes?.append(fountainData) }
+		
+		if let fountain2 = UTType("fi.kapitan.fountain") { contentTypes?.append(fountain2) }
+		if let fountainData2 = UTType("com.kapitan.fountainData") { contentTypes?.append(fountainData2) }
+				
+		if let plainFountainUTI = UTType(filenameExtension: "fountain", conformingTo: UTType.plainText) { contentTypes?.append(plainFountainUTI) }
 		if let fdxUTI = UTType(filenameExtension: "fdx") { contentTypes?.append(fdxUTI) }
 		if let txtUTI = UTType(filenameExtension: "txt") { contentTypes?.append(txtUTI) }
 		if let fadeInUTI = UTType(filenameExtension: "fadein") { contentTypes?.append(fadeInUTI) }
+		if let plainTextUTI = UTType(mimeType: "text/plain", conformingTo: UTType.plainText) { contentTypes?.append(plainTextUTI) }
+		
 		
 		if contentTypes?.count == 0 {
 			contentTypes = nil
@@ -34,6 +42,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	}
 	
     override func viewDidLoad() {
+		FileManager.default.url(forUbiquityContainerIdentifier: nil) // This can help reset state
+		
         super.viewDidLoad()
         		
         delegate = self
@@ -83,8 +93,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 	
 	func importAndPresentTemplate(_ url:URL) {
 		importDocument(at: url, nextToDocumentAt: URL.documentsDirectory, mode: .copy) { url, error in
-			if url != nil {
-				self.presentDocument(at: url!)
+			if let url {
+				self.presentDocument(at: url)
 			}
 		}
 	}
@@ -136,9 +146,9 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: - Document Presentation
     
     func presentDocument(at documentURL: URL) {
-		if documentURL.pathExtension != "txt" && documentURL.pathExtension != "fountain" && 
+		// If this is not a Fountain file, we'll use file import
+		if documentURL.pathExtension != "txt" && documentURL.pathExtension != "fountain" &&
 			(documentURL.typeIdentifier != "com.kapitan.fi" && documentURL.typeIdentifier != "io.fountain") {
-			// Import
 			importFile(at: documentURL)
 			return
 		}
