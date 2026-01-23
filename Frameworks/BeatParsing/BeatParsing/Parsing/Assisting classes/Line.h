@@ -10,6 +10,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatParsing/Storybeat.h>
 #import <BeatParsing/BeatNoteData.h>
+#import <BeatParsing/InlineFormatting.h>
 
 /// Line type enum
 /// @note Some types are only used in static parsing and/or exporting, such as `more` and `dualDialogueMore`. `BeatFormatting` class also introduces supplementary types for internal use.
@@ -42,9 +43,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 	typeCount /// This is the the max number of line types, used in `for` loops and enumerations, can be ignored
 };
 
-#pragma mark - Formatting characters
 
-#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
+#pragma mark - Formatting characters
 
 #define ITALIC_PATTERN @"*"
 #define ITALIC_CHAR "*"
@@ -77,17 +77,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 #define COLOR_PATTERN "color"
 #define STORYLINE_PATTERN "storyline"
 
-#pragma mark FDX style names
-
-// For FDX compatibility & attribution
-#define BOLD_STYLE @"Bold"
-#define ITALIC_STYLE @"Italic"
-#define BOLDITALIC_STYLE @"BoldItalic"
-#define UNDERLINE_STYLE @"Underline"
-#define STRIKEOUT_STYLE @"Strikeout"
-#define OMIT_STYLE @"Omit"
-#define NOTE_STYLE @"Note"
-#define MACRO_STYLE @"Macro"
 
 @class OutlineScene;
 @class BeatExportSettings;
@@ -213,6 +202,13 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Copies this line
 - (Line*)clone;
 
+/// Experimental dictionary which will hold the formatted ranges in the future
+@property (nonatomic) NSMutableDictionary<NSValue*, NSMutableIndexSet*>* formattedRanges;
+- (void)setRanges:(NSMutableIndexSet*)indices forFormatting:(FormattedRange)formatting;
+
+/// Returns the index set for given formatted range type. Never returns a `nil` value.
+- (NSMutableIndexSet*)formattedRange:(FormattedRange)type;
+
 
 #pragma mark - String generation
 
@@ -309,7 +305,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet* noteRanges;
 @property (nonatomic) NSMutableIndexSet* omittedRanges;
 @property (nonatomic) NSMutableIndexSet* highlightRanges;
-@property (nonatomic) NSMutableIndexSet* strikeoutRanges;
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
 @property (nonatomic) NSMutableIndexSet* macroRanges;
 
@@ -412,6 +407,26 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// The highest revision generation for this line.
 @property (nonatomic) NSInteger revisionGeneration;
 
+
+#pragma mark - Ranges
+
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes;
+
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes;
+
+///Returns indices between given char delimiters
+/// @param string Unicode character array for the string
+/// @param length Length of the unicode array
+/// @param line The line we're handling. Any found escape ranges will be updated to the line.
+/// @param startString Characters that open the range
+/// @param startLength Length of characters that open the range
+/// @param endString Characters that close the range
+/// @param delimLength Length of characters that close the range
+/// @param excludes These indices will be ignored when finding ranges
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes;
+
+/// Returns the omission ranges. This has to be parsed first, because the star in `/*` might be mistaken for italic otherwise.
++ (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars;
 
 
 #pragma mark - Convenience methods

@@ -117,7 +117,7 @@
     __block bool containsLowerCase = false;
     [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         NSString *substr = [self substringWithRange:range];
-        if (substr.containsOnlyWhitespace) return;
+        if (substr.containsOnlyWhitespace || [substr.trim isEqualToString:@"^"]) return;
         else if (!substr.containsOnlyUppercase) {
             containsLowerCase = true;
             *stop = true;

@@ -53,27 +53,6 @@
     return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-/*
-/// Creates and stores a string with style attributes. Please don't use in editor, only for static parsing.
-/// TODO: This is an extremely bad getter name. Why?
-/// - note N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for screenplay rendering or FDX export.
-- (NSAttributedString*)attrString
-{
-    if (_attrString == nil) {
-        NSAttributedString *string = [self attributedStringForFDX];
-        NSMutableAttributedString *result = NSMutableAttributedString.new;
-        
-        [self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-            [result appendAttributedString:[string attributedSubstringFromRange:range]];
-        }];
-        
-        _attrString = result;
-    }
-    
-    return _attrString;
-}
-*/
- 
 - (NSAttributedString*)attributedStringForFDX
 {
     return self.attributedString;
@@ -86,52 +65,32 @@
     NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
         
     // Make non-forced chacter cues uppercase. This should happen automatically, but in some character sets maybe not?
+    /*
     if ((self.type == character || self.type == dualDialogueCharacter) && self.numberOfPrecedingFormattingCharacters == 0) {
         NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
         if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
     }
+     */
     
-    // Add font stylization
-    [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > ITALIC_PATTERN.length * 2) {
-            [string addBeatStyleAttr:ITALIC_STYLE range:range];
-        }
-    }];
-
-    [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > BOLD_PATTERN.length * 2) {
-            [string addBeatStyleAttr:BOLD_STYLE range:range];
-        }
-    }];
-    
-    [self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > ITALIC_PATTERN.length * 2) {
-            [string addBeatStyleAttr:BOLDITALIC_STYLE range:range];
-        }
-    }];
-    
-    [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > UNDERLINE_PATTERN.length * 2) {
-            [string addBeatStyleAttr:UNDERLINE_STYLE range:range];
-        }
-    }];
+    // Add font stylization. We iterate through formatting range types (the last enum is a count value) and apply the style names.
+    for (NSUInteger i=0; i<(NSUInteger)FormattingRangeCount; i++) {
+        FormattedRange formatting = (FormattedRange)i;
         
-    [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > OMIT_PATTERN.length * 2) {
-            [string addBeatStyleAttr:OMIT_STYLE range:range];
-        }
-    }];
-    
-    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length > NOTE_PATTERN.length * 2) {
-            [string addBeatStyleAttr:NOTE_STYLE range:range];
-        }
-    }];
+        NSMutableIndexSet* indices = [self formattedRange:formatting];
+        InlineFormatting* f = InlineFormatting.inlineFormats[@(formatting)];
+        if (f == nil) continue;
 
-    [self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [string addBeatStyleAttr:OMIT_STYLE range:range];
-    }];
-        
+        // Enumerate formatted ranges
+        [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            // Don't apply any formatting to too short ranges
+            if (range.length < f.openLength + f.closeLength) return;
+            
+            NSString* style = [InlineFormatting styleNameFor:formatting];
+            if (style != nil) [string addBeatStyleAttr:style range:range];
+            else NSLog(@"WARNING: No style name for %@", @(formatting));
+        }];
+    }
+    
     [self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [string addBeatStyleAttr:@"RemovalSuggestion" range:range];
     }];

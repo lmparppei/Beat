@@ -153,7 +153,16 @@
     // Join strings
     self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];
     
+    for (NSNumber* key in line.formattedRanges.allKeys) {
+        NSMutableIndexSet* indices = line.formattedRanges[key];
+        [indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            if (self.formattedRanges[key] == nil) self.formattedRanges[key] = NSMutableIndexSet.new;
+            [self.formattedRanges[key] addIndexesInRange:NSMakeRange(offset + range.location, range.length)];
+        }];
+    }
+    
     // Offset and copy formatting ranges
+    /*
     [line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
@@ -162,9 +171,6 @@
     }];
     [line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.underlinedRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
-    }];
-    [line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
     [line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.escapeRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
@@ -175,7 +181,8 @@
     [line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.macroRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
-    
+    */
+     
     // Offset and copy revised ranges
     for (NSNumber* key in line.revisedRanges.allKeys) {
         if (!self.revisedRanges) self.revisedRanges = NSMutableDictionary.dictionary;

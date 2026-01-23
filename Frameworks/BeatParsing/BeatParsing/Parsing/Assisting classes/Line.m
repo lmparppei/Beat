@@ -71,6 +71,8 @@
         _formattedAs = -1;
         _parser = parser;
         
+        _formattedRanges = NSMutableDictionary.new;
+        /*
         _boldRanges = NSMutableIndexSet.indexSet;
         _italicRanges = NSMutableIndexSet.indexSet;
         _underlinedRanges = NSMutableIndexSet.indexSet;
@@ -80,7 +82,8 @@
         _omittedRanges = NSMutableIndexSet.indexSet;
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
-        
+        */
+         
         _currentVersion = 0;
         
         _uuid = NSUUID.UUID;
@@ -193,6 +196,15 @@
     if (self.revisedRanges.count > 0) newLine.revisedRanges = self.revisedRanges.mutableCopy;
     
     // Not sure why these are guarded.
+    NSMutableDictionary* ranges = NSMutableDictionary.new;
+    for (NSValue* key in self.formattedRanges.allKeys) {
+        NSMutableIndexSet* indices = ((NSMutableIndexSet*)self.formattedRanges[key]).mutableCopy;
+        ranges[key] = indices;
+    }
+    
+    newLine.formattedRanges = ranges;
+    
+    /*
     newLine.italicRanges = self.italicRanges.mutableCopy;
     newLine.boldRanges = self.boldRanges.mutableCopy;
     newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
@@ -200,11 +212,11 @@
     newLine.omittedRanges = self.omittedRanges.mutableCopy;
     newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
     newLine.sceneNumberRange = self.sceneNumberRange;
-    newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
     newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
     newLine.escapeRanges = self.escapeRanges.mutableCopy;
     newLine.macroRanges = self.macroRanges.mutableCopy;
-    
+    */
+     
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
     
@@ -519,34 +531,54 @@
         unichar charArray[length];
         [self.string getCharacters:charArray];
         
-        self.boldRanges = [self rangesInChars:charArray
+        for (InlineFormatting* formatting in InlineFormatting.rangesToFormat) {
+            NSMutableIndexSet* indices = [Line rangesInChars:charArray ofLength:length inLine:self between:formatting.open and:formatting.close startLength:formatting.openLength endLength:formatting.closeLength excludingIndices:nil];
+            [self setRanges:indices forFormatting:formatting.formatType];
+        }
+        
+        // This method is called after a line has been split in two, so we'll need to parse any leftover note ranges. Not sure if this actually works or not.
+        self.noteRanges = [Line rangesInChars:charArray
                                      ofLength:length
+                                       inLine:self
+                                      between:NOTE_OPEN_CHAR
+                                          and:NOTE_CLOSE_CHAR
+                                   withLength:2];
+        /*
+        self.boldRanges = [Line rangesInChars:charArray
+                                     ofLength:length
+                                       inLine:self
                                       between:BOLD_CHAR
                                           and:BOLD_CHAR
                                    withLength:2];
-        self.italicRanges = [self rangesInChars:charArray
-                                     ofLength:length
-                                      between:ITALIC_CHAR
-                                          and:ITALIC_CHAR
-                                   withLength:1];
+        self.italicRanges = [Line rangesInChars:charArray
+                                       ofLength:length
+                                         inLine:self
+                                        between:ITALIC_CHAR
+                                            and:ITALIC_CHAR
+                                     withLength:1];
         
-        self.underlinedRanges = [self rangesInChars:charArray
+        
+        self.underlinedRanges = [Line rangesInChars:charArray
                                            ofLength:length
+                                             inLine:self
                                             between:UNDERLINE_CHAR
                                                 and:UNDERLINE_CHAR
                                          withLength:1];
         
-        self.noteRanges = [self rangesInChars:charArray
+        self.noteRanges = [Line rangesInChars:charArray
                                      ofLength:length
+                                       inLine:self
                                       between:NOTE_OPEN_CHAR
                                           and:NOTE_CLOSE_CHAR
                                    withLength:2];
         
-        self.macroRanges = [self rangesInChars:charArray
+        self.macroRanges = [Line rangesInChars:charArray
                                       ofLength:length
+                                        inLine:self
                                        between:MACRO_OPEN_CHAR
                                            and:MACRO_CLOSE_CHAR
                                     withLength:2];
+         */
     }
     @catch (NSException* e) {
         NSLog(@"Error when trying to reset formatting: %@", e);
@@ -556,7 +588,7 @@
 
 
 #pragma mark - Formatting range lookup
-
+/*
 /// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too. Why, I don't know.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
@@ -608,6 +640,194 @@
         
     return indexSet;
 }
+*/
+
+
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes
+{
+    return [Line rangesInChars:string ofLength:length inLine:line between:startString and:startString startLength:delimLength endLength:delimLength excludingIndices:excludes];
+}
+
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString and:(char*)endString withLength:(NSInteger)delimLength
+{
+    return [Line rangesInChars:string ofLength:length inLine:line between:startString and:endString withLength:delimLength excludingIndices:nil];
+}
+
+
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes
+{
+    // Let's use the asym method here, just put in our symmetric delimiters.
+    return [Line rangesInChars:string ofLength:length inLine:line between:startString and:endString startLength:delimLength endLength:delimLength excludingIndices:excludes];
+}
+
+/**
+ @note Returns indices between given char delimiters
+ */
++ (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes
+{
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    if (length < startLength + delimLength) return indexSet;
+    
+    NSRange range = NSMakeRange(-1, 0);
+    
+    for (NSInteger i=0; i <= length - delimLength; i++) {
+        // If this index is contained in the omit character indexes, skip
+        if ([excludes containsIndex:i]) continue;
+        
+        // First check for escape character
+        if (i > 0) {
+            unichar prevChar = string[i-1];
+            if (prevChar == '\\') {
+                [line.escapeRanges addIndex:i - 1];
+                continue;
+            }
+        }
+        
+        if (range.location == -1) {
+            // Next, see if we can find the whole start string
+            bool found = true;
+            for (NSInteger k=0; k<startLength; k++) {
+                if (i+k >= length) {
+                    break;
+                } else if (startString[k] != string[i+k]) {
+                    found = false;
+                    break;
+                }
+            }
+            
+            if (!found) continue;
+            
+            // Success! We found a matching string
+            range.location = i;
+            
+            // Pass the starting string
+            i += startLength-1;
+            
+        } else {
+            // We have found a range, let's see if we find a closing string.
+            bool found = true;
+            for (NSInteger k=0; k<delimLength; k++) {
+                if (endString[k] != string[i+k]) {
+                    found = false;
+                    break;
+                }
+            }
+            
+            if (!found) continue;
+            
+            // Success, we found a closing string.
+            range.length = i + delimLength - range.location;
+            [indexSet addIndexesInRange:range];
+            
+            // Add the current formatting ranges to future excludes
+            [excludes addIndexesInRange:(NSRange){ range.location, startLength }];
+            [excludes addIndexesInRange:(NSRange){ i, delimLength }];
+            
+            range.location = -1;
+            
+            // Move past the ending string
+            i += delimLength - 1;
+        }
+    }
+    
+    return indexSet;
+}
+
++ (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
+{
+    line.omitIn = lastLineOut;
+    
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    NSRange range = (line.omitIn) ? NSMakeRange(0, 0) : NSMakeRange(NSNotFound, 0);
+    
+    for (NSUInteger i=0; i < length-1; i++) {
+        if (i+1 > length) break;
+        unichar c1 = string[i];
+        unichar c2 = string[i+1];
+        
+        if (c1 == '/' && c2 == '*' && range.location == NSNotFound) {
+            [stars addIndex:i+1];
+            range.location = i;
+            
+        } else if (c1 == '*' && c2 == '/') {
+            if (range.location == NSNotFound) continue;
+            
+            [stars addIndex:i];
+            
+            range.length = i - range.location + OMIT_PATTERN_LENGTH;
+            [indexSet addIndexesInRange:range];
+            
+            range = NSMakeRange(NSNotFound, 0);
+        }
+    }
+    
+    if (range.location != NSNotFound) {
+        line.omitOut = true;
+        [indexSet addIndexesInRange:NSMakeRange(range.location, line.length - range.location)];
+    } else {
+        line.omitOut = false;
+    }
+    
+    return indexSet;
+}
+ 
+
+#pragma mark - Formatting shorthands
+
+/*
+ 
+ This is very convoluted, but what can I say. These are shorthand getters for formatted ranges, which are stored in a single mutable dictionary. This makes the system much more scalable, so instead of applying tons of unnecessary hard-coded range names, we can use an enum value, but unfortunately those hard-coded names are already scattered around the app, so ... yeah, this is what we end up. At least from now on, it's much easier to maintain the ranges or add new ones.
+ 
+ Any newer methods should be using this system from now on.
+ 
+ */
+
+- (NSMutableIndexSet*)boldRanges { return [self formattedRange:FormattingRangeBold]; }
+- (void)setBoldRanges:(NSMutableIndexSet *)boldRanges { [self setRanges:boldRanges forFormatting:FormattingRangeBold]; }
+
+- (NSMutableIndexSet*)italicRanges { return [self formattedRange:FormattingRangeItalic]; }
+- (void)setItalicRanges:(NSMutableIndexSet *)italicRanges { [self setRanges:italicRanges forFormatting:FormattingRangeItalic]; }
+
+- (NSMutableIndexSet*)underlinedRanges { return [self formattedRange:FormattingRangeUnderlined]; }
+- (void)setUnderlinedRanges:(NSMutableIndexSet *)underlinedRanges { [self setRanges:underlinedRanges forFormatting:FormattingRangeUnderlined]; }
+
+- (NSMutableIndexSet*)macroRanges { return [self formattedRange:FormattingRangeMacro]; }
+- (void)setMacroRanges:(NSMutableIndexSet *)macroRanges { [self setRanges:macroRanges forFormatting:FormattingRangeMacro]; }
+
+- (NSMutableIndexSet*)highlightRanges { return [self formattedRange:FormattingRangeHighlight]; }
+- (void)setHighlightRanges:(NSMutableIndexSet *)highlightRanges { [self setRanges:highlightRanges forFormatting:FormattingRangeHighlight]; }
+
+- (NSMutableIndexSet *)omittedRanges { return [self formattedRange:FormattingRangeOmission]; }
+- (void)setOmittedRanges:(NSMutableIndexSet *)omittedRanges { [self setRanges:omittedRanges forFormatting:FormattingRangeOmission]; }
+
+- (NSMutableIndexSet *)noteRanges { return [self formattedRange:FormattingRangeNote]; }
+- (void)setNoteRanges:(NSMutableIndexSet *)noteRanges { [self setRanges:noteRanges forFormatting:FormattingRangeNote]; }
+
+- (NSMutableIndexSet *)removalSuggestionRanges { return [self formattedRange:FormattingRangeRemovalSuggestion]; }
+- (void)setRemovalSuggestionRanges:(NSMutableIndexSet *)removalSuggestionRanges { _formattedRanges[@(FormattingRangeRemovalSuggestion)] = removalSuggestionRanges; }
+
+- (NSMutableIndexSet *)escapeRanges { return [self formattedRange:FormattingRangeEscape]; }
+- (void)setEscapeRanges:(NSMutableIndexSet *)escapeRanges { [self setRanges:escapeRanges forFormatting:FormattingRangeEscape]; }
+
+/// Returns the index set for given formatted range type. Never returns a `nil` value.
+- (NSMutableIndexSet*)formattedRange:(FormattedRange)type
+{
+    if (_formattedRanges[@(type)] == nil) _formattedRanges[@(type)] = NSMutableIndexSet.new;
+    return _formattedRanges[@(type)];
+}
+
+/// Set ranges for a formatting type. Ensures that you won't save a `nil` value.
+- (void)setRanges:(NSMutableIndexSet*)indices forFormatting:(FormattedRange)formatting
+{
+    self.formattedRanges[@(formatting)] = (indices != nil) ? indices : NSMutableIndexSet.new;
+}
+
+/// It's much more sensible to calculate this on the fly than store it every time.
+- (NSMutableIndexSet*)boldItalicRanges
+{
+    NSMutableIndexSet* boldItalicRanges = [self.italicRanges indexesIntersectingIndexSet:self.boldRanges].mutableCopy;
+    return boldItalicRanges;
+}
 
 
 #pragma mark Formatting checking convenience
@@ -615,7 +835,7 @@
 /// Returns TRUE when the line has no inline formatting (like **bold**)
 -(bool)noFormatting
 {
-    return !(_boldRanges.count || _italicRanges.count || _strikeoutRanges.count || _underlinedRanges.count);
+    return !(self.boldRanges.count || self.italicRanges.count || self.highlightRanges.count || self.underlinedRanges.count);
 }
 
 
@@ -735,11 +955,12 @@
     }
     
     return @{
-        @"notes": [self.noteRanges arrayRepresentation],
-        @"omitted": [self.omittedRanges arrayRepresentation],
-        @"bold": [self.boldRanges arrayRepresentation],
-        @"italic": [self.italicRanges arrayRepresentation],
-        @"underlined": [self.underlinedRanges arrayRepresentation],
+        @"notes": self.noteRanges.arrayRepresentation,
+        @"omitted": self.omittedRanges.arrayRepresentation,
+        @"bold": self.boldRanges.arrayRepresentation,
+        @"italic": self.italicRanges.arrayRepresentation,
+        @"underlined": self.underlinedRanges.arrayRepresentation,
+        @"highlighted": self.highlightRanges.arrayRepresentation,
         @"revisions": revisedRanges
     };
 }

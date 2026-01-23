@@ -105,7 +105,8 @@
 }
 
 /// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc. to convert it to another style of formatting
-- (NSIndexSet*)formattingRanges {
+- (NSIndexSet*)formattingRanges
+{
     return [self formattingRangesWithGlobalRange:NO includeNotes:YES includeOmissions:YES];
 }
 
@@ -171,6 +172,19 @@
     }
     
     // Stylization ranges
+    // TODO: Figure out a way to make this conform with the nice InlineFormatting thing.
+    NSArray<NSValue*>* formattedRanges = @[@(FormattingRangeBold), @(FormattingRangeItalic), @(FormattingRangeUnderlined), @(FormattingRangeHighlight)];
+    for (NSNumber* key in formattedRanges) {
+        InlineFormatting* f = InlineFormatting.inlineFormats[key];
+        if (f == nil) NSLog(@"⚠️ No inline formatting rule for %@", key);
+        
+        NSIndexSet* formattedIndices = [self formattedRange:(FormattedRange)key.unsignedIntValue];
+        [formattedIndices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [indices addIndexesInRange:NSMakeRange(range.location + offset, f.openLength)];
+            [indices addIndexesInRange:NSMakeRange(range.location + range.length - f.closeLength + offset, f.closeLength)];
+        }];
+    }
+    /*
     [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [indices addIndexesInRange:NSMakeRange(range.location + offset, BOLD_PATTERN.length)];
         [indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
@@ -183,6 +197,7 @@
         [indices addIndexesInRange:NSMakeRange(range.location + offset, UNDERLINE_PATTERN.length)];
         [indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
     }];
+    */
     
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
