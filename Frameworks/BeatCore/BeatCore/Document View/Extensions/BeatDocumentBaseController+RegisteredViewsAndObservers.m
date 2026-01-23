@@ -72,5 +72,10 @@
     [self.registeredPluginContainers addObject:(id<BeatPluginContainerInstance>)view];
 }
 
+- (void)registerPaginationBoundView:(id<BeatPaginationBoundOutlineView>)view
+{
+    if (self.registeredPaginationBoundViews == nil) self.registeredPaginationBoundViews = NSMutableArray.new;
+    [self.registeredPaginationBoundViews addObject:view];
+}
 
 @end
