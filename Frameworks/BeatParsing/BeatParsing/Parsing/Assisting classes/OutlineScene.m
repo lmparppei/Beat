@@ -47,9 +47,10 @@
 	return NSMakeRange(self.position, self.length);
 }
 
-/// Returns a very unreliable "chronometric" length for the scene
+/// @warning Don't use this method, it's a very old thing.
 -(NSInteger)timeLength
 {
+    NSLog(@"DEPRECATED: Don't use OutlineScene.timeLength to determine chronometry");
 	// Welllll... this is a silly implementation, but let's do it.
 	// We'll measure scene length purely by the character length, but let's substract the scene heading length
 	NSInteger length = self.length - self.line.string.length + 40;
@@ -172,9 +173,7 @@
         }
         
         // No length set - this is probably the last object in outline, so let's assume it takes up the rest of the document.
-        if (length == -1) {
-            return NSMaxRange(lines.lastObject.textRange) - self.position;
-        }
+        if (length == -1) length = NSMaxRange(lines.lastObject.textRange) - self.position;
         
         return length;
     }
@@ -195,8 +194,10 @@
 	NSMutableSet *names = NSMutableSet.set;
 	
 	for (Line* line in lines) {
-		if (line.isOutlineElement && line.type != synopse && line != self.line) break;
-		else if (line.type == character || line.type == dualDialogueCharacter) {
+        // I don't know what this is. Probably in some cases the scene might swallow up other outline elements? Not sure how.
+		if (line.isOutlineElement && line != self.line) break;
+		
+        if (line.isAnyCharacter) {
 			NSString *characterName = line.characterName;
 			if (characterName.length) [names addObject:line.characterName];
 		}
@@ -232,19 +233,20 @@
 	
 	NSArray *lines = self.delegate.lines;
 	NSInteger idx = [lines indexOfObject:self.line];
-	
+    NSInteger omissionStart = -1;
+    
 	// Find out where the omission ends
 	for (NSInteger s = idx + 1; s < lines.count; s++) {
 		Line *nextLine = lines[s];
 		NSInteger omitEndLoc = [nextLine.string rangeOfString:@"*/"].location;
 		
 		if (omitEndLoc != NSNotFound && nextLine.omitIn) {
-			return nextLine.position + omitEndLoc;
+            omissionStart = nextLine.position + omitEndLoc;
 			break;
 		}
 	}
 	
-	return -1;
+    return omissionStart;
 }
 
 /// Returns the storyline NAMES in this scene
@@ -261,7 +263,7 @@
 }
 
 
-#pragma mark - Ownership
+#pragma mark - Hierarchy
 
 /// Convenience method for `.parent.children`
 - (NSArray*)siblings

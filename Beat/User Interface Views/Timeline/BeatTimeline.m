@@ -256,7 +256,6 @@
 				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
 			} else {
 				_totalLength += (scene.printedLength > PLACEHOLDER_WIDTH) ?  scene.printedLength : PLACEHOLDER_WIDTH;
-				//_totalLength += scene.timeLength;
 			}
 			
 			if (scene.storylines.count) {
