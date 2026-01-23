@@ -126,19 +126,12 @@
         // Draw scene numbers
         if (line.type == heading) {
             [self drawSceneNumberForLine:line rect:rect inset:inset];
-        }
-        else if (line.type == section && line.isBoneyardSection) {
+        } else if (line.type == section && line.isBoneyardSection) {
             [self drawBoneyardMarkerForLine:line];
-        }
-        else if (line.type == pageBreak) {
+        } else if (line.type == pageBreak) {
             [self drawForcedPageBreakForLine:line];
         }
-#if TARGET_OS_OSX
-        else if (line.type == section) {
-            //[self drawSectionDividerForLine:line rect:rect inset:inset];
-        }
-#endif
-        
+                
         // Draw markers
         if (line.markerRange.length > 0) {
             [self drawMarkerForLine:line rect:rect inset:inset];
@@ -335,6 +328,23 @@
         NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
         __block NSInteger revisionLevel = -1;
         __block RevisionType revisionType = RevisionNone;
+
+        Line* line = [self.editorDelegate.parser lineAtIndex:charRange.location];
+
+        if (line.highlightRanges.count > 0) {
+            [line.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+                NSRange globalRange = NSMakeRange(range.location + line.position, range.length);
+                NSRange globalGlyphRange = [self glyphRangeForCharacterRange:globalRange actualCharacterRange:nil];
+                NSArray* rects = [self rectsForGlyphRange:globalGlyphRange];
+                for (NSValue* v in rects) {
+                    CGRect rect = v.rectValue;
+                    rect.origin.x += inset.width;
+                    rect.origin.y += inset.height;
+                    [[BXColor.systemYellowColor colorWithAlphaComponent:0.5] setFill];
+                    BXRectFill(rect);
+                }
+            }];
+        }
         
         [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
             
