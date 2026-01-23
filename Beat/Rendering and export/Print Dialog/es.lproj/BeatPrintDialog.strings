@@ -62,7 +62,8 @@
 "xBa-Ue-WC0.title" = "5º";
 
 /* Class = "NSButtonCell"; title = "Print Scene Numbers"; ObjectID = "XTs-KO-ZjG"; */
-"XTs-KO-ZjG.title" = "Imprimir números de escena";
+"XTs-KO-ZjG.title" = "Números de escena";
+"qC1-Ig-3gL.title" = "Números de página";
 
 /* Class = "NSButtonCell"; title = "4th"; ObjectID = "XyP-L6-Yh9"; */
 "XyP-L6-Yh9.title" = "4º";

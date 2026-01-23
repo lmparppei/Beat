@@ -54,7 +54,7 @@
 "XLr-0o-DaH.title" = "Neljäs";
 
 /* Class = "NSButtonCell"; title = "Print Scene Numbers"; ObjectID = "XTs-KO-ZjG"; */
-"XTs-KO-ZjG.title" = "Tulosta kohtausnumerot";
+"XTs-KO-ZjG.title" = "Kohtausnumerot";
 
 /* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "XaA-mb-KGd"; */
 "XaA-mb-KGd.title" = "US Letter";
@@ -93,3 +93,5 @@
 "YI4-GJ-jLL.title" = "6.";
 "YA6-dX-Ctn.title" = "7.";
 "BNA-67-JgB.title" = "8.";
+
+"qC1-Ig-3gL.title" = "Številke strani";

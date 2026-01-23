@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
-        <plugIn identifier="com.apple.pdfkit.ibplugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <plugIn identifier="com.apple.pdfkit.ibplugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,6 +17,7 @@
                 <outlet property="pdfView" destination="VcW-6f-wYm" id="OSu-5y-Te4"/>
                 <outlet property="primaryButton" destination="oP5-3G-eOr" id="YBK-15-EbI"/>
                 <outlet property="printNotes" destination="qVw-JB-cjH" id="3Jk-yx-mzL"/>
+                <outlet property="printPageNumbers" destination="gqt-sB-VRb" id="irp-8z-ejw"/>
                 <outlet property="printSceneNumbers" destination="7Oz-ue-27o" id="Kx0-DP-V4D"/>
                 <outlet property="printSections" destination="GTV-2p-SXF" id="jR9-2Q-pSQ"/>
                 <outlet property="printSynopsis" destination="ptb-NP-jOd" id="4Wf-lC-Zau"/>
@@ -44,7 +45,7 @@
         <window title="Print" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rg7-lI-xne" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" utility="YES"/>
             <rect key="contentRect" x="382" y="331" width="850" height="434"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" id="Eh4-Tm-L4f">
                 <rect key="frame" x="0.0" y="0.0" width="850" height="434"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -65,7 +66,7 @@
                     <button verticalHuggingPriority="750" id="7Oz-ue-27o">
                         <rect key="frame" x="364" y="266" width="243" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Print Scene Numbers" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="XTs-KO-ZjG">
+                        <buttonCell key="cell" type="check" title="Scene Numbers" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="XTs-KO-ZjG">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -74,7 +75,7 @@
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" boxType="separator" id="V9B-91-HF1">
-                        <rect key="frame" x="366" y="250" width="247" height="5"/>
+                        <rect key="frame" x="366" y="220" width="247" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <button tag="1" verticalHuggingPriority="750" id="Pvt-SR-b7W">
@@ -215,7 +216,7 @@ DQ
                                             <rect key="frame" x="-1" y="171" width="198" height="14"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" title="Include Invisible Elements" id="Nef-4V-udt">
-                                                <font key="font" metaFont="systemBold" size="11"/>
+                                                <font key="font" metaFont="smallSystemBold"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -227,7 +228,7 @@ DQ
                                             <rect key="frame" x="0.0" y="78" width="197" height="14"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" title="Highlight Revisions" id="3Ft-pa-w7n">
-                                                <font key="font" metaFont="systemBold" size="11"/>
+                                                <font key="font" metaFont="smallSystemBold"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -464,7 +465,7 @@ DQ
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJH-ja-IuH">
-                                            <rect key="frame" x="0.0" y="55.5" width="195" height="15"/>
+                                            <rect key="frame" x="0.0" y="55" width="195" height="15"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="None" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" state="on" inset="2" id="1KJ-qe-KeZ">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -478,7 +479,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button tag="1" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b6X-TV-UzK">
-                                            <rect key="frame" x="0.0" y="35.5" width="195" height="15"/>
+                                            <rect key="frame" x="0.0" y="35" width="195" height="15"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Text Color" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="lQd-48-z2R">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -492,7 +493,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button tag="2" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kVR-p8-r15">
-                                            <rect key="frame" x="0.0" y="15.5" width="195" height="15"/>
+                                            <rect key="frame" x="0.0" y="15" width="195" height="15"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Text Background" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="6OC-5j-jBy">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -530,6 +531,17 @@ DQ
                         <rect key="frame" x="159" y="217" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     </progressIndicator>
+                    <button verticalHuggingPriority="750" id="gqt-sB-VRb">
+                        <rect key="frame" x="364" y="244" width="243" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Page Numbers" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="qC1-Ig-3gL">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="togglePageNumbers:" target="-2" id="8Nd-r8-EgM"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <connections>
@@ -539,8 +551,8 @@ DQ
         </window>
     </objects>
     <resources>
-        <image name="text.aligncenter" catalog="system" width="16" height="13"/>
-        <image name="text.alignleft" catalog="system" width="16" height="13"/>
-        <image name="text.alignright" catalog="system" width="16" height="13"/>
+        <image name="text.aligncenter" catalog="system" width="17" height="13"/>
+        <image name="text.alignleft" catalog="system" width="17" height="13"/>
+        <image name="text.alignright" catalog="system" width="17" height="13"/>
     </resources>
 </document>

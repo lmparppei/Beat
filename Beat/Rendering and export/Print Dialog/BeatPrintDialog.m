@@ -30,6 +30,7 @@
 @interface BeatPrintDialog () <NSTextFieldDelegate, PDFViewDelegate>
 
 @property (weak) IBOutlet NSButton* printSceneNumbers;
+@property (weak) IBOutlet NSButton* printPageNumbers;
 @property (weak) IBOutlet NSButton* radioA4;
 @property (weak) IBOutlet NSButton* radioLetter;
 @property (weak) IBOutlet PDFView* pdfView;
@@ -113,9 +114,12 @@
 	_advancedOptionsButton.state = ([NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY]) ? NSOnState : NSOffState;
 	
 	// Restore settings for note/synopsis/section printing
-	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSections]) _printSections.state = NSOnState;
-	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis]) _printSynopsis.state = NSOnState;
-	if ([self.documentDelegate.documentSettings getBool:DocSettingPrintNotes]) _printNotes.state = NSOnState;
+	_printSections.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintSections] ? NSOnState : NSOffState;
+	_printSynopsis.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis] ? NSOnState : NSOffState;
+	_printNotes.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintNotes] ? NSOnState : NSOffState;
+
+	self.printSceneNumbers.state = (_documentDelegate.printSceneNumbers) ? NSOnState : NSOffState;
+	self.printPageNumbers.state = ![_documentDelegate.documentSettings getBool:DocSettingHidePageNumbers] ? NSOnState : NSOffState;
 	
 	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	NSIndexSet* hiddenRevisions = [NSIndexSet fromArray:[self.documentDelegate.documentSettings get:DocSettingHiddenRevisions]];
@@ -179,10 +183,7 @@
 	[_pdfView setDocument:nil];
 					
 	[self loadWindow];
-		
-	// Get setting from document
-	self.printSceneNumbers.state = (_documentDelegate.printSceneNumbers) ? NSOnState : NSOffState;
-	
+			
 	// Check the paper size
 	// WIP: Unify these so the document knows its BeatPaperSize too
 	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:NSOnState];
@@ -316,6 +317,13 @@
 - (IBAction)selectSceneNumberPrinting:(id)sender
 {
 	_documentDelegate.printSceneNumbers = (_printSceneNumbers.state == NSOnState);
+	[self loadPreview];
+}
+
+- (IBAction)togglePageNumbers:(id)sender
+{
+	NSButton* button = (NSButton*)sender;
+	[_documentDelegate.documentSettings setBool:DocSettingHidePageNumbers as:!(button.state == NSOnState)];
 	[self loadPreview];
 }
 
