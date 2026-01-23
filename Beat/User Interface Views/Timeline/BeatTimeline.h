@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatTimeline : NSView <BeatSceneOutlineView, BeatTimelineItemDelegate, NSTextFieldDelegate>
+@interface BeatTimeline : NSView <BeatPaginationBoundOutlineView, BeatTimelineItemDelegate, NSTextFieldDelegate>
 
 @property (nonatomic) bool visible;
 
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)show;
 - (void)hide;
 - (void)reload;
-- (void)refreshWithDelay;
+
 - (void)didMoveToSceneIndex:(NSInteger)index;
 - (CGFloat)playheadPosition;
 

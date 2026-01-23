@@ -124,7 +124,8 @@
 
 #pragma mark - Stylization
 
-- (void)setSceneFor:(NSRect)rect {
+- (void)setSceneFor:(NSRect)rect
+{
 	self.frame = rect;
 	self.layer.opacity = UNSELECTED_ALPHA;
 	

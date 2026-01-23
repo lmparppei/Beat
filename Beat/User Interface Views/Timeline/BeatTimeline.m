@@ -24,11 +24,13 @@
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import "BeatTimeline.h"
 #import "BeatTimelineItem.h"
 #import "HorizontalPinchView.h"
 
 #define STORYLINE_TITLE @"Track Storyline"
+#define PLACEHOLDER_WIDTH 0.01
 
 #define DEFAULT_HEIGHT 130.0
 #define DEFAULT_Y 33.0
@@ -57,7 +59,7 @@
 @property (nonatomic, weak) IBOutlet NSView* containerView;
 
 // Timeline data
-@property (nonatomic) NSInteger totalLength;
+@property (nonatomic) CGFloat totalLength;
 @property (nonatomic) bool hasSections;
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSMutableArray *scenes;
@@ -82,6 +84,7 @@
 - (void)awakeFromNib {
 	// Register this view to be updated
 	[_delegate registerSceneOutlineView:self];
+	[_delegate registerPaginationBoundView:self];
 	
 	// No item selected
 	_clickedItem = nil;
@@ -140,6 +143,11 @@
 	[self hide];
 }
 
+- (BOOL)isFlipped { return YES; }
+
+
+#pragma mark - Mouse events
+
 - (void)scrollWheel:(NSEvent *)event
 {
 	// For some reason we need to do this on macOS Sonoma.
@@ -154,20 +162,72 @@
 	[super scrollWheel:event];
 }
 
-- (void)refreshWithDelay {
-	// Refresh timeline at an interval and cancel if any changes are made before refresh.
+-(void)mouseUp:(NSEvent *)event
+{
+	[super mouseUp:event];
 	
-	// Let's not, for now.
-	
-	/*
-	 [_refreshTimer invalidate];
-	 
-	 _refreshTimer = [NSTimer scheduledTimerWithTimeInterval:2.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
-	 self.outline = [self.delegate getOutlineItems];
-	 [self updateScenesAndRebuild:YES];
-	 }];
-	 */
+	// Close "add storyline" popover
+	if (_storylinePopover.isShown) {
+		[_storylinePopover close];
+		_storylineField.stringValue = @"";
+	}
 }
+
+
+#pragma mark - Create items
+
+/// Creates needed amount of timeline item views (or removes extra ones)
+- (void)createTimelineItemViews:(NSInteger)scenes
+{
+	NSInteger diff = scenes - self.scenes.count;
+	if (diff > 0) {
+		// We need more items
+		for (int i = 0; i < diff; i++) {
+			BeatTimelineItem *item = [BeatTimelineItem.alloc initWithDelegate:self];
+			[_scenes addObject:item];
+			[self addSubview:item];
+		}
+	} else if (diff < 0) {
+		// There are extra items
+		for (NSInteger i = 0; i < -diff; i++) {
+			BeatTimelineItem *item = _scenes.lastObject;
+			[item removeFromSuperview];
+			[_scenes removeObject:item];
+		}
+	}
+}
+
+/// Creates needed amount of storyline item views (or removes extra ones)
+- (void)createStorylineItems:(NSInteger)storylineBlocks {
+	NSInteger diff = storylineBlocks - self.storylineItems.count;
+	if (diff > 0) {
+		for (int i = 0; i < diff; i++) {
+			BeatTimelineItem *item = [[BeatTimelineItem alloc] initWithDelegate:self];
+			[_storylineItems addObject:item];
+			[self addSubview:item];
+		}
+	} else if (diff < 0) {
+		for (NSInteger i = 0; i < -diff; i++) {
+			[_storylineItems.lastObject removeFromSuperview];
+			[_storylineItems removeLastObject];
+		}
+	}
+	
+	// Remove all storyline items when they are not needed
+	if ((storylineBlocks == 0 && _visibleStorylines.count) ||
+		(_visibleStorylines.count == 0 && _storylineItems.count > 0)) {
+		for (BeatTimelineItem *item in _storylineItems) {
+			[item removeFromSuperview];
+		}
+		
+		[_storylineItems removeAllObjects];
+		[self removeStorylineLabels];
+		[_visibleStorylines removeAllObjects];
+	}
+}
+
+
+#pragma mark - Updating scenes
 
 - (void)updateScenes {
 	[self updateScenesAndRebuild:NO];
@@ -195,7 +255,8 @@
 				_hasSections = YES;
 				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
 			} else {
-				_totalLength += scene.timeLength;
+				_totalLength += (scene.printedLength > PLACEHOLDER_WIDTH) ?  scene.printedLength : PLACEHOLDER_WIDTH;
+				//_totalLength += scene.timeLength;
 			}
 			
 			if (scene.storylines.count) {
@@ -207,53 +268,13 @@
 			scenes++;
 		}
 		
-		NSInteger diff = scenes - self.scenes.count;
+		if (_totalLength == 0.0) _totalLength = 0.01;
 		
-		// We need more items
-		if (diff > 0) {
-			for (int i = 0; i < diff; i++) {
-				BeatTimelineItem *item = [BeatTimelineItem.alloc initWithDelegate:self];
-				[_scenes addObject:item];
-				[self addSubview:item];
-			}
-		}
-		// There are extra items
-		else if (diff < 0) {
-			for (NSInteger i = 0; i < -diff; i++) {
-				BeatTimelineItem *item = _scenes.lastObject;
-				[item removeFromSuperview];
-				[_scenes removeObject:item];
-			}
-		}
+		// Create timeline items
+		[self createTimelineItemViews:scenes];
 		
 		// Do the same for storyline blocks
-		diff = storylineBlocks - self.storylineItems.count;
-		if (diff > 0) {
-			for (int i = 0; i < diff; i++) {
-				BeatTimelineItem *item = [[BeatTimelineItem alloc] initWithDelegate:self];
-				[_storylineItems addObject:item];
-				[self addSubview:item];
-			}
-		}
-		else if (diff < 0) {
-			for (NSInteger i = 0; i < -diff; i++) {
-				[_storylineItems.lastObject removeFromSuperview];
-				[_storylineItems removeLastObject];
-			}
-			
-		}
-		
-		// Remove all storyline items when they are not needed
-		if ((storylineBlocks == 0 && _visibleStorylines.count) ||
-			(_visibleStorylines.count == 0 && _storylineItems.count > 0)) {
-			for (BeatTimelineItem *item in _storylineItems) {
-				[item removeFromSuperview];
-			}
-			
-			[_storylineItems removeAllObjects];
-			[self removeStorylineLabels];
-			[_visibleStorylines removeAllObjects];
-		}
+		[self createStorylineItems:storylineBlocks];
 	}
 	
 	// CREATE TIMELINE ELEMENTS
@@ -296,7 +317,8 @@
 			width = 1;
 			rect = NSMakeRect(x, yPosition, 1, 1);
 		} else {
-			width = scene.timeLength * factor;
+			CGFloat length = scene.printedLength > PLACEHOLDER_WIDTH ? scene.printedLength : PLACEHOLDER_WIDTH;
+			width = length * factor;
 			rect = NSMakeRect(x, yPosition, width, height);
 		}
 		
@@ -360,12 +382,24 @@
 		index++;
 	}
 	
-	// Move playhead to the selected position + disable core animation
+	[self moveToCurrentSceneAnimated:false];
+}
+
+- (void)moveToCurrentSceneAnimated:(BOOL)animated
+{
+	// Move playhead to the selected position
 	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+	
+	// Disable core animation
+	if (animated) [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+	
 	[self moveToScene:_delegate.currentScene scroll:false];
+	
 	[CATransaction commit];
 }
+
+
+#pragma mark - Drawing
 
 -(void)setFrame:(NSRect)frame
 {
@@ -377,13 +411,17 @@
 	[super setFrame:frame];
 }
 
-- (void)drawRect:(NSRect)dirtyRect {
+- (void)drawRect:(NSRect)dirtyRect
+{
 	[super drawRect:dirtyRect];
 	[self updateScenes];
 	
 	// Let's draw labels
 	if (_visibleStorylines) [self updateStorylineLabels];
 }
+
+
+#pragma mark - Move to scenes
 
 /// Called by the editor to tell we moved to this scene
 - (void)didMoveToSceneIndex:(NSInteger)index
@@ -452,14 +490,6 @@
 	[self updateLayer];
 }
 
-- (BeatTimelineItem*)timelineItemFor:(OutlineScene*)scene
-{
-	for (BeatTimelineItem *item in self.scenes) {
-		if (item.representedItem == scene) return item;
-	}
-	return nil;
-}
-
 - (void)movePlayhead:(NSRect)selectionRect {
 	CGPathRef path = CGPathCreateWithRect(CGRectMake(0, 0, 1, self.frame.size.height), nil);
 	_playhead.bounds = CGRectMake(0, 0, 1, self.frame.size.height);
@@ -471,6 +501,19 @@
 - (CGFloat)playheadPosition {
 	return _playhead.position.x;
 }
+
+#pragma mark - Data model
+
+- (BeatTimelineItem*)timelineItemFor:(OutlineScene*)scene
+{
+	for (BeatTimelineItem *item in self.scenes) {
+		if (item.representedItem == scene) return item;
+	}
+	return nil;
+}
+
+
+#pragma mark - Selecting
 
 - (void)deselectAll {
 	[_selectedItems removeAllObjects];
@@ -534,26 +577,12 @@
 	}
 }
 
-- (BOOL)isFlipped { return YES; }
 
-- (void)reload {
-	// Don't load in background
-	if (!self.visible) return;
-	
-	_outline = _delegate.parser.outline.copy;
-	
-	[self updateScenesAndRebuild:YES];
-	[self updateStorylines];
-}
+#pragma mark - Random shit
 
--(void)mouseUp:(NSEvent *)event {
-	[super mouseUp:event];
-	
-	// Close "add storyline" popover
-	if (_storylinePopover.isShown) {
-		[_storylinePopover close];
-		_storylineField.stringValue = @"";
-	}
+- (BOOL)showsTrueLengths
+{
+	return true;
 }
 
 #pragma mark - Storyline handling
@@ -803,6 +832,26 @@
 - (void)reloadWithChanges:(OutlineChanges *)changes
 {
 	if (self.visible) [self reload];
+}
+
+- (void)paginationFinished
+{
+	if (!self.visible) return;
+	_outline = _delegate.parser.safeOutline;
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		[self updateScenesAndRebuild:YES];
+	});
+}
+
+- (void)reload
+{
+	// Don't load in background
+	if (!self.visible) return;
+	
+	_outline = _delegate.parser.safeOutline;
+	
+	[self updateScenesAndRebuild:YES];
+	[self updateStorylines];
 }
 
 
