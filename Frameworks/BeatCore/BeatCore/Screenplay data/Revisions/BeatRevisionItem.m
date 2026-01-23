@@ -28,7 +28,7 @@
 
 + (BeatRevisionItem*)type:(RevisionType)type generation:(NSInteger)level
 {
-    if (type == RevisionRemovalSuggestion) level = -1;
+    //if (type == RevisionRemovalSuggestion) level = -1;
     return [BeatRevisionItem.alloc initWithType:type generation:level];
 }
 
