@@ -83,6 +83,8 @@
 
 @property (nonatomic) bool timedOut;
 
+@property (nonatomic) NSDictionary* sceneHeights;
+
 @end
 
 @implementation BeatPagination
@@ -145,8 +147,45 @@
 	else return BeatStyles.shared.defaultStyles;
 }
 
+#pragma mark - Update page numbers
+
+- (void)updatePageNumber:(BeatPageNumberingMode)mode numberingBegan:(bool *)numberingBegan page:(BeatPaginationPage *)page pageNumber:(NSInteger *)pageNumber {
+    if (!*numberingBegan) {
+        if (mode == BeatPageNumberingModeFirstScene && page.hasScene) {
+            // This page will get a number, because it has a scene
+            *numberingBegan = true;
+        } else if (mode == BeatPageNumberingModeFirstPageBreak && page.hasForcedPageBreak) {
+            // This page WON'T get a number, but the following ones do
+            *numberingBegan = true;
+            return;
+        }
+    }
+    
+    if (*numberingBegan && page.customPageNumber == nil) {
+        page.pageNumber = *pageNumber;
+        *pageNumber += 1;
+    }
+}
+
 
 #pragma mark - Delivering results
+
+- (void)updateHeights:(Line **)currentScene heights:(inout NSMutableDictionary<NSString *,NSNumber *> *)heights page:(BeatPaginationPage *)page {
+    for (Line* line in page.lines) {
+        if (line.type != heading) continue;
+        
+        if (*currentScene == nil) {
+            *currentScene = line;
+            continue;
+        } else {
+            NSUInteger currentPosition = [*currentScene position];
+            CGFloat height = [self heightForRange:NSMakeRange(currentPosition, line.position - 1 - currentPosition)];
+            heights[[*currentScene uuidString]] = @(height);
+            
+            *currentScene = line;
+        }
+    }
+}
 
 /// Called when this operation is finished.
 - (void)paginationFinished
@@ -159,26 +198,21 @@
     NSInteger pageNumber = self.settings.firstPageNumber;
     bool numberingBegan = (mode == BeatPageNumberingModeDefault);
     
+    NSMutableDictionary<NSString*, NSNumber*>* heights = NSMutableDictionary.new;
+    Line* currentScene;
+    
     for (BeatPaginationPage* page in self.pages) {
-        if (!numberingBegan) {
-            if (mode == BeatPageNumberingModeFirstScene && page.hasScene) {
-                // This page will get a number, because it has a scene
-                numberingBegan = true;
-            } else if (mode == BeatPageNumberingModeFirstPageBreak && page.hasForcedPageBreak) {
-                // This page WON'T get a number, but the following ones do
-                numberingBegan = true;
-                continue;
-            }
-        }
+        [self updatePageNumber:mode numberingBegan:&numberingBegan page:page pageNumber:&pageNumber];
         
-        if (numberingBegan && page.customPageNumber == nil) {
-            page.pageNumber = pageNumber;
-            pageNumber += 1;
-        }
+        [self updateHeights:&currentScene heights:heights page:page];
     }
+    
+    self.sceneHeights = heights;
     
     [self.delegate paginationFinished:self];
 }
+
+
 
 - (NSDictionary<NSValue*,NSArray<NSNumber*>*>*)editorPageBreaks
 {
@@ -752,7 +786,8 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 #pragma mark - Heights of scenes
 
 /// Find line based on UUID
-- (NSInteger)indexForEditorLine:(Line*)line {
+- (NSInteger)indexForEditorLine:(Line*)line
+{
     NSInteger idx = NSNotFound;
     for (NSInteger i=0; i<_lines.count; i++) {
         if ([_lines[i].uuid BequalTo:line.uuid]) {
@@ -764,11 +799,15 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
     return idx;
 }
 
-- (CGFloat)heightForScene:(OutlineScene*)scene {
+- (CGFloat)heightForScene:(OutlineScene*)scene
+{
     // Height for omitted scenes is always 0.0
     if (scene.omitted) return 0.0;
     
+    NSNumber* height = self.sceneHeights[scene.line.uuidString];
+    return (CGFloat)height.floatValue;
     
+    /*
     // We can't use scene.range here, because it ends where an omitted scene might begin.
     // Let's find the next scene, then.
     NSInteger lineIndex = [self indexForEditorLine:scene.line];
@@ -794,6 +833,7 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
     NSRange range = NSMakeRange(firstLine.position, NSMaxRange(lastLine.range) - firstLine.position);
     
     return [self heightForRange:range];
+     */
 }
 
 - (CGFloat)heightForRange:(NSRange)range
