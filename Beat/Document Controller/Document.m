@@ -942,19 +942,16 @@
 - (void)paginationFinished:(BeatPagination *)operation indices:(NSIndexSet *)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks
 {
 	[super paginationFinished:operation indices:indices pageBreaks:pageBreaks];
-	
-	// If we have relative outline on, we'll need to update the heights... TODO: this should be a registered event
-	if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights]) {
-		for (OutlineScene* scene in self.parser.outline) {
-			CGFloat oldHeight = scene.printedLength;
-			scene.printedLength = [self.pagination heightForScene:scene];
-			if (oldHeight == scene.printedLength) continue;
-			
-			dispatch_async(dispatch_get_main_queue(), ^(void) {
-				[self.outlineView reloadItem:scene];
-			});
-		}
+
+	for (OutlineScene* scene in self.parser.outline) {
+		scene.printedLength = [self.pagination heightForScene:scene];
 	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		for (id<BeatPaginationBoundOutlineView>view in self.registeredPaginationBoundViews) {
+			[view paginationFinished];
+		}
+	});	
 }
 
 @end
