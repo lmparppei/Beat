@@ -66,6 +66,7 @@ typedef NS_ENUM(NSInteger, BeatParagraphPaginationMode) {
 - (NSInteger)findPageIndexForLine:(Line*)line;
 - (NSInteger)findPageIndexAt:(NSInteger)position;
 - (CGFloat)heightForScene:(OutlineScene*)scene;
+- (CGFloat)heightForSceneWithUUID:(NSString*)uuidString;
 - (CGFloat)heightForRange:(NSRange)range;
 
 - (NSInteger)pageIndexForScene:(OutlineScene*)scene;

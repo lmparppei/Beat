@@ -513,8 +513,7 @@
 	CGFloat remainingSpace = _currentPage.remainingSpace;
     
 	// If remaining space is less than 1 line OR we're just leaving one line on this page, just roll on to next page
-	if (remainingSpace < lineHeight || (remainingSpace <= lineHeight + group.topMargin)
-        ) {
+	if (remainingSpace < lineHeight || (remainingSpace <= lineHeight + group.topMargin)) {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:group.blocks.firstObject.lines.firstObject attributedString:nil reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	} else if (group.blocks.count > 0) {
@@ -806,34 +805,12 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
     
     NSNumber* height = self.sceneHeights[scene.line.uuidString];
     return (CGFloat)height.floatValue;
-    
-    /*
-    // We can't use scene.range here, because it ends where an omitted scene might begin.
-    // Let's find the next scene, then.
-    NSInteger lineIndex = [self indexForEditorLine:scene.line];
-    NSInteger endIndex = 0;
-    
-    if (lineIndex == NSNotFound) return 0.0;
-    
-    // Find next scene heading
-    for (NSInteger i=lineIndex+1; i<_lines.count; i++) {
-        Line* line = _lines[i];
-        if (line.type == heading && !line.omitted) {
-            endIndex = i - 1;
-            break;
-        }
-        else if (line == _lines.lastObject) {
-            endIndex = i;
-        }
-    }
-    
-    Line* firstLine = _lines[lineIndex];
-    Line* lastLine = _lines[endIndex];
-    
-    NSRange range = NSMakeRange(firstLine.position, NSMaxRange(lastLine.range) - firstLine.position);
-    
-    return [self heightForRange:range];
-     */
+}
+
+- (CGFloat)heightForSceneWithUUID:(NSString*)uuidString
+{
+    NSNumber* height = self.sceneHeights[uuidString];
+    return (height != nil) ? (CGFloat)height.floatValue : 0.0;
 }
 
 - (CGFloat)heightForRange:(NSRange)range
