@@ -115,6 +115,15 @@
         else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
     }
     */
+    
+    if (self.dualDialogueElement) {
+        // This is a little hacky. We need to change the pointer to a clone of the line because we are asking for style for this line from stylesheet,
+        // and while the left-side of a dual dialogue block is parsed as single dialogue, in rendered context, it has to be dual dialogue too.
+        line = line.clone;
+        if (line.type == character) line.type = dualDialogueCharacter;
+        else if (line.type == parenthetical) line.type = dualDialogueParenthetical;
+        else if (line.type == dialogue) line.type = dualDialogue;
+    }
 
     BeatPaperSize pageSize = self.delegate.settings.paperSize;
     
