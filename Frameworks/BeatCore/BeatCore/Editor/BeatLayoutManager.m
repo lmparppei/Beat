@@ -45,11 +45,15 @@
     #define BXRectFill UIRectFill
     #define BXBezierPath UIBezierPath
 
+    #define BXRoundedBezierPath(rect, radius) [BXBezierPath bezierPathWithRoundedRect:rect cornerRadius:radius];
+
     // Because of different line heights on iOS, we'll need to add an offset
     #define Y_OFFSET -1.0
 
     #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
     #define getRectValue CGRectValue
+
+    #define BXRectValue CGRectValue
 #else
     #define BXPoint NSPoint
     #define BXRectFill NSRectFill
@@ -59,6 +63,10 @@
 
     #define rectNumberValue(s) [NSValue valueWithRect:rect]
     #define getRectValue rectValue
+
+    #define BXRoundedBezierPath(rect, radius) [BXBezierPath bezierPathWithRoundedRect:tagRect xRadius:radius yRadius:radius];
+
+    #define BXRectValue rectValue
 #endif
 
 
@@ -337,7 +345,8 @@
                 NSRange globalGlyphRange = [self glyphRangeForCharacterRange:globalRange actualCharacterRange:nil];
                 NSArray* rects = [self rectsForGlyphRange:globalGlyphRange];
                 for (NSValue* v in rects) {
-                    CGRect rect = v.rectValue;
+                    CGRect rect = v.BXRectValue;
+
                     rect.origin.x += inset.width;
                     rect.origin.y += inset.height;
                     [[BXColor.systemYellowColor colorWithAlphaComponent:0.5] setFill];
@@ -417,11 +426,8 @@
                 
                 CGRect tagRect = aRect;
                 tagRect.origin.x -= 2.0; tagRect.size.width += 2.0;
-#if TARGET_OS_OSX
-                BXBezierPath* path = [BXBezierPath bezierPathWithRoundedRect:tagRect xRadius:3.0 yRadius:3.0];
-#else
-                BXBezierPath* path = [BXBezierPath bezierPathWithRoundedRect:tagRect cornerRadius:3.0];
-#endif
+                
+                BXBezierPath* path = BXRoundedBezierPath(tagRect, 3.0);
                 [path fill];
                 
                 //BXRectFill(aRect);
