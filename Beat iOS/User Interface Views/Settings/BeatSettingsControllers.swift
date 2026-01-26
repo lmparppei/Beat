@@ -83,7 +83,9 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var sectionFontSize:UIButton?
 	@IBOutlet weak var synopsisFontType:UIButton?
 	
-	/// Font size switch is only available on iOS
+	@IBOutlet weak var fontStyleButton:UIButton?
+	
+	/// Font size switch is only available on iPhone
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
 	
 	override func viewDidLoad() {
@@ -106,6 +108,11 @@ class BeatSettingsViewController:UITableViewController {
 		
 		let highContrast = UserDefaults.standard.string(forKey: ThemeManager.loadedThemeKey()) ?? ""
 		self.highContrastSwitch?.setOn(highContrast.count > 0 , animated: false)
+		
+		let style = BeatUserDefaults.shared().getInteger(BeatSettingFontStyle)
+		if let fontStyleMenu = fontStyleButton?.menu, style < fontStyleMenu.children.count {
+			(fontStyleMenu.children[style] as? UICommand)?.state = .on
+		}
 		
 		if let stylesheet = self.delegate?.styles.name,
 		   let availableStyles = stylesheetSwitch?.stylesheets.split(separator: ",") {
@@ -132,6 +139,10 @@ class BeatSettingsViewController:UITableViewController {
 			sectionFontCommand.state = .on
 		}
 		
+	}
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
 	}
 	
 	@IBAction func toggleDarkMode(_ sender:UISegmentedControl) {
@@ -291,10 +302,18 @@ class BeatSettingsViewController:UITableViewController {
 		self.delegate?.formatting.formatAllLines()
 	}
 	
-	@IBAction func toggleFontStyle(_ sender:UISegmentedControl) {
+	@IBAction func toggleFontStyle(_ sender:UIMenuElement) {
 		// This is a little hacky. 0 = serif, 1 = sans serif, 2 = courier new
-		BeatUserDefaults.shared().save(sender.selectedSegmentIndex, forKey: BeatSettingFontStyle)
+		// BeatUserDefaults.shared().save(sender.selectedSegmentIndex, forKey: BeatSettingFontStyle)
+		let style = if sender.title == "Courier Prime" { 0 }
+					else if sender.title == "Courier Prime Sans" { 1 }
+					else { 2 }
 		
+		// This is a little hacky. 0 = serif, 1 = sans serif, 2 = courier new
+		BeatUserDefaults.shared().save(style, forKey: BeatSettingFontStyle)
+		print("New font style:", style)
+
+
 		self.delegate?.reloadStyles()
 		self.delegate?.formatting.formatAllLines()
 	}
@@ -322,3 +341,14 @@ extension UIMenu {
 		return nil
 	}
 }
+
+extension UIButton {
+	/// Forcibly set the selected item for given button with a menu
+	func forceSelectedIndex(_ index: Int) {
+		guard let menu, index > 0, index < menu.children.count else {
+			return
+		}
+		(menu.children[index] as? UIAction)?.state = .on
+	}
+}
+
