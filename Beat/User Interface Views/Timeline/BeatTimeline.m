@@ -62,7 +62,7 @@
 @property (nonatomic) CGFloat totalLength;
 @property (nonatomic) bool hasSections;
 @property (nonatomic) NSInteger sectionDepth;
-@property (nonatomic) NSMutableArray *scenes;
+@property (nonatomic) NSMutableArray<BeatTimelineItem*>* scenes;
 @property (nonatomic) NSMutableArray *storylineItems;
 @property (nonatomic) NSMutableArray *storylineLabels;
 @property (nonatomic) NSArray *storylineColors;
@@ -414,9 +414,79 @@
 {
 	[super drawRect:dirtyRect];
 	[self updateScenes];
+	[self drawPageNumbers];
 	
 	// Let's draw labels
 	if (_visibleStorylines) [self updateStorylineLabels];
+}
+
+- (void)drawPageNumbers
+{
+	NSDictionary* attrs = @{
+		NSFontAttributeName: [NSFont systemFontOfSize:6.0],
+		NSForegroundColorAttributeName: NSColor.secondaryLabelColor
+	};
+
+	NSInteger sceneIdx = 0;
+	CGFloat sceneStartPage = 0.0;
+
+	CGFloat prevX = -1.0;
+	NSUInteger density = NSNotFound;
+
+	NSArray<BeatPaginationPage*>* pages = self.delegate.pagination.finishedPagination.pages;
+	
+	for (NSInteger p = 0; p < pages.count; p++) {
+
+		CGFloat pagePos = (CGFloat)p; // page-space position
+
+		BeatPaginationPage* page = pages[p];
+		if (page.lines.firstObject.type == heading || page.lines.firstObject.type == section) {
+			// Let's find the index of this item
+			OutlineScene* newScene = [self.delegate.parser sceneWithUUID:page.lines.firstObject.uuidString];
+			NSInteger newSceneIndex = [self.outline indexOfObject:newScene];
+			if (newSceneIndex != NSNotFound) {
+				sceneIdx = newSceneIndex;
+				sceneStartPage = p;
+			}
+		}
+		
+		while (sceneIdx < self.scenes.count) {
+			BeatTimelineItem *item = self.scenes[sceneIdx];
+			CGFloat sceneLength = item.representedItem.printedLength;
+			CGFloat sceneEndPage = sceneStartPage + sceneLength;
+
+			// Does this page live inside this scene?
+			if (pagePos >= sceneStartPage && pagePos < sceneEndPage) {
+
+				CGFloat t = (pagePos - sceneStartPage) / sceneLength;
+				CGFloat x = item.frame.origin.x + t * item.frame.size.width;
+
+				// Define density of page numbers
+				if (density == NSNotFound && prevX >= 0.0) {
+					CGFloat dx = x - prevX;
+					if (dx < 10.0) density = 10;
+					else if (dx < 15.0) density = 5;
+					else density = 1;
+				}
+
+				if (density == NSNotFound || p % density == 0) {
+					NSAttributedString *pStr =
+						[[NSAttributedString alloc]
+							initWithString:[NSString stringWithFormat:@"%ld", p + 1]
+								attributes:attrs];
+
+					[pStr drawAtPoint:CGPointMake(x, 80.0)];
+				}
+
+				prevX = x;
+				break;
+			}
+
+			sceneStartPage = sceneEndPage;
+			sceneIdx++;
+		}
+	}
+
 }
 
 
