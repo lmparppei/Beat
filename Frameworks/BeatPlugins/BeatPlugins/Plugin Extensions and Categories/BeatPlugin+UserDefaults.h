@@ -9,6 +9,8 @@
 
 @protocol BeatPluginUserDefaultsExports <JSExport>
 
+NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark User settings
 /// Sets a user default (`key`, `value`)
 JSExportAs(setUserDefault, - (void)setUserDefault:(NSString* _Nonnull)settingName setting:(id  _Nullable)value);
@@ -18,6 +20,8 @@ JSExportAs(getUserDefault, - (id _Nullable)getUserDefault:(NSString* _Nonnull)se
 JSExportAs(getRawUserDefault, - (id _Nullable)getRawUserDefault:(NSString* _Nonnull)settingName);
 /// Stores a non-prefixed user default value
 JSExportAs(setRawUserDefault,- (void)setRawUserDefault:(NSString* _Nonnull)settingName value:(id _Nullable)value);
+
+NS_ASSUME_NONNULL_END
 
 @end
 
