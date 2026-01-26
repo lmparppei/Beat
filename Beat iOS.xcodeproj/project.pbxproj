@@ -22,7 +22,7 @@
 		B610166A29A7D14B0090235A /* BeatSettingsControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B610166929A7D14B0090235A /* BeatSettingsControllers.swift */; };
 		B61073952DB689E4005AD11B /* 0.2.11.html in Resources */ = {isa = PBXBuildFile; fileRef = B61073942DB689E4005AD11B /* 0.2.11.html */; };
 		B6118AA82EA13715009D817D /* SimulatedTyping.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6118AA72EA13712009D817D /* SimulatedTyping.swift */; };
-		B61653702F1A3A98000C6F2C /* 0.3.11.html in Resources */ = {isa = PBXBuildFile; fileRef = B616536F2F1A3A98000C6F2C /* 0.3.11.html */; };
+		B61653702F1A3A98000C6F2C /* 0.4.0.html in Resources */ = {isa = PBXBuildFile; fileRef = B616536F2F1A3A98000C6F2C /* 0.4.0.html */; };
 		B61914CF2C0497E80079C828 /* BeatStatisticsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B61914CD2C0497DE0079C828 /* BeatStatisticsUI.html */; };
 		B61914D02C0497EA0079C828 /* BeatStatistics.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B61914CE2C0497DF0079C828 /* BeatStatistics.beatPlugin */; };
 		B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B619DE5529F6ED51007D1838 /* BeatExportViewController.swift */; };
@@ -124,6 +124,7 @@
 		B6A97CA32BF0C3FD00414878 /* BeatFileExport.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6A97CA12BF0C3FD00414878 /* BeatFileExport.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6A97CA52BF0C62B00414878 /* BeatDocumentViewController+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */; };
 		B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B61BB529F970A20098D94D /* UITextView+UX.m */; };
+		B6BEE27D2F24C2FC00CF6BF5 /* BeatLLMHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BEE27C2F24C2F700CF6BF5 /* BeatLLMHelper.swift */; };
 		B6C51B4E2DF755C10093965F /* 0.2.12.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C51B4D2DF755C10093965F /* 0.2.12.html */; };
 		B6C597B42E66370100418587 /* ThumbnailProvider.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6C597B32E66370100418587 /* ThumbnailProvider.xcassets */; };
 		B6C597C42E6EA28000418587 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6C597C32E6EA28000418587 /* Main.storyboard */; };
@@ -231,7 +232,7 @@
 		B610166929A7D14B0090235A /* BeatSettingsControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSettingsControllers.swift; sourceTree = "<group>"; };
 		B61073942DB689E4005AD11B /* 0.2.11.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.11.html; sourceTree = "<group>"; };
 		B6118AA72EA13712009D817D /* SimulatedTyping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedTyping.swift; sourceTree = "<group>"; };
-		B616536F2F1A3A98000C6F2C /* 0.3.11.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.11.html; sourceTree = "<group>"; };
+		B616536F2F1A3A98000C6F2C /* 0.4.0.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.0.html; sourceTree = "<group>"; };
 		B61914CD2C0497DE0079C828 /* BeatStatisticsUI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = BeatStatisticsUI.html; sourceTree = "<group>"; };
 		B61914CE2C0497DF0079C828 /* BeatStatistics.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; path = BeatStatistics.beatPlugin; sourceTree = "<group>"; };
 		B619DE5529F6ED51007D1838 /* BeatExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatExportViewController.swift; sourceTree = "<group>"; };
@@ -345,6 +346,7 @@
 		B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+Export.swift"; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
+		B6BEE27C2F24C2F700CF6BF5 /* BeatLLMHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLLMHelper.swift; sourceTree = "<group>"; };
 		B6C51B4D2DF755C10093965F /* 0.2.12.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.12.html; sourceTree = "<group>"; };
 		B6C597B32E66370100418587 /* ThumbnailProvider.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ThumbnailProvider.xcassets; sourceTree = "<group>"; };
 		B6C597C22E6EA28000418587 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -591,7 +593,7 @@
 				B6F4BAF92EF59A49004A40ED /* 0.3.8.html */,
 				B6720F8E2EF9B9AA00A1907F /* 0.3.9.html */,
 				B6060DC62F04109D008FE406 /* 0.3.10.html */,
-				B616536F2F1A3A98000C6F2C /* 0.3.11.html */,
+				B616536F2F1A3A98000C6F2C /* 0.4.0.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -859,6 +861,7 @@
 		B6CE24DC283853FE00D53CE8 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B6BEE27C2F24C2F700CF6BF5 /* BeatLLMHelper.swift */,
 				B6CE24DD2838541500D53CE8 /* Utilities.swift */,
 			);
 			path = Utilities;
@@ -1025,7 +1028,7 @@
 				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
 				B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */,
 				B64FA4A92DA55E590098F448 /* ThemeEditor.storyboard in Resources */,
-				B61653702F1A3A98000C6F2C /* 0.3.11.html in Resources */,
+				B61653702F1A3A98000C6F2C /* 0.4.0.html in Resources */,
 				B61914CF2C0497E80079C828 /* BeatStatisticsUI.html in Resources */,
 				B65B56EB2D42AB23008BB43F /* 0.2.5.html in Resources */,
 				B65B56F02D4394AF008BB43F /* 0.2.6.html in Resources */,
@@ -1140,6 +1143,7 @@
 				B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
 				B6ED944E2E37AAE700D76982 /* BeatAppState.swift in Sources */,
+				B6BEE27D2F24C2FC00CF6BF5 /* BeatLLMHelper.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
 				B6298D4B2BC66E3D00F9AAF0 /* BeatNavigationController.swift in Sources */,
 				B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */,
@@ -1397,7 +1401,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 98;
+				CURRENT_PROJECT_VERSION = 100;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1419,7 +1423,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.3.11;
+				MARKETING_VERSION = 0.4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1455,7 +1459,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 98;
+				CURRENT_PROJECT_VERSION = 100;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1472,7 +1476,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.3.11;
+				MARKETING_VERSION = 0.4.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;
