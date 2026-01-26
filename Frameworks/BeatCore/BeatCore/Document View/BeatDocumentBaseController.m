@@ -797,16 +797,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle];
 }
 
-/*
-- (bool)useSansSerif
-{
-    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
-}
-- (void)setUseSansSerif:(bool)useSansSerif
-{
-    [BeatUserDefaults.sharedDefaults saveBool:useSansSerif forKey:BeatSettingUseSansSerif];
-}
-*/
 
 /// Returns current default font point size
 - (CGFloat)fontSize
