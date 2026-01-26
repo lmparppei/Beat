@@ -245,8 +245,10 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			view.textField?.font = view.textField?.font?.bold()
 			view.sceneNumber?.stringValue = ""
 		} else if let scene = result.scene  {
-			// This is a scene heading result
-			view.textField?.stringValue = scene.stringForDisplay()
+			// This is a scene heading result. Uppercased for scene headings, as-is for section lines.
+			view.textField?.stringValue =
+				if scene.type == .heading { scene.stringForDisplay().uppercased() }
+				else { scene.stringForDisplay() }
 			view.sceneNumber?.stringValue = scene.sceneNumber ?? ""
 		}
 		
