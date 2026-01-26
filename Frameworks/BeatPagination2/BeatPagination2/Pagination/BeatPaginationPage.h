@@ -28,7 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 -(NSRange)representedRange;
 -(NSRange)safeRange;
 
+/// Returns the relative position of block
 - (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
+/// Returns the ACTUAL POINT value for position of block
 - (CGFloat)actualPositionOfBlock:(BeatPaginationBlock*)block;
 
 - (CGFloat)positionOfBlockForLine:(Line*)line;
