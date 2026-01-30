@@ -140,7 +140,7 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
 {
     bool previousIsEmpty = previousLine.effectivelyEmpty || previousLine == nil;
     bool nextIsEmpty = (nextLine.type == empty);
-  
+   
     // Check length first
     bool isLongEnough = false;
     if (line.length >= self.minimumLength || (delegate.currentLine == line && line.length >= self.minimumLengthAtInput)) {
@@ -155,7 +155,7 @@ minimumLengthAtInput:(NSInteger)minimumLengthAtInput
         (mask_contains(self.options, PreviousIsNotEmpty) && previousLine.length == 0) ||            // Previous should NOT be empty, but isn't
         
         (self.allCapsUntilParentheses && !line.string.onlyUppercaseUntilParenthesis) ||             // Caps rules not fulfilled
-        (line.string.containsOnlyWhitespace && line.length > self.allowedWhiteSpace)  ||            // Wrong amount of whitespace 
+        (line.string.containsOnlyWhitespace && line.length > self.allowedWhiteSpace && line.length < 2)  ||            // Wrong amount of whitespace 
 
         (mask_contains(self.options, RequiresTwoEmptyLines) && line.length == 0 && !nextIsEmpty)
         )
