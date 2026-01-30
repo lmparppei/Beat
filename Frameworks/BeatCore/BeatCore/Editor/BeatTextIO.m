@@ -870,19 +870,36 @@ static NSString *centeredEnd = @" <";
 
 - (void)forceLineType:(LineType)lineType
 {
-    [self forceLineType:lineType range:self.delegate.selectedRange];
+    if (lineType == lyrics || lineType == centered) {
+        [self forceLineType:lineType forAllLinesInRange:self.delegate.selectedRange];
+    } else {
+        [self forceLineType:lineType range:self.delegate.selectedRange];
+    }
 }
 
-- (void)forceLineType:(LineType)type range:(NSRange)cursorLocation
+- (void)forceLineType:(LineType)type range:(NSRange)range
 {
-    Line* currentLine = self.delegate.currentLine;
-    if (currentLine == nil) return;
+    Line* line = [self.delegate.parser lineAtPosition:range.location];
+    if (line == nil) return;
     
-    NSString* symbol = self.forceSymbols[@(type)];
-    
+    [self forceLineType:type forLine:line];
+}
+
+- (void)forceLineType:(LineType)lineType forLine:(Line*)line
+{
     // Remove or change current symbol
-    NSRange forcedRange = NSMakeRange(currentLine.position, currentLine.numberOfPrecedingFormattingCharacters);
+    NSString* symbol = self.forceSymbols[@(lineType)];
+    NSRange forcedRange = NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters);
     [self replaceRange:forcedRange withString:symbol];
+}
+
+- (void)forceLineType:(LineType)type forAllLinesInRange:(NSRange)range
+{
+    NSArray<Line*>* lines = [self.delegate.parser linesInRange:range];
+    for (Line* line in lines) {
+        if (line.type == empty) continue;
+        [self forceLineType:type forLine:line];
+    }
 }
 
 
