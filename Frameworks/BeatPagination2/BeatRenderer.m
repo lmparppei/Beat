@@ -263,7 +263,7 @@
             
             // Apply highlight if needed
             if ([styleNames containsObject:HIGHLIGHT_STYLE]) {
-                [attributedString addAttribute:NSBackgroundColorAttributeName value:[BXColor.systemYellowColor colorWithAlphaComponent:0.9] range:range];
+                [attributedString addAttribute:@"Highlight" value:@1 range:range];
             }
         }
         

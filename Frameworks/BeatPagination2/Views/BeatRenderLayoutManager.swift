@@ -41,7 +41,7 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 					return
 				}
 			}
-            
+                        
             // In rendered text, the revision attribute is a A NUMBER VALUE
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
                 guard obj != nil, let revisionValue = obj as? NSNumber else { return }
@@ -76,5 +76,31 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 	
 	override public func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
+        drawHighlight(forGlyphRange: glyphsToShow)
 	}
+    
+    /// Draws background highlights (for `Highlight` attribute) for given glyph range. Called in `drawBackground`.
+    func drawHighlight(forGlyphRange glyphRange:NSRange) {
+        let range = self.characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
+        
+        self.textStorage?.enumerateAttribute(NSAttributedString.Key("Highlight"), in: range) { val, highlightRange, stop in
+            guard val != nil else { return }
+            
+            let gr = self.glyphRange(forCharacterRange: highlightRange, actualCharacterRange: nil)
+            let rects = self.rectsForGlyphRange(gr)
+            
+            let c = UXColor.yellow.withAlphaComponent(0.9)
+            c.setFill()
+            
+            for rectValue in rects {
+                #if os(iOS)
+                    let rect = rectValue.cgRectValue
+                    UIRectFill(rect)
+                #else
+                    let rect = rectValue.rectValue
+                    rect.fill()
+                #endif
+            }
+        }
+    }
 }
