@@ -18,20 +18,26 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		super.init(forOpening: contentTypes)
 	}
 	
+	let allowedExtensions:[String] = ["fountain", "fdx", "txt", "fadein"]
+	
 	required init?(coder: NSCoder) {
 		var contentTypes:[UTType]? = []
 		
 		if let fountainUTI = UTType(filenameExtension: "fountain") { contentTypes?.append(fountainUTI) }
 		if let fountainData = UTType(filenameExtension: "fountain", conformingTo: UTType.data) { contentTypes?.append(fountainData) }
-		
 		if let fountain2 = UTType("fi.kapitan.fountain") { contentTypes?.append(fountain2) }
-		if let fountainData2 = UTType("com.kapitan.fountainData") { contentTypes?.append(fountainData2) }
-				
-		if let plainFountainUTI = UTType(filenameExtension: "fountain", conformingTo: UTType.plainText) { contentTypes?.append(plainFountainUTI) }
-		if let fdxUTI = UTType(filenameExtension: "fdx") { contentTypes?.append(fdxUTI) }
-		if let txtUTI = UTType(filenameExtension: "txt") { contentTypes?.append(txtUTI) }
-		if let fadeInUTI = UTType(filenameExtension: "fadein") { contentTypes?.append(fadeInUTI) }
-		if let plainTextUTI = UTType(mimeType: "text/plain", conformingTo: UTType.plainText) { contentTypes?.append(plainTextUTI) }
+		
+		// Let's manually add some extensions to help using cloud services
+		for ext in allowedExtensions {
+			if let uti = UTType(filenameExtension: ext) {
+				contentTypes?.append(uti)
+			}
+		}
+		
+		// The user can toggle all file types on. This is required when using Google Drive.
+		if BeatUserDefaults.shared().getBool(BeatSettingAllowAllFileTypes) {
+			contentTypes?.append(UTType.data)
+		}
 		
 		
 		if contentTypes?.count == 0 {
@@ -125,6 +131,12 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didPickDocumentsAt documentURLs: [URL]) {
         guard let sourceURL = documentURLs.first else { return }
 		
+		let ext = sourceURL.pathExtension.lowercased()
+		if !allowedExtensions.contains(ext) {
+			self.displayError(title: "Wrong File Type", message: "Files with type .\(ext) can't be opened. You might allowed all files to be displayed, so double-check you are trying to open a Fountain file.", preferredStyle: .alert)
+			return
+		}
+				
         // Present the Document View Controller for the first document that was picked.
         // If you support picking multiple items, make sure you handle them all.
         presentDocument(at: sourceURL)
