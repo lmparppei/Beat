@@ -111,6 +111,8 @@ NSString* const BeatSettingInputAssistantHidden         = @"hideInputAssistant";
 
 NSString* const BeatSpellCheckingLanguage               = @"spellCheckingLanguage";
 
+NSString* const BeatSettingAllowAllFileTypes            = @"allowAllFileTypes";
+
 + (BeatUserDefaults*)sharedDefaults
 {
 	static BeatUserDefaults* sharedDefaults;

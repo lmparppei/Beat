@@ -1,5 +1,11 @@
 # Changelog
 
+## Beat 2.1.5
+
+- Again forgot to update this log for a long time
+- Parser has finally moved to a rule-based system and inline formatting ranges are also contained in a dictionary instead of individual index sets
+
+
 ## Beat 2.0.0
 
 - Forgot to update this log
