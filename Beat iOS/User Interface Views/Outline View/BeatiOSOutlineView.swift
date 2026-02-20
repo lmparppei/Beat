@@ -56,6 +56,8 @@ import Foundation
 		let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeToClose))
 		swipe.direction = .left
 		self.addGestureRecognizer(swipe)
+		
+		self.scrollRectToVisible(CGRectMake(0, 0, 100, 0.1), animated: false)
 	}
 	
 	@objc func setupColors() {

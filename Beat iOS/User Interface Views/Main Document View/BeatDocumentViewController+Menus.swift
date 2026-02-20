@@ -125,7 +125,7 @@ extension BeatDocumentViewController {
 				completion(items)
 			}
 		])
-				
+		
 		self.screenplayButton?.menu = screenplayMenu
 		self.screenplayButton?.primaryAction = nil
 		

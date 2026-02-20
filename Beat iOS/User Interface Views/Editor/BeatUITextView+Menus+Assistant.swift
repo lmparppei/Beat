@@ -505,6 +505,15 @@ extension BeatUITextView {
 		}
 		
 		guard let line = editorDelegate?.currentLine else { return UIMenu(children: actions) }
+		/*
+		actions.append(
+			UIAction(title: "Generate Synopsis", handler: { _ in
+				if #available(iOS 26.0, *) {
+					self.generateSynopsis()
+				}
+			})
+		 )
+		*/
 		
 		if line.isAnyDialogue() || line.type == .action {
 			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
@@ -535,6 +544,13 @@ extension BeatUITextView {
 			])
 			
 			actions.append(revisionMenu)
+			
+			let review = UIAction(title: "Add Review") { [weak self] _ in
+				guard let self, let editorDelegate else { return }
+				editorDelegate.review.showReviewIfNeeded(range: editorDelegate.selectedRange, forEditing: true)
+			}
+			
+			actions.append(review)
 		}
 		
 		let textIO = editorDelegate?.textActions
@@ -560,5 +576,55 @@ extension BeatUITextView {
 		return menu
 	}
 	
+	/// This is a very early concept for generating synopses for scenes
+	func generateSynopsis() {
+		if #available(iOS 26.0, *) {
+			Task {
+				let llm = BeatLLMHelper()
+				if let d = self.editorDelegate, let scene = self.editorDelegate?.currentScene {
+					do {
+						_ = try await llm.getSynopsis(scene: scene, delegate: d)
+					} catch {
+						print("LLM error: \(error)")
+					}
+				}
+			}
+		}
+	}
 }
+/*
+ 
+ eräänä iltana
+ kun viimein kaikki alkaa olla hyvin
+ kaikki mennyt
+   virheet
+     rikokset
+       harhaiset polut
+ palaavat kammottavana, tahmeana aaltona
+ 
+ se olin minä
+ koko ajan
+ vaikka olen vakuutellut muuta
+ 
+ se olin minä
+ joka teki ne asiat
+ en tiedä miksi
+ en tiedä miksen pysäyttänyt itseäni
+ en tiedä miten pystyin
+ en muista
+ aivan kuin en olisi ollut tässä
+ 
+ mutta se olin minä
+ olen se joka teki sen kaiken
+ 
+ mutta
+ olen myös paljon muuta
+ paljon muuta
+ ja ehkä on aika mennä eteenpäin
+ oppia
+ ja ymmärtää
+ muut eivät ehkä antaisi anteeksi
+ mutta minä voin yrittää.
 
+ 
+ */

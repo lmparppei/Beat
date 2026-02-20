@@ -39,7 +39,6 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 			contentTypes?.append(UTType.data)
 		}
 		
-		
 		if contentTypes?.count == 0 {
 			contentTypes = nil
 		}
@@ -133,7 +132,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		
 		let ext = sourceURL.pathExtension.lowercased()
 		if !allowedExtensions.contains(ext) {
-			self.displayError(title: "Wrong File Type", message: "Files with type .\(ext) can't be opened. You might allowed all files to be displayed, so double-check you are trying to open a Fountain file.", preferredStyle: .alert)
+			self.displayError(title: "Wrong File Type", message: "Files with type .\(ext) can't be opened. You might have allowed all files to be displayed, so double-check you are trying to open a Fountain file.", preferredStyle: .alert)
 			return
 		}
 				

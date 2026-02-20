@@ -34,6 +34,7 @@ class iOSDocument: UIDocument {
 	}
 	
     override func contents(forType typeName: String) throws -> Any {
+		print("... Asking for contents")
 		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
 			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
 		}
@@ -77,7 +78,7 @@ class iOSDocument: UIDocument {
 		let closed = await super.close()
 		
 		if let vc = delegate as? BeatDocumentViewController {
-			vc.unloadViews()
+			await vc.unloadViews()
 		}
 		
 		//self.delegate = nil

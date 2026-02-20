@@ -455,19 +455,23 @@ SimulatedTyping* typing;
 	return false;
 }
 
-- (void)showLockStatus {
+- (void)showLockStatus
+{
 	
 }
 
-- (bool)contentLocked {
+- (bool)contentLocked
+{
 	return [self.documentSettings getBool:DocSettingLocked];
 }
 
-- (BeatDocumentSettings*)documentSettings {
+- (BeatDocumentSettings*)documentSettings
+{
 	return self.document.settings;
 }
 
-- (NSString*)contentForSaving {
+- (NSString*)contentForSaving
+{
 	return [self createDocumentFile];
 }
 
@@ -514,7 +518,8 @@ SimulatedTyping* typing;
 
 #pragma mark - Sidebar
 
-- (IBAction)toggleSidebar:(id)sender {
+- (IBAction)toggleSidebar:(id)sender
+{
 	bool shown = false;
 	
 	if (is_Mobile) {
@@ -668,7 +673,8 @@ SimulatedTyping* typing;
 
 #pragma mark - Document setting shorthands
 
-- (void)setPageSize:(BeatPaperSize)pageSize {
+- (void)setPageSize:(BeatPaperSize)pageSize
+{
 	[super setPageSize:pageSize];
 	[self.textView resize];
 }
