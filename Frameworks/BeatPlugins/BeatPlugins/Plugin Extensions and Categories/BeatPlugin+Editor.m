@@ -90,13 +90,9 @@
 /// Sets  the selected range in editor
 - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length
 {
-    @try {
-        NSRange range = NSMakeRange(start, length);
-        [self.delegate setSelectedRange:range];
-    }
-    @catch (NSException *exception) {
-        [self reportError:@"Out of range" withText:[NSString stringWithFormat:@"position: %lu  length: %lu", start, length]];
-    }
+    NSRange range = NSMakeRange(start, length);
+    range = CLAMP_RANGE(range, self.delegate.text.length);
+    [self.delegate setSelectedRange:range];
 }
 
 /// Sets given color for the line. Supports both outline elements and lines for the second parameter.

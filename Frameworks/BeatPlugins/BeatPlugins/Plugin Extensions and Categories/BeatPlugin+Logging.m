@@ -26,20 +26,31 @@
 /// Logs the given message to plugin developer log
 - (void)log:(NSString*)string
 {
-    if (string == nil) string = @"";
+    NSMutableString* result = NSMutableString.new;
+    NSArray* args = [JSContext currentArguments];
+    
+    for (id arg in args) {
+        if ([arg isKindOfClass:JSValue.class]) {
+            NSString* val = ((JSValue*)arg).toString;
+            [result appendString:val];;
+        } else {
+            [result appendFormat:@"%@", arg];
+        }
+        if (arg != args.lastObject) [result appendString:@" "];
+    }
     
     #if TARGET_OS_OSX
         BeatConsole *console = BeatConsole.shared;
-        if (NSThread.isMainThread) [console logToConsole:string pluginName:(self.pluginName != nil) ? self.pluginName : @"General" context:self.delegate];
+        if (NSThread.isMainThread) [console logToConsole:result pluginName:(self.pluginName != nil) ? self.pluginName : @"General" context:self.delegate];
         else {
             // Allow logging in background thread
             dispatch_async(dispatch_get_main_queue(), ^(void){
-                [console logToConsole:string pluginName:self.pluginName context:self.delegate];
+                [console logToConsole:result pluginName:self.pluginName context:self.delegate];
             });
         }
     #else
         // iOS doesn't have a log window, we'll just use Xcode console
-        NSLog(@"%@: %@", self.pluginName, string);
+        NSLog(@"%@: %@", self.pluginName, result);
     #endif
 }
 

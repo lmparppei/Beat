@@ -36,6 +36,9 @@
 #import "BeatPlugin+Menus.h"
 #import "BeatPlugin+Listeners.h"
 #import "BeatPlugin+TextHighlighting.h"
+#import "BeatPlugin+ScreenAndWindowUtilities.h"
+#import "BeatPlugin+Tagging.h"
+#import "BeatPlugin+Reviews.h"
 #import <BeatPlugins/BeatPlugin+HTMLViews.h>
 #import <BeatPlugins/BeatPlugin+Windows.h>
 #import <BeatPlugins/BeatPlugin+Threading.h>
@@ -74,6 +77,10 @@
  
  */
 @implementation BeatPlugin
+// Getters for these are defined in categories
+@synthesize reviews;
+@synthesize tagging;
+
 
 + (BeatPlugin*)withName:(NSString*)name delegate:(id<BeatPluginDelegate>)delegate
 {
@@ -398,28 +405,6 @@
 }
 
 
-#pragma mark - Access other documents
-
-#if !TARGET_OS_IOS
-/// Returns all document instances
-- (NSArray<id<BeatPluginDelegate>>*)documents
-{
-    return (NSArray<id<BeatPluginDelegate>>*)NSDocumentController.sharedDocumentController.documents;
-}
-- (BeatPlugin*)interface:(id<BeatPluginDelegate>)document
-{
-    BeatPlugin* interface = BeatPlugin.new;
-    interface.delegate = document;
-    return interface;
-}
-- (id)document
-{
-    return self.delegate.document;
-}
-#endif
-
-
-
 #pragma mark - Speak
 
 #if !TARGET_OS_IOS
@@ -508,14 +493,6 @@
 }
 
 
-
-#pragma mark - Tagging interface
-// TODO: Just return the tagging object and move all exports there
-
-- (NSArray*)availableTags { return [BeatTagging categories]; }
-- (NSDictionary*)tagsForScene:(OutlineScene *)scene { return [self.delegate.tagging tagsForScene:scene]; }
-
-
 #pragma mark - Pagination interface
 
 /// Legacy compatibility
@@ -545,52 +522,8 @@
 }
 
 
-#pragma mark - Utilities
-
-/// Returns screen frame as an array
-/// - returns: `[x, y, width, height]`
-- (NSArray*)screen
-{
-#if TARGET_OS_IOS
-    CGRect screen = self.delegate.documentWindow.screen.bounds;
-#else
-    CGRect screen = self.delegate.documentWindow.screen.frame;
-#endif
-	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
-}
-/// Returns window frame as an array
-/// - returns: `[x, y, width, height]`
-- (NSArray*)getWindowFrame {
-	return [self windowFrame];
-}
-- (NSArray*)windowFrame
-{
-	CGRect frame = self.delegate.documentWindow.frame;
-	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
-}
-/// Sets host document window frame
-- (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
-{
-#if !TARGET_OS_IOS
-	NSRect frame = NSMakeRect(x, y, width, height);
-	[self.delegate.documentWindow setFrame:frame display:true];
-#endif
-}
-
 
 #pragma mark - Objective C interface
-
-/// Set any value in `Document` class
-- (void)setPropertyValue:(NSString*)key value:(id)value
-{
-	[self.delegate setPropertyValue:key value:value];
-}
-
-/// Get any value in `Document` class
-- (id)getPropertyValue:(NSString *)key
-{
-	return [self.delegate getPropertyValue:key];
-}
 
 /// Calls Objective C methods.
 /// @note Do **NOT** use this if you don't know what you are doing.
@@ -636,75 +569,9 @@
 }
 
 /// This crashes the whole app when needed. Can lead to data loss, so use with extreme care.
-- (void)crash {
+- (void)crash
+{
 	@throw([NSException exceptionWithName:NSInternalInconsistencyException reason:@"Crash thrown by plugin" userInfo:nil]);
-}
-
-
-#pragma mark - Document utilities
-
-/// Returns the plain-text file content used to save current screenplay (including settings block etc.)
-- (NSString*)createDocumentFile
-{
-	return _delegate.createDocumentFile;
-}
-/// Returns the plain-text file content used to save current screenplay (including settings block etc.) with additional `BeatDocumentSettings` block
-- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings
-{
-	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
-}
-
-
-
-#pragma mark - Document
-
-/// Creates a new document. macOS-only for now.
-- (void)newDocument:(NSString*)string
-{
-#if TARGET_OS_OSX
-    // This fixes a rare and weird NSResponder issue. Forward this call to the actual document, no questions asked.
-    if (![string isKindOfClass:NSString.class]) {
-        [self.delegate.document newDocument:nil];
-        return;
-    }
-    
-    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
-    if (string.length) [delegate newDocumentWithContents:string];
-    else [NSDocumentController.sharedDocumentController newDocument:nil];
-#endif
-}
-
-/// Creates a new *document object* if you want to access that document after creating it.
-- (id)newDocumentObject:(NSString*)string
-{
-#if !TARGET_OS_IOS
-    id<BeatAppAPIDelegate> delegate = (id<BeatAppAPIDelegate>)NSApp.delegate;
-    if (string.length) return [delegate newDocumentWithContents:string];
-    else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
-#endif
-    return nil;
-}
-
-
-#pragma mark - Document Settings
-
-// Plugin-specific document settings (prefixed by plugin name)
-- (id)getDocumentSetting:(NSString*)settingName {
-	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	return [_delegate.documentSettings get:key];
-}
-- (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
-	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	[_delegate.documentSettings set:key as:value];
-}
-
-// Access to raw document settings (NOT prefixed by plugin name)
-- (id)getRawDocumentSetting:(NSString*)settingName {
-	return [_delegate.documentSettings get:settingName];
-}
-
-- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
-	[_delegate.documentSettings set:settingName as:value];
 }
 
 

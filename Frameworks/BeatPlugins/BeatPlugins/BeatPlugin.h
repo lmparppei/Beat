@@ -81,7 +81,6 @@
 @property (weak, readonly, nonatomic) id<BeatPluginContainer> container;
 
 #if TARGET_OS_OSX
-- (id)document;
 - (void)setZoomLevel:(CGFloat)zoomLevel;
 #endif
 
@@ -102,19 +101,6 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (NSString*)localize:(NSString*)string;
 
 
-#pragma mark Document settings
-/// Returns a document setting prefixed by current plugin name
-- (id)getDocumentSetting:(NSString*)key;
-/// Returns a non-prefixed document setting
-- (id)getRawDocumentSetting:(NSString*)key;
-/// For those who REALLY know what they're doing
-- (id)getPropertyValue:(NSString*)key;
-/// Sets a document setting without plugin prefix. Can be used to tweak actual document data.
-JSExportAs(setRawDocumentSetting, - (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value);
-/// Sets a document setting, prefixed by plugin name, so you won't mess up settings for other plugins.
-JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName setting:(id)value);
-
-
 #pragma mark Listeners
 @property (nonatomic) bool onPreviewFinishedDisabled;
 @property (nonatomic) bool onOutlineChangeDisabled;
@@ -127,47 +113,20 @@ JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName
 
 
 #pragma mark General editor and app access
-/// Creates a new document with given string
-/// - note: The string can contain a settings block
-- (void)newDocument:(NSString*)string;
-/// Creates a new `Document` object without actually opening the window
-- (id)newDocumentObject:(NSString*)string;
+
 /// Returns the (shared) theme manager
 @property (nonatomic, weak) id theme;
 
-/// Current screen dimensions
-- (NSArray*)screen;
 
-	#if !TARGET_OS_IOS
-	/// Window dimensions
-	- (NSArray*)windowFrame;
-	/// Alias for windowFrame
-	- (NSArray*)getWindowFrame;
-	/// Sets the window frame
-	JSExportAs(setWindowFrame, - (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
-	#endif
+#pragma mark Reviews
 
+@property (nonatomic) BeatReview* reviews;
 
-
-#pragma mark - Document utilities
-
-/// Returns the plain-text file content used to save current screenplay (including settings block etc.)
-- (NSString*)createDocumentFile;
-/// Returns the plain-text file content used to save current screenplay (including settings block etc.) with additional `BeatDocumentSettings` block
-- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
-
-#if TARGET_OS_OSX
-/// Returns all document instances
-- (NSArray<id>*)documents;
-/// Returns a plugin interface for given document
-- (id)interface:(id)document;
-#endif
 
 #pragma mark Tagging
-/// Returns all tags in the scene
-- (NSDictionary*)tagsForScene:(OutlineScene*)scene;
-/// Returns all available tag names
-- (NSArray*)availableTags;
+
+@property (nonatomic) BeatTagging* tagging;
+
 
 
 #pragma mark Pagination
