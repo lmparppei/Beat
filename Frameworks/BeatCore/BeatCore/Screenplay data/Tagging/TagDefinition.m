@@ -24,12 +24,13 @@
 	return self;
 }
 
-- (bool)hasId:(NSString*)tagId {
-	if ([self.defId isEqualToString:tagId]) return YES;
-	else return NO;
+- (bool)hasId:(NSString*)tagId
+{
+    return ([self.defId isEqualToString:tagId]);
 }
 
-- (NSString*)typeAsString {
+- (NSString*)typeAsString
+{
 	return [BeatTagging keyFor:self.type];
 }
 

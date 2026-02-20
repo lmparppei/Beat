@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatCore/BeatTagging.h>
+#import <BeatCore/BeatCompatibility.h>
+
 @class Line;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) NSMutableArray *lines;
 + (BeatTagItem*)withString:(NSString*)string type:(BeatTagType)type range:(NSRange)range;
 
-- (TagColor*)color;
+- (BXColor*)color;
 - (NSString*)key;
 - (void)addRange:(NSRange)range;
 - (NSArray<NSValue*>*)ranges;

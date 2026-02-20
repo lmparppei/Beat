@@ -11,13 +11,11 @@
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
-    #define TagColor UIColor
     #define TagFont UIFont
     #define BeatEditorTextView UITextView
     #define BeatTagView UITextView
 #else
     #import <Cocoa/Cocoa.h>
-    #define TagColor NSColor
     #define TagFont NSFont
     #define BeatTagView NSTextView
 #endif
@@ -38,6 +36,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 	ExtraTag,
 	VehicleTag,
 	MusicTag,
+    SoundTag,
     StuntTag,
     SetDesignTag,
 	GenericTag
@@ -48,6 +47,11 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 
 #pragma mark - Search result items for tagging using Levenshtein algorithm
 
+/**
+ * Tag search result to be displayed in UI when tagging something in the text.
+ * @property string Item name
+ * @property distanace The Levenshtein distance to possible match (0..1)
+*/
 @interface TagSearchResult : NSObject
 @property (nonatomic) NSString *string;
 @property (nonatomic) CGFloat distance;
@@ -78,7 +82,6 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
     -> load tag definitions using this class, create the aforementioned definition array
     -> load ranges and use this class to match tags to definitions
  
- Nice and easy, just needs some work.
  
  */
 @interface BeatTagging : NSObject
@@ -106,7 +109,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 /// Dictionary of colors associated with tags (string key)
 + (NSDictionary<NSString*, BXColor*>*)tagColors;
 /// Returns the color for given tag type
-+ (TagColor*)colorFor:(BeatTagType)tag;
++ (BXColor*)colorFor:(BeatTagType)tag;
 /// Returns the definitions for all tags in an array
 + (NSMutableArray<TagDefinition*>*)definitionsForTags:(NSArray<BeatTag*>*)tags;
 /// Creates a new UUID and returns it as string
@@ -123,6 +126,9 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 + (NSString*)localizedTagNameForType:(BeatTagType)type;
 /// Converts an FDX tag name to Beat tag key
 + (NSString*)fdxCategoryToBeat:(NSString*)category;
+/// Get tags and definitions from an external attributed string
++ (NSDictionary*)tagsAndDefinitionsFrom:(NSAttributedString*)attrStr;
+
 
 #pragma mark - Instance (document-bound) methods
 
@@ -143,8 +149,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (void)saveTags;
 /// A UI string for listing tags in given scene
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
-/// Returns all tag __definitions__ in current document.
-- (NSArray<TagDefinition*>*)getDefinitions;
+/// Returns all tag __definitions__ in current document as seriazible dictionaries for storing them as JSON
+- (NSArray<NSDictionary<NSString*, NSString*>*>*)getDefinitionsForSaving;
 /// Creates a tag item (the ones that are attached as attributes in text view) with given name and type
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;
 /// Returns an array for saving the tags for converting to JSON
@@ -161,8 +167,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (TagDefinition*)definitionWithName:(NSString*)name type:(BeatTagType)type;
 /// Returns all scenes which contain the given tag definition.
 - (NSArray<OutlineScene*>*)scenesForTagDefinition:(TagDefinition*)tag;
-/// Get tags and definitions from an external attributed string
-+ (NSDictionary*)tagsAndDefinitionsFrom:(NSAttributedString*)attrStr;
+
 
 #pragma mark - Tagging methods
 

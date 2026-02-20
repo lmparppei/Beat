@@ -32,7 +32,7 @@
 - (NSString*)key {
 	return [BeatTagging keyFor:self.type];
 }
-- (TagColor*)color {
+- (BXColor*)color {
 	return [BeatTagging colorFor:self.type];
 }
 - (void)addRange:(NSRange)range {	
