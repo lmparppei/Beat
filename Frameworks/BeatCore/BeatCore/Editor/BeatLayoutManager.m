@@ -640,8 +640,8 @@
 
 #pragma mark - Draw markers
 
-- (void)drawMarkerForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset {
-    
+- (void)drawMarkerForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset
+{
     CGRect r = CGRectMake(inset.width + X_OFFSET, rect.origin.y, 12, rect.size.height);
     
     BXColor* color;
@@ -724,7 +724,8 @@
 
 #pragma mark - Draw story beats
 
-- (void)drawBeat:(CGRect)rect inset:(CGSize)inset {
+- (void)drawBeat:(CGRect)rect inset:(CGSize)inset
+{
     BXBezierPath* path = BXBezierPath.bezierPath;
     
     CGFloat m = 16.0;
@@ -775,20 +776,8 @@
 }
 
 
-#pragma mark - Crossplatform helpers
+#pragma mark - Layout helper
 
--(void)saveGraphicsState
-{
-#if !TARGET_OS_IOS
-    [NSGraphicsContext saveGraphicsState];
-#endif
-}
--(void)restoreGraphicsState
-{
-#if !TARGET_OS_IOS
-    [NSGraphicsContext restoreGraphicsState];
-#endif
-}
 -(CGSize)inset
 {
 #if TARGET_OS_IOS

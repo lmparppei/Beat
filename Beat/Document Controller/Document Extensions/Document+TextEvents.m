@@ -8,6 +8,7 @@
 
 #import "Document+TextEvents.h"
 #import "Document+UI.h"
+#import "Document+Menus.h"
 
 @implementation Document (TextEvents)
 

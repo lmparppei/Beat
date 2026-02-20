@@ -61,4 +61,6 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 
 #import <BeatCore/BeatVersionControl.h>
 
+#import <BeatCore/BeatReviewExports.h>
+
 

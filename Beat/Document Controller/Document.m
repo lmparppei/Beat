@@ -130,7 +130,7 @@
 
 // WARNING!!!
 /// We're suppressing protocol warnings because we're conforming to the main delegate using multiple categories. This is not wise, but whatever.
-/// The reasoning behind this is also bad, because when I learned what protocols were, I went all in and made a "safe" protocol for interacting with the main editor window. Since a lot of stuff has been moved into their own cross-platform classes, but still, there's a ton of functionality that I want to be available with a single protocol on both systems. This is why BeatEditorDelegate (also badly named, I know) has become useful. Two entirely different classes (`UIDocumentViewController` and `NSDocument`) can now be used as the heart of the app, allowing the other classes to interact with it no matter the OS.
+/// The reasoning behind this is also bad, because when I learned what protocols were, I went all in and made a "safe" protocol for interacting with the main editor window. Since then, a lot of stuff has been moved into their own cross-platform classes, but still, there's a ton of functionality that I want to be available with a single protocol on both systems. This is why BeatEditorDelegate (also badly named, I know) has become useful. Two entirely different classes (`UIDocumentViewController` and `NSDocument`) can now be used as the heart of the app, allowing the other classes to interact with it no matter the OS.
 /// I still should have split it into multiple protocols, but whatever. Too late now.
 #pragma clang diagnostic ignored "-Wprotocol"
 @implementation Document
@@ -140,7 +140,7 @@
 
 #pragma mark - Document Initialization
 
-/// **Warning**: This is used for returning the actual document object through editor delegate. Handle with care. 
+/// **Warning**: This is used for returning the actual document object through editor delegate. Handle with care. (I don't know why, you could just cast it.)
 -(Document*)document { return self; }
 
 /// A paranoid method to actually null every-fucking-thing.
@@ -235,7 +235,6 @@
 	}
 }
 
-
 /// - note: This is a total mess. We should use a similar class as iOS uses for the actual `NSDocument` and initialize our parser/document settings there.
 /// This is here purely for legacy reasons, as it's how old macOS apps used to do things by default. Nowadays there are better ways to achieve the same thing, but unfortunately it would require a lot of refactoring at a very deep level, hence we are stuck with doing things in a very clunky way for now.
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController
@@ -275,7 +274,7 @@
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
 	// This method can crash the app in some instances, so I've tried to solve the issue
-	// by wrapping it in try-catch block. Let's see if it helps.
+	// by wrapping it in try-catch block. Let's see if it helps. (2026 edit: What is this?)
 	
 	NSData *dataRepresentation;
 	bool success = NO;
@@ -316,7 +315,6 @@
 
 /// Loads text & remove settings block from Fountain.
 /// - note: `readBeatDocumentString:` is implemented by the super class. It will handle setting `contentBuffer` at load.
-
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
 {
 	self.documentIsLoading = true;
@@ -330,11 +328,16 @@
 	return YES;
 }
 
-- (void)revertToText:(NSString*)text
+
+- (void)readDocumentWithURL:(NSURL*)url typeName:(NSString*)typeName
 {
-	[super revertToText:text];
+	NSData *data = [NSData dataWithContentsOfURL:url];
+	_revertedTo = url;
+	self.documentIsLoading = YES;
+	
+	[self readFromData:data ofType:typeName error:nil reverting:YES];
+	
 	[self setupDocument];
-	[self addToChangeCount];
 }
 
 
@@ -358,6 +361,13 @@
 
 #pragma mark - Reverting to versions
 
+- (void)revertToText:(NSString*)text
+{
+	[super revertToText:text];
+	[self setupDocument];
+	[self addToChangeCount];
+}
+
 -(void)revertDocumentToSaved:(id)sender
 {
 	if (!self.fileURL) return;
@@ -368,17 +378,6 @@
 {
 	[self readDocumentWithURL:url typeName:typeName];
 	return YES;
-}
-
-- (void)readDocumentWithURL:(NSURL*)url typeName:(NSString*)typeName
-{
-	NSData *data = [NSData dataWithContentsOfURL:url];
-	_revertedTo = url;
-	self.documentIsLoading = YES;
-	
-	[self readFromData:data ofType:typeName error:nil reverting:YES];
-	
-	[self setupDocument];
 }
 
 
@@ -456,7 +455,6 @@
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
 	
 	if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
-	//[self updateChangeCount:NSChangeCleared];
 	[self.undoManager removeAllActions];
 	
 	// Put any previously loaded text into the text view when it's loaded
@@ -558,7 +556,7 @@
 	return self.lastComponentOfFileName.stringByDeletingPathExtension;
 }
 
-	
+
 #pragma mark - Misc document stuff
 
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key
@@ -635,15 +633,6 @@
 	prev.nextResponder = originalResponder;
 }
 
--(void)setupLayout
-{
-	// Apply layout
-	[_documentWindow layoutIfNeeded];
-	[self updateLayout];
-	
-	[self.textView loadCaret];
-}
-
 // Can I come over, I need to rest
 // lay down for a while, disconnect
 // the night was so long, the day even longer
@@ -655,6 +644,35 @@
 - (NSString *)windowNibName
 {
 	return @"Document";
+}
+
+- (CGFloat)documentWidth { return self.textView.documentWidth; }
+
+
+#pragma mark - Layout
+
+-(void)setupLayout
+{
+	// Apply layout
+	[_documentWindow layoutIfNeeded];
+	[self updateLayout];
+	
+	[self.textView loadCaret];
+}
+
+- (CGFloat)magnification { return self.textView.zoomLevel; }
+
+- (void)ensureLayout
+{
+	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.text.length) actualCharacterRange:nil];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	
+	self.textView.needsDisplay = true;
+	self.textView.needsLayout = true;
+	
+	[self.marginView updateBackground];
+	
+	[self.textView ensureCaret];
 }
 
 /// Ensures minimum window size, sets text view insets and forces editor views to be displayed. After that, ensures text view layout.
@@ -670,26 +688,6 @@
 	[self ensureLayout];
 }
 
-- (CGFloat)documentWidth { return self.textView.documentWidth; }
-
-
-#pragma mark - Layout
-
-- (CGFloat)magnification { return self.textView.zoomLevel; }
-
-
-- (void)ensureLayout
-{
-	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.text.length) actualCharacterRange:nil];
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	
-	self.textView.needsDisplay = true;
-	self.textView.needsLayout = true;
-	
-	[self.marginView updateBackground];
-	
-	[self.textView ensureCaret];
-}
 
 
 #pragma mark - Print & Export
@@ -724,23 +722,6 @@
  and I just couldn't ask
  
  */
-
-
-#pragma mark - Toggling user default settings on/off
-
-/// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
-- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem
-{
-	if (menuItem == nil || menuItem.settingKey.length == 0) return;
-	
-	if (menuItem.documentSetting) [self.documentSettings toggleBool:menuItem.settingKey];
-	else [BeatUserDefaults.sharedDefaults toggleBool:menuItem.settingKey];
-	
-	[self ensureLayout];
-	
-	// This notification should be the preferred way of updating any views etc. in the future
-	[NSNotificationCenter.defaultCenter postNotification:[NSNotification.alloc initWithName:@"SettingToggled" object:nil userInfo:nil]];
-}
 
 
 #pragma mark - Text did change
@@ -881,9 +862,6 @@
 {
 	self.sidebarVisible = NO;
 }
-
-
-
 
 /// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
 - (IBAction)toggleSidebar:(id)sender

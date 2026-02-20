@@ -357,7 +357,7 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
             pageViews[pageIndex] = pageView
             return pageView!
         } else {
-            print("Failed to create")
+            // Failed to create page view. Return an empty view.
             return UXView()
         }
     }

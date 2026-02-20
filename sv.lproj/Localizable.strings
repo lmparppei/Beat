@@ -475,5 +475,6 @@
 "export.highlightRevisions.none" = "Ingen";
 "export.highlightRevisions.text" = "Textfärg";
 "export.highlightRevisions.background" = "Bakgrundsfärg";
+"export.printHeadingColor" = "Färgade scenrubriker";
 
 "review.keyword.none" = "Inga #taggar";

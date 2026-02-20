@@ -758,3 +758,4 @@
 /* (No Comment) */
 "versionControl.noVersionControl" = "Sin control de versiones";
 
+"export.printHeadingColor" = "Encabezados de escena en color";

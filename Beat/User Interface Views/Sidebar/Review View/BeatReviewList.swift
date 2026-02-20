@@ -96,7 +96,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 				let str = string.attributedSubstring(from: clampedRange)
 				let content = review.string
 				
-				let listItem:ReviewListItem = ReviewListItem(content: content! as String, snippet: str.string, range: clampedRange, keywords: review.keywords)
+				let listItem:ReviewListItem = ReviewListItem(content: content, snippet: str.string, range: clampedRange, keywords: review.keywords)
 				reviewList.add(listItem)
 			}
 		})

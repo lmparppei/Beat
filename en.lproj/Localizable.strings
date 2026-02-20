@@ -344,5 +344,6 @@
 "export.highlightRevisions.none" = "None";
 "export.highlightRevisions.text" = "Text Color";
 "export.highlightRevisions.background" = "Background Color";
+"export.printHeadingColor" = "Colored Scene Headings";
 
 "review.keyword.none" = "No #keywords";

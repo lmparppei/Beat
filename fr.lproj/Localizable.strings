@@ -773,3 +773,4 @@
 /* (No Comment) */
 "versionControl.noVersionControl" = "Aucun contrôle de version";
 
+"export.printHeadingColor" = "En-têtes de scène colorés";

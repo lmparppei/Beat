@@ -76,3 +76,9 @@
 })
 
 #define ToAttributedString(string) [[NSAttributedString alloc] initWithString:string]
+
+#if TARGET_OS_IOS
+    #define SaveLayoutManagerGraphicsState() ;
+#else
+    #define SaveLayoutManagerGraphicsState() [NSGraphicsContext saveGraphicsState];
+#endif

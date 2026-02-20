@@ -287,3 +287,4 @@
 "tagManager.windowTitle" = "Upravitelj oznak";
 
 "export.includeRevisions" = "Vključi označevalnike revizij";
+"export.printHeadingColor" = "Barvni naslovi prizorov";

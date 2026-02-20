@@ -26,6 +26,8 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 		NSGraphicsContext.saveGraphicsState()
         #endif
         
+        //var previousLine:Line?
+                
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
 			let markerRect = CGRectMake(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
 			
@@ -41,7 +43,27 @@ public class BeatRenderLayoutManager:NSLayoutManager {
 					return
 				}
 			}
-                        
+            /*
+            var newLine = false
+            
+            self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRepresentedLineKey), in: range) { obj, attrRange, stop in
+                if let line = obj as? Line {
+                    if line.type == .heading {
+                        stop.pointee = true
+                    } else if line != previousLine {
+                        newLine = true
+                    }
+                    
+                    previousLine = line
+                    stop.pointee = true
+                }
+            }
+            
+            if newLine {
+                // Draw line number here
+            }
+             */
+            
             // In rendered text, the revision attribute is a A NUMBER VALUE
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
                 guard obj != nil, let revisionValue = obj as? NSNumber else { return }

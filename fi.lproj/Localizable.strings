@@ -294,5 +294,6 @@
 "export.highlightRevisions.none" = "Ei mitään";
 "export.highlightRevisions.text" = "Tekstin väri";
 "export.highlightRevisions.background" = "Taustaväri";
+"export.printHeadingColor" = "Värilliset kohtausotsikot";
 
 "review.keyword.none" = "Ei #avainsanoja";

@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B60976B12F39EDF800AFAEF9 /* BeatTagCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60976B02F39EDF800AFAEF9 /* BeatTagCategory.swift */; };
+		B60976B32F3C76A300AFAEF9 /* BeatReview+Popover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60976B22F3C769F00AFAEF9 /* BeatReview+Popover.swift */; };
 		B61991832BA9B53D002F0E69 /* Novel Tutorial iOS.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B60441B42BA9A74A0056A52F /* Novel Tutorial iOS.fountain */; };
 		B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */ = {isa = PBXBuildFile; fileRef = B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */; };
 		B619DE6D29F90A7A007D1838 /* BeatAutocomplete.h in Headers */ = {isa = PBXBuildFile; fileRef = B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FD0612A6926BF00A40883 /* NSArray+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61FD0622A6926BF00A40883 /* NSArray+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B61FD0602A6926BF00A40883 /* NSArray+JSON.m */; };
 		B621170E2A6FABDC0053228F /* BeatCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = B621170D2A6FABDC0053228F /* BeatCompatibility.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6229E942F3246CD00E4626D /* BeatReviewExports.h in Headers */ = {isa = PBXBuildFile; fileRef = B6229E932F3246CD00E4626D /* BeatReviewExports.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */; };
 		B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6311EC12D672C6200712CFE /* NSString+Compression.h in Headers */ = {isa = PBXBuildFile; fileRef = B6311EBF2D672C6200712CFE /* NSString+Compression.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -176,11 +179,14 @@
 
 /* Begin PBXFileReference section */
 		B60441B42BA9A74A0056A52F /* Novel Tutorial iOS.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Novel Tutorial iOS.fountain"; sourceTree = "<group>"; };
+		B60976B02F39EDF800AFAEF9 /* BeatTagCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTagCategory.swift; sourceTree = "<group>"; };
+		B60976B22F3C769F00AFAEF9 /* BeatReview+Popover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatReview+Popover.swift"; sourceTree = "<group>"; };
 		B619DE6A29F906D7007D1838 /* BeatAutocomplete.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatAutocomplete.m; sourceTree = "<group>"; };
 		B619DE6B29F906D8007D1838 /* BeatAutocomplete.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAutocomplete.h; sourceTree = "<group>"; };
 		B61FD05F2A6926BF00A40883 /* NSArray+JSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+JSON.h"; sourceTree = "<group>"; };
 		B61FD0602A6926BF00A40883 /* NSArray+JSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+JSON.m"; sourceTree = "<group>"; };
 		B621170D2A6FABDC0053228F /* BeatCompatibility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCompatibility.h; sourceTree = "<group>"; };
+		B6229E932F3246CD00E4626D /* BeatReviewExports.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatReviewExports.h; sourceTree = "<group>"; };
 		B62FB00D298FB662003492B5 /* BeatCore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatCore.md; sourceTree = "<group>"; };
 		B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
 		B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
@@ -618,10 +624,12 @@
 		B68C0F5B299D82130031AE6B /* Review */ = {
 			isa = PBXGroup;
 			children = (
+				B60976B22F3C769F00AFAEF9 /* BeatReview+Popover.swift */,
 				B68C0F59299D82130031AE6B /* BeatReview.swift */,
 				B63AB3BD2A56B33200B28BC0 /* BeatReviewEditor.swift */,
 				B63AB3BF2A56BD6200B28BC0 /* BeatReviewEditor iOS.xib */,
 				B68C0F6A299D8A4F0031AE6B /* BeatReviewEditor macOS.xib */,
+				B6229E932F3246CD00E4626D /* BeatReviewExports.h */,
 			);
 			path = Review;
 			sourceTree = "<group>";
@@ -703,6 +711,7 @@
 				B6D3201E298EBE2B003DA45D /* BeatTagItem.h */,
 				B6D3201F298EBE2B003DA45D /* BeatTagItem.m */,
 				B692E2DF2C73CAE10009833F /* BeatTagReport.swift */,
+				B60976B02F39EDF800AFAEF9 /* BeatTagCategory.swift */,
 			);
 			path = Tagging;
 			sourceTree = "<group>";
@@ -785,6 +794,7 @@
 				B6311ECA2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.h in Headers */,
 				B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */,
 				B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */,
+				B6229E942F3246CD00E4626D /* BeatReviewExports.h in Headers */,
 				B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */,
 				B633C1E2298C61150011449D /* BeatEditorDelegate.h in Headers */,
 				B633C1B9298C5F750011449D /* BeatCore.h in Headers */,
@@ -954,6 +964,7 @@
 				B68C0F62299D843C0031AE6B /* BeatValueTransformers.swift in Sources */,
 				B6AC5CC72D70E53800DB81C5 /* NSImage+Scaling.swift in Sources */,
 				B63BE8432B5B33F1003814A5 /* Synchronized.swift in Sources */,
+				B60976B12F39EDF800AFAEF9 /* BeatTagCategory.swift in Sources */,
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */,
@@ -973,6 +984,7 @@
 				B67B070F2E0D36CE004345D4 /* BeatDocumentBaseController+AdditionalData.m in Sources */,
 				B69A29CA29FF0F3600839259 /* BeatScreenplayElements.swift in Sources */,
 				B68D9CD12C64007C00FCC9BE /* NSIndexSet+Array.swift in Sources */,
+				B60976B32F3C76A300AFAEF9 /* BeatReview+Popover.swift in Sources */,
 				B663B3BB2AFA69CE007217E3 /* BeatDocumentBaseController.m in Sources */,
 				B692E2E22C73CD2E0009833F /* BeatCompatibility.swift in Sources */,
 				B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */,

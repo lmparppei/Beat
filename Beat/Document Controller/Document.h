@@ -94,9 +94,6 @@ THE SOFTWARE.
 /// Sheet view (strong reference for avoiding weirdness)
 @property (nonatomic) NSWindowController* _Nullable sheetController;
 
-/// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
-- (IBAction)toggleSetting:(BeatOnOffMenuItem* _Nonnull)menuItem;
-
 /// Check for dark mode
 - (bool)isDark;
 
