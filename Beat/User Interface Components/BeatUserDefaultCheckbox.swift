@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import BeatCore
 
-@objc public class BeatUserDefaultCheckbox:NSButton {
+@objcMembers
+public class BeatUserDefaultCheckbox:NSButton {
 	@IBInspectable public var resetPreview:Bool = false
 	@IBInspectable public var documentSetting:Bool = false
-	@objc @IBInspectable var userDefaultKey:String = ""
+	@IBInspectable var userDefaultKey:String = ""
 
 	override public func awakeFromNib() {
 		super.awakeFromNib()
@@ -21,6 +23,14 @@ import Foundation
 		
 		if value { self.state = .on }
 		else { self.state = .off }
+	}
+	
+	public func updateValue(_ delegate:BeatEditorDelegate?) {
+		if documentSetting, let delegate {
+			self.state = delegate.documentSettings.getBool(userDefaultKey) ? .on : .off
+		} else if !documentSetting {
+			self.state = BeatUserDefaults.shared().getBool(userDefaultKey) ? . on : .off
+		}
 	}
 }
 
