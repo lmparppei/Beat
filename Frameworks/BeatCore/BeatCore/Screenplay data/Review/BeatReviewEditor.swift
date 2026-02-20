@@ -27,9 +27,9 @@ import Foundation
 import UXKit
 
 protocol BeatReviewEditorDelegate:AnyObject {
-    func applyReview(item:BeatReviewItem)
-    func deleteReview(item:BeatReviewItem)
-    func saveReview(item:BeatReviewItem)
+    func applyReview(_ item:BeatReviewItem)
+    func deleteReview(_ item:BeatReviewItem)
+    func saveReview(_ item:BeatReviewItem)
         
     func close()
     
@@ -139,17 +139,17 @@ protocol BeatReviewEditorDelegate:AnyObject {
         #endif
     }
     
-    func applyReview(item: BeatReviewItem) {
-        self.delegate.applyReview(item: item)
+    func applyReview(_ item: BeatReviewItem) {
+        self.delegate.applyReview(item)
     }
     
-    func deleteReview(item: BeatReviewItem) {
-        self.delegate.deleteReview(item: item)
+    func deleteReview(_ item: BeatReviewItem) {
+        self.delegate.deleteReview(item)
         self.close()
     }
     
-    func saveReview(item: BeatReviewItem) {
-        self.delegate.saveReview(item: item)
+    func saveReview(_ item: BeatReviewItem) {
+        self.delegate.saveReview(item)
     }
 
 }
@@ -289,7 +289,7 @@ extension BeatReviewEditorViewBase {
         textView?.setInsets(CGSizeMake(5.0, 8.0))
                 
         // Load content from the review
-        textView?.text = item.string as? String ?? ""
+        textView?.text = item.string
                 
         highlightHashtags()
         updateEditorMode()
@@ -373,8 +373,8 @@ extension BeatReviewEditorViewBase {
     }
     
     @IBAction public func confirm(sender:Any?) {
-        item.string = textView?.string as? NSString
-        delegate?.applyReview(item: item)
+        item.string = textView?.text as? String ?? ""
+        delegate?.applyReview(item)
     }
     
     @IBAction public func edit(sender:Any?) {
@@ -383,14 +383,14 @@ extension BeatReviewEditorViewBase {
         
     @IBAction public func deleteReview(sender:Any?) {
         guard let delegate else { print("No delegate set for deleting reviews"); return }
-        delegate.deleteReview(item: item)
+        delegate.deleteReview(item)
     }
     
     
     // MARK: Text view delegation
     public func textDidChange(_ notification: Notification) {
-        item.string = textView?.text as? NSString
-        delegate?.saveReview(item: item)
+        item.string = textView?.text as? String ?? ""
+        delegate?.saveReview(item)
         highlightHashtags()
     }
         

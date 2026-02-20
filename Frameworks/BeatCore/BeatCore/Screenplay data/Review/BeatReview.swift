@@ -13,32 +13,50 @@
  */
 
 #if os(macOS)
-import Cocoa
+	import Cocoa
 #else
-import UIKit
+	import UIKit
 #endif
 import UXKit
 
-public protocol BeatReviewInterface {
-    func showReviewItem(range:NSRange, forEditing:Bool)
-	func applyReview(item:BeatReviewItem)
-    func deleteReview(item:BeatReviewItem)
+import JavaScriptCore
+
+/// JS API exports for the individual review items (objects attached to text)
+@objc public protocol BeatReviewItemExports:JSExport {
+    var string:String { get set }
+    var keywords: [String] { get }
+    var emptyReview:Bool { get }
 }
+
+/// JS API exports for the main review class
+@objc public protocol BeatReviewExports:JSExport {
+    func saveReview(_ item: BeatReviewItem)
+    func deleteReview(_ item:BeatReviewItem)
+    func getReviews() -> [BeatReviewItem]
+    func item(at location: Int) -> BeatReviewItem?
+	func rangeForReview(_ review:BeatReviewItem) -> NSRange
+	func reviewsChanged()
+    
+    var popoverVisible:Bool { get }
+    var isEditing:Bool { get }
+}
+
 
 // MARK: - Review item
 
-@objc public class BeatReviewItem:NSObject, NSCopying, NSCoding {
-	@objc public var string:NSString! = ""
+@objc public class BeatReviewItem:NSObject, NSCopying, NSCoding, BeatReviewItemExports {
+	@objc public var string:String = ""
 	
     @objc public var keywords:[String] {
+        let string = self.string as NSString
         if string.range(of: "#").location == NSNotFound { return [] }
         
 		// Regexes are highly inefficient, but a lookup is only used if a hash symbol is found
         let pattern = "#(\\w+)"
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let results = regex.matches(in: self.string as String, options: [], range: NSRange(location: 0, length: self.string.length))
-            return results.map { self.string.substring(with: $0.range(at: 1)) }
+            let results = regex.matches(in: self.string, options: [], range: NSRange(location: 0, length: string.length))
+            return results.map { string.substring(with: $0.range(at: 1)) }
         } catch {
             print("Regex error: \(error)")
             return []
@@ -47,6 +65,7 @@ public protocol BeatReviewInterface {
     
 	@objc public var emptyReview:Bool {
 		get {
+            let string = self.string as NSString
 			if (string.length == 0) {
 				return true
 			} else {
@@ -56,13 +75,13 @@ public protocol BeatReviewInterface {
 	}
 	
 	@objc public init(reviewString:NSString?) {
-		string = reviewString ?? ""
+		string = (reviewString as? String ?? "")
 		super.init()
 	}
 	
 	public required init?(coder: NSCoder) {
 		super.init()
-		string = coder.decodeObject(forKey: "string") as? NSString ?? ""
+		string = coder.decodeObject(forKey: "string") as? String ?? ""
 	}
 	
 	public func encode(with coder: NSCoder) {
@@ -70,7 +89,7 @@ public protocol BeatReviewInterface {
 	}
 	
 	public func copy(with zone: NSZone? = nil) -> Any {
-		let item = BeatReviewItem(reviewString: self.string)
+		let item = BeatReviewItem(reviewString: self.string as NSString)
 		return item
 	}
 }
@@ -78,7 +97,11 @@ public protocol BeatReviewInterface {
 
 // MARK: - Review manager
 
-@objc public class BeatReview: NSObject {
+@objc public class BeatReview: NSObject, BeatReviewExports {
+    public func test(_ idx:BeatReviewItem?) -> BeatReviewItem? {
+        return self.getReviews().first
+    }
+    
 	@IBOutlet var delegate:BeatEditorDelegate?
     
 	var currentRange:NSRange = NSMakeRange(0, 0)
@@ -151,19 +174,19 @@ public protocol BeatReviewInterface {
                 return
             }
             
-            if (NSMaxRange(prevRange) + 1 == range.location && item.string.isEqual(to: prevString as String)) {
+            if (NSMaxRange(prevRange) + 1 == range.location && item.string == prevString as String) {
                 // TODO: Fix review attribute ranges
                 print("We should fix this attribute...")
             }
             
             ranges.add([
                 "range": [range.location, range.length],
-                "string": item.string ?? ""
+                "string": item.string
             ])
             
             if (!item.emptyReview) {
                 prevRange = range
-                prevString = item.string
+                prevString = item.string as NSString
             }
         }
         
@@ -171,7 +194,7 @@ public protocol BeatReviewInterface {
     }
     
     /// Stores a single review item
-    @objc public func saveReview(item: BeatReviewItem) {
+    @objc public func saveReview(_ item: BeatReviewItem) {
         let trimmedString = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if (trimmedString.count > 0 && trimmedString != "") {
@@ -182,11 +205,13 @@ public protocol BeatReviewInterface {
         self.delegate?.formatting.refreshBackground(for: currentRange)
         delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
         
+        // Commit to attributed text cache
+        _ = delegate?.getAttributedText()
 		changeDone()
     }
 	
     /// Deletes a review item from text view
-    public func deleteReview(item:BeatReviewItem) {
+    public func deleteReview(_ item:BeatReviewItem) {
 		guard let delegate else { print("No delegate set for review editor"); return }
 		
         var deleteRange = NSMakeRange(NSNotFound, 0)
@@ -210,10 +235,11 @@ public protocol BeatReviewInterface {
         }
 
         // Commit to attributed text cache
-        _ = delegate.attributedString()
+        _ = delegate.getAttributedText()
     }
     
-    @objc public func applyReview(item:BeatReviewItem) {
+    /// Applies changes to a review item
+    @objc public func applyReview(_ item:BeatReviewItem) {
         self.closePopover()
 
 		guard let delegate = self.delegate,
@@ -242,150 +268,92 @@ public protocol BeatReviewInterface {
         _ = delegate.attributedString()
     }
 	
+    @objc public func rangeForReview(_ review:BeatReviewItem) -> NSRange {
+        return rangeForReview(review, startPosition: 0)
+    }
+    
+    @objc public func rangeForReview(_ review:BeatReviewItem, startPosition:Int) -> NSRange {
+		var effectiveRange: NSRange = NSMakeRange(NSNotFound, 0)
+		
+		guard let delegate = self.delegate,
+			  let textView = delegate.getTextView()
+		else { return effectiveRange }
+				
+		// textStorage has different optionality on macOS and iOS. Nicely done again, Apple.
+		#if os(macOS)
+			guard let textStorage = textView.textStorage else { return effectiveRange }
+		#else
+			let textStorage = textView.textStorage
+		#endif
+		
+        textStorage.enumerateAttribute(BeatReview.attributeKey(), in: textStorage.range) { attr, range, stop in
+            guard let reviewItem = attr as? BeatReviewItem else { return }
+            if reviewItem == review, !review.emptyReview {
+                effectiveRange = range
+                stop.pointee = true
+            }
+        }
+        
+		return effectiveRange
+	}
+	
+	@objc public func reviewsChanged() {
+		delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
+	}
+	    
+    /// Alias for conforming to ObjC plugin API protocol
+	public func item(at location: Int) -> BeatReviewItem? { return reviewItem(at: location) }
+	
+    /// Returns a review object at given text position
 	func reviewItem(at location:Int) -> BeatReviewItem? {
 		let attr = delegate?.textStorage().attribute(BeatReview.attributeKey(), at: location, effectiveRange: nil)
 		return attr as? BeatReviewItem
 	}
-}
-
-
-// MARK: - Review popover view (cross-platform)
-
-/// Don't ask me about this code.
-
-extension BeatReview {
-    @objc public func showReviewIfNeeded(range:NSRange, forEditing:Bool) {
-        guard let delegate else { return }
-        if delegate.text().count == 0 || delegate.selectedRange.location == delegate.text().count { return }
-        
-        if forEditing {
-            showReviewEditorIfNeeded(range: range, forEditing: forEditing)
-        } else {
-            let loc = delegate.selectedRange.location
-            let item = self.delegate?.textStorage().attribute(BeatReview.attributeKey(), at: loc, effectiveRange: nil) as? BeatReviewItem
-            
-            if let review = item, !review.emptyReview, review != previouslyShownReview {
-                self.showReviewEditorIfNeeded(range: range, forEditing: false)
-                previouslyShownReview = review
-            } else {
-                previouslyShownReview = nil
-                self.closePopover()
-                #if os(iOS)
-                self.delegate?.getTextView().becomeFirstResponder()
-                #endif
-            }
-        }
-    }
-    
-	@objc public func showReviewEditorIfNeeded(range:NSRange, forEditing:Bool) {
-		guard let delegate = self.delegate else { return }
+	
+    /// Returns all review items stored in the editor text
+	public func getReviews() -> [BeatReviewItem] {
+		var reviewList:[BeatReviewItem] = []
 		
-		// Initialize an empty review item
-		var reviewItem = BeatReviewItem(reviewString: "")
+		guard let string = self.delegate?.attributedString() as? NSAttributedString
+		else { print("Warning: No string for fetching reviews"); return reviewList }
 		
-		// If the cursor landed on a review, display the review at that location
-		if range.length == 0 {
-			if let item = self.reviewItem(at: range.location) {
-                #if os(iOS)
-                // on iPhone, we won't show it if it's the same we just showed
-				if self.previouslyShownReview == item {
-					closePopover()
-					return
-				}
-                // ... if we *are* showing it, let's end editing as well
-                self.delegate?.getTextView().endEditing(true)
-                #endif
-				// Set new review and store it
-				reviewItem = item
-				self.previouslyShownReview = reviewItem
-			} else {
-				// Zero length and no review available, just return
-				self.previouslyShownReview = nil
-				closePopover()
-				return
+		string.enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, string.length)) { value, range, stop in
+			let review:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
+			let clampedRange = range.clamped(to: string.length)
+			
+			if (!review.emptyReview && clampedRange.length > 0) {
+				reviewList.append(review)
 			}
 		}
-				
-		if ((currentRange == range || reviewItem == currentItem) && self.popoverVisible) {
-			// If a review popover is already visible for the current item, do nothing
-			return
-		} else if (reviewItem != currentItem) {
-			// If this item is currently edited, we'll close the popover before proceeding
-			closePopover()
-		}
 		
-		// Store inspected review item and its range
-		currentRange = range
-		currentItem = reviewItem
-		var reviewRange = range
-		
-		// This is a NEW, empty review. We'll check if there's another item right next to it and join the ranges.
-		if (reviewItem.emptyReview && forEditing) {
-			delegate.textStorage().enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
-				let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem.init(reviewString: "")
-				
-				if (!item.emptyReview) {
-					reviewItem = item
-					reviewRange.length += rng.location - reviewRange.location + rng.length
-					stop.pointee = true
-				}
-			})
-		}
-		
-		// The range has to be at least 1 in length for the popover to display correctly.
-		if (reviewRange.length == 0) {
-			var displayRange = NSMakeRange(reviewRange.location, 1)
-			if (NSMaxRange(displayRange) > delegate.text().count) {
-				displayRange.location -= 1
-			}
-			reviewRange = displayRange
-		}
-        
-		// Create editor popover if we're not already displaying it
-        if self.reviewEditor?.item != reviewItem {
-            self.reviewEditor = BeatReviewEditor(review: reviewItem, delegate: self, editable: forEditing)
-            self.reviewEditor?.show(range: range, editable: forEditing, sender: delegate.getTextView())
-        }
-	}
-	    
-    @objc public func closePopover() {
-		self.reviewEditor?.close()
-		self.reviewEditor = nil
-    }
-    
-    @objc public var editorVisible:Bool {
-        return (self.reviewEditor != nil)
-    }
-    
-    func editorDidClose(for item:BeatReviewItem) {
-        let string = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
-        if string.count == 0 {
-            deleteReview(item: item)
-        }
-		
-		self.currentItem = nil
-    }
-}
-
-// MARK: - OS compatibility layer
-extension BeatReview {
-	var popoverVisible:Bool {
-		#if os(macOS)
-            return self.reviewEditor?.popover?.isShown ?? false
-		#elseif os(iOS)
-            return (self.reviewEditor?.editor?.presentingViewController?.presentingViewController == self)
-		#endif
+		return reviewList
 	}
 	
-	func changeDone() {
-        // Look at this mess. Come on, Apple. After you've stopped using slave labour, maybe provide some outo-of-the-box compatibility between the systems.
-		#if os(macOS)
-			delegate?.updateChangeCount(.changeDone)
-		#elseif os(iOS)
-			delegate?.updateChangeCount(.done)
-		#endif
-	}
+    @objc public var popoverVisible:Bool {
+        #if os(macOS)
+            return self.reviewEditor?.popover?.isShown ?? false
+        #elseif os(iOS)
+            return (self.reviewEditor?.editor?.presentingViewController?.presentingViewController == self)
+        #endif
+    }
+    
+    func changeDone() {
+        delegate?.addToChangeCount()
+    }
+    
+    public var isEditing:Bool {
+        #if os(macOS)
+            guard let reviewEditor, let popover = reviewEditor.popover, let editor = reviewEditor.editor
+            else { return false }
+            
+            return popover.isShown && editor.editable
+        #else
+            return false
+        #endif
+    }
 }
+
+
 /*
  
  meit' ei oo montaa
