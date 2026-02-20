@@ -202,12 +202,16 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Copies this line
 - (Line*)clone;
 
-/// Experimental dictionary which will hold the formatted ranges in the future
+/// This dictionary contains all formatted ranges. They is a `FormattedRange` enum value.
+/// There are convenience setters for ranges (so you can do stuff like `line.boldedRanges = NSIndexSet`, but it's recommended using `setRanges: forFormatting:` to store them.
 @property (nonatomic) NSMutableDictionary<NSValue*, NSMutableIndexSet*>* formattedRanges;
 - (void)setRanges:(NSMutableIndexSet*)indices forFormatting:(FormattedRange)formatting;
 
 /// Returns the index set for given formatted range type. Never returns a `nil` value.
 - (NSMutableIndexSet*)formattedRange:(FormattedRange)type;
+
+/// @warning This property is used only for testing purposes.
+@property (nonatomic) NSString* image;
 
 
 #pragma mark - String generation

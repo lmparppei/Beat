@@ -57,12 +57,12 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
                                     usingBlock:^(NSString * _Nullable paragraph,
                                                  NSRange paragraphRange,
                                                  NSRange enclosingRange,
-                                                 BOOL * _Nonnull stop) {
+                                                 BOOL * _Nonnull stop) {        
         NSAttributedString* paragraphStr = [self attributedSubstringFromRange:paragraphRange];
         NSMutableString* str = NSMutableString.new;
         
         __block PastedFragmentStyle activeStyle = 0;
-
+        
         [paragraphStr enumerateAttributesInRange:NSMakeRange(0, paragraphStr.length)
                                          options:0
                                       usingBlock:^(NSDictionary<NSAttributedStringKey,id> *attrs,
@@ -99,7 +99,7 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
         if (activeStyle & PastedFragmentStyleBold)      [str appendString:@"**"];
         
         // Nothing to do here, just add a line break and continue.
-        if (str.length == 0 && result.length > 0) {
+        if (paragraphRange.length == 0 || str.length == 0) {
             [result appendString:@"\n"]; return;
         }
         
@@ -108,7 +108,7 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
         
         NSParagraphStyle *pStyle = attrs[NSParagraphStyleAttributeName];
         BXFont *font = attrs[NSFontAttributeName];
-        CGFloat spacing = font.ascender - font.descender;
+        CGFloat spacing = font.ascender;
                     
         // In sub-paragraphs, we might need to add line breaks to mimic paragraph spacing
         if (result.length > 0 && (pStyle.paragraphSpacingBefore > 0 || spacing > font.pointSize)) [result appendString:@"\n"];

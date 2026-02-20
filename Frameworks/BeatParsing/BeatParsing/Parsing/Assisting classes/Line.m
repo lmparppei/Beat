@@ -60,7 +60,8 @@
 
 #pragma mark - Initialization
 
-- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser {
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser
+{
     self = [super init];
     if (self) {
         if (string == nil) string = @"";
@@ -72,17 +73,6 @@
         _parser = parser;
         
         _formattedRanges = NSMutableDictionary.new;
-        /*
-        _boldRanges = NSMutableIndexSet.indexSet;
-        _italicRanges = NSMutableIndexSet.indexSet;
-        _underlinedRanges = NSMutableIndexSet.indexSet;
-        _boldItalicRanges = NSMutableIndexSet.indexSet;
-        _strikeoutRanges = NSMutableIndexSet.indexSet;
-        _noteRanges = NSMutableIndexSet.indexSet;
-        _omittedRanges = NSMutableIndexSet.indexSet;
-        _escapeRanges = NSMutableIndexSet.indexSet;
-        _removalSuggestionRanges = NSMutableIndexSet.indexSet;
-        */
          
         _currentVersion = 0;
         
@@ -121,6 +111,7 @@
         _type = type;
         _unsafeForPageBreak = YES;
         _formattedAs = -1;
+        _formattedRanges = NSMutableDictionary.new;
         _uuid = NSUUID.UUID;
         _nextElementIsDualDialogue = false;
         
@@ -543,42 +534,6 @@
                                       between:NOTE_OPEN_CHAR
                                           and:NOTE_CLOSE_CHAR
                                    withLength:2];
-        /*
-        self.boldRanges = [Line rangesInChars:charArray
-                                     ofLength:length
-                                       inLine:self
-                                      between:BOLD_CHAR
-                                          and:BOLD_CHAR
-                                   withLength:2];
-        self.italicRanges = [Line rangesInChars:charArray
-                                       ofLength:length
-                                         inLine:self
-                                        between:ITALIC_CHAR
-                                            and:ITALIC_CHAR
-                                     withLength:1];
-        
-        
-        self.underlinedRanges = [Line rangesInChars:charArray
-                                           ofLength:length
-                                             inLine:self
-                                            between:UNDERLINE_CHAR
-                                                and:UNDERLINE_CHAR
-                                         withLength:1];
-        
-        self.noteRanges = [Line rangesInChars:charArray
-                                     ofLength:length
-                                       inLine:self
-                                      between:NOTE_OPEN_CHAR
-                                          and:NOTE_CLOSE_CHAR
-                                   withLength:2];
-        
-        self.macroRanges = [Line rangesInChars:charArray
-                                      ofLength:length
-                                        inLine:self
-                                       between:MACRO_OPEN_CHAR
-                                           and:MACRO_CLOSE_CHAR
-                                    withLength:2];
-         */
     }
     @catch (NSException* e) {
         NSLog(@"Error when trying to reset formatting: %@", e);
@@ -1016,6 +971,18 @@
     _inheritedForcedPageNumber = forcedPageNumber;
 }
 
+
+#pragma mark - Image
+
+- (NSString*)image
+{
+    /*
+     
+     Resolve image from macro. The bundle or whatever has to be available via export settings to support pagination. Maybe the whole line should 
+     
+     */
+    return nil;
+}
 
 
 #pragma mark - Debugging
