@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Document (Menus)
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
+- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem;
 @end
 
 NS_ASSUME_NONNULL_END

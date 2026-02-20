@@ -15,6 +15,25 @@
 
 @implementation Document (Menus)
 
+#pragma mark - Toggling user default settings on/off
+
+/// Toggles user default or document setting value on or off. Requires `BeatOnOffMenuItem` with a defined `settingKey`.
+- (IBAction)toggleSetting:(BeatOnOffMenuItem*)menuItem
+{
+	if (menuItem == nil || menuItem.settingKey.length == 0) return;
+	
+	if (menuItem.documentSetting) [self.documentSettings toggleBool:menuItem.settingKey];
+	else [BeatUserDefaults.sharedDefaults toggleBool:menuItem.settingKey];
+	
+	[self ensureLayout];
+	
+	// This notification should be the preferred way of updating any views etc. in the future
+	[NSNotificationCenter.defaultCenter postNotification:[NSNotification.alloc initWithName:@"SettingToggled" object:nil userInfo:nil]];
+}
+
+
+#pragma mark - Menu item validation
+
 //Empty function, which needs to exists to make the share access the validateMenuItems function
 - (IBAction)share:(id)sender {}
 - (IBAction)export:(id)sender {}
