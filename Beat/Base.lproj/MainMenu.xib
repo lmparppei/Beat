@@ -716,6 +716,11 @@ DQ
                                     <action selector="addPageBreak:" target="-1" id="QOi-6j-Qi0"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Highlight" keyEquivalent="I" id="Yhj-A7-rfE">
+                                <connections>
+                                    <action selector="addPageBreak:" target="-1" id="zjx-Ke-YjC"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
                             <menuItem title="Macros" id="J5q-RS-R0i">
                                 <modifierMask key="keyEquivalentModifierMask"/>

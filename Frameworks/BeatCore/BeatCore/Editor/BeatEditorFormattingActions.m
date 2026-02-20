@@ -30,8 +30,7 @@ static NSString *omitClose= @"*/";
 static NSString *centeredStart = @"> ";
 static NSString *centeredEnd = @" <";
 
-static NSString *highlightSymbolOpen = @"<<";
-static NSString *highlightSymbolClose = @">>";
+static NSString *highlightSymbol = @"+";
 static NSString *macroSymbolOpen = @"{{";
 static NSString *macroSymbolClose = @"}}";
 
@@ -257,6 +256,12 @@ static NSString *macroSymbolClose = @"}}";
     [self format:range startingSymbol:centeredStart endSymbol:centeredEnd style:Centered];
 }
 
+- (IBAction)makeHighlighted:(id)sender
+{
+    NSRange range = [self rangeUntilLineBreak:_delegate.selectedRange];
+    [self format:range startingSymbol:highlightSymbol endSymbol:highlightSymbol style:Other];
+}
+
 - (IBAction)makeNote:(id)sender
 {
 	//Retreiving the cursor location
@@ -293,55 +298,85 @@ static NSString *macroSymbolClose = @"}}";
 }
 
 /*
- // An initial attempt at making a more sensible formatting method but... uh. No hope.
-- (void)addFormattingTo:(NSRange)range open:(NSString*)openSymbol close:(NSString*)closeSymbol style:(BeatMarkupStyle)style
+- (void)format:(NSRange)range style:(FormattedRange)style
 {
-    NSString* text = _delegate.text;
+    // Don't go out of range
+    if (NSMaxRange(range) > _delegate.text.length) return;
+    
+    // First check if this range is already formatted using this current style
+    NSArray<Line*>* lines = [self.delegate.parser linesInRange:range];
+    
+    NSMutableDictionary<Line*, NSValue*>* localRanges = NSMutableDictionary.new;
+    
+    InlineFormatting *format = InlineFormatting.inlineFormats[@(style)];
+    NSString* open = [NSString stringWithCharacters:(unichar*)format.open length:format.openLength];
+    NSString* close = [NSString stringWithCharacters:(unichar*)format.close length:format.closeLength];
+    
+    // Before changing any lines, we'll gather everything in given range and store the local ranges
+    for (Line* line in lines) {
+        if (line.length == 0) continue;
         
-    bool strip = false;
-    
-    // First look around the item
-    NSInteger start = range.location;
-    NSInteger end = NSMaxRange(range);
-    
-    NSInteger precedingStars = 0;
-    NSInteger followingStars = 0;
-    
-    while (start >= 0) {
-        if ([text characterAtIndex:start] != '*') break;
-        precedingStars++;
-        start--;
-    }
-    while (end < text.length && followingStars < precedingStars) {
-        if ([text characterAtIndex:end] != '*') break;
-        followingStars++;
-        end++;
+        NSRange globalRange = NSIntersectionRange(range, line.textRange);
+        localRanges[line] = [NSValue valueWithRange:NSMakeRange(globalRange.location - line.position, globalRange.length)];
     }
     
-    // Same amount of stars OR over 3 stars. Strip the styling we were about to add
-    if ((precedingStars && followingStars && precedingStars == openSymbol.length) ||
-        (precedingStars == followingStars && precedingStars > 2)) {
-        strip = true;
-    }
-
-    
-    if (strip) {
-        // Remove anything that's here
+    // Now iterate through the lines again and get the formatted range
+    for (Line* line in lines) {
+        NSValue* localRangeValue = localRanges[line];
+        if (localRangeValue == nil) continue;
+        
+        NSRange localRange = localRangeValue.rangeValue;
+        NSRange globalRange = NSMakeRange(line.position + localRange.location, localRange.length);
+        NSString* fullText = self.delegate.text;
+        NSString* string = [fullText substringWithRange:globalRange];
+        
+        NSIndexSet* formattedIndices = [line formattedRange:style];
+        
+        if ([formattedIndices containsIndexesInRange:localRange]) {
+            NSRange rangeToReplace = globalRange;
+            // All the indices were contained within the formatted range. We'll *remove* the formatting.
+            NSRange openRange = NSMakeRange(globalRange.location, open.length);
+            NSRange closeRange = NSMakeRange(globalRange.length, close.length);
+            
+            // This means that we'll have to carve out a hole for the formatting instead of removing it.
+            bool carveOut = false;
+            
+            // If we don't find the formatting characters at the start of the range, we'll have to traverse the text backwards to see where the
+            if (![[self.delegate.text substringWithRange:openRange] isEqualToString:open]) {
+                NSInteger actualOpenLocation = [fullText rangeOfString:open options:NSBackwardsSearch range:NSMakeRange(0, globalRange.location)].location;
+                
+                // Actually, we'll have to *carve out* the formatting here.
+                if (globalRange.location - actualOpenLocation > open.length) {
+                    carveOut = true;
+                } else {
+                    globalRange.location -= open.length;
+                    globalRange.length += open.length;
+                }
+            }
+            
+            if (![[self.delegate.text substringWithRange:closeRange] isEqualToString:close]) {
+                // I just can't go on
+            }
+            
+        } else {
+            // We'll add formatting around the given range
+            [self.delegate.textActions replaceRange:globalRange withString:[NSString stringWithFormat:@"%@%@%@", open, string, close]];
+        }
     }
 }
 */
-
-- (void)format:(NSRange)cursorLocation startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(NSInteger)style
+ 
+- (void)format:(NSRange)range startingSymbol:(NSString*)startingSymbol endSymbol:(NSString*)endSymbol style:(NSInteger)style
 {
     //[self addFormattingTo:cursorLocation open:startingSymbol close:endSymbol style:style];
     
     // Looking at this in 2023... oh my. TODO: Fix this at some point.
     
 	// Don't go out of range
-    if (NSMaxRange(cursorLocation) > _delegate.text.length) return;
+    if (NSMaxRange(range) > _delegate.text.length) return;
 	
 	// Check if the selected text is already formated in the specified way
-	NSString *selectedString = [_delegate.text substringWithRange:cursorLocation];
+	NSString *selectedString = [_delegate.text substringWithRange:range];
 	NSInteger selectedLength = selectedString.length;
 	NSInteger symbolLength = startingSymbol.length + endSymbol.length;
 	
@@ -350,7 +385,7 @@ static NSString *macroSymbolClose = @"}}";
     
     // Special rules for centered..... added in 2023 feeling agony. This whole method has to be fixed one day.
     if (style == Centered) {
-        NSArray* lines = (cursorLocation.length > 0) ? [self.delegate.parser linesInRange:cursorLocation] : @[[self.delegate.parser lineAtPosition:cursorLocation.location]];
+        NSArray* lines = (range.length > 0) ? [self.delegate.parser linesInRange:range] : @[[self.delegate.parser lineAtPosition:range.location]];
         
         for (Line* line in lines) {
             if (line.string.length == 0) {
@@ -372,11 +407,11 @@ static NSString *macroSymbolClose = @"}}";
 	// See if the selected range already has formatting INSIDE the selected area
 	bool alreadyFormatted = NO;
 	if (selectedLength >= symbolLength) {
-		alreadyFormatted = [self rangeHasFormatting:cursorLocation open:startingSymbol end:endSymbol];
+		alreadyFormatted = [self rangeHasFormatting:range open:startingSymbol end:endSymbol];
 		
 		if (style == Italic) {
 			// Bold and Italic have similar stylization, so weed to do an additional check
-			if ([self rangeHasFormatting:cursorLocation open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
+			if ([self rangeHasFormatting:range open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
 		}
 	}
 	
@@ -384,7 +419,7 @@ static NSString *macroSymbolClose = @"}}";
 		NSString *replacementString = [selectedString substringWithRange:NSMakeRange(startingSymbol.length, selectedLength - startingSymbol.length - endSymbol.length)];
 		
 		//The Text is formatted, remove the formatting
-		[_delegate.textActions replaceRange:cursorLocation withString:replacementString];
+		[_delegate.textActions replaceRange:range withString:replacementString];
 
 		addedCharactersBeforeRange = 0;
 		addedCharactersInRange = -(startingSymbol.length + endSymbol.length);
@@ -393,7 +428,7 @@ static NSString *macroSymbolClose = @"}}";
 		//The Text isn't formatted, but let's alter the cursor range and check again because there might be formatting right outside the selected area
 		alreadyFormatted = NO;
 		
-		NSRange safeRange = (NSRange) { cursorLocation.location - startingSymbol.length, cursorLocation.length + startingSymbol.length + endSymbol.length };
+		NSRange safeRange = (NSRange) { range.location - startingSymbol.length, range.length + startingSymbol.length + endSymbol.length };
 		
 		if (NSIntersectionRange(safeRange, (NSRange){ 0, _delegate.text.length }).length == safeRange.length) {
 			alreadyFormatted = [self rangeHasFormatting:safeRange open:startingSymbol end:endSymbol];
@@ -414,8 +449,8 @@ static NSString *macroSymbolClose = @"}}";
 			addedCharactersInRange = 0;
 		} else {
 			//The text really isn't formatted. Just add the formatting using the original data.
-			[_delegate.textActions addString:endSymbol atIndex:cursorLocation.location + cursorLocation.length];
-			[_delegate.textActions addString:startingSymbol atIndex:cursorLocation.location];
+			[_delegate.textActions addString:endSymbol atIndex:NSMaxRange(range)];
+			[_delegate.textActions addString:startingSymbol atIndex:range.location];
 			
 			addedCharactersBeforeRange = startingSymbol.length;
 			addedCharactersInRange = 0;
@@ -423,7 +458,7 @@ static NSString *macroSymbolClose = @"}}";
 	}
 	
 	// Return range to how it was
-	self.delegate.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
+	self.delegate.selectedRange = NSMakeRange(range.location+addedCharactersBeforeRange, range.length+addedCharactersInRange);
 }
 
 - (IBAction)forceHeading:(id)sender
@@ -552,12 +587,11 @@ static NSString *macroSymbolClose = @"}}";
         NSString *leftSide = [_delegate.text substringWithRange:(NSRange){ range.location, open.length }];
         NSString *rightSide = [_delegate.text substringWithRange:(NSRange){ range.location + range.length - end.length, end.length }];
         
-        if ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]) return YES;
-        else return NO;
+        return ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]);
     
-    } else {
-        return NO;
     }
+    
+    return NO;
 }
 
 
