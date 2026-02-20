@@ -272,7 +272,7 @@
             if (color != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
         }
     }];
-    
+        
     // Add hyperlink for the represented line
     if (!line.isTitlePage && self.settings.operation != ForQuickLook) {
         NSRange lineRange = NSMakeRange(0, attributedString.length - 1);
@@ -315,11 +315,15 @@
     
     // For headings, add some extra formatting (wrap them in a table and insert scene numbers)
     if (line.type == heading && style.sceneNumber && !self.settings.simpleSceneHeadings) {
+        if (self.settings.printSceneHeadingColors) {
+            BXColor* color = [BeatColors color:line.color];
+            if (color != nil) [attributedString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, attributedString.length)];
+        }
         attributedString = [self renderHeading:line content:attributedString firstElementOnPage:firstElementOnPage];
-        // This is an experimental feature to support PDF outlines
+        // Let's add a heading attribute to support PDF table of contents
         [attributedString addAttribute:@"HEADING" value:[NSString stringWithFormat:@"%@ %@", line.sceneNumber, line.stringForDisplay.uppercaseString] range:NSMakeRange(0, attributedString.length)];
     }
-    
+        
     return attributedString;
 }
 

@@ -51,7 +51,7 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
 		_paperSize = NSNotFound;
         
         _hidePageNumbers = hidePageNumbers;
-                
+        
         if (revisions == nil) revisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1024)];
         
         _headerAlignment = 1;
@@ -63,6 +63,8 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
 + (BeatExportSettings*)operation:(BeatExportOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
     return [BeatExportSettings.alloc initWithOperation:operation delegate:delegate];
 }
+
+/// This doesn't make any sense. Just get the values from the document settings, right?
 - (BeatExportSettings*)initWithOperation:(BeatExportOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate
 {
     self = super.init;
@@ -89,6 +91,8 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
         _fileName = delegate.fileNameString;
         
         _firstPageNumber = [delegate.documentSettings getInt:DocSettingFirstPageNumber];
+        
+        _printSceneHeadingColors = [delegate.documentSettings getBool:DocSettingPrintHeadingColor];
         
         // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings. Probably a bytemask?
         [self applyInvisibleElementSettings];

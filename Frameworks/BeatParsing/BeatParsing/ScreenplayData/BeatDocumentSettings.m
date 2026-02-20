@@ -72,6 +72,8 @@ NSString * const DocSettingTextLengthAtSave = @"Text Length";
 
 NSString * const DocSettingHidePageNumbers = @"Hide Page Numbers";
 
+NSString * const DocSettingPrintHeadingColor = @"printHeadingColor";
+
 -(id)init
 {
     return [BeatDocumentSettings.alloc initWithDelegate:nil];

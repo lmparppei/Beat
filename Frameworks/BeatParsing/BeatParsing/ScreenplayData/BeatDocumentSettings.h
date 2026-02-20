@@ -68,6 +68,8 @@ extern NSString * const DocSettingPageNumberingMode;
 
 extern NSString * const DocSettingTextLengthAtSave;
 
+extern NSString * const DocSettingPrintHeadingColor;
+
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)toggleBool:(NSString*)key;
 - (void)setInt:(NSString*)key as:(NSInteger)value;

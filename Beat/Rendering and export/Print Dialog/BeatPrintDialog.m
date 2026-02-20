@@ -13,6 +13,7 @@
  which also does all the necessary preprocessing.
  
  This is a HORRIBLY convoluted system. I'm sorry for any inconvenience.
+ I should rewrite all of this crap one day, but for now it works and isn't that broken.
  
  NOTE: PrintView is stored into HOST DOCUMENT to keep it in memory after
  closing the dialog.
@@ -29,8 +30,6 @@
 
 @interface BeatPrintDialog () <NSTextFieldDelegate, PDFViewDelegate>
 
-@property (weak) IBOutlet NSButton* printSceneNumbers;
-@property (weak) IBOutlet NSButton* printPageNumbers;
 @property (weak) IBOutlet NSButton* radioA4;
 @property (weak) IBOutlet NSButton* radioLetter;
 @property (weak) IBOutlet PDFView* pdfView;
@@ -57,9 +56,12 @@
 @property (weak) IBOutlet NSButton* revisionSeventh;
 @property (weak) IBOutlet NSButton* revisionEight;
 
-@property (weak) IBOutlet NSButton* printSections;
-@property (weak) IBOutlet NSButton* printSynopsis;
-@property (weak) IBOutlet NSButton* printNotes;
+@property (weak) IBOutlet BeatUserDefaultCheckbox* printSceneNumbers;
+@property (weak) IBOutlet NSButton* printPageNumbers;
+@property (weak) IBOutlet BeatUserDefaultCheckbox* printSections;
+@property (weak) IBOutlet BeatUserDefaultCheckbox* printSynopsis;
+@property (weak) IBOutlet BeatUserDefaultCheckbox* printNotes;
+@property (weak) IBOutlet BeatUserDefaultCheckbox* printSceneHeadingColors;
 
 @property (weak) IBOutlet NSButton* revisionHighlightModeNone;
 @property (weak) IBOutlet NSButton* revisionHighlightModeText;
@@ -113,33 +115,36 @@
 	[self showOrHideAdvancedOptionsAndAnimate:false];
 	_advancedOptionsButton.state = ([NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY]) ? NSOnState : NSOffState;
 	
-	// Restore settings for note/synopsis/section printing
-	_printSections.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintSections] ? NSOnState : NSOffState;
-	_printSynopsis.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintSynopsis] ? NSOnState : NSOffState;
-	_printNotes.state = [self.documentDelegate.documentSettings getBool:DocSettingPrintNotes] ? NSOnState : NSOffState;
-
-	self.printSceneNumbers.state = (_documentDelegate.printSceneNumbers) ? NSOnState : NSOffState;
-	self.printPageNumbers.state = ![_documentDelegate.documentSettings getBool:DocSettingHidePageNumbers] ? NSOnState : NSOffState;
+	// Restore some settings from document delegate
+	NSArray<BeatUserDefaultCheckbox*>* checkboxesToUpdate = @[_printSections, _printSynopsis, _printNotes, _printSceneNumbers, _printSceneHeadingColors];
+	for (BeatUserDefaultCheckbox* checkbox in checkboxesToUpdate) {
+		if (self.documentDelegate != nil) [checkbox updateValue:self.documentDelegate];
+	}
 	
+	// Page number printing is an inverted value
+	_printPageNumbers.state = ![_documentDelegate.documentSettings getBool:DocSettingHidePageNumbers] ? NSOnState : NSOffState;
+	
+	// Update selected revisions
 	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	NSIndexSet* hiddenRevisions = [NSIndexSet fromArray:[self.documentDelegate.documentSettings get:DocSettingHiddenRevisions]];
 	
 	for (NSButton* b in revisionControls) {
 		b.state = ([hiddenRevisions containsIndex:b.tag]) ? NSOffState : NSOnState;
 	}
-	
-	BeatExportSettings* settings = self.exportSettings;
-	
-	self.headerText.stringValue = settings.header;
-	[self.headerAlign setSelectedSegment:[self.documentDelegate.documentSettings getInt:DocSettingHeaderAlignment]];
-	
-	[self toggleAdvancedOptions:_advancedOptionsButton];
-	
+
+	// Revision highlighting mode
 	BeatExportRevisionHighlightMode highlightMode = [self.documentDelegate.documentSettings getInt:DocSettingPrintedRevisionHighlighting];
 	if (highlightMode == 0) self.revisionHighlightModeNone.state = NSOnState;
 	else if (highlightMode == 1) self.revisionHighlightModeText.state = NSOnState;
 	else if (highlightMode == 2) self.revisionHighlightModeBackground.state = NSOnState;
 	
+	// Set header values
+	self.headerText.stringValue = [self.documentDelegate.documentSettings getString:DocSettingHeader];
+	[self.headerAlign setSelectedSegment:[self.documentDelegate.documentSettings getInt:DocSettingHeaderAlignment]];
+
+	
+	[self toggleAdvancedOptions:_advancedOptionsButton];
+		
 	//[self.window center];
 }
 
@@ -387,6 +392,19 @@
 	[self.pdfView setDocument:doc];
 	
 	_firstPreview = NO;
+}
+
+- (IBAction)toggleSetting:(BeatUserDefaultCheckbox*)sender
+{
+	bool val = sender.state == NSOnState;
+	
+	if (sender.documentSetting) {
+		[self.documentDelegate.documentSettings setBool:sender.userDefaultKey as:val];
+	} else {
+		[BeatUserDefaults.sharedDefaults saveBool:val forKey:sender.userDefaultKey];
+	}
+	
+	if (sender.resetPreview) [self loadPreview];
 }
 
 - (NSArray<NSNumber*>*)hiddenRevisions
