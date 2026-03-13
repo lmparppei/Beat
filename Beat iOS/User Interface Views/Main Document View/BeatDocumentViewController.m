@@ -451,9 +451,7 @@ SimulatedTyping* typing;
 	return _document.fileURL.lastPathComponent.stringByDeletingPathExtension;
 }
 
-- (bool)isDark {
-	return false;
-}
+- (bool)isDark { return false; }
 
 - (void)showLockStatus
 {
@@ -603,7 +601,8 @@ SimulatedTyping* typing;
 
 #pragma mark - Text I/O
 
-- (NSString *)text {
+- (NSString *)text
+{
 	if (self.textView == nil) return self.formattedTextBuffer.string;
 	
 	if (NSThread.isMainThread) return self.textView.text;

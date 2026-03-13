@@ -120,7 +120,6 @@ extension BeatUITextView {
 		// Calculate the index of the last glyph that fits within the available height
 		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
 		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
-	
 
 		// Get the rectangle of the line fragment that contains the last glyph
 		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
@@ -175,6 +174,9 @@ extension BeatUITextView {
 		let documentWidth = self.documentWidth
 		self.textContainer.size.width = documentWidth
 		
+		self.insetsLayoutMarginsFromSafeArea = true
+		self.automaticallyAdjustsScrollIndicatorInsets = true
+		
 		let factor = 1 / self.zoomScale
 		let scaledFrame = self.frame.width * factor
 		
@@ -183,6 +185,27 @@ extension BeatUITextView {
 		if (documentWidth < scaledFrame) {
 			insets.left = ((self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2) * factor
 		}
+		
+		// Calculate the index of the last glyph that fits within the available height
+		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
+		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
+
+		// Get the rectangle of the line fragment that contains the last glyph
+		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex, effectiveRange: nil)
+		
+		var lastLineY = lastLineRect.maxY
+		if lastLineRect.origin.y <= 0.0 {
+			lastLineRect = layoutManager.extraLineFragmentRect
+			lastLineY = abs(lastLineRect.maxY)
+		}
+		
+		// A duct-tape fix for a weird issue in iOS 26
+		if let window, lastLineY < window.frame.height {
+			let diff = window.frame.height - lastLineY
+			let topInset = min(diff, 150)
+			insets.top = topInset
+		}
+		
 		
 		self.textContainerInset = insets
 	}

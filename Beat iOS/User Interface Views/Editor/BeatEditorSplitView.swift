@@ -107,6 +107,27 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		if let navController = vc as? UINavigationController {
 			navController.setNavigationBarHidden(true, animated: false)
 		}
+		
+		vc.navigationItem.leftBarButtonItems = []
+		vc.navigationItem.hidesBackButton = true
+		vc.navigationItem.setLeftBarButtonItems([], animated: false)
+	
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		if let nav = viewController(for: .primary) as? UINavigationController {
+			nav.isNavigationBarHidden = true
+		}
+		
+		if let nav = viewController(for: .secondary) as? UINavigationController {
+			// Hide split view button. This is a hack, sorry.
+			let item = UIBarButtonItem()
+			item.isHidden = true
+			nav.topViewController?.navigationItem.leftBarButtonItem = item
+			nav.isNavigationBarHidden = true
+		}
 	}
 	
 }
@@ -116,10 +137,24 @@ class BeatEditorViewController:UIViewController {
 	@IBOutlet @objc public weak var scrollView:BeatScrollView?
 	@IBOutlet @objc public weak var pageView:BeatPageView?
 	@IBOutlet @objc public weak var testView:UITextView?
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		navigationItem.leftBarButtonItem = UIBarButtonItem()
+		navigationItem.leftItemsSupplementBackButton = false
+		navigationItem.hidesBackButton = true
+		navigationItem.leftBarButtonItems = []
+	}
 }
 
 class BeatSidebarViewController:UITableViewController {
-	@objc public weak var editorDelegate:BeatEditorDelegate?		
+	@objc public weak var editorDelegate:BeatEditorDelegate?
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		self.navigationController?.isNavigationBarHidden = true
+	}
 }
 
 /**

@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import BeatCore
 
 @objc class BeatiOSOutlineView: UITableView, UITableViewDelegate, BeatSceneOutlineView {
 	@objc public var aboutToShow = false
@@ -20,6 +21,8 @@ import Foundation
 	
 	/// This is a placeholder for diffable data source I guess
 	var selectedItem:OutlineDataItem?
+	
+	var mobileMode:Bool { return UIDevice.current.userInterfaceIdiom == .phone }
 	
 	/// Returns the currently selected scene
 	var selectedScene:OutlineScene? {
@@ -41,7 +44,7 @@ import Foundation
 		var topInset = UIDevice.current.userInterfaceIdiom == .phone ? 100.0 : 0.0
 		if #available(iOS 26.0, *) { }
 		else {
-			topInset = 100.0
+			topInset = mobileMode ? 150.0 : 100.0
 		}
 				
 		self.contentInset = UIEdgeInsets(top: topInset, left: 0.0, bottom: 0.0, right: 0.0)

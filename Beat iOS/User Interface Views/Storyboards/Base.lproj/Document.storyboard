@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="n1j-v5-5jA">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="n1j-v5-5jA">
     <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24405"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -144,6 +144,22 @@
             </objects>
             <point key="canvasLocation" x="3139" y="65"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ewk-wz-XY9">
+            <objects>
+                <navigationController id="q1q-ip-ycm" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="BJh-g1-hL4">
+                        <rect key="frame" x="0.0" y="24" width="1024" height="54"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="rootViewController" id="kMb-vR-Yai"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Caa-Fh-89r" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2449" y="1519"/>
+        </scene>
         <!--Beat Editor View Controller-->
         <scene sceneID="uc1-BM-eyz">
             <objects>
@@ -181,7 +197,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eTe-Gf-Vv9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2865" y="1522"/>
+            <point key="canvasLocation" x="3139" y="1519"/>
         </scene>
         <!--Beat Sidebar View Controller-->
         <scene sceneID="9rO-4Y-XEo">
@@ -222,7 +238,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bo0-Gi-KDE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2865" y="825"/>
+            <point key="canvasLocation" x="3139" y="854"/>
         </scene>
         <!--Beat Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
@@ -287,13 +303,29 @@
             <objects>
                 <splitViewController allowDoubleColumnStyle="YES" primaryBackgroundStyle="sidebar" id="CQ1-ft-LFq" customClass="BeatEditorSplitViewController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <connections>
-                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="masterViewController" id="Uxe-xP-hoP"/>
-                        <segue destination="4sm-tP-vUc" kind="relationship" relationship="detailViewController" id="u9j-UM-Tc1"/>
+                        <segue destination="q1q-ip-ycm" kind="relationship" relationship="detailViewController" id="yOd-vO-Nrg"/>
+                        <segue destination="PU4-s1-JbV" kind="relationship" relationship="masterViewController" id="6mJ-qo-xgJ"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xu4-04-QfC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1744" y="1152"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="gPZ-gl-GCa">
+            <objects>
+                <navigationController id="PU4-s1-JbV" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Kcx-gY-scj">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="54"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="da5-TV-bCJ" kind="relationship" relationship="rootViewController" id="kTr-qe-WMy"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aBD-U3-hs7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2448" y="853"/>
         </scene>
         <!--Create PDF-->
         <scene sceneID="ZxL-Wj-Jkf">

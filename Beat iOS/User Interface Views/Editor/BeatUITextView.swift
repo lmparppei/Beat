@@ -299,7 +299,7 @@ import BeatParsing
 		guard !isUpdatingLayout else { return }
 		
 		isUpdatingLayout = true
-		mobileViewResize()
+		if self.mobileMode { mobileViewResize() }
 		isUpdatingLayout = false
 	}
 	
