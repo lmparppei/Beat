@@ -286,11 +286,19 @@
             if (value == nil) return;
             
             NSInteger level = ((NSNumber*)value).intValue;
-            if (value == 0 || level >= BeatRevisions.revisionGenerations.count) return;
+            if (value == 0 ||
+                level >= BeatRevisions.revisionGenerations.count ||
+                ![self.settings.revisions containsIndex:level]) {
+                return;
+            }
             
             BeatRevisionGeneration* gen = BeatRevisions.revisionGenerations[level];
+            
             BXColor* c = [BeatColors color:gen.color];
             NSRange clampedRange = CLAMP_RANGE(range, attributedString.length);
+            
+            // Just for safety
+            if (c == nil || clampedRange.length == 0) return;
             
             if (_settings.revisionHighlightMode == BeatExportRevisionHighlightColor) {
                 [attributedString addAttribute:NSForegroundColorAttributeName value:c range:clampedRange];
