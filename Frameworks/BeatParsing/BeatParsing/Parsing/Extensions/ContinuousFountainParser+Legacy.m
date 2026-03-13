@@ -13,6 +13,7 @@
  */
 @implementation ContinuousFountainParser (Legacy)
 
+/*
 /// Parses the line type for given line. It *has* to know its line index.
 /// @warning __This method is no longer in use.__ Use ONLY for testing purposes.
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSUInteger)index
@@ -230,5 +231,6 @@
         i--;
     }
 }
+*/
 
 @end

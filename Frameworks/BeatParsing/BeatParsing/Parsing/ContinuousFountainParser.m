@@ -46,6 +46,8 @@
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/ContinuousFountainParser+Macros.h>
 #import <BeatParsing/ContinuousFountainParser+TitlePage.h>
+#import <BeatParsing/ContinuousFountainParser+ParsingRules.h>
+#import <BeatParsing/ContinuousFountainParser+LineIdentifiers.h>
 #import "ContinuousFountainParser+Notes.h"
 
 #import <BeatParsing/NSArray+BinarySearch.h>
@@ -65,9 +67,7 @@
 @property (nonatomic) NSRange editedRange;
 /// This is set `true` when we're not parsing the text for the editor but rather for exporting etc.
 @property (nonatomic) bool nonContinuous;
-/// Cached line set for UUID creation
-@property (nonatomic) NSArray* cachedLines;
-
+/// A private reference to all parsing rules. If you make a copy of the rule array, you can insert your own rules at runtime.
 @property (nonatomic) NSArray<ParsingRule*>* parsingRules;
 
 @end
@@ -136,44 +136,8 @@
         if (_nonContinuous) _staticParser = YES;
         else _staticParser = NO;
         
-        // Parsing rules
-        _parsingRules = @[
-            [ParsingRule type:empty exactMatches:@[@"", @" "] allowedWhitespace:1],
-            [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@".", @"．"] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:@[@"."]],
-            [ParsingRule type:shot options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"!!", @"！！"] endsWith:nil],
-            [ParsingRule type:action options:0 previousTypes:nil beginsWith:@[@"!", @"！"] endsWith:nil],
-            [ParsingRule type:lyrics options:(AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"~", @"～"] endsWith:nil],
-            [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:@[@"^"]],
-            [ParsingRule type:character options:(PreviousIsEmpty | AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@"@", @"＠"] endsWith:nil],
-            
-            [ParsingRule type:pageBreak options:(AllowsLeadingWhitespace) minimumLength:3 minimumLengthAtInput:3 allowedSymbol:'='],
-            
-            [ParsingRule type:section options:0 previousTypes:nil beginsWith:@[@"#", @"＃"] endsWith:nil],
-            [ParsingRule type:synopse options:0 previousTypes:nil beginsWith:@[@"="] endsWith:nil],
-            
-            [ParsingRule type:heading options:(PreviousIsEmpty) previousTypes:nil beginsWith:@[@"int", @"ext", @"i/e", @"i./e", @"e/i", @"e./i"] endsWith:nil requiredAfterPrefix:@[@" ", @"."] excludedAfterPrefix:nil],
-            [ParsingRule type:centered options:(AllowsLeadingWhitespace) previousTypes:nil beginsWith:@[@">"] endsWith:@[@"<"]],
-            [ParsingRule type:transitionLine options:0 previousTypes:nil beginsWith:@[@">"] endsWith:nil],
-            [ParsingRule type:transitionLine options:(PreviousIsEmpty | AllCapsUntilParentheses) previousTypes:nil beginsWith:nil endsWith:@[@"TO:"]],
-            
-            // Dual dialogue
-            [ParsingRule type:dualDialogueCharacter options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) previousTypes:nil beginsWith:nil endsWith:@[@"^"] requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule type:dualDialogueParenthetical options:(AllowsLeadingWhitespace | PreviousIsNotEmpty)  previousTypes:@[@(dualDialogueCharacter), @(dualDialogue)] beginsWith:@[@"("] endsWith:nil requiredAfterPrefix:nil excludedAfterPrefix:nil],
-            [ParsingRule type:dualDialogue options:(AllowsLeadingWhitespace | PreviousIsNotEmpty) minimumLength:1 previousTypes:@[@(dualDialogueCharacter), @(dualDialogue), @(dualDialogueParenthetical)]],
-            
-            // Dialogue
-            [ParsingRule type:character options:(PreviousIsEmpty | AllCapsUntilParentheses | AllowsLeadingWhitespace) minimumLength:2 minimumLengthAtInput:3 previousTypes:nil],
-            [ParsingRule type:parenthetical options:(AllowsLeadingWhitespace | PreviousIsNotEmpty) previousTypes:@[@(character), @(dialogue), @(parenthetical)] beginsWith:@[@"("] endsWith:nil],
-            [ParsingRule type:dialogue options:(AllowsLeadingWhitespace | RequiresTwoEmptyLines | PreviousIsNotEmpty) minimumLength:0 previousTypes:@[@(character), @(dialogue), @(parenthetical)]],
-            
-            [ParsingRule type:titlePageTitle options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"title:"] endsWith:nil ],
-            [ParsingRule type:titlePageCredit options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"credit:"] endsWith:nil],
-            [ParsingRule type:titlePageAuthor options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"author:", @"authors:"] endsWith:nil],
-            [ParsingRule type:titlePageSource options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"source:"] endsWith:nil],
-            [ParsingRule type:titlePageContact options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"contact:"] endsWith:nil],
-            [ParsingRule type:titlePageDraftDate options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:@[@"draft date:"] endsWith:nil],
-            [ParsingRule type:titlePageUnknown options:(AllowsLeadingWhitespace | BelongsToTitlePage) previousTypes:nil beginsWith:nil endsWith:nil]
-        ];
+        // Store a local reference to parsing rules
+        _parsingRules = ContinuousFountainParser.rules;
         
         [self parseText:string];
         [self updateMacros];
@@ -181,11 +145,30 @@
     
     return self;
 }
+
 - (ContinuousFountainParser*)initWithString:(NSString*)string
 {
     return [self initWithString:string delegate:nil];
 }
 
+/// Returns the actual rule for given type
+- (ParsingRule*)ruleForType:(LineType)type
+{
+    static NSDictionary<NSNumber*, ParsingRule*>* rules;
+    if (rules == nil) {
+        NSMutableDictionary* ruleDict = [NSMutableDictionary.alloc initWithCapacity:self.parsingRules.count];
+        static dispatch_once_t once;
+        dispatch_once(&once, ^{
+            for (ParsingRule* rule in self.parsingRules) {
+                ruleDict[@(rule.resultingType)] = rule;
+            }
+            
+            rules = ruleDict;
+        });
+    }
+    
+    return rules[@(type)];
+}
 
 #pragma mark - Document setting getter
 
@@ -282,8 +265,7 @@
             
             // Quick fix for mistaking an ALL CAPS action for a character cue. This only works in linear, static parsing.
             if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
-                previousLine.type = [self ruleBasedParsingFor:line atIndex:index - 1];
-                //previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
+                previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
                 if (previousLine.type == character) previousLine.type = action;
             }
             
@@ -365,75 +347,6 @@
 /// I've replaced the old unichar-based code with this monstrosity to avoid weird quirks with multi-byte characters, and to preserve some metadata when inserting line breaks at the beginning of a line.
 - (NSIndexSet*)parseAddition:(NSString*)string atPosition:(NSUInteger)position
 {
-    /*
-    NSMutableIndexSet* changedIndices = NSMutableIndexSet.new;
-    
-    // Get the line where we are adding characters
-    NSUInteger lineIndex = [self lineIndexAtPosition:position];
-    Line* currentLine = self.lines[lineIndex];
-    
-    [changedIndices addIndex:lineIndex];
-    
-    NSUInteger indexInLine = position - currentLine.position;
-    
-    // Split the current line at insertion point
-    NSString* firstHalf = [currentLine.string substringToIndex:indexInLine];
-    NSString* secondHalf = [currentLine.string substringFromIndex:indexInLine];
-    
-    // Split the added string into components by newline
-    NSArray* components = [string componentsSeparatedByString:@"\n"];
-    
-    if (components.count == 1) {
-        // No line breaks in the added string, just insert the string
-        currentLine.string = [NSString stringWithFormat:@"%@%@%@", firstHalf, string, secondHalf];
-    } else {
-        // Multiple components with line breaks
-        
-        // Keep the original line intact with its metadata
-        if (indexInLine == 0) {
-            // When inserting at the beginning of a line
-            
-            // First, add all new lines except the last one
-            NSInteger insertionIndex = lineIndex;
-            for (NSUInteger i = 0; i < components.count - 1; i++) {
-                [self addLineWithString:components[i] atPosition:currentLine.position lineIndex:insertionIndex];
-                [changedIndices addIndex:insertionIndex];
-                insertionIndex++;
-            }
-            
-            // Append the last component to the original line with secondHalf
-            currentLine.string = [components.lastObject stringByAppendingString:secondHalf];
-            lineIndex = insertionIndex; // Update lineIndex to the original line's new position
-        } else {
-            // When inserting in the middle or at the end of a line
-            // Firs update the current line with firstHalf + first component
-            currentLine.string = [firstHalf stringByAppendingString:components[0]];
-            
-            // Now insert new lines for in-the-middle components
-            NSInteger insertionIndex = lineIndex + 1;
-            for (NSUInteger i = 1; i < components.count; i++) {
-                NSString* lineContent = (i == components.count - 1)
-                ? [components[i] stringByAppendingString:secondHalf] // Last component gets secondHalf
-                : components[i];                                      // Middle components as-is
-                
-                [self addLineWithString:lineContent
-                             atPosition:NSMaxRange(self.lines[insertionIndex-1].range)
-                              lineIndex:insertionIndex];
-                [changedIndices addIndex:insertionIndex];
-                insertionIndex++;
-            }
-            
-            // Update lineIndex to point to the last inserted line
-            lineIndex = insertionIndex - 1;
-        }
-    }
-    
-    // Adjust positions of all subsequent lines
-    [self adjustLinePositionsFrom:changedIndices.firstIndex];
-    
-    return changedIndices;
-     */
-    
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
     
     // Get the line where into which we are adding characters
@@ -610,6 +523,45 @@
 
 #pragma mark - Correcting parsed content for existing lines
 
+/// Modern way of parsing a line type. We should migrate to this ASAP.
+- (LineType)parseLineTypeFor:(Line*)line atIndex:(NSInteger)index
+{
+    Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
+    Line *nextLine = (index+1 < self.lines.count && index >= 0) ? self.lines[index + 1] : nil;
+    
+    // Check if this line was forced to become a character cue in editor (by pressing tab)
+    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
+        line.forcedCharacterCue = NO;
+        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
+        return (line.string.lastNonWhiteSpaceCharacter == 94) ? dualDialogueCharacter : character;
+    } else if (line.length == 0 && previousLine.isAnyCharacter) {
+        
+        //return (previousLine.type == character) ? dialogue : dualDialogue;
+    }
+    
+    if (line.string.length > 0) {
+        // Add the first \ as an escape character if needed
+        if ([line.string characterAtIndex:0] == '\\')
+            [line.escapeRanges addIndex:0];
+    }
+    
+    for (ParsingRule* rule in self.parsingRules) {
+        // Ignore disabled types
+        if ([self.delegate.disabledTypes containsIndex:(NSInteger)rule.resultingType]) continue;
+        
+        if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
+            return rule.resultingType;
+        }
+    }
+    
+    if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
+        return action;
+    } else {
+        return empty;
+    }
+}
+
+
 /// Ensures that any dialogue on the given line is parsed correctly. Continuous parsing only. A bit confusing to use. Unhelpful documentation.
 - (void)ensureDialogueParsingFor:(Line*)line
 {
@@ -659,8 +611,56 @@
     }
 }
 
+/// Fixes dialogue blocks when something is addede below a possible cue
+- (void)correctDialogueBlockIfNeededAt:(NSInteger)index
+{
+    if (index == 0) return;
+    Line* line = self.lines[index];
+    
+    Line* prevLine = self.lines[index-1];
+    Line* lineBeforeThat = (index > 1) ? self.lines[index-2] : nil;
+    
+    for (ParsingRule* rule in self.parsingRules) {
+        if ([rule validate:prevLine previousLine:lineBeforeThat nextLine:line delegate:self.delegate]) {
+            NSLog(@"Corrected");
+            prevLine.type = rule.resultingType;
+            [self.changedIndices addIndex:index-1];
+            return;
+        }
+    }
+    
+    /*
+    ParsingRule* characterRule = [self ruleForType:character];
+    ParsingRule* dualDialogueCharacterRule = [self ruleForType:dualDialogueCharacter];
+    
+    // Check if the previous line might be a character cue
+    Line* prevLine =  self.lines[index-1];
+    Line* lineBeforeThat = (index > 1) ? self.lines[index-2] : nil;
+    Line* nextLine = (index < self.lines.count - 1) ? self.lines[index+1] : nil;
+    if (prevLine.type == empty) return;
+    
+    if (line.length > 0 && prevLine.length > 0) {
+        bool isCue = false;
+        
+        for (ParsingRule* rule in @[characterRule, dualDialogueCharacterRule]) {
+            if ([rule validate:prevLine
+                  previousLine:lineBeforeThat
+                      nextLine:nextLine
+                      delegate:self.delegate]) {
+                prevLine.type = rule.resultingType;
+                isCue = true;
+            }
+        }
+        
+        if (isCue) {
+            [self.changedIndices addIndex:index-1];
+        }
+    }
+     */
+}
+
 /// Fixes orphaned cues when line breaks are added to dialogue blocks
-- (void)correctOrphanedCueAt:(NSInteger)index
+- (void)correctOrphanedCueIfNeededAt:(NSInteger)index
 {
     Line* line = self.lines[index];
     if (index == 0 || line.type != empty) return;
@@ -672,8 +672,8 @@
         Line* l = self.lines[i];
         
         if (l.length == 0 || l.type == empty) {
+            // Break after two empty lines, no cue to be found
             if (emptyLineFound) break;
-            
             emptyLineFound = true;
             continue;
         } else if (!l.isAnyCharacter) {
@@ -716,7 +716,10 @@
     
     NSRange oldMarker = currentLine.markerRange;
     NSIndexSet* oldNotes = currentLine.noteRanges.copy;
-        
+    
+    // We need to look behind before parsing
+    if (oldType == empty && currentLine.length > 0) [self correctDialogueBlockIfNeededAt:index];
+    
     // Parse correct type
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
@@ -752,9 +755,9 @@
         
     // Correct orphaned dialogue if needed
     //[self correctOrphanedDialogueAt:index];
-    [self correctOrphanedCueAt:index];
+    [self correctOrphanedCueIfNeededAt:index];
         
-    //If there is a next element, check if it might need a reparse because of a change in type or omit out
+    // If there is a next element, check if it might need a reparse because of a change in type or omit out
     if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
         currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
         
@@ -764,7 +767,7 @@
             bool nextLineAffectedByEmptyLine = [self requiresPrecedingLineToBeEmpty:nextLine.type];
             
             if (currentLine.type != oldType ||
-                currentLine.isTitlePage ||					// if line is a title page, parse next line too
+                currentLine.isTitlePage ||					
                 nextLine.isTitlePage ||
                 
                 // Avoid dialogue weirdness
@@ -841,10 +844,8 @@
     LineType oldType = line.type;
     line.escapeRanges = NSMutableIndexSet.new;
     
-    // Beat recently migrated to rule-based parsing. You can uncomment the below line to test if there are some issues with parsing.
-    // if ([self parseLineTypeFor:line atIndex:index] != [self ruleBasedParsingFor:line atIndex:index]) NSLog(@"⚠️ wrong type:  rule-based %@ / parsed %@) - %@", [Line typeName:testNew], [Line typeName:testOriginal], line);
-    
-    line.type = [self ruleBasedParsingFor:line atIndex:index];
+    // Parse current line type
+    line.type = [self parseLineTypeFor:line atIndex:index];
     
     // Remember where our boneyard begins
     if (line.isBoneyardSection) self.boneyardAct = line;
@@ -918,44 +919,6 @@
                 line.resetsSceneNumber = true;
             }
         }
-    }
-}
-
-/// Modern way of parsing a line type. We should migrate to this ASAP.
-- (LineType)ruleBasedParsingFor:(Line*)line atIndex:(NSInteger)index
-{
-    Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    Line *nextLine = (index+1 < self.lines.count && index >= 0) ? self.lines[index + 1] : nil;
-    
-    // Check if this line was forced to become a character cue in editor (by pressing tab)
-    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
-        line.forcedCharacterCue = NO;
-        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
-        return (line.string.lastNonWhiteSpaceCharacter == 94) ? dualDialogueCharacter : character;
-    } else if (line.length == 0 && previousLine.isAnyCharacter) {
-        
-        //return (previousLine.type == character) ? dialogue : dualDialogue;
-    }
-    
-    if (line.string.length > 0) {
-        // Add the first \ as an escape character if needed
-        if ([line.string characterAtIndex:0] == '\\')
-            [line.escapeRanges addIndex:0];
-    }
-    
-    for (ParsingRule* rule in self.parsingRules) {
-        // Ignore disabled types
-        if ([self.delegate.disabledTypes containsIndex:(NSInteger)rule.resultingType]) continue;
-        
-        if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
-            return rule.resultingType;
-        }
-    }
-    
-    if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
-        return action;
-    } else {
-        return empty;
     }
 }
 
@@ -1048,7 +1011,7 @@
             (NSMaxRange(range) == line.length && line.noteOut) ) continue;
         
         // We can define a color using both [[color red]] or just [[red]], or #ffffff
-        if ([content containsString:@"color "]) {
+        if ([content rangeOfString:@"color "].location == 0) {
             // "color red"
             headingColor = [content substringFromIndex:@"color ".length];
             line.colorRange = range;
@@ -1078,42 +1041,12 @@
 
 - (NSArray*)safeLines
 {
-	if (NSThread.isMainThread) return self.lines;
-	else return self.lines.copy;
+    return (NSThread.isMainThread) ? self.lines : self.lines.copy;
 }
+
 - (NSArray*)safeOutline
 {
-	if (NSThread.isMainThread) return self.outline;
-	else return self.outline.copy;
-}
-
-/// Returns a fully built map with the UUID as key to identify actual line objects. Note that this BUILDS the full map every time. If you are looking for a specific line at runtime, use `lineWithUUID:`.
-- (NSMapTable<NSUUID*, Line*>*)uuidsToLines
-{
-    @synchronized (self.lines) {
-        // Return the cached version when possible -- or when we are not in the main thread.
-
-        if ([self.cachedLines isEqualToArray:self.lines]) {
-            return _uuidsToLines;
-        }
-
-        NSArray* lines = self.lines.copy;
-        
-        // Store the current state of lines
-        self.cachedLines = lines;
-
-        // Create UUID map with strong UUID references to weak line objects.
-        NSMapTable<NSUUID*, Line*>* uuidTable = [NSMapTable.alloc initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:lines.count];
-        
-        for (Line* line in lines) {
-            if (line == nil) continue;
-            // uuids[line.uuid] = line;
-            [uuidTable setObject:line forKey:line.uuid.copy];
-        }
-        
-        _uuidsToLines = uuidTable;
-        return _uuidsToLines;
-    }
+    return (NSThread.isMainThread) ? self.outline : self.outline.copy;
 }
 
 
@@ -1140,55 +1073,6 @@
 		if (scene.type == heading) [scenes addObject:scene];
 	}
 	return scenes;
-}
-
-
-#pragma mark - Line identifiers (UUIDs)
-
-/// Returns every line UUID as an arrayg
-- (NSArray<NSUUID*>*)lineIdentifiers:(NSArray<Line*>*)lines
-{
-	if (lines == nil) lines = self.lines;
-	
-	NSMutableArray *uuids = NSMutableArray.new;
-	for (Line *line in lines) {
-		[uuids addObject:line.uuid];
-	}
-	return uuids;
-}
-
-/// Sets the given UUIDs to each line at the same index. Note that you can provide either an array of `NSString`s or __REAL__ `NSUUID`s.
-- (void)setIdentifiers:(NSArray*)uuids
-{
-	for (NSInteger i = 0; i < uuids.count; i++) {
-		id item = uuids[i];
-        // We can have either strings or real UUIDs in the array. Make sure we're using the correct type.
-        NSUUID *uuid = ([item isKindOfClass:NSString.class]) ? [NSUUID.alloc initWithUUIDString:item] : item;
-				
-		if (i < self.lines.count && uuid != nil) {
-			Line *line = self.lines[i];
-			line.uuid = uuid;
-		}
-	}
-}
-
-/// Sets the given UUIDs to each outline element at the same index
-- (void)setIdentifiersForOutlineElements:(NSArray<NSDictionary<NSString*, NSString*>*>*)uuids
-{
-    for (NSInteger i=0; i<self.outline.count; i++) {
-        if (i >= uuids.count) break;
-        
-        OutlineScene* scene = self.outline[i];
-        NSDictionary* item = uuids[i];
-        
-        NSString* uuidString = item[@"uuid"];
-        NSString* string = item[@"string"];
-        
-        if ([scene.string.lowercaseString isEqualToString:string.lowercaseString]) {
-            NSUUID* uuid = [NSUUID.alloc initWithUUIDString:uuidString];
-            scene.line.uuid = uuid;
-        }
-    }
 }
 
 

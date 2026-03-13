@@ -59,7 +59,7 @@ public class BeatParsingRule:NSObject {
     }
     
 }
-
+/*
 @objc public extension ContinuousFountainParser {
     @objc static var rules:[BeatParsingRule] = [
     
@@ -275,3 +275,4 @@ extension String {
         return isUppercase
     }
 }
+*/

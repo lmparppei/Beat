@@ -107,8 +107,10 @@
 /// Returns the assigned document settings 
 - (BeatDocumentSettings*)documentSettings;
 
-//@property (nonatomic) NSDictionary<NSUUID*, Line*>* uuidsToLines;
+/// Use this getter
 @property (nonatomic) NSMapTable<NSUUID*, Line*>* uuidsToLines;
+/// This is the UNDERLYING value, which you should never touch
+@property (nonatomic) NSMapTable<NSUUID*, Line*>* uuidsToLinesMap;
 
 + (NSArray*)titlePageForString:(NSString*)string;
 
@@ -117,6 +119,9 @@
 - (ContinuousFountainParser*)initWithString:(NSString*)string;
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous;
+
+/// Cached line set for UUID creation
+@property (nonatomic) NSArray* cachedLines;
 
 
 #pragma mark - Parsing methods
@@ -163,12 +168,6 @@
 
 /// Returns the number of scenes  in the file (excluding other structure elements)
 - (NSInteger)numberOfScenes;
-
-/// Returns `NSUUID` object for each line.
-- (NSArray*)lineIdentifiers:(NSArray<NSUUID*>*)lines;
-
-/// Set `NSUUID` identifiers for lines in corresponding indices.
-- (void)setIdentifiers:(NSArray*)uuids;
 
 
 #pragma mark -
