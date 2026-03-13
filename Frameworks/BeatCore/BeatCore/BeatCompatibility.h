@@ -69,8 +69,9 @@
     NSUInteger _max = (maxLength); \
     if (_r.location >= _max) { \
         _r.length = 0; \
-    } else if (_r.location + _r.length > _max) { \
+    } else if (NSMaxRange(_r) > _max) { \
         _r.length = _max - _r.location; \
+        if (_r.length < 0) _r.length = 0; \
     } \
     _r; \
 })
