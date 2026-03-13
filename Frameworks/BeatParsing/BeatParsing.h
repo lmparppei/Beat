@@ -10,12 +10,14 @@
 #pragma clang system_header
 
 #import <BeatParsing/ContinuousFountainParser.h>
+#import <BeatParsing/ContinuousFountainParser+ParsingRules.h>
 #import <BeatParsing/ContinuousFountainParser+Preprocessing.h>
 #import <BeatParsing/ContinuousFountainParser+Outline.h>
 #import <BeatParsing/ContinuousFountainParser+Omissions.h>
 #import <BeatParsing/ContinuousFountainParser+Lookup.h>
 #import <BeatParsing/ContinuousFountainParser+Macros.h>
 #import <BeatParsing/ContinuousFountainParser+TitlePage.h>
+#import <BeatParsing/ContinuousFountainParser+LineIdentifiers.h>
 
 #import <BeatParsing/Line.h>
 #import <BeatParsing/Line+Type.h>
