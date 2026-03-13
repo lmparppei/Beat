@@ -66,7 +66,7 @@
                     </pdfView>
                     <button verticalHuggingPriority="750" id="7Oz-ue-27o" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                         <rect key="frame" x="364" y="292" width="241" height="18"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Scene Numbers" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="XTs-KO-ZjG">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
@@ -82,7 +82,7 @@
                     </button>
                     <box verticalHuggingPriority="750" boxType="separator" id="V9B-91-HF1">
                         <rect key="frame" x="366" y="249" width="246" height="5"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <button tag="1" verticalHuggingPriority="750" id="Pvt-SR-b7W">
                         <rect key="frame" x="364" y="363" width="114" height="18"/>
@@ -108,7 +108,7 @@
                     </button>
                     <stackView orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="oXl-Cd-3PM">
                         <rect key="frame" x="364" y="11" width="249" height="24"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <beginningViews>
                             <button verticalHuggingPriority="750" id="fHP-XE-rvR">
                                 <rect key="frame" x="-7" y="-3" width="76" height="32"/>
@@ -165,7 +165,7 @@ DQ
                     </stackView>
                     <box verticalHuggingPriority="750" boxType="separator" id="owR-aB-zi3">
                         <rect key="frame" x="366" y="322" width="246" height="5"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="KuQ-os-ENU">
                         <rect key="frame" x="364" y="388" width="239" height="16"/>
@@ -178,7 +178,7 @@ DQ
                     </textField>
                     <box boxType="custom" borderType="line" title="Box" titlePosition="noTitle" id="oDa-5Z-L46">
                         <rect key="frame" x="627" y="0.0" width="223" height="468"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                         <view key="contentView" id="JN0-AE-3uR" customClass="NSVisualEffectView">
                             <rect key="frame" x="1" y="1" width="221" height="466"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -255,7 +255,7 @@ DQ
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="8KN-ok-TnQ" customClass="BeatColorLabelView" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="315" width="17" height="18"/>
+                                            <rect key="frame" x="0.0" y="313" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="SsU-Tq-SuY"/>
                                             <userDefinedRuntimeAttributes>
@@ -263,7 +263,7 @@ DQ
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="qMM-1X-51d" customClass="BeatColorLabelView" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="294" width="17" height="18"/>
+                                            <rect key="frame" x="0.0" y="292" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="L3L-04-kA2"/>
                                             <userDefinedRuntimeAttributes>
@@ -271,7 +271,7 @@ DQ
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Kl2-sk-j5X" customClass="BeatColorLabelView" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="250" width="17" height="18"/>
+                                            <rect key="frame" x="0.0" y="248" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="RFe-7s-BqO"/>
                                             <userDefinedRuntimeAttributes>
@@ -279,7 +279,7 @@ DQ
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="ns8-TX-6xO" customClass="BeatColorLabelView" customModule="Beat" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="272" width="17" height="18"/>
+                                            <rect key="frame" x="0.0" y="270" width="17" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Syw-cx-Q2W"/>
                                             <userDefinedRuntimeAttributes>
@@ -544,8 +544,8 @@ DQ
                         <color key="fillColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     </box>
                     <button verticalHuggingPriority="750" id="mu6-Go-Nii">
-                        <rect key="frame" x="364" y="62" width="251" height="18"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
+                        <rect key="frame" x="364" y="62" width="250" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="check" title="Show advanced options" bezelStyle="regularSquare" imagePosition="right" alignment="right" inset="2" id="K23-C7-mRO">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
@@ -560,7 +560,7 @@ DQ
                     </progressIndicator>
                     <button verticalHuggingPriority="750" id="gqt-sB-VRb" customClass="BeatUserDefaultCheckbox" customModule="Beat" customModuleProvider="target">
                         <rect key="frame" x="364" y="270" width="241" height="18"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Page Numbers" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="qC1-Ig-3gL">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>

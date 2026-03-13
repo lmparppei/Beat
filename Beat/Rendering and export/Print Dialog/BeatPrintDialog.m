@@ -108,7 +108,7 @@
 -(void)awakeFromNib
 {
 	self.renderQueue = NSMutableArray.new;
-	self.panelWidth = self.window.frame.size.width;
+	self.panelWidth = self.window.contentView.frame.size.width;
 	
 	// Show advanced options?
 	
