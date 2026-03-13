@@ -208,6 +208,7 @@
     newLine.macroRanges = self.macroRanges.mutableCopy;
     */
      
+    newLine.sceneNumberRange = self.sceneNumberRange;
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
     
