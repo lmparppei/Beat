@@ -184,20 +184,6 @@
             [indices addIndexesInRange:NSMakeRange(range.location + range.length - f.closeLength + offset, f.closeLength)];
         }];
     }
-    /*
-    [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [indices addIndexesInRange:NSMakeRange(range.location + offset, BOLD_PATTERN.length)];
-        [indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
-    }];
-    [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [indices addIndexesInRange:NSMakeRange(range.location + offset, ITALIC_PATTERN.length)];
-        [indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length +offset, ITALIC_PATTERN.length)];
-    }];
-    [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [indices addIndexesInRange:NSMakeRange(range.location + offset, UNDERLINE_PATTERN.length)];
-        [indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
-    }];
-    */
     
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

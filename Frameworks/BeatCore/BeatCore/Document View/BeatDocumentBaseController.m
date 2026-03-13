@@ -730,7 +730,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
         
     // Save reviewed ranges
-    NSArray *reviews = [_review rangesForSavingWithString:attrStr];
+    NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
     [self.documentSettings set:DocSettingReviews as:reviews];
     
     // Save heading/section info
