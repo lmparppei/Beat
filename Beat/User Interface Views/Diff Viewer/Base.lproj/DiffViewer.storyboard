@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -48,7 +48,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="844" height="523"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView wantsLayer="YES" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="qgB-Dv-OJS" customClass="DiffViewerTextView" customModule="Beat" customModuleProvider="target">
+                                        <textView wantsLayer="YES" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" spellingCorrection="YES" smartInsertDelete="YES" id="qgB-Dv-OJS" customClass="DiffViewerTextView" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="844" height="523"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -213,6 +213,9 @@
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="versionControl.commit"/>
+                                                            </userDefinedRuntimeAttributes>
                                                             <connections>
                                                                 <action selector="commit:" target="bU7-R8-ocO" id="hf9-03-2zp"/>
                                                             </connections>
@@ -235,7 +238,7 @@
                                 </tabViewItems>
                             </tabView>
                             <button verticalHuggingPriority="750" id="7dG-cd-9l2">
-                                <rect key="frame" x="583" y="3" width="165" height="32"/>
+                                <rect key="frame" x="578" y="3" width="165" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="push" title="Generate Markers" bezelStyle="rounded" imagePosition="leading" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M6O-5k-N75">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -248,7 +251,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" id="v9p-yp-pGE">
-                                <rect key="frame" x="474" y="3" width="112" height="32"/>
+                                <rect key="frame" x="464" y="3" width="112" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="push" title="Restore" bezelStyle="rounded" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EeU-eL-No6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -259,6 +262,20 @@
                                     <action selector="revertToCurrentVersion:" target="bU7-R8-ocO" id="fwu-kT-Iaz"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" id="8MN-65-u3e">
+                                <rect key="frame" x="310" y="3" width="118" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                                <buttonCell key="cell" type="push" title="Reset" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zyo-Dc-v9A">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="versionControl.reset"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="resetVersionControl:" target="bU7-R8-ocO" id="uo4-Y9-rf4"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <connections>
@@ -267,6 +284,7 @@
                         <outlet property="currentVersionMenu" destination="Rbe-4P-3Pz" id="ciY-ix-Tw6"/>
                         <outlet property="generateRevisionsButton" destination="7dG-cd-9l2" id="NbM-RY-fPI"/>
                         <outlet property="otherVersionMenu" destination="UV3-ur-EKR" id="H4f-jD-def"/>
+                        <outlet property="resetButton" destination="8MN-65-u3e" id="Vv5-t5-hCj"/>
                         <outlet property="restoreButton" destination="v9p-yp-pGE" id="xMt-IR-hih"/>
                         <outlet property="statusView" destination="AAn-1D-ajG" id="0ef-nN-r6m"/>
                         <outlet property="textView" destination="qgB-Dv-OJS" id="Njm-v3-wzG"/>
