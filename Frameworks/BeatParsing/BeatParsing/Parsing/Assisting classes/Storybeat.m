@@ -7,6 +7,7 @@
 //
 
 #import "Storybeat.h"
+#import <BeatParsing/Line.h>
 
 @implementation Storybeat
 /// Creates a storyline and automatically divides storyline and beat.
@@ -58,6 +59,7 @@
 	string = [string stringByAppendingString:@"]]"];
 	return string;
 }
+
 - (NSString*)stringified {
 	NSString *str = [NSString stringWithString:self.storyline];
 	if (self.beat.length) str = [str stringByAppendingFormat:@": %@", self.beat];
@@ -69,6 +71,11 @@
 		@"storyline": (self.storyline) ? _storyline : @"",
 		@"beat": (self.beat) ? _beat : @"",
 	};
+}
+
+- (NSRange)range
+{
+    return NSMakeRange(self.line.position + self.rangeInLine.location, self.rangeInLine.length);
 }
 
 #pragma mark - Debug

@@ -28,6 +28,8 @@
 @property (nonatomic, weak) Line *line;
 @property (nonatomic, weak) OutlineScene *scene;
 @property (nonatomic) NSRange rangeInLine;
+/// The **global** range of this line
+@property (nonatomic) NSRange range;
 - (NSString*)stringified;
 - (NSDictionary*)forSerialization;
 @end
