@@ -915,6 +915,18 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "Zyo-Dc-v9A.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Reset\"; ObjectID = \"Zyo-Dc-v9A\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reset"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
