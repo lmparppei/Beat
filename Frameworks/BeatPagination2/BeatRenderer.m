@@ -925,10 +925,11 @@
             // Top/bottom spacing
             pStyle.paragraphSpacingBefore = style.marginTop;
             pStyle.paragraphSpacing = style.marginBottom;
-                        
+                                    
             // Line height
             pStyle.maximumLineHeight = self.styles.page.lineHeight;
             pStyle.minimumLineHeight = self.styles.page.lineHeight;
+            pStyle.lineSpacing = 0.0;
             
             // Add content padding where needed
             if (!isDualDialogue && !line.isTitlePage) {
