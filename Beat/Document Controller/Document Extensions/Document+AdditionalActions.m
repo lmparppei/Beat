@@ -226,8 +226,6 @@
 }
 
 
-
-
 #pragma mark - Tag editor
 
 - (IBAction)showTagEditor:(id)sender
@@ -292,5 +290,6 @@
 		self.sheetController = nil;
 	}];
 }
+
 
 @end

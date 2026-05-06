@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (bool)hasVersionControl;
 /// Creates initial commit and stores it in document settings
 - (void)createInitialCommit;
+/// Resets the version control data
+- (void)resetVersionControl;
 /// Commits the current text in document (no message)
 - (void)addCommit;
 /// Commits the current text in document with given message. Set  `message` to `nil` to commit without a message.

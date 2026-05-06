@@ -203,6 +203,11 @@ static NSString* settingSeparator = @"<__SETTINGS__>";
 
 #pragma mark - Committing
 
+- (void)resetVersionControl
+{
+    [self.delegate.documentSettings remove:BeatVersionControl.settingKey];
+}
+
 - (NSString*)textToCommit
 {
     // Create a dummy setting block with only the essential stuff. We'll encode the JSON to avoid confusion
