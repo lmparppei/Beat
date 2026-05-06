@@ -47,13 +47,17 @@
         } else if (index == -1) {
             self.index = line.string.length;
         } else {
-            // Find out the actual index
+            // Find out the actual index. Clamp range just in case and perform other checks to avoid weird crashes.
+            NSRange range = NSMakeRange(0, MIN(attrStr.length, index));
+            
             __block NSInteger actualIndex = NSNotFound;
-            [attrStr enumerateAttribute:@"BeatEditorRange" inRange:NSMakeRange(0, index) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-                NSRange representedRange = ((NSValue*)value).rangeValue;
-                actualIndex = representedRange.location + range.length;
-                *stop = true;
-            }];
+            if (NSMaxRange(range) >= 0 && NSMaxRange(range) < attrStr.length) {
+                [attrStr enumerateAttribute:@"BeatEditorRange" inRange:NSMakeRange(0, index) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+                    NSRange representedRange = ((NSValue*)value).rangeValue;
+                    actualIndex = representedRange.location + range.length;
+                    *stop = true;
+                }];
+            }
             
             if (actualIndex != NSNotFound) self.index = actualIndex;
         }
