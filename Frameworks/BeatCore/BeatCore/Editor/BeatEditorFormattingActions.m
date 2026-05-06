@@ -15,6 +15,7 @@
 #import <BeatCore/BeatLocalization.h>
 #import <TargetConditionals.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 @implementation BeatEditorFormattingActions
 
@@ -182,8 +183,8 @@ static NSString *macroSymbolClose = @"}}";
     [_delegate setTypeAndFormat:currentLine type:character];
     
     // Note the editor that we're forcing a character cue at this point.
-    _delegate.characterInputForLine = currentLine;
-    _delegate.characterInput = YES;
+    _delegate.lineForNewCue = currentLine;
+    //_delegate.characterInput = YES;
 }
 
 /// Adds character extension stub on current line or moves to edit it
@@ -289,6 +290,18 @@ static NSString *macroSymbolClose = @"}}";
     NSString* string = [_delegate.text substringWithRange:range];
     
     [_delegate.textActions replaceRange:range withString:string.uppercaseString];
+}
+
+- (IBAction)makeLineUppercaseAndMoveOn:(id)sender
+{
+    if (_delegate.currentLine == nil) return;
+    
+    Line* line = _delegate.currentLine;
+    NSRange range = line.textRange;
+    
+    NSAttributedString* attrStr = [_delegate.getAttributedText attributedSubstringFromRange:range].uppercased;
+    [_delegate.textActions replaceRange:range withAttributedString:attrStr];
+    [_delegate.textActions addString:@"\n" atIndex:NSMaxRange(range)];
 }
 
 - (IBAction)makeMacro:(id)sender

@@ -88,7 +88,7 @@
 		}
 	}
 	
-	if (affectedRange.length == 0 && self.currentLine == self.characterInputForLine && self.characterInput) {
+	if (affectedRange.length == 0 && self.currentLine == self.lineForNewCue) {
 		string = string.uppercaseString;
 	}
 	
@@ -101,9 +101,9 @@
 -(void)textViewDidChangeSelection:(UITextView *)textView
 {
 	// For some reason iOS creates a bogus reference... I don't know. This is a duct-tape fix.
-	if (self.characterInputForLine != nil) {
-		if (self.currentLine.position == self.characterInputForLine.position) {
-			self.characterInputForLine = self.currentLine;
+	if (self.lineForNewCue != nil) {
+		if (self.currentLine.position == self.lineForNewCue.position) {
+			self.lineForNewCue = self.currentLine;
 		} else {
 			[self.textView cancelCharacterInput];
 		}
@@ -188,13 +188,13 @@
 	
 	// Process line break after a forced character input
 	if (!undoOrRedo && [text isEqualToString:@"\n"]) {
-		if (self.characterInput && self.characterInputForLine) {
+		if (self.lineForNewCue != nil) {
 			// If the cue is empty, reset it
-			if (self.characterInputForLine.length == 0) {
-				self.characterInputForLine.type = empty;
-				[self.formatting formatLine:self.characterInputForLine];
+			if (self.lineForNewCue.length == 0) {
+				self.lineForNewCue.type = empty;
+				[self.formatting formatLine:self.lineForNewCue];
 			} else {
-				self.characterInputForLine.forcedCharacterCue = YES;
+				self.lineForNewCue.forcedCharacterCue = YES;
 			}
 		} else if ((currentLine.isAnyParenthetical || currentLine.isAnyCharacter) &&
 				   range.length == 0 &&

@@ -399,22 +399,22 @@ import BeatParsing
 		else { return true }
 		
 		/// We'll return `true` when current line is empty (what is this)
-		return (editorDelegate.characterInput && line.string.count == 0)
+		return (editorDelegate.lineForNewCue != nil && line.string.count == 0)
 	}
 	
 	@objc func cancelCharacterInput() {
 		guard let editorDelegate = self.editorDelegate, let currentLine = editorDelegate.currentLine else { return }
 
-		let line = editorDelegate.characterInputForLine
+		let line = editorDelegate.lineForNewCue
 
 		var shouldCancel = true
 		
-		if editorDelegate.characterInputForLine != nil, currentLine.position == NSMaxRange(editorDelegate.characterInputForLine.range()) {
+		if editorDelegate.lineForNewCue != nil, currentLine.position == NSMaxRange(editorDelegate.lineForNewCue.range()) {
 			shouldCancel = false
 		}
 		
-		editorDelegate.characterInput = false
-		editorDelegate.characterInputForLine = nil
+		//editorDelegate.characterInput = false
+		editorDelegate.lineForNewCue = nil
 		
 		// Uh... well, yeah.
 		if !shouldCancel { return }
@@ -634,7 +634,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func forceCharacterInput() {
-		if self.editorDelegate?.characterInput ?? false { return }
+		if self.editorDelegate?.lineForNewCue != nil { return }
 		self.editorDelegate?.formattingActions.addCue()
 	}
 	

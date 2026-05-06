@@ -526,38 +526,37 @@
 /// Modern way of parsing a line type. We should migrate to this ASAP.
 - (LineType)parseLineTypeFor:(Line*)line atIndex:(NSInteger)index
 {
-    Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
-    Line *nextLine = (index+1 < self.lines.count && index >= 0) ? self.lines[index + 1] : nil;
-    
-    // Check if this line was forced to become a character cue in editor (by pressing tab)
-    if (line.forcedCharacterCue || _delegate.characterInputForLine == line) {
-        line.forcedCharacterCue = NO;
-        // 94 = ^ (this is here to avoid issues with Turkish alphabet)
-        return (line.string.lastNonWhiteSpaceCharacter == 94) ? dualDialogueCharacter : character;
-    } else if (line.length == 0 && previousLine.isAnyCharacter) {
+    @synchronized (line) {
+        Line *previousLine = (index > 0) ? self.lines[index - 1] : nil;
+        Line *nextLine = (index+1 < self.lines.count && index >= 0) ? self.lines[index + 1] : nil;
         
-        //return (previousLine.type == character) ? dialogue : dualDialogue;
-    }
-    
-    if (line.string.length > 0) {
-        // Add the first \ as an escape character if needed
-        if ([line.string characterAtIndex:0] == '\\')
-            [line.escapeRanges addIndex:0];
-    }
-    
-    for (ParsingRule* rule in self.parsingRules) {
-        // Ignore disabled types
-        if ([self.delegate.disabledTypes containsIndex:(NSInteger)rule.resultingType]) continue;
-        
-        if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
-            return rule.resultingType;
+        // Check if this line was forced to become a character cue in editor (by pressing tab)
+        if (line.forcedCharacterCue || _delegate.lineForNewCue == line) {
+            line.forcedCharacterCue = NO;
+            // 94 = ^ (this is here to avoid issues with Turkish alphabet)
+            return (line.string.lastNonWhiteSpaceCharacter == 94) ? dualDialogueCharacter : character;
         }
-    }
-    
-    if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
-        return action;
-    } else {
-        return empty;
+        
+        if (line.string.length > 0) {
+            // Add the first \ as an escape character if needed
+            if ([line.string characterAtIndex:0] == '\\')
+                [line.escapeRanges addIndex:0];
+        }
+        
+        for (ParsingRule* rule in self.parsingRules) {
+            // Ignore disabled types
+            if ([self.delegate.disabledTypes containsIndex:(NSInteger)rule.resultingType]) continue;
+            
+            if ([rule validate:line previousLine:previousLine nextLine:nextLine delegate:self.delegate]) {
+                return rule.resultingType;
+            }
+        }
+        
+        if ((line.length > 1 && line.string.containsOnlyWhitespace) || line.length > 0) {
+            return action;
+        } else {
+            return empty;
+        }
     }
 }
 

@@ -128,7 +128,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     Line* prevLine; // We'll look up previous line ONLY IF NEEDED. It will be NULL for anything else.
     
     // Catch forced character cue
-    if (_delegate.characterInputForLine == line && _delegate.characterInput) type = character;
+    //if (_delegate.lineForNewCue == line && _delegate.characterInput) type = character;
+    if (_delegate.lineForNewCue == line) type = character;
     
     // We need to get left margin here to avoid issues with extended line types
     if (line.isTitlePage) type = titlePageUnknown;
@@ -429,7 +430,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     
 	// Do nothing for already formatted empty lines (except update the represented line)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 &&
-        line != _delegate.characterInputForLine && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
+        line != _delegate.lineForNewCue && [paragraphStyle _equalTo:attributes[NSParagraphStyleAttributeName]]) {
 		// If we need to update the represented line, do it here
 		if (newAttributes[BeatRepresentedLineKey]) {
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:fullRange];
@@ -448,7 +449,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	line.formattedAs = line.type;
     
 	// Extra rules for character cue input
-	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
+    //if (_delegate.characterInput && _delegate.characterInputForLine == line) {
+	if (_delegate.lineForNewCue == line) {
 		// Do some extra checks for dual dialogue
         if (line.length && line.string.lastNonWhiteSpaceCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;

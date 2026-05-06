@@ -598,9 +598,10 @@ static NSString *centeredEnd = @" <";
                 result = [result stringByAppendingFormat:@"%@%@\n", contdString, (currentLine.type == dualDialogueCharacter) ? @"^" : @""];
                 
                 [self replaceRange:currentLine.textRange withString:result];
-                if (_delegate.characterInputForLine == currentLine && _delegate.characterInput) {
-                    _delegate.characterInput = false;
-                    _delegate.characterInputForLine = nil;
+                //if (_delegate.lineForNewCue == currentLine && _delegate.characterInput) {
+                if (_delegate.lineForNewCue == currentLine) {
+                    //_delegate.characterInput = false;
+                    _delegate.lineForNewCue = nil;
                 }
                 return YES;
             }

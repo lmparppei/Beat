@@ -24,7 +24,7 @@
 /// Document settings object
 @property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
 /// This is a confusing property name, but it defines the line on which a character cue is being entered after a tab press
-@property (nonatomic, readonly) Line* characterInputForLine;
+@property (nonatomic, readonly) Line* lineForNewCue;
 /// Current selected range (ask for this only in main thead)
 @property (nonatomic, readonly) NSRange selectedRange;
 /// A list of disabled line types (`LineType` is an integer enum, so an index set is the fastest way to implement this)

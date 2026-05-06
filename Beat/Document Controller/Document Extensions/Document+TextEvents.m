@@ -37,7 +37,7 @@
 	
 	
 	// Check for character input trouble
-	if (self.characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.characterInputForLine.position) {
+	if (self.lineForNewCue != nil && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
 		[self cancelCharacterInput];
 		change = false;
 	}
@@ -66,12 +66,12 @@
 			}
 		}
 		// Process line break after a forced character input
-		else if (self.characterInput && self.characterInputForLine && NSMaxRange(self.characterInputForLine.textRange) <= self.text.length) {
+		else if (self.lineForNewCue == self.currentLine && NSMaxRange(self.lineForNewCue.textRange) <= self.text.length) {
 			// If the cue is empty, reset it
-			if (self.characterInputForLine.string.length == 0) {
-				[self setTypeAndFormat:self.characterInputForLine type:empty];
+			if (self.lineForNewCue.string.length == 0) {
+				[self setTypeAndFormat:self.lineForNewCue type:empty];
 			} else {
-				self.characterInputForLine.forcedCharacterCue = YES;
+				self.lineForNewCue.forcedCharacterCue = YES;
 			}
 		}
 		// Handle automatic line breaks
@@ -140,12 +140,12 @@
 	Line* currentLine = self.currentLine;
 	
 	// Reset forced character input
-	if (self.characterInputForLine != currentLine && self.characterInput) {
-		self.characterInput = NO;
-		if (self.characterInputForLine.string.length == 0) {
-			[self setTypeAndFormat:self.characterInputForLine type:empty];
-			self.characterInputForLine = nil;
-		}
+	//if (self.characterInputForLine != currentLine && self.characterInput) {
+	if (self.lineForNewCue != nil && self.lineForNewCue != currentLine) {
+		if (self.lineForNewCue.string.length == 0)
+			[self setTypeAndFormat:self.lineForNewCue type:empty];
+		
+		self.lineForNewCue = nil;
 	}
 	
 	// Correct parsing for character cues (we need to move this to parser somehow)
@@ -218,8 +218,9 @@
 - (void)cancelCharacterInput
 {
 	// TODO: Move this to text view
-	self.characterInput = NO;
-	self.characterInputForLine = nil;
+	//self.characterInput = NO;
+	Line* cueLine = self.lineForNewCue;
+	self.lineForNewCue = nil;
 	
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -232,7 +233,7 @@
 	self.textView.needsDisplay = YES;
 	self.textView.needsLayout = YES;
 	
-	[self setTypeAndFormat:self.characterInputForLine type:empty];
+	[self setTypeAndFormat:cueLine type:empty];
 }
 
 /*
