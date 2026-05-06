@@ -22,7 +22,6 @@ public extension BeatPreviewController {
 	@IBAction func toggleThumbnailView(sender:NSButton) {
 		guard let constraint = self.thumbnailViewConstraint else { return }
 		if constraint.constant > 0 {
-			print(" ---> hide")
 			BeatUserDefaults.shared().save(true, forKey: "hideThumbnailView")
 			setThumbnailViewHidden(true)
 		} else {

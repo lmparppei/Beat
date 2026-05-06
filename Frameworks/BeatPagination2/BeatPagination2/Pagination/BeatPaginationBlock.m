@@ -41,7 +41,8 @@
     return block;
 }
 
-- (instancetype)initWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement {
+- (instancetype)initWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement
+{
 	self = [super init];
 	if (self) {
 		_delegate = delegate;
@@ -59,7 +60,8 @@
 }
 
 /// Returns the type for first line in the block.
-- (LineType)type {
+- (LineType)type
+{
 	return self.lines.firstObject.type;
 }
 
@@ -196,7 +198,8 @@
 }
 
 /// Returns the line which resides at given Y coordinate within the local height of this block.
-- (Line*)lineAt:(CGFloat)y {
+- (Line*)lineAt:(CGFloat)y
+{
 	CGFloat height = 0.0;
 	
 	for (Line* line in self.lines) {
@@ -208,7 +211,8 @@
 }
 
 /// Returns the height of preceding elements until the given line.
-- (CGFloat)heightUntil:(Line*)lineToFind {
+- (CGFloat)heightUntil:(Line*)lineToFind
+{
 	CGFloat height = 0.0;
 	
 	for (Line* line in self.lines) {
@@ -223,7 +227,8 @@
 }
 
 /// Returns the line which doesn't fit within the given remaining space.
-- (Line*)findSpillerAt:(CGFloat)remainingSpace {
+- (Line*)findSpillerAt:(CGFloat)remainingSpace
+{
 	CGFloat height = 0.0;
 	
 	for (Line* line in self.lines) {
@@ -241,7 +246,8 @@
 #pragma mark - Return left/right columns for dual dialogue
 
 /// Returns lines for the left column of a dual dialogue block
-- (NSArray<Line*>*)leftSideDialogue {
+- (NSArray<Line*>*)leftSideDialogue
+{
 	NSMutableArray *lines = NSMutableArray.new;
 	for (Line* line in self.lines) {
 		if (line.type == dualDialogueCharacter) break;
@@ -250,7 +256,8 @@
 	return lines;
 }
 /// Returns lines for the right side of a dual dialogue block
-- (NSArray<Line*>*)rightSideDialogue {
+- (NSArray<Line*>*)rightSideDialogue
+{
 	NSMutableArray *lines = NSMutableArray.new;
 	for (Line* line in self.lines) {
 		if (line.isDialogue) continue;
@@ -260,7 +267,8 @@
 }
 
 /// Returns (and when needed, creates) a dual dialogue block inside this block.
-- (BeatPaginationBlock*)leftColumnBlock {
+- (BeatPaginationBlock*)leftColumnBlock
+{
 	if (_leftColumnBlock == nil) {
 		_leftColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self leftSideDialogue] delegate:self.delegate isDualDialogueElement:true];
 	}
@@ -268,7 +276,8 @@
 }
 
 /// Returns (and when needed, creates) a dual dialogue block inside this block.
-- (BeatPaginationBlock*)rightColumnBlock {
+- (BeatPaginationBlock*)rightColumnBlock
+{
 	if (_rightColumnBlock == nil) {
 		_rightColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self rightSideDialogue] delegate:self.delegate isDualDialogueElement:true];
 	}
@@ -279,7 +288,8 @@
 #pragma mark - Breaking block across pages
 
 /// Returns the indexes in which this block *could* be broken apart. Basically useless for anything else than dialogue at this point.
-- (NSIndexSet*)possiblePageBreakIndices {
+- (NSIndexSet*)possiblePageBreakIndices
+{
 	// Dialogue blocks have different types of safe indices
     Line* firstLine = self.lines.firstObject;
 	if (firstLine.isAnyCharacter) return [self possiblePageBreakIndicesForDialogueBlock];
@@ -377,7 +387,8 @@
     return pageBreakData;
 }
 
-- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
+- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace
+{
     return [self splitParagraphWithRemainingSpace:remainingSpace line:nil];
 }
 
@@ -488,7 +499,8 @@
     }
 }
 
-- (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
+- (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace
+{
 	NSArray *left = self.leftSideDialogue;
 	NSArray *right = self.rightSideDialogue;
 	
@@ -540,7 +552,8 @@
 }
 
 /// Splits a **block** of dialogue, retaining as much as possible in given remaining space.
-- (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
+- (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace
+{
     //remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
     
     NSMutableArray* dialogueBlock = self.lines.mutableCopy;
@@ -712,9 +725,10 @@
 
 
 /// Splits a line of dialogue, retaining as much as possible in given remaining space.
-- (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace {
+- (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace
+{
 	// Regex for splitting into sentences
-    NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…]+\\s*)" options:0 error:nil];
+    NSRegularExpression* regex = [NSRegularExpression.alloc initWithPattern:@"(.+?[\\.\\?\\!…\\/]+\\s*)" options:0 error:nil];
     
     // Create temporary string and catch sentences
     NSString* string = [line stripFormattingWithSettings:self.delegate.settings];
@@ -841,16 +855,7 @@
 /// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
 /// @warning: This code uses **TextKit 1**
 - (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line textStorage:(out NSTextStorage**)textStorage
-{    
-    /*
-    // If this is a *dual dialogue* column, we'll need to convert the style.
-    if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
-        if (type == dialogue) type = dualDialogue;
-        else if (type == character) type = dualDialogueCharacter;
-        else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
-    }
-     */
-    
+{
     RenderStyle *style = [self.delegate.styles forLine:line];
     
     BXFont* font = _delegate.fonts.regular;
@@ -884,6 +889,7 @@
 {
 	return [self attributedStringForFirstElement:false];
 }
+
 - (NSAttributedString*)attributedStringForFirstElementOnPage
 {
 	return [self attributedStringForFirstElement:true];
@@ -901,6 +907,7 @@
 {
     return [self widthForType:line.typeName];
 }
+
 - (CGFloat)widthForType:(NSString*)typeName
 {
     RenderStyle* style = [_delegate.styles forElement:typeName];
@@ -910,10 +917,12 @@
     return width;
 }
 
+
 #pragma mark - Convenience
 
 /// Returns an array of line UUIDs
-- (NSArray<NSUUID*>*)UUIDs {
+- (NSArray<NSUUID*>*)UUIDs
+{
 	if (_UUIDs == nil) {
         NSMutableArray* UUIDs = [NSMutableArray arrayWithCapacity:self.lines.count];
 		for (Line* line in self.lines) {

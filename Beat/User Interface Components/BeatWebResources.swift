@@ -46,7 +46,7 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 			return
 		}
 	
-		var suffix = "/?version=" + version
+		var suffix = "/?_version=" + version
 		#if ADHOC
 			suffix += "&adhoc=1"
 		#endif

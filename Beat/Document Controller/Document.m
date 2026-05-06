@@ -102,7 +102,6 @@
 #import "BeatAppDelegate+DarkMode.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
-#import "SceneCards.h"
 #import "MarginView.h"
 #import "BeatLockButton.h"
 #import "BeatColorMenuItem.h"
@@ -203,7 +202,7 @@
 	self.tagging = nil;
 	self.review = nil;
 	
-	self.previewController = nil;
+	self.previewController = nil; // Fuck you, I'll null it if I want
 	
 	// Fully deallocate text view
 	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(0, self.textView.textStorage.string.length) withString:@""];

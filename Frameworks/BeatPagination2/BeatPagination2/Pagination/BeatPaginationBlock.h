@@ -12,6 +12,15 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPageDelegate;
 
+/**
+ 
+ A single block of paginated screenplay content.
+ 
+ While paginating, single blocks are wrapped in `BeatPaginationBlockGroup`s, and when a group is broken apart for splitting content across pages, we'll often need to break apart single blocks as well. The block class handles that process.
+ 
+ Blocks return their height and type, and can contain sub-blocks for left/right column content for dual dialogue blocks. 
+ 
+ */
 @interface BeatPaginationBlock : NSObject
 @property (weak, nonatomic) id<BeatPageDelegate> delegate;
 

@@ -113,6 +113,8 @@
 		B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */; };
 		B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */ = {isa = PBXBuildFile; fileRef = B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B686BD252B3444390074FC67 /* Screenplay-editor-iOS.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B686BD242B34432E0074FC67 /* Screenplay-editor-iOS.beatCSS */; };
+		B689FCAF2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B689FCAE2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift */; };
+		B689FCB12F9225DB00D4EEC6 /* BeatVersionControl+CommitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B689FCB02F9225D400D4EEC6 /* BeatVersionControl+CommitView.swift */; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */; };
 		B68C0F5C299D821A0031AE6B /* BeatReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68C0F59299D82130031AE6B /* BeatReview.swift */; };
@@ -161,6 +163,8 @@
 		B6D32028298EBE45003DA45D /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201D298EBE2B003DA45D /* BeatTag.m */; };
 		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DCB7EF2F936CFB005C3F08 /* BeatVersionControl+ContinuousDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */; };
+		B6DCB7F12F936ED5005C3F08 /* BeatVersionControl+Diffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */; };
 		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
 		B6EDC4FF2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6EDC5002E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EDC4FE2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m */; };
@@ -291,6 +295,8 @@
 		B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
 		B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatMeasure.h; sourceTree = "<group>"; };
 		B686BD242B34432E0074FC67 /* Screenplay-editor-iOS.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Screenplay-editor-iOS.beatCSS"; sourceTree = "<group>"; };
+		B689FCAE2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+Formatting.swift"; sourceTree = "<group>"; };
+		B689FCB02F9225D400D4EEC6 /* BeatVersionControl+CommitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+CommitView.swift"; sourceTree = "<group>"; };
 		B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatLayoutManager.h; sourceTree = "<group>"; };
 		B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatLayoutManager.m; sourceTree = "<group>"; };
 		B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -333,6 +339,8 @@
 		B6D3201F298EBE2B003DA45D /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
 		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
+		B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+ContinuousDiff.swift"; sourceTree = "<group>"; };
+		B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+Diffing.swift"; sourceTree = "<group>"; };
 		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+ConvertToFountain.h"; sourceTree = "<group>"; };
 		B6EDC4FE2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+ConvertToFountain.m"; sourceTree = "<group>"; };
@@ -424,6 +432,10 @@
 			children = (
 				B6311F002D6B1E5D00712CFE /* BeatVersionControl.h */,
 				B6311F012D6B1E5D00712CFE /* BeatVersionControl.m */,
+				B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */,
+				B689FCAE2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift */,
+				B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */,
+				B689FCB02F9225D400D4EEC6 /* BeatVersionControl+CommitView.swift */,
 			);
 			path = "Version Control";
 			sourceTree = "<group>";
@@ -946,6 +958,7 @@
 				B6FDCF6F2BD45B7B00A6C9B6 /* TextStorageExtensions.swift in Sources */,
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
 				B660D9BE2F2D49620080AC65 /* NSLayoutManager+RectsForRange.swift in Sources */,
+				B689FCAF2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift in Sources */,
 				B63AB3C22A56BEDF00B28BC0 /* BeatTextViewExtensions.swift in Sources */,
 				B67B07112E159114004345D4 /* BeatBackup.swift in Sources */,
 				B64AD5ED2B2F65EB00EBD63A /* BeatTitlePage.swift in Sources */,
@@ -968,8 +981,10 @@
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B619DE6C29F906D9007D1838 /* BeatAutocomplete.m in Sources */,
 				B6D15A722AF9793500DAB66D /* BeatStylesheet.swift in Sources */,
+				B6DCB7F12F936ED5005C3F08 /* BeatVersionControl+Diffing.swift in Sources */,
 				B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */,
 				B6311EC22D672C6200712CFE /* NSString+Compression.m in Sources */,
+				B6DCB7EF2F936CFB005C3F08 /* BeatVersionControl+ContinuousDiff.swift in Sources */,
 				B6D15A322AF96C0A00DAB66D /* BeatEditorFormatting.m in Sources */,
 				B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
@@ -1010,6 +1025,7 @@
 				B6F84CF22E3D33A700A23129 /* OutlineItemProvider.m in Sources */,
 				B6311EE72D68797B00712CFE /* NSString+UnicharUtilities.m in Sources */,
 				B6311EE82D68797B00712CFE /* NSString+JavaSubstring.m in Sources */,
+				B689FCB12F9225DB00D4EEC6 /* BeatVersionControl+CommitView.swift in Sources */,
 				B6311EE92D68797B00712CFE /* NSString+UriCompatibility.m in Sources */,
 				B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */,
 				B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */,

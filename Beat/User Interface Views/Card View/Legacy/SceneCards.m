@@ -354,9 +354,12 @@
 
 #pragma mark - JavaScript handler
 
-- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
+{
 	// I have no fucking idea what any of this does.
 	// Send in the clowns. There ought to be clowns.
+	
+	// I'm *pretty* sure this code isn't used anymore, right?
 	
 	if ([message.name isEqualToString:@"cardClick"]) {
 		[_delegate toggleCards:nil];
