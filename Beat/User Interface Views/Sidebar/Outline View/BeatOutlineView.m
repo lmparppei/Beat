@@ -83,7 +83,12 @@
 //    New Year 2026 edit: You fuckers broke everything in macOS 26 and I could
 //    forgive that UNLESS YOU WERE AGAIN COMPLICIT IN NEW FUCKING GENOCIDES.
 //    FUCK YOU. FREE PALESTINE. END SLAVE LABOUR. UNIONIZE NOW.
-
+//
+//	  Spring 2026 update: You fucking fucks are still fucking people over, in
+//    global south, in Palestine, and even in your OWN fucking country by supporting
+//    genocidal and fascistic leaders JUST FOR YOUR OWN FUCKING PROFITS.
+//    FUCK YOU, APPLE, FUCK YOU, TIM APPLE.
+//    SOLIDARITY FOR PALESTINE. SOLIDARITY FOR WORKING CLASS. EAT THE RICH.
 
 //    So, back to the code:
 
