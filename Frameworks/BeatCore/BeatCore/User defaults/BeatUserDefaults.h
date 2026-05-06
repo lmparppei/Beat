@@ -91,6 +91,8 @@ extern NSString* const BeatSpellCheckingLanguage;
 /// iOS only. Set to `true` to allow all file types (basically `public.data`) in document browser view, which enables using Google Drive to sync your files.
 extern NSString* const BeatSettingAllowAllFileTypes;
 
+extern NSString* const BeatSettingSmartQuotes;
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 
