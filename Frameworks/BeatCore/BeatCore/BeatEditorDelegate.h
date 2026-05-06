@@ -233,8 +233,8 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark - Editor flags
 
 @property (nonatomic) bool revisionMode;
-@property (nonatomic) bool characterInput;
-@property (nonatomic) Line* characterInputForLine;
+//@property (nonatomic) bool characterInput;
+@property (nonatomic) Line* lineForNewCue;
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
