@@ -130,11 +130,16 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @property (nonatomic, copy) NSString *partialText;
 
 
-
 #pragma mark - Common methods
 
 - (void)setup;
 - (void)didFinishLoading;
+
+
+#pragma mark - Selection events
+
+@property (nonatomic) NSMutableArray<void (^)(NSRange)>* registeredSelectionEvents;
+
 
 #pragma mark - Scrolling
 

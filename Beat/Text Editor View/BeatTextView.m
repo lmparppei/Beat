@@ -129,8 +129,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.textContainer.heightTracksTextView = NO;
 	
 	self.automaticDataDetectionEnabled = NO;
-	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;
+	self.automaticQuoteSubstitutionEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingSmartQuotes];
 	
 	self.usesFindBar = true;
 	self.usesFindPanel = false;
@@ -233,6 +233,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Setup validated menu items
 	[self setupValidationItems];
+	
+	// Setup selection events. You can register more later if needed.
+	[self setupSelectionEvents];
 }
 
 - (void)didFinishLoading

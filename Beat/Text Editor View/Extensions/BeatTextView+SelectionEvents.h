@@ -12,7 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatTextView (SelectionEvents)
 
+/// Sets up main selection events (review + future metadata navigation)
+- (void)setupSelectionEvents;
+
+/// 
 - (void)didChangeSelection:(NSNotification *)notification;
+
+/// Register an event performed when selection changes. Please note that this is different from the main editor selection event. I don't really know why.
+- (void)registerSelectionEvent:(void (^ _Nonnull)(NSRange))event;
 
 @end
 

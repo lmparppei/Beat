@@ -13,7 +13,44 @@
 
 @implementation BeatTextView (SelectionEvents)
 
+
 #pragma mark - Selection events
+
+- (void)setupSelectionEvents
+{
+	// Show review popover when needed
+	[self registerSelectionEvent:^(NSRange range) {
+		if (self.text.length == 0) return;
+		
+		// Don't go out of range. We can't check for attributes at the last index.
+		NSUInteger pos = range.location;
+		if (NSMaxRange(self.selectedRange) >= self.string.length) pos = self.string.length - 1;
+		if (pos < 0) pos = 0;
+		
+		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
+		if (reviewItem && !reviewItem.emptyReview) {
+			[self.editorDelegate.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			[self.window makeFirstResponder:self];
+		} else {
+			[self.editorDelegate.review closePopover];
+		}
+	}];
+	
+	// Story beat buttons
+	[self registerSelectionEvent:^(NSRange range) {
+		[self updateStorybeatButtons];
+	}];
+}
+
+- (void)registerSelectionEvent:(void (^ _Nonnull)(NSRange))event
+{
+	if (self.registeredSelectionEvents == nil) self.registeredSelectionEvents = NSMutableArray.new;
+	
+	[self.registeredSelectionEvents addObject:event];
+}
+
+
+#pragma mark - Selection listeners
 
 /**
  
@@ -51,34 +88,22 @@
 			[self.editorDelegate.review showReviewIfNeededWithRange:self.selectedRange forEditing:YES];
 			break;
 		default:
-			[self selectionEvents];
+			[self performSelectionEvents];
 			break;
 	}
 }
+
 
 - (bool)selectionAtEnd
 {
 	return (self.selectedRange.location == self.string.length);
 }
 
-- (void)selectionEvents
+- (void)performSelectionEvents
 {
-	// TODO: I could/should make this one a registered event, too.
-	
-	// Don't go out of range. We can't check for attributes at the last index.
-	NSUInteger pos = self.selectedRange.location;
-	if (NSMaxRange(self.selectedRange) >= self.string.length) pos = self.string.length - 1;
-	if (pos < 0) pos = 0;
-	
-	// Review items
-	if (self.string.length > 0) {
-		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
-		if (reviewItem && !reviewItem.emptyReview) {
-			[self.editorDelegate.review showReviewIfNeededWithRange:NSMakeRange(pos, 0) forEditing:NO];
-			[self.window makeFirstResponder:self];
-		} else {
-			[self.editorDelegate.review closePopover];
-		}
+	// Perform all registered events
+	for (void (^event)(NSRange) in self.registeredSelectionEvents) {
+		event(self.selectedRange);
 	}
 }
 

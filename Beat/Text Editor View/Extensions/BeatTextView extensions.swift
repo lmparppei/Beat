@@ -101,5 +101,7 @@ public extension BeatTextView {
 
 		self.autocompletePopover.close()
 	}
+	
+	
 }
 

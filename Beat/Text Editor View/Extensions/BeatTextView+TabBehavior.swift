@@ -30,7 +30,7 @@ public extension BeatTextView {
 	}
 	
 	@objc func forceCharacterInput() {
-		guard let editorDelegate, !editorDelegate.characterInput else { return }
+		guard let editorDelegate, editorDelegate.lineForNewCue == nil else { return }
 		
 		editorDelegate.formattingActions.addCue()
 	}
