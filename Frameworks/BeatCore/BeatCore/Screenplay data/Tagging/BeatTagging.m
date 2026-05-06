@@ -166,15 +166,18 @@
 }
 
 /// Maps color names to tag keys
-+ (NSDictionary<NSString*,NSString*>*)tagColors
++ (NSDictionary<NSString*,BXColor*>*)tagColors
 {
-    static NSDictionary<NSString*, NSString*>* tagColors;
+    static NSDictionary<NSString*, BXColor*>* tagColors;
     
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        NSMutableDictionary<NSString*, NSString*>* colors = NSMutableDictionary.new;
+        NSMutableDictionary<NSString*, BXColor*>* colors = NSMutableDictionary.new;
         for (BeatTagCategory* cat in BeatTagging.tagCategories) {
-            if (cat.colorName != nil) colors[cat.keyName] = cat.colorName;
+            if (cat.colorName != nil) {
+                BXColor* c = [BeatColors color:cat.colorName];
+                if (c != nil) colors[cat.keyName] = c;
+            }
         }
         
         tagColors = colors;
@@ -186,10 +189,11 @@
 /// Returns the tag type for a key. Misleading name, sorry.
 + (BeatTagType)tagFor:(NSString*)tagKey
 {
-    NSDictionary* keysToTypes = BeatTagging.keysToTypes;
-    BeatTagCategory* cat = keysToTypes[tagKey];
-    if (cat != nil) {
-        return cat.type;
+    NSDictionary<NSString*, NSNumber*>* keysToTypes = BeatTagging.keysToTypes;
+    NSNumber* value = keysToTypes[tagKey];
+    if (value != nil) {
+        BeatTagType type = (BeatTagType)value.intValue;
+        return type;
     } else {
         return GenericTag;
     }
@@ -212,7 +216,7 @@
 
 + (NSString*)hexForKey:(NSString*)key
 {
-    BXColor *color = self.tagColors[key.lowercaseString];
+    BXColor* color = self.tagColors[key.lowercaseString];
     return [BeatColors get16bitHex:color];
 }
 
