@@ -91,9 +91,14 @@
 
 - (void)scrollWheel:(NSEvent *)event
 {
-	// For some reason we need to do this on macOS Sonoma.
-	// No events are registered in the scroll view when another scroll view is earlier in responder chain in this window. No idea.
-	if (@available(macOS 14.0, *)) {
+	if (@available(macOS 26.0, *)) {
+		// See below, on 26 this bug has been fixed but *other* weird issues persist.
+		[super scrollWheel:event];
+		return;
+	}
+	else if (@available(macOS 14.0, *)) {
+		// For some reason we need to do this on macOS Sonoma.
+		// No events are registered in the scroll view when another scroll view is earlier in responder chain in this window. No idea.
 		if (self.drawnOnScreen) {
 			CGPoint p = [self convertPoint:event.locationInWindow fromView:nil];
 			
