@@ -70,6 +70,7 @@ class DiffViewerViewController: NSViewController {
 	@IBOutlet private weak var generateRevisionsButton: NSButton?
 	@IBOutlet private weak var restoreButton:NSButton?
 	@IBOutlet private weak var viewModeControl:NSSegmentedControl?
+	@IBOutlet private weak var resetButton:NSButton?
 	
 	@IBOutlet private weak var actionTabs:NSTabView?
 	
@@ -108,7 +109,7 @@ class DiffViewerViewController: NSViewController {
 		}
 		
 		// All views to enable
-		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton, viewModeControl]
+		let viewsToEnable = [textView, currentVersionMenu, otherVersionMenu, restoreButton, generateRevisionsButton, viewModeControl, resetButton]
 		// A subset of views that should be enabled for mixed state (not full VC, just external files)
 		let mixedStateViews = [textView, otherVersionMenu, generateRevisionsButton]
 		let viewsToHideInMixedState = [currentVersionMenu, statusView]
@@ -146,7 +147,7 @@ class DiffViewerViewController: NSViewController {
 		guard let delegate = delegate, let textView = textView else { return }
 
 		textView.setup(editorDelegate: delegate)
-		textView.backgroundColor = if self.view.effectiveAppearance == NSAppearance(named: .aqua) { ThemeManager.shared().backgroundColor.lightColor } else { ThemeManager.shared().backgroundColor.darkColor! }
+		textView.backgroundColor = delegate.isDark() ? ThemeManager.shared().backgroundColor.darkColor! : ThemeManager.shared().backgroundColor.lightColor
 		
 		// Set up custom scroller
 		if let scrollView = textView.enclosingScrollView {
@@ -169,20 +170,26 @@ class DiffViewerViewController: NSViewController {
 		_ = compareToLatestCommit()
 	}
 	
+	@IBAction func resetVersionControl(_ sender:Any?) {
+		let alert = NSAlert()
+		alert.messageText = "Are you sure you want to reset version control?"
+		alert.informativeText = "This will delete all your commits until this point. This action cannot be undone."
+		
+		alert.addButton(withTitle: BeatLocalization.localizedString(forKey: "general.cancel"))
+		alert.addButton(withTitle: BeatLocalization.localizedString(forKey: "general.ok"))
+		
+		let response = alert.runModal()
+		if response == .alertSecondButtonReturn {
+			vc?.resetVersionControl()
+			refreshView()
+		}
+	}
+	
 	@IBAction func commit(_ sender: Any?) {
 		guard let delegate = delegate,
 			  let button = sender as? NSButton else { return }
 		
-		// Show a popover
-		let popover = NSPopover()
-		popover.behavior = .transient
-		
-		let popoverVC = CommitMessagePopover { [weak self] message in
-			popover.close()
-			
-			// Create version control and add commit with message
-			let vc = BeatVersionControl(delegate: delegate)
-			vc.addCommit(withMessage: message)
+		let popover = BeatVersionControl.commitPrompt(delegate: delegate) { [weak self] vc in
 			self?.updateCommitStatus()
 			
 			// After committing, select the latest commit to be displayed
@@ -193,8 +200,6 @@ class DiffViewerViewController: NSViewController {
 			self?.populateVersions()
 			self?.refreshContent()
 		}
-		
-		popover.contentViewController = popoverVC
 		
 		// Show the popover
 		popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
@@ -433,101 +438,19 @@ class DiffViewerViewController: NSViewController {
 	func loadDiff() {
 		guard let originalText = originalText, let modifiedText = modifiedText else { return }
 		
-		let dmp = DiffMatchPatch()
-		guard let diffs = dmp.diff_main(ofOldString: originalText, andNewString: modifiedText) else { return }
-		
-		dmp.diff_cleanupSemantic(diffs)
-		
-		// Convert NSMutableArray to [Diff]
-		var diffValues: [Diff] = []
-		for d in diffs {
-			if let diff = d as? Diff {
-				diffValues.append(diff)
-			}
+		if let text = BeatVersionControl.diffedText(originalText: originalText, modifiedText: modifiedText) {
+			textView?.textStorage?.setAttributedString(text)
+			textView?.needsDisplay = true
+			textView?.setSelectedRange(NSMakeRange(0, 0))
 		}
-		
-		let text = formatDiffedText(diffValues, isOriginal: false)
-		textView?.textStorage?.setAttributedString(text)
-		textView?.needsDisplay = true
 	}
 	
 	func loadText() {
 		guard let text = originalText else { return }
 		
-		let attributedString = formatFountain(text)
+		let attributedString = BeatVersionControl.formatFountain(text)
 		textView?.textStorage?.setAttributedString(attributedString)
-	}
-	
-	
-	// MARK: - Text Formatting
-	
-	private func formatDiffedText(_ diffs: [Diff], isOriginal: Bool) -> NSAttributedString {
-		let string = NSMutableString()
-		
-		let redColor = BeatColors.color("red").withAlphaComponent(0.2)
-		let greenColor = BeatColors.color("green").withAlphaComponent(0.2)
-		
-		let indices: [String: NSMutableIndexSet] = [
-			"delete": NSMutableIndexSet(),
-			"insert": NSMutableIndexSet()
-		]
-		
-		// Create an attributed string from diffs
-		for diff in diffs {
-			let text = diff.text ?? ""
-			let range = NSMakeRange(string.length, text.count)
-					
-			switch diff.operation.rawValue {
-			case 1: // Delete
-				indices["delete"]?.add(in: range)
-			case 2: // Insert
-				indices["insert"]?.add(in: range)
-			default: // Equal
-				break
-			}
-
-			string.append(text)
-		}
-		
-		// Create a string, parse content and load document settings
-		let attributedString = formatFountain(string as String)
-		
-		// Apply diff colors
-		indices["delete"]?.enumerateRanges(using: { range, stop in
-			guard NSMaxRange(range) <= attributedString.length else { return }
-			
-			attributedString.addAttribute(.backgroundColor, value: redColor, range: range)
-			attributedString.addAttribute(.strikethroughColor, value: NSColor.red, range: range)
-			attributedString.addAttribute(.strikethroughStyle, value: 1, range: range)
-			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "delete", range: range)
-		})
-		indices["insert"]?.enumerateRanges(using: { range, stop in
-			guard NSMaxRange(range) <= attributedString.length else { return }
-			
-			attributedString.addAttribute(.backgroundColor, value: greenColor, range: range)
-			attributedString.addAttribute(NSAttributedString.Key("DIFF"), value: "add", range: range)
-		})
-		
-		return attributedString
-	}
-	
-	private func formatFountain(_ string: String) -> NSMutableAttributedString {
-		let settings = BeatDocumentSettings()
-		
-		let settingRange = settings.readAndReturnRange(string)
-		
-		var content = string
-		if settingRange.location != NSNotFound && settingRange.length != 0 {
-			content = String(string.prefix(settingRange.location))
-		}
-
-		let attributedString = NSMutableAttributedString(string: content)
-		let formatting = BeatEditorFormatting(textStorage: attributedString)
-
-		formatting.staticParser = ContinuousFountainParser(staticParsingWith: attributedString.string, settings: settings)
-		formatting.formatAllLines()
-		
-		return attributedString
+		textView?.setSelectedRange(NSMakeRange(0, 0))
 	}
 	
 	
@@ -542,7 +465,7 @@ class DiffViewerViewController: NSViewController {
 		var deleteRanges: [NSRange] = []
 		
 		// Scan through the entire text storage to find diff markers
-		textStorage.enumerateAttribute(NSAttributedString.Key("DIFF"), in: textStorage.range) { value, range, stop in
+		textStorage.enumerateAttribute(BeatVersionControl.diffAttributeKey, in: textStorage.range) { value, range, stop in
 			guard let attr = value as? String else { return }
 			if attr == "delete" {
 				deleteRanges.append(range)

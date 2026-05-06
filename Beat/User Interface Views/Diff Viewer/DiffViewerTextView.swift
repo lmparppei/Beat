@@ -16,6 +16,8 @@ class DiffViewerTextView: NSTextView {
 	var magnification = 1.3
 	var scaled = false
 	
+	var contextMenu:NSMenu?
+	
 	override var frame: NSRect {
 		didSet {
 			updateTextLayout()
@@ -47,4 +49,55 @@ class DiffViewerTextView: NSTextView {
 		textContainerInset = CGSize(width: insetWidth, height: 10.0)
 		textContainer?.containerSize = CGSize(width: documentWidth, height: .greatestFiniteMagnitude)
 	}
+	
+	override func menu(for event: NSEvent) -> NSMenu? {
+		if event.type == .rightMouseDown {
+			let menu = super.menu(for: event)
+			
+			menu?.addItem(.separator())
+			
+			let prevItem = NSMenuItem(title: "Previous Change", action: #selector(previousRevision), keyEquivalent: "\u{001e}")
+			prevItem.keyEquivalentModifierMask.insert(.control)
+			let nextItem = NSMenuItem(title: "Next Change", action: #selector(nextRevision), keyEquivalent: "\u{001f}")
+			nextItem.keyEquivalentModifierMask.insert(.control)
+			
+			menu?.addItem(prevItem)
+			menu?.addItem(nextItem)
+			
+			return menu
+		}
+		
+		return super.menu(for: event)
+	}
+	
+	@IBAction func previousRevision(_ sender:Any?) {
+		guard let textStorage else { return }
+		
+		let loc = self.selectedRange().location
+		let range = NSMakeRange(0, loc)
+		
+		textStorage.enumerateAttribute(BeatVersionControl.diffAttributeKey, in: range, options: .reverse) { value, range, stop in
+			guard value != nil else { return }
+			
+			stop.pointee = true
+			self.setSelectedRange(range)
+			self.scrollRangeToVisible(range)
+		}
+	}
+	
+	@IBAction func nextRevision(_ sender:Any?) {
+		guard let textStorage else { return }
+		
+		let loc = NSMaxRange(self.selectedRange())
+		let range = NSMakeRange(loc, self.text.count - loc)
+		
+		textStorage.enumerateAttribute(BeatVersionControl.diffAttributeKey, in: range) { value, range, stop in
+			guard value != nil else { return }
+			
+			stop.pointee = true
+			self.setSelectedRange(range)
+			self.scrollRangeToVisible(range)
+		}
+	}
+	
 }
