@@ -243,8 +243,13 @@
 		self.popoverManager = nil;
 	}
 	
-	NSRect rowFrame = [self frameOfCellAtColumn:1 row:self.selectedRow];
-	
+	// Fix for a weird macOS 26 bug
+	if (self.numberOfColumns < 2) return;
+
+	NSInteger index = self.selectedRow;
+	if (index >= _characterNameList.count || index >= self.numberOfRows) return;
+
+	NSRect rowFrame = [self frameOfCellAtColumn:1 row:index];
 	NSString* name = _characterNameList[self.selectedRow];
 	
 	// We'll have to fetch a new value for this character, because it might be out of sync
