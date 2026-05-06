@@ -34,8 +34,6 @@
 @interface Line()
 @property (nonatomic) NSUInteger oldHash;
 @property (nonatomic) NSString* cachedString;
-
-@property (nonatomic) NSDictionary* beatRangesAndContents;
 @end
 
 @implementation Line
@@ -189,8 +187,12 @@
     // Not sure why these are guarded.
     NSMutableDictionary* ranges = NSMutableDictionary.new;
     for (NSValue* key in self.formattedRanges.allKeys) {
-        NSMutableIndexSet* indices = ((NSMutableIndexSet*)self.formattedRanges[key]).mutableCopy;
-        ranges[key] = indices;
+        if (self.formattedRanges[key] != nil) {
+            NSMutableIndexSet* indices = ((NSMutableIndexSet*)self.formattedRanges[key]).mutableCopy;
+            ranges[key] = indices;
+        } else {
+            ranges[key] = NSMutableIndexSet.new;
+        }
     }
     
     newLine.formattedRanges = ranges;
@@ -888,7 +890,7 @@
         @"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
         @"uuid": (self.uuid) ? self.uuid.UUIDString : @"",
         @"notes": self.notesAsJSON,
-        @"ranges": self.ranges
+        @"ranges": (self.ranges) ? self.ranges : @{}
     }];
     
     if (self.type == synopse) {
