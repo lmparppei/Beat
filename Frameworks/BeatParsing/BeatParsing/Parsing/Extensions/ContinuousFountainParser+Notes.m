@@ -19,6 +19,9 @@
 // The danger is in a particular location... it increases towards a center... the center of danger is here...
 // The danger is still present, in your time, as it was in ours.
 
+// Update 2026-05-06: I come back here now and then. I think the above part was originally intended as a humorous
+// note for my future self, but I get fucking angry and resent my past every time I see it. Go fuck yourself, past me.
+
 /**
  Parses notes for given line at specified index. You also need to specify the type the line had before we are parsing the notes.
  
