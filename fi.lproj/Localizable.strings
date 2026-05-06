@@ -297,3 +297,13 @@
 "export.printHeadingColor" = "Värilliset kohtausotsikot";
 
 "review.keyword.none" = "Ei #avainsanoja";
+
+"versionControl.base" = "Lähtöpiste";
+"versionControl.current" = "Nykyinen";
+"versionControl.addExternalFile" = "Avaa tiedosto...";
+"versionControl.noVersionControl" = "Ei versionhallintaa";
+
+"versionControl.reset.confirm" = "Haluatko varmasti nollata versionhallinnan?";
+"versionControl.reset.info" = "Tämä poistaa kaikki muutokset tähän pisteeseen asti. Tätä toimintoa ei voi kumota.";
+
+"versionControl.reset" = "Nollaa";

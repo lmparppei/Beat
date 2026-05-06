@@ -478,3 +478,13 @@
 "export.printHeadingColor" = "Färgade scenrubriker";
 
 "review.keyword.none" = "Inga #taggar";
+
+"versionControl.base" = "Bas";
+"versionControl.current" = "Nuvarande";
+"versionControl.addExternalFile" = "Öppna fil...";
+"versionControl.noVersionControl" = "Ingen versionskontroll";
+
+"versionControl.reset.confirm" = "Är du säker på att du vill återställa versionskontrollen?";
+"versionControl.reset.info" = "Detta raderar alla dina commits fram till den här punkten. Åtgärden kan inte ångras.";
+
+"versionControl.reset" = "Återställ";

@@ -330,6 +330,10 @@
 "versionControl.addExternalFile" = "Open File...";
 "versionControl.noVersionControl" = "No Version Control";
 
+"versionControl.reset" = "Reset";
+"versionControl.reset.confirm" = "Are you sure you want to reset version control?";
+"versionControl.reset.info" = "This will delete all your commits until this point. This action cannot be undone.";
+
 "pagination.paragraphPaginationMode.default" = "Break Actions Across Pages (Default)";
 "pagination.paragraphPaginationMode.avoid" = "Avoid Breaking Actions";
 

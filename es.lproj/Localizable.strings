@@ -759,3 +759,7 @@
 "versionControl.noVersionControl" = "Sin control de versiones";
 
 "export.printHeadingColor" = "Encabezados de escena en color";
+
+"versionControl.reset.confirm" = "¿Estás seguro de que quieres restablecer el control de versiones?";
+"versionControl.reset.info" = "Esto eliminará todos tus commits hasta este punto. Esta acción no se puede deshacer.";
+"versionControl.reset" = "Restablecer";

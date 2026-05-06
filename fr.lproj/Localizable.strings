@@ -774,3 +774,7 @@
 "versionControl.noVersionControl" = "Aucun contrôle de version";
 
 "export.printHeadingColor" = "En-têtes de scène colorés";
+
+"versionControl.reset.confirm" = "Êtes-vous sûr de vouloir réinitialiser le contrôle de version ?";
+"versionControl.reset.info" = "Cela supprimera tous vos commits jusqu'à ce point. Cette action est irréversible.";
+"versionControl.reset" = "Réinitialiser";

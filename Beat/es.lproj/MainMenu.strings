@@ -212,7 +212,9 @@
 "eZ7-I2-Df6.title" = "Autoguardar";
 
 /* Class = "NSMenuItem"; title = "Version Control..."; ObjectID = "f0T-Tr-pQT"; */
-"f0T-Tr-pQT.title" = "Versión Control...";
+"f0T-Tr-pQT.title" = "Versión Control";
+"juK-Ts-CTY.title" = "Versión Control…";
+"b0g-h0-lPt.title" = "Confirmar";
 
 /* Class = "NSMenuItem"; title = "Check Grammar With Spelling"; ObjectID = "f1v-Oj-qcf"; */
 "f1v-Oj-qcf.title" = "Revisar gramática y ortografía";

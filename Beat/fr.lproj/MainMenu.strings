@@ -212,7 +212,9 @@
 "eZ7-I2-Df6.title" = "Enregistrement automatique";
 
 /* Class = "NSMenuItem"; title = "Version Control..."; ObjectID = "f0T-Tr-pQT"; */
-"f0T-Tr-pQT.title" = "Suivi des versions...";
+"f0T-Tr-pQT.title" = "Suivi des versions";
+"juK-Ts-CTY.title" = "Suivi des versions…";
+"b0g-h0-lPt.title" = "Valider";
 
 /* Class = "NSMenuItem"; title = "Check Grammar With Spelling"; ObjectID = "f1v-Oj-qcf"; */
 "f1v-Oj-qcf.title" = "Vérifier la grammaire pendant la saisie";

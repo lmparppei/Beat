@@ -288,3 +288,12 @@
 
 "export.includeRevisions" = "Vključi označevalnike revizij";
 "export.printHeadingColor" = "Barvni naslovi prizorov";
+
+"versionControl.base" = "Osnova";
+"versionControl.current" = "Trenutno";
+"versionControl.addExternalFile" = "Odpri datoteko...";
+"versionControl.noVersionControl" = "Brez nadzora različic";
+
+"versionControl.reset.confirm" = "Ali ste prepričani, da želite ponastaviti nadzor različic?";
+"versionControl.reset.info" = "S tem boste izbrisali vse svoje commite do te točke. Tega dejanja ni mogoče razveljaviti.";
+"versionControl.reset" = "Ponastavi";

@@ -718,7 +718,16 @@ DQ
                             </menuItem>
                             <menuItem title="Highlight" keyEquivalent="I" id="Yhj-A7-rfE">
                                 <connections>
-                                    <action selector="addPageBreak:" target="-1" id="zjx-Ke-YjC"/>
+                                    <action selector="makeHighlighted:" target="-1" id="FqJ-7Q-5JY"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Convert Line to Uppercase" id="wnM-9S-dgW">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="makeLineUppercaseAndMoveOn:" target="-1" id="PqC-UZ-ZFC"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
@@ -907,8 +916,24 @@ DQ
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem title="Version Control..." keyEquivalent="O" id="f0T-Tr-pQT">
+                            <menuItem title="Version Control" id="f0T-Tr-pQT">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <menu key="submenu" title="Version Control" id="NDo-3f-hku">
+                                    <items>
+                                        <menuItem title="Version Control..." keyEquivalent="O" id="juK-Ts-CTY">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="openDiffViewer:" target="-1" id="ogC-jc-cLH"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Commit" keyEquivalent="C" id="b0g-h0-lPt">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="commit:" target="-1" id="CdF-ph-qZu"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                                 <connections>
                                     <action selector="openDiffViewer:" target="-1" id="M4Q-km-gGw"/>
                                 </connections>
