@@ -23,7 +23,7 @@
     NSMutableString *result = NSMutableString.string;
     
     __block NSInteger pos = 0;
-    
+        
     [attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
         NSString *string = [attrStr attributedSubstringFromRange:range].string;
                 

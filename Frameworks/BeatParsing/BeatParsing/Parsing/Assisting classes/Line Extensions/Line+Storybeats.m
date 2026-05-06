@@ -20,7 +20,7 @@
         if (note.type != NoteTypeBeat) continue;
         [self.__beatRanges addIndexesInRange:note.range];
         
-        // This is an empty note, ignore
+        // This is a single-word note, ignore
         NSInteger i = [note.content rangeOfString:@" "].location;
         if (i == NSNotFound) continue;
         

@@ -29,8 +29,8 @@
  See you in the future.
  
  __Update in 2023-12-28__: The pagination _sort of_ works like this nowadays, but because we are
- still rendering Fountain to something else, we still need to split and format the lines.
- This should still be fixed at some point. Maybe create line element which already has a preprocessed
+ still rendering Fountain to something else, we anyway need to split and format the lines.
+ This should still be fixed at some point. Maybe create a line element which already has a preprocessed
  attributed string for output.
  
  */
@@ -63,6 +63,24 @@
             break;
         }
     }
+    
+    /*
+    // Also, we need to escape possible forced formatting. If we for reason or another split a string at " ! ", we'll end up with "!" which then gets interpreted as a formatting symbol.
+    bool escape = false;
+    for (ParsingRule* rule in ContinuousFountainParser.rules) {
+        for (NSString* prefix in rule.beginsWith) {
+            if ([second.string rangeOfString:prefix].location == 0) {
+                escape = true;
+            }
+        }
+    }
+    
+    if (escape) {
+        NSMutableAttributedString* mSecond = second.mutableCopy;
+        [mSecond insertAttributedString:[NSAttributedString.alloc initWithString:@"\\"] atIndex:0];
+        second = mSecond;
+    }
+     */
     
     Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
     Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
@@ -97,15 +115,15 @@
             
             // Iterate through revised ranges, calculate intersections and add to their respective line items
             [self.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-                NSRange firstIntersct = NSIntersectionRange(range, firstRange);
-                NSRange secondIntersct = NSIntersectionRange(range, secondRange);
+                NSRange firstIntersect = NSIntersectionRange(range, firstRange);
+                NSRange secondIntersect = NSIntersectionRange(range, secondRange);
                 
-                if (firstIntersct.length > 0) {
-                    [retain.revisedRanges[key] addIndexesInRange:firstIntersct];
+                if (firstIntersect.length > 0) {
+                    [retain.revisedRanges[key] addIndexesInRange:firstIntersect];
                 }
-                if (secondIntersct.length > 0) {
+                if (secondIntersect.length > 0) {
                     // Substract offset from the split range to get it back to zero
-                    NSRange actualRange = NSMakeRange(secondIntersct.location - index, secondIntersct.length);
+                    NSRange actualRange = NSMakeRange(secondIntersect.location - index, secondIntersect.length);
                     [split.revisedRanges[key] addIndexesInRange:actualRange];
                 }
             }];

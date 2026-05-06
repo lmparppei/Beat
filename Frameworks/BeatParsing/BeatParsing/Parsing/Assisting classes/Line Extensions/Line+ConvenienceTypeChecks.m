@@ -131,23 +131,53 @@
         omitted = true;
     } else if (self.omittedRanges.count > 0 && self.omittedRanges.count == self.string.length - 1) {
         // Out of convenience, if there's a *single* space left somewhere on the line, we'll consider it omitted.
+        // (WTF. Isn't this anyway covered by parsing rules? I don't want to touch it if it breaks something somewhere.)
         NSMutableIndexSet* visibleIndices = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.length)];
         [visibleIndices removeIndexes:self.omittedRanges];
         
         // We should now have a single index left
-        if (visibleIndices.count == 1 && [self.string characterAtIndex:visibleIndices.firstIndex] == ' ') return true;
+        omitted = (visibleIndices.count == 1 && [self.string characterAtIndex:visibleIndices.firstIndex] == ' ');
     }
     
     return omitted;
 }
 
-- (BOOL)hasExtension {
+
+#pragma mark Character cue extension
+
+- (BOOL)hasExtension
+{
     /// Returns  `TRUE` if the character cue has an extension
     if (!self.isAnyCharacter) return false;
-    
+        
     NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
-    if (parenthesisLoc == NSNotFound) return false;
-    else return true;
+    return (parenthesisLoc != NSNotFound);
 }
+
+/// Gathers all extensions in a character cue. Returns `nil` if there are none OR if it's a non-character.
+- (NSArray<NSString*>* _Nullable)extensions
+{
+    NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
+    if (parenthesisLoc == NSNotFound) return nil;
+
+    NSMutableArray *extensions = NSMutableArray.new;
+    NSRange range = NSMakeRange(parenthesisLoc + 1, self.string.length - (parenthesisLoc + 1));
+
+    while (NSMaxRange(range) <= self.string.length && range.length > 0) {
+        NSInteger parenthesisClose = [self.string rangeOfString:@")" options:0 range:range].location;
+        if (parenthesisClose == NSNotFound) break;
+
+        [extensions addObject:[self.string substringWithRange:NSMakeRange(range.location, parenthesisClose - range.location)]];
+        range = NSMakeRange(parenthesisClose + 1, self.string.length - (parenthesisClose + 1));
+
+        parenthesisLoc = [self.string rangeOfString:@"(" options:0 range:range].location;
+        if (parenthesisLoc == NSNotFound) break;
+
+        range = NSMakeRange(parenthesisLoc + 1, self.string.length - (parenthesisLoc + 1));
+    }
+
+    return (extensions.count > 0) ? extensions : nil;
+}
+
 
 @end

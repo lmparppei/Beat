@@ -129,8 +129,7 @@
     __block NSMutableDictionary<NSValue*, NSString*>* rangesAndStrings = NSMutableDictionary.new;
     __block NSMutableArray* strings = NSMutableArray.new;
     
-    NSArray* notes = [self noteData];
-    for (BeatNoteData* note in notes) {
+    for (BeatNoteData* note in self.noteData) {
         if (withRanges) rangesAndStrings[[NSValue valueWithRange:note.range]] = note.content;
         else [strings addObject:note.content];
     }
