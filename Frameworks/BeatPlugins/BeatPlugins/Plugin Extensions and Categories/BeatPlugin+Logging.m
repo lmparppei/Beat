@@ -29,18 +29,23 @@
     NSMutableString* result = NSMutableString.new;
     NSArray* args = [JSContext currentArguments];
     
-    for (id arg in args) {
-        if ([arg isKindOfClass:JSValue.class]) {
-            NSString* val = ((JSValue*)arg).toString;
-            [result appendString:val];;
-        } else {
-            [result appendFormat:@"%@", arg];
+    if (args.count > 0) {
+        for (id arg in args) {
+            if ([arg isKindOfClass:JSValue.class]) {
+                NSString* val = ((JSValue*)arg).toString;
+                [result appendString:val];;
+            } else {
+                [result appendFormat:@"%@", arg];
+            }
+            if (arg != args.lastObject) [result appendString:@" "];
         }
-        if (arg != args.lastObject) [result appendString:@" "];
+    } else {
+        [result setString:string];
     }
     
     #if TARGET_OS_OSX
         BeatConsole *console = BeatConsole.shared;
+
         if (NSThread.isMainThread) [console logToConsole:result pluginName:(self.pluginName != nil) ? self.pluginName : @"General" context:self.delegate];
         else {
             // Allow logging in background thread
