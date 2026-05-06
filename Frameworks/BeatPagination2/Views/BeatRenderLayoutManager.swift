@@ -9,8 +9,17 @@ import UXKit
 
 // MARK: - Custom layout manager for text views in rendered page view
 
-public class BeatRenderLayoutManager:NSLayoutManager {
+public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 	weak var pageView:BeatPaginationPageView?
+    
+    public override init() {
+        super.init()
+        self.delegate = self
+    }
+    
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
     
 	override public func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
@@ -123,6 +132,71 @@ public class BeatRenderLayoutManager:NSLayoutManager {
                     rect.fill()
                 #endif
             }
+        }
+    }
+    
+    @objc func lineFragmentRanges() -> [NSRange] {
+        guard let textStorage else { return [] }
+        
+        var ranges:[NSRange] = []
+        
+        let glyphRange = self.glyphRange(forCharacterRange: NSMakeRange(0, textStorage.length), actualCharacterRange: nil)
+        enumerateLineFragments(forGlyphRange: glyphRange) { rect, bounds, container, range, stop in
+            let charRange = self.characterRange(forGlyphRange: range, actualGlyphRange: nil)
+            if charRange.length > 0 {
+                ranges.append(charRange)
+            }
+        }
+        
+        return ranges
+    }
+    
+    @objc func stringInRange(_ range:NSRange) -> String? {
+        guard let textStorage, NSMaxRange(range) <= textStorage.length else { return nil }
+        
+        return textStorage.string.substring(range: range)
+    }
+    
+    func representedLineUUIDs(inRange:NSRange) -> [NSRange:String?] {
+        guard let textStorage else { return [:] }
+        
+        var uuids:[NSRange:String] = [:]
+        //let ranges: [NSRange] = self.lineFragmentRanges()
+        
+        textStorage.enumerateAttribute(NSAttributedString.Key(BeatRepresentedLineKey), in: textStorage.range) { value, range, stop in
+            if let line = value as? Line {
+                uuids[range] = line.uuidString()
+            }
+        }
+        
+        return uuids
+    }
+    
+    
+    /// This is a delegate trick to hold some Japanese and Chinese fonts constrained to the actual size that was paginated. For some reason, internal pagination code handles the Japanese sizing just well, but once it is rendered out, the slightly higher fonts start to drift. We'll forcibly set the line fragment rect when that happens.
+    public func layoutManager(
+        _ layoutManager: NSLayoutManager,
+        shouldSetLineFragmentRect lineFragmentRect: UnsafeMutablePointer<CGRect>,
+        lineFragmentUsedRect: UnsafeMutablePointer<CGRect>,
+        baselineOffset: UnsafeMutablePointer<CGFloat>,
+        in textContainer: NSTextContainer,
+        forGlyphRange glyphRange: NSRange
+    ) -> Bool {
+        let chrRange = self.characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
+        
+        guard let textStorage,
+              let paragraphStyle = textStorage.attribute(.paragraphStyle, at: chrRange.location, effectiveRange: nil) as? NSParagraphStyle
+        else { return false }
+        
+        let allowedHeight = paragraphStyle.maximumLineHeight + paragraphStyle.paragraphSpacingBefore + paragraphStyle.paragraphSpacing
+        let proposedHeight = lineFragmentRect.pointee.height
+        
+        // If the proposed height is higher than what we are expecting from styles, let's not allow that. Baseline stays the same.
+        if proposedHeight > allowedHeight {
+            lineFragmentRect.pointee = CGRectMake(lineFragmentRect.pointee.origin.x, lineFragmentRect.pointee.origin.y, lineFragmentRect.pointee.width, allowedHeight)
+            return true
+        } else {
+            return false
         }
     }
 }
