@@ -617,15 +617,17 @@
 
 - (NSAttributedString *)getAttributedText
 {
-    NSAttributedString* attrStr;
-    if (!NSThread.isMainThread) {
-        attrStr = self.attrTextCache.copy;
-    } else {
-        attrStr = self.textView.textStorage.copy;
-        self.attrTextCache = attrStr;
+    @synchronized (self.attrTextCache) {
+        NSAttributedString* attrStr;
+        if (!NSThread.isMainThread) {
+            attrStr = self.attrTextCache.copy;
+        } else {
+            attrStr = self.textView.textStorage.copy;
+            self.attrTextCache = attrStr;
+        }
+        
+        return (attrStr != nil) ? attrStr : NSAttributedString.new;
     }
-    
-    return (attrStr != nil) ? attrStr : NSAttributedString.new;
 }
 
 - (NSAttributedString*)attributedString

@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_END
 /// Flag for if character cue input is on/off
 @property (nonatomic) bool characterInput;
 /// Line on which the input is happening. This is not the best approach, but whatever.
-@property (nonatomic) Line* _Nullable characterInputForLine;
+@property (nonatomic) Line* _Nullable lineForNewCue;
 @property (nonatomic) NSIndexSet* _Nullable disabledTypes;
 
 - (void)lineWasRemoved:(Line * _Nonnull)line;
