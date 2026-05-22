@@ -166,6 +166,14 @@ open class InputAssistantView: UIToolbar {
 		}
 	}
 	
+	/// The type of display we're currently using. It's either a collection view or buttons.
+	private enum InputAssistantType {
+		case buttons
+		case suggestions
+	}
+	
+	private var displayMode:InputAssistantType = .buttons
+	
 	/// Auto completion data source
 	var dSource: AutocompletionDataSource?
 	
@@ -177,6 +185,10 @@ open class InputAssistantView: UIToolbar {
 	
 	/// Bar button item that holds the suggestions collection view
 	private var suggestionsBarItem: UIBarButtonItem?
+
+	/// Tracked suggestion view constraint
+	private var suggestionsWidthConstraint: NSLayoutConstraint?
+
 	
 	public init(editorDelegate: BeatEditorDelegate, inputAssistantDelegate: InputAssistantViewDelegate?) {
 		super.init(frame: .init(origin: .zero, size: .init(width: 0, height: 55)))
@@ -206,25 +218,24 @@ open class InputAssistantView: UIToolbar {
 		collectionView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		
-		// Create container view
-		let containerView = UIView()
+		// Use the subclass instead of plain UIView
+		let containerView = SuggestionsContainerView()
 		containerView.translatesAutoresizingMaskIntoConstraints = false
 		containerView.addSubview(collectionView)
 		
-		// Set up constraints
 		NSLayoutConstraint.activate([
 			collectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
 			collectionView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
 			collectionView.topAnchor.constraint(equalTo: containerView.topAnchor),
 			collectionView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-			containerView.heightAnchor.constraint(equalToConstant: 44)
 		])
 		
+		// No height constraint needed — intrinsicContentSize handles it
 		self.suggestionsCollectionView = collectionView
 		self.suggestionsContainerView = containerView
-		
 		// Create bar button item with the container
 		self.suggestionsBarItem = UIBarButtonItem(customView: containerView)
+		
 	}
 	
 	public func reloadData() {
@@ -300,53 +311,67 @@ open class InputAssistantView: UIToolbar {
 		updateToolbarItems()
 	}
 	
-	/// Update the toolbar items based on current actions and suggestions visibility
-	private func updateToolbarItems() {
-		var items: [UIBarButtonItem] = []
+	open override func layoutSubviews() {
+		super.layoutSubviews()
+		updateSuggestionsWidth()
+	}
+
+	private func updateSuggestionsWidth() {
+		guard let containerView = suggestionsContainerView else { return }
+		let padding: CGFloat = 16
+		let availableWidth = bounds.width - padding
+		guard availableWidth > 0 else { return }
+
+		suggestionsWidthConstraint?.isActive = false
+		let widthConstraint = containerView.widthAnchor.constraint(equalToConstant: availableWidth)
+		widthConstraint.priority = UILayoutPriority(999)
+		widthConstraint.isActive = true
+		suggestionsWidthConstraint = widthConstraint
+	}
 		
-		// Determine if we should show suggestions
+	/// Update the toolbar items based on current actions and suggestions visibility.
+	private func updateToolbarItems() {
+		// Determine if we should show suggestions or not. We'll also update the display mode to determine if we should update all the items or not.
 		let hasSuggestions = (suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0) > 0
 		let shouldShowSuggestions = hasSuggestions && (assistantDelegate?.shouldShowSuggestions() ?? false)
 		
+		var items: [UIBarButtonItem]?
+		
 		if shouldShowSuggestions {
-			// ONLY show suggestions - full width
-			if let suggestionsBarItem, let containerView = suggestionsContainerView {
-				// Set full width for suggestions
-				let totalWidth = UIScreen.main.bounds.width - 16 // some padding
-				
-				// Remove any existing width constraints
-				containerView.constraints.forEach { constraint in
-					if constraint.firstAttribute == .width {
-						constraint.isActive = false
-					}
-				}
-				
-				let widthConstraint = containerView.widthAnchor.constraint(equalToConstant: totalWidth)
-				widthConstraint.priority = .required
-				widthConstraint.isActive = true
-				
-				items.append(suggestionsBarItem)
+			items = []
+			
+			if let suggestionsBarItem = suggestionsBarItem {
+				items?.append(suggestionsBarItem)
+				items?.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)) // Fill the rest with empty space. Seems to fix some positioning problems.
 			}
-		} else {
+			
+			displayMode = .suggestions
+			
+		} else if self.items?.count == 0 || displayMode != .buttons {
 			// Show leading and trailing actions (no suggestions)
+			items = []
 			
 			// Leading actions
 			if !leadingActions.isEmpty {
 				let leadingButtons = createBarButtonItems(from: leadingActions)
-				items.append(contentsOf: leadingButtons)
+				items?.append(contentsOf: leadingButtons)
 			}
 			
 			// Flexible space between leading and trailing
-			items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+			items?.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
 			
 			// Trailing actions
 			if !trailingActions.isEmpty {
 				let trailingButtons = createBarButtonItems(from: trailingActions)
-				items.append(contentsOf: trailingButtons)
+				items?.append(contentsOf: trailingButtons)
 			}
+			
+			displayMode = .buttons
 		}
 		
-		self.setItems(items, animated: false)
+		if let items {
+			self.setItems(items, animated: false)
+		}
 	}
 	
 	/// Create UIBarButtonItems from InputAssistantActions
@@ -427,3 +452,10 @@ extension InputAssistantView: UIInputViewAudioFeedback {
 	public var enableInputClicksWhenVisible: Bool { return true }
 }
 
+// A container that defers width to layout but declares its height
+final class SuggestionsContainerView: UIView {
+	override var intrinsicContentSize: CGSize {
+		// Width is flexible (noIntrinsicMetric), height is fixed
+		return CGSize(width: UIView.noIntrinsicMetric, height: 44)
+	}
+}

@@ -40,6 +40,8 @@
 	
 	// This is a hack to fix weird scrolling bugs on iPhone. Let's make sure the content size is adjusted correctly when keyboard has been shown.
 	if (is_Mobile && endFrame != nil) {
+		[self.textView resize];
+		
 		UIEdgeInsets insets = self.textView.contentInset;
 		
 		CGRect currentKeyboard = endFrame.CGRectValue;
@@ -82,7 +84,7 @@
 		if (animateBounds) self.scrollView.bounds = bounds;
 		
 	} completion:^(BOOL finished) {
-		[self.textView resize];
+		
 	}];
 }
 
