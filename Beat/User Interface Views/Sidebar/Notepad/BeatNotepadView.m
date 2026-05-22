@@ -91,6 +91,8 @@
 
 - (void)scrollWheel:(NSEvent *)event
 {
+	[self.nextResponder scrollWheel:event];
+	/*
 	if (@available(macOS 26.0, *)) {
 		// See below, on 26 this bug has been fixed but *other* weird issues persist.
 		[super scrollWheel:event];
@@ -108,8 +110,8 @@
 			}
 		}
 	}
-	
-	[super scrollWheel:event];
+*/
+	//[super scrollWheel:event];
 }
 
 
