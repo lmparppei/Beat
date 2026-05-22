@@ -409,9 +409,13 @@ NSString* const BeatSettingSmartQuotes                  = @"smartQuotes";
 
 - (void)removeUserDefaults
 {
+    /*
     NSDictionary * dict = NSUserDefaults.standardUserDefaults.dictionaryRepresentation;
     for (id key in dict) [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
     [NSUserDefaults.standardUserDefaults synchronize];
+     */
+    
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:BeatSettingSectionFontType];
 }
 
 /// Back in the day, I was an idiot and didn't correctly prefix my settings. Called when the singleton is initialized.
