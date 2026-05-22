@@ -253,7 +253,7 @@
 			const pluginImage = document.getElementById("plugin-image")
 			const pluginWarning = document.getElementById("plugin-warning")
 			
-			let currentPlugin = ""
+			let currentPluginBundle = ""
 			
 			function loadData(data) {
 				document.body.className = "visible"
@@ -271,7 +271,7 @@
 				pluginWarning.innerHTML = ""
 				
 				// Set current plugin name
-				currentPlugin = data.name
+				currentPluginBundle = data.bundleName
 				pluginAction.setAttribute("name", data.name)
 				
 				setButtonStatus(data)
@@ -303,9 +303,9 @@
 			}
 			
 			function download() {
-				if (currentPlugin.length == 0) return
+				if (currentPluginBundle.length == 0) return
 				pluginAction.className = "downloading"
-				window.webkit.messageHandlers.download.postMessage(currentPlugin);
+				window.webkit.messageHandlers.download.postMessage(currentPluginBundle);
 			}
 			function downloadComplete(data) {
 				/*
