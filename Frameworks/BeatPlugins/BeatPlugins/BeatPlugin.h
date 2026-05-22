@@ -173,15 +173,13 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 /// Returns character data object
 - (BeatCharacterData*)characterData;
 
-
-
 #pragma mark Notepad
 #if TARGET_OS_OSX
 @property (nonatomic, weak, readonly) BeatNotepad* notepad;
 #endif
 
-
 @end
+
 
 
 #pragma mark - Host document delegate
@@ -248,6 +246,15 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 
 /// Revision manager
 @property (nonatomic) BeatRevisions* revisionTracking;
+
+
+#pragma mark - Index card printing
+
+#if TARGET_OS_OSX
+- (void)printIndexCards;
+#endif
+
+
 @end
 
 
@@ -379,6 +386,5 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 @property (nonatomic) NSMutableDictionary<NSValue*, JSValue*>* observedTextViews;
 
 - (void)restart;
-
 
 @end

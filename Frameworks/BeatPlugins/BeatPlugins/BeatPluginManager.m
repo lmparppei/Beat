@@ -26,14 +26,14 @@
 #import <BeatCore/BeatCore-Swift.h>
 #import <os/log.h>
 
-// Hard-coded JSON file URL
+// Hard-coded URLs
 #define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
-
-#define DOWNLOAD_URL_BASE @"raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
+#define DOWNLOAD_URL_BASE @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
 #define DOWNLOAD_URL_IMAGES @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Images/"
+
 #define PLUGIN_FOLDER @"Plugins"
 #define STYLES_FOLDER @"Styles"
-#define DISABLED_KEY @"Disabled Plugins"
+#define DISABLED_KEY @"beat.kapitanFI.com.disabledPlugins"
 
 @implementation BeatPluginData
 
@@ -46,6 +46,7 @@
     self = [super init];
     if (self) {
         self.name = info[@"name"];
+        self.bundleName = info[@"bundleName"];
         self.text = info[@"text"];
         self.copyright = info[@"copyright"];
         self.version = info[@"version"];
@@ -78,7 +79,7 @@
     return self;
 }
 
-/// Returns plugin data, which means files and the actual script
+/// Returns an executable plugin instance with the actual script and all bundled files.
 - (BeatPluginData*)pluginInstance
 {
     BeatPluginData *plugin = [[BeatPluginData alloc] init];
@@ -121,9 +122,9 @@
 
 - (void)loadLocalInfo
 {
-    // Get plugin script contents
-    NSError *error;
-    NSString *script = [NSString stringWithContentsOfURL:self.descriptionURL encoding:NSUTF8StringEncoding error:&error];
+    // First we'll find a description. The description is either included in the main plugin script file OR in a separate file called _description.
+    NSError* error;
+    NSString* description = [NSString stringWithContentsOfURL:self.descriptionURL encoding:NSUTF8StringEncoding error:&error];
     
     if (error) {
         NSLog(@"%@ / ERROR %@", self.localURL, error);
@@ -144,13 +145,13 @@
     Rx* compatibilityRx = [Rx rx:@"\nCompatibility:(.*)\n" options:NSRegularExpressionCaseInsensitive];
     Rx* htmlRx = [Rx rx:@"<Description>((.|\n)*)</Description>" options:NSRegularExpressionCaseInsensitive];
     
-    RxMatch *matchVersion = [script firstMatchWithDetails:versionRx];
-    RxMatch *matchCopyright = [script firstMatchWithDetails:copyrightRx];
-    RxMatch *matchDescription = [script firstMatchWithDetails:descriptionRx];
-    RxMatch *matchType = [script firstMatchWithDetails:typeRx];
-    RxMatch *matchImage = [script firstMatchWithDetails:imageRx];
-    RxMatch *matchHTML = [script firstMatchWithDetails:htmlRx];
-    RxMatch *matchCompatibility = [script firstMatchWithDetails:compatibilityRx];
+    RxMatch *matchVersion = [description firstMatchWithDetails:versionRx];
+    RxMatch *matchCopyright = [description firstMatchWithDetails:copyrightRx];
+    RxMatch *matchDescription = [description firstMatchWithDetails:descriptionRx];
+    RxMatch *matchType = [description firstMatchWithDetails:typeRx];
+    RxMatch *matchImage = [description firstMatchWithDetails:imageRx];
+    RxMatch *matchHTML = [description firstMatchWithDetails:htmlRx];
+    RxMatch *matchCompatibility = [description firstMatchWithDetails:compatibilityRx];
         
     if (matchVersion) self.version = [[(RxMatchGroup*)matchVersion.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
     if (matchCopyright) self.copyright = [[(RxMatchGroup*)matchCopyright.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -190,13 +191,13 @@
 - (NSURL*)mainScriptURL
 {
     if (self.bundleURL == nil) return self.localURL;
-    return [self findBundleFileThatMatches:self.mainPluginFileNames];
+    return [self findBundledFileThatMatches:self.mainPluginFileNames];
 }
 
 - (NSURL*)descriptionURL
 {
     if (self.bundleURL == nil) return self.localURL;
-    return [self findBundleFileThatMatches:[self.mainPluginFileNames arrayByAddingObject:@"_description"]];
+    return [self findBundledFileThatMatches:[self.mainPluginFileNames arrayByAddingObject:@"_description"]];
 }
 
 - (NSArray<NSString*>*)mainPluginFileNames
@@ -205,7 +206,7 @@
     return @[pluginName, @"plugin.js", [NSString stringWithFormat:@"%@.beatCSS", pluginName], [NSString stringWithFormat:@"%@.js", pluginName]];
 }
 
-- (NSURL*)findBundleFileThatMatches:(NSArray<NSString*>*)possibleNames
+- (NSURL*)findBundledFileThatMatches:(NSArray<NSString*>*)possibleNames
 {
     for (NSString* filename in possibleNames) {
         NSString* path = [self.bundleURL.path stringByAppendingPathComponent:filename];
@@ -235,9 +236,11 @@
     return @"";
 }
 
-- (NSDictionary*)json {
+- (NSDictionary*)json
+{
 	return @{
 		@"name": (self.name) ? self.name : @"",
+        @"bundleName": (self.bundleName) ? self.bundleName : @"",
 		@"text": (self.text) ? self.text : @"",
 		@"copyright": (self.copyright) ? self.copyright : @"",
 		@"version": (self.version) ? self.version : @"",
@@ -248,7 +251,7 @@
 		@"html": (self.html) ? self.html : @"",
         @"type": self.typeAsString,
 
-		// If a required version is set, we have already checked compatibility.
+		// If a required version is set, we have already checked compatibility and set the .compatible flag
 		// Otherwise, let's always assume the plugin is comppatible.
 		@"compatible": (self.requiredVersion) ? @(self.compatible) : @(YES)
 	};
@@ -258,16 +261,16 @@
 {
 	NSString *imagePath;
 	
-	// No image
-	if (self.imagePath.length == 0) return @"";
-	
-	// Return remote url
-	else if ([self.imagePath rangeOfString:@"http"].location != NSNotFound) {
+    if (self.imagePath.length == 0) {
+        // No image
+        return @"";
+        
+    } else if ([self.imagePath rangeOfString:@"http"].location != NSNotFound) {
+        // Return remote url
 		return (self.imagePath) ? self.imagePath : @"";
-	}
-	
-	// Return base64 representation
-	else if (_localURL) {
+        
+	} else if (_localURL) {
+        // Return base64 representation
 		imagePath = [_bundleURL.path stringByAppendingPathComponent:self.imagePath];
 		
 		NSError *error;
@@ -316,7 +319,6 @@ static BeatPluginManager *sharedManager;
 	static BOOL initialized = NO;
 	if (!initialized)
 	{
-		NSLog(@"Initializing plugin manager...");
 		initialized = YES;
 		sharedManager = BeatPluginManager.new;
 	}
@@ -412,6 +414,7 @@ static BeatPluginManager *sharedManager;
 
 #pragma mark - Check for plugin updates
 
+/// Updates the available plugins dictionary and shows a notification for all available updates.
 - (void)checkForUpdates
 {
 	bool autoUpdate = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUpdatePluginsAutomatically];
@@ -447,10 +450,15 @@ static BeatPluginManager *sharedManager;
 	}];
 }
 
+/// Method for automatically updating all installed plugins
 - (void)updatePlugins:(NSArray*)availableUpdates
 {
 	for (NSString* name in availableUpdates) {
-		[self downloadPlugin:name withCallback:^(NSString * _Nonnull pluginName) {
+        // We need the bundle name for downloading... don't ask :-)
+        BeatPluginInfo* plugin = self.plugins[name];
+        NSString* bundleName = plugin.bundleName;
+        
+		[self downloadPlugin:bundleName withCallback:^(NSString * _Nonnull pluginName) {
             #if !TARGET_OS_IOS
             id<BeatNotificationDelegate> notifications = (id<BeatNotificationDelegate>)NSApp.delegate;
 			[notifications showNotification:@"Plugin Updated" body:pluginName identifier:@"PluginUpdates" oneTime:YES interval:3.0];
@@ -558,6 +566,7 @@ static BeatPluginManager *sharedManager;
 				@"imagePath": imageURL,
 				@"html": (data[@"html"]) ? data[@"html"] : @"",
 				@"installed": @(NO),
+                @"bundleName": (pluginName) ? pluginName : @""
 			}];
 			
 			[plugins setValue:info forKey:name];
@@ -620,6 +629,11 @@ static BeatPluginManager *sharedManager;
                 // Skip non-folder files if they are not standalone items
                 NSString* extension = url.pathExtension.lowercaseString;
                 if (extension.length == 0 || (![extension isEqualToString:@"beatplugin"] && [extension isEqualToString:@"beatcss"] && [extension isEqualToString:@"js"])) continue;
+                
+                // We need to make sure we won't include the editor styles for style definitions put directly in the root folder
+                if ([extension isEqualToString:@"beatcss"] && [url.lastPathComponent containsString:@"-editor"]) {
+                    continue;
+                }
             }
             
             BeatPluginInfo* plugin = [BeatPluginInfo.alloc initWithURL:url];
@@ -706,16 +720,18 @@ static BeatPluginManager *sharedManager;
 	if (error) os_log(OS_LOG_DEFAULT, "Error deleting plugin: %@", name);
 }
 
-- (void)downloadPlugin:(NSString*)pluginName withCallback:(void (^)(NSString* pluginName))callbackBlock
+/// - note: `pluginName` is the BUNDLE name of the plugin in the external library, so it has to include the extension
+- (void)downloadPlugin:(NSString*)pluginBundleName withCallback:(void (^)(NSString* pluginName))callbackBlock
 {
+    if (pluginBundleName == nil) return;
+    
 	if (!_incompleteDownloads) _incompleteDownloads = NSMutableSet.set;
-	[_incompleteDownloads addObject:pluginName];
+	[_incompleteDownloads addObject:pluginBundleName];
 	
-	__block NSString *pluginFileName = [NSString stringWithFormat:@"%@.beatPlugin.zip", pluginName];
+	__block NSString *pluginFileName = [NSString stringWithFormat:@"%@.zip", pluginBundleName];
 	
-	NSString *downloadPath = [NSString stringWithFormat:@"%@%@", DOWNLOAD_URL_BASE, pluginFileName];
-	downloadPath = [downloadPath stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLPathAllowedCharacterSet];
-	downloadPath = [NSString stringWithFormat:@"https://%@", downloadPath];
+    NSString* downloadPath = [pluginFileName stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLPathAllowedCharacterSet];
+    downloadPath = [NSString stringWithFormat:@"%@%@", DOWNLOAD_URL_BASE, downloadPath];
 	
 	NSURL *url = [NSURL URLWithString:downloadPath];
 	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
@@ -731,9 +747,11 @@ static BeatPluginManager *sharedManager;
 		} else {
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				NSLog(@"Installing plugin...");
+                NSString* pluginName = pluginBundleName.stringByDeletingPathExtension;
+                
 				@try {
 					[self installPlugin:tempDir];
-                    
+                                        
                     BeatPluginInfo* plugin = self.plugins[pluginName];
                     if (plugin == nil) {
                         NSLog(@"ERROR: Plugin was not found after installation");
@@ -754,7 +772,7 @@ static BeatPluginManager *sharedManager;
 					os_log(OS_LOG_DEFAULT, "Error installing plugin %@", pluginName);
 				}
 				@finally {
-					[self.incompleteDownloads removeObject:pluginName];
+					[self.incompleteDownloads removeObject:pluginBundleName];
 				}
 			});
 		}

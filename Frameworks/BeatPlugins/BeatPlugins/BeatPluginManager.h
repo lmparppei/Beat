@@ -28,7 +28,10 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) bool compatible;
 @property (nonatomic) bool isFolder;
 
+/// This is the name without an extension
 @property (nonatomic) NSString *name;
+/// This is the actual bundle name with extension (ie. `beatPlugin` or `beatCSS`)
+@property (nonatomic) NSString *bundleName;
 @property (nonatomic) BeatPluginType type;
 @property (nonatomic) NSString *version;
 @property (nonatomic) NSString *copyright;

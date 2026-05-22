@@ -30,4 +30,5 @@ FOUNDATION_EXPORT const unsigned char BeatPluginsVersionString[];
 #import <BeatPlugins/BeatWidgetView.h>
 #import <BeatPlugins/BeatModalAccessoryView.h>
 #import <BeatPlugins/BeatSpeak.h>
+#import <BeatPlugins/BeatPlugin+IndexCardPrinting.h>
 #endif
