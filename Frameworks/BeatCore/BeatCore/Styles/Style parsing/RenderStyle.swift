@@ -93,7 +93,8 @@ struct PaginationRule {
 
 @objc public class RenderStyle:NSObject, RenderStyleExports {
     // Map property names to types
-    public class var types:[String:RenderStyleValueType] { return [
+    public class var types:[String:RenderStyleValueType] {
+        return [
         "text-align": .stringType,
         "color": .stringType,
         "font": .stringType,
@@ -104,6 +105,7 @@ struct PaginationRule {
         "uppercase": .boolType,
         "indent-split-elements": .boolType,
         "scene-number": .boolType,
+        "scene-number-right": .boolType,
         "unindent-fresh-paragraph": .boolType,
         "font-type": .enumType,
         "visible-elements": .lineType,
@@ -118,7 +120,11 @@ struct PaginationRule {
         "overrideParagraphPaginationMode": .boolType,
         "significant-units": .integerType,
     ] }
-    
+
+    /// This is a placeholder render style for checking value types
+    static var typeRenderStyle:RenderStyle = RenderStyle(rules: [:])
+
+    /// These are basically like #define in ObjC. For example, you can use `significant-units: pages;` and the value will be converted to `0`, which is compatible with the underlying enums.
     public class var aliases:[String:Any] { return [
         "pages": 0,
         "words": 1,
@@ -265,6 +271,7 @@ struct PaginationRule {
     
     
     @objc public var sceneNumber:Bool = true
+    @objc public var sceneNumberRight:Bool = true
     
     public init(rules:[String:Any]) {
         // Save initial styles and remove any conditionals from that list
@@ -277,7 +284,7 @@ struct PaginationRule {
             // Create property name based on the rule key
             var value = rules[key]!
             
-            let property = styleNameToProperty(name: key)
+            let property = RenderStyle.styleNameToProperty(name: key)
             if property == "fontType" {
                 let fontType = value as? BeatFontType ?? .fixed
                 value = fontType.rawValue
@@ -322,82 +329,25 @@ struct PaginationRule {
         }        
     }
     
-    public func styleNameToProperty (name:String) -> String {
-        switch name.lowercased() {
-        case "font-type":
-            return "fontType"
-        case "width-a4":
-            return "widthA4"
-        case "width-us":
-            return "widthLetter"
-        case "text-align":
-            return "textAlign"
-        case "margin-top":
-            return "marginTop"
-        case "margin-bottom":
-            return "marginBottom"
-        case "margin-bottom-us":
-            return "marginBottomLetter"
-        case "margin-bottom-a4":
-            return "marginBottomA4"
-        case "margin-left":
-            return "marginLeft"
-        case "margin-right":
-            return "marginRight"
-        case "padding-left":
-            return "paddingLeft"
-        case "line-height":
-            return "lineHeight"
-        case "default-width-a4":
-            return "defaultWidthA4"
-        case "default-width-us":
-            return "defaultWidthLetter"
-        case "content-padding":
-            return "contentPadding"
-        case "margin-left-us":
-            return "marginLeftLetter"
-        case "margin-left-a4":
-            return "marginLeftA4"
-        case "font-size":
-            return "fontSize"
-        case "line-height-multiplier":
-            return "lineHeightMultiplier"
-        case "first-line-indent":
-            return "firstLineIndent"
-        case "indent-split-elements":
-            return "indentSplitElements"
-        case "scene-number":
-            return "sceneNumber"
-        case "unindent-fresh-paragraphs":
-            return "unindentFreshParagraphs"
-        case "visible-elements":
-            return "visibleElements"
-        case "begins-page":
-            return "beginsPage"
-        case "forced-margin":
-            return "forcedMargin"
-        case "first-page-with-number":
-            return "firstPageWithNumber"
-        case "disabled-types":
-            return "disabledTypes"
-        case "additional-settings":
-            return "additionalSettings"
-        case "skip-if-preceded-by":
-            return "skipIfPrecededBy"
-        case "reformat-following-paragraph-after-type-change":
-            return "reformatFollowingParagraphAfterTypeChange"
-        case "disable-automatic-paragraphs":
-            return "disableAutomaticParagraphs"
-        case "line-fragment-multiplier":
-            return "lineFragmentMultiplier"
-        case "min-font-size":
-            return "minimumFontSize"
-        case "pagination-mode":
-            return "paginationMode"
-        case "significant-units":
-            return "significantUnits"
-        default:
-            return name
+    public class func styleNameToProperty (name:String) -> String {
+        // We have a couple of properties that are not correctly mapped because of legacy reasons
+        let overrides: [String: String] = [
+            "min-font-size":      "minimumFontSize",
+            "width-us":           "widthLetter",
+            "margin-bottom-us":   "marginBottomLetter",
+            "default-width-us":   "defaultWidthLetter",
+            "margin-left-us":     "marginLeftLetter",
+        ]
+        
+        let key = name.lowercased()
+        if let override = overrides[key] { return override }
+        
+        if let _ = key.range(of: "-") {
+            let components = key.split(separator: "-")
+            guard let first = components.first else { return name } // In case we can't do the camel case, return the original key
+            return ([String(first)] + components.dropFirst().map { $0.capitalized }).joined()
+        } else {
+            return name;
         }
     }
     

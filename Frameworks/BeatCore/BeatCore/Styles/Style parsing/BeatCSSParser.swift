@@ -187,8 +187,10 @@ public final class CssParser {
         var value = string
         var type = RenderStyle.types[key]
         
-        // We'll infer some types
-        if string == "true" || string == "false" { type = .boolType }
+        // We'll infer boolean types
+        if string == "true" || string == "false" {
+            type = .boolType
+        }
         
         // First replace any setting getters
         if let val = replaceGetter(value: value, getter: "userSetting", { key in return BeatUserDefaults.shared().get(key) }) {
@@ -241,6 +243,7 @@ public final class CssParser {
     
     func floatValue(value: inout String, key: String) -> Any? {
         // Calculate different units based on *fixed values*
+        // (Note in 2026: You are an idiot, past me.)
         value = value.replacingOccurrences(of: "ch", with: "* 7.25")
         value = value.replacingOccurrences(of: "l", with: "* \(self.lineHeight)")
         value = value.replacingOccurrences(of: "px", with: "")

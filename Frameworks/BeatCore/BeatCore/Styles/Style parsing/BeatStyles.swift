@@ -82,6 +82,7 @@ public class BeatStyles:NSObject {
         }
 #endif
         
+        // Each document will have its own stylesheet, recognized UUID, because document settings will have effect on stylesheets
         let uuid:UUID? = delegate?.uuid()
         
         if let loadedStyle = _loadedStyles[name], uuid == nil {
@@ -95,7 +96,7 @@ public class BeatStyles:NSObject {
         
         // If no URL is available, first check user folder.
         // We NEED TO HAVE a file called Screenplay.beatCSS in the bundle, otherwise the app will crash.
-        if url == nil, let userStyle = userStylesheet(name: name) {
+        if url == nil, let userStyle = userStylesheet(name: styleName, forEditor: forEditor) {
             url = userStyle
         } else if url == nil {
             url = stylesheets[defaultStyle]!
@@ -126,8 +127,30 @@ public class BeatStyles:NSObject {
     }
     
     /// Returns the **URL** for a stylesheet with given name (excluding `-editor` and extension)
-    func userStylesheet(name:String) -> URL? {
-        let url = BeatPaths.appDataPath("Styles").appendingPathComponent(name + ".beatCSS")
+    func userStylesheet(name:String, forEditor:Bool) -> URL? {
+        // This is a little problematic, because we have two ways of adding custom stylesheets, either to root or by downloading, so we need to check for both alternatives
+        
+        let styleUrl = BeatPaths.appDataPath("Styles")
+        let styleBundleUrl = styleUrl.appendingPathComponent(name + ".beatCSS")
+        let sheetName = name + (forEditor ? "-editor" : "") + ".beatCSS"
+        
+        var folder:ObjCBool = false
+        var url:URL
+        let exists = FileManager.default.fileExists(atPath: styleBundleUrl.path, isDirectory: &folder)
+        
+        guard exists else {
+            print("ERROR: Stylesheet not found")
+            return nil
+        }
+        
+        if folder.boolValue {
+            // This is a style bundle.
+            url = styleBundleUrl.appendingPathComponent(sheetName)
+        } else {
+            // This is a style located directly in the styles folder
+            url = styleUrl.appendingPathComponent(sheetName)
+        }
+        
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
     
