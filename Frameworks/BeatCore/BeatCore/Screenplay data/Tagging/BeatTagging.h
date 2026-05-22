@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 	CostumeTag,
 	MakeupTag,
 	VFXTag,
+    CameraTag,
 	SpecialEffectTag,
 	AnimalTag,
 	ExtraTag,

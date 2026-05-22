@@ -62,27 +62,102 @@
 + (NSString*)attributeKey { return @"BeatTag"; }
 + (NSString*)notificationName { return @"BeatTagModified"; } 
 
-/// In the future, this is how categories work instead of the clunky hard-coded values
+/// Returns all available tag categories. In theory, this could be expanded by users in the future, but then it can't be a class method.
 + (NSArray<BeatTagCategory*>*)tagCategories
 {
     static NSArray<BeatTagCategory*>* categories;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         categories = @[
-            [BeatTagCategory.alloc initWithType:CharacterTag keyName:@"cast" iconName:@"person.fill" colorName:@"cyan" fdxCategories:@[@"Cast"]],
-             [BeatTagCategory.alloc initWithType:PropTag keyName:@"prop" iconName:@"gym.bag.fill" colorName:@"orange" fdxCategories:@[@"Prop",@"Props"]],
-             [BeatTagCategory.alloc initWithType:VFXTag keyName:@"vfx" iconName:@"fx" colorName:@"purple" fdxCategories:@[@"VFX"]],
-             [BeatTagCategory.alloc initWithType:SpecialEffectTag keyName:@"sfx" iconName:@"flame" colorName:@"brown" fdxCategories:@[@"Special Effect", @"Special Effects", @"Practical FX"]],
-             [BeatTagCategory.alloc initWithType:AnimalTag keyName:@"animal" iconName:@"dog.fill" colorName:@"yellow" fdxCategories:@[@"Animal", @"Animals"]],
-             [BeatTagCategory.alloc initWithType:ExtraTag keyName:@"extras" iconName:@"person.3" colorName:@"magenta" fdxCategories:@[@"Extras"]],
-             [BeatTagCategory.alloc initWithType:VehicleTag keyName:@"vehicle" iconName:@"bicycle" colorName:@"teal" fdxCategories:@[@"Vehicle", @"Vehicles"]],
-             [BeatTagCategory.alloc initWithType:CostumeTag keyName:@"costume" iconName:@"tshirt.fill" colorName:@"pink" fdxCategories:@[@"Costume"]],
-             [BeatTagCategory.alloc initWithType:MakeupTag keyName:@"makeup" iconName:@"theatermask.and.paintbrush.fill" colorName:@"green" fdxCategories:@[@"Makeup", @"Makeup & hair"]],
-             [BeatTagCategory.alloc initWithType:MusicTag keyName:@"music" iconName:@"music.note" colorName:@"olive" fdxCategories:@[@"Music"]],
-             [BeatTagCategory.alloc initWithType:SoundTag keyName:@"sound" iconName:@"speaker.wave.3" colorName:@"rose" fdxCategories:@[@"Sound"]],
-             [BeatTagCategory.alloc initWithType:StuntTag keyName:@"stunt" iconName:@"figure.fall" colorName:@"blue" fdxCategories:@[@"Stunt", @"Stunts"]],
-            [BeatTagCategory.alloc initWithType:SetDesignTag keyName:@"setDesign" iconName:@"chair.lounge.fill" colorName:@"goldenrod" fdxCategories:@[@"Location", @"Scenography", @"Greenery", @"Art"]],
-             [BeatTagCategory.alloc initWithType:GenericTag keyName:@"other" iconName:@"generic" colorName:@"gray" fdxCategories:@[@"Synopsis", @"Special Equipment", @"Security", @"Additional Work", @"Notes", @"Script Day", @"Unit", @"Synopsis"]],
+            [BeatTagCategory.alloc initWithType:CharacterTag 
+                                        keyName:@"cast"
+                                       iconName:@"person.fill" 
+                                      colorName:@"cyan"
+                                  fdxCategories:@[@"Cast"]],
+            
+             [BeatTagCategory.alloc initWithType:PropTag
+                                         keyName:@"prop"
+                                        iconName:@"gym.bag.fill"
+                                       colorName:@"orange"
+                                   fdxCategories:@[@"Prop",@"Props"]],
+            
+             [BeatTagCategory.alloc initWithType:VFXTag
+                                         keyName:@"vfx"
+                                        iconName:@"fx"
+                                       colorName:@"purple"
+                                   fdxCategories:@[@"VFX"]],
+            
+             [BeatTagCategory.alloc initWithType:SpecialEffectTag
+                                         keyName:@"sfx"
+                                        iconName:@"flame"
+                                       colorName:@"brown"
+                                   fdxCategories:@[@"Special Effect", @"Special Effects", @"Practical FX"]],
+            
+            [BeatTagCategory.alloc initWithType:CameraTag
+                                        keyName:@"camera"
+                                       iconName:@"camera.fill"
+                                      colorName:@"mint"
+                                  fdxCategories:@[@"Camera"]],
+            
+             [BeatTagCategory.alloc initWithType:AnimalTag
+                                         keyName:@"animal"
+                                        iconName:@"dog.fill"
+                                       colorName:@"yellow"
+                                   fdxCategories:@[@"Animal", @"Animals"]],
+            
+             [BeatTagCategory.alloc initWithType:ExtraTag
+                                         keyName:@"extras"
+                                        iconName:@"person.3"
+                                       colorName:@"magenta"
+                                   fdxCategories:@[@"Extras"]],
+            
+             [BeatTagCategory.alloc initWithType:VehicleTag
+                                         keyName:@"vehicle"
+                                        iconName:@"bicycle"
+                                       colorName:@"teal"
+                                   fdxCategories:@[@"Vehicle", @"Vehicles"]],
+            
+             [BeatTagCategory.alloc initWithType:CostumeTag
+                                         keyName:@"costume"
+                                        iconName:@"tshirt.fill"
+                                       colorName:@"pink"
+                                   fdxCategories:@[@"Costume"]],
+            
+             [BeatTagCategory.alloc initWithType:MakeupTag
+                                         keyName:@"makeup"
+                                        iconName:@"theatermask.and.paintbrush.fill"
+                                       colorName:@"green"
+                                   fdxCategories:@[@"Makeup", @"Makeup & hair"]],
+            
+             [BeatTagCategory.alloc initWithType:MusicTag
+                                         keyName:@"music"
+                                        iconName:@"music.note"
+                                       colorName:@"olive"
+                                   fdxCategories:@[@"Music"]],
+            
+             [BeatTagCategory.alloc initWithType:SoundTag
+                                         keyName:@"sound"
+                                        iconName:@"speaker.wave.3"
+                                       colorName:@"rose"
+                                   fdxCategories:@[@"Sound"]],
+            
+             [BeatTagCategory.alloc initWithType:StuntTag
+                                         keyName:@"stunt"
+                                        iconName:@"figure.fall"
+                                       colorName:@"blue"
+                                   fdxCategories:@[@"Stunt", @"Stunts"]],
+            
+            [BeatTagCategory.alloc initWithType:SetDesignTag
+                                        keyName:@"setDesign"
+                                       iconName:@"chair.lounge.fill"
+                                      colorName:@"goldenrod"
+                                  fdxCategories:@[@"Location", @"Scenography", @"Greenery", @"Art"]],
+            
+             [BeatTagCategory.alloc initWithType:GenericTag
+                                         keyName:@"other"
+                                        iconName:@"generic"
+                                       colorName:@"gray"
+                                   fdxCategories:@[@"Synopsis", @"Special Equipment", @"Security", @"Additional Work", @"Notes", @"Script Day", @"Unit", @"Synopsis"]],
         ];
     });
      
