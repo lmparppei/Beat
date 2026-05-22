@@ -40,6 +40,7 @@
     
     dispatch_once(&once, ^{
         // NOTE: These are NOT used for parsing. They just help with applying inline formatting to attributed strings.
+        // Btw, why don't we set a name for these? Currently we need a separate lookup table. It's O(1), but still an extra step, which requires creating an NSNumber.
         allFormats = @[
             [InlineFormatting type:FormattingRangeBold delim:"**" delimLength:2],
             [InlineFormatting type:FormattingRangeItalic delim:"*" delimLength:1],
@@ -59,6 +60,27 @@
     });
     
     return formats;
+}
+
++ (NSDictionary<NSString*,NSNumber*>*)formattingTypes
+{
+    static NSDictionary* formattingTypes;
+    static dispatch_once_t once;
+    
+    dispatch_once(&once, ^{
+        formattingTypes = @{
+            BOLD_STYLE: @(FormattingRangeBold),
+            ITALIC_STYLE: @(FormattingRangeItalic),
+            UNDERLINE_STYLE: @(FormattingRangeUnderlined),
+            BOLDITALIC_STYLE: @(FormattingRangeBoldItalic),
+            HIGHLIGHT_STYLE: @(FormattingRangeHighlight),
+            OMIT_STYLE: @(FormattingRangeOmission),
+            NOTE_STYLE: @(FormattingRangeNote),
+            MACRO_STYLE: @(FormattingRangeMacro)
+        };
+    });
+    
+    return formattingTypes;
 }
 
 + (NSDictionary<NSNumber*,NSString*>*)styleNames

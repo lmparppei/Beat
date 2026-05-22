@@ -108,6 +108,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// All inline parsing formats. Note that these should NOT be used for parsing, they are only helpful when applying attributes to strings. 
 + (NSDictionary<NSNumber*,InlineFormatting*>*)inlineFormats;
 
++ (NSDictionary<NSString*,NSNumber*>*)formattingTypes;
+
 @end
 
 NS_ASSUME_NONNULL_END
