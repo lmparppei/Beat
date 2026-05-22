@@ -264,6 +264,7 @@
 "tag.extras" = "Statisti";
 "tag.vehicle" = "Vozilo";
 "tag.none" = "Noben";
+"tag.camera" = "Kamera";
 
 
 "tagManager.createReport" = "Ustvari poročilo o oznakah";

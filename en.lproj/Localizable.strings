@@ -304,6 +304,7 @@
 "tag.none" = "None";
 "tag.stunt" = "Stunt";
 "tag.setDesign" = "Set Design";
+"tag.camera" = "Camera";
 
 "tagManager.createReport" = "Create Tag Report";
 

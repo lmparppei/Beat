@@ -448,6 +448,7 @@
 "tag.vehicle" = "Fordon";
 "tag.none" = "Ingen";
 "tag.stunt" = "Stunt";
+"tag.camera" = "Kamera";
 
 "tagManager.createReport" = "Skapa taggrapport";
 

@@ -533,8 +533,12 @@
 /* (No Comment) */
 "tag.cast" = "Casting";
 
+"tag.camera" = "Caméra";
+
 /* (No Comment) */
 "tag.costume" = "Costume";
+
+"tag.camera" = "Cámara";
 
 /* (No Comment) */
 "tag.extras" = "Figurants";

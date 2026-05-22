@@ -264,6 +264,7 @@
 "tag.none" = "Ei mitään";
 "tag.stunt" = "Stuntti";
 "tag.setDesign" = "Lavastus";
+"tag.camera" = "Kamera";
 
 "tagManager.createReport" = "Luo tagiraportti";
 
