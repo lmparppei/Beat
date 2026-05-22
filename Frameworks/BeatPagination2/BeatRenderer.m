@@ -417,16 +417,17 @@
     rightStyle.alignment = NSTextAlignmentRight;
     
     // Create scene number string
-    NSString* sceneNumber = (printSceneNumbers) ? [NSString stringWithFormat:@"%@\n", line.sceneNumber] : @" \n";
+    NSString* numberLeft = (printSceneNumbers) ? [NSString stringWithFormat:@"%@\n", line.sceneNumber] : @" \n";
+    NSString* numberRight = (printSceneNumbers && self.styles.heading.sceneNumberRight) ? [NSString stringWithFormat:@"%@\n", line.sceneNumber] : @" \n";
     
     // Create left/right scene numbers
-    NSMutableAttributedString* sceneNumberLeft = [NSMutableAttributedString.alloc initWithString:sceneNumber attributes: @{
+    NSMutableAttributedString* sceneNumberLeft = [NSMutableAttributedString.alloc initWithString:numberLeft attributes: @{
         NSFontAttributeName: font,
         NSForegroundColorAttributeName: BXColor.blackColor,
         NSParagraphStyleAttributeName: leftStyle
     }];
     
-    NSMutableAttributedString* sceneNumberRight = [NSMutableAttributedString.alloc initWithString:sceneNumber attributes: @{
+    NSMutableAttributedString* sceneNumberRight = [NSMutableAttributedString.alloc initWithString:numberRight attributes: @{
         NSFontAttributeName: font,
         NSForegroundColorAttributeName: BXColor.blackColor,
         NSParagraphStyleAttributeName: rightStyle
