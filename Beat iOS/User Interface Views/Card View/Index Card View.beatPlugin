@@ -575,6 +575,10 @@ function updateCard(scene) {
 // ###################################
 
 function printCards() {
+	// This is a hacky custom method
+	
+	Beat.printIndexCards()
+	/*
 	let css = Beat.appAssetAsString("BeatCardsPrint.css")
 	let printedHTML = ""
 
@@ -600,9 +604,12 @@ function printCards() {
 
     let imageableSize = Beat.printInfo().imageableSize
 
-	// Orientation is ALWAYS LANDSCAPE
+	// Orientation is ALWAYS LANDSCAPE, so the math has to work accordingly.
 	let cardsPerRow = 3;
 	let maxRows = Math.floor(imageableSize.width / 165);
+	
+	let height = imageableSize.width / maxRows + 5;
+	css = css.replace("#MAX_HEIGHT#", height);
 
     let cardsOnRow = 0
 	let rows = 0
@@ -629,13 +636,14 @@ function printCards() {
 
     let settings = {
     	orientation: "landscape",
-    	margins: [5, 5, 5, 5]
+    	margins: [0, 0, 0, 0]
     }
 
-    let htmlContent = "<html><head><style>" + css + "</style></head><body><div id='container'><section>" + printedHTML + "</section></div></body></html>"
+    let htmlContent = "<html><head><meta name='viewport' content='initial-scale=0.9, maximum-scale=0.9, user-scalable=no' /><style>" + css + "</style></head><body><div id='container'><section>" + printedHTML + "</section></div></body></html>"
     Beat.printHTML(htmlContent, settings, () => {
 
     })
+	 */
 }
 
 function windowed() {

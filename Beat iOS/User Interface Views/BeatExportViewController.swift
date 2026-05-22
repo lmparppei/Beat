@@ -77,7 +77,7 @@ final class BeatExportSettingController:UITableViewController, BeatPDFController
 		
 		// Toggle revisions
 		let hiddenRevisions = editorDelegate.documentSettings.get(DocSettingHiddenRevisions) as? [Int] ?? []
-		print("Hidden revisions:", hiddenRevisions)
+
 		for revision in revisionSwitches ?? [] {
 			revision.isChecked = !hiddenRevisions.contains(revision.tag)
 		}
