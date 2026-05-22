@@ -27,6 +27,8 @@ import BeatParsing
     var width = 0.0
     var link:URL?
     
+    var drawn = false
+    
     @objc public init(content:NSAttributedString, width: Double = 0.0) {
         self.width = width
         
@@ -55,10 +57,14 @@ import BeatParsing
     override public func draw(_ layer: CALayer, in ctx: CGContext) {
         // Thank you, @marcprux on stackoverflow
         let isPDF = !UIGraphicsGetPDFContextBounds().isEmpty
-        
-        if !self.layer.shouldRasterize && isPDF {
+                        
+        if !drawn && !self.layer.shouldRasterize && isPDF {
+            UIGraphicsPushContext(ctx)
             self.draw(self.bounds)
-        } else {
+            UIGraphicsPopContext()
+            
+            drawn = true
+        } else if !drawn {
             super.draw(layer, in: ctx)
         }
     }
@@ -125,6 +131,8 @@ import BeatParsing
         
         super.init(textAttachment: textAttachment, parentView: parentView, textLayoutManager: textLayoutManager, location: location)
         tracksTextAttachmentViewBounds = true
+        
+        view?.layoutSubviews()
     }
     
     @objc public override func loadView() {

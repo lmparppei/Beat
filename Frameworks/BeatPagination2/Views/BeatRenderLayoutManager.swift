@@ -52,26 +52,6 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 					return
 				}
 			}
-            /*
-            var newLine = false
-            
-            self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRepresentedLineKey), in: range) { obj, attrRange, stop in
-                if let line = obj as? Line {
-                    if line.type == .heading {
-                        stop.pointee = true
-                    } else if line != previousLine {
-                        newLine = true
-                    }
-                    
-                    previousLine = line
-                    stop.pointee = true
-                }
-            }
-            
-            if newLine {
-                // Draw line number here
-            }
-             */
             
             // In rendered text, the revision attribute is a A NUMBER VALUE
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in

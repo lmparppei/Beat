@@ -158,7 +158,6 @@ class BeatPDFPrinter:NSObject {
 					
 					// Let's enumerate through all the layout fragments now
 					textView.textLayoutManager?.enumerateTextLayoutFragments(from: location, options: [.ensuresLayout, .estimatesSize, .ensuresExtraLineFragment], using: { fragment in
-						
 						let frame = fragment.layoutFragmentFrame
 						var origin = textView.frame.origin
 						
@@ -172,12 +171,16 @@ class BeatPDFPrinter:NSObject {
 												
 						// Draw text attachment
 						if let provider = fragment.textAttachmentViewProviders.first, let view = provider.view {
+							view.setNeedsLayout()
+							view.layoutIfNeeded()
+							
 							let attachmentFrame = fragment.frameForTextAttachment(at: fragment.rangeInElement.location)
 							actualFrame.origin.y += attachmentFrame.origin.y
 							
 							// To draw the attachment in correct position in PDF context, we'll translate the context coordinates by the actual frame
 							cgContext.saveGState()
 							cgContext.translateBy(x: actualFrame.origin.x, y: actualFrame.origin.y)
+							
 							view.layer.render(in: cgContext)
 							cgContext.restoreGState()
 							
