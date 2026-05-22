@@ -618,7 +618,7 @@
 - (void)setupResponderChain
 {
 	// Our desired responder chain, add more custom responders when needed
-	NSArray *chain = @[_formattingActions, self.revisionTracking, self.notepad, self.timeline];
+	NSArray *chain = @[_formattingActions, self.revisionTracking, self.timeline];
 	
 	// Store the original responder after text view
 	NSResponder *prev = self.textView;
