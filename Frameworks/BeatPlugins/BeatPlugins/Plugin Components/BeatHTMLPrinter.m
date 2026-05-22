@@ -42,7 +42,11 @@
 	printView.shouldUpdateWhileOffscreen = true;
 	printView.frameLoadDelegate = self;
 	printView.mainFrame.frameView.allowsScrolling = NO;
-	_printView = printView;
+    
+    printView.mediaStyle = @"print";
+    printView.textSizeMultiplier = 0.9;
+    
+    _printView = printView;
 	
 	[self addSubview:printView];
 	
