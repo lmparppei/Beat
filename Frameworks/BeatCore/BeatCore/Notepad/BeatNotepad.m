@@ -184,27 +184,7 @@
         
         [result appendString:string];
     }];
-    /*
-     [self.attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:(NSRange){0,self.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-     
-     NSString* string = [self.string substringWithRange:range];
-     
-     // Do nothing for default color
-     if (value != self.defaultColor) {
-     NSString *colorTag;
-     for (NSString *colorName in BeatColors.colors.allKeys) {
-     if (BeatColors.colors[colorName] == value) {
-     colorTag = colorName;
-     break;
-     }
-     }
-     
-     if (colorTag) string = [NSString stringWithFormat:@"<%@>%@</%@>", colorTag, string, colorTag];
-     }
-     
-     [result appendString:string];
-     }];
-     */
+    
     return result;
 }
 
