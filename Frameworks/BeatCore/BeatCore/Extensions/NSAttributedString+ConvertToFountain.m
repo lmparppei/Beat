@@ -111,7 +111,7 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
         CGFloat spacing = font.ascender;
                     
         // In sub-paragraphs, we might need to add line breaks to mimic paragraph spacing
-        if (result.length > 0 && (pStyle.paragraphSpacingBefore > 0 || spacing > font.pointSize)) [result appendString:@"\n"];
+        if (result.length > 0 && (pStyle.paragraphSpacingBefore > 0 || spacing > font.pointSize) && NSMaxRange(paragraphRange) != self.string.length) [result appendString:@"\n"];
         [result appendString:str];
         [result appendString:@"\n"];
         if (pStyle.paragraphSpacing > 0) [result appendString:@"\n"];
