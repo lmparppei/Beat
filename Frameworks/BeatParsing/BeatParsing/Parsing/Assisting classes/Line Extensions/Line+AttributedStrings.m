@@ -6,6 +6,7 @@
 //
 
 #import "Line+AttributedStrings.h"
+#import <BeatParsing/InlineFormatting.h>
 #import <BeatParsing/NSString+CharacterControl.h>
 #import <BeatParsing/BeatParsing-Swift.h>
 
@@ -22,32 +23,66 @@
     // NOTE! This only works with the FDX attributed string
     NSMutableString *result = NSMutableString.string;
     
-    __block NSInteger pos = 0;
-        
+    NSMutableSet<NSString*>* openStyles = NSMutableSet.new;
+    
     [attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        NSString *string = [attrStr attributedSubstringFromRange:range].string;
-                
-        NSMutableString *open = [NSMutableString stringWithString:@""];
-        NSMutableString *close = [NSMutableString stringWithString:@""];
-        NSMutableString *openClose = [NSMutableString stringWithString:@""];
-        
+        if (range.length == 0) return;
         NSSet *styles = attrs[@"Style"];
         
-        if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
-        if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
-        if ([styles containsObject:UNDERLINE_STYLE]) [openClose appendString:UNDERLINE_PATTERN];
-        if ([styles containsObject:NOTE_STYLE]) {
-            [open appendString:[NSString stringWithFormat:@"%s", NOTE_OPEN_CHAR]];
-            [close appendString:[NSString stringWithFormat:@"%s", NOTE_CLOSE_CHAR]];
-        }
-                        
-        [result appendString:open];
-        [result appendString:openClose];
+        NSString *string = [attrStr attributedSubstringFromRange:range].string;
+        
+        [openStyles.copy enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+            // Close any styles NOT included in the current block
+            if (![styles containsObject:obj]) {
+                FormattedRange formattingType = (FormattedRange)InlineFormatting.formattingTypes[obj].unsignedIntValue;
+                InlineFormatting* f = InlineFormatting.inlineFormats[@(formattingType)];
+                
+                [result appendFormat:@"%s", f.close];
+                
+                [openStyles removeObject:obj];
+            }
+        }];
+        
+        [styles enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
+            // Don't open already open things again
+            if ([openStyles containsObject:obj]) return;
+            
+            NSNumber* t = InlineFormatting.formattingTypes[obj];
+            InlineFormatting* f = InlineFormatting.inlineFormats[t];
+            if (f == nil) return;
+            
+            [result appendString:[NSString stringWithFormat:@"%s", f.open]];
+            
+            [openStyles addObject:obj];
+        }];
+        
         [result appendString:string];
-        [result appendString:openClose];
+/*
+        NSMutableString *open = [NSMutableString stringWithString:@""];
+        NSMutableString *close = [NSMutableString stringWithString:@""];
+        
+        NSSet *styles = attrs[@"Style"];
+         
+        for (InlineFormatting* inlineFormat in InlineFormatting.inlineFormats.allValues) {
+            NSString* styleName = [InlineFormatting styleNameFor:inlineFormat.formatType];
+            if ([styles containsObject:styleName]) {
+                [open insertString:[NSString stringWithFormat:@"%s", inlineFormat.open] atIndex:0];
+                [close appendString:[NSString stringWithFormat:@"%s", inlineFormat.close]];
+            }
+        }
+    
+        [result appendString:open];
+        [result appendString:string];
         [result appendString:close];
-
-        pos += open.length + openClose.length + string.length + openClose.length + close.length;
+*/
+        
+    }];
+    
+    [openStyles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+        FormattedRange formattingType = (FormattedRange)InlineFormatting.formattingTypes[obj].unsignedIntValue;
+        InlineFormatting* f = InlineFormatting.inlineFormats[@(formattingType)];
+        
+        [result appendFormat:@"%s", f.close];
     }];
     
     return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];

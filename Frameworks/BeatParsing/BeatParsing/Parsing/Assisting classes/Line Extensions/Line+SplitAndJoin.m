@@ -103,7 +103,7 @@
     split.position = self.position + retain.string.length;
     
     // Now we'll have to go through some extra trouble to keep the revised ranges intact.
-    if (self.revisedRanges.count) {
+    if (self.revisedRanges.count > 0) {
         NSRange firstRange = NSMakeRange(0, index);
         NSRange secondRange = NSMakeRange(index, split.string.length);
         split.revisedRanges = NSMutableDictionary.new;
@@ -129,7 +129,7 @@
             }];
         }
     }
-    
+        
     // Let's also split our resolved macros
     if (self.resolvedMacros.count) {
         retain.resolvedMacros = NSMutableDictionary.new;

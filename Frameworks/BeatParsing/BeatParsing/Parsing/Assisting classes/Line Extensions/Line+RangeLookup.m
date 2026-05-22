@@ -170,21 +170,22 @@
         [indices addIndex:self.sceneNumberRange.location + offset - 1];
         [indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length + offset];
     }
-    
+        
     // Stylization ranges
     // TODO: Figure out a way to make this conform with the nice InlineFormatting thing.
     NSArray<NSValue*>* formattedRanges = @[@(FormattingRangeBold), @(FormattingRangeItalic), @(FormattingRangeUnderlined), @(FormattingRangeHighlight)];
     for (NSNumber* key in formattedRanges) {
         InlineFormatting* f = InlineFormatting.inlineFormats[key];
         if (f == nil) NSLog(@"⚠️ No inline formatting rule for %@", key);
-        
+                
         NSIndexSet* formattedIndices = [self formattedRange:(FormattedRange)key.unsignedIntValue];
+                
         [formattedIndices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
             [indices addIndexesInRange:NSMakeRange(range.location + offset, f.openLength)];
             [indices addIndexesInRange:NSMakeRange(range.location + range.length - f.closeLength + offset, f.closeLength)];
         }];
     }
-    
+        
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
             [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
