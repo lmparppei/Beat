@@ -142,7 +142,7 @@
 	// Reset forced character input
 	//if (self.characterInputForLine != currentLine && self.characterInput) {
 	if (self.lineForNewCue != nil && self.lineForNewCue != currentLine) {
-		if (self.lineForNewCue.string.length == 0)
+		if (self.lineForNewCue.string.length == 0 && !self.undoManager.isUndoing)
 			[self setTypeAndFormat:self.lineForNewCue type:empty];
 		
 		self.lineForNewCue = nil;
