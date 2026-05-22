@@ -517,7 +517,7 @@
     NSUInteger length = self.string.length;
     // Let's not do this for extremely long lines. I don't know how many symbols a unichar array can hold.
     // I guess there should be a fallback for insanely long strings, but this is a free and open source app, so if your
-    // unique artwork requires 300 000 unicode symbols on a single lines, please use some other software.
+    // unique artwork requires 300 000 unicode symbols on a single line, please use some other software.
     if (length > 300000) return;
     
     @try {
@@ -528,6 +528,7 @@
         for (InlineFormatting* formatting in InlineFormatting.rangesToFormat) {
             NSMutableIndexSet* indices = [Line rangesInChars:charArray ofLength:length inLine:self between:formatting.open and:formatting.close startLength:formatting.openLength endLength:formatting.closeLength excludingIndices:nil];
             [self setRanges:indices forFormatting:formatting.formatType];
+            
         }
         
         // This method is called after a line has been split in two, so we'll need to parse any leftover note ranges. Not sure if this actually works or not.
@@ -546,60 +547,6 @@
 
 
 #pragma mark - Formatting range lookup
-/*
-/// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too. Why, I don't know.
-- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
-{
-    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
-    
-    NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
-    NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
-    
-    for (NSInteger i = 0;;i++) {
-        if (i > lastIndex) {
-            break;
-        }
-                
-        // No range is currently inspected
-        if (rangeBegin == -1) {
-            bool match = YES;
-            for (int j = 0; j < delimLength; j++) {
-                // Check for escape character (like \*)
-                if (i > 0 && string[j + i - 1] == '\\') {
-                    match = NO;
-                    break;
-                }
-            
-                if (string[j+i] != startString[j]) {
-                    match = NO;
-                    break;
-                }
-            }
-            if (match) {
-                rangeBegin = i;
-                i += delimLength - 1;
-            }
-        // We have found a range
-        } else {
-            bool match = YES;
-            for (int j = 0; j < delimLength; j++) {
-                if (string[j+i] != endString[j]) {
-                    match = NO;
-                    break;
-                }
-            }
-            if (match) {
-                [indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
-                rangeBegin = -1;
-                i += delimLength - 1;
-            }
-        }
-    }
-        
-    return indexSet;
-}
-*/
-
 
 + (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length inLine:(inout Line*)line between:(char*)startString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes
 {
@@ -626,7 +573,7 @@
     NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
     if (length < startLength + delimLength) return indexSet;
     
-    NSRange range = NSMakeRange(-1, 0);
+    NSRange range = NSMakeRange(NSNotFound, 0);
     
     for (NSInteger i=0; i <= length - delimLength; i++) {
         // If this index is contained in the omit character indexes, skip
@@ -641,13 +588,12 @@
             }
         }
         
-        if (range.location == -1) {
+        if (range.location == NSNotFound) {
             // Next, see if we can find the whole start string
-            bool found = true;
+            BOOL found = true;
+            
             for (NSInteger k=0; k<startLength; k++) {
-                if (i+k >= length) {
-                    break;
-                } else if (startString[k] != string[i+k]) {
+                if (i+k >= length || startString[k] != string[i+k]) {
                     found = false;
                     break;
                 }
@@ -662,10 +608,12 @@
             i += startLength-1;
             
         } else {
+            
             // We have found a range, let's see if we find a closing string.
             bool found = true;
+            
             for (NSInteger k=0; k<delimLength; k++) {
-                if (endString[k] != string[i+k]) {
+                if (i + k >= length || endString[k] != string[i+k]) {
                     found = false;
                     break;
                 }
@@ -673,7 +621,7 @@
             
             if (!found) continue;
             
-            // Success, we found a closing string.
+            // Success, we found the closing delimiter.
             range.length = i + delimLength - range.location;
             [indexSet addIndexesInRange:range];
             
@@ -681,13 +629,14 @@
             [excludes addIndexesInRange:(NSRange){ range.location, startLength }];
             [excludes addIndexesInRange:(NSRange){ i, delimLength }];
             
-            range.location = -1;
+            range.location = NSNotFound;
+            range.length = 0;
             
             // Move past the ending string
             i += delimLength - 1;
         }
     }
-    
+        
     return indexSet;
 }
 
