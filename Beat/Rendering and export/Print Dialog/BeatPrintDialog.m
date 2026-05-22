@@ -202,6 +202,17 @@
 	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
 		[(Document*)self.documentDelegate releasePrintDialog];
 	}];
+	
+
+	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:section]) {
+		self.printSections.state = NSOnState;
+		self.printSections.enabled = false;
+	}
+	
+	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:synopse]) {
+		self.printSynopsis.state = NSOnState;
+		self.printSynopsis.enabled = false;
+	}
 }
 
 - (IBAction)close:(id)sender

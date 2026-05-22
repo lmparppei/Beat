@@ -43,7 +43,9 @@ import AppKit
 	}
 	
 	override func viewDidLoad() {
-		guard let documentSettings = self.editorDelegate?.documentSettings else { return }
+		guard let editorDelegate,
+			  let documentSettings = self.editorDelegate?.documentSettings
+		else { return }
 		
 		self.settings = [
 			DocSettingPrintSceneNumbers: printSceneNumbers!,
@@ -61,12 +63,19 @@ import AppKit
 			}
 		}
 		
+		if editorDelegate.styles.document._visibleElements.contains(.section) {
+			self.printSections?.state = .on
+			self.printSections?.isEnabled = false
+		}
+				
 		// We also need to check if revisions are visible or not
 		self.revisionButtons = [revision1!, revision2!, revision3!, revision4!, revision5!, revision6!, revision7!, revision8!]
 		let hiddenRevisions = documentSettings.get(DocSettingHiddenRevisions) as? [Int] ?? []
 		for revisionButton in revisionButtons {
 			revisionButton.state = hiddenRevisions.contains(revisionButton.tag) ? .off : .on
 		}
+		
+		
 	}
 	
 	@IBAction func toggle(sender:NSButton?) {
