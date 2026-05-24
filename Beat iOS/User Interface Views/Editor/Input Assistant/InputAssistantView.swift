@@ -168,11 +168,12 @@ open class InputAssistantView: UIToolbar {
 	
 	/// The type of display we're currently using. It's either a collection view or buttons.
 	private enum InputAssistantType {
+		case none
 		case buttons
 		case suggestions
 	}
 	
-	private var displayMode:InputAssistantType = .buttons
+	private var displayMode:InputAssistantType = .none
 	
 	/// Auto completion data source
 	var dSource: AutocompletionDataSource?
@@ -334,8 +335,9 @@ open class InputAssistantView: UIToolbar {
 		// Determine if we should show suggestions or not. We'll also update the display mode to determine if we should update all the items or not.
 		let hasSuggestions = (suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0) > 0
 		let shouldShowSuggestions = hasSuggestions && (assistantDelegate?.shouldShowSuggestions() ?? false)
-		
+				
 		var items: [UIBarButtonItem]?
+		var empty = true
 		
 		if shouldShowSuggestions {
 			items = []
@@ -345,9 +347,10 @@ open class InputAssistantView: UIToolbar {
 				items?.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)) // Fill the rest with empty space. Seems to fix some positioning problems.
 			}
 			
+			empty = false
 			displayMode = .suggestions
 			
-		} else if self.items?.count == 0 || displayMode != .buttons {
+		} else if self.items == nil || self.items?.count == 0 || displayMode != .buttons {
 			// Show leading and trailing actions (no suggestions)
 			items = []
 			
@@ -355,6 +358,7 @@ open class InputAssistantView: UIToolbar {
 			if !leadingActions.isEmpty {
 				let leadingButtons = createBarButtonItems(from: leadingActions)
 				items?.append(contentsOf: leadingButtons)
+				empty = false
 			}
 			
 			// Flexible space between leading and trailing
@@ -364,13 +368,17 @@ open class InputAssistantView: UIToolbar {
 			if !trailingActions.isEmpty {
 				let trailingButtons = createBarButtonItems(from: trailingActions)
 				items?.append(contentsOf: trailingButtons)
+				empty = false
 			}
 			
 			displayMode = .buttons
 		}
 		
-		if let items {
+		if let items, items.count > 0, !empty {
 			self.setItems(items, animated: false)
+		} else {
+			self.items?.removeAll()
+			displayMode = .none
 		}
 	}
 	
