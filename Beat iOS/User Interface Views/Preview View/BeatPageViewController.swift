@@ -266,12 +266,9 @@ import BeatCore
     
 	/// Centers content view
     private func updateContentPosition() {
-		guard subviews.count > 0 else { return }
-				
-		// get the content view and center it
-        let subView = subviews[0]
+		guard let container else { print(" No container"); return }
 		let offset = self.bounds.width / 2
-		subView.center = CGPointMake(offset, subView.center.y)
+		container.center = CGPointMake(offset, container.center.y)
     }
     
 	/// Reloads page data and draws pages in current bounds
@@ -293,7 +290,6 @@ import BeatCore
 		// Reset loaded page views
 		self.loadedPageViews = [:]
 		
-        //self.contentSize = container.frame.size
 		self.contentSize = container.frame.size
         self.pageRects = rectsForPages()
         
