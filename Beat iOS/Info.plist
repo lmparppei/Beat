@@ -2,11 +2,32 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Document</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>ATSApplicationFontsPath</key>
 	<string>.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>UIDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 			<key>CFBundleTypeName</key>
 			<string>Fountain Screenplay</string>
 			<key>CFBundleTypeRole</key>
@@ -20,6 +41,8 @@
 			</array>
 		</dict>
 		<dict>
+			<key>UIDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 			<key>CFBundleTypeName</key>
 			<string>Plain Text</string>
 			<key>CFBundleTypeRole</key>
@@ -65,7 +88,6 @@
 		<string>Courier Prime Sans Bold.ttf</string>
 		<string>Courier Prime Sans Italic.ttf</string>
 		<string>Courier Prime Sans Bold Italic.ttf</string>
-		<string>Courier Prime Sans Italic.ttf</string>
 		<string>NotoEmoji.ttf</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
@@ -91,6 +113,25 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>fountain</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Text File</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>public.plain-text</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>txt</string>
 				</array>
 			</dict>
 		</dict>

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
-@property (nonatomic) iOSDocument* _Nullable document;
+@property (nonatomic) iOSDocument* _Nullable fountainDocument;
 @property (weak, readonly) BXWindow* documentWindow;
 
 @property (nonatomic, weak) UIDocumentBrowserViewController* _Nullable documentBrowser;

@@ -653,7 +653,7 @@ FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteg
 FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
 FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
-FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string);
+FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSAttributedString*)string);
 FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position);
 FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
 FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);

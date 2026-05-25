@@ -85,7 +85,8 @@ NS_ASSUME_NONNULL_END
 @interface BeatDocumentBaseController:NSDocument <DocumentExports, BeatExportSettingDelegate, BeatDocumentSettingDelegate>
 #else
 // iOS
-@interface BeatDocumentBaseController:UIViewController
+// @interface BeatDocumentBaseController:UIViewController
+@interface BeatDocumentBaseController:UIDocumentViewController
 #endif
 
 #pragma mark - Loading text

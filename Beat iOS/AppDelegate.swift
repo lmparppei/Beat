@@ -17,7 +17,7 @@ enum BeatForcedAppearance {
 @main
 class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
+    //var window: UIWindow?
 
 	func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 		print("Beat for iOS")
@@ -36,7 +36,6 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-		
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -46,7 +45,7 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
-
+/*
     func application(_ app: UIApplication, open inputURL: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         // Ensure the URL is a file URL
         guard inputURL.isFileURL else { return false }
@@ -64,10 +63,9 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
             // Present the Document View Controller for the revealed URL
             documentBrowserViewController.presentDocument(at: revealedDocumentURL!)
         }
-
         return true
     }
-	
+*/
 	/*
 	func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([any UIUserActivityRestoring]?) -> Void) -> Bool {
 		guard userActivity.activityType == "fi.KAPITAN.Beat.editing",
@@ -130,6 +128,13 @@ class BeatiOSAppDelegate: UIResponder, UIApplicationDelegate {
 		BeatUserDefaults.shared().save(darkMode, forKey: BeatSettingDarkMode)
 		
 		NotificationCenter.default.post(name: NSNotification.Name("Appearance changed"), object: nil)
+	}
+	
+	func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+		return UISceneConfiguration(
+			name: "Default Configuration",
+			sessionRole: connectingSceneSession.role
+		)
 	}
 }
 	 

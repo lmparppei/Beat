@@ -35,10 +35,14 @@ class iOSDocument: UIDocument {
 	
     override func contents(forType typeName: String) throws -> Any {
 		print("... Asking for contents")
-		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
-			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
+		if let parser = delegate?.parser {
+			guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
+				fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
+			}
+			return text.data(using: .utf8) as Any
+		} else {
+			return "".data(using: .utf8) as Any
 		}
-		return text.data(using: .utf8) as Any
     }
 	
 	override func save(to url: URL, for saveOperation: UIDocument.SaveOperation) async -> Bool {
