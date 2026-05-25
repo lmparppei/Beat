@@ -441,8 +441,25 @@
 
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace line:(Line*)line
 {
-    // If no line is set, let's use the first item
-    if (line == nil) line = self.lines.firstObject;
+    // If no line is set, we'll need to find the offending item
+    if (line == nil && self.lines.count == 1) {
+        line = self.lines.firstObject;
+    } else if (line == nil) {
+        for (NSInteger i=0;i<self.lines.count;i++) {
+            Line* l = self.lines[i];
+            CGFloat h = [self heightUntil:l];
+            if (h > remainingSpace) {
+                // Let's not leave a single line behind
+                RenderStyle* s = [self.delegate.styles forLine:l];
+                if (self.delegate.styles.page.lineHeight + s.marginTop < h) {
+                    line = l;
+                }
+                break;
+            }
+        }
+        
+        if (line == nil) line = self.lines.firstObject;
+    }
     
     BeatParagraphPaginationMode mode = self.delegate.paragraphPaginationMode;
     
@@ -491,11 +508,20 @@
         
         NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
         
+        NSInteger i = [self.lines indexOfObject:line];
+        NSArray* retainedLines = (i>0) ? [self.lines subarrayWithRange:NSMakeRange(0, i)] : @[];
+        NSArray* splitLines = [self.lines subarrayWithRange:NSMakeRange(i, self.lines.count-i)];
+        
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
-        return @[@[prePageBreak], onNextPage, pageBreak];
+        return @[[retainedLines arrayByAddingObject:prePageBreak], onNextPage, pageBreak];
     } else {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Avoid paragraph split"];
-        return @[@[], @[line], pageBreak];
+        NSInteger i = [self.lines indexOfObject:line];
+        
+        NSArray* retain = (i>0) ? [self.lines subarrayWithRange:NSMakeRange(0, i)] : @[];
+        NSArray* split = [self.lines subarrayWithRange:NSMakeRange(i, self.lines.count-i)];
+        
+        return @[retain, split, pageBreak];
     }
 }
 
