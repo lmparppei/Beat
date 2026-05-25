@@ -506,14 +506,15 @@
         Line *prePageBreak = splitElements[0];
         Line *postPageBreak = splitElements[1];
         
-        NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
-        
         NSInteger i = [self.lines indexOfObject:line];
         NSArray* retainedLines = (i>0) ? [self.lines subarrayWithRange:NSMakeRange(0, i)] : @[];
-        NSArray* splitLines = [self.lines subarrayWithRange:NSMakeRange(i, self.lines.count-i)];
+        NSArray* splitLines = (i < self.lines.count) ? [self.lines subarrayWithRange:NSMakeRange(i+1, self.lines.count-i-1)] : @[];
+        
+        NSArray* onPrevPage = [retainedLines arrayByAddingObject:prePageBreak];
+        NSArray* onNextPage = [((postPageBreak.length > 0) ? @[postPageBreak] : @[]) arrayByAddingObjectsFromArray:splitLines];
         
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:retain.length element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Paragraph split"];
-        return @[[retainedLines arrayByAddingObject:prePageBreak], onNextPage, pageBreak];
+        return @[onPrevPage, onNextPage, pageBreak];
     } else {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:line attributedString:[line attributedStringForOutputWith:_delegate.settings] reason:@"Avoid paragraph split"];
         NSInteger i = [self.lines indexOfObject:line];
