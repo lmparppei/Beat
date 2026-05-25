@@ -377,8 +377,8 @@ open class InputAssistantView: UIToolbar {
 		if let items, items.count > 0, !empty {
 			self.setItems(items, animated: false)
 		} else {
-			self.items?.removeAll()
-			displayMode = .none
+			//self.items?.removeAll()
+			//displayMode = .none
 		}
 	}
 	
