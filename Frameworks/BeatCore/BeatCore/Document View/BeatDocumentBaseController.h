@@ -156,6 +156,8 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showRevisedTextColor;
 
+@property (nonatomic) bool showTags;
+
 
 #pragma mark - Handoff
 

@@ -70,6 +70,10 @@
 {
     return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisions];
 }
+- (void)setShowRevisions:(bool)showRevisions {
+    [BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
+    [self ensureLayout];
+}
 
 - (bool)showRevisedTextColor
 {
@@ -135,6 +139,15 @@
 - (NSInteger)revisionLevel
 {
     return [self.documentSettings getInt:DocSettingRevisionLevel];
+}
+
+- (bool)showTags
+{
+    return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowTags];
+}
+- (void)setShowTags:(bool)showTags
+{
+    [BeatUserDefaults.sharedDefaults saveBool:showTags forKey:BeatSettingShowTags];
 }
 
 

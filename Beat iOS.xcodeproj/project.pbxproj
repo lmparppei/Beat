@@ -362,6 +362,7 @@
 		B6A97BF92BF0BA7500414878 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B6A97CA12BF0C3FD00414878 /* BeatFileExport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatFileExport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+Export.swift"; sourceTree = "<group>"; };
+		B6B36AEB2FC59A2D00FCAF06 /* BeatDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentViewController.swift; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
 		B6BEE27C2F24C2F700CF6BF5 /* BeatLLMHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLLMHelper.swift; sourceTree = "<group>"; };
@@ -535,6 +536,7 @@
 				B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */,
 				B65B56EC2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.h */,
 				B65B56ED2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.m */,
+				B6B36AEB2FC59A2D00FCAF06 /* BeatDocumentViewController.swift */,
 			);
 			path = "Main Document View";
 			sourceTree = "<group>";

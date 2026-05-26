@@ -47,8 +47,14 @@
 
 //@objc var hideFountainMarkup: Bool = false
 @property (nonatomic) bool closing;
+@property (nonatomic) bool initialFormattingInAction;
+@property (nonatomic) bool initialFormattingComplete;
 
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* topContainerConstraint;
+
+/// This is our shadow document. For some genious reason, the new iOS document view controller allows only SYNCHRONIZED access to `.document` property.
+/// The value is set along the `document` value.
+@property (nonatomic, weak) iOSDocument* __fountainDocument;
 
 @end
 
@@ -56,12 +62,19 @@
 @dynamic textView;
 @dynamic previewController;
 
--(instancetype)initWithCoder:(NSCoder *)coder {
+-(instancetype)initWithCoder:(NSCoder *)coder
+{
 	self = [super initWithCoder:coder];
-	if (self) {
-		self.documentIsLoading = true;
-	}
-	
+	self.documentIsLoading = true;
+
+	return self;
+}
+
+- (instancetype)initWithDocument:(UIDocument *)document
+{
+	self = [super initWithDocument:document];
+	self.documentIsLoading = true;
+
 	return self;
 }
 
@@ -71,44 +84,35 @@
 	return (iOSDocument*)self.document;
 }
 
+/// Override document getter to support async access to `document` property. Extremely hacky.
+- (UIDocument *)document
+{
+	return (NSThread.isMainThread) ? super.document : ___fountainDocument;
+}
+
+- (void)navigationItemDidUpdate
+{
+	[super navigationItemDidUpdate];
+	[self setupTitleBar];
+}
+
 - (void)setDocument:(UIDocument *)document
 {
 	[super setDocument:document];
-	NSLog(@"Set document");
-	/*
-	[document openWithCompletionHandler:^(BOOL success) {
-		// Do something here maybe
-		if (!success) return;
-		
-		self.parser = [ContinuousFountainParser.alloc initWithString:self.fountainDocument.rawText delegate:self];
-		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.fountainDocument.rawText];
-		self.attrTextCache = self.formattedTextBuffer;
-		
-		// Load fonts (iOS is limited to serif courier for now)
-		[self loadFonts];
-		
-		// Format the document. We'll create a static formatting instance for this operation.
-		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
-		formatting.delegate = self;
-		
-		// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
-		for (Line* line in self.parser.lines) {
-			@autoreleasepool {
-				[formatting formatLine:line firstTime:true];
-			}
-		}
-		
-		[self.parser.changedIndices removeAllIndexes];
-
-		[self afterLoadSetup];
-	}];
-	 */
+	___fountainDocument = (iOSDocument*)document;
+	
+	self.documentIsLoading = true;
+	self.initialFormattingComplete = false;
 }
 
 - (void)initialFormatting
 {
-	NSLog(@"Initial formatting");
-	if (self.fountainDocument == nil) return;
+	if (_initialFormattingInAction ||
+		mask_contains(((UIDocument*)self.document).documentState, UIDocumentStateClosed) ||
+		!self.documentIsLoading ||
+		self.fountainDocument == nil) return;
+	
+	_initialFormattingInAction = true;
 	
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.fountainDocument.rawText delegate:self];
 	self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.fountainDocument.rawText];
@@ -121,22 +125,27 @@
 	BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
 	formatting.delegate = self;
 	
-	// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
+	// Perform initial formatting
 	for (Line* line in self.parser.lines) {
-		@autoreleasepool {
-			[formatting formatLine:line firstTime:true];
-		}
+		[formatting formatLine:line firstTime:true];
 	}
 	
 	[self.parser.changedIndices removeAllIndexes];
 	
-	[self setup];
+	// Oh well. View can be loaded before the document is loaded and vice-versa.
+	// We need to throttle the setup phase until formatting is complete
+	self.initialFormattingInAction = false;
+	self.initialFormattingComplete = true;
+
+	if (self.viewLoaded) {
+		NSLog(@"View has loaded, perform setup");
+		[self setup];
+	}
 }
 
 - (void)documentDidOpen
 {
 	[self initialFormatting];
-	[self afterLoadSetup];
 }
 	
 - (BXWindow*)documentWindow
@@ -154,7 +163,7 @@
 	
 	// Let the app state know this is the current document view controller
 	BeatAppState.shared.documentController = self;
-		
+	
 	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
 	[delegate checkDarkMode];
 	
@@ -178,13 +187,14 @@
 	// Create text view
 	[self createTextView];
 	
+	// Updates the UI to current color scheme
 	[self updateUIColors];
 	
 	// Setup document title menu (done in Swift extension)
 	[self setupTitleBar];
-			
+	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
-		
+	
 	[self setupDocument];
 }
 
@@ -263,6 +273,8 @@
 	// Setup outline view
 	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
 	self.outlineView.editorDelegate = self;
+	
+	[self afterLoadSetup];
 }
 
 - (void)setStylesheetAndReformat:(NSString *)name
@@ -314,7 +326,7 @@
 		self.textView.frame = self.scrollView.frame;
 		
 		[self.view addSubview:self.textView];
-		
+				
 		[self.scrollView.superview addSubview:self.textView];
 		[self.pageView removeFromSuperview];
 		[self.scrollView removeFromSuperview];
@@ -335,8 +347,31 @@
 /// NOTE: You need to call `loadDocument` before actually presenting the view
 - (void)viewDidLoad
 {
+	if (@available(iOS 18.0, *)) {
+		self.launchOptions.background.backgroundColorTransformer = ^UIColor * _Nonnull(UIColor * _Nonnull color) {
+			return UIColor.darkGrayColor;
+		};
+		UIView* v = UIView.new;
+		v.backgroundColor = [BeatColors color:@"backgroundGray"];
+				
+		self.launchOptions.primaryAction = [UIAction actionWithTitle:@"New Document" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+			NSLog(@"!!!");
+		}];
+		self.launchOptions.secondaryAction = [UIAction actionWithTitle:@"Templates & Tutorials" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+			NSLog(@"!!!");
+		}];
+	}
+	
 	[super viewDidLoad];
-	[self setup];
+	
+	// Because view can be loaded before the document is loaded and parsed, we need to avoid race conditions here.
+	// Only set things up if formatting is complete, and once we've performed initial formatting, we'll check if the view has loaded and perform the setup there.
+	// Can this go wrong in some cases? Maybe.
+	if (!_initialFormattingInAction) {
+		[self initialFormatting];
+	} else if (_initialFormattingComplete) {
+		[self setup];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -425,12 +460,14 @@
 
 #pragma mark - Teardown
 
-/// This is called by `iOSDocument` after closing the document
+/// This is called by `iOSDocument` after closing the document.
 - (void)unloadViews
 {
+	// We won't do this in the new model I guess?
+	
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
-	
+	/*
 	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
 		[container unload];
 	}
@@ -469,14 +506,17 @@
 	[self.previewView removeFromParentViewController];
 	self.previewView = nil;
 		
-	[self removeChildren];
-	self.editorSplitView = nil;
-	
+	 */
+	 
+	//[self removeChildren];
+	// self.editorSplitView = nil;
+	 
 	// These have to be nulled to kill any retained line references
 	self.formattedTextBuffer = NSMutableAttributedString.new;
 	self.attrTextCache = NSMutableAttributedString.new;
-	
-	self.document = nil;
+
+	 
+	// self.document = nil;
 }
 
 
@@ -762,7 +802,6 @@
 #pragma mark - Editor text view values
 
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
-- (CGFloat)magnification { return self.textView.enclosingScrollView.zoomScale; }
 
 
 #pragma mark Editor text view helpers

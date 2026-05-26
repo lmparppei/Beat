@@ -524,7 +524,7 @@ Line *cachedRectLine;
 	}
 	
 	// Left/right insets
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - self.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - self.documentWidth * self.zoomLevel / 2) / self.zoomLevel;
 	
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(self.documentWidth, self.textContainer.size.height);

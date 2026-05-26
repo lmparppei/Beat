@@ -51,6 +51,7 @@
              @"mint": [BeatColors colorWithRed:72 green:231 blue:211],
              @"violet": [BeatColors colorWithRed:116 green:62 blue:230],
              @"olive": [BeatColors colorWithRed:77 green:147 blue:44],
+             @"backgroundgray": [BeatColors colorWithRed:34 green:34 blue:35],
 	};
 	
 	return _colorValues;

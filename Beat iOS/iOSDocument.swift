@@ -34,8 +34,7 @@ class iOSDocument: UIDocument {
 	}
 	
     override func contents(forType typeName: String) throws -> Any {
-		print("... Asking for contents")
-		if let parser = delegate?.parser {
+		if let _ = delegate?.parser {
 			guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
 				fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
 			}

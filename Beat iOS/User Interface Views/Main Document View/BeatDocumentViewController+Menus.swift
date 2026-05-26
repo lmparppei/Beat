@@ -18,11 +18,11 @@ extension BeatDocumentViewController {
 		setupTitleMenus()
 	}
 	
-	/// Sets up the rename/document menu
+	/// Sets up the basic tool bar menu
 	@objc func setupTitleMenus() {
-		// Basic iPad menu scheme
 		guard let document else { return }
 		
+		/*
 		let documentProperties = UIDocumentProperties(url: document.fileURL)
 		if let itemProvider = NSItemProvider(contentsOf: document.fileURL) {
 			documentProperties.dragItemsProvider = { _ in
@@ -34,7 +34,8 @@ extension BeatDocumentViewController {
 		}
 		
 		navigationItem.documentProperties = documentProperties
-		
+		 */
+		 
 		navigationItem.titleMenuProvider = { suggestions in
 			var items = suggestions
 			

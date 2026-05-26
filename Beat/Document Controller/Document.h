@@ -77,7 +77,6 @@ THE SOFTWARE.
 /// Current editor view. This is __not__ a sidebar tab, but the underlying tab view in full document view. Editor, preview and index cards are different tabs.
 @property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 
-@property (nonatomic) bool showTags;
 @property (nonatomic) bool revisionMode;
 @property (nonatomic) bool contentLocked;
 @property (nonatomic) BOOL autosave;

@@ -193,7 +193,7 @@ typedef void (^BeatChangeListener)(NSRange);
 /// Sets and gets the selected range in editor text view
 @property (nonatomic, readwrite) NSRange selectedRange;
 @property (nonatomic, readonly) CGFloat documentWidth;
-@property (nonatomic, readonly) CGFloat magnification;
+//@property (nonatomic, readonly) CGFloat magnification;
 
 #pragma mark Editor text view helpers
 
@@ -284,7 +284,6 @@ typedef void (^BeatChangeListener)(NSRange);
 #if TARGET_OS_IOS
 - (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
-- (void)refreshLayoutByExportSettings;
 #endif
 
 #if TARGET_OS_IOS
