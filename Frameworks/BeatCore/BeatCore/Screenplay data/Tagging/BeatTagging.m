@@ -412,10 +412,11 @@
 
 + (NSArray<BeatTag*>*)allTagsFrom:(NSAttributedString*)string
 {
-    NSMutableArray<BeatTag*> * tags = NSMutableArray.new;
+    // Having an initial capacity here saves us some milliseconds from some array complexity.
+    NSMutableArray<BeatTag*> * tags = [NSMutableArray.alloc initWithCapacity:150];
     [string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         BeatTag *tag = (BeatTag*)value;
-        if (tag.type == NoTag) return; // Just in case
+        if (tag == nil || tag.type == NoTag) return;
         
         // Save current range of the tag into the object and add to array
         tag.range = range;
@@ -784,10 +785,16 @@
 }
 
 /// Returns an array for saving the tags for converting to JSON.
+/// - warning Automatically generates tag data. To avoid a performance hit, use an array of `BeatTag`s when available.
 - (NSArray<NSDictionary<NSString*,id>*>*)serializedTagData
 {
+    return [self serializedTagDataWithTags:self.allTags];
+}
+
+/// Returns an array for saving the tags for converting to JSON.
+- (NSArray<NSDictionary<NSString*,id>*>*)serializedTagDataWithTags:(NSArray<BeatTag*>*)tags
+{
     NSMutableArray *tagsToSave = NSMutableArray.new;
-    NSArray *tags = [self allTags];
     
     for (BeatTag* tag in tags) {
         [tagsToSave addObject:@{
@@ -800,26 +807,32 @@
     return tagsToSave;
 }
 
-/// Returns JSON-seriazible dictionary values for all used definitions
+/// Returns JSON-seriazible dictionary values for all used definitions. Automatically generates all tags.
+/// - warning To avoid performance hit, use existing ones when available.
 - (NSArray<NSDictionary<NSString*, NSString*>*>*)getDefinitionsForSaving
 {
-	NSArray<BeatTag*>* allTags = [self allTags];
+    return [self getDefinitionsForSavinWithTags:self.allTags];
+}
+
+/// Returns JSON-seriazible dictionary values for all used definitions
+- (NSArray<NSDictionary<NSString*, NSString*>*>*)getDefinitionsForSavinWithTags:(NSArray<BeatTag*>*)allTags
+{
     NSMutableArray<TagDefinition*>* defs = NSMutableArray.new;
-	
-	for (BeatTag* tag in allTags) {
-		if (![defs containsObject:tag.definition]) [defs addObject:tag.definition];
-	}
-	
+    
+    for (BeatTag* tag in allTags) {
+        if (![defs containsObject:tag.definition]) [defs addObject:tag.definition];
+    }
+    
     NSMutableArray<NSDictionary*>* defsToSave = NSMutableArray.new;
-	for (TagDefinition *def in defs) {
-		[defsToSave addObject:@{
-			@"name": def.name,
-			@"type": [BeatTagging keyFor:def.type],
-			@"id": def.defId
-		}];
-	}
-	
-	return defsToSave;
+    for (TagDefinition *def in defs) {
+        [defsToSave addObject:@{
+            @"name": def.name,
+            @"type": [BeatTagging keyFor:def.type],
+            @"id": def.defId
+        }];
+    }
+    
+    return defsToSave;
 }
 
 + (NSMutableArray<TagDefinition*>*)definitionsForTags:(NSArray<BeatTag*>*)tags
@@ -980,13 +993,20 @@
 	}];
 }
 
+/// - warning For some reason, this is very slow. Use `saveTagsWithAttributedString:` when you have a pre-computed attributed string available.
 - (void)saveTags
 {
-    NSArray<NSDictionary*>* tags = self.serializedTagData;
-	NSArray* definitions = [self getDefinitionsForSaving];
-	
-	[_delegate.documentSettings set:DocSettingTags as:tags];
-	[_delegate.documentSettings set:DocSettingTagDefinitions as:definitions];
+    [self saveTagsWithAttributedString:self.delegate.attributedString];
+}
+
+- (void)saveTagsWithAttributedString:(NSAttributedString*)attrStr
+{
+    NSArray<BeatTag*>* allTags = [BeatTagging allTagsFrom:attrStr];
+    NSArray<NSDictionary*>* tags = [self serializedTagDataWithTags:allTags];
+    NSArray* definitions = [self getDefinitionsForSavinWithTags:allTags];
+    
+    [_delegate.documentSettings set:DocSettingTags as:tags];
+    [_delegate.documentSettings set:DocSettingTagDefinitions as:definitions];
 }
 
 - (void)updateTaggingData 

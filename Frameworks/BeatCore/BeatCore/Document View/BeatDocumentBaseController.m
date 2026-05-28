@@ -693,17 +693,20 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
-    [self bakeRevisions];
+    // Do we need to bake revisions here? Aren't they stored using attributed string nowadays?
+    //[self bakeRevisions];
     
-    // For async saving & thread safety, make a copy of the lines array
+    [BeatMeasure start:@"      -- Full save"];
+    
     NSAttributedString *attrStr = self.getAttributedText;
     NSString* content = self.parser.screenplayForSaving;
-    NSString* actualText = self.text;
+    NSString* visibleText = self.text;
+    NSString* parsedText = self.parser.rawText;
     
     // Make sure data is intact
-    if (actualText.length != content.length) {
+    if (visibleText.length != parsedText.length) {
         NSLog(@"🆘 Editor and parser are out of sync. We'll use the editor text.");
-        content = actualText;
+        content = visibleText;
     }
     
     if (content == nil) {
@@ -713,24 +716,24 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     
     // Resort to content buffer if needed
     if (content == nil) content = self.attrTextCache.string;
-
+    
     // Store the text length. This is used for health checks.
     [self.documentSettings setInt:DocSettingTextLengthAtSave as:content.length];
-    
+        
     // Save added/removed ranges
     // This saves the revised ranges into Document Settings
     NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
     [self.documentSettings set:DocSettingRevisions as:revisions];
     
     // Save tag definitions and ranges
-    [self.tagging saveTags];
+    [self.tagging saveTagsWithAttributedString:attrStr];
     
     // Save current revision color
     [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
     
     // Store currently running plugins (the ones which support restoration)
     [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
-        
+    
     // Save reviewed ranges
     NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
     [self.documentSettings set:DocSettingReviews as:reviews];
@@ -750,12 +753,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
 
     // Add line break if needed
-    if (content.length > 0 && ![[content substringFromIndex:content.length-1] isEqualToString:@"\n"])
+    if (content.length > 0 && [content characterAtIndex:content.length - 1] != '\n')
         settingsString = [NSString stringWithFormat:@"\n%@", settingsString];
 
     // Create final result string
     NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
     
+    [BeatMeasure end:@"      -- Full save"];
+        
     [self documentWasSaved];
     
     return result;
@@ -766,7 +771,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)bakeRevisions
 {
-    [BeatRevisions bakeRevisionsIntoLines:self.parser.lines.copy text:self.getAttributedText];
+    [self.revisionTracking bakeRevisions];
 }
 
 - (NSIndexSet*)shownRevisions

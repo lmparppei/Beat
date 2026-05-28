@@ -152,6 +152,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (void)bakeTags;
 /// Saves tag data into document settings.
 - (void)saveTags;
+/// Saves tag data into document settings using a pre-existing attributed string. 
+- (void)saveTagsWithAttributedString:(NSAttributedString*)attrStr;
 /// A UI string for listing tags in given scene
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
 /// Returns all tag __definitions__ in current document as seriazible dictionaries for storing them as JSON
