@@ -59,7 +59,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 - (bool)isDark;
 - (void)showLockStatus;
-//- (void)handleTabPress;
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (CGFloat)lineHeight;
