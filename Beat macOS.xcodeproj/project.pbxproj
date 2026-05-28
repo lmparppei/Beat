@@ -298,6 +298,7 @@
 		B617658B2BA5A2AB00F18417 /* BeatTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765882BA5A2AB00F18417 /* BeatTimer.m */; };
 		B617658C2BA5A2AB00F18417 /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765892BA5A2AB00F18417 /* BeatTimerView.m */; };
 		B617658D2BA5A2AB00F18417 /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61765892BA5A2AB00F18417 /* BeatTimerView.m */; };
+		B6180CD32FC636E000831FEC /* beat-cli in Embed CLI tool */ = {isa = PBXBuildFile; fileRef = B66F1D1F2ED74D3B005EB432 /* beat-cli */; };
 		B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
 		B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
 		B61F016F266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
@@ -893,6 +894,17 @@
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6180CD22FC636CE00831FEC /* Embed CLI tool */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				B6180CD32FC636E000831FEC /* beat-cli in Embed CLI tool */,
+			);
+			name = "Embed CLI tool";
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		B64C29682ED88F970064835E /* Embed CLI Tool */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -2600,6 +2612,7 @@
 				B6F4A2D0221EE96D0065D9CB /* CopyFiles */,
 				B6B6358E2222C8C8003159AF /* ShellScript */,
 				B67F75732B1735410028D009 /* Embed Foundation Extensions */,
+				B6180CD22FC636CE00831FEC /* Embed CLI tool */,
 			);
 			buildRules = (
 			);
@@ -3950,7 +3963,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133483;
+				CURRENT_PROJECT_VERSION = 133557;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3973,7 +3986,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.19;
+				MARKETING_VERSION = 2.1.18;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
@@ -4000,7 +4013,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133483;
+				CURRENT_PROJECT_VERSION = 133557;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4023,7 +4036,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.0.19;
+				MARKETING_VERSION = 2.1.18;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				OTHER_SWIFT_FLAGS = "-DADHOC";
