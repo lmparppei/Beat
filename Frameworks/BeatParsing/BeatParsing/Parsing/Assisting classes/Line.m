@@ -163,11 +163,15 @@
 
 /* This should be implemented as NSCopying */
 
--(id)copy {
+-(id)copy
+{
     return [self clone];
 }
 
-- (Line*)clone {
+/// I'm not sure why we're not using `copy` here, but whatever. Use this to create a copy.
+/// - note __Never__ copy the parser reference to avoid memory leaks
+- (Line*)clone
+{
     Line* newLine = [Line withString:self.string type:self.type];
     newLine.representedLine = self;
     newLine.uuid = self.uuid;
@@ -184,7 +188,6 @@
     
     if (self.revisedRanges.count > 0) newLine.revisedRanges = self.revisedRanges.mutableCopy;
     
-    // Not sure why these are guarded.
     NSMutableDictionary* ranges = NSMutableDictionary.new;
     for (NSValue* key in self.formattedRanges.allKeys) {
         if (self.formattedRanges[key] != nil) {
@@ -196,19 +199,6 @@
     }
     
     newLine.formattedRanges = ranges;
-    
-    /*
-    newLine.italicRanges = self.italicRanges.mutableCopy;
-    newLine.boldRanges = self.boldRanges.mutableCopy;
-    newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
-    newLine.noteRanges = self.noteRanges.mutableCopy;
-    newLine.omittedRanges = self.omittedRanges.mutableCopy;
-    newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
-    newLine.sceneNumberRange = self.sceneNumberRange;
-    newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
-    newLine.escapeRanges = self.escapeRanges.mutableCopy;
-    newLine.macroRanges = self.macroRanges.mutableCopy;
-    */
      
     newLine.sceneNumberRange = self.sceneNumberRange;
     newLine.sceneNumber = self.sceneNumber.copy;
