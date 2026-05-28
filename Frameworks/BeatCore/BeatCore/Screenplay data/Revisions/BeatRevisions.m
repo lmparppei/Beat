@@ -228,10 +228,12 @@
     return ranges;
 }
 
-#pragma mark Attributed string
+
+#pragma mark - Saving and loading revisions from settings
 
 /// Writes the given revisions into a plain text string, and returns an attributed string
-+ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
++ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string
+{
     NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(string) ? string : @""];
     [BeatRevisions loadRevisionsFromDictionary:revisions toAttributedString:attrStr];
     return attrStr;
@@ -312,6 +314,12 @@
     return self;
 }
 
+/// Bakes current revisions into the lines of our current parser. Shorthand for the full method.
+/// - note We are using a copy of the actual lines array for semi-thread safety.
+- (void)bakeRevisions
+{
+    [BeatRevisions bakeRevisionsIntoLines:_delegate.parser.lines.copy text:_delegate.getAttributedText];
+}
 
 /// Adds  revision attributes from the delegate
 - (void)loadRevisions {

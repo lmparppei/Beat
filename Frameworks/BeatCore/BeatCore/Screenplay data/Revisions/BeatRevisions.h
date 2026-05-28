@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 #else
 @interface BeatRevisions: NSResponder <BeatRevisionExports>
 #endif
+- (void)bakeRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string;
 + (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
