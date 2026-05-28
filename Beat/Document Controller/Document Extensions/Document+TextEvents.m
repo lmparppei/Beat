@@ -236,39 +236,4 @@
 	[self setTypeAndFormat:cueLine type:empty];
 }
 
-/*
-#pragma mark - Character cues
-// TODO: Move these to text view
-
-- (void)handleTabPress
-{
-	// TODO: Move this to text view
-	// Force character if the line is suitable
-	Line *currentLine = self.currentLine;
-	
-	if (currentLine.isAnyCharacter && currentLine.string.length > 0) {
-		if ([self.text positionInsideParentheticals:self.selectedRange.location]) {
-			[self.textActions moveToNextDialogueLineOrAddNew];
-		} else {
-			[self.formattingActions addOrEditCharacterExtension];
-		}
-	} else if (currentLine.isAnyDialogue && currentLine.string.length == 0) {
-		[self.textActions addString:@"()" atIndex:currentLine.position];
-		self.selectedRange = NSMakeRange(currentLine.position+1, 0);
-	} else {
-		[self forceCharacterInput];
-	}
-}
-
-- (void)forceCharacterInput
-{
-	// TODO: Move this to text view
-	// Don't allow this to happen twice
-	if (self.characterInput) return;
-	
-	[self.formattingActions addCue];
-}
-*/
-
-
 @end
