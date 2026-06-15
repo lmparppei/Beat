@@ -7,6 +7,7 @@
 
 #import "NSAttributedString+ConvertToFountain.h"
 #import <BeatCore/BeatCompatibility.h>
+#import <BeatCore/BeatMeasure.h>
 #import __OS_KIT
 
 typedef NS_OPTIONS(NSUInteger, PastedFragmentStyle) {
@@ -51,13 +52,13 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
 {
     // A basic attributed string. Here we'll check for some spacing etc.
     NSMutableString* result = NSMutableString.new;
-    
+        
     [self.string enumerateSubstringsInRange:NSMakeRange(0, self.length)
                                        options:NSStringEnumerationByParagraphs
                                     usingBlock:^(NSString * _Nullable paragraph,
                                                  NSRange paragraphRange,
                                                  NSRange enclosingRange,
-                                                 BOOL * _Nonnull stop) {        
+                                                 BOOL * _Nonnull stop) {
         NSAttributedString* paragraphStr = [self attributedSubstringFromRange:paragraphRange];
         NSMutableString* str = NSMutableString.new;
         
@@ -111,9 +112,10 @@ static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
         CGFloat spacing = font.ascender;
                     
         // In sub-paragraphs, we might need to add line breaks to mimic paragraph spacing
-        if (result.length > 0 && (pStyle.paragraphSpacingBefore > 0 || spacing > font.pointSize) && NSMaxRange(paragraphRange) != self.string.length) [result appendString:@"\n"];
+        if (result.length > 0 && (pStyle.paragraphSpacingBefore > 0 || spacing > font.pointSize)) [result appendString:@"\n"];
         [result appendString:str];
-        [result appendString:@"\n"];
+        // Don't add the trailing paragraph break at the last line
+        if (NSMaxRange(paragraphRange) != self.string.length) [result appendString:@"\n"];
         if (pStyle.paragraphSpacing > 0) [result appendString:@"\n"];
     }];
     
