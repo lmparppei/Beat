@@ -239,13 +239,12 @@
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController
 {
 	[super windowControllerWillLoadNib:windowController];
-
+	
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
 	
 	// Initialize parser
 	self.documentIsLoading = YES;
-	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController
@@ -264,6 +263,7 @@
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self; // The conformance is provided by a Swift extension
 	
+	[self setupParser];
 	[self setup];
 }
 
@@ -314,15 +314,18 @@
 
 /// Loads text & remove settings block from Fountain.
 /// - note: `readBeatDocumentString:` is implemented by the super class. It will handle setting `contentBuffer` at load.
+/// - warning: This makes no fucking sense. It's not a superclass thing, because we are allocating the parser in a very different way on iOS.
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
 {
 	self.documentIsLoading = true;
 
 	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
-	text = [self readBeatDocumentString:text];
+	self.contentBuffer = text;
+	
+	//text = [self readBeatDocumentString:text];
 	
 	// If we're not reverting, we can also set the text here
-	if (!reverting)	[self setText:text];
+	//if (!reverting) [self setText:text];
 	
 	return YES;
 }
@@ -336,6 +339,7 @@
 	
 	[self readFromData:data ofType:typeName error:nil reverting:YES];
 	
+	[self setupParser];
 	[self setupDocument];
 }
 
@@ -363,6 +367,8 @@
 - (void)revertToText:(NSString*)text
 {
 	[super revertToText:text];
+	
+	[self setupParser];
 	[self setupDocument];
 	[self addToChangeCount];
 }
@@ -402,11 +408,21 @@
 
 #pragma mark - Setup
 
+/// Call this FIRST before doing anything else
+- (void)setupParser
+{
+	// Let's initialize the parser from previously loaded content buffer.
+	if (self.contentBuffer == nil) self.contentBuffer = @"";
+	self.parser = [ContinuousFountainParser withRawString:self.contentBuffer delegate:self settings:self.documentSettings];
+}
+
 /**
  Flow: `windowControllerDidLoadNib` -> `setup` -> `setupDocument` -> `renderDocument` -> (async formatting) -> `loadingComplete`
  */
 - (void)setup
 {
+	self.documentIsLoading = true;
+
 	[self.previewController setup];
 	
 	// Setup plugins
@@ -417,7 +433,9 @@
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
-		// Initialize theme
+	[self.textView setNeedsDisplay:true];
+		
+	// Initialize theme
 	[self loadSelectedTheme:false];
 	
 	// Setup views
@@ -443,21 +461,13 @@
 /// Reloads all necessary things. Should be called when the whole text has changed.
 - (void)setupDocument
 {
-	self.documentIsLoading = true;
-	if (self.contentBuffer == nil) self.contentBuffer = @"";
-	
-	[self.textView setNeedsDisplay:true];
-	
 	self.textView.alphaValue = 0.0;
-	
-	// We are re-initializing the parser here for some reason. Do we need to?
-	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
-	
+		
 	if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
 	[self.undoManager removeAllActions];
 	
-	// Put any previously loaded text into the text view when it's loaded
-	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
+	// Put the text from parser to the text view
+	[self.textView setText:self.parser.text];
 	
 	// Set up revision tracking before preview is created and lines are rendered on screen
 	[self.revisionTracking setup];
