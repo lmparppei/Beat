@@ -298,3 +298,6 @@
 "versionControl.reset.confirm" = "Ali ste prepričani, da želite ponastaviti nadzor različic?";
 "versionControl.reset.info" = "S tem boste izbrisali vse svoje commite do te točke. Tega dejanja ni mogoče razveljaviti.";
 "versionControl.reset" = "Ponastavi";
+
+"versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
+"versionMenu.noVersions" = "Ni alternativnih verzij";

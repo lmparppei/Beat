@@ -782,3 +782,6 @@
 "versionControl.reset.confirm" = "Êtes-vous sûr de vouloir réinitialiser le contrôle de version ?";
 "versionControl.reset.info" = "Cela supprimera tous vos commits jusqu'à ce point. Cette action est irréversible.";
 "versionControl.reset" = "Réinitialiser";
+
+"versionMenu.newVersion" = "Ajouter une nouvelle alternative pour cette ligne";
+"versionMenu.noVersions" = "Aucune version alternative";

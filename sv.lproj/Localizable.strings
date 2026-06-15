@@ -9,6 +9,7 @@
 
 /* (No Comment) */
 "backup.reverting.message" = "Alla osparade ändringar försvinner när du återgår till en tidigare version.";
+"revert.revertAction" = "Återgå";
 
 /* (No Comment) */
 "backup.reverting.title" = "Återgå";
@@ -489,3 +490,6 @@
 "versionControl.reset.info" = "Detta raderar alla dina commits fram till den här punkten. Åtgärden kan inte ångras.";
 
 "versionControl.reset" = "Återställ";
+
+"versionMenu.newVersion" = "Lägg till nytt alternativ för den här raden";
+"versionMenu.noVersions" = "Inga alternativa versioner";

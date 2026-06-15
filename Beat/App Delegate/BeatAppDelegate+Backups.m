@@ -162,7 +162,7 @@
 		[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:version.URL ofType:NSPlainTextDocumentType error:&error];
 		if (error) NSLog(@"Error: %@", error);
 		
-	} buttons:@[[BeatLocalization key:@"revert.revertAction"], [BeatLocalization key:@"general.cancel"]]];
+	} buttons:@[[BeatLocalization key:@"backup.revertAction"], [BeatLocalization key:@"general.cancel"]]];
 }
 
 

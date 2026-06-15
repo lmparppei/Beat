@@ -763,3 +763,6 @@
 "versionControl.reset.confirm" = "¿Estás seguro de que quieres restablecer el control de versiones?";
 "versionControl.reset.info" = "Esto eliminará todos tus commits hasta este punto. Esta acción no se puede deshacer.";
 "versionControl.reset" = "Restablecer";
+
+"versionMenu.newVersion" = "Añadir nueva alternativa para esta línea";
+"versionMenu.noVersions" = "Sin versiones alternativas";

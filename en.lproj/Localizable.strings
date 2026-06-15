@@ -143,6 +143,7 @@
 
 "backup.reverting.title" = "Revert File";
 "backup.reverting.message" = "Any unsaved changes will be lost when reverting to an earlier version.";
+"revert.revertAction" = "Revert";
 
 "editor.setSceneNumber" = "Set Number For Scene";
 "editor.setSceneNumber.info" = "Custom scene number (can include letters, or press space for a scene with no scene number)";
@@ -352,3 +353,6 @@
 "export.printHeadingColor" = "Colored Scene Headings";
 
 "review.keyword.none" = "No #keywords";
+
+"versionMenu.newVersion" = "Add New Alternative for This Line";
+"versionMenu.noVersions" = "No Alternative Versions";

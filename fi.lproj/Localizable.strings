@@ -116,6 +116,7 @@
 
 "backup.revertToSaved" = "Viimeksi tallennettu";
 "backup.backupVault" = "Avaa varmuuskopiokansio...";
+"revert.revertAction" = "Palauta";
 
 "backup.saved" = "Tallennettu";
 "backup.revertAction" = "Palauta";
@@ -308,3 +309,6 @@
 "versionControl.reset.info" = "Tämä poistaa kaikki muutokset tähän pisteeseen asti. Tätä toimintoa ei voi kumota.";
 
 "versionControl.reset" = "Nollaa";
+
+"versionMenu.newVersion" = "Lisää vaihtoehtoinen versio rivistä";
+"versionMenu.noVersions" = "Ei vaihtoehtoisia versioita";
