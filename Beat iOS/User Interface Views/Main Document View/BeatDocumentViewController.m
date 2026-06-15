@@ -222,7 +222,6 @@
 		[self restoreCaret];
 	});
 }
-SimulatedTyping* typing;
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -232,6 +231,9 @@ SimulatedTyping* typing;
 		editorWasActive = false;
 		[self.textView becomeFirstResponder];
 	}
+	
+	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
+	delegate.currentDocument = self.document;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -251,32 +253,33 @@ SimulatedTyping* typing;
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback
 {
-	[self.document openWithCompletionHandler:^(BOOL success) {
-		// Do something here maybe
-		if (!success) return;
-		
-		self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
-		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.document.rawText];
-		self.attrTextCache = self.formattedTextBuffer;
-		
-		// Load fonts (iOS is limited to serif courier for now)
-		[self loadFonts];
-		
-		// Format the document. We'll create a static formatting instance for this operation.
-		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
-		formatting.delegate = self;
-		
-		// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
-		for (Line* line in self.parser.lines) {
-			@autoreleasepool {
-				[formatting formatLine:line firstTime:true];
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		[self.document openWithCompletionHandler:^(BOOL success) {
+			// Do something here maybe
+			if (!success) return;
+			
+			self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
+			self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.parser.text];
+			self.attrTextCache = self.formattedTextBuffer;
+			
+			// Load fonts before formatting
+			[self loadFonts];
+			
+			// Format the document. We'll create a static formatting instance for this operation.
+			BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
+			formatting.delegate = self;
+			
+			// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
+			for (Line* line in self.parser.lines) {
+				@autoreleasepool {
+					[formatting formatLine:line firstTime:true];
+				}
 			}
-		}
-		
-		[self.parser.changedIndices removeAllIndexes];
-		
-		callback();
-	}];
+			
+			[self.parser.changedIndices removeAllIndexes];
+			callback();
+		}];
+	});
 }
 
 - (void)setStylesheetAndReformat:(NSString *)name
@@ -356,7 +359,8 @@ SimulatedTyping* typing;
 - (IBAction)dismissDocumentViewController:(id)sender
 {
 	[self dismissViewControllerAnimated:true completion:^{
-		[self.document closeWithCompletionHandler:nil];
+		[self.document closeWithCompletionHandler:^(BOOL success) {
+		}];
 	}];
 }
 

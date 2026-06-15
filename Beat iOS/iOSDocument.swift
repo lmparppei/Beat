@@ -32,9 +32,8 @@ class iOSDocument: UIDocument {
 	override var description: String {
 		return fileURL.deletingPathExtension().lastPathComponent
 	}
-	
+		
     override func contents(forType typeName: String) throws -> Any {
-		print("... Asking for contents")
 		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
 			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
 		}
@@ -47,7 +46,6 @@ class iOSDocument: UIDocument {
 		if !backup {
 			print("Backup failed")
 		}
-		
 		return success
 	}
 		
