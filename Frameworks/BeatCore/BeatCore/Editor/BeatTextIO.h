@@ -99,6 +99,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 /// @returns `true` if something happened, `false` if not.
 - (BOOL)moveToNextDialogueLineOrAddNew;
 
+- (void)switchToVersion:(NSInteger)index;
+- (void)addVersionForLine:(Line*)line;
+
 @end
 
 

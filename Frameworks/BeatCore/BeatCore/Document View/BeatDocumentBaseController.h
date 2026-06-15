@@ -219,7 +219,7 @@ NS_ASSUME_NONNULL_END
 @property (strong, nonatomic) NSString* _Nullable contentBuffer;
 
 - (NSString* _Nullable)text;
-- (void)setText:(NSString * _Nonnull)text;
+//- (void)setText:(NSString * _Nonnull)text;
 
 - (NSAttributedString * _Nonnull)getAttributedText;
 - (NSAttributedString * _Nonnull)attributedString;

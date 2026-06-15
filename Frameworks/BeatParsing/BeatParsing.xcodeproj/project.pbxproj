@@ -25,6 +25,8 @@
 		B61A4E972D22079600CE761C /* NSDictionary+Inverse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */; };
 		B61A4E9A2D220F7900CE761C /* Line+RangeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E982D220F7900CE761C /* Line+RangeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E992D220F7900CE761C /* Line+RangeLookup.m */; };
+		B62D7D8C2FC87F8D00FE8ED9 /* Line+Versions.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B62D7D8D2FC87F8D00FE8ED9 /* Line+Versions.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */; };
 		B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */; };
 		B637EE112A4A0AB300F4E7AA /* OutlineChanges.h in Headers */ = {isa = PBXBuildFile; fileRef = B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B637EE122A4A0AB300F4E7AA /* OutlineChanges.m in Sources */ = {isa = PBXBuildFile; fileRef = B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */; };
@@ -117,6 +119,8 @@
 		B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDictionary+Inverse.swift"; sourceTree = "<group>"; };
 		B61A4E982D220F7900CE761C /* Line+RangeLookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+RangeLookup.h"; sourceTree = "<group>"; };
 		B61A4E992D220F7900CE761C /* Line+RangeLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+RangeLookup.m"; sourceTree = "<group>"; };
+		B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Versions.h"; sourceTree = "<group>"; };
+		B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Versions.m"; sourceTree = "<group>"; };
 		B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTypeParsingRules.swift; sourceTree = "<group>"; };
 		B637EE0F2A4A0AB300F4E7AA /* OutlineChanges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineChanges.h; sourceTree = "<group>"; };
 		B637EE102A4A0AB300F4E7AA /* OutlineChanges.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineChanges.m; sourceTree = "<group>"; };
@@ -249,6 +253,8 @@
 				B61A4E932D22068900CE761C /* Line+SplitAndJoin.m */,
 				B61A4E982D220F7900CE761C /* Line+RangeLookup.h */,
 				B61A4E992D220F7900CE761C /* Line+RangeLookup.m */,
+				B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */,
+				B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */,
 			);
 			path = "Line Extensions";
 			sourceTree = "<group>";
@@ -418,6 +424,7 @@
 				B61A4E8C2D21990B00CE761C /* Line+Storybeats.h in Headers */,
 				B6D1E5102C456D020014D16B /* ContinuousFountainParser+Omissions.h in Headers */,
 				B6737DF02CD2DBE700644D98 /* ContinuousFountainParser+Notes.h in Headers */,
+				B62D7D8C2FC87F8D00FE8ED9 /* Line+Versions.h in Headers */,
 				B61A4E882D21923800CE761C /* Line+AttributedStrings.h in Headers */,
 				B69066862F1E7A620004AE58 /* ContinuousFountainParser+TitlePage.h in Headers */,
 				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
@@ -541,6 +548,7 @@
 				B61A4E802D218D4F00CE761C /* Line+Type.m in Sources */,
 				B6DBB2C32D778F93008327EF /* ContinuousFountainParser+Lookup.m in Sources */,
 				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
+				B62D7D8D2FC87F8D00FE8ED9 /* Line+Versions.m in Sources */,
 				B6C597B82E66F3AD00418587 /* ContinuousFountainParser+Macros.m in Sources */,
 				B6DC61552D1834BB00ED708A /* ParsingRule.m in Sources */,
 				B6F9ED7B2E9FAF9C00DE450F /* BeatWeakLine.swift in Sources */,

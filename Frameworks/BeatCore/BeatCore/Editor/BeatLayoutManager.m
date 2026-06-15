@@ -150,7 +150,7 @@
         }
         
         if (line.versions.count > 0) {
-            [self drawVersion:rect line:line inset:inset];
+            [self drawVersion:boundingRect line:line inset:inset];
         }
     }];
 }
@@ -765,8 +765,12 @@
 
 - (void)drawVersion:(CGRect)rect line:(Line*)line inset:(CGSize)inset
 {
-    CGFloat x = _editorDelegate.documentWidth - (inset.width / 2);
-    CGFloat y = rect.origin.y;
+    CGFloat padding = self.textContainers.firstObject.lineFragmentPadding;
+    CGFloat w = _editorDelegate.documentWidth - padding * 2;
+    CGRect r = CGRectMake(inset.width + rect.origin.x, rect.origin.y + inset.height, w, rect.size.height);
+    
+    CGFloat x = CGRectGetMaxX(r);
+    CGFloat y = r.origin.y;
     
     NSString* str = [NSString stringWithFormat:@"%lu/%lu", line.currentVersion+1, line.versions.count];
     [str drawAtPoint:CGPointMake(x, y) withAttributes:@{
@@ -908,7 +912,7 @@
     [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
     
     free(newGlyphs);
-    free(modifiedProps);    
+    free(modifiedProps);
     CFRelease(modifiedStr);
     
     return glyphRange.length;

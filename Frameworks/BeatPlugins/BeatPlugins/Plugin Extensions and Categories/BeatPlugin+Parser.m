@@ -14,13 +14,8 @@
 /// Parses string and return a new parser object
 - (ContinuousFountainParser*)parser:(NSString*)string
 {
-    // Catch document settings
-    NSRange settingsRange = [[[BeatDocumentSettings alloc] init] readSettingsAndReturnRange:string];
-    if (settingsRange.length > 0) {
-        string = [self removeRange:settingsRange from:string];
-    }
-    
-    ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:string];
+    BeatDocumentSettings* settings = BeatDocumentSettings.new;
+    ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initStaticParsingWithString:string settings:settings];
     return parser;
 }
 
@@ -29,6 +24,7 @@
 {
     return [Line withString:string type:type];
 }
+
 /// Returns parsed `Line` objects for current document.
 - (NSArray*)lines { return self.delegate.parser.lines; }
 - (NSArray*)linesForScene:(id)sceneId { return [self.delegate.parser linesForScene:(OutlineScene*)sceneId]; }
@@ -146,16 +142,5 @@
     return self.delegate.parser;
 }
 
-- (NSString*)removeRange:(NSRange)range from:(NSString*)string {
-    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:(NSRange){0, string.length}];
-    [indexSet removeIndexesInRange:range];
-    
-    NSMutableString *result = [NSMutableString string];
-    [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [result appendString:[string substringWithRange:range]];
-    }];
-    
-    return result;
-}
 
 @end

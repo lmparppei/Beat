@@ -713,7 +713,7 @@ static NSString *macroSymbolClose = @"}}";
     Line* line = self.delegate.currentLine;
     if (line.versions.count <= 1) return;
     
-    NSDictionary* version = [line switchVersion:amount];
+    NSDictionary* version = [line stepVersion:amount];
     if (version != nil && version[@"text"] != nil) {
         [self.delegate.textActions replaceRange:line.textRange withString:version[@"text"]];
         [self.delegate.revisionTracking loadLocalRevision:version[@"revisions"] line:line];
@@ -727,11 +727,11 @@ static NSString *macroSymbolClose = @"}}";
      */
 }
 
+
 -  (IBAction)addVersionForLine:(id)sender
 {
     Line* line = self.delegate.currentLine;
-    [line addVersion];
-    [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+    [self.delegate.textActions addVersionForLine:line];
 }
 
 

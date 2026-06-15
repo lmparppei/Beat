@@ -938,4 +938,26 @@ static NSString *centeredEnd = @" <";
     return false;
 }
 
+
+#pragma mark - Versions
+
+- (void)switchToVersion:(NSInteger)index
+{
+    [self.delegate bakeRevisions];
+    
+    Line* line = self.delegate.currentLine;
+    
+    NSDictionary* version = [line switchVersion:index];
+    if (version != nil && version[@"text"] != nil) {
+        [self.delegate.textActions replaceRange:line.textRange withString:version[@"text"]];
+        [self.delegate.revisionTracking loadLocalRevision:version[@"revisions"] line:line];
+    }
+}
+
+- (void)addVersionForLine:(Line*)line
+{
+    [line addVersion];
+    [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+}
+
 @end

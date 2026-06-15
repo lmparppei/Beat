@@ -74,16 +74,23 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @class BeatTagging;
 @class BeatPaginationPage;
 @class BeatEditorPopoverController;
+@class BeatValidationItem;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
 @property (weak) IBOutlet BeatTagging *tagging;
+
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
+@property (nonatomic) IBOutlet NSMenu *lineVersionMenu;
+
 @property (nonatomic) NSString* text;
 @property (nonatomic) BeatEditorPopoverController* popoverController;
 
 @property (nonatomic) bool didType;
+
+/// Automatically validated menu items
+@property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
 
 /// This is set `true` while the user is scrolling the view
 @property (nonatomic) bool scrolling;

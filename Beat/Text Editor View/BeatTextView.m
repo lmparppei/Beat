@@ -80,9 +80,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
-/// Validated menu items
-@property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
-
 @property (weak, nonatomic) IBOutlet NSScrollView* minimapContainer;
 @property (nonatomic) IBOutlet MinimapTextView* minimapView;
 
@@ -178,7 +175,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		self.layoutManager.delegate = (id<NSLayoutManagerDelegate>)self.layoutManager;
 	}
 
-	
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
 	
@@ -547,6 +543,16 @@ Line *cachedRectLine;
 		[menu addItem:NSMenuItem.separatorItem];
 		
 		for (NSMenuItem* item in self.contextMenu.itemArray) [menu addItem:item.copy];
+		menu.delegate = self;
+	}
+	
+	// Add submenu delegate
+	for (NSMenuItem* item in menu.itemArray) {
+		if (item.menu.itemArray.count > 0) {
+			if ([item.submenu isKindOfClass:BeatLineVersionMenu.class]) {
+				item.submenu.delegate = self;
+			}
+		}
 	}
 	
 	return menu;
@@ -632,38 +638,6 @@ double clamp(double d, double min, double max)
 	return t > max ? max : t;
 }
 
-
-#pragma mark - Validate menu items
-
-- (void)setupValidationItems
-{
-	self.validatedMenuItems = @[
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:BeatUserDefaults.sharedDefaults],
-	];
-}
-
-- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
-{
-	for (BeatValidationItem *item in self.validatedMenuItems) {
-		if (menuItem.action == item.selector) {
-			bool on = [item validate];
-			if (on) [menuItem setState:NSOnState];
-			else [menuItem setState:NSOffState];
-		}
-	}
-	
-	if (menuItem.action == @selector(toggleFocusMode:)) {
-		return [self validateFocusMode:menuItem];
-	}
-	
-	return [super validateMenuItem:menuItem];
-}
-
-- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem {
-	// Remove context menu for layout orientation change
-	if (anItem.action == @selector(changeLayoutOrientation:)) return NO;
-	return [super validateUserInterfaceItem:anItem];
-}
 
 
 #pragma mark - Hiding markup

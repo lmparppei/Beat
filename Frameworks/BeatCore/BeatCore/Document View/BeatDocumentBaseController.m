@@ -141,6 +141,8 @@
 #pragma mark - Loading text
 
 /// Loads the given Beat document string by reading the settings block and returning content. Also sets the content buffer.
+/// - note Why don't we allocate the parser here? I know that on iOS the parser is held by the document, which is different than on macOS , which still uses the old design paradigm, where `Document` is also the view controller.
+/// However, we should be able to go around this in a way or another.
 - (NSString*)readBeatDocumentString:(NSString*)text
 {
     self.documentIsLoading = true;
@@ -605,12 +607,14 @@
     return self.textView.text;
 }
 
+/*
 - (void)setText:(NSString *)text
 {
     // If view is not ready yet, set text to buffer
     if (self.textView == nil) self.contentBuffer = text;
     else [self.textView setText:text];
 }
+ */
 
 
 #pragma mark - Text cache
@@ -693,15 +697,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
-    // Do we need to bake revisions here? Aren't they stored using attributed string nowadays?
+    // Do we need to bake revisions here? Aren't they stored using attributed string nowadays? Let's not and we'll see if something breaks, he he.
     //[self bakeRevisions];
-    
-    [BeatMeasure start:@"      -- Full save"];
     
     NSAttributedString *attrStr = self.getAttributedText;
     NSString* content = self.parser.screenplayForSaving;
     NSString* visibleText = self.text;
-    NSString* parsedText = self.parser.rawText;
+    NSString* parsedText = self.parser.text;
     
     // Make sure data is intact
     if (visibleText.length != parsedText.length) {
@@ -750,7 +752,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
         [self unblockUserInteraction];
     #endif
     
-    NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
+    NSString* settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
 
     // Add line break if needed
     if (content.length > 0 && [content characterAtIndex:content.length - 1] != '\n')
@@ -759,8 +761,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     // Create final result string
     NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
     
-    [BeatMeasure end:@"      -- Full save"];
-        
     [self documentWasSaved];
     
     return result;

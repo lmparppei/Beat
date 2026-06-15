@@ -456,9 +456,8 @@ NSUInteger prevLineAtLocationIndex = 0;
     // Don't go out of range
     if (array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
         /** Uh, wtf, how does this work?
-            We are checking if the search origin is in range from -1 to the full array count,
-            so I don't understand how and why this could actually work, and why are we getting
-            the correct behavior. The magician surprised themself, too.
+            We are checking if the search origin is in range from -1 to the full array count, so I don't understand how and why this could actually work, and why are we getting the correct behavior. The magician surprised themself, too.
+            (Edit in 2026: I think this works because -1 calculated as max int, so actually the range is array count ... max int.)
          */
         return nil;
     }
@@ -501,7 +500,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 #pragma mark - Element block lookup
 
 /// Returns the lines for a full dual dialogue block
-- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue {
+- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue
+{
     if (!line.isDialogue && !line.isDualDialogue) return @[];
     
     NSMutableArray<Line*>* left = NSMutableArray.new;
@@ -543,7 +543,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 /// Returns the lines for screenplay block in given range.
-- (NSArray<Line*>*)blockForRange:(NSRange)range {
+- (NSArray<Line*>*)blockForRange:(NSRange)range
+{
     NSMutableArray *blockLines = NSMutableArray.new;
     NSArray *lines;
     

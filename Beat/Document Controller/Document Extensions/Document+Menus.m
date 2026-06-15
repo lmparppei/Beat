@@ -45,6 +45,7 @@
 	SEL action = menuItem.action;
 
 	// Toggle checks first
+	// TODO: (wtf, there are multiple similar, basically overlapping menu item classes. These should be fixed at some point.
 	if ([menuItem isKindOfClass:BeatOnOffMenuItem.class]) {
 		BeatOnOffMenuItem* validatingItem = (BeatOnOffMenuItem*)menuItem;
 		valid = [validatingItem setCheckedWithDocument:self];
@@ -168,6 +169,9 @@
 	else if ([menuItem isKindOfClass:BeatVisibleRevisionMenuItem.class]) {
 		NSArray<NSNumber*>* indices = [self.documentSettings get:DocSettingHiddenRevisions];
 		[(BeatVisibleRevisionMenuItem*)menuItem validateWithVisibleRevisions:indices];
+	}
+	else if (menuItem.action == @selector(markAddition:) || menuItem.action == @selector(markRemoval:) || menuItem.action == @selector(clearMarkings:)) {
+		valid = (self.textView.selectedRange.length > 0);
 	}
 	
 	return valid;

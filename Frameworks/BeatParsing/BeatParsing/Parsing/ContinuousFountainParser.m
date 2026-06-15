@@ -65,8 +65,6 @@
 @property (nonatomic) NSUInteger lastLineIndex;
 /// The range which was edited most recently.
 @property (nonatomic) NSRange editedRange;
-/// This is set `true` when we're not parsing the text for the editor but rather for exporting etc.
-@property (nonatomic) bool nonContinuous;
 /// A private reference to all parsing rules. If you make a copy of the rule array, you can insert your own rules at runtime.
 @property (nonatomic) NSArray<ParsingRule*>* parsingRules;
 
@@ -77,16 +75,18 @@
 
 #pragma mark - Initializers
 
-/// Extracts the title page from given string
+/// Extracts the title page from given string and reparses it. We should create a special title page class.
+/// (Wow, there actually is one, `BeatTitlePage`, written in Swift, but it's not used anywhere in the app except for the document thumbnail provider for iOS. Maybe it's not worth all the refractoring at this point.)
 + (NSArray*)titlePageForString:(NSString*)string
 {
-    NSArray <NSString*>*rawLines = [string componentsSeparatedByString:@"\n"];
+    NSArray<NSString*>* rawLines = [string componentsSeparatedByString:@"\n"];
     
-    if (rawLines.count == 0) return @[];
-    else if (![rawLines.firstObject containsString:@":"]) return @[];
+    // No lines found
+    if (rawLines.count == 0 ||
+        ![rawLines.firstObject containsString:@":"]) return @[];
+    
     
     NSMutableString *text = NSMutableString.new;
-    
     for (NSString *l in rawLines) {
         // Break at empty line
         [text appendFormat:@"%@\n", l];
@@ -99,23 +99,28 @@
     return parser.titlePage;
 }
 
-- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings
+- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(inout BeatDocumentSettings*)settings
 {
     return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
 }
+
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous
 {
     return [self initWithString:string delegate:delegate settings:nil nonContinuous:nonContinuous];
 }
+
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate
 {
     return [self initWithString:string delegate:delegate settings:nil];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings
+
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(inout BeatDocumentSettings*)settings
 {
     return [self initWithString:string delegate:delegate settings:settings nonContinuous:NO];
 }
-- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous
+
+/// @warning Contrary to how these things worked in the past, you can no longer use the plain text as editor text. Always,__ ALWAYS__ fetch the plain text from parser after initialization. Don't use the plain string you provided to parser. You can also send the full text, with settings block.
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(inout BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous
 {
     self = [super init];
     
@@ -126,24 +131,34 @@
         _titlePage = NSMutableArray.array;
         
         _delegate = delegate;
-        _nonContinuous = nonContinuous;
-        _staticDocumentSettings = settings;
+        
+        // To avoid retain cycles and memory leaks, we'll only store a strong reference when using static parsing.
+        _staticDocumentSettings = (nonContinuous || delegate == nil) ? settings : nil;
         
         previousLineIndex = NSNotFound;
         previousSceneIndex = NSNotFound;
-        
-        // Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
-        if (_nonContinuous) _staticParser = YES;
-        else _staticParser = NO;
-        
+                
         // Store a local reference to parsing rules
         _parsingRules = ContinuousFountainParser.rules;
         
-        [self parseText:string];
+        NSRange settingsRange = [settings readSettingsAndReturnRange:string];
+        NSString* content = [string stringByRemovingRange:settingsRange];
+        
+        [self parseText:content];
         [self updateMacros];
     }
     
     return self;
+}
+
+/// Use this to initialize a parser with __raw__ string from a Fountain file. This automatically reads settings (__remember to pass a pointer!__) and initializes a parser. After this, you can get the actual content string for editor using `getRawText`
++ (ContinuousFountainParser*)withRawString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(inout BeatDocumentSettings*)settings
+{
+    NSRange settingsRange = [settings readSettingsAndReturnRange:string];
+    NSString* rawContent = [string stringByRemovingRange:settingsRange];
+    
+    ContinuousFountainParser* parser = [ContinuousFountainParser.alloc initWithString:rawContent delegate:delegate settings:settings];
+    return parser;
 }
 
 - (ContinuousFountainParser*)initWithString:(NSString*)string
@@ -176,14 +191,14 @@
 /// TODO: Perhaps the parser should hold the document settings and read them when originally parsing the document? This would be much more sensible.
 - (BeatDocumentSettings*)documentSettings
 {
-    if (self.staticDocumentSettings != nil) return self.staticDocumentSettings;
-    else return self.delegate.documentSettings;
+    if (self.delegate != nil) return self.delegate.documentSettings;
+    else return self.staticDocumentSettings;
 }
 
 
 #pragma mark - Saved file processing
 
-/// Returns the RAW text when saving a screenplay.
+/// Returns the RAW text when saving a screenplay, including additional markup (namely versions)
 - (NSString*)screenplayForSaving
 {
     NSArray *lines = self.safeLines.copy;
@@ -194,8 +209,7 @@
         if (!line) continue;
         
         NSString* string = line.string;
-        /*
-        // This won't work, because we need to keep editor + parser in sync. Alternatives need to be stored to settings.
+
         if (line.versions.count > 0) {
             // Update current version
             [line storeVersion];
@@ -205,10 +219,10 @@
                 @"versions": line.versionsForSerialization
             };
             NSData* versionData = [NSJSONSerialization dataWithJSONObject:versionDict options:0 error:nil];
-            NSString* versionString = [NSString stringWithFormat:@"\/** ALTERNATIVES: %@ *\/", [NSString.alloc initWithData:versionData encoding:NSUTF8StringEncoding]];
+            NSString* versionString = [NSString stringWithFormat:@"/** ALTERNATIVES: %@ */", [NSString.alloc initWithData:versionData encoding:NSUTF8StringEncoding]];
             
             string = [string stringByAppendingString:versionString];
-        }*/
+        }
     
         // Append to full content
         [content appendString:string];
@@ -223,7 +237,7 @@
 }
 
 /// Returns the whole document as single string
-- (NSString*)rawText
+- (NSString*)text
 {
     NSMutableString *string = NSMutableString.string;
     for (Line* line in self.lines) {
@@ -231,6 +245,12 @@
         else [string appendFormat:@"%@", line.string];
     }
     return string;
+}
+
+- (NSString*)rawText
+{
+    NSLog(@"!!! ContinuousFountainParser.rawText is deprecated");
+    return self.text;
 }
 
 
@@ -269,7 +289,7 @@
                 if (previousLine.type == character) previousLine.type = action;
             }
             
-            position += rawLine.length + 1; // +1 for newline character
+            position += line.length + 1; // +1 for newline character
             previousLine = line;
         }
     }
@@ -473,7 +493,7 @@
     
     // Make sure we have at least one line left after the operation
     if (self.lines.count == 0) {
-        Line* newLine = [Line withString:@"" type:empty];
+        Line* newLine = [Line withString:@"" type:empty parser:self];
         newLine.position = 0;
         [self.lines addObject:newLine];
     }
@@ -964,7 +984,7 @@
         
         if (words.count > 1) {
             NSString* potentialColor = words[1].lowercaseString;
-            if ([self.colors containsObject:potentialColor]) {
+            if ([ContinuousFountainParser.colors containsObject:potentialColor]) {
                 markerColor = potentialColor;
             }
         }
@@ -993,7 +1013,7 @@
 /// Finds and sets the color for given outline-level line. Only the last one is used, preceding color notes are ignored.
 - (NSString *)colorForHeading:(Line *)line
 {
-    NSArray *colors = self.colors;
+    NSArray *colors = ContinuousFountainParser.colors;
     
     __block NSString* headingColor = @"";
     line.colorRange = NSMakeRange(0, 0);
@@ -1078,10 +1098,14 @@
 #pragma mark - Colors
 
 /// We can't import `BeatColors` here, so let's use generic color names
-- (NSArray<NSString*>*)colors
++ (NSArray<NSString*>*)colors
 {
     static NSArray* colors;
-    if (colors == nil) colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
+    });
+
     return colors;
 }
 
