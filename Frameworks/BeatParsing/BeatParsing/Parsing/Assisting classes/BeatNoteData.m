@@ -14,6 +14,7 @@
  */
 
 #import "BeatNoteData.h"
+#import <BeatParsing/ContinuousFountainParser.h>
 
 @implementation BeatNoteData
 
@@ -28,7 +29,7 @@
     if ([lowercaseText rangeOfString:@"marker"].location == 0) {
         // Check if this note is a marker
         type = NoteTypeMarker;
-    } else if ([BeatNoteData.colors containsObject:lowercaseText] || [lowercaseText rangeOfString:@"color"].location == 0) {
+    } else if ([ContinuousFountainParser.colors containsObject:lowercaseText] || [lowercaseText rangeOfString:@"color"].location == 0) {
         // This note only contains a color
         type = NoteTypeColor;
     } else if ([lowercaseText rangeOfString:@"beat"].location == 0 || [lowercaseText rangeOfString:@"storyline"].location == 0) {
@@ -39,7 +40,7 @@
         // Check if this note has a color assigned to it, ie. [[red: Hello World]]
         NSInteger i = [lowercaseText rangeOfString:@":"].location;
         NSString* c = [lowercaseText substringToIndex:i];
-        if (c.length > 0 && ([c characterAtIndex:0] == '#' || [BeatNoteData.colors containsObject:c])) {
+        if (c.length > 0 && ([c characterAtIndex:0] == '#' || [ContinuousFountainParser.colors containsObject:c])) {
             color = c;
             content = [text substringFromIndex:i+1];
         }
@@ -47,14 +48,6 @@
         
     return [BeatNoteData.alloc initWithContent:content color:color range:range type:type];
 }
-
-+ (NSArray<NSString*>*)colors
-{
-    static NSArray* colors;
-    if (colors == nil) colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
-    return colors;
-}
-
 
 -(instancetype)initWithContent:(NSString*)content color:(NSString*)color range:(NSRange)range type:(NoteType)type
 {
@@ -93,6 +86,8 @@
             return @"beat";
         case NoteTypePageNumber:
             return @"page";
+        case NoteTypeTodo:
+            return @"todo";
         default:
             return @"";
     }
@@ -104,3 +99,48 @@
 }
 
 @end
+/**
+ 
+ writing this on a train
+ the same landscapes
+ every time but
+ i don't seem to memorize them
+ just a house here and there
+ a pier
+ a bridge
+ that's all
+ 
+ i've travelled these tracks
+ 200 kilometers
+ over and over again
+ but i can't remember a single trip
+ 
+ and from the landscape
+ of my past
+ all i can remember are
+ the worst moments
+ i've let them define me
+ all i can remember
+ are the darkest hours
+ when i wasn't
+ myself
+ whatever that means
+ am i that
+ am i those moments
+ can i be forgiven
+ forgiven by me
+ by others
+ by anyone
+ 
+ on the train again
+ meaningless seats
+ meaningless landscapes
+ meaningless coffee
+ and i won't remember this
+ trip
+ either
+ i'm so sorry
+ forgive me,
+ train
+ 
+ */
