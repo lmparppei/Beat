@@ -231,7 +231,10 @@ import BeatParsing
 		// Text view behavior
 		self.smartDashesType = .no
 		self.smartQuotesType = .no
-		self.smartInsertDeleteType = .no		
+		self.smartInsertDeleteType = .no
+		
+		// This *might* reduce blurriness.
+		self.layer.shouldRasterize = false
 		
 		resizePaper()
 		resize()
@@ -545,12 +548,10 @@ extension BeatUITextView: UIScrollViewDelegate {
 		// Set content scale factor (see UIView+Scale extension)
 		// We'll multiply the value with screen native scale. Not sure if this is wise or not.
 		let scale = scrollView.zoomScale * UIScreen.main.nativeScale
-		scrollView.scaleView(view: scrollView, scale: scale)
-		scrollView.scaleLayer(layer: scrollView.layer, scale: scale)
 		
-		self.scaleView(view: self, scale: scale)
-		self.scaleLayer(layer: self.layer, scale: scale)
-		
+		scrollView.scaleViewTree(to: scale)
+		self.scaleView(scale: scale)
+
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) { [weak self] in
 			self?.pageView?.frame.origin.x = frame.origin.x
 			
