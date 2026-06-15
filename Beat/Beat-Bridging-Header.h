@@ -33,6 +33,8 @@
 #import "BeatTextView.h"
 #import "BeatBrowserView.h"
 
+#import "BeatTextView+TypewriterMode.h"
+
 #import "BeatModalInput.h"
 
 #import "ITSwitch.h"

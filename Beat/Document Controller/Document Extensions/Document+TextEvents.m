@@ -136,7 +136,7 @@
 {
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
-	
+		
 	Line* currentLine = self.currentLine;
 	
 	// Reset forced character input

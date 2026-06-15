@@ -33,5 +33,9 @@
 	parser = nil;
 }
 
+-  (void)log:(NSString*)string
+{
+	[BeatConsole.shared logToConsole:string pluginName:@"DEBUG" context:nil];
+}
 
 @end
