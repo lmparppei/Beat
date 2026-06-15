@@ -206,7 +206,7 @@ import BeatCore
         }
               
         if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
-            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange:NSMakeRange(0, parser.rawText().count))
+            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange:NSMakeRange(0, parser.text().count))
             runPagination(pagination: operation)
         }
     }
