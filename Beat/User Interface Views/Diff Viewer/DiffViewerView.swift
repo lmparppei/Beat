@@ -448,13 +448,14 @@ class DiffViewerViewController: NSViewController {
 	func loadText() {
 		guard let text = originalText else { return }
 		
+		/// Parse and format plain text to Fountain
 		let attributedString = BeatVersionControl.formatFountain(text)
 		textView?.textStorage?.setAttributedString(attributedString)
 		textView?.setSelectedRange(NSMakeRange(0, 0))
 	}
 	
 	
-	// Call this after the text is set in textView
+	/// Call this after the text is set in textView
 	func updateScrollerWithDiffMarkers() {
 		guard let textView = textView,
 			  let textStorage = textView.textStorage,
@@ -554,3 +555,9 @@ class DiffViewerGenerateMarkersViewController:NSViewController {
 		self.view.window?.contentViewController?.dismiss(self)
 	}
 }
+/**
+ 
+ there's a bluebird in my heart
+ that wants to get out
+ 
+ */
