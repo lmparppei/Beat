@@ -20,10 +20,10 @@ class ThumbnailProvider: QLThumbnailProvider {
     
     override func provideThumbnail(for request: QLFileThumbnailRequest, _ handler: @escaping (QLThumbnailReply?, Error?) -> Void) {
 		do {
-			let string = try String(contentsOf: request.fileURL)
+			//let string = try String(contentsOf: request.fileURL)
 			
-			let parser = ContinuousFountainParser(string: string)!
-			let titlePage = BeatTitlePage(parser.parseTitlePage() ?? [])
+			//let parser = ContinuousFountainParser(string: string)!
+			//let titlePage = BeatTitlePage(parser.parseTitlePage())
 
 			let size = CGSizeMake(request.maximumSize.height * 0.694, request.maximumSize.height)
 			
@@ -32,14 +32,14 @@ class ThumbnailProvider: QLThumbnailProvider {
 					return false
 				}
 				
-				var title = titlePage.stringFor("title")
+				var title = "TITLE" // titlePage.stringFor("title")
 				if (title.count == 0) { title = "Untitled" }
 				title = title.uppercased()
 				
-				let credit = titlePage.stringFor("credit")
+				let credit = "by" // titlePage.stringFor("credit")
 				if (credit.count > 0) { title += "\n\n" + credit }
 				
-				let authors = titlePage.stringFor("authors")
+				let authors = "Your Name" //titlePage.stringFor("authors")
 				if (authors.count > 0) { title += "\n\n" + authors }
 				
 				let pStyle = NSMutableParagraphStyle()
