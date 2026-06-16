@@ -103,6 +103,9 @@ NS_ASSUME_NONNULL_END
 /// macOS only – `true` when loading and initial formatting is still in process
 @property (nonatomic) bool documentIsLoading;
 
+/// Set `true` in collaboration mode. Changes how text input and attributes are handled.
+@property (nonatomic) bool collaborating;
+
 
 #pragma mark - Parser
 @property (strong, nonatomic) ContinuousFountainParser* _Nullable parser;

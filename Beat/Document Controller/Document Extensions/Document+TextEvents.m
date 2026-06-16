@@ -16,6 +16,31 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	bool shouldChange = [self shouldChangeTextInRange:affectedCharRange replacementString:replacementString];
+		
+	if (self.collaborating) {
+		// In collaboration mode, we will never physically commit any text to the text view.
+		// However, we *will* send this change to the YDocument at this point. Parsing will be done when changes are committed to the CRDT.
+		// TODO: YClient edit
+		return false;
+	}
+
+	// Check if we can safely add the string (and parse the addition)
+	if (shouldChange) {
+		// Make the replacement string uppercase in parser
+		if (self.characterInput) replacementString = replacementString.uppercaseString;
+		
+		// Parse changes so far
+		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+		
+		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+	}
+	
+	return shouldChange;
+}
+
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(nullable NSString *)replacementString
+{
 	// Don't allow editing the script while tagging
 	if (self.mode != EditMode || self.contentLocked) return NO;
 	
@@ -85,18 +110,7 @@
 		// Auto-close () and [[]]
 		if (self.matchParentheses) change = ![self.textActions shouldMatchParenthesesIn:affectedCharRange string:replacementString];
 	}
-	
-	// If change is true, we can safely add the string (and parse the addition)
-	if (change) {
-		// Make the replacement string uppercase in parser
-		if (self.characterInput) replacementString = replacementString.uppercaseString;
 		
-		// Parse changes so far
-		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-		
-		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	}
-	
 	return change;
 }
 

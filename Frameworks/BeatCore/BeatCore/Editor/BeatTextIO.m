@@ -11,6 +11,8 @@
  
  There's a lot of very old code, which is pretty terrible, but works.
  
+ Edit 2026: Oh sweet summer child. Why did you do all this. You could have had everything so much easier.
+ 
  */
 
 #import "BeatTextIO.h"
@@ -126,7 +128,12 @@ static NSString *centeredEnd = @" <";
     }
 #else
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
-        [textView replaceCharactersInRange:range withString:string];
+        if (!self.delegate.collaborating) {
+            [textView replaceCharactersInRange:range withString:string];
+        } else {
+            // In collaboration mode, we are not physically changing anything in the text view.
+            // Instead, all changes are communicated to the CRDT document. In that case, the delegate method already does everything we need.
+        }
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif
