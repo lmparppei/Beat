@@ -20,6 +20,7 @@
 // Categories
 #import <BeatCore/BeatDocumentBaseController+RegisteredViewsAndObservers.h>
 #import <BeatCore/BeatDocumentBaseController+PreviewControl.h>
+#import <BeatCore/BeatDocumentBaseController+Fonts.h>
 
 #define FORWARD_TO( CLASS, TYPE, METHOD ) \
 - (TYPE)METHOD { [CLASS METHOD]; }
@@ -576,10 +577,17 @@
 
 #pragma mark - Selection
 
+/**
+ Getter for text view selection. This allows us to skip importing OS-specific frameworks and clunky OS-checks in most places.
+ */
 - (NSRange)selectedRange
 {
     return self.textView.selectedRange;
 }
+
+/**
+ Setter for text view selection. This allows us to skip importing OS-specific frameworks and clunky OS-checks in most places.
+ */
 - (void)setSelectedRange:(NSRange)range
 {
     [self setSelectedRange:range withoutTriggeringChangedEvent:NO];
@@ -588,33 +596,20 @@
 /// Sets selected range without triggering `didChangeSelection:` event when needed
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent
 {
-    _skipSelectionChangeEvent = triggerChangedEvent;
+    if (NSMaxRange(range) > self.text.length) return;
     
-    @try {
-        [self.textView setSelectedRange:range];
-    }
-    @catch (NSException *e) {
-        NSLog(@"Selection out of range");
-    }
+    _skipSelectionChangeEvent = triggerChangedEvent;
+    [self.textView setSelectedRange:range];
 }
 
 
-#pragma mark - Text getter/setter
+#pragma mark - Text getter
 
+/// - note: you can only GET the text from this class. Setting the text has to be done in OS-specific implementations.
 - (NSString *)text
 {
-    if (!NSThread.isMainThread) return self.attrTextCache.string;
-    return self.textView.text;
+    return NSThread.isMainThread ? self.textView.text : self.attrTextCache.string;
 }
-
-/*
-- (void)setText:(NSString *)text
-{
-    // If view is not ready yet, set text to buffer
-    if (self.textView == nil) self.contentBuffer = text;
-    else [self.textView setText:text];
-}
- */
 
 
 #pragma mark - Text cache
@@ -649,36 +644,37 @@
 
 #pragma mark - Text actions
 
-// Because of some legacy stuff, text I/O methods are forwarded from this class to BeatTextIO.
-
-FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
-FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
-FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
-FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
-FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
-FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
-FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSAttributedString*)string);
-FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position);
-FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
-FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);
-
 /// Removes an attribute from the text storage
 - (void)removeAttribute:(NSString*)key range:(NSRange)range
 {
     if (key == nil) return;
-    [self.textView.textStorage removeAttribute:key range:range];
+    
+    if (!self.collaborating) {
+        [self.textView.textStorage removeAttribute:key range:range];
+    } else {
+        // TODO: YDocument compatibility
+    }
 }
 /// Adds an attribute to the text storage
 - (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range
 {
     if (value == nil) return;
-    [self.textView.textStorage addAttribute:key value:value range:range];
+    
+    if (!self.collaborating) {
+        [self.textView.textStorage addAttribute:key value:value range:range];
+    } else {
+        // TODO: YDocument compatibility
+    }
 }
 /// Adds attributes to the text storage
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range
 {
     if (attributes == nil) return;
-    [self.textView.textStorage addAttributes:attributes range:range];
+    if (!self.collaborating) {
+        [self.textView.textStorage addAttributes:attributes range:range];
+    } else {
+        // TODO: YDocument compatibility
+    }
 }
 
 
@@ -749,7 +745,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     }
     
     #if TARGET_OS_OSX
-        [self unblockUserInteraction];
+        [self unblockUserInteraction]; // What is this?
     #endif
     
     NSString* settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
@@ -789,77 +785,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
     return shownRevisions;
 }
 
-
-#pragma mark - Fonts
-
-- (BeatFontSet*)fonts
-{
-    //if (_fonts == nil) return BeatFonts.sharedFonts;
-    if (_fonts == nil) return BeatFontManager.shared.defaultFonts;
-    else return _fonts;
-}
-
-- (NSInteger)fontStyle
-{
-    return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle];
-}
-
-
-/// Returns current default font point size
-- (CGFloat)fontSize
-{
-    return BeatFontManager.shared.defaultFonts.regular.pointSize;
-}
-
-- (BeatFontType)fontType
-{
-    bool variableWidth = self.editorStyles.variableFont;
-    NSInteger fontStyle = self.fontStyle;
-    BeatFontType type = BeatFontTypeFixed;
-    
-    if (variableWidth) {
-        if (fontStyle == 0 || fontStyle == 2) type = BeatFontTypeVariableSerif;
-        else if (fontStyle == 1) type = BeatFontTypeVariableSansSerif;
-    } else {
-        if (fontStyle == 0) type = BeatFontTypeFixed;
-        else if (fontStyle == 1) type = BeatFontTypeFixedSansSerif;
-        else if (fontStyle == 2) type = BeatFontTypeFixedNew;
-    }
-
-    return type;
-}
-
-- (void)loadFonts
-{
-    self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:1.0];
-}
-
-- (void)loadFontsWithScale:(CGFloat)scale
-{
-    self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:scale];
-}
-
-/// Reloads fonts and reformats whole document if needed.
-/// @warning Can take a lot of time. Use with care.
-- (void)reloadFonts
-{
-    NSString* oldFontName = self.fonts.name.copy;
-    [self loadFonts];
-    
-    // If the font changed, let's reformat the whole document.
-    if (![oldFontName isEqualToString:self.fonts.name]) [self.formatting formatAllLines];
-}
-
-- (CGFloat)fontScale
-{
-#if TARGET_OS_IOS
-    if (is_Mobile) {
-        CGFloat zoom = (CGFloat)[BeatUserDefaults.sharedDefaults getInteger:BeatSettingPhoneFontSize];
-        return ((zoom + 4) / 10 ) + 1.0;
-    }
-#endif
-    return 1.0;
-}
 
 
 #pragma mark - Handoff

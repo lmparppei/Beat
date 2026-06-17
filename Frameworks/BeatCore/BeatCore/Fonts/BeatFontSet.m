@@ -99,6 +99,21 @@
     return scaledFonts[font.fontName][@(actualSize)];
 }
 
++ (BeatFontType)fontTypeWithStyle:(BeatFontStyle)fontStyle variableWidth:(BOOL)variableWidth
+{
+    BeatFontType type = BeatFontTypeFixed;
+    
+    if (variableWidth) {
+        if (fontStyle == BeatFontStyleSerif || fontStyle == BeatFontStyleCourierNew) type = BeatFontTypeVariableSerif;
+        else if (fontStyle == BeatFontStyleSansSerif) type = BeatFontTypeVariableSansSerif;
+    } else {
+        if (fontStyle == BeatFontStyleSerif) type = BeatFontTypeFixed;
+        else if (fontStyle == BeatFontStyleSansSerif) type = BeatFontTypeFixedSansSerif;
+        else if (fontStyle == BeatFontStyleCourierNew) type = BeatFontTypeFixedNew;
+    }
+
+    return type;
+}
 
 
 @end

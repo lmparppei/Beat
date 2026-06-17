@@ -222,7 +222,6 @@ NS_ASSUME_NONNULL_END
 @property (strong, nonatomic) NSString* _Nullable contentBuffer;
 
 - (NSString* _Nullable)text;
-//- (void)setText:(NSString * _Nonnull)text;
 
 - (NSAttributedString * _Nonnull)getAttributedText;
 - (NSAttributedString * _Nonnull)attributedString;
@@ -232,39 +231,25 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Text actions
 
 @property (nonatomic, readwrite) IBOutlet BeatTextIO* _Nullable textActions;
+
+/// __Always__ use `removeAttribute:` instead of accessing text storage directly. This allows us to intercept attribute changes in collaboration mode.
 - (void)removeAttribute:(NSString* _Nonnull)key range:(NSRange)range;
+/// __Always__ use `addAttribute:` instead of accessing text storage directly. This allows us to intercept attribute changes in collaboration mode.
 - (void)addAttribute:(NSString* _Nonnull)key value:(id _Nonnull)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary* _Nonnull)attributes range:(NSRange)range;
 
-NS_ASSUME_NONNULL_BEGIN
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string;
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index;
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-- (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
-- (void)removeRange:(NSRange)range;
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string;
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position;
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
-- (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
-NS_ASSUME_NONNULL_END
 
 
 #pragma mark - Formatting
 
-//@property (nonatomic) BeatFonts* _Nonnull fonts;
+/// Use this to fetch fonts.
 @property (nonatomic) BeatFontSet* _Nonnull fonts;
-//@property (nonatomic) bool useSansSerif;
+/// Underlying private font storage. Might be null at first.
+@property (nonatomic) BeatFontSet* _Nullable __fonts;
+
 @property (nonatomic) NSInteger fontStyle;
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) bool waitingForFormatting;
-
-/// Loads the current fonts defined by stylesheet.
-- (void)loadFonts;
-/// Loads fonts with given scale
-- (void)loadFontsWithScale:(CGFloat)scale;
-/// Reloads fonts and performs reformatting if needed.
-- (void)reloadFonts;
 
 @property (nonatomic) BeatEditorFormatting* _Nullable formatting;
 /// When something was changed, this method takes care of reformatting every line. Actually done in `BeatEditorFormatting`.
@@ -276,10 +261,6 @@ NS_ASSUME_NONNULL_END
 - (void)reformatLinesAtIndices:(NSMutableIndexSet * _Nonnull)indices;
 /// A convenience method for reformatting all lines. Please note that this does NOT use any sort of concurrency and can be slow on some computers.
 - (void)reformatAllLines;
-/// Returns current default font point size
-- (CGFloat)fontSize;
-- (CGFloat)fontScale;
-
 
 - (void)updateThemeAndReformat:(NSArray* _Nullable)types;
 
