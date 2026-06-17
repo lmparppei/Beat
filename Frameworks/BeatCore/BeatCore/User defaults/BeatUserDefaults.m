@@ -29,7 +29,6 @@ NSString* const BeatSettingAutosave 					= @"autosave";
 NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
 NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
 NSString* const BeatSettingAutocomplete 				= @"autocomplete";
-//NSString* const BeatSettingUseSansSerif 				= @"useSansSerif";
 NSString* const BeatSettingFontStyle                    = @"fontStyle";
 
 NSString* const BeatSettingMagnification 				= @"magnification";
