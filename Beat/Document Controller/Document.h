@@ -63,10 +63,14 @@ THE SOFTWARE.
 @class BeatEditorFormatting;
 @class BeatPrintDialog;
 
+@class BeatYClient;
+
 @interface Document : BeatDocumentBaseController <BeatEditorDelegate, NSLayoutManagerDelegate, ContinuousFountainParserDelegate, BeatTimerDelegate>
 
 /// Main document window. Because Beat originates from antiquated code, we are not using a document view controller, but something else. I'm not exactly sure what.
 @property (weak) NSWindow* _Nullable documentWindow;
+
+@property (nonatomic) BeatYClient* _Nullable yClient;
 
 
 #pragma mark - Editor flags

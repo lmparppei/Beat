@@ -817,6 +817,9 @@
 		B6FA28D02C046D390047E498 /* BeatStatisticsUI.html in Resources */ = {isa = PBXBuildFile; fileRef = B6FA28CE2C046D390047E498 /* BeatStatisticsUI.html */; };
 		B6FA28D22C046D3D0047E498 /* BeatStatistics.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FA28D12C046D3D0047E498 /* BeatStatistics.beatPlugin */; };
 		B6FA28D32C046D3D0047E498 /* BeatStatistics.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B6FA28D12C046D3D0047E498 /* BeatStatistics.beatPlugin */; };
+		B6FC4BC92FE2C922008B4C80 /* Document+YDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC4BC82FE2C922008B4C80 /* Document+YDoc.swift */; };
+		B6FC4BCA2FE2C922008B4C80 /* Document+YDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC4BC82FE2C922008B4C80 /* Document+YDoc.swift */; };
+		B6FC4BCB2FE2C922008B4C80 /* Document+YDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FC4BC82FE2C922008B4C80 /* Document+YDoc.swift */; };
 		B6FCA60B2BD7A75F00784B24 /* Document+Menus.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FCA60A2BD7A75F00784B24 /* Document+Menus.m */; };
 		B6FCA60C2BD7A75F00784B24 /* Document+Menus.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FCA60A2BD7A75F00784B24 /* Document+Menus.m */; };
 		B6FCA6162BD9479800784B24 /* Document+AdditionalActions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FCA6152BD9479800784B24 /* Document+AdditionalActions.m */; };
@@ -1434,6 +1437,7 @@
 		B6FA1ECB2CF336EB002737A8 /* RTFPrintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTFPrintView.swift; sourceTree = "<group>"; };
 		B6FA28CE2C046D390047E498 /* BeatStatisticsUI.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BeatStatisticsUI.html; sourceTree = "<group>"; };
 		B6FA28D12C046D3D0047E498 /* BeatStatistics.beatPlugin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BeatStatistics.beatPlugin; sourceTree = "<group>"; };
+		B6FC4BC82FE2C922008B4C80 /* Document+YDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document+YDoc.swift"; sourceTree = "<group>"; };
 		B6FCA6092BD7A75F00784B24 /* Document+Menus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Document+Menus.h"; sourceTree = "<group>"; };
 		B6FCA60A2BD7A75F00784B24 /* Document+Menus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Document+Menus.m"; sourceTree = "<group>"; };
 		B6FCA6142BD9479800784B24 /* Document+AdditionalActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Document+AdditionalActions.h"; sourceTree = "<group>"; };
@@ -2002,6 +2006,7 @@
 				B689FCB22F92277A00D4EEC6 /* Document+VersionControl.swift */,
 				B6637C112FA7E17D00EF58B0 /* Document+Storybeats.swift */,
 				B666910D2FBCE11F00B10FBA /* Document+IndexCardPrinting.swift */,
+				B6FC4BC82FE2C922008B4C80 /* Document+YDoc.swift */,
 			);
 			path = "Document Extensions";
 			sourceTree = "<group>";
@@ -3185,6 +3190,7 @@
 				B60FF86F26583B1F00886E06 /* VerticallyCenteredTextField.m in Sources */,
 				B666910B2FBCDE4500B10FBA /* IndexCardPrinting.swift in Sources */,
 				B69C74DC2773D6350022D9D5 /* BeatLaunchButton.m in Sources */,
+				B6FC4BCA2FE2C922008B4C80 /* Document+YDoc.swift in Sources */,
 				B6BEE26F2F227C4B00CF6BF5 /* BeatSceneSnapshot.swift in Sources */,
 				B6730A8D2E99AA2C00BA1315 /* Document+Autosave.m in Sources */,
 				B6BD38EE2BE01CD0001DD811 /* BeatColorLabelView.swift in Sources */,
@@ -3368,6 +3374,7 @@
 				B612601E2CD3D1D8009AE189 /* VerticallyCenteredTextField.m in Sources */,
 				B666910C2FBCDE4500B10FBA /* IndexCardPrinting.swift in Sources */,
 				B612601F2CD3D1D8009AE189 /* BeatLaunchButton.m in Sources */,
+				B6FC4BC92FE2C922008B4C80 /* Document+YDoc.swift in Sources */,
 				B6BEE26E2F227C4B00CF6BF5 /* BeatSceneSnapshot.swift in Sources */,
 				B6730A8E2E99AA2C00BA1315 /* Document+Autosave.m in Sources */,
 				B61260202CD3D1D8009AE189 /* BeatColorLabelView.swift in Sources */,
@@ -3559,6 +3566,7 @@
 				B60FF87026583B1F00886E06 /* VerticallyCenteredTextField.m in Sources */,
 				B666910A2FBCDE4500B10FBA /* IndexCardPrinting.swift in Sources */,
 				B69C74DD2773D6350022D9D5 /* BeatLaunchButton.m in Sources */,
+				B6FC4BCB2FE2C922008B4C80 /* Document+YDoc.swift in Sources */,
 				B6BEE26D2F227C4B00CF6BF5 /* BeatSceneSnapshot.swift in Sources */,
 				B6730A8F2E99AA2C00BA1315 /* Document+Autosave.m in Sources */,
 				B6BD38EF2BE01CD0001DD811 /* BeatColorLabelView.swift in Sources */,
@@ -4233,7 +4241,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133559;
+				CURRENT_PROJECT_VERSION = 133561;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4278,7 +4286,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133559;
+				CURRENT_PROJECT_VERSION = 133561;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -4325,7 +4333,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133560;
+				CURRENT_PROJECT_VERSION = 133561;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4370,7 +4378,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133560;
+				CURRENT_PROJECT_VERSION = 133561;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

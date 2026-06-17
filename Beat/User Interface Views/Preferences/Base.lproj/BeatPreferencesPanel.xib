@@ -889,7 +889,7 @@
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="46607BB2-3806-4EB1-929F-7E30BD87B9F4" explicitItemIdentifier="Layout" label="Formatting" paletteLabel="Formatting" tag="-1" sizingBehavior="auto" selectable="YES" id="ha1-yG-obd">
-                        <imageReference key="image" image="doc" catalog="system" symbolScale="medium" renderingMode="template"/>
+                        <imageReference key="image" image="document" catalog="system" symbolScale="medium" renderingMode="template"/>
                         <connections>
                             <action selector="toggleTab:" target="-2" id="wTh-QK-A1o"/>
                         </connections>
@@ -928,7 +928,7 @@
         <image name="SettingIcon_black" width="370" height="370"/>
         <image name="bold" catalog="system" width="11" height="12"/>
         <image name="bubbles.and.sparkles" catalog="system" width="17" height="15"/>
-        <image name="doc" catalog="system" width="14" height="16"/>
+        <image name="document" catalog="system" width="14" height="16"/>
         <image name="folder" catalog="system" width="18" height="14"/>
         <image name="underline" catalog="system" width="11" height="14"/>
     </resources>

@@ -89,8 +89,6 @@
 /// Check compatibility with Beat version. Basically used for checking if Beat version is out of date.
 - (bool)compatibleWith:(NSString*)version;
 
-/// Sets a property value in host document. Only for those who REALLY, REALLY, __REALLY__ KNOW WHAT THEY ARE DOING
-JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
 /// Executes a run-time ObjC call. This is for the people who, really, and let me emphasize, __actually__ know what the fuck they are doing. No plugins should ever use this method. Purely for testing and hacking purposes.
 JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments);
 /// Returns `true` when the plugin is running on iOS

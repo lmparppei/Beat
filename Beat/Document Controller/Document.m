@@ -110,6 +110,7 @@
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
+#import <BeatCore/BeatDocumentBaseController+Fonts.h>
 
 @interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate>
 
@@ -917,6 +918,8 @@
 		}
 	});	
 }
+
+@synthesize fontSize;
 
 @end
 
