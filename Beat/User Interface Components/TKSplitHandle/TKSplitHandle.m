@@ -87,6 +87,8 @@
 		[self.bottomOrLeftView removeFromSuperview];
         self.mainConstraint.constant = 0;
 		self.image = nil;
+		
+		[self.delegate leftViewDidHide];
 	}
 }
 
@@ -114,11 +116,10 @@
     }
 }
 
-- (void) restoreBottomOrLeftView {
+- (void)restoreBottomOrLeftView {
     if (self.bottomOrLeftViewIsCollapsed) {
 		// Inform the delegate we did show the view
 		// (customization for Beat)
-		[self.delegate leftViewDidShow];
 		
         if (self.mainConstraint.constant < self.safeMinConstraint) {
             self.mainConstraint.constant = MIN(MAX(self.bottomOrLeftViewSpan, self.safeMinConstraint), self.safeMaxConstraint);
@@ -141,8 +142,8 @@
             [sup addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[bolv]|" options:0 metrics:nil views:views]];
             [sup addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bolv]-0-[split]" options:0 metrics:nil views:views]];
         }
-	} else {
-		//[self.delegate leftViewDidHide];
+		
+		[self.delegate leftViewDidShow];
 	}
 }
 
