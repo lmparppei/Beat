@@ -7,7 +7,7 @@
 //
 
 import Foundation
-/*
+
 @objc extension Document:TKSplitHandleDelegate {
 	@objc public func leftViewDidShow() {
 		updateOutlineButton()
@@ -16,7 +16,7 @@ import Foundation
 	@objc public func leftViewDidHide() {
 		updateOutlineButton()
 	}
-		
+			
 	@objc public func splitViewDidResize() {
 		guard let splitHandle else { return }
 		let width:Int = Int(splitHandle.bottomOrLeftView.frame.size.width)
@@ -26,9 +26,28 @@ import Foundation
 	}
 	
 	fileprivate func updateOutlineButton() {
-		guard let splitHandle else { return }
-		self.outlineButton?.state = splitHandle.bottomOrLeftViewIsCollapsed() ? .off : .on
+		self.outlineButton?.state = self.sidebarVisible ? .on : .off
 	}
 
 }
-*/
+/**
+ 
+ I held you through the night
+ while you cried
+   inconsolably
+   in their bed
+   with her scent still on the pillow
+ "not yet
+ not yet
+ mom, not yet"
+ 
+ I'm here
+ I'm your family now
+ I'm still here
+ I'll be here
+ until
+   it finds
+   us too.
+ 
+ 
+ */

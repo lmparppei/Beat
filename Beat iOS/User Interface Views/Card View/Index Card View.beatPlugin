@@ -576,74 +576,7 @@ function updateCard(scene) {
 
 function printCards() {
 	// This is a hacky custom method
-	
 	Beat.printIndexCards()
-	/*
-	let css = Beat.appAssetAsString("BeatCardsPrint.css")
-	let printedHTML = ""
-
-	let json = []
-	let outline = Beat.outline()
-
-	for (let i=0; i < outline.length; i++) {
-		let scene = updateScene(outline[i])
-
-		scene.synopsisList = ""
-		if (scene.synopsis.length > 0) {
-			let synopsisList = []
-			for (const synopsis of scene.synopsis) {
-				synopsisList += templates.synopsisItem.withData(synopsis)
-			}
-
-			if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
-			scene.text = ""
-		}
-
-		json.push(scene)
-    }
-
-    let imageableSize = Beat.printInfo().imageableSize
-
-	// Orientation is ALWAYS LANDSCAPE, so the math has to work accordingly.
-	let cardsPerRow = 3;
-	let maxRows = Math.floor(imageableSize.width / 165);
-	
-	let height = imageableSize.width / maxRows + 5;
-	css = css.replace("#MAX_HEIGHT#", height);
-
-    let cardsOnRow = 0
-	let rows = 0
-
-    for (const card of json) {
-    	if (card.typeAsString == "section") continue;
-
-    	let cardHTML = templates.printedCard.withData(card)
-    	printedHTML += cardHTML
-
-    	cardsOnRow++
-    	
-    	if (cardsOnRow == cardsPerRow) {
-    		rows++
-    		cardsOnRow = 0
-    	}
-    	if (rows == maxRows) {
-    		printedHTML += "</section><div class='pageBreak'></div><section>"
-
-    		rows = 0
-    		cardsOnRow = 0
-    	}
-    }
-
-    let settings = {
-    	orientation: "landscape",
-    	margins: [0, 0, 0, 0]
-    }
-
-    let htmlContent = "<html><head><meta name='viewport' content='initial-scale=0.9, maximum-scale=0.9, user-scalable=no' /><style>" + css + "</style></head><body><div id='container'><section>" + printedHTML + "</section></div></body></html>"
-    Beat.printHTML(htmlContent, settings, () => {
-
-    })
-	 */
 }
 
 function windowed() {

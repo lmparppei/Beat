@@ -111,7 +111,7 @@
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
 
-@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate, TKSplitHandleDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate>
 
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
@@ -847,30 +847,7 @@
 }
 
 
-#pragma mark - split view listener
-
-- (void)setSplitHandleMinSize:(CGFloat)value
-{
-	self.splitHandle.topOrRightMinSize = value;
-}
-
-- (void)splitViewDidResize
-{
-	[self.documentSettings setInt:DocSettingSidebarWidth as:(NSInteger)self.splitHandle.bottomOrLeftView.frame.size.width];
-	[self updateLayout];
-}
-
-- (void)leftViewDidShow
-{
-	self.sidebarVisible = YES;
-	[_outlineButton setState:NSOnState];
-	[self.outlineView reloadOutline];
-}
-
-- (void)leftViewDidHide
-{
-	self.sidebarVisible = NO;
-}
+#pragma mark - split view actions
 
 /// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
 - (IBAction)toggleSidebar:(id)sender
