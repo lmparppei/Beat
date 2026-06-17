@@ -64,28 +64,6 @@
     NSArray<OutlineScene*>* outline = self.delegate.parser.outline.copy;
     NSMutableArray *scenesToSerialize = [NSMutableArray arrayWithCapacity:outline.count];
         
-    /*
-    // This is very efficient, but I can't figure out how to fix memory management issues. Would probably require a full copy of the parser.
-    NSMutableDictionary<NSNumber*, NSDictionary*>* items = NSMutableDictionary.new;
-    @synchronized (self.delegate.parser.lines) {
-        // Multi-threaded JSON process
-        dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
-        dispatch_apply((size_t)outline.count, queue, ^(size_t index) {
-            if (outline[index] == nil) return;
-            NSDictionary* json = outline[index].forSerialization;
-            @synchronized (self.delegate.parser.outline) {
-                items[@(index)] = json;
-            }
-        });
-    }
-        
-    // Turn the dictionary into a normal array
-    for (NSInteger i=0; i<items.count; i++) {
-        NSNumber* idx = @(i);
-        if (items[idx] != nil) [scenesToSerialize addObject:items[@(i)]];
-    }
-     */
-
     for (OutlineScene* scene in outline) {
         [scenesToSerialize addObject:scene.forSerialization];
     }
