@@ -38,7 +38,10 @@
 #import "BeatModalInput.h"
 
 #import "ITSwitch.h"
+#import "TKSplitHandle.h"
 
 #import "BeatColorMenuItem.h"
+
+
 
 #endif /* Beat_Bridging_Header_h */
