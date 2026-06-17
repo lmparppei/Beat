@@ -89,7 +89,7 @@
 #pragma mark - Rendering interface
 
 /// Returns a single, long attributed string for all pages, rather than paginated content.
-/// @warning Not compatible with iOS.
+/// @warning Not compatible with iOS. (Why so?)
 - (NSAttributedString*)renderContent:(NSArray<BeatPaginationPage*>*)pages
 {
     NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
