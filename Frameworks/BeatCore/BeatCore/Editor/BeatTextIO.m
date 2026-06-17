@@ -240,7 +240,7 @@ static NSString *centeredEnd = @" <";
         undoPosition = range.location;
     }
     
-    [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
+    [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldAttrStr];
     [_delegate.undoManager setActionName:@"Move Scene"];
 }
 
@@ -383,6 +383,8 @@ static NSString *centeredEnd = @" <";
         // Only spare our custom, registered attributes
         NSDictionary* customAttrs = [BeatAttributes stripUnnecessaryAttributesFrom:attrs];
         [newString addAttributes:customAttrs range:NSMakeRange(range.location, range.length)];
+        
+        // TODO: YDocument compatibility
     }];
 
     if ([self.delegate textView:self.textView shouldChangeTextInRange:range replacementString:newString.string]) {
