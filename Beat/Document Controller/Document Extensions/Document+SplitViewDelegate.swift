@@ -28,12 +28,11 @@ import Foundation
 	fileprivate func updateOutlineButton() {
 		self.outlineButton?.state = self.sidebarVisible ? .on : .off
 	}
-
-}
-
-func setSplitHandleMinSize(_ size:Float) {
-	guard let splitHandle else { return }
-	splitHandle.topOrRightMinSize = size;
+	
+	func setSplitHandleMinSize(_ size:Float) {
+		guard let splitHandle else { return }
+		splitHandle.topOrRightMinSize = size;
+	}
 }
 
 /**
