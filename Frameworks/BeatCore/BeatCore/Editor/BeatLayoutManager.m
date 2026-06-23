@@ -27,6 +27,8 @@
 
 #import "BeatRevisions.h"
 
+@import yswift;
+
 @interface BeatLayoutManager()
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
 @property (nonatomic) NSMutableParagraphStyle* _Nullable sceneNumberStyle;
@@ -353,19 +355,25 @@
             }];
         }
         
-        // In collaboration mode, we will want to draw selection ranges
+        // In collaboration mode, we will want to draw selection ranges. These are updated by text view once it receives remote carets. 
         if (self.editorDelegate.collaborating && self.userSelections.count > 0) {
             for (NSString* userId in self.userSelections.allKeys) {
                 NSValue* val = self.userSelections[userId];
-                NSRange selection = val.rangeValue;
-                if (selection.location == NSNotFound || selection.length == 0 || NSIntersectionRange(selection, charRange).length == 0) continue;
-                NSRange selectionGlyphRange = [self glyphRangeForCharacterRange:selection actualCharacterRange:nil];
                 
-                NSArray<NSValue*>* selectionRects = [self rectsForGlyphRange:selectionGlyphRange];
-                for (NSValue* rectValue in selectionRects) {
-                    CGRect rect = addInsetToRect(rectValue.BXRectValue, inset);
-                    [[BXColor.systemRedColor colorWithAlphaComponent:0.2] setFill];
-                    BXRectFill(rect);
+                NSString* colorName = [self.editorDelegate.yClient userColorFor:userId];
+                BXColor* color = [BeatColors color:colorName];
+                
+                if (color != nil) {
+                    NSRange selection = val.rangeValue;
+                    if (selection.location == NSNotFound || selection.length == 0 || NSIntersectionRange(selection, charRange).length == 0) continue;
+                    NSRange selectionGlyphRange = [self glyphRangeForCharacterRange:selection actualCharacterRange:nil];
+                    
+                    NSArray<NSValue*>* selectionRects = [self rectsForGlyphRange:selectionGlyphRange];
+                    for (NSValue* rectValue in selectionRects) {
+                        CGRect rect = addInsetToRect(rectValue.BXRectValue, inset);
+                        [[color colorWithAlphaComponent:0.2] setFill];
+                        BXRectFill(rect);
+                    }
                 }
             }
         }

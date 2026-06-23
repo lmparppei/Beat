@@ -598,6 +598,7 @@
     if (NSMaxRange(range) > self.text.length) return;
     
     _skipSelectionChangeEvent = triggerChangedEvent;
+    _skipSelectionUpdate = triggerChangedEvent;
     [self.textView setSelectedRange:range];
 }
 
@@ -674,15 +675,6 @@
     
 }
 
-- (void)addSharedAttribute:(NSAttributedStringKey)key value:(id)value range:(NSRange)range
-{
-    NSLog(@"Shared attribute support is for now handled in OS-specific implementation");
-}
-
-- (void)removeSharedAttribute:(NSAttributedStringKey)key range:(NSRange)range
-{
-    NSLog(@"Shared attribute support is for now handled in OS-specific implementation");
-}
 
 
 #pragma mark - Creating the actual document file

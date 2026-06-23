@@ -44,6 +44,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatRevisions;
 @class BeatReview;
 @class BeatPlugin;
+@class YClient;
 
 /**
  Protocol for editor views which need to be updated in some cases
@@ -140,6 +141,14 @@ typedef void (^BeatChangeListener)(NSRange);
 - (NSAttributedString*)getAttributedText;
 
 
+#pragma mark - Collaboration
+
+/// Collaboration client. Use this and cast as `YClient` when `yswift` isn't available.
+@property (nonatomic) id client;
+/// CRDT client for collaboration
+@property (nonatomic) YClient* yClient;
+
+
 #pragma mark - Revisions
 
 @property (nonatomic) NSInteger revisionLevel;
@@ -151,7 +160,6 @@ typedef void (^BeatChangeListener)(NSRange);
 #pragma mark - Reviews
 
 @property (nonatomic) BeatReview* review;
-
 
 
 #pragma mark - Editing the text content

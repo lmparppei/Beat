@@ -100,17 +100,10 @@ THE SOFTWARE.
 
 @property (weak) NSTimer *autosaveTimer;
 
-/// This flags stops `textViewDidChangeSelection` event and gets reset automatically.
-@property (nonatomic) BOOL skipSelectionUpdate;
-
 
 #pragma mark - Collaboration
 
-/// CRDT client.
-/// - note: Because of some weird scoping problems, this has to be explicitly cast in Swift every time. No idea why.
-@property (nonatomic) id _Nullable client;
 @property (nonatomic, weak) IBOutlet CollaborationButton* _Nullable collaborationButton;
-@property (nonatomic) BOOL applyingRemoteEdits;
 
 
 #pragma mark - Applying settings

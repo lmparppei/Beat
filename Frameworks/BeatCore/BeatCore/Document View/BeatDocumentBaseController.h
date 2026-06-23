@@ -107,6 +107,14 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) bool collaborating;
 
 
+#pragma mark - Collaboration
+
+/// CRDT client.
+/// - note: Because of some weird scoping problems, this has to be explicitly cast in Swift every time. No idea why.
+@property (nonatomic) id _Nullable client;
+@property (nonatomic) BOOL applyingRemoteEdits;
+
+
 #pragma mark - Parser
 @property (strong, nonatomic) ContinuousFountainParser* _Nullable parser;
 /// Returns a copy of the outline
@@ -190,8 +198,12 @@ NS_ASSUME_NONNULL_END
 /// - note: Override this property in OS class.
 @property (nonatomic, weak) IBOutlet BXTextView* _Nullable textView;
 
-/// Skips selection change events when needed. Remember to reset after selection change.
+/// Skips selection change events in __TEXT VIEW__ when needed. Remember to reset after selection change.
 @property (nonatomic) bool skipSelectionChangeEvent;
+
+/// This flags stops `textViewDidChangeSelection` (in document scope, not text view) event and gets reset automatically.
+@property (nonatomic) BOOL skipSelectionUpdate;
+
 
 - (BXTextView* _Nonnull)getTextView;
 - (NSTextStorage* _Nonnull)textStorage;
