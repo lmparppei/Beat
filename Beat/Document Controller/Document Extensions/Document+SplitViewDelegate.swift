@@ -30,6 +30,12 @@ import Foundation
 	}
 
 }
+
+func setSplitHandleMinSize(_ size:Float) {
+	guard let splitHandle else { return }
+	splitHandle.topOrRightMinSize = size;
+}
+
 /**
  
  I held you through the night
