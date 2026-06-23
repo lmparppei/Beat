@@ -1090,6 +1090,14 @@ final public class YText: YOpaqueObject {
             }
         }
     }
+    
+    public func addAttribute(_ name: String, value: any YTextAttributeValue, range: NSRange) {
+        format(range.location, length: range.length, attributes: [name: value])
+    }
+
+    public func removeAttribute(_ name: String, range: NSRange) {
+        format(range.location, length: range.length, attributes: [name: NSNull()])
+    }
 
     public func removeAttribute(_ attributeName: String) {
         if self.document != nil {

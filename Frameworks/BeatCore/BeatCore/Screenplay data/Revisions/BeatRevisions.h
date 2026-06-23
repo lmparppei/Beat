@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSIndexSet*)everyRevisionIndex;
 
 + (NSArray<BeatRevisionGeneration*>*)revisionGenerations;
-+ (NSString*)attributeKey;
++ (NSAttributedStringKey)attributeKey;
 
 /// Returns a JSON array created from revision data baked in lines.
 + (NSDictionary<NSString*,NSArray*>*)serializeFromBakedLines:(NSArray<Line*>*)lines;

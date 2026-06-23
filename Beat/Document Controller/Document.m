@@ -78,6 +78,7 @@
 #import <BeatFileExport/BeatFileExport.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import "Beat-Swift.h"
+@import yswift;
 
 #import "Document.h"
 #import "Document+WindowManagement.h"
@@ -203,8 +204,11 @@
 	self.tagging = nil;
 	self.review = nil;
 	
-	self.previewController = nil; // Fuck you, I'll null it if I want
+	// End collaboration if needed
+	[self endCollaborationWithDocumentClosing:true];
 	
+	// self.previewController = nil; // Fuck you, I'll null it if I want
+		
 	// Fully deallocate text view
 	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(0, self.textView.textStorage.string.length) withString:@""];
 	[self.textView removeFromSuperview];
@@ -294,7 +298,7 @@
 		// If saving was successful, let's store the data into cache
 		if (success) _dataCache = dataRepresentation.copy;
 	}
-	
+		
 	if (dataRepresentation == nil) {
 		NSLog(@"ERROR: Something went horribly wrong. Trying to crash the app to avoid data loss.");
 		@throw NSInternalInconsistencyException;
@@ -322,12 +326,7 @@
 
 	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
 	self.contentBuffer = text;
-	
-	//text = [self readBeatDocumentString:text];
-	
-	// If we're not reverting, we can also set the text here
-	//if (!reverting) [self setText:text];
-	
+		
 	return YES;
 }
 
@@ -553,6 +552,11 @@
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 
+- (void)setCollaborating:(bool)collaborating
+{
+	NSLog(@"Collaboration: %@", collaborating ? @"true" : @"false");
+	[super setCollaborating:collaborating];
+}
 
 #pragma mark - Misc document stuff
 
@@ -713,13 +717,21 @@
 
 - (IBAction)undoEdit:(id)sender
 {
-	[self.undoManager undo];
+	if (!self.collaborating) {
+		[self.undoManager undo];
+	} else {
+		[self collaborationUndo]; // defined in Document+Collaboration
+	}
 	[self ensureLayout];
 }
 
 - (IBAction)redoEdit:(id)sender
 {
-	[self.undoManager redo];
+	if (!self.collaborating) {
+		[self.undoManager redo];
+	} else {
+		[self collaborationRedo]; // defined in Document+Collaboration
+	}
 	[self ensureLayout];
 }
 
@@ -739,7 +751,12 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	[super textDidChange];
+	[super textDidChange];	
+	
+	if (self.collaborating) {
+		// In collaboration mode, we'll have to inform the client manually, to handle events with marked text states.
+		//[((YClient*)self.client) editorTextDidChangeWithMarkedText:self.textView.hasMarkedText textStorage:self.textStorage];
+	}
 	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];

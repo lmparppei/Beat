@@ -246,6 +246,18 @@
 	return document;
 }
 
+- (IBAction)joinCollaboration:(id)sender
+{
+	[BeatCollaborationManager openJoinModal];
+}
+
+- (void)joinCollaborationSession:(NSString*)roomId
+{
+	Document* doc = (Document*)[self newDocumentWithContents:@""];
+	[doc joinCollaborationWithRoomId:roomId];
+	
+}
+
 - (IBAction)newDocument:(id)sender
 {
 	[NSDocumentController.sharedDocumentController newDocument:sender];

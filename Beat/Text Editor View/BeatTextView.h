@@ -98,6 +98,11 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 /// A shorthand to return `true` when selection is at end. Use this to avoid going out of range when setting typing attributes.
 @property (nonatomic) bool selectionAtEnd;
 
+
+#pragma mark User carets
+
+@property (nonatomic) NSMutableDictionary<NSString*, CALayer*>* userCarets;
+
 #pragma mark Layout and positioning
 
 + (CGFloat)linePadding;

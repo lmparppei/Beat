@@ -1,6 +1,24 @@
 {
-  "originHash" : "e2cab7e4ff7ba660a742c6164dbbb6052b63c65800a6edeb71636622ab9b41bb",
+  "originHash" : "e79869847ac9877335e6b0fa891f3bb0c60a6a36e4d7433b46646b484b5392c7",
   "pins" : [
+    {
+      "identity" : "lib0-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ObuchiYuki/lib0-swift.git",
+      "state" : {
+        "revision" : "001958e8384591bf11ad5f494cc525bb2367d5b7",
+        "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "promise",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ObuchiYuki/Promise.git",
+      "state" : {
+        "revision" : "5d9c0a847608bd11c379d50a3ba225356a2a75d7",
+        "version" : "1.3.0"
+      }
+    },
     {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",

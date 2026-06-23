@@ -233,11 +233,13 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic, readwrite) IBOutlet BeatTextIO* _Nullable textActions;
 
 /// __Always__ use `removeAttribute:` instead of accessing text storage directly. This allows us to intercept attribute changes in collaboration mode.
-- (void)removeAttribute:(NSString* _Nonnull)key range:(NSRange)range;
+- (void)removeAttribute:(NSAttributedStringKey _Nonnull)key range:(NSRange)range;
 /// __Always__ use `addAttribute:` instead of accessing text storage directly. This allows us to intercept attribute changes in collaboration mode.
-- (void)addAttribute:(NSString* _Nonnull)key value:(id _Nonnull)value range:(NSRange)range;
+- (void)addAttribute:(NSAttributedStringKey _Nonnull)key value:(id _Nonnull)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary* _Nonnull)attributes range:(NSRange)range;
 
+- (void)addSharedAttribute:(NSAttributedStringKey)key value:(id)value range:(NSRange)range;
+- (void)removeSharedAttribute:(NSAttributedStringKey _Nonnull)key range:(NSRange)range;
 
 
 #pragma mark - Formatting

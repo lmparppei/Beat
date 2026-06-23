@@ -57,6 +57,7 @@ typedef enum : NSUInteger {
 
 - (NSURL*)appDataPath:(NSString*)subPath;
 - (id)newDocumentWithContents:(NSString*)string;
+- (void)joinCollaborationSession:(NSString*)roomId;
 
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 

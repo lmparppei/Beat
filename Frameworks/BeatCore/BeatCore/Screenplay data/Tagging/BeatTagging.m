@@ -59,7 +59,7 @@
 	[self loadTags:[_delegate.documentSettings get:DocSettingTags] definitions:[_delegate.documentSettings get:DocSettingTagDefinitions]];
 }
 
-+ (NSString*)attributeKey { return @"BeatTag"; }
++ (NSAttributedStringKey)attributeKey { return @"BeatTag"; }
 + (NSString*)notificationName { return @"BeatTagModified"; } 
 
 /// Returns all available tag categories. In theory, this could be expanded by users in the future, but then it can't be a class method.

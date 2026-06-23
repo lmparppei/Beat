@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="24006"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -15,6 +15,7 @@
                 <outlet property="beatTimer" destination="rsQ-wl-KkE" id="pT8-vn-UCc"/>
                 <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Wxg-hf-1FX"/>
                 <outlet property="cardsTab" destination="798-ya-EGc" id="HQx-jG-RjP"/>
+                <outlet property="collaborationButton" destination="qUw-8g-iK7" id="l5o-NE-IK2"/>
                 <outlet property="editorTab" destination="stc-hX-uX6" id="VsM-zw-nqb"/>
                 <outlet property="formattingActions" destination="bnh-y9-2pe" id="LoR-qT-gji"/>
                 <outlet property="lockButton" destination="ftJ-Zm-jkE" id="naF-WT-rXK"/>
@@ -1314,6 +1315,15 @@
                                                                 <outlet property="label" destination="Ihj-dv-Nq4" id="orL-78-X5H"/>
                                                             </connections>
                                                         </customView>
+                                                        <button hidden="YES" imageHugsTitle="YES" id="qUw-8g-iK7" customClass="CollaborationButton" customModule="Beat" customModuleProvider="target">
+                                                            <rect key="frame" x="15" y="17" width="150" height="33"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <buttonCell key="cell" type="bevel" title="Collaborating" bezelStyle="rounded" imagePosition="leading" alignment="center" imageScaling="proportionallyDown" inset="2" id="CYe-hG-6Dd">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                                <imageReference key="image" image="person.2.fill" catalog="system" symbolScale="default" renderingMode="template" variableValue="0.0"/>
+                                                            </buttonCell>
+                                                        </button>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="6ht-pW-tB8"/>
@@ -1551,7 +1561,7 @@
                                             <rect key="frame" x="158" y="0.0" width="997" height="661"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="997" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
@@ -1609,7 +1619,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="158" height="661"/>
                                             <clipView key="contentView" id="4TZ-H7-Mfc">
                                                 <rect key="frame" x="0.0" y="0.0" width="158" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <collectionView id="fJG-gv-m6T" customClass="BeatPageThumbnailView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="158" height="158"/>
@@ -2228,6 +2238,7 @@
         <image name="list.number" catalog="system" width="16" height="13"/>
         <image name="minus.magnifyingglass" catalog="system" width="16" height="15"/>
         <image name="number" catalog="system" width="15" height="15"/>
+        <image name="person.2.fill" catalog="system" width="21" height="15"/>
         <image name="plus.magnifyingglass" catalog="system" width="16" height="15"/>
         <image name="sidebar.left" catalog="system" width="18" height="14"/>
         <image name="xmark.circle.fill" catalog="system" width="15" height="15"/>

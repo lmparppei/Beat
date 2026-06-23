@@ -209,7 +209,7 @@ public class BeatRenderingTextFragment:NSTextLayoutFragment {
             
             // TODO: Flip these somehow (rects vs. attrs) or something
             // Or better yet, maybe create a dictinoary with line rect as key and the highest revision there
-            attrStr.enumerateAttribute(NSAttributedString.Key(rawValue: BeatRevisions.attributeKey()), in: range, using: { value, attrRange, stop in
+            attrStr.enumerateAttribute(BeatRevisions.attributeKey(), in: range, using: { value, attrRange, stop in
                 guard let revisionValue = value as? NSNumber else { return }
                 let generation = revisionValue.intValue
                 

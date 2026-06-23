@@ -9,6 +9,9 @@
 #import "Document+TextEvents.h"
 #import "Document+UI.h"
 #import "Document+Menus.h"
+#import "Beat-Swift.h"
+
+@import yswift;
 
 @implementation Document (TextEvents)
 
@@ -17,14 +20,7 @@
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	bool shouldChange = [self shouldChangeTextInRange:affectedCharRange replacementString:replacementString];
-		
-	if (self.collaborating) {
-		// In collaboration mode, we will never physically commit any text to the text view.
-		// However, we *will* send this change to the YDocument at this point. Parsing will be done when changes are committed to the CRDT.
-		// TODO: YClient edit
-		return false;
-	}
-
+	
 	// Check if we can safely add the string (and parse the addition)
 	if (shouldChange) {
 		// Make the replacement string uppercase in parser
@@ -41,13 +37,13 @@
 
 - (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(nullable NSString *)replacementString
 {
-	// Don't allow editing the script while tagging
+	// Block editing in some cases
 	if (self.mode != EditMode || self.contentLocked) return NO;
-	
+		
 	Line* currentLine = self.currentLine;
 	
 	bool change = true;
-	bool undoOperation = self.undoManager.isRedoing || self.undoManager.isUndoing;
+	bool undoOperation = self.isRedoing || self.isUndoing;
 	
 	// This shouldn't be here :-)
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
@@ -59,7 +55,6 @@
 		unichar c = [replacementString characterAtIndex:0];
 		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
 	}
-	
 	
 	// Check for character input trouble
 	if (self.lineForNewCue != nil && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
@@ -120,7 +115,7 @@
 	if (self.documentIsLoading) return;
 	
 	// Some attributes are only added for undo/redo actions, namely the represented line key.
-	if ((self.undoManager.isUndoing || self.undoManager.isRedoing) && delta > 0 &&
+	if ((self.isRedoing || self.isUndoing) && delta > 0 &&
 		mask_contains(editedMask, NSTextStorageEditedCharacters) && mask_contains(editedMask, NSTextStorageEditedAttributes)) {
 		NSRange additionRange = NSMakeRange(editedRange.location, editedRange.length);
 		
@@ -133,6 +128,7 @@
 			line.currentVersion = oldLine.currentVersion;
 		}];
 	}
+
 	
 	if (editedMask & NSTextStorageEditedCharacters) {
 		self.waitingForFormatting = true;
@@ -140,8 +136,14 @@
 		
 		// Register changes. Because macOS Sonoma somehow changed attribute handling, we need to _queue_ those changes and
 		// then release them when text has changed
-		if (self.revisionMode && self.lastChangedRange.location != NSNotFound && !self.undoManager.isUndoing) {
+		if (self.revisionMode && self.lastChangedRange.location != NSNotFound && !self.isUndoing) {
 			[self.revisionTracking queueRegisteringChangesInRange:NSMakeRange(editedRange.location, editedRange.length) delta:delta];
+		}
+		
+		// Add local edits to the shared document
+		if (self.collaborating && !self.applyingRemoteEdits) {
+			YClient* client = self.yClient;
+			[client applyLocalEditWithEditedRange:editedRange delta:delta textStorage:self.textStorage];
 		}
 	}
 }
@@ -150,13 +152,23 @@
 {
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
-		
+	
+	// In some cases we might want to skip this, mostly in collaboration situations.
+	if (self.skipSelectionUpdate) {
+		self.skipSelectionUpdate = false;
+		return;
+	}
+	
+	if (self.collaborating) {
+		[self updateSelectionAwareness];
+	}
+	
 	Line* currentLine = self.currentLine;
 	
 	// Reset forced character input
 	//if (self.characterInputForLine != currentLine && self.characterInput) {
 	if (self.lineForNewCue != nil && self.lineForNewCue != currentLine) {
-		if (self.lineForNewCue.string.length == 0 && !self.undoManager.isUndoing)
+		if (self.lineForNewCue.string.length == 0 && !self.isUndoing)
 			[self setTypeAndFormat:self.lineForNewCue type:empty];
 		
 		self.lineForNewCue = nil;
@@ -195,6 +207,28 @@
 		// Update running plugins
 		[self.pluginAgent updatePluginsWithSelection:self.selectedRange];
 	});
+}
+
+
+
+#pragma mark - Undo checkers
+
+- (BOOL)isUndoing
+{
+	if (self.collaborating) {
+		return self.yClient.isUndoing;
+	} else {
+		return self.undoManager.isUndoing;
+	}
+}
+
+- (BOOL)isRedoing
+{
+	if (self.collaborating) {
+		return self.yClient.isRedoing;
+	} else {
+		return self.undoManager.isRedoing;
+	}
 }
 
 

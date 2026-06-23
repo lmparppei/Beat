@@ -128,12 +128,7 @@ static NSString *centeredEnd = @" <";
     }
 #else
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
-        if (!self.delegate.collaborating) {
-            [textView replaceCharactersInRange:range withString:string];
-        } else {
-            // In collaboration mode, we are not physically changing anything in the text view.
-            // Instead, all changes are communicated to the CRDT document. In that case, the delegate method already does everything we need.
-        }
+        [textView replaceCharactersInRange:range withString:string];
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif
@@ -213,7 +208,6 @@ static NSString *centeredEnd = @" <";
     if (position > _delegate.text.length) position = _delegate.text.length;
 
     NSAttributedString* oldAttrStr = [_delegate.textStorage attributedSubstringFromRange:range];
-    NSString *oldString = [_delegate.text substringWithRange:range];
     
     NSAttributedString* stringToMove = (string != nil) ? string : oldAttrStr;
     

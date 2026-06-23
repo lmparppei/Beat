@@ -163,7 +163,6 @@
 		B6D32028298EBE45003DA45D /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201D298EBE2B003DA45D /* BeatTag.m */; };
 		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6DCB7EF2F936CFB005C3F08 /* BeatVersionControl+ContinuousDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */; };
 		B6DCB7F12F936ED5005C3F08 /* BeatVersionControl+Diffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */; };
 		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
 		B6EDC4FF2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -341,7 +340,6 @@
 		B6D3201F298EBE2B003DA45D /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
 		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
-		B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+ContinuousDiff.swift"; sourceTree = "<group>"; };
 		B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+Diffing.swift"; sourceTree = "<group>"; };
 		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+ConvertToFountain.h"; sourceTree = "<group>"; };
@@ -440,7 +438,6 @@
 				B6311F012D6B1E5D00712CFE /* BeatVersionControl.m */,
 				B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */,
 				B689FCAE2F92234000D4EEC6 /* BeatVersionControl+Formatting.swift */,
-				B6DCB7EE2F936CF1005C3F08 /* BeatVersionControl+ContinuousDiff.swift */,
 				B689FCB02F9225D400D4EEC6 /* BeatVersionControl+CommitView.swift */,
 			);
 			path = "Version Control";
@@ -899,6 +896,8 @@
 				Base,
 			);
 			mainGroup = B633C1AB298C5F750011449D;
+			packageReferences = (
+			);
 			productRefGroup = B633C1B6298C5F750011449D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -992,7 +991,6 @@
 				B6DCB7F12F936ED5005C3F08 /* BeatVersionControl+Diffing.swift in Sources */,
 				B6F59D432C6E830E00AB8FAE /* BeatFontExtensions.swift in Sources */,
 				B6311EC22D672C6200712CFE /* NSString+Compression.m in Sources */,
-				B6DCB7EF2F936CFB005C3F08 /* BeatVersionControl+ContinuousDiff.swift in Sources */,
 				B6D15A322AF96C0A00DAB66D /* BeatEditorFormatting.m in Sources */,
 				B676DD2C2BA8AC7700F7DBDA /* OutlineViewItem.m in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,

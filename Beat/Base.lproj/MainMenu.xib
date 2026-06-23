@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
     </dependencies>
     <objects>
@@ -100,6 +99,19 @@
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
+                            <menuItem title="Begin Collaboration…" id="pDT-Wd-F71">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="startCollaboration:" target="-1" id="ooG-RE-wFs"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Join Collaboration…" id="Y1a-bA-StC">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="joinCollaboration:" target="-1" id="ySy-TE-ton"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="FaF-tA-Mun"/>
                             <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>

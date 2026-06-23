@@ -22,10 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)editorDelegate;
 
 @property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
-//@property (nonatomic) NSDictionary<NSValue*,NSArray<NSNumber*>*>* _Nullable pageBreaks;
 @property (nonatomic) NSMapTable<Line*,NSArray*>* _Nullable pageBreaksMap;
+/// This is a map of other users' selections for collaboration mode
+@property (nonatomic) NSMutableDictionary<NSString*,NSValue*>* _Nullable userSelections;
 - (void)updatePageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks;
 - (void)ensureLayoutForLinesInRange:(NSRange)range;
+- (void)updateRemoteUserSelection:(NSString*)userId range:(NSRange)range;
 @end
 
 NS_ASSUME_NONNULL_END

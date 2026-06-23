@@ -38,6 +38,13 @@ final public class YAwareness<State: Codable> {
             .sink{[unowned self] in self._handleChange($0.update) }.store(in: &_objectBag)
     }
     
+    public func unregister(_ document: YDocument) {
+        self.opaque.unregister(document)
+        for o in _objectBag {
+            o.cancel()
+        }
+    }
+    
     public func applyUpdate(_ update: Data, origin: Origin) {
         do {
             try self.opaque.applyUpdate(update, origin: origin)
@@ -122,7 +129,7 @@ final public class YOpaqueAwareness {
     public func register(_ document: YDocument) {
         assert(clientID == -1, "This awareness already inialized.")
         self.clientID = document.clientID
-        
+                
         self._checkTimer = Timer.scheduledTimer(withTimeInterval: outdatedTimeout / 10, repeats: true) {[weak self] timer in
             guard let self = self else { return timer.invalidate() }
             let now = Date().timeIntervalSince1970
@@ -141,10 +148,16 @@ final public class YOpaqueAwareness {
         }
         
         document.on(YDocument.On.destroy) {
+            print(" - document destroyed")
             self._checkTimer.invalidate()
         }
         
         self.localState = [String: Any]()
+    }
+    
+    public func unregister(_ document: YDocument) {
+        self._checkTimer.invalidate()
+        self.localState = nil
     }
 
     public var localState: Any? {

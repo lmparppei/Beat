@@ -115,7 +115,7 @@
 }
 
 /// Rertusn the attribute key used in `NSAttributedString` created by `Line` class
-+ (NSString*)attributeKey {
++ (NSAttributedStringKey)attributeKey {
 	return REVISION_ATTR;
 }
 

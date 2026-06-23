@@ -13,6 +13,8 @@
  
  */
 
+#import <Foundation/Foundation.h>
+
 #import <BeatCore/BeatCompatibility.h>
 #import __OS_KIT
 
@@ -158,8 +160,8 @@ typedef void (^BeatChangeListener)(NSRange);
 
 @property (nonatomic, readonly) NSRange lastEditedRange;
 
-- (void)removeAttribute:(NSString*)key range:(NSRange)range;
-- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range;
+- (void)removeAttribute:(NSAttributedStringKey)key range:(NSRange)range;
+- (void)addAttribute:(NSAttributedStringKey)key value:(id)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range;
 
 /// Determines if the text has changed since last query

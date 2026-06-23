@@ -1,7 +1,7 @@
 
 # yswift
 
-**NOTE:** This version has been modified for (beat) and is NOT the same as ObuchiYuki's original repo. Main differences are some quite serious bug fixes and minor stylization. The (beat) version also includes client class with dependency-free networking. I'm completely indebted to the work of Yuki, and this library still relies on unmodified `lib0-swift` and `Promise` libraries.
+**NOTE:** This version has been modified for (beat) and is NOT the same as ObuchiYuki's original repo. Main differences are some quite serious bug fixes and minor stylization. The (beat) version also includes client class (`YClient`) with dependency-free networking. I'm completely indebted to the work of Yuki, and this library still relies on unmodified `lib0-swift` and `Promise` libraries.
 
  The original README begins now.
 

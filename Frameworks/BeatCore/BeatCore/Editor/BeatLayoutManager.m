@@ -306,17 +306,15 @@
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
 {
-    // Store revision names and create an array for background colors
-    //static NSDictionary<NSString*, NSNumber*>* revisionLevels;
+    // Store revision names and create an array for background colors (what -- I'm not sure if this makes any sense)
     static NSMutableDictionary<NSString*,BXColor*>* bgColors;
-
-    if (_textView == nil) _textView = _editorDelegate.getTextView;
-    
     if (bgColors == nil) {
         NSArray* revisionGenerations = BeatRevisions.revisionGenerations;
         bgColors = [NSMutableDictionary dictionaryWithCapacity:revisionGenerations.count];
     }
-        
+    
+    if (_textView == nil) _textView = _editorDelegate.getTextView;
+    
     CGSize inset = self.inset;
     CGFloat documentWidth = _editorDelegate.documentWidth;
     
@@ -353,6 +351,23 @@
                     BXRectFill(rect);
                 }
             }];
+        }
+        
+        // In collaboration mode, we will want to draw selection ranges
+        if (self.editorDelegate.collaborating && self.userSelections.count > 0) {
+            for (NSString* userId in self.userSelections.allKeys) {
+                NSValue* val = self.userSelections[userId];
+                NSRange selection = val.rangeValue;
+                if (selection.location == NSNotFound || selection.length == 0 || NSIntersectionRange(selection, charRange).length == 0) continue;
+                NSRange selectionGlyphRange = [self glyphRangeForCharacterRange:selection actualCharacterRange:nil];
+                
+                NSArray<NSValue*>* selectionRects = [self rectsForGlyphRange:selectionGlyphRange];
+                for (NSValue* rectValue in selectionRects) {
+                    CGRect rect = addInsetToRect(rectValue.BXRectValue, inset);
+                    [[BXColor.systemRedColor colorWithAlphaComponent:0.2] setFill];
+                    BXRectFill(rect);
+                }
+            }
         }
         
         [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
@@ -400,8 +415,7 @@
                 CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
                 bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
                 
-                fullRect.origin.x += inset.width;
-                fullRect.origin.y += inset.height;
+                fullRect = addInsetToRect(fullRect, inset);
                 
                 if (fullLine) {
                     CGFloat padding = self.textView.textContainer.lineFragmentPadding;
@@ -484,6 +498,10 @@
     }];
     
     [super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
+}
+
+CGRect addInsetToRect(CGRect rect, CGSize inset) {
+    return CGRectMake(rect.origin.x + inset.width, rect.origin.y + inset.height, rect.size.width, rect.size.height);
 }
 
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow
@@ -1079,6 +1097,26 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     _pageBreaks = pageBreaks;
      */
 }
+
+
+#pragma mark - Collaboration mode carets
+
+- (void)updateRemoteUserSelection:(NSString*)userId range:(NSRange)range
+{
+    if (self.userSelections == nil) self.userSelections = NSMutableDictionary.new;
+    
+    NSValue* oldValue = self.userSelections[userId];
+    
+    self.userSelections[userId] = [NSValue valueWithRange:range];
+    
+    if (oldValue != nil) {
+        NSRange oldRange = oldValue.rangeValue;
+        [self invalidateDisplayForCharacterRange:oldRange];
+    }
+    
+    [self invalidateDisplayForCharacterRange:range];
+}
+
 
 #pragma mark - Ensuring layout for lines
 

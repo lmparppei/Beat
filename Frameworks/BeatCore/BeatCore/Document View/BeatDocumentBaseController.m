@@ -297,10 +297,9 @@
     if (self.documentIsLoading) return;
     if (self.textStorage.isEditing) [self.textStorage endEditing];
     
-        // Begin from top if no last changed range was set
+    // Begin from top if no last changed range was set
     if (self.lastChangedRange.location == NSNotFound) self.lastChangedRange = NSMakeRange(0, 0);
-
-    // Update formatting
+    
     [self.formatting applyFormatChanges];
 
     // Save attributed text to cache
@@ -645,36 +644,44 @@
 #pragma mark - Text actions
 
 /// Removes an attribute from the text storage
-- (void)removeAttribute:(NSString*)key range:(NSRange)range
+- (void)removeAttribute:(NSAttributedStringKey)key range:(NSRange)range
 {
     if (key == nil) return;
     
-    if (!self.collaborating) {
-        [self.textView.textStorage removeAttribute:key range:range];
-    } else {
-        // TODO: YDocument compatibility
-    }
+    [self.textView.textStorage removeAttribute:key range:range];
+    
+    if (self.collaborating) [self removeSharedAttribute:key range:range];
 }
 /// Adds an attribute to the text storage
-- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range
+- (void)addAttribute:(NSAttributedStringKey)key value:(id)value range:(NSRange)range
 {
     if (value == nil) return;
     
-    if (!self.collaborating) {
-        [self.textView.textStorage addAttribute:key value:value range:range];
-    } else {
-        // TODO: YDocument compatibility
-    }
+    [self.textView.textStorage addAttribute:key value:value range:range];
+
+    // TODO: YDocument compatibility
+    if (self.collaborating)[self addSharedAttribute:key value:value range:range];
 }
 /// Adds attributes to the text storage
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range
 {
     if (attributes == nil) return;
-    if (!self.collaborating) {
-        [self.textView.textStorage addAttributes:attributes range:range];
-    } else {
+    [self.textView.textStorage addAttributes:attributes range:range];
+    
+    if (self.collaborating) {
         // TODO: YDocument compatibility
     }
+    
+}
+
+- (void)addSharedAttribute:(NSAttributedStringKey)key value:(id)value range:(NSRange)range
+{
+    NSLog(@"Shared attribute support is for now handled in OS-specific implementation");
+}
+
+- (void)removeSharedAttribute:(NSAttributedStringKey)key range:(NSRange)range
+{
+    NSLog(@"Shared attribute support is for now handled in OS-specific implementation");
 }
 
 
@@ -705,6 +712,7 @@
     if (visibleText.length != parsedText.length) {
         NSLog(@"🆘 Editor and parser are out of sync. We'll use the editor text.");
         content = visibleText;
+        NSLog(@"-----------\nParser:\n%@\n - - - - - - \n%@", self.parser.text, self.textView.string);
     }
     
     if (content == nil) {

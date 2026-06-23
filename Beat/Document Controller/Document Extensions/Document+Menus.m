@@ -12,6 +12,7 @@
 
 #import "Document+Menus.h"
 #import "Beat-Swift.h"
+@import yswift;
 
 @implementation Document (Menus)
 
@@ -138,11 +139,11 @@
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
 	else if (menuItem.action == @selector(undoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
-		valid = self.undoManager.canUndo;
+		valid = (self.collaborating) ? self.yClient.canUndo : self.undoManager.canUndo;
 	}
 	else if (menuItem.action == @selector(redoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.redo", nil), [self.undoManager redoActionName]];
-		valid = self.undoManager.canRedo;
+		valid = (self.collaborating) ? self.yClient.canRedo : self.undoManager.canRedo;
 	}
 	else if (menuItem.submenu.itemArray.firstObject.action == @selector(shareFromService:)) {
 		[menuItem.submenu removeAllItems];
@@ -172,6 +173,9 @@
 	}
 	else if (menuItem.action == @selector(markAddition:) || menuItem.action == @selector(markRemoval:) || menuItem.action == @selector(clearMarkings:)) {
 		valid = (self.textView.selectedRange.length > 0);
+	}
+	else if (menuItem.action == @selector(startCollaboration:)) {
+		return !self.collaborating;
 	}
 	
 	return valid;

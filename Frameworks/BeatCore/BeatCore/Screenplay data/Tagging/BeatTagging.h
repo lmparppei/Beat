@@ -94,7 +94,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 
 #pragma mark - Class methods
 
-+ (NSString*)attributeKey;
++ (NSAttributedStringKey)attributeKey;
 + (NSString*)notificationName;
 
 /// Returns an array of all available tag categories

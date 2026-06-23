@@ -160,7 +160,7 @@ import JavaScriptCore
 			
 			if (NSMaxRange(range) <= delegate.text().count) {
 				// TODO: YDocument compatibility
-				delegate.textStorage().addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
+				delegate.addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
 			}
 		}
 	}
@@ -204,7 +204,7 @@ import JavaScriptCore
         if (trimmedString.count > 0 && trimmedString != "") {
             // Save review if it's not empty
 			// TODO: YDocument compatibility
-            delegate?.addAttribute(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
+            delegate?.addAttribute(BeatReview.attributeKey(), value: item, range: currentRange)
         }
         
         self.delegate?.formatting.refreshBackground(for: currentRange)

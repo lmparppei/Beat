@@ -91,6 +91,12 @@ extension YUpdateDecoder {
             let restStructs = try store.integrateStructs(transaction: transaction, clientsStructRefs: uss)
             
             let pending = store.pendingStructs
+            
+            if let missing = pending?.missing {
+                print("We are missing:", missing)
+                print("   --- ", pending?.update.data.count)
+            }
+            
             if (pending != nil) {
                 // check if we can apply something
                 for (client, clock) in pending!.missing {
