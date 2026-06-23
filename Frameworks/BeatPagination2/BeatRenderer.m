@@ -57,7 +57,19 @@
         if (type == BeatFontTypeFixed && [BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle] == 2) type = BeatFontTypeFixedNew;
         fonts = [BeatFontManager.shared fontsFor:type];
     }
-    
+
+    bool variableWidthStyle = (stylesheet != nil && (stylesheet.page.fontType == BeatFontTypeVariableSerif || stylesheet.page.fontType == BeatFontTypeVariableSansSerif));
+    NSString* customFontKey = (fonts.custom || variableWidthStyle) ? BeatSettingCustomNovelFont : BeatSettingCustomScreenplayFont;
+    NSString* customFont = [BeatUserDefaults.sharedDefaults get:customFontKey];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:(fonts.custom || variableWidthStyle) ? BeatSettingCustomNovelExportFont : BeatSettingCustomScreenplayExportFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:(fonts.custom || variableWidthStyle) ? BeatSettingCustomNovelEditorFont : BeatSettingCustomScreenplayEditorFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomExportFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomEditorFont];
+
+    if (customFont.length > 0) {
+        BeatFontSet* customFonts = [BeatFontManager.shared customFontsWithFontName:customFont scale:1.0];
+        if (customFonts != nil) fonts = customFonts;
+    }
 
     return fonts;
 }

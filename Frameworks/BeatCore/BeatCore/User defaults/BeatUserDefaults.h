@@ -25,6 +25,16 @@ extern NSString * const BeatSettingAutocomplete;
 /// 0: Serif, 1: Sans Serif, 2: Courier New / fall back to 0
 extern NSString * const BeatSettingFontStyle;
 
+/// Custom font overrides
+extern NSString * const BeatSettingCustomEditorFont;
+extern NSString * const BeatSettingCustomExportFont;
+extern NSString * const BeatSettingCustomScreenplayFont;
+extern NSString * const BeatSettingCustomNovelFont;
+extern NSString * const BeatSettingCustomScreenplayEditorFont;
+extern NSString * const BeatSettingCustomNovelEditorFont;
+extern NSString * const BeatSettingCustomScreenplayExportFont;
+extern NSString * const BeatSettingCustomNovelExportFont;
+
 extern NSString * const BeatSettingMagnification;
 extern NSString * const BeatSettingAutomaticLineBreaks;
 extern NSString * const BeatSettingUpdatePluginsAutomatically;

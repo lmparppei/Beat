@@ -45,8 +45,9 @@
 /* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
 "VTU-wq-qyb.title" = "Courier Prime";
 
-/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
-"Wyn-hc-s1G.title" = "Editorin fontti";
+/* Class = "NSTextFieldCell"; title = "Screenplay Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Screenplay Font";
+"EXF-cl-002.title" = "Novel Font";
 
 /* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
 "Yuw-0s-K2b.title" = "1";

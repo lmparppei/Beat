@@ -312,3 +312,11 @@
 
 "versionMenu.newVersion" = "Lisää vaihtoehtoinen versio rivistä";
 "versionMenu.noVersions" = "Ei vaihtoehtoisia versioita";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Valitse fontti…";
+"prefs.font.customScreenplay" = "Valitse fontti…";
+"prefs.font.customNovel" = "Valitse fontti…";
+"prefs.font.choose" = "Valitse fontti…";
+"prefs.font.change" = "Vaihda fontti…";
+"prefs.font.notMonospaced" = "Tämä fontti ei ole tasalevyinen, joten sivumäärä voi poiketa standardista.";

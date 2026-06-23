@@ -766,3 +766,11 @@
 
 "versionMenu.newVersion" = "Añadir nueva alternativa para esta línea";
 "versionMenu.noVersions" = "Sin versiones alternativas";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Elegir fuente…";
+"prefs.font.customScreenplay" = "Elegir fuente…";
+"prefs.font.customNovel" = "Elegir fuente…";
+"prefs.font.choose" = "Elegir fuente…";
+"prefs.font.change" = "Cambiar fuente…";
+"prefs.font.notMonospaced" = "Esta fuente no es monoespaciada, por lo que el recuento de páginas puede diferir del estándar.";

@@ -43,11 +43,27 @@
 
 - (void)loadFonts
 {
-    self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:1.0];
+    [self loadFontsWithScale:1.0];
 }
 
 - (void)loadFontsWithScale:(CGFloat)scale
 {
+    bool variableFont = self.editorStyles.variableFont;
+    NSString* customFontKey = (variableFont) ? BeatSettingCustomNovelFont : BeatSettingCustomScreenplayFont;
+    NSString* customFont = [BeatUserDefaults.sharedDefaults get:customFontKey];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:(variableFont) ? BeatSettingCustomNovelEditorFont : BeatSettingCustomScreenplayEditorFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:(variableFont) ? BeatSettingCustomNovelExportFont : BeatSettingCustomScreenplayExportFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomEditorFont];
+    if (customFont.length == 0) customFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomExportFont];
+
+    if (customFont.length > 0) {
+        BeatFontSet* customFonts = [BeatFontManager.shared customFontsWithFontName:customFont scale:scale];
+        if (customFonts != nil) {
+            self.fonts = customFonts;
+            return;
+        }
+    }
+
     self.fonts = [BeatFontManager.shared fontsWith:self.fontType scale:scale];
 }
 
@@ -57,9 +73,40 @@
 {
     NSString* oldFontName = self.fonts.name.copy;
     [self loadFonts];
-    
+
     // If the font changed, let's reformat the whole document.
-    if (![oldFontName isEqualToString:self.fonts.name]) [self.formatting formatAllLines];
+    if (![oldFontName isEqualToString:self.fonts.name]) {
+        [self.formatting formatAllLines];
+        [self refreshEditorFont];
+    }
+}
+
+/// Refreshes typing attributes after a font change.
+- (void)refreshEditorFont
+{
+    BXTextView* textView = self.getTextView;
+    if (textView == nil) return;
+
+    BXFont* font = self.fonts.regular;
+    textView.font = font;
+
+    CGFloat lineHeight = self.editorStyles.page.lineHeight;
+    if (self.fonts.custom) {
+        lineHeight = MAX(lineHeight, ceil(font.ascender - font.descender + font.leading));
+    }
+
+    NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+    paragraphStyle.maximumLineHeight = lineHeight;
+    paragraphStyle.minimumLineHeight = lineHeight;
+    paragraphStyle.lineSpacing = 1.0;
+    #if TARGET_OS_OSX
+    textView.defaultParagraphStyle = paragraphStyle;
+    #endif
+
+    NSMutableDictionary* typingAttributes = textView.typingAttributes.mutableCopy;
+    typingAttributes[NSFontAttributeName] = font;
+    typingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+    textView.typingAttributes = typingAttributes;
 }
 
 - (CGFloat)fontScale

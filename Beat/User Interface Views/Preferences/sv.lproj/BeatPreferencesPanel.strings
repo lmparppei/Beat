@@ -127,8 +127,9 @@
 /* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
 "WAb-8C-Sjl.title" = "Medelstor";
 
-/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
-"Wyn-hc-s1G.title" = "Skärmtypsnitt";
+/* Class = "NSTextFieldCell"; title = "Screenplay Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Screenplay Font";
+"EXF-cl-002.title" = "Novel Font";
 
 /* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
 "xYL-rJ-JMw.title" = "Visa scenfärger i rullningslisten";
@@ -170,4 +171,3 @@
 "2Og-yp-uDM.label" = "Avancerade";
 
 "EbP-vJ-jSl.title" = "Lägg till titelsida automatiskt";
-

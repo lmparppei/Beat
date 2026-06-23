@@ -27,7 +27,8 @@ private struct BeatFontSetTemplate {
     @objc static public let shared = BeatFontManager()
 
     private var fonts:[CGFloat:[String:BeatFontSet]] = [:]
-    
+    private var customFontSets:[CGFloat:[String:BeatFontSet]] = [:]
+
     private let fontTemplates:[String:BeatFontSetTemplate] = [
         "mono serif": BeatFontSetTemplate(name: "Courier Prime",
                                   regular: "Courier Prime",
@@ -121,6 +122,22 @@ private struct BeatFontSetTemplate {
                                  synopsisFont: template.synopsis)
     
         fonts[scale]?[type] = font
+        return font
+    }
+
+    @objc public func customFonts(fontName:String, scale:CGFloat = 1.0) -> BeatFontSet? {
+        if fontName.isEmpty { return nil }
+
+        if let cached = customFontSets[scale]?[fontName] {
+            return cached
+        }
+
+        guard let font = BeatFontSet.customFontSet(withFontName: fontName, size: 12.0, scale: scale) else {
+            return nil
+        }
+
+        if customFontSets[scale] == nil { customFontSets[scale] = [:] }
+        customFontSets[scale]?[fontName] = font
         return font
     }
 }

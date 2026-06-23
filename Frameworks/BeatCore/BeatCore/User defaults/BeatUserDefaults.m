@@ -30,6 +30,14 @@ NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
 NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
 NSString* const BeatSettingAutocomplete 				= @"autocomplete";
 NSString* const BeatSettingFontStyle                    = @"fontStyle";
+NSString* const BeatSettingCustomEditorFont             = @"customEditorFont";
+NSString* const BeatSettingCustomExportFont             = @"customExportFont";
+NSString* const BeatSettingCustomScreenplayFont         = @"customScreenplayFont";
+NSString* const BeatSettingCustomNovelFont              = @"customNovelFont";
+NSString* const BeatSettingCustomScreenplayEditorFont   = @"customScreenplayEditorFont";
+NSString* const BeatSettingCustomNovelEditorFont        = @"customNovelEditorFont";
+NSString* const BeatSettingCustomScreenplayExportFont   = @"customScreenplayExportFont";
+NSString* const BeatSettingCustomNovelExportFont        = @"customNovelExportFont";
 
 NSString* const BeatSettingMagnification 				= @"magnification";
 NSString* const BeatSettingAutomaticLineBreaks 			= @"autoLineBreaks";
@@ -134,7 +142,15 @@ NSString* const BeatSettingSmartQuotes                  = @"smartQuotes";
             BeatSettingAutocomplete: @YES,
             //BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
             BeatSettingFontStyle: @0,
-            
+            BeatSettingCustomEditorFont: @"",
+            BeatSettingCustomExportFont: @"",
+            BeatSettingCustomScreenplayFont: @"",
+            BeatSettingCustomNovelFont: @"",
+            BeatSettingCustomScreenplayEditorFont: @"",
+            BeatSettingCustomNovelEditorFont: @"",
+            BeatSettingCustomScreenplayExportFont: @"",
+            BeatSettingCustomNovelExportFont: @"",
+
             BeatSettingDarkMode: @NO,
             BeatSettingForcedAppearance: @0,
 

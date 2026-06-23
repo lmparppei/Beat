@@ -493,3 +493,11 @@
 
 "versionMenu.newVersion" = "Lägg till nytt alternativ för den här raden";
 "versionMenu.noVersions" = "Inga alternativa versioner";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Välj typsnitt…";
+"prefs.font.customScreenplay" = "Välj typsnitt…";
+"prefs.font.customNovel" = "Välj typsnitt…";
+"prefs.font.choose" = "Välj typsnitt…";
+"prefs.font.change" = "Ändra typsnitt…";
+"prefs.font.notMonospaced" = "Det här typsnittet har inte fast teckenbredd, så sidantalet kan avvika från standarden.";
