@@ -69,8 +69,11 @@
 
 @property (nonatomic, weak) IBOutlet NSPopUpButton* novelFontStyle;
 @property (nonatomic, weak) IBOutlet NSImageView* screenplayFontWarning;
+@property (nonatomic, weak) IBOutlet NSTextField* customFontWarningLabel;
+@property (nonatomic, weak) IBOutlet NSBox* customFontWarningSeparator;
 @property (nonatomic) NSString* activeFontSettingKey;
 @property (nonatomic) bool activeFontRequiresMonospaced;
+@property (nonatomic) NSDictionary<NSValue*, NSValue*>* customFontWarningOriginalFrames;
 
 @end
 
@@ -530,20 +533,63 @@ static const NSInteger BeatNovelFontChooseTag = 2;
 {
 	[self updateFontPopup:self.fontStyle customTag:BeatScreenplayFontCustomTag chooseTag:BeatScreenplayFontChooseTag setting:BeatSettingCustomScreenplayFont builtInTag:[BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle]];
 	[self updateFontPopup:self.novelFontStyle customTag:BeatNovelFontCustomTag chooseTag:BeatNovelFontChooseTag setting:BeatSettingCustomNovelFont builtInTag:0];
-	[self updateScreenplayFontWarning];
+	[self updateCustomFontWarning];
 }
 
-- (void)updateScreenplayFontWarning
+- (void)updateCustomFontWarning
 {
-	NSString* fontName = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomScreenplayFont];
-	NSFont* font = (fontName.length > 0) ? [NSFont fontWithName:fontName size:12.0] : nil;
-	bool showWarning = (font != nil && !font.isFixedPitch);
+	NSString* screenplayFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomScreenplayFont];
+	NSString* novelFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomNovelFont];
+	bool showWarning = (screenplayFont.length > 0 || novelFont.length > 0);
 
 	self.screenplayFontWarning.hidden = !showWarning;
-	self.screenplayFontWarning.toolTip = showWarning ? NSLocalizedString(@"prefs.font.notMonospaced", @"This font isn't monospaced, so page counts may differ from the standard.") : nil;
-	if ([self.screenplayFontWarning respondsToSelector:@selector(setContentTintColor:)]) {
+	self.customFontWarningLabel.hidden = !showWarning;
+	self.customFontWarningLabel.stringValue = showWarning ? NSLocalizedString(@"prefs.font.customWarning", @"Custom fonts can affect pagination and standard screenplay formatting.") : @"";
+	[self layoutCustomFontWarning:showWarning];
+	if (@available(macOS 10.14, *)) {
 		self.screenplayFontWarning.contentTintColor = NSColor.systemYellowColor;
 	}
+}
+
+- (void)layoutCustomFontWarning:(bool)showWarning
+{
+	static const CGFloat compactSeparatorY = 292.0;
+	static const CGFloat warningSeparatorY = 276.0;
+	static const CGFloat compactContentOffset = 4.0;
+	static const CGFloat warningContentOffset = -12.0;
+	static const CGFloat warningIconY = 288.0;
+	static const CGFloat warningLabelY = 287.0;
+
+	NSView* container = self.customFontWarningSeparator.superview;
+	if (self.customFontWarningOriginalFrames == nil) {
+		NSMutableDictionary* frames = NSMutableDictionary.new;
+		for (NSView* view in container.subviews) {
+			if (view == self.customFontWarningSeparator || view == self.screenplayFontWarning || view == self.customFontWarningLabel) continue;
+			if (NSMaxY(view.frame) > compactSeparatorY) continue;
+			frames[[NSValue valueWithNonretainedObject:view]] = [NSValue valueWithRect:view.frame];
+		}
+		self.customFontWarningOriginalFrames = frames;
+	}
+
+	CGFloat contentOffset = showWarning ? warningContentOffset : compactContentOffset;
+	for (NSValue* key in self.customFontWarningOriginalFrames) {
+		NSView* view = key.nonretainedObjectValue;
+		NSRect frame = [self.customFontWarningOriginalFrames[key] rectValue];
+		frame.origin.y += contentOffset;
+		view.frame = frame;
+	}
+
+	NSRect separatorFrame = self.customFontWarningSeparator.frame;
+	separatorFrame.origin.y = showWarning ? warningSeparatorY : compactSeparatorY;
+	self.customFontWarningSeparator.frame = separatorFrame;
+
+	NSRect iconFrame = self.screenplayFontWarning.frame;
+	iconFrame.origin.y = warningIconY;
+	self.screenplayFontWarning.frame = iconFrame;
+
+	NSRect labelFrame = self.customFontWarningLabel.frame;
+	labelFrame.origin.y = warningLabelY;
+	self.customFontWarningLabel.frame = labelFrame;
 }
 
 - (void)updateFontPopup:(NSPopUpButton*)popup customTag:(NSInteger)customTag chooseTag:(NSInteger)chooseTag setting:(NSString*)setting builtInTag:(NSInteger)builtInTag

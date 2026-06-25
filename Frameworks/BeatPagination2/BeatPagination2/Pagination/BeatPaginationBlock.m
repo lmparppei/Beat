@@ -154,6 +154,7 @@
         BXFont* customFont = [self fontFor:style];
         if (customFont != nil) font = customFont;
     }
+    font = [self font:font fittingLineHeight:lineHeight];
     
     NSString* stringWithoutFormatting = [line stripFormattingWithSettings:self.delegate.settings];
     
@@ -195,6 +196,17 @@
     if (font == nil) font = _delegate.fonts.regular;
     
     return font;
+}
+
+- (BXFont*)font:(BXFont*)font fittingLineHeight:(CGFloat)lineHeight
+{
+    if (!self.delegate.fonts.custom || font == nil) return font;
+
+    CGFloat fontHeight = ceil(font.ascender - font.descender + font.leading);
+    if (lineHeight <= 0.0 || fontHeight <= lineHeight || fontHeight <= 0.0) return font;
+
+    CGFloat fittedSize = font.pointSize * lineHeight / fontHeight;
+    return [BXFont fontWithName:font.fontName size:fittedSize] ?: font;
 }
 
 /// Returns the line which resides at given Y coordinate within the local height of this block.
@@ -837,6 +849,7 @@
 	BXFont* font = self.delegate.fonts.regular;
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+    font = [self font:font fittingLineHeight:lineHeight];
 	
 #if TARGET_OS_IOS
 	// Set font size to 80% on iOS
@@ -887,6 +900,7 @@
     
     BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
+    font = [self font:font fittingLineHeight:(style.lineHeight > 0.0) ? style.lineHeight : self.delegate.styles.page.lineHeight];
     
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
     CGFloat width = [self.delegate.renderer blockWidthFor:line dualDialogue:false];

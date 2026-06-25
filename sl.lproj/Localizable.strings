@@ -308,4 +308,4 @@
 "prefs.font.customNovel" = "Izberi pisavo…";
 "prefs.font.choose" = "Izberi pisavo…";
 "prefs.font.change" = "Spremeni pisavo…";
-"prefs.font.notMonospaced" = "Ta pisava nima fiksne širine, zato se lahko število strani razlikuje od standarda.";
+"prefs.font.customWarning" = "Pisave po meri lahko vplivajo na razporeditev strani in standardno oblikovanje scenarija.";

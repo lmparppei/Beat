@@ -363,4 +363,4 @@
 "prefs.font.customNovel" = "Choose Font…";
 "prefs.font.choose" = "Choose Font…";
 "prefs.font.change" = "Change Font…";
-"prefs.font.notMonospaced" = "This font isn't monospaced, so page counts may differ from the standard.";
+"prefs.font.customWarning" = "Custom fonts can affect pagination and standard screenplay formatting.";

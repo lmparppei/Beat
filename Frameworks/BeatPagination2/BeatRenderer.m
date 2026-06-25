@@ -846,7 +846,20 @@
         }
     }
     
-    return font;
+    return [self font:font fittingLineHeightForStyle:style];
+}
+
+- (BXFont*)font:(BXFont*)font fittingLineHeightForStyle:(RenderStyle*)style
+{
+    if (!self.fonts.custom || font == nil) return font;
+
+    CGFloat lineHeight = (style.lineHeight > 0.0) ? style.lineHeight : self.styles.page.lineHeight;
+    CGFloat fontHeight = ceil(font.ascender - font.descender + font.leading);
+    if (lineHeight <= 0.0 || fontHeight <= lineHeight || fontHeight <= 0.0) return font;
+
+    CGFloat fittedSize = font.pointSize * lineHeight / fontHeight;
+    if (@available(macOS 10.15, *)) return [font fontWithSize:fittedSize];
+    return [BXFont fontWithName:font.fontName size:fittedSize] ?: font;
 }
 
 /// Returns attribute dictionary for given line. We are caching the styles.

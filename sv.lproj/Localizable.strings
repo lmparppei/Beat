@@ -500,4 +500,4 @@
 "prefs.font.customNovel" = "Välj typsnitt…";
 "prefs.font.choose" = "Välj typsnitt…";
 "prefs.font.change" = "Ändra typsnitt…";
-"prefs.font.notMonospaced" = "Det här typsnittet har inte fast teckenbredd, så sidantalet kan avvika från standarden.";
+"prefs.font.customWarning" = "Anpassade typsnitt kan påverka sidbrytningen och standardformateringen av manus.";

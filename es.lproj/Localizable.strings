@@ -773,4 +773,4 @@
 "prefs.font.customNovel" = "Elegir fuente…";
 "prefs.font.choose" = "Elegir fuente…";
 "prefs.font.change" = "Cambiar fuente…";
-"prefs.font.notMonospaced" = "Esta fuente no es monoespaciada, por lo que el recuento de páginas puede diferir del estándar.";
+"prefs.font.customWarning" = "Las fuentes personalizadas pueden afectar la paginación y el formato estándar del guion.";

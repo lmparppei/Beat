@@ -319,4 +319,4 @@
 "prefs.font.customNovel" = "Valitse fontti…";
 "prefs.font.choose" = "Valitse fontti…";
 "prefs.font.change" = "Vaihda fontti…";
-"prefs.font.notMonospaced" = "Tämä fontti ei ole tasalevyinen, joten sivumäärä voi poiketa standardista.";
+"prefs.font.customWarning" = "Mukautetut fontit voivat vaikuttaa sivutukseen ja käsikirjoituksen vakiomuotoiluun.";
