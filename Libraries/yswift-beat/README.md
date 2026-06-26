@@ -1,9 +1,11 @@
 
 # yswift
 
-**NOTE:** This version has been modified for (beat) and is NOT the same as ObuchiYuki's original repo. Main differences are some quite serious bug fixes and minor stylization. The (beat) version also includes client class (`YClient`) with dependency-free networking. I'm completely indebted to the work of Yuki, and this library still relies on unmodified `lib0-swift` and `Promise` libraries.
+**NOTE:** This version has been modified for (beat) and is NOT the same as ObuchiYuki's original repo. Main differences are some quite serious bug fixes and minor stylization. The (beat) version also includes client class (`YClient`) with dependency-free networking.
 
- The original README begins now.
+The author has granted the permission to use their contributions as CC0, and the original Yjs library is licensed under MIT, so all contributions from (beat) fall under GPL. I'm completely indebted to the work of Yuki, and this library still relies on unmodified `lib0-swift` and `Promise` libraries. 
+
+The original README begins now.
 
 ---------
 
