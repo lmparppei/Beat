@@ -87,11 +87,16 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Text I/O
 
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+{
+    [self replaceCharactersInRange:range withAttributedString:[NSAttributedString.alloc initWithString:string]];
+}
+
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
  @warning __Don't use__ this for adding text. Go through the intermediate methods instead, `addString`, `removeString` etc.
  */
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+- (void)replaceCharactersInRange:(NSRange)range withAttributedString:(NSAttributedString*)string
 {
     BXTextView* textView = self.textView;
     
@@ -127,9 +132,10 @@ static NSString *centeredEnd = @" <";
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
         if (!self.delegate.collaborating) {
-            [textView replaceCharactersInRange:range withString:string];
+            //[textView replaceCharactersInRange:range withString:string];
+            [textView.textStorage replaceCharactersInRange:range withAttributedString:string];
         } else {
             // In collaboration mode, we are not physically changing anything in the text view.
             // Instead, all changes are communicated to the CRDT document. In that case, the delegate method already does everything we need.
@@ -212,13 +218,14 @@ static NSString *centeredEnd = @" <";
 {
     if (position > _delegate.text.length) position = _delegate.text.length;
 
+    [self.delegate.textStorage beginEditing];
+    
     NSAttributedString* oldAttrStr = [_delegate.textStorage attributedSubstringFromRange:range];
-    NSString *oldString = [_delegate.text substringWithRange:range];
     
     NSAttributedString* stringToMove = (string != nil) ? string : oldAttrStr;
     
     // First remove everything
-    [self replaceCharactersInRange:range withString:@""];
+    [self replaceRange:range withString:@""];
     
     NSInteger newPosition = position;
     if (range.location < position) {
@@ -227,21 +234,8 @@ static NSString *centeredEnd = @" <";
     if (newPosition < 0) newPosition = 0;
     
     [self replaceRange:NSMakeRange(newPosition, 0) withAttributedString:stringToMove];
-    //[self replaceCharactersInRange:NSMakeRange(newPosition, 0) withString:stringToMove];
-    
-    NSRange undoingRange;
-    NSInteger undoPosition;
-    
-    if (range.location > position) {
-        undoPosition = range.location + stringToMove.length;
-        undoingRange = NSMakeRange(position, stringToMove.length);
-    } else {
-        undoingRange = NSMakeRange(newPosition, stringToMove.length);
-        undoPosition = range.location;
-    }
-    
-    [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldAttrStr];
-    [_delegate.undoManager setActionName:@"Move Scene"];
+        
+    [self.delegate.textStorage endEditing];
 }
 
 /// Moves given range to another position
