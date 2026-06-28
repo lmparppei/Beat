@@ -110,8 +110,7 @@
 				NSButton *button = item;
 				bool value = [BeatUserDefaults.sharedDefaults getBool:key];
 				
-				if (value) button.state = NSOnState;
-				else button.state = NSOffState;
+				button.state = BXState(value);
 			}
 			else if ([item isKindOfClass:NSTextField.class]) {
 				NSTextField *textField = item;
@@ -125,14 +124,15 @@
 			
 			if ([key isEqualToString:@"sceneHeadingSpacing"]) {
 				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:key];
-				if (value == 1) _headingSpacing1.state = NSOnState;
-				else _headingSpacing2.state = NSOnState;
+								
+				if (value == 1) _headingSpacing1.state = BXOnState;
+				else _headingSpacing2.state = BXOnState;
 			}
 			else if ([key isEqualToString:BeatSettingBackupURL]) {
 				NSString* url = [BeatUserDefaults.sharedDefaults get:BeatSettingBackupURL];
 				
-				if (url.length == 0) self.backupUseDefault.state = NSOnState;
-				else self.backupUseCustom.state = NSOnState;
+				if (url.length == 0) self.backupUseDefault.state = BXOnState;
+				else self.backupUseCustom.state = BXOnState;
 					
 					
 				self.backupURLdisplay.stringValue = url;
@@ -278,7 +278,7 @@
 		return;
 	}
 	
-	[BeatUserDefaults.sharedDefaults saveBool:(sender.state == NSOnState) forKey:sender.userDefaultKey];
+	[BeatUserDefaults.sharedDefaults saveBool:(sender.state == BXOnState) forKey:sender.userDefaultKey];
 	
 	if (sender.resetPreview) {
 		[self reloadStyles];
@@ -331,7 +331,7 @@
 			else if ([sender isKindOfClass:NSButton.class]) {
 				// Button
 				NSButton *button = sender;
-				if (button.state == NSOnState) {
+				if (button.state == BXOnState) {
 					[BeatUserDefaults.sharedDefaults saveBool:YES forKey:key];
 				} else {
 					[BeatUserDefaults.sharedDefaults saveBool:NO forKey:key];
@@ -368,7 +368,7 @@
 /// Only call this from `BeatUserDefaultCheckbox`
 - (IBAction)toggleUserDefault:(BeatUserDefaultCheckbox*)sender
 {
-	bool value = (sender.state == NSOnState);
+	bool value = (sender.state == BXOnState);
 	[BeatUserDefaults.sharedDefaults save:@(value) forKey:sender.userDefaultKey];
 }
 
@@ -451,8 +451,7 @@
 - (void)setCheckBox:(NSString*)name value:(bool)value {
 	NSButton *button = [self valueForKey:name];
 	
-	if (value) button.state = NSOnState;
-	else button.state = NSOffState;
+	button.state = BXState(value);
 }
 
 #pragma mark - Text field delegation

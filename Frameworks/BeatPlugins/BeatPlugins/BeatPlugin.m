@@ -691,6 +691,9 @@
     [self.delegate updateChangeCount:BXChangeDone];
 }
 
+- (void)previewDidFinish:(BeatPagination * _Nullable)operation indices:(NSIndexSet * _Nullable)indices { 
+    NSLog(@"!!! Override BeatPlugin.previewDidFinish: in category");
+}
 
 @end
 /*
