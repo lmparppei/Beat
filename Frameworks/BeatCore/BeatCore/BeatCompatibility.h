@@ -34,6 +34,12 @@
 
 #else
 
+    //#define BXOnState BXOnState
+    #define BXOnState NSControlStateValueOn
+
+    //#define BXOnState BXOffState
+    #define BXOffState NSControlStateValueOff
+
     #define BXColor NSColor
     #define BXView NSView
     #define BXTextView NSTextView
@@ -57,7 +63,9 @@
     #define BXBoldFontMask NSBoldFontMask
 
     #define __OS_KIT <AppKit/AppKit.h>
-
+    
+    /// Expands to control state value
+    #define BXState(value) (value) ? BXOnState : BXOffState
 #endif
 
 // Shorthand for comparing bitmasks
