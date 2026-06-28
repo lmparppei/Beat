@@ -160,7 +160,7 @@ static NSString *centeredEnd = @" <";
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
-    
+
 #if !TARGET_OS_IOS
     // I don't know why, but we shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
