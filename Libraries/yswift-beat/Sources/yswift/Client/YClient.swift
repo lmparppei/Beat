@@ -88,7 +88,8 @@ public enum YClientRole {
         self.clientName = clientName
         
         // We need to replace this hard-coded server name with something else at some point
-        self.networkClient = YNetworkClient(serverURL: URL(string: "ws://localhost:8080")!)
+        //self.networkClient = YNetworkClient(serverURL: URL(string: "ws://localhost:25110")!)
+        self.networkClient = YNetworkClient(serverURL: URL(string: "ws://beat-server-production.up.railway.app")!)
         self.undoManager = YUndoManager(doc.getText(), options: .make(captureTimeout: .infinity, trackedOrigins: YUndoManager.TrackOrigins(arrayLiteral: origin), document: doc))
         
         super.init()
@@ -153,7 +154,7 @@ public enum YClientRole {
     func createSyncCheckTimer() -> Timer {
         return Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true, block: { [weak self] _ in
             guard let self else { return }
-            print("Checking sync for", self.clientName)
+
             if let pendingStructs = doc.store.pendingStructs, pendingStructs.missing.count > 0 {
                 self.sendSync(step: .step1)
             }
@@ -227,6 +228,8 @@ public enum YClientRole {
         
         let newColor = self.allColors[nextUserColorIndex % self.allColors.count]
         self.nextUserColorIndex += 1
+        
+        userColors[userId] = newColor
         
         return newColor
     }
