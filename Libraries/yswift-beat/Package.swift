@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "yswift", targets: ["yswift"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/ObuchiYuki/Promise.git", .upToNextMajor(from: "1.0.14")),
+        .package(url: "../Promise", .upToNextMajor(from: "1.0.14")),
         .package(url: "https://github.com/ObuchiYuki/lib0-swift.git", .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
