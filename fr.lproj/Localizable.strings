@@ -785,3 +785,5 @@
 
 "versionMenu.newVersion" = "Ajouter une nouvelle alternative pour cette ligne";
 "versionMenu.noVersions" = "Aucune version alternative";
+
+"general.copyLink" = "Copier le lien";

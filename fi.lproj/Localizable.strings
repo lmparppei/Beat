@@ -312,3 +312,5 @@
 
 "versionMenu.newVersion" = "Lisää vaihtoehtoinen versio rivistä";
 "versionMenu.noVersions" = "Ei vaihtoehtoisia versioita";
+
+"general.copyLink" = "Kopioi linkki";

@@ -301,3 +301,5 @@
 
 "versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
 "versionMenu.noVersions" = "Ni alternativnih verzij";
+
+"general.copyLink" = "Kopiraj povezavo";

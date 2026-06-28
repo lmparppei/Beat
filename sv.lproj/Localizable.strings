@@ -493,3 +493,5 @@
 
 "versionMenu.newVersion" = "Lägg till nytt alternativ för den här raden";
 "versionMenu.noVersions" = "Inga alternativa versioner";
+
+"general.copyLink" = "Kopiera länk";

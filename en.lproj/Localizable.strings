@@ -356,3 +356,5 @@
 
 "versionMenu.newVersion" = "Add New Alternative for This Line";
 "versionMenu.noVersions" = "No Alternative Versions";
+
+"general.copyLink" = "Copy Link";
