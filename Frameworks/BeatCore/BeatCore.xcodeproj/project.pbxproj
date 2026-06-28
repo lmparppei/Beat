@@ -167,6 +167,7 @@
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCB7F12F936ED5005C3F08 /* BeatVersionControl+Diffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */; };
 		B6E0E0F62AC4CAE400948752 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E0E0F52AC4CAE400948752 /* Localizable.swift */; };
+		B6E4E9FD2FF1A3FE00397F37 /* Promise in Frameworks */ = {isa = PBXBuildFile; productRef = B6E4E9FC2FF1A3FE00397F37 /* Promise */; };
 		B6EDC4FF2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6EDC5002E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EDC4FE2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m */; };
 		B6F59D3E2C6E7D3600AB8FAE /* BeatNotepad.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F59D3D2C6E7D3600AB8FAE /* BeatNotepad.m */; };
@@ -367,6 +368,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6E4E9FD2FF1A3FE00397F37 /* Promise in Frameworks */,
 				B677DD422FEB0708001575BF /* yswift in Frameworks */,
 				B68C0F6E299D8D300031AE6B /* libUXKit-AppKit.a in Frameworks */,
 				B663B3C02AFA7FF7007217E3 /* BeatThemes.framework in Frameworks */,
@@ -911,6 +913,7 @@
 			mainGroup = B633C1AB298C5F750011449D;
 			packageReferences = (
 				B677DD402FEB0708001575BF /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */,
+				B6E4E9FB2FF1A3FE00397F37 /* XCLocalSwiftPackageReference "../../Libraries/Promise" */,
 			);
 			productRefGroup = B633C1B6298C5F750011449D /* Products */;
 			projectDirPath = "";
@@ -1289,12 +1292,20 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../Libraries/yswift-beat";
 		};
+		B6E4E9FB2FF1A3FE00397F37 /* XCLocalSwiftPackageReference "../../Libraries/Promise" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../Libraries/Promise;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		B677DD412FEB0708001575BF /* yswift */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = yswift;
+		};
+		B6E4E9FC2FF1A3FE00397F37 /* Promise */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Promise;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

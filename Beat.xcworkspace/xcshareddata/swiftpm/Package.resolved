@@ -1,5 +1,5 @@
 {
-  "originHash" : "e79869847ac9877335e6b0fa891f3bb0c60a6a36e4d7433b46646b484b5392c7",
+  "originHash" : "a08158c1f9d392fb6b6cb1bfdab12999e119e59c95698108f0c5d7e852674e76",
   "pins" : [
     {
       "identity" : "lib0-swift",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "001958e8384591bf11ad5f494cc525bb2367d5b7",
         "version" : "1.0.4"
-      }
-    },
-    {
-      "identity" : "promise",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ObuchiYuki/Promise.git",
-      "state" : {
-        "revision" : "5d9c0a847608bd11c379d50a3ba225356a2a75d7",
-        "version" : "1.3.0"
       }
     },
     {
