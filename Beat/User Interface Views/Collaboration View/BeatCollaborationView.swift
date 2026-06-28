@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import BeatCore
 import yswift
 
 class CollaborationButton:NSButton {
@@ -57,6 +58,10 @@ class CollaborationButton:NSButton {
 		}
 	}
 
+	@objc public func showCollaborationMenu() {
+		self.handleClick()
+	}
+	
 	// MARK: - Click
 
 	@objc private func handleClick() {
@@ -196,12 +201,22 @@ class CollaborationView: NSViewController, NSTableViewDataSource, NSTableViewDel
 
 		switch tableColumn?.identifier.rawValue {
 		case "dot":
-			return circleImage(color: .systemGray, diameter: 10)
+			return userColorImage(for: participant.userId)
 		case "name":
 			return participant.name
 		default:
 			return nil
 		}
+	}
+	
+	func userColorImage(for userId: String) -> NSImage? {
+		var image:NSImage?
+		
+		if let color = self.client?.userColor(for: userId) {
+			image = BeatColors.labelImage(forColor: color, size: CGSize(width: 12, height: 12))
+		}
+		
+		return image
 	}
 
 	
@@ -217,6 +232,17 @@ class CollaborationView: NSViewController, NSTableViewDataSource, NSTableViewDel
 	@IBAction func disconnect(_ sender: Any?) {
 		client?.close()
 	}
+	
+	@IBAction func shareJoinLink(_ sender: NSButton) {
+		guard let roomId = client?.room else { return }
+
+		let url = URL(string: "beat://join?\(roomId)")!
+		let inviteText = "Join my (beat) session!\n\n\(url.absoluteString)"
+				
+		let picker = NSSharingServicePicker(items: [inviteText])
+		picker.delegate = self
+		picker.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
+	}
 
 	// MARK: - Helpers
 
@@ -228,5 +254,32 @@ class CollaborationView: NSViewController, NSTableViewDataSource, NSTableViewDel
 		}
 		image.isTemplate = false
 		return image
+	}
+}
+
+
+// MARK: - Sharing picker delegate
+
+extension CollaborationView:NSSharingServicePickerDelegate {
+	/// Adds "Copy Link" sharing option
+	func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, sharingServicesForItems items: [Any], proposedSharingServices proposedServices: [NSSharingService]) -> [NSSharingService] {
+		
+		let string = BeatLocalization.localizedString(forKey: "general.copyLink")
+		
+		var image:NSImage
+		if #available(macOS 11.0, *) {
+			image = NSImage(systemSymbolName: "link", accessibilityDescription: nil)!
+		} else {
+			image = NSImage()
+		}
+		
+		let copyService = NSSharingService(title: string,
+										   image: image,
+										   alternateImage: nil) {
+			guard let url = items.first as? URL else { return }
+			NSPasteboard.general.clearContents()
+			NSPasteboard.general.setString(url.absoluteString, forType: .string)
+		}
+		return [copyService] + proposedServices
 	}
 }

@@ -248,7 +248,7 @@
 
 - (IBAction)joinCollaboration:(id)sender
 {
-	[BeatCollaborationManager openJoinModal];
+	[BeatCollaborationManager openJoinModal:nil];
 }
 
 - (void)joinCollaborationSession:(NSString*)roomId
@@ -263,6 +263,14 @@
 	[NSDocumentController.sharedDocumentController newDocument:sender];
 }
 
+
+#pragma mark - Handle custom URLs
+
+- (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
+{
+	[self handleURLs:urls];
+}
+ 
 
 #pragma mark - Create a file with rich text contents (attributed string)
 

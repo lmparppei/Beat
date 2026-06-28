@@ -81,6 +81,8 @@ import yswift
 				client.clientName = name
 				client.awareness.localState?.name = client.clientName
 			}
+			
+			document.collaborationButton?.showCollaborationMenu()
 		}
 
 		if let window = document.windowForSheet {
@@ -92,8 +94,8 @@ import yswift
 
 	// MARK: - Join flow
 
-	@objc class func openJoinModal() {
-		let (accessory, nameField, roomField) = makeNameRoomAccessoryView()
+	@objc class func openJoinModal(_ roomId:String? = nil) {
+		let (accessory, nameField, roomField) = makeNameRoomAccessoryView(roomId: roomId)
 
 		let alert = NSAlert()
 		alert.messageText = "Join Collaboration"
