@@ -134,6 +134,13 @@
         // Set up fonts
         BeatStylesheet* stylesheet = settings.styles;
         _fonts = [BeatFontManager.shared fontsFor:stylesheet.page.fontType]; // defaults to 0, which is fixed
+
+        bool variableWidthStyle = (stylesheet.page.fontType == BeatFontTypeVariableSerif || stylesheet.page.fontType == BeatFontTypeVariableSansSerif);
+        NSString* customFont = [BeatUserDefaults.sharedDefaults get:variableWidthStyle ? BeatSettingCustomNovelFont : BeatSettingCustomScreenplayFont];
+        if (customFont.length > 0) {
+            BeatFontSet* customFonts = [BeatFontManager.shared customFontsWithFontName:customFont scale:1.0];
+            if (customFonts != nil) _fonts = customFonts;
+        }
 				
 		_startTime = NSDate.new;
 	}

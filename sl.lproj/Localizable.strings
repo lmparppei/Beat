@@ -301,3 +301,11 @@
 
 "versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
 "versionMenu.noVersions" = "Ni alternativnih verzij";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Izberi pisavo…";
+"prefs.font.customScreenplay" = "Izberi pisavo…";
+"prefs.font.customNovel" = "Izberi pisavo…";
+"prefs.font.choose" = "Izberi pisavo…";
+"prefs.font.change" = "Spremeni pisavo…";
+"prefs.font.customWarning" = "Pisave po meri lahko vplivajo na razporeditev strani in standardno oblikovanje scenarija.";

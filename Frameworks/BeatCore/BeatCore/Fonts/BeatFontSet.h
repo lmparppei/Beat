@@ -61,6 +61,7 @@ typedef NS_ENUM(NSInteger, BeatFontStyle) {
 
 @property (nonatomic, readonly) NSString* name;
 @property (nonatomic, readonly) CGFloat scale;
+@property (nonatomic, readonly) bool custom;
 @property (nonatomic, readonly) BXFont *regular;
 @property (nonatomic, readonly) BXFont *bold;
 @property (nonatomic, readonly) BXFont *italic;
@@ -70,6 +71,8 @@ typedef NS_ENUM(NSInteger, BeatFontStyle) {
 @property (nonatomic, readonly) BXFont *emojiFont;
 
 + (instancetype)name:(NSString *)name size:(CGFloat)size scale:(CGFloat)scale regular:(NSString *)regularFontName bold:(NSString *)boldFontName italic:(NSString *)italicFontName boldItalic:(NSString *)boldItalicFontName sectionFont:(NSString* _Nullable)sectionFontName synopsisFont:(NSString* _Nullable)synopsisFontName;
+
++ (nullable instancetype)customFontSetWithFontName:(NSString *)fontName size:(CGFloat)size scale:(CGFloat)scale;
 - (BXFont*)sectionFontWithSize:(CGFloat)size;
 - (BXFont*)font:(BXFont*)font inScaledSize:(CGFloat)fontSize;
 

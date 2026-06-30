@@ -205,9 +205,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.layoutManager.allowsNonContiguousLayout = YES;
 	NSSpellChecker.sharedSpellChecker.automaticallyIdentifiesLanguages = true;
 	
+	CGFloat lineHeight = self.editorDelegate.editorStyles.page.lineHeight;
+	if (_editorDelegate.fonts.custom) {
+		BXFont* font = _editorDelegate.fonts.regular;
+		lineHeight = MAX(lineHeight, ceil(font.ascender - font.descender + font.leading));
+	}
+
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	paragraphStyle.maximumLineHeight = self.editorDelegate.editorStyles.page.lineHeight;
-	paragraphStyle.minimumLineHeight = self.editorDelegate.editorStyles.page.lineHeight;
+	paragraphStyle.maximumLineHeight = lineHeight;
+	paragraphStyle.minimumLineHeight = lineHeight;
 	paragraphStyle.lineSpacing = 1.0;
 	[self setDefaultParagraphStyle:paragraphStyle];
 	

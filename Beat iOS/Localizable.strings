@@ -129,3 +129,16 @@
 
 "cards.addScene" = "Add New Scene Here";
 "cards.addScenePrompt" = "Heading For New Scene";
+
+/* Fonts (Settings) */
+"settings.customFonts" = "Fonts";
+"settings.screenplayFonts" = "Screenplay Fonts";
+"settings.customScreenplayFont" = "Choose Screenplay Font…";
+"settings.useDefaultScreenplayFont" = "Use Built-In Screenplay Font";
+"settings.novelFonts" = "Novel Fonts";
+"settings.customNovelFont" = "Choose Novel Font…";
+"settings.useDefaultNovelFont" = "Use Default Novel Font";
+"settings.useDefaultFonts" = "Use Default Fonts";
+"settings.notMonospaced.title" = "Not Monospaced";
+"settings.notMonospaced.message" = "This font isn't monospaced, so page counts may differ from the standard ~1 page per minute.";
+"general.OK" = "OK";

@@ -67,6 +67,14 @@
 
 @property (nonatomic) NSString *headingSample;
 
+@property (nonatomic, weak) IBOutlet NSPopUpButton* novelFontStyle;
+@property (nonatomic, weak) IBOutlet NSImageView* screenplayFontWarning;
+@property (nonatomic, weak) IBOutlet NSTextField* customFontWarningLabel;
+@property (nonatomic, weak) IBOutlet NSBox* customFontWarningSeparator;
+@property (nonatomic) NSString* activeFontSettingKey;
+@property (nonatomic) bool activeFontRequiresMonospaced;
+@property (nonatomic) NSDictionary<NSValue*, NSValue*>* customFontWarningOriginalFrames;
+
 @end
 
 @implementation BeatPreferencesPanel
@@ -166,7 +174,9 @@
 	
 	 
 	[self setupLanguages];
-	
+	[self migrateLegacyCustomFonts];
+	[self updateFontPopups];
+
 	[self.window.toolbar setSelectedItemIdentifier:@"General"];
 	[self updateHeadingSample:YES];
 }
@@ -361,7 +371,7 @@
 	}
 	
 	if (sender == _screenplayItemMore || sender == _screenplayItemContd) [self reloadStyles];
-	
+
 	[self apply];
 }
 
@@ -404,6 +414,211 @@
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) [doc applyUserSettings];
 }
 
+#pragma mark - Custom fonts
+
+static const NSInteger BeatScreenplayFontCustomTag = 3;
+static const NSInteger BeatScreenplayFontChooseTag = 4;
+static const NSInteger BeatNovelFontCustomTag = 1;
+static const NSInteger BeatNovelFontChooseTag = 2;
+
+- (IBAction)selectEditorFont:(NSPopUpButton*)sender
+{
+	if (sender.selectedItem.tag == BeatScreenplayFontCustomTag || sender.selectedItem.tag == BeatScreenplayFontChooseTag) {
+		[self openFontPanelForSetting:BeatSettingCustomScreenplayFont requiresMonospaced:true];
+	} else {
+		[BeatUserDefaults.sharedDefaults saveInteger:sender.selectedItem.tag forKey:BeatSettingFontStyle];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomScreenplayFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomScreenplayEditorFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomScreenplayExportFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomEditorFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomExportFont];
+		[self applyFontChanges];
+	}
+}
+
+- (IBAction)selectNovelFont:(NSPopUpButton*)sender
+{
+	if (sender.selectedItem.tag == BeatNovelFontCustomTag || sender.selectedItem.tag == BeatNovelFontChooseTag) {
+		[self openFontPanelForSetting:BeatSettingCustomNovelFont requiresMonospaced:false];
+	} else {
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomNovelFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomNovelEditorFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomNovelExportFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomEditorFont];
+		[BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingCustomExportFont];
+		[self applyFontChanges];
+	}
+}
+
+- (void)openFontPanelForSetting:(NSString*)key requiresMonospaced:(bool)requiresMonospaced
+{
+	self.activeFontSettingKey = key;
+	self.activeFontRequiresMonospaced = requiresMonospaced;
+
+	NSFontManager* fm = NSFontManager.sharedFontManager;
+	fm.target = self;
+	fm.action = @selector(changeFont:);
+
+	NSFont* current = [self fontForSetting:key];
+	if (current == nil) current = requiresMonospaced ? [NSFont userFixedPitchFontOfSize:12.0] : [NSFont systemFontOfSize:12.0];
+
+	[fm setSelectedFont:current isMultiple:NO];
+	[fm orderFrontFontPanel:self];
+	[self updateFontPopups];
+}
+
+- (NSFont*)fontForSetting:(NSString*)key
+{
+	NSString* name = [BeatUserDefaults.sharedDefaults get:key];
+	if (name.length == 0) return nil;
+	return [NSFont fontWithName:name size:12.0];
+}
+
+- (void)changeFont:(id)sender
+{
+	if (self.activeFontSettingKey == nil) return;
+
+	NSFontManager* fm = (NSFontManager*)sender;
+	NSFont* base = [self fontForSetting:self.activeFontSettingKey];
+	if (base == nil) base = self.activeFontRequiresMonospaced ? [NSFont userFixedPitchFontOfSize:12.0] : [NSFont systemFontOfSize:12.0];
+
+	NSFont* newFont = [fm convertFont:base];
+	if (newFont == nil) return;
+
+	[BeatUserDefaults.sharedDefaults save:newFont.fontName forKey:self.activeFontSettingKey];
+	[self applyFontChanges];
+}
+
+- (void)applyFontChanges
+{
+	[self apply];
+	[self reloadStyles];
+	[self updateHeadingSample];
+	[self updateFontPopups];
+}
+
+- (void)migrateLegacyCustomFonts
+{
+	NSString* screenplayFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomScreenplayFont];
+	NSString* novelFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomNovelFont];
+
+	NSString* editorFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomEditorFont];
+	if (editorFont.length > 0 && screenplayFont.length == 0 && novelFont.length == 0) {
+		[BeatUserDefaults.sharedDefaults save:editorFont forKey:BeatSettingCustomScreenplayFont];
+		[BeatUserDefaults.sharedDefaults save:editorFont forKey:BeatSettingCustomNovelFont];
+		screenplayFont = editorFont;
+		novelFont = editorFont;
+	}
+
+	NSString* exportFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomExportFont];
+	if (exportFont.length > 0 && screenplayFont.length == 0 && novelFont.length == 0) {
+		[BeatUserDefaults.sharedDefaults save:exportFont forKey:BeatSettingCustomScreenplayFont];
+		[BeatUserDefaults.sharedDefaults save:exportFont forKey:BeatSettingCustomNovelFont];
+		screenplayFont = exportFont;
+		novelFont = exportFont;
+	}
+
+	NSString* legacyScreenplayFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomScreenplayEditorFont];
+	if (screenplayFont.length == 0 && legacyScreenplayFont.length > 0) {
+		[BeatUserDefaults.sharedDefaults save:legacyScreenplayFont forKey:BeatSettingCustomScreenplayFont];
+	}
+
+	NSString* legacyNovelFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomNovelEditorFont];
+	if (novelFont.length == 0 && legacyNovelFont.length > 0) {
+		[BeatUserDefaults.sharedDefaults save:legacyNovelFont forKey:BeatSettingCustomNovelFont];
+	}
+}
+
+- (void)updateFontPopups
+{
+	[self updateFontPopup:self.fontStyle customTag:BeatScreenplayFontCustomTag chooseTag:BeatScreenplayFontChooseTag setting:BeatSettingCustomScreenplayFont builtInTag:[BeatUserDefaults.sharedDefaults getInteger:BeatSettingFontStyle]];
+	[self updateFontPopup:self.novelFontStyle customTag:BeatNovelFontCustomTag chooseTag:BeatNovelFontChooseTag setting:BeatSettingCustomNovelFont builtInTag:0];
+	[self updateCustomFontWarning];
+}
+
+- (void)updateCustomFontWarning
+{
+	NSString* screenplayFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomScreenplayFont];
+	NSString* novelFont = [BeatUserDefaults.sharedDefaults get:BeatSettingCustomNovelFont];
+	bool showWarning = (screenplayFont.length > 0 || novelFont.length > 0);
+
+	self.screenplayFontWarning.hidden = !showWarning;
+	self.customFontWarningLabel.hidden = !showWarning;
+	self.customFontWarningLabel.stringValue = showWarning ? NSLocalizedString(@"prefs.font.customWarning", @"Custom fonts can affect pagination and standard screenplay formatting.") : @"";
+	[self layoutCustomFontWarning:showWarning];
+	if (@available(macOS 10.14, *)) {
+		self.screenplayFontWarning.contentTintColor = NSColor.systemYellowColor;
+	}
+}
+
+- (void)layoutCustomFontWarning:(bool)showWarning
+{
+	static const CGFloat compactSeparatorY = 292.0;
+	static const CGFloat warningSeparatorY = 276.0;
+	static const CGFloat compactContentOffset = 4.0;
+	static const CGFloat warningContentOffset = -12.0;
+	static const CGFloat warningIconY = 288.0;
+	static const CGFloat warningLabelY = 287.0;
+
+	NSView* container = self.customFontWarningSeparator.superview;
+	if (self.customFontWarningOriginalFrames == nil) {
+		NSMutableDictionary* frames = NSMutableDictionary.new;
+		for (NSView* view in container.subviews) {
+			if (view == self.customFontWarningSeparator || view == self.screenplayFontWarning || view == self.customFontWarningLabel) continue;
+			if (NSMaxY(view.frame) > compactSeparatorY) continue;
+			frames[[NSValue valueWithNonretainedObject:view]] = [NSValue valueWithRect:view.frame];
+		}
+		self.customFontWarningOriginalFrames = frames;
+	}
+
+	CGFloat contentOffset = showWarning ? warningContentOffset : compactContentOffset;
+	for (NSValue* key in self.customFontWarningOriginalFrames) {
+		NSView* view = key.nonretainedObjectValue;
+		NSRect frame = [self.customFontWarningOriginalFrames[key] rectValue];
+		frame.origin.y += contentOffset;
+		view.frame = frame;
+	}
+
+	NSRect separatorFrame = self.customFontWarningSeparator.frame;
+	separatorFrame.origin.y = showWarning ? warningSeparatorY : compactSeparatorY;
+	self.customFontWarningSeparator.frame = separatorFrame;
+
+	NSRect iconFrame = self.screenplayFontWarning.frame;
+	iconFrame.origin.y = warningIconY;
+	self.screenplayFontWarning.frame = iconFrame;
+
+	NSRect labelFrame = self.customFontWarningLabel.frame;
+	labelFrame.origin.y = warningLabelY;
+	self.customFontWarningLabel.frame = labelFrame;
+}
+
+- (void)updateFontPopup:(NSPopUpButton*)popup customTag:(NSInteger)customTag chooseTag:(NSInteger)chooseTag setting:(NSString*)setting builtInTag:(NSInteger)builtInTag
+{
+	popup.toolTip = nil;
+	NSMenuItem* customItem = [popup.menu itemWithTag:customTag];
+	NSMenuItem* chooseItem = [popup.menu itemWithTag:chooseTag];
+	NSString* fontName = [BeatUserDefaults.sharedDefaults get:setting];
+
+	if (fontName.length > 0) {
+		NSFont* font = [NSFont fontWithName:fontName size:12.0];
+		NSString* display = font.displayName ?: fontName;
+
+		customItem.hidden = NO;
+		customItem.title = display;
+		chooseItem.title = NSLocalizedString(@"prefs.font.change", @"Change Font…");
+		popup.toolTip = display;
+		[popup selectItem:customItem];
+		return;
+	}
+
+	customItem.hidden = YES;
+	chooseItem.title = NSLocalizedString(@"prefs.font.choose", @"Choose Font…");
+
+	NSMenuItem* builtIn = [popup.menu itemWithTag:builtInTag];
+	if (builtIn != nil) [popup selectItem:builtIn];
+	else [popup selectItemAtIndex:0];
+}
+
 - (IBAction)toggleLanguage:(id)sender {
 	NSPopUpButton *btn = sender;
 	
@@ -442,6 +657,15 @@
 - (void)windowWillClose:(NSNotification *)notification
 {
 	[[NSApplication sharedApplication] stopModal];
+
+	// Stop receiving font panel callbacks.
+	NSFontManager* fm = NSFontManager.sharedFontManager;
+	if (fm.target == self) {
+		fm.target = nil;
+		fm.action = NULL;
+	}
+	self.activeFontSettingKey = nil;
+	if (NSFontPanel.sharedFontPanelExists) [NSFontPanel.sharedFontPanel orderOut:nil];
 }
 
 -(id)valueForUndefinedKey:(NSString *)key {
