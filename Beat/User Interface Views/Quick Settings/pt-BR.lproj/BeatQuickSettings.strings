@@ -1,0 +1,42 @@
+
+/* Class = "NSTextFieldCell"; title = "Dark Mode"; ObjectID = "1tE-QT-xSi"; */
+"1tE-QT-xSi.title" = "Modo Escuro";
+
+/* Class = "NSTextFieldCell"; title = "Review Mode"; ObjectID = "FcR-V7-PTU"; */
+"FcR-V7-PTU.title" = "Modo de Revisão";
+
+/* Class = "NSTextFieldCell"; title = "Paper Size"; ObjectID = "Rt1-qW-ihD"; */
+"Rt1-qW-ihD.title" = "Tamanho do Papel";
+
+/* Class = "NSMenuItem"; title = "Fourth"; ObjectID = "Wg2-ho-wkf"; */
+"Wg2-ho-wkf.title" = "Quarta";
+
+/* Class = "NSTextFieldCell"; title = "Quick Settings"; ObjectID = "Xx5-eT-SRb"; */
+"Xx5-eT-SRb.title" = "Configurações Rápidas";
+
+/* Class = "NSMenuItem"; title = "First"; ObjectID = "a5T-li-azw"; */
+"a5T-li-azw.title" = "Primeira";
+
+/* Class = "NSTextFieldCell"; title = "Revision Mode"; ObjectID = "aWw-HG-atC"; */
+"aWw-HG-atC.title" = "Modo de Revisão";
+
+/* Class = "NSTextFieldCell"; title = "Revision"; ObjectID = "iOg-5U-Rwp"; */
+"iOg-5U-Rwp.title" = "Revisão";
+
+/* Class = "NSTextFieldCell"; title = "Scene Numbers"; ObjectID = "nWf-Cv-Juj"; */
+"nWf-Cv-Juj.title" = "Números de Cena";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "sqm-in-rbh"; */
+"sqm-in-rbh.title" = "Números de Página";
+
+/* Class = "NSMenuItem"; title = "Third"; ObjectID = "v0U-lZ-E3A"; */
+"v0U-lZ-E3A.title" = "Terceira";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "vON-wx-6tU"; */
+"vON-wx-6tU.title" = "A4";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "xjh-Yu-ZRp"; */
+"xjh-Yu-ZRp.title" = "US Letter";
+
+/* Class = "NSMenuItem"; title = "Second"; ObjectID = "yzY-bO-hOh"; */
+"yzY-bO-hOh.title" = "Segunda";
