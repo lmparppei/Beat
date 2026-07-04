@@ -250,6 +250,7 @@ NS_ASSUME_NONNULL_END
 - (void)addAttribute:(NSAttributedStringKey _Nonnull)key value:(id _Nonnull)value range:(NSRange)range;
 - (void)addAttributes:(NSDictionary* _Nonnull)attributes range:(NSRange)range;
 
+@property (nonatomic) BOOL didProcessCharacterCue;
 
 #pragma mark - Formatting
 

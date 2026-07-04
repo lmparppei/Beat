@@ -147,6 +147,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic) id client;
 /// CRDT client for collaboration
 @property (nonatomic) YClient* yClient;
+- (void)endCollaborationWithDocumentClosing:(BOOL)documentClosing;
 
 
 #pragma mark - Revisions

@@ -12,14 +12,46 @@ extension BeatDocumentBaseController {
     @objc public var yClient:YClient? { return self.client as? YClient }
         
     @objc public func joinCollaboration(roomId:String) {
-        self.setupCollaboration(string: "", joining: true)
+        // Replace the Beat URL scheme just in case
+        let room = roomId.replacingOccurrences(of: "beat://join?", with: "")
+        
+        self.setupCollaboration(joining: true)
         
         if let client = self.yClient {
+            showWaitingForSync()
+            
+            // When joining a collaboration session, we need to wait for sync step 2 before allowing any changes.
+            // This listener is nilled once it has run successfully.
+            client.onUpdate = { [weak self] type in
+                guard let self else { return }
+                
+                if type == .step2 {
+                    self.hideWaitingForSync()
+                    self.yClient?.onUpdate = nil
+                }
+            }
+            
             client.clientName = BeatUserDefaults.shared().get("userName") as? String ?? "Anonymous"
-            client.connect(room: roomId)
+            client.connect(room: room)
         }
     }
     
+    @objc open func showWaitingForSync() {
+        Swift.print("Override showWaitingForSync in OS implementation")
+    }
+    
+    @objc open func hideWaitingForSync() {
+        Swift.print("Override hideWaitingForSync in OS implementation")
+    }
+    
+    @objc open func showCollaborationError(_ description: String, canReconnect: Bool, shouldClose: Bool = false) {
+        Swift.print("Override showError in OS implementation")
+    }
+    
+    @objc open func disconnectedAfterError(reason:YNetworkClientDisconnectReason.RawValue, error:NSError?) {
+        Swift.print("Override disconnectedAfterError in OS implementation")
+    }
+        
     /// Disconnect, deallocate, kill listeners.
     @objc open func endCollaboration(documentClosing:Bool) {
         guard let client = self.client as? YClient else { return }
@@ -28,29 +60,60 @@ extension BeatDocumentBaseController {
         self.client = nil
         self.collaborating = false
         
-
+        if let lm = self.layoutManager() as? BeatLayoutManager {
+            lm.resetRemoteUserSelections()
+        }
+        
+        // Do any further teardown in OS-specific implementation
     }
     
     @objc public func connectAndBeginCollaboration(onRoomCreated:((String) -> Void)?) {
-        guard let parser else { return }
-        setupCollaboration(string: parser.text())
+        setupCollaboration()
         if let client = self.client as? YClient {
             client.onRoomCreated = onRoomCreated
             client.connect()
         }
     }
     
-    @objc open func setupCollaboration(string:String, joining:Bool = false) {
+    @objc open func setupCollaboration(joining:Bool = false) {
         self.collaborating = true
         
+        guard let server = Bundle(for: BeatDocumentBaseController.self).infoDictionary?["collaborationServer"] as? String else {
+            Swift.print("NO SERVER DEFINED. Remember to add server name to BeatCore Info.plist")
+            return
+        }
+        
         let userName:String? = BeatUserDefaults.shared().get("userName") as? String
-        self.client = YClient(doc: YDocument(), clientName: userName ?? "")
+        self.client = YClient(doc: YDocument(), server: server, clientName: userName ?? "")
         
         guard let client = self.client as? YClient else { return }
         let doc = client.doc
-                
+        
+        var text = ""
+        
+        if !joining, let parser {
+            // The host gives our source of truth
+            text = parser.text()
+        }
+        
         doc.transact(origin: client.origin) {
-            doc.getText().insert(0, text: string)
+            doc.getText().insert(0, text: text)
+            
+            if !joining {
+                // Bake revisions
+                // This is a little silly. We should maybe transmit the full JSON setting block here and let the receiving end apply everything they need from that.
+                let revisions = self.revisionTracking.revisedRanges()
+                if let additions = revisions["Addition"] {
+                    for addition in additions {
+                        if addition.count < 3 { continue }
+                        
+                        let range = NSMakeRange(addition[0].intValue, addition[1].intValue)
+                        let generation = addition[2].intValue
+                        
+                        doc.getText().format(range.location, length: range.length, attributes: [BeatRevisions.attributeKey().rawValue: generation])
+                    }
+                }
+            }
         }
         
         // Don't allow undoing the initial transaction
@@ -61,21 +124,33 @@ extension BeatDocumentBaseController {
             self?.sharedDocumentChanged(event: event)
         }
                 
-        client.networkClient.onError = { e in
-            Swift.print("ERROR:", e)
+        client.networkClient.onError = { [weak self] description, error in
+            Swift.print("Server error: \(description)")
+            
+            // Handle server errors
+            if error.domain == "YServer", let reason = YServerError(rawValue: error.code) {
+                if reason == .roomNotFound {
+                    self?.showCollaborationError("Room not found.", canReconnect: false, shouldClose: true)
+                }
+            }
         }
                     
         client.onDisconnect = { [weak self] reason, error in
             if reason == .userTriggered {
                 self?.endCollaboration(documentClosing: false)
+            } else {
+                // Filter out non-error reasons
+                if reason != .userTriggered && reason != .hostTerminated {
+                    self?.disconnectedAfterError(reason: reason.rawValue, error: error as? NSError)
+                }
             }
         }
         
         client.onAwarenessUpdate = { [weak self] awareness in
             self?.updateRemoteCarets()
         }
-            
-        //client.connect(room: "test")
+                    
+        // Do any additional UI setup on OS-specific implementation
     }
     
     @objc open func updateRemoteCarets() {
@@ -155,7 +230,6 @@ extension BeatDocumentBaseController {
             let attrs = d.getAttributes()
             if attrs.count > 0 {
                 if let revision = attrs[BeatRevisions.attributeKey().rawValue] as? Int {
-                    Swift.print("Revision:", revision)
                     var revisionItem:BeatRevisionItem?
                     if revision >= 0 {
                         revisionItem = BeatRevisionItem(type: .addition, generation: revision)
