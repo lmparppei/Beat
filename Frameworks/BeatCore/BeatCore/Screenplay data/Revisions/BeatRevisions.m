@@ -242,7 +242,7 @@
 #pragma mark JSON data for saved files
 
 /// Returns the revised ranges to be saved into data block of the Fountain file
-+ (NSDictionary<NSString*,NSArray*>*)rangesForSaving:(NSAttributedString*)string
++ (NSDictionary<NSString*,NSArray<NSArray<NSNumber*>*>*>*)rangesForSaving:(NSAttributedString*)string
 {
     NSMutableAttributedString *str = string.mutableCopy;
     
@@ -599,7 +599,7 @@
 
 #pragma mark Convenience methods
 
-- (NSDictionary*)revisedRanges
+- (NSDictionary<NSString*,NSArray<NSArray<NSNumber*>*>*>*)revisedRanges
 {
     NSDictionary *revisions = [BeatRevisions rangesForSaving:self.delegate.getAttributedText];
     return revisions;
@@ -844,7 +844,7 @@
 		
 		NSModalResponse result = [alert runModal];
 		
-		if (alert.suppressionButton.state == NSOnState) {
+		if (alert.suppressionButton.state == BXOnState) {
 			[BeatUserDefaults.sharedDefaults setSuppressed:@"commitRevisions" value:YES];
 		}
 		

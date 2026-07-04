@@ -71,7 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markerAction:(RevisionType)type;
 - (void)fixRevisionAttributesInRange:(NSRange)fullRange;
 
-- (NSDictionary*)revisedRanges;
+/// Returns all revised ranges categorized by type
+- (NSDictionary<NSString*,NSArray<NSArray<NSNumber*>*>*>*)revisedRanges;
 
 - (void)nextRevision;
 - (void)previousRevision;
