@@ -15,10 +15,17 @@ class CollaborationButton:NSButton {
 	var collaborationMenu: CollaborationView?
 
 	weak var client:YClient?
+	@IBOutlet weak var document:BeatEditorDelegate?
 	
 	private var observers: [NSObjectProtocol] = []
 	private var transientPopover: NSPopover?
 
+	private enum CollaborationButtonState {
+		case connected
+		case disconnected
+		case reconnecting
+	}
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		target = self
@@ -40,10 +47,12 @@ class CollaborationButton:NSButton {
 		guard let vc = sb.instantiateInitialController() as? CollaborationView else { print("Failed to load"); return }
 		vc.loadView()
 		
-		vc.setup(with: client)
+		vc.setup(with: client, document: self.document)
 		collaborationMenu = vc
 		
 		setupNotificationListeners()
+
+		self.changeStatus(status: .connected)
 	}
 	
 	/// Resets the status of this menu to default (hidden, no client)
@@ -73,7 +82,7 @@ class CollaborationButton:NSButton {
 			return
 		}
 
-		vc.setup(with: client)
+		vc.setup(with: client, document: self.document)
 		
 		let pop = NSPopover()
 		pop.contentViewController = vc
@@ -103,16 +112,53 @@ class CollaborationButton:NSButton {
 				self?.collaborationMenu?.reload()
 				self?.showTransient("\(name) left")
 			},
-			nc.addObserver(forName: .YDisconnected, object: client, queue: .main) { [weak self] _ in
-				self?.popover?.close()
-				self?.reset()
+			nc.addObserver(forName: .YDisconnected, object: client, queue: .main) { [weak self] note in
+				self?.transientPopover?.close()
+				
+				if let rawReason = note.userInfo?["reason"] as? Int,
+					let reason = YNetworkClientDisconnectReason(rawValue: rawReason) {
+					if reason == .userTriggered || reason == .hostTerminated {
+						// User triggered session end
+						self?.popover?.close()
+						self?.reset()
+					}
+				} else {
+					// Change status
+					self?.changeStatus(status: .disconnected)
+				}
 				
 				self?.showTransient("Disconnected. Remember to save a local copy.")
-				
-				//self?.transientPopover?.close()
-				//self?.removeFromSuperview()
+			},
+			nc.addObserver(forName: .YReconnecting, object: client, queue: .main) { [weak self] note in
+				self?.transientPopover?.close()
+				self?.changeStatus(status: .reconnecting)
+			},
+			nc.addObserver(forName: .YSessionEnded, object: client, queue: .main) { [weak self] note in
+				self?.showTransient("Session ended. Remember to save a local copy.")
+				self?.reset()
 			}
 		]
+	}
+		
+	private func changeStatus(status:CollaborationButtonState) {
+		
+		if status == .connected {
+			self.title = "Collaborating"
+			if #available(macOS 11.0, *) {
+				self.image = NSImage.init(systemSymbolName: "person.2.fill", accessibilityDescription: nil)
+			}
+		} else if status == .disconnected {
+			self.title = "Disconnected"
+			if #available(macOS 11.0, *) {
+				self.image = NSImage.init(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
+			}
+		} else if status == .reconnecting {
+			self.title = "Reconnecting…"
+			if #available(macOS 11.0, *) {
+				self.image = NSImage.init(systemSymbolName: "phone.connection", accessibilityDescription: nil)
+			}
+		}
+		
 	}
 
 	// MARK: - Transient notification
@@ -123,7 +169,7 @@ class CollaborationButton:NSButton {
 
 		let label = NSTextField(labelWithString: message)
 		label.font = .systemFont(ofSize: 12)
-		label.textColor = .secondaryLabelColor
+		label.textColor = .labelColor
 		label.sizeToFit()
 
 		let padding: CGFloat = 12
@@ -158,14 +204,16 @@ class CollaborationView: NSViewController, NSTableViewDataSource, NSTableViewDel
 	@IBOutlet weak var statusLight: NSButton?
 	@IBOutlet weak var statusLabel: NSTextField?
 
+	weak var document: BeatEditorDelegate?
 	weak var client: YClient?
 	//private var role: String = ""
 
 	// Snapshot used for table display, refreshed in reload()
 	private var participants: [YUserAwareness] = []
 
-	func setup(with client: YClient) {
+	func setup(with client: YClient, document:BeatEditorDelegate?) {
 		self.client = client
+		self.document = document
 		reload()
 	}
 
@@ -230,7 +278,13 @@ class CollaborationView: NSViewController, NSTableViewDataSource, NSTableViewDel
 	}
 	
 	@IBAction func disconnect(_ sender: Any?) {
-		client?.close()
+		if let client {
+			if client.isConnected {
+				client.close()
+			} else {
+				document?.endCollaboration(withDocumentClosing: false)
+			}
+		}
 	}
 	
 	@IBAction func shareJoinLink(_ sender: NSButton) {
@@ -276,9 +330,13 @@ extension CollaborationView:NSSharingServicePickerDelegate {
 		let copyService = NSSharingService(title: string,
 										   image: image,
 										   alternateImage: nil) {
-			guard let url = items.first as? URL else { return }
-			NSPasteboard.general.clearContents()
-			NSPasteboard.general.setString(url.absoluteString, forType: .string)
+			guard let string = items.first as? String else { return }
+			
+			if let range = string.range(of: "beat:") {
+				let url = string.suffix(from: range.lowerBound)
+				NSPasteboard.general.clearContents()
+				NSPasteboard.general.setString(String(url), forType: .string)
+			}			
 		}
 		return [copyService] + proposedServices
 	}
