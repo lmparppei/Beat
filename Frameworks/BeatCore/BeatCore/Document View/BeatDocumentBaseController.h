@@ -103,16 +103,17 @@ NS_ASSUME_NONNULL_END
 /// macOS only – `true` when loading and initial formatting is still in process
 @property (nonatomic) bool documentIsLoading;
 
-/// Set `true` in collaboration mode. Changes how text input and attributes are handled.
-@property (nonatomic) bool collaborating;
-
 
 #pragma mark - Collaboration
 
+/// Set `true` in collaboration mode. Changes how text input and attributes are handled.
+@property (nonatomic) bool collaborating;
 /// CRDT client.
-/// - note: Because of some weird scoping problems, this has to be explicitly cast in Swift every time. No idea why.
+/// - note: Because of some weird scoping problems, this has to be explicitly cast in Swift every time. No idea why. There's a Swift extension for `- (YClient*)yClient`.
 @property (nonatomic) id _Nullable client;
 @property (nonatomic) BOOL applyingRemoteEdits;
+/// Set to `true` at collaboration start and `false` when we have received sync step 2 for the first time. 
+@property (nonatomic) BOOL waitingForRemoteTextFormatting;
 
 
 #pragma mark - Parser
@@ -261,6 +262,7 @@ NS_ASSUME_NONNULL_END
 
 @property (nonatomic) NSInteger fontStyle;
 @property (nonatomic) bool hideFountainMarkup;
+/// Set to `true` in text storage delegate after characters have been changed, to avoid strange scrolling bugs in macOS 26. 
 @property (nonatomic) bool waitingForFormatting;
 
 @property (nonatomic) BeatEditorFormatting* _Nullable formatting;

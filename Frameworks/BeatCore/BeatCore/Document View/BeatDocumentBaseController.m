@@ -424,19 +424,19 @@
 
 
 #pragma mark - Formatting
-/// TODO: WHY ARE THESE HERE???? Move to `BeatFormatting`
-/// Not so fast – some sort of reformatting control is nice to have in this object for theme delegate conformance. Although why aren't themes in `BeatCore` to begin with?
-
-- (IBAction)reformatEverything:(id)sender
-{
-    [self.parser resetParsing];
-    [self.formatting applyFormatChanges];
-    [self.formatting formatAllLines];
-}
 
 /// When something was changed, this method takes care of reformatting every line. Actually done in `BeatEditorFormatting`.
 - (void)applyFormatChanges
 {
+    /*
+    // An die Nachgeborenen. Tuleville sukupolville. For generations come.
+    if (self.waitingForRemoteTextFormatting) {
+        [self applyInitialRemoteTextFormatting];
+        self.waitingForFormatting = false;
+        return;
+    }
+    */
+    
     [self.formatting applyFormatChanges];
     self.waitingForFormatting = false;
 }
@@ -453,7 +453,6 @@
     self.waitingForFormatting = false;
 }
 
-
 /// Forces a type on a line and formats it accordingly. Can be abused to do strange and esoteric stuff.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type
 {
@@ -464,12 +463,6 @@
 - (void)updateTheme
 {
     NSLog(@"WARNING: Override updateTheme in OS-specific implementation");
-}
-
-- (void)setWaitingForFormatting:(bool)waitingForFormatting
-{
-    _waitingForFormatting = waitingForFormatting;
-    
 }
 
 - (void)updateThemeAndReformat:(NSArray*)types
