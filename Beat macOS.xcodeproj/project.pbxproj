@@ -1311,8 +1311,6 @@
 		B69C74DB2773D6350022D9D5 /* BeatLaunchButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLaunchButton.m; sourceTree = "<group>"; };
 		B69C74DF2773D9CA0022D9D5 /* NSImage+ProportionalScaling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSImage+ProportionalScaling.h"; sourceTree = "<group>"; };
 		B69C74E02773D9CA0022D9D5 /* NSImage+ProportionalScaling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSImage+ProportionalScaling.m"; sourceTree = "<group>"; };
-		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneCards.h; sourceTree = "<group>"; };
-		B69EF55024659FC000C5B78C /* SceneCards.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneCards.m; sourceTree = "<group>"; };
 		B69EF5522465AA2000C5B78C /* CardPrintCSS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = CardPrintCSS.css; sourceTree = "<group>"; };
 		B69FCF62272314900022A9D9 /* BeatCharacterList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCharacterList.h; sourceTree = "<group>"; };
 		B69FCF63272314900022A9D9 /* BeatCharacterList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCharacterList.m; sourceTree = "<group>"; };
@@ -1771,8 +1769,6 @@
 				B66FC99D2276EAD800C0265D /* CardView.js */,
 				B69EF5522465AA2000C5B78C /* CardPrintCSS.css */,
 				B6EAEDBF267A687900BBD2A2 /* CardWindow.html */,
-				B69EF54F24659FC000C5B78C /* SceneCards.h */,
-				B69EF55024659FC000C5B78C /* SceneCards.m */,
 			);
 			path = Legacy;
 			sourceTree = "<group>";
@@ -4310,7 +4306,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133563;
+				CURRENT_PROJECT_VERSION = 133568;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4355,7 +4351,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133563;
+				CURRENT_PROJECT_VERSION = 133568;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = C3R7KAVB6V;
@@ -4402,7 +4398,7 @@
 				CODE_SIGN_ENTITLEMENTS = BeatQuickLook/BeatQuickLook.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133563;
+				CURRENT_PROJECT_VERSION = 133568;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4447,7 +4443,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133563;
+				CURRENT_PROJECT_VERSION = 133568;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

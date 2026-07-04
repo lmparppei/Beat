@@ -329,8 +329,6 @@
 		B67C2CEC2A2D155600B88B0F /* NotoEmoji.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoEmoji.ttf; sourceTree = "<group>"; };
 		B681F1B62FD8A766009178A8 /* 0.4.10.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.10.html; sourceTree = "<group>"; };
 		B682C25A2B30FAB50027511A /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = "Beat iOS/Localizable.strings"; sourceTree = "<group>"; };
-		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
-		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
 		B6839B472D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatDocumentViewController+TextEvents.h"; sourceTree = "<group>"; };
 		B6839B482D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BeatDocumentViewController+TextEvents.m"; sourceTree = "<group>"; };
 		B686BD222B33AF0E0074FC67 /* BeatUserDefaultButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatUserDefaultButton.swift; sourceTree = "<group>"; };
@@ -685,8 +683,6 @@
 		B648C1902BA04D2700F0DD34 /* Legacy */ = {
 			isa = PBXGroup;
 			children = (
-				B68321B529F6BD7D00A2553E /* BeatPrintView.h */,
-				B68321B629F6BD7E00A2553E /* BeatPrintView.m */,
 				B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */,
 				B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */,
 				B686FF8A2971BC7D00789C8D /* Render to HTML */,

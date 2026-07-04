@@ -1,0 +1,51 @@
+{
+  "originHash" : "a08158c1f9d392fb6b6cb1bfdab12999e119e59c95698108f0c5d7e852674e76",
+  "pins" : [
+    {
+      "identity" : "lib0-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ObuchiYuki/lib0-swift.git",
+      "state" : {
+        "revision" : "001958e8384591bf11ad5f494cc525bb2367d5b7",
+        "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "sparkle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparkle-project/Sparkle",
+      "state" : {
+        "branch" : "2.x",
+        "revision" : "fa4eaa977cb1a390b237349be2f3d761175f345a"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "cdd0ef3755280949551dc26dee5de9ddeda89f54",
+        "version" : "1.6.2"
+      }
+    },
+    {
+      "identity" : "uxkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZeeZide/UXKit",
+      "state" : {
+        "revision" : "39e7851e92ebdfb06d06cdcab605b7372b264923",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "zipfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/weichsel/ZIPFoundation/",
+      "state" : {
+        "revision" : "02b6abe5f6eef7e3cbd5f247c5cc24e246efcfe0",
+        "version" : "0.9.19"
+      }
+    }
+  ],
+  "version" : 3
+}
