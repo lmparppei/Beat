@@ -75,92 +75,131 @@ public enum YNetworkClientDisconnectReason:Int {
     case hostTerminated
     case timedOut
     case networkLost
+    case roomNotFound
     case error
+}
+
+public enum YServerError:Int {
+    case roomNotFound
 }
 
 public final class YNetworkClient: NSObject {
 
     public var userId = UUID().uuidString
     
-    // Callbacks — set these before calling connect
-    public var onRoomCreated: ((String) -> Void)?   // roomId → share this as the join link
-    public var onJoined: ((String) -> Void)?        // roomId
+    public var onRoomCreated: ((String) -> Void)?
+    public var onJoined: ((String) -> Void)?
     public var onPeerJoined: ((String, [String]) -> Void)?
     public var onPeerLeft: ((String, [String], Bool) -> Void)?
-    public var onUpdates: (([Data]) -> Void)?       // array of binary CRDT chunks from a remote peer
-    public var onError: ((String) -> Void)?
+    public var onUpdates: (([Data]) -> Void)?
+    public var onError: ((String, NSError) -> Void)?
     public var onDisconnected: ((YNetworkClientDisconnectReason, Error?) -> Void)?
     public var onConnected: (() -> Void)?
     
-    public var isConnected:Bool = false
-    
-    public var activePeers:Set<String> = [] {
+    public var ready: Bool = false
+    public var isConnected: Bool = false {
         didSet {
-            print("activePeers: \(activePeers)")
+            if !isConnected { ready = false }
         }
     }
+    public var isReconnecting: Bool = false
+    public var activePeers: Set<String> = []
     
     private let baseURL: URL
     private var webSocketTask: URLSessionWebSocketTask?
     private var urlSession: URLSession!
+    
+    // Tracks intentional disconnects so delegate callbacks
+    // don't misfire as errors
+    private var disconnectReason: YNetworkClientDisconnectReason?
+    // Guards against double-firing from didCloseWith + didCompleteWithError
+    private var disconnectCallbackFired = false
 
     init(serverURL: URL) {
         self.baseURL = serverURL
-                
         super.init()
         self.urlSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
 
     // MARK: - Public API
 
-    /// Host: create a new room. `onRoomCreated` fires with the roomId on success.
     public func createRoom() {
         connect(path: "/create/\(userId)")
     }
 
-    /// Peer: join an existing room by id.
     public func joinRoom(_ roomId: String) {
         connect(path: "/join/\(roomId)/\(userId)")
     }
 
-    /// Send an array of binary CRDT chunks to all other peers in one frame.
     public func sendUpdates(_ chunks: [Data]) {
-        //print("      --> sending",chunks)
         guard !chunks.isEmpty else { return }
         let frame = Framing.encode(chunks)
-        let message = URLSessionWebSocketTask.Message.data(frame)
-        webSocketTask?.send(message) { [weak self] error in
+        webSocketTask?.send(.data(frame)) { [weak self] error in
             if let error {
-                self?.onError?("Send failed: \(error.localizedDescription)")
+                self?.onError?("Send failed: \(error.localizedDescription)", error as NSError)
             }
         }
     }
 
+    /// Clean disconnect — will not trigger error UI.
     public func disconnect() {
-        webSocketTask?.cancel(with: .goingAway, reason: nil)
-        webSocketTask = nil
+        cancelCurrentTask(reason: .userTriggered)
+    }
+    
+    /// Reconnect to an existing room — replaces the socket without
+    /// triggering disconnect UI.
+    public func reconnect(roomId: String) {
+        cancelCurrentTask(reason: nil) // nil = suppress the callback entirely
+        isReconnecting = true
+        connect(path: "/join/\(roomId)/\(userId)")
     }
 
     // MARK: - Private
 
-    private func connect(path: String) {
-        let url = baseURL.appendingPathComponent(path)
-        webSocketTask = urlSession.webSocketTask(with: url)
-        webSocketTask?.resume()
-        receiveNext()
+    private func cancelCurrentTask(reason: YNetworkClientDisconnectReason?) {
+        disconnectReason = reason
+        disconnectCallbackFired = false
+        webSocketTask?.cancel(with: .normalClosure, reason: nil)
+        webSocketTask = nil
     }
 
-    private func receiveNext() {
-        webSocketTask?.receive { [weak self] result in
-            guard let self else { return }
+    private func connect(path: String) {
+        disconnectReason = nil
+        disconnectCallbackFired = false
+        
+        let url = baseURL.appendingPathComponent(path)
+        let task = urlSession.webSocketTask(with: url)
+        webSocketTask = task
+        
+        task.resume()
+        receiveNext(for: task)
+    }
+
+    // Pass the task explicitly so a replaced task's receive loop
+    // doesn't call back into a newer socket
+    private func receiveNext(for task: URLSessionWebSocketTask) {
+        task.receive { [weak self] result in
+            guard let self, self.webSocketTask === task else { return }
             switch result {
             case .failure(let error):
-                self.onError?("Receive error: \(error.localizedDescription)")
+                self.onError?("Receive error: \(error.localizedDescription)", error as NSError)
             case .success(let message):
                 self.handle(message)
-                self.receiveNext()
+                self.receiveNext(for: task)
             }
         }
+    }
+
+    private func disconnectEvent(reason: YNetworkClientDisconnectReason, error: Error?) {
+        // Only fire once per disconnection event
+        guard !disconnectCallbackFired else { return }
+        disconnectCallbackFired = true
+        isConnected = false
+        
+        // Suppress callback entirely during reconnects
+        guard !isReconnecting else { return }
+        
+        onDisconnected?(reason, error)
     }
 
     private func handle(_ message: URLSessionWebSocketTask.Message) {
@@ -170,7 +209,7 @@ public final class YNetworkClient: NSObject {
                 let chunks = try Framing.decode(data)
                 onUpdates?(chunks)
             } catch {
-                onError?("Framing decode failed: \(error)")
+                onError?("Framing decode failed: \(error)", error as NSError)
             }
 
         case .string(let text):
@@ -181,35 +220,39 @@ public final class YNetworkClient: NSObject {
 
             switch type {
             case "room_created":
-                if let roomId = json["roomId"] as? String {
-                    onRoomCreated?(roomId)
-                }
+                ready = true
+                isReconnecting = false
+                if let roomId = json["roomId"] as? String { onRoomCreated?(roomId) }
                 
             case "joined":
-                if let roomId = json["roomId"] as? String {
-                    onJoined?(roomId)
-                }
+                ready = true
+                isReconnecting = false
+                if let roomId = json["roomId"] as? String { onJoined?(roomId) }
                 if let memberIds = json["memberIds"] as? [String] {
                     activePeers.removeAll()
                     activePeers.formUnion(memberIds)
                 }
                 
             case "peer_joined":
-                let userId = json["userId"] as? String
-                let memberIds = json["memberIds"] as? [String]
-                onPeerJoined?(userId ?? "", memberIds ?? [])
-                if let userId { activePeers.insert(userId) }
+                let userId = json["userId"] as? String ?? ""
+                let memberIds = json["memberIds"] as? [String] ?? []
+                activePeers.insert(userId)
+                onPeerJoined?(userId, memberIds)
                 
             case "peer_left":
-                let userId = json["userId"] as? String
-                let memberIds = json["memberIds"] as? [String]
+                let userId = json["userId"] as? String ?? ""
+                let memberIds = json["memberIds"] as? [String] ?? []
                 let isHost = json["isHost"] as? Bool ?? false
+                activePeers.remove(userId)
+                onPeerLeft?(userId, memberIds, isHost)
                 
-                onPeerLeft?(userId ?? "", memberIds ?? [], isHost)
-                if let userId { activePeers.remove(userId) }
+            case "peer_reconnected":
+                let userId = json["userId"] as? String ?? ""
+                activePeers.insert(userId)
                 
             case "error":
-                onError?(json["message"] as? String ?? "Unknown error")
+                let message = json["message"] as? String ?? "Unknown error"
+                handleServerError(message: message)
                 
             default:
                 break
@@ -219,56 +262,58 @@ public final class YNetworkClient: NSObject {
             break
         }
     }
+    
+    private func handleServerError(message:String) {
+        var disconnect = false
+        var code = -9999
+        
+        if message == "Room not found" {
+            code = YServerError.roomNotFound.rawValue
+            disconnect = true
+        }
+        onError?(message, NSError(domain: "YServer", code: code, userInfo: [NSLocalizedDescriptionKey: message]))
+        
+        if disconnect {
+            self.disconnect()
+        }
+    }
 }
 
 // MARK: - URLSessionWebSocketDelegate
 
 extension YNetworkClient: URLSessionWebSocketDelegate {
-    public func urlSession(
-        _ session: URLSession,
-        webSocketTask: URLSessionWebSocketTask,
-        didOpenWithProtocol protocol: String?
-    ) {
-        // Connected — waiting for server handshake message
-        self.isConnected = true
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask,
+                           didOpenWithProtocol protocol: String?) {
+        isConnected = true
         onConnected?()
     }
 
-    public func urlSession(
-        _ session: URLSession,
-        webSocketTask: URLSessionWebSocketTask,
-        didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
-        reason: Data?
-    ) {
-        self.isConnected = false
-        onDisconnected?(.userTriggered, nil)
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask,
+                           didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        // If we set an explicit reason, use it; otherwise treat as host termination
+        let reason = disconnectReason ?? .hostTerminated
+        disconnectEvent(reason: reason, error: nil)
     }
     
-    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: (any Error)?) {
-        print("Invalid error")
-    }
-    
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
+    public func urlSession(_ session: URLSession, task: URLSessionTask,
+                           didCompleteWithError error: Error?) {
+        guard let error = error as? NSError else { return }
         
-        var reason:YNetworkClientDisconnectReason = .hostTerminated
+        // NSURLErrorCancelled (-999) fires when we cancel intentionally —
+        // didCloseWith already handled (or will handle) that case
+        if error.code == NSURLErrorCancelled { return }
         
-        if let error = error as? NSError {
-            let errorCode = error.code
-            let domain = error.domain
-            
-            switch errorCode {
-            case NSURLErrorTimedOut:
-                reason = .timedOut
-            case NSURLErrorBadURL, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed, NSURLErrorUnsupportedURL, NSURLErrorBadServerResponse:
-                reason = .hostNotFound
-            case NSURLErrorNetworkConnectionLost:
-                reason = .networkLost
-            default:
-                reason = .error
-            }
+        let reason: YNetworkClientDisconnectReason
+        switch error.code {
+        case NSURLErrorTimedOut:              reason = .timedOut
+        case NSURLErrorNetworkConnectionLost: reason = .networkLost
+        case NSURLErrorCannotFindHost,
+             NSURLErrorDNSLookupFailed,
+             NSURLErrorBadServerResponse:     reason = .hostNotFound
+        default:                              reason = .error
         }
         
-        onDisconnected?(reason, error)
+        disconnectEvent(reason: reason, error: error)
     }
 }
 
