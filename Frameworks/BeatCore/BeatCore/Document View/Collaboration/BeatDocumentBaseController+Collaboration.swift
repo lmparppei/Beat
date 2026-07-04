@@ -18,6 +18,7 @@ extension BeatDocumentBaseController {
         self.setupCollaboration(joining: true)
         
         if let client = self.yClient {
+            self.waitingForRemoteTextFormatting = true
             showWaitingForSync()
             
             // When joining a collaboration session, we need to wait for sync step 2 before allowing any changes.
@@ -42,6 +43,11 @@ extension BeatDocumentBaseController {
     
     @objc open func hideWaitingForSync() {
         Swift.print("Override hideWaitingForSync in OS implementation")
+    }
+    
+    /// Override this  with code to apply formatting to the text received from remote user when connecting.
+    @objc open func applyInitialRemoteTextFormatting() {
+        Swift.print("Override applyRemoteInitialFormatting in OS implementation")
     }
     
     @objc open func showCollaborationError(_ description: String, canReconnect: Bool, shouldClose: Bool = false) {

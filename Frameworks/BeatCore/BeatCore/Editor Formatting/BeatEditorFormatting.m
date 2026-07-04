@@ -99,9 +99,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
         if (idx < lines.count) [self formatLine:lines[idx]];
         else break;
     }
-    
+
     self.delegate.waitingForFormatting = false;
-    
     [parser.changedIndices removeAllIndexes];
 }
 
@@ -109,7 +108,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Paragraph styles
 
 /// Returns paragraph style for given line type
-- (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
+- (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type
+{
 	Line *tempLine = [Line withString:@"" type:type];
 	return [self paragraphStyleFor:tempLine];
 }

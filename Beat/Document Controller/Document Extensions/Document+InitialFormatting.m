@@ -52,7 +52,6 @@
 		// Start rendering
 		self.progressIndicator.maxValue =  1.0;
 		[self formatAsynchronouslyFrom:0 batchSize:500 fullString:self.textView.attributedString.mutableCopy results:NSMutableDictionary.new];
-		//[self formatAllWithDelayFrom:0 formattedString:formattedString];
 	} else {
 		// Empty document, do nothing.
 		[self formattingComplete:nil];

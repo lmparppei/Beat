@@ -30,23 +30,31 @@ There are some parts that have been completely commented out. Sometimes I've wri
 
 `Document` is a massive class, and I'm sorry for that. It is that because of legacy reasons (meaning me being bad at Objective C) and I'm not proud of it. I've started moving a lot of stuff to an OS-agnostic class called `BeatDocumentBaseController`, which is the superclass of both macOS and iOS implementations of the actual document view.
 
-At some point I should migrate the document class to the more modern approach, where the document is NOT the actual view controller. This current setup is a legacy macOS thing. It's not that hard, but requires some hard manual labor. AI wasn't able to do it for me. 
+At some point I should migrate the document class to the more modern approach, where the document is NOT the actual view controller. This current setup is a legacy macOS thing. It's not that difficult, but requires some hard manual labor. AI wasn't able to do it for me. 
 
-Start from `windowControllerDidLoadNib` and work from there. Document loading is throttled using chained GC dispatches, and might be a bit confusing at first.
+Start from `windowControllerDidLoadNib` and work from there. Document formatting is throttled using chained GC dispatches, and might be a bit confusing at first.
 
 From there, editing a document is this constant three-way ping-pong of `BeatTextView`, `Document` and `ContinuousFountainParser`. It's often unclear what happens in `BeatTextView`, and what happens in `Document`. 
 
 Rendering and text view specific things (such as displaying autocorrect dropdowns) are handled by the text view, while `Document` listens to changes in the text, sends them to parser and after parsing, asks another class to format the text. The document also contains a lot of `IBAction`s, though most of them are just stubs forwarding them somewhere else.
 
 `shouldChangeTextInRange` parses the possible change **before** it is actually displayed, which means the parser knows the change ahead of time. Formatting is applied (based on parser data) when the text view calls `textDidChange`.
- 
+
+
+#BeatEditorDelegate
+
+When I first started the project, I didn't understand weak references and/or somehow couldn't pass the Document window everyhwere (missing imports, maybe), so I created the `BeatEditorDelegate` protocol. It defines almost *all* of the core functionality of the document view controller, and inadvertently that became quite handy when I ported Beat to iOS. The protocol now defines how the main editor object should behave, and all of its methods. 
+
+The downside of that is that the protocol is absolutely **massive**. It requires a ton of methods, and most of them are implemented under categories and extensions, which unfortunately that means that Xcode screams at your face that the main classes don't conform to the protocol. 
+
+This should be fixed at some point, but editor delegate references are absolutely EVERYWHERE. You might have some luck using agentic AI or something. I'm quite opposed to that myself. 
 
 
 ## Parser
 
-`ContinuousFountainParser` is based on the work of Hendrik Noeller, though I've rewritten ost of it since. I figured out how to optimize quite a few things, and also streamlined some of the stuff. And made some of it more complicated.
+`ContinuousFountainParser` is based on the work of Hendrik Noeller, though I've rewritten most of it since. I figured out how to optimize quite a few things, and also streamlined some of the stuf -- and made some of it more complicated. Fountain is not trivial to parse, so I've created so-called Parsing Rules to help with the process.
 
-Parser **does not** use regexes, but parses changes on char level (using `unichar` arrays) and it might look a bit weird at times, but is super fast. I've tried commenting the more confusing parts, but probably haven't covered the particular thing that confuses you.
+Parser **does not** use regexes, and instead parses changes on char level (using `unichar` arrays) and while it might look a bit weird at times, it is super fast. I've tried commenting the more confusing parts, but probably haven't covered the particular thing that confuses you.
 
 The parser is used both while editing (live/continuous parsing) and when exporting and loading documents (static parsing). It's important to ensure that everything gets parsed correctly in both situations, because, in theory, Fountain files should be parsed from bottom to top, and here we're always parsing downwards. We also need to perform lookbacks and correct our parses based on other surrounding lines -- and in many cases, reparse all of those affected lines.
 
@@ -88,16 +96,24 @@ Pagination class also has an API for getting page numbers in the editor. In the 
 
 ## Rendering
 
+Beat originally used parts of the very old Fountain repo, including a modified version of their HTML export code. I've since migrated to native AppKit/UIKit rendering using `NSAttributedString`s, text views and `NSLayoutManager` magic. Apple hasn't really bothered to document most of that, and there are a lot of quirks you have to navigate around, if you want to change how the rendering works.
 
+I'm targetting fairly new iOS versions (16+), while keeping macOS requirements quite low (10.15 from 2026 onwards) and that comes with an extra burden: TextKit 2. Modern Apple systems automatically use TextKit 2 views, and they did the migration before the system was even ready. Editor view is always set to TextKit 1 compatibility mode, but that won't work with rendering on iOS, so there are essentially two overlapping systems.
+
+On a further fun note, for some insane reason iOS doesn't support text tables. On macOS, we're rendering page headers, scene headings and dual dialogue using tables, which is pretty easy. iOS, on the other hand, uses text attachments to mimic table views. There is a lot of layout code to keep things correctly in place and retain the metrics of `NSTextTable` cells.
+
+For the most part, rendering just takes in a `Line` object and turns it into an `NSAttributedString` and that's it. The heart of it works out of the box on both systems, it's just the layout that will make you lose your mind. 
 
 
 # Plugins
 
 Plugins work through `JavaScriptCore`. It's a convoluted system, but the actual plugins are relatively simple. They run using a single class, `BeatPlugin`, and most relevant classes have `JSExports` protocols to make them compatible with the plugin API.
 
-Plugin Library downloads stuff from a hard-coded GitHub repository (see exact URL in the class). There is a chance that the plugins could do nefarious things, so all of those plugins are reviewed and approved by me, but Beat can run whatever you feed it. **Supply-chain attack is possible**, but the plugin repo is separate from main app repo, and I can kill plugin support via the release if something bad happens. 
+Plugin Library downloads stuff from a hard-coded GitHub repository (see the exact URL in code). There is a chance that the plugins could do nefarious things, so all of those plugins are reviewed and approved by me. **Supply-chain attack is possible**, but the plugin repo is separate from main app repo, and I can kill plugin support via the release if something bad happens. 
 
-To be able to provide plugins to end users in the future, you need access to that repository. There is a script called `create_json.sh` in plugin repo, which can be used to package all plugins and create the external JSON file, whic is used by Plugin Library to serve the data.   
+You can write local plugins yourself, and Beat can run whatever you feed it. 
+
+To be able to provide plugins to end users in the future, you need access to that repository. There is a script called `create_json.sh` in plugin repo, which can be used to package all plugins and create the external JSON file, which is used by Plugin Library to serve the data.  
 
 Most plugin API methods are documented in the GitHub repository Wiki.
 
@@ -130,11 +146,22 @@ If encoded correctly, document settings can contain almost any sort of informati
 There are standard keywords for certain settings, which you can see in the class itself, but the block can contain other settings too. For example, plugins can write their own settings into the file, usually prefixed by plugin name, ie. `"PluginName: setting"`.
 
 
-## Future Considerations
+# Collaboration Mode
+
+As of 2026, there is a possibility for a collaboration mode built into Beat. The server name can be set in `Info.plist`. Server code is not public for now.
+
+Collaboration mode uses CRDTs with local files. Nothing is stored on the server, and the source of truth is the document that's last standing in an open room. The CRDT library used is `yswift`, a ground-up reimplementation of Yjs for Swift, which is **NOT FULLY COMPATIBLE** with Yjs.
+
+I've tried to implement collaboration with minimal changes to the actual app core. Certain things being filtered out by checking if `document.collaborating` is set to `true`. 
+
+
+# Future Considerations
 
 As you might notice, TextBundle is included in the project. We *could* have a Beat-specific file format, which could include any sort of attachments and data along with the screenplay, and even multiple versions of the document. However, using plain-text UTF-8 files makes things much easier for the user, and adds to the trust that your files are actually readable on any computer.
 
-It would of course be possible to support both plain Fountain files and `.beat` (TextBundle) wrappers, and that might be the way to go. Just alert the user that they will need to save the project in a wrapper file format when they include data that isn't convenient to save at the end of a plain-text screenplay.  
+It would of course be possible to support both plain Fountain files and `.beat` (TextBundle) wrappers, and that might be the way to go. Just alert the user that they will need to save the project in a wrapper file format when they include data that isn't convenient to save at the end of a plain-text screenplay.
+
+ (2026 edit: I've since moved away from this idea.)
 
 
 # Post-mortem
@@ -156,4 +183,5 @@ Lauri-Matti
 Helsinki, Finland
 March/April 2022  
 
-*(updated slightly in 2023)*
+*(updated slightly in 2023)*  
+*(some more updates in 2026)*
