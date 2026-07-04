@@ -366,10 +366,10 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     NSMutableAttributedString *textStorage = self.textStorage;
     
     // Get editing status from delegate
-    bool alreadyEditing = _delegate.textStorage.isEditing;
+    bool alreadyEditing = (_textStorage == nil) ? _delegate.textStorage.isEditing : false;
     if (!alreadyEditing) [textStorage beginEditing];
 	
-    NSRange selectedRange = _delegate.selectedRange;
+    NSRange selectedRange = (NSThread.isMainThread) ? _delegate.selectedRange : NSMakeRange(NSNotFound, 0);
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
@@ -455,29 +455,6 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
         if (line.length && line.string.lastNonWhiteSpaceCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
         
-		// Only do this if we are REALLY typing at this location
-		// Foolproof fix for a strange, rare bug which changes multiple lines into character cues and the user is unable to undo the changes
-        if (NSMaxRange(range) <= selectedRange.location) {
-            self.didProcessForcedCharacterCue = true; // Flag that we're processing a character cue (to avoid reparsing the change on iOS)
-			
-            [self.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
-			line.string = line.string.uppercaseString;
-            
-            self.didProcessForcedCharacterCue = false; // End processing
-
-            line.string = line.string.uppercaseString;
-            
-            #if TARGET_OS_IOS
-                // On iOS we need to reset the caret position
-                [_delegate setSelectedRange:selectedRange];
-            #else
-                // And on macOS we need to set the color (no idea why)
-            [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range textStorage:nil];
-            #endif
-
-			_delegate.selectedRange = selectedRange;
-		}
-		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
 		// No idea why.
 		if (_delegate.hideFountainMarkup) {
@@ -496,7 +473,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	// If we are editing a dialogue block at the end of the document, the line will be empty.
 	// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
     bool shouldSetTypingAttributes = false;
-	if (!firstTime && line.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
+	if (!firstTime && line.string.length == 0 && NSLocationInRange(selectedRange.location, line.range)) {
 		Line* previousLine;
 		
         NSInteger lineIndex = [self.parser indexOfLine:line];
@@ -917,8 +894,9 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Get text storage
 
--(NSMutableAttributedString *)textStorage {
-	if (_textStorage) return _textStorage;
+-(NSMutableAttributedString *)textStorage
+{
+	if (_textStorage != nil) return _textStorage;
 	else return _delegate.textStorage;
 }
 
