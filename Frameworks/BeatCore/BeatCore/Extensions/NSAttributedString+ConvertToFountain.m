@@ -16,20 +16,6 @@ typedef NS_OPTIONS(NSUInteger, PastedFragmentStyle) {
     PastedFragmentStyleUnderline = 1 << 2,
 };
 
-static inline NSString *OpenMarkerForStyle(PastedFragmentStyle style) {
-    switch (style) {
-        case PastedFragmentStyleBold:      return @"**";
-        case PastedFragmentStyleItalic:    return @"*";
-        case PastedFragmentStyleUnderline: return @"_";
-        default: return @"";
-    }
-}
-
-static inline NSString *CloseMarkerForStyle(PastedFragmentStyle style) {
-    // Same markers, but order matters
-    return OpenMarkerForStyle(style);
-}
-
 static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
     PastedFragmentStyle style = 0;
 
