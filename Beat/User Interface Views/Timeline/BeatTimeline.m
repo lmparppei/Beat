@@ -686,18 +686,18 @@
 	[_storylinePopup addItemWithTitle:STORYLINE_TITLE];
 	for (NSString *storyline in _storylines) {
 		[_storylinePopup addItemWithTitle:storyline];
-		if ([_visibleStorylines containsObject:storyline]) _storylinePopup.lastItem.state = NSOnState;
+		if ([_visibleStorylines containsObject:storyline]) _storylinePopup.lastItem.state = BXOnState;
 	}
 }
 
 - (IBAction)selectStoryline:(id)sender
 {
 	NSMenuItem *item = [(NSPopUpButton*)sender selectedItem];
-	if (item.state == NSOnState) {
-		item.state = NSOffState;
+	if (item.state == BXOnState) {
+		item.state = BXOffState;
 		[_visibleStorylines removeObject:item.title.uppercaseString];
 	} else {
-		item.state = NSOnState;
+		item.state = BXOnState;
 		[_visibleStorylines addObject:item.title.uppercaseString];
 	}
 	
@@ -753,7 +753,7 @@
 	self.visible = !self.visible;
 	if (self.visible) [self show]; else [self hide];
 
-	self.toggleButton.state = (self.visible) ? NSOnState : NSOffState;
+	self.toggleButton.state = BXState(self.visible);
 }
 
 - (void)show

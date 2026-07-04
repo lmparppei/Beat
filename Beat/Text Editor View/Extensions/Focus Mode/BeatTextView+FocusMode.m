@@ -55,8 +55,7 @@
 
 - (BOOL)validateFocusMode:(NSMenuItem*)menuItem
 {
-	if (menuItem.tag == self.focusModeType) menuItem.state = NSOnState;
-	else menuItem.state = NSOffState;
+	menuItem.state = BXState(menuItem.tag == self.focusModeType);
 	return true;
 }
 

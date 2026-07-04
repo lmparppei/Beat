@@ -8,6 +8,7 @@
 
 #import "BeatModalAccessoryView.h"
 #import "BeatConsole.h"
+#import <BeatCore/BeatCompatibility.h>
 
 #define WIDTH 350
 
@@ -101,7 +102,7 @@
 		[view addSubview:label];
 		
 		NSButton *checkbox = [[NSButton alloc] initWithFrame:(NSRect){ 80 - 18, 0, 18, 18 }];
-		[checkbox setButtonType:NSSwitchButton];
+        [checkbox setButtonType:NSButtonTypeSwitch];
 		field = checkbox;
 		[view addSubview:checkbox];
 		
@@ -155,7 +156,7 @@
 		}
 		else if ([item isKindOfClass:NSButton.class]) {
 			NSButton *checkbox = item;
-			if (checkbox.state == NSOnState) [result setValue:@(true) forKey:name];
+			if (checkbox.state == BXOnState) [result setValue:@(true) forKey:name];
 			else [result setValue:@(false) forKey:name];
 		}
 	}

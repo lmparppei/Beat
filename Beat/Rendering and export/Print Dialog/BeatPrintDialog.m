@@ -113,7 +113,7 @@
 	// Show advanced options?
 	
 	[self showOrHideAdvancedOptionsAndAnimate:false];
-	_advancedOptionsButton.state = ([NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY]) ? NSOnState : NSOffState;
+	_advancedOptionsButton.state = BXState([NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY]);
 	
 	// Restore some settings from document delegate
 	NSArray<BeatUserDefaultCheckbox*>* checkboxesToUpdate = @[_printSections, _printSynopsis, _printNotes, _printSceneNumbers, _printSceneHeadingColors];
@@ -122,21 +122,21 @@
 	}
 	
 	// Page number printing is an inverted value
-	_printPageNumbers.state = ![_documentDelegate.documentSettings getBool:DocSettingHidePageNumbers] ? NSOnState : NSOffState;
+	_printPageNumbers.state = BXState(![_documentDelegate.documentSettings getBool:DocSettingHidePageNumbers]);
 	
 	// Update selected revisions
 	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	NSIndexSet* hiddenRevisions = [NSIndexSet fromArray:[self.documentDelegate.documentSettings get:DocSettingHiddenRevisions]];
 	
 	for (NSButton* b in revisionControls) {
-		b.state = ([hiddenRevisions containsIndex:b.tag]) ? NSOffState : NSOnState;
+		b.state = BXState(![hiddenRevisions containsIndex:b.tag]);
 	}
 
 	// Revision highlighting mode
 	BeatExportRevisionHighlightMode highlightMode = [self.documentDelegate.documentSettings getInt:DocSettingPrintedRevisionHighlighting];
-	if (highlightMode == 0) self.revisionHighlightModeNone.state = NSOnState;
-	else if (highlightMode == 1) self.revisionHighlightModeText.state = NSOnState;
-	else if (highlightMode == 2) self.revisionHighlightModeBackground.state = NSOnState;
+	if (highlightMode == 0) self.revisionHighlightModeNone.state = BXOnState;
+	else if (highlightMode == 1) self.revisionHighlightModeText.state = BXOnState;
+	else if (highlightMode == 2) self.revisionHighlightModeBackground.state = BXOnState;
 	
 	// Set header values
 	self.headerText.stringValue = [self.documentDelegate.documentSettings getString:DocSettingHeader];
@@ -191,8 +191,8 @@
 			
 	// Check the paper size
 	// WIP: Unify these so the document knows its BeatPaperSize too
-	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:NSOnState];
-	else [_radioLetter setState:NSOnState];
+	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:BXOnState];
+	else [_radioLetter setState:BXOnState];
 		
 	// Reload PDF preview
 	_firstPreview = YES;
@@ -205,12 +205,12 @@
 	
 
 	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:section]) {
-		self.printSections.state = NSOnState;
+		self.printSections.state = BXOnState;
 		self.printSections.enabled = false;
 	}
 	
 	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:synopse]) {
-		self.printSynopsis.state = NSOnState;
+		self.printSynopsis.state = BXOnState;
 		self.printSynopsis.enabled = false;
 	}
 }
@@ -303,11 +303,11 @@
 	settings.revisions = [self printedRevisions];
 	
 	settings.paperSize = self.documentDelegate.pageSize;
-	settings.printNotes = (_printNotes.state == NSOnState);
+	settings.printNotes = (_printNotes.state == BXOnState);
 	
 	NSMutableIndexSet* additionalTypes = NSMutableIndexSet.new;
-	if (_printSections.state == NSOnState) [additionalTypes addIndex:section];
-	if (_printSynopsis.state == NSOnState) [additionalTypes addIndex:synopse];
+	if (_printSections.state == BXOnState) [additionalTypes addIndex:section];
+	if (_printSynopsis.state == BXOnState) [additionalTypes addIndex:synopse];
 	settings.additionalTypes = additionalTypes;
 			
 	return settings;
@@ -332,14 +332,14 @@
 
 - (IBAction)selectSceneNumberPrinting:(id)sender
 {
-	_documentDelegate.printSceneNumbers = (_printSceneNumbers.state == NSOnState);
+	_documentDelegate.printSceneNumbers = (_printSceneNumbers.state == BXOnState);
 	[self loadPreview];
 }
 
 - (IBAction)togglePageNumbers:(id)sender
 {
 	NSButton* button = (NSButton*)sender;
-	[_documentDelegate.documentSettings setBool:DocSettingHidePageNumbers as:!(button.state == NSOnState)];
+	[_documentDelegate.documentSettings setBool:DocSettingHidePageNumbers as:!(button.state == BXOnState)];
 	[self loadPreview];
 }
 
@@ -347,7 +347,7 @@
 {
 	NSButton *button = sender;
 	
-	[NSUserDefaults.standardUserDefaults setBool:(button.state == NSOnState) forKey:ADVANCED_PRINT_OPTIONS_KEY];
+	[NSUserDefaults.standardUserDefaults setBool:(button.state == BXOnState) forKey:ADVANCED_PRINT_OPTIONS_KEY];
 	[self showOrHideAdvancedOptionsAndAnimate:true];
 }
 
@@ -370,7 +370,7 @@
 - (IBAction)toggleColorCodePages:(id)sender
 {
 	NSButton *checkbox = sender;
-	if (checkbox.state == NSOnState) [_documentDelegate.documentSettings setBool:DocSettingColorCodePages as:YES];
+	if (checkbox.state == BXOnState) [_documentDelegate.documentSettings setBool:DocSettingColorCodePages as:YES];
 	else [_documentDelegate.documentSettings setBool:DocSettingColorCodePages as:NO];
 
 	[self loadPreview];
@@ -387,7 +387,7 @@
 	BeatUserDefaultCheckbox* checkbox = sender;
 
 	if (checkbox.userDefaultKey.length > 0) {
-		[self.documentDelegate.documentSettings setBool:checkbox.userDefaultKey as:(checkbox.state == NSOnState)];
+		[self.documentDelegate.documentSettings setBool:checkbox.userDefaultKey as:(checkbox.state == BXOnState)];
 	}
 	
 	[self loadPreview];
@@ -407,7 +407,7 @@
 
 - (IBAction)toggleSetting:(BeatUserDefaultCheckbox*)sender
 {
-	bool val = sender.state == NSOnState;
+	bool val = sender.state == BXOnState;
 	
 	if (sender.documentSetting) {
 		[self.documentDelegate.documentSettings setBool:sender.userDefaultKey as:val];
@@ -424,7 +424,7 @@
 	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	
 	for (NSButton* b in revisionControls) {
-		if (b.state == NSOnState) [hiddenIndices removeIndex:b.tag];
+		if (b.state == BXOnState) [hiddenIndices removeIndex:b.tag];
 	}
 	
 	return hiddenIndices.toArray;
@@ -436,7 +436,7 @@
 	NSArray<NSButton*>* revisionControls = @[self.revisionFirst, _revisionSecond, _revisionThird, _revisionFourth, _revisionFifth, _revisionSixth, _revisionSeventh, _revisionEight];
 	
 	for (NSButton* b in revisionControls) {
-		if (b.state != NSOnState) [revisions removeIndex:b.tag];
+		if (b.state != BXOnState) [revisions removeIndex:b.tag];
 	}
 	
 	return revisions;

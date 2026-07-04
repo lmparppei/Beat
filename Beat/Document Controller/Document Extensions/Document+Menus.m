@@ -71,7 +71,7 @@
 	// Special conditions for other than normal edit view
 	if (self.currentTab == self.nativePreviewTab) {
 		// Toggle preview item has a checkmark
-		if (action == @selector(preview:)) menuItem.state = NSOnState;
+		if (action == @selector(preview:)) menuItem.state = BXOnState;
 		// Some other items are also enabled
 		return (action == @selector(zoomIn:) ||
 			menuItem.action == @selector(zoomOut:) ||
@@ -80,7 +80,7 @@
 			menuItem.action == @selector(preview:)
 				);
 	} else if (self.currentTab == self.cardsTab) {
-		if (action == @selector(toggleCards:)) menuItem.state = NSOnState;
+		if (action == @selector(toggleCards:)) menuItem.state = BXOnState;
 		
 		// Only toggle cards and undo/redo are available
 		return (action == @selector(toggleCards:) ||
@@ -90,31 +90,31 @@
 	
 	//
 	if (action == @selector(toggleTimeline:)) {
-		menuItem.state = (self.timeline.visible) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.timeline.visible);
 	}
 	else if (action == @selector(toggleSidebarView:)) {
-		menuItem.state = (self.sidebarVisible) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.sidebarVisible);
 	}
 	else if (action == @selector(toggleTagging:)) {
-		menuItem.state = (self.mode == TaggingMode) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.mode == TaggingMode);
 	}
 	else if (action == @selector(toggleReview:)) {
-		menuItem.state = (self.mode == ReviewMode) ? NSOnState : NSOffState;
+		menuItem.state =  BXState(self.mode == ReviewMode);
 	}
 	else if (action == @selector(reviewSelectedRange:)) {
 		valid = (self.selectedRange.length > 0);
 	}
 	else if (action == @selector(selectSansSerif:)) {
-		menuItem.state = (self.fontStyle == 1) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.fontStyle == 1);
 	}
 	else if (action == @selector(selectSerif:)) {
-		menuItem.state = (self.fontStyle == 0) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.fontStyle == 0);
 	}
 	else if (action == @selector(toggleDarkMode:)) {
-		menuItem.state = (self.isDark) ? NSOnState : NSOffState;
+		menuItem.state = BXState(self.isDark);
 	}
 	else if (action == @selector(toggleCards:)) {
-		menuItem.state = NSOffState;
+		menuItem.state = BXOffState;
 	}
 	else if (action == @selector(showWidgets:)) {
 		// Don't show menu item for widget view, if no widgets are visible
@@ -122,7 +122,7 @@
 		if (self.widgetView.subviews.count > 0) {
 			menuItem.hidden = NO;
 		} else {
-			menuItem.state = NSOffState;
+			menuItem.state = BXOffState;
 			menuItem.hidden = YES;
 			valid = false;
 		}
@@ -132,7 +132,7 @@
 		NSString* stylesheet = [self.documentSettings getString:DocSettingStylesheet].copy;
 		if (stylesheet.length == 0) stylesheet = nil;
 		
-		m.state = [m.stylesheet isEqualToString:stylesheet] ? NSOnState : NSOffState;
+		m.state = BXState([m.stylesheet isEqualToString:stylesheet]);
 	}
 	
 	// So, I have overriden everything regarding undo (because I couldn't figure it out)

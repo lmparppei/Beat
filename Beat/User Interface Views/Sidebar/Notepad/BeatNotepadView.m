@@ -71,7 +71,7 @@
 	[super awakeFromNib];
 
 	self.buttons = @[self.buttonDefault, self.buttonRed, self.buttonGreen, self.buttonBlue, self.buttonPink, self.buttonOrange, self.buttonBrown, self.buttonCyan, self.buttonMagenta];
-	self.buttonDefault.state = NSOnState;
+	self.buttonDefault.state = BXOnState;
 	
 	self.textColor = self.currentColor;
 	self.buttonDefault.itemColor = self.defaultColor;
@@ -225,8 +225,7 @@
 	[self setColor:box.colorName];
 	
 	for (ColorCheckbox *button in _buttons) {
-		if ([button.colorName isEqualToString:self.currentColorName]) button.state = NSOnState;
-		else button.state = NSControlStateValueOff;
+		button.state = BXState([button.colorName isEqualToString:self.currentColorName]);
 	}
 	
 	if (self.selectedRange.length) {

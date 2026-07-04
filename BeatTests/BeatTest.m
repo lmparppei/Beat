@@ -31,30 +31,5 @@
 	return self;
 }
 
-- (void) test {
-	_printer = [[WebPrinter alloc] init];
-	[_printer printHtml:@"<h1>Test!</h1>" printInfo:NSPrintInfo.sharedPrintInfo];
-}
-
-- (NSString*)testString {
-	return @"INT. TESTI\n\n" \
-	"Jotain tavaraa tässä.\n" \
-	"Tätä riviä ei ole uudessa?\n" \
-	"Jotain vielä lisää tässä on.\n\n" \
-	"HAHMO\n" \
-	"Dialogia.\n\n" \
-	"Jotain muuta.";
-}
-
-- (NSString*)testString2 {
-	return @"INT. TESTI\n" \
-	"\n" \
-	"Jotain tavaraa tässä.\n" \
-	"Tämäkin on uusi.\n" \
-	"Jotain vielä lisää tässä on.\n\n"
-	"HAHMO\n" \
-	"Dialogia.\n\n" \
-	"Jotain muuta.";
-}
 
 @end

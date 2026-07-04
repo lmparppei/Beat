@@ -189,7 +189,7 @@
 	_changesMade = true;
 	
 	BeatThemeColorWell* colorWell = sender;
-	NSColor* color = [colorWell.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace device:nil];
+	NSColor* color = [colorWell.color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace];
 	
 	NSString* key = colorWell.themeKey;
 	if (key.length == 0) return;

@@ -24,7 +24,6 @@
 #import <Cocoa/Cocoa.h>
 #import <BeatPlugins/BeatPluginHTMLWindow.h>
 @class BeatPluginHTMLPanel;
-@class BeatHTMLPrinter;
 @class BeatPluginData;
 
 #else
@@ -56,6 +55,8 @@
 @class BeatPluginUIDropdown;
 @class BeatPluginUICheckbox;
 @class BeatPluginUILabel;
+
+@class BeatPluginPrintView;
 
 @protocol BeatPluginContainer;
 @protocol BeatHTMLView;
@@ -329,7 +330,7 @@ JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len
 #pragma mark UI-side stuff for macOS and iOS
 
 #if TARGET_OS_OSX
-@property (nonatomic) BeatHTMLPrinter *printer;
+@property (nonatomic) BeatPluginPrintView* printer;
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
 @property (nonatomic) BeatPluginUIView *widgetView;
 @property (nonatomic) NSWindow *sheet;

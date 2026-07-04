@@ -38,7 +38,8 @@
 }
 
 -(id)initWithPasteboardPropertyList:(id)propertyList ofType:(NSString *)type {
-	return [NSKeyedUnarchiver unarchiveObjectWithData:propertyList];
+	return [NSKeyedUnarchiver unarchivedObjectOfClass:BeatPasteboardItem.class fromData:propertyList error:nil];
+	//return [NSKeyedUnarchiver unarchiveObjectWithData:propertyList];
 }
 
 +(NSString*)pasteboardType
@@ -57,7 +58,8 @@
 
 - (id)pasteboardPropertyListForType:(NSString *)type {
 	if (![type isEqualToString:UTI]) return nil;
-	return [NSKeyedArchiver archivedDataWithRootObject:self];
+	return [NSKeyedArchiver archivedDataWithRootObject:self requiringSecureCoding:false error:nil];
+	//return [NSKeyedArchiver archivedDataWithRootObject:self];
 }
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {

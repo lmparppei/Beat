@@ -50,7 +50,6 @@
 // Some things are only available on macOS
 #if TARGET_OS_OSX
 #import "BeatSpeak.h"
-#import "BeatHTMLPrinter.h"
 #import "BeatModalAccessoryView.h"
 #endif
 

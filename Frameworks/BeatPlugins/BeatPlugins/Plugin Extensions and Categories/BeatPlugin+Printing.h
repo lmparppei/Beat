@@ -9,7 +9,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @protocol BeatPluginPrintingExports <JSExport>
-JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
+//JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 - (NSDictionary*)printInfo;
 @end
 

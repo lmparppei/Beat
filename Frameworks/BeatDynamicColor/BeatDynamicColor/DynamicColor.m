@@ -101,10 +101,10 @@ FORWARD(colorSpace, NSColorSpace *)
     return [self.effectiveColor colorUsingColorSpace:space];
 }
 
-FORWARD(colorSpaceName, NSColorSpaceName)
-- (NSColor *)colorUsingColorSpaceName:(NSColorSpaceName)name
+/// Yeah, this is deprecated, but `NSColor.hash` still uses it. No idea why.
+- (NSColorSpaceName)colorSpaceName
 {
-    return [self.effectiveColor colorUsingColorSpaceName:name];
+    return self.effectiveColor.colorSpaceName;
 }
 
 FORWARD(numberOfComponents, NSInteger)

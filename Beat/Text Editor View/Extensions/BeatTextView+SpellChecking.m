@@ -56,7 +56,6 @@
 
 - (void)checkTextInRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options
 {
-	__block bool check = true;
 	__block NSMutableIndexSet* ranges = NSMutableIndexSet.new;
 	
 	// NOTE: If no specific spelling stuff is on, we'll just rely on the basic spell checker.

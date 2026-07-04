@@ -224,7 +224,7 @@
 	NSString *header = (self.headerText.stringValue.length) ? self.headerText.stringValue : @"";
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:nil header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.everyRevisionIndex scene:nil];
-	settings.paperSize = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
+	settings.paperSize = (_radioA4.state == BXOnState) ? BeatA4 : BeatUSLetter;
 
 	return settings;
 }

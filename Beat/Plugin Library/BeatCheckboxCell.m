@@ -36,7 +36,8 @@
 		[_checkbox setHidden:YES];
 	}
 	
-	if (_enabled) [_checkbox setState:NSOnState]; else [_checkbox setState:NSOffState];
+	_checkbox.state = BXState(_enabled);
+	
 	if (_name) [_pluginName setStringValue:_name];
 	
 	if (_updateAvailable) [_pluginName setTextColor:[BeatColors color:@"green"]];
@@ -59,7 +60,7 @@
 	if (!_pluginManager) _pluginManager = BeatPluginManager.sharedManager;
 	
 	NSButton *checkBox = (NSButton*)sender;
-	if (checkBox.state == NSOnState) [_pluginManager enablePlugin:self.name];
+	if (checkBox.state == BXOnState) [_pluginManager enablePlugin:self.name];
 	else [_pluginManager disablePlugin:self.name];
 }
 

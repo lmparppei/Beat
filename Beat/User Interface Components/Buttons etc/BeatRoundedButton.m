@@ -23,21 +23,21 @@
 	
 	RoundedButton* button = self.cell;
 	button.clicked = YES;
-	[self setNeedsDisplay];
+	self.needsDisplay = YES;
 }
 - (void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
 	
 	RoundedButton* button = self.cell;
 	button.clicked = NO;
-	[self setNeedsDisplay];
+	self.needsDisplay = YES;
 }
 - (void)mouseExited:(NSEvent *)event {
 	[super mouseExited:event];
 	
 	RoundedButton* button = self.cell;
 	button.clicked = NO;
-	[self setNeedsDisplay];
+	self.needsDisplay = YES;
 }
 
 @end

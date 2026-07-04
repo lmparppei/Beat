@@ -105,7 +105,7 @@
 	
 	// Add revert to saved
 	NSMenuItem *toSaved = [[NSMenuItem alloc] initWithTitle:[BeatLocalization key:@"backup.saved"] action:@selector(revertTo:) keyEquivalent:@""];
-	toSaved.state = (!doc.isDocumentEdited) ? NSOnState : NSOffState;
+	toSaved.state = (!doc.isDocumentEdited) ? BXOnState : BXOffState;
 	toSaved.tag = NSNotFound;
 	
 	[self.revertMenu addItem:toSaved];
@@ -124,7 +124,7 @@
 		NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:modificationTime action:@selector(revertTo:) keyEquivalent:@""];
 		item.tag = i;
 		
-		if ([[(Document*)doc revertedTo] isEqualTo:version.URL]) item.state = NSOnState;
+		if ([[(Document*)doc revertedTo] isEqualTo:version.URL]) item.state = BXOnState;
 		
 		[self.revertMenu addItem:item];
 		

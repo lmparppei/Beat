@@ -18,7 +18,7 @@ import Cocoa
 
 #if os(macOS)
 
-class BeatPluginPrintView:NSView, WKNavigationDelegate {
+@objc public class BeatPluginPrintView:NSView, WKNavigationDelegate {
     var html:String = ""
     var printInfo:NSPrintInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
     var imageableBounds:NSRect {
@@ -44,7 +44,7 @@ class BeatPluginPrintView:NSView, WKNavigationDelegate {
     var readyToPrint = false
     
     // 0 is portrait, 1 landscape
-    var orientation = 0 {
+    @objc var orientation = 0 {
         didSet {
             if (orientation == 0) {
                 printInfo.orientation = .portrait
@@ -54,13 +54,13 @@ class BeatPluginPrintView:NSView, WKNavigationDelegate {
         }
     }
 
-    // This is here for pre-11.0 support. Why am I doing this to myself?
-    var webPrinter = BeatHTMLPrinter(name: "Beat plugin printing operation")
-
-
-    init(html:String) {
+    @objc public init(html:String, printInfo:NSPrintInfo?) {
         self.html = html
         super.init(frame: CGRectZero)
+        
+        if printInfo != nil {
+            self.printInfo = printInfo!
+        }
         
         webView.frame = CGRectMake(0, 0, self.printInfo.paperSize.width, self.printInfo.paperSize.height)
         webView.navigationDelegate = self
@@ -73,14 +73,14 @@ class BeatPluginPrintView:NSView, WKNavigationDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         readyToPrint = true
         if (waitingToPrint) {
             runPrintOperation()
         }
     }
     
-    func print() {
+    @objc public func print() {
         if (readyToPrint) {
             runPrintOperation()
         } else {
@@ -95,7 +95,6 @@ class BeatPluginPrintView:NSView, WKNavigationDelegate {
         } else {
             // Fallback on earlier versions
         }
-        
     }
 }
 

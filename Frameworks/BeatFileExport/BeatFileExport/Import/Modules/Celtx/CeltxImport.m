@@ -136,7 +136,7 @@
 - (NSButton*)createCloseButton {
 	NSButton *cancelButton = [[NSButton alloc] initWithFrame:NSMakeRect(PADDING, PADDING, 70, 30)];
 	cancelButton.title = @"Cancel";
-	cancelButton.bezelStyle = NSRoundedBezelStyle;
+    cancelButton.bezelStyle = NSBezelStylePush;
 	[cancelButton setTarget:self];
 	[cancelButton setAction:@selector(closeModal)];
 	return cancelButton;
@@ -144,7 +144,7 @@
 - (NSButton*)createOpenButton {
 	NSButton *openButton = [[NSButton alloc] initWithFrame:NSMakeRect(210, PADDING, 80, 30)];
 	openButton.title = @"Open";
-	openButton.bezelStyle = NSRoundedBezelStyle;
+    openButton.bezelStyle = NSBezelStylePush;
 	[openButton setTarget:self];
 	[openButton setAction:@selector(openDocuments)];
 	return openButton;

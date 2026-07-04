@@ -15,12 +15,12 @@
 {
 	bool visible = !self.sidebarVisible;
 	
+	self.outlineButton.state = BXState(visible);
+	
 	// Save sidebar state to settings
 	[self.documentSettings setBool:DocSettingSidebarVisible as:visible];
 	
 	if (visible) {
-		[self.outlineButton setState:NSOnState];
-		
 		// Show outline
 		[self.outlineView reloadOutline];
 		
@@ -54,8 +54,6 @@
 		// Show sidebar
 		[self.splitHandle restoreBottomOrLeftView];
 	} else {
-		[self.outlineButton setState:NSOffState];
-		
 		// Hide outline
 		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
 		

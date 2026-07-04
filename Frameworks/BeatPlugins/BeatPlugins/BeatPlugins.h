@@ -25,7 +25,6 @@ FOUNDATION_EXPORT const unsigned char BeatPluginsVersionString[];
 #import <BeatPlugins/BeatPluginAgent.h>
 
 #if TARGET_OS_OSX
-#import <BeatPlugins/BeatHTMLPrinter.h>
 #import <BeatPlugins/BeatPluginUI.h>
 #import <BeatPlugins/BeatWidgetView.h>
 #import <BeatPlugins/BeatModalAccessoryView.h>

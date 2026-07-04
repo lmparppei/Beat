@@ -6,12 +6,14 @@
 //
 
 #import "BeatPlugin+Printing.h"
+#import <BeatPlugins/BeatPlugins-Swift.h>
 
 @implementation BeatPlugin (Printing)
 
 #pragma mark - Printing interface
 
 #if TARGET_OS_OSX
+
 - (NSDictionary*)printInfo
 {
     NSPrintInfo* printInfo = NSPrintInfo.sharedPrintInfo;
@@ -28,8 +30,7 @@
     NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
     
     dispatch_async(dispatch_get_main_queue(), ^(void){
-        self.printer = BeatHTMLPrinter.new;
-        
+       
         if (settings[@"orientation"]) {
             NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
             if ([orientation isEqualToString:@"landscape"]) printInfo.orientation = NSPaperOrientationLandscape;
@@ -54,11 +55,16 @@
             }
         }
         
+        self.printer = [BeatPluginPrintView.alloc initWithHtml:html printInfo:printInfo];
+        [self.printer print];
+        /*
         [self.printer printHtml:html printInfo:printInfo callback:^{
             if (callback) [callback callWithArguments:nil];
         }];
+         */
     });
 }
+
 #endif
 
 @end

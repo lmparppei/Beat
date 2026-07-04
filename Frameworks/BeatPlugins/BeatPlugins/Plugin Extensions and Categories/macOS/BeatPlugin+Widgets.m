@@ -28,7 +28,7 @@
     if (self.widgetView != nil) return self.widgetView;
     
     self.resident = YES;
-    [self.delegate.pluginAgent registerPlugin:self];
+    [self.delegate.pluginAgent registerPlugin:(id<BeatPluginInstance>)self];
     
     BeatPluginUIView *view = [BeatPluginUIView.alloc initWithHeight:height];
     self.widgetView = view;

@@ -334,14 +334,14 @@
 				if ([item.representedItem.storylines containsObject:storyline]) mutual++;
 			}
 			
-			if (mutual == self.delegate.selectedItems.count) [menu.itemArray.lastObject setState:NSOnState];
-			else if (mutual > 0) [menu.itemArray.lastObject setState:NSMixedState];
-			else [menu.itemArray.lastObject setState:NSOffState];
+			if (mutual == self.delegate.selectedItems.count) [menu.itemArray.lastObject setState:BXOnState];
+			else if (mutual > 0) [menu.itemArray.lastObject setState:NSControlStateValueMixed];
+			else [menu.itemArray.lastObject setState:BXOffState];
 			
 		} else {
 			// Set on state for the clicked item
 			if ([self.representedItem.storylines containsObject:storyline]) {
-				[menu.itemArray.lastObject setState:NSOnState];
+				[menu.itemArray.lastObject setState:BXOnState];
 			}
 		}
 	}
@@ -355,7 +355,7 @@
 	NSString *storyline = [(NSMenuItem*)sender title];
 	
 	NSMenuItem *menuItem = sender;
-	if (menuItem.state == NSOnState) {
+	if (menuItem.state == BXOnState) {
 		[_delegate removeStoryline:storyline from:_representedItem];
 	} else {
 		[_delegate addStoryline:storyline to:_representedItem];

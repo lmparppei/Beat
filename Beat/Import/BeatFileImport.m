@@ -91,14 +91,14 @@
 - (void)fdx {
 	// The XML reader works asynchronously, so we'll put a completion handler inside the completion handler
 	__block NSButton* importNotes = NSButton.new;
-	[importNotes setButtonType:NSSwitchButton];
+	[importNotes setButtonType:NSButtonTypeSwitch];
 	[importNotes setTitle:@"Import Final Draft notes (WARNING: Can cause formatting issues in some cases)"];
 
 	[self addCheckbox:importNotes];
 	[self openDialogForFormat:@"fdx" completion:^(NSURL * url) {
 	__block FDXImport *fdxImport;
 	
-		bool notes = (importNotes.state == NSOnState);
+		bool notes = (importNotes.state == NSControlStateValueOn);
 		fdxImport = [FDXImport.alloc initWithURL:url importNotes:notes completion:^(NSString* content) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				[self openFileWithContents:content];
