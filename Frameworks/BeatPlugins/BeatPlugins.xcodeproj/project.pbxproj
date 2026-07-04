@@ -61,8 +61,6 @@
 		B680B79B2A6EBEBD00FCD805 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7962A6EBEBD00FCD805 /* BeatSpeak.m */; };
 		B680B7A12A6EBEF100FCD805 /* BeatPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */; };
 		B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B79D2A6EBEF100FCD805 /* BeatPlugin.m */; };
-		B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */; platformFilters = (macos, ); };
-		B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
 		B680B7AC2A6EC0E200FCD805 /* BeatConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A92A6EC0E200FCD805 /* BeatConsole.m */; };
 		B680B7AD2A6EC0E200FCD805 /* BeatConsoleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */; platformFilters = (macos, ); };
 		B680B7AE2A6EC0E500FCD805 /* BeatConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = B680B7AB2A6EC0E200FCD805 /* BeatConsole.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -81,6 +79,7 @@
 		B6964D952D7E21AB00F034A4 /* BeatPlugin+Windows.m in Sources */ = {isa = PBXBuildFile; fileRef = B6964D932D7E21AB00F034A4 /* BeatPlugin+Windows.m */; };
 		B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC1A2A71451D0078BA79 /* BeatPluginContainer.swift */; };
 		B696BC3B2A73FB6E0078BA79 /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62117032A6EC9100053228F /* UnzipKit.framework */; };
+		B697D10C2FF7CC5000CBFA9D /* BeatPluginPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696BC362A73AFC70078BA79 /* BeatPluginPrint.swift */; };
 		B69A975F2D130E4300DD2B77 /* BeatPlugin+Menus.m in Sources */ = {isa = PBXBuildFile; fileRef = B69A975E2D130E4300DD2B77 /* BeatPlugin+Menus.m */; };
 		B69A97602D130E4300DD2B77 /* BeatPlugin+Menus.h in Headers */ = {isa = PBXBuildFile; fileRef = B69A975D2D130E4300DD2B77 /* BeatPlugin+Menus.h */; };
 		B69A97642D1313B500DD2B77 /* BeatPlugin+Widgets.m in Sources */ = {isa = PBXBuildFile; fileRef = B69A97632D1313B500DD2B77 /* BeatPlugin+Widgets.m */; };
@@ -172,8 +171,6 @@
 		B680B79E2A6EBEF100FCD805 /* BeatPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPlugin.h; sourceTree = "<group>"; };
 		B680B79F2A6EBEF100FCD805 /* BeatPluginManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginManager.h; sourceTree = "<group>"; };
 		B680B7A02A6EBEF100FCD805 /* BeatPluginManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginManager.m; sourceTree = "<group>"; };
-		B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLPrinter.h; sourceTree = "<group>"; };
-		B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLPrinter.m; sourceTree = "<group>"; };
 		B680B7A82A6EC0E200FCD805 /* BeatConsoleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatConsoleTextField.swift; sourceTree = "<group>"; };
 		B680B7A92A6EC0E200FCD805 /* BeatConsole.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatConsole.m; sourceTree = "<group>"; };
 		B680B7AA2A6EC0E200FCD805 /* BeatConsole.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatConsole.xib; sourceTree = "<group>"; };
@@ -310,8 +307,6 @@
 			isa = PBXGroup;
 			children = (
 				B6BC404B2C18C7A80055DBCE /* BeatTextChangeObserver.swift */,
-				B680B7A32A6EC08200FCD805 /* BeatHTMLPrinter.h */,
-				B680B7A42A6EC08200FCD805 /* BeatHTMLPrinter.m */,
 			);
 			path = "Plugin Components";
 			sourceTree = "<group>";
@@ -522,7 +517,6 @@
 				B680B7852A6EBC1C00FCD805 /* BeatWidgetView.h in Headers */,
 				B6B1A76C2F3E58D200D60C80 /* BeatPlugin+Reviews.h in Headers */,
 				B680B78A2A6EBC3A00FCD805 /* BeatPluginUIExports.h in Headers */,
-				B680B7A62A6EC08400FCD805 /* BeatHTMLPrinter.h in Headers */,
 				B680B7872A6EBC2C00FCD805 /* BeatPluginUIButton.h in Headers */,
 				B680B7892A6EBC2C00FCD805 /* BeatPluginUILabel.h in Headers */,
 				B6DBB2CB2D7E170A008327EF /* BeatPlugin+Listeners.h in Headers */,
@@ -626,7 +620,6 @@
 				B657116B2CF51D4D00051427 /* BeatPlugin+Parser.m in Sources */,
 				B680B77B2A6EBBFD00FCD805 /* BeatModalAccessoryView.m in Sources */,
 				B680B7A12A6EBEF100FCD805 /* BeatPluginManager.m in Sources */,
-				B680B7A52A6EC08200FCD805 /* BeatHTMLPrinter.m in Sources */,
 				B62117142A6FFBFF0053228F /* BeatPluginHTMLViewController.swift in Sources */,
 				B680B7A22A6EBEF100FCD805 /* BeatPlugin.m in Sources */,
 				B67F75812B1D27000028D009 /* BeatPluginAgent.m in Sources */,
@@ -658,6 +651,7 @@
 				B680B77E2A6EBBFD00FCD805 /* BeatPluginHTMLWindow.m in Sources */,
 				B696BC1B2A71451D0078BA79 /* BeatPluginContainer.swift in Sources */,
 				B6F6E49B2CF78236008AB346 /* BeatPlugin+FileIO.m in Sources */,
+				B697D10C2FF7CC5000CBFA9D /* BeatPluginPrint.swift in Sources */,
 				B63D40F02EE070C3003771CF /* BeatPlugin+Timer.m in Sources */,
 				B680B77F2A6EBBFD00FCD805 /* BeatPluginUICheckbox.m in Sources */,
 				B680B7842A6EBBFD00FCD805 /* BeatPluginWebView.swift in Sources */,

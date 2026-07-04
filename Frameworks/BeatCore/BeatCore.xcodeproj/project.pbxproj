@@ -346,6 +346,7 @@
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
 		B6DCB7F02F936ED0005C3F08 /* BeatVersionControl+Diffing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatVersionControl+Diffing.swift"; sourceTree = "<group>"; };
 		B6E0E0F52AC4CAE400948752 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		B6E4EA032FF266E600397F37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B6EDC4FD2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+ConvertToFountain.h"; sourceTree = "<group>"; };
 		B6EDC4FE2E97010C00FA0F92 /* NSAttributedString+ConvertToFountain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+ConvertToFountain.m"; sourceTree = "<group>"; };
 		B6F59D3C2C6E7D3600AB8FAE /* BeatNotepad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotepad.h; sourceTree = "<group>"; };
@@ -470,6 +471,7 @@
 		B633C1B7298C5F750011449D /* BeatCore */ = {
 			isa = PBXGroup;
 			children = (
+				B6E4EA032FF266E600397F37 /* Info.plist */,
 				B633C1B8298C5F750011449D /* BeatCore.h */,
 				B621170D2A6FABDC0053228F /* BeatCompatibility.h */,
 				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
@@ -912,8 +914,8 @@
 			);
 			mainGroup = B633C1AB298C5F750011449D;
 			packageReferences = (
-				B677DD402FEB0708001575BF /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */,
-				B6E4E9FB2FF1A3FE00397F37 /* XCLocalSwiftPackageReference "../../Libraries/Promise" */,
+				B697D10A2FF3B1C300CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */,
+				B697D10B2FF3B21D00CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */,
 			);
 			productRefGroup = B633C1B6298C5F750011449D /* Products */;
 			projectDirPath = "";
@@ -1199,6 +1201,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeatCore/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1241,6 +1244,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeatCore/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1288,11 +1292,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		B677DD402FEB0708001575BF /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */ = {
+		B697D10A2FF3B1C300CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../Libraries/yswift-beat";
 		};
-		B6E4E9FB2FF1A3FE00397F37 /* XCLocalSwiftPackageReference "../../Libraries/Promise" */ = {
+		B697D10B2FF3B21D00CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../Libraries/Promise;
 		};
