@@ -1125,6 +1125,25 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
     [self invalidateDisplayForCharacterRange:range];
 }
 
+- (void)resetRemoteUserSelections
+{
+    NSDictionary* oldValues = self.userSelections.copy;
+    self.userSelections = NSMutableDictionary.new;
+    
+    for (NSValue* value in oldValues.allValues) {
+        [self invalidateDisplayForCharacterRange:value.rangeValue];
+    }
+}
+
+- (void)resetRemoteUserSelectionFor:(NSString*)userId
+{
+    NSValue* oldValue = self.userSelections[userId];
+    [self.userSelections removeObjectForKey:userId];
+    
+    if (oldValue != nil) {
+        [self invalidateDisplayForCharacterRange:oldValue.rangeValue];
+    }
+}
 
 #pragma mark - Ensuring layout for lines
 

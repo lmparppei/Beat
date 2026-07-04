@@ -16,7 +16,7 @@ import yswift
 	// MARK: - Host flow
 
 	class func beginCollaboration(document: Document) {
-		if document.fileURL != nil || !document.hasUnautosavedChanges {
+		if document.fileURL != nil && !document.hasUnautosavedChanges {
 			presentSaveRequiredAlert(for: document)
 		} else {
 			connectAndBeginCollaboration(document: document)
@@ -38,14 +38,21 @@ import yswift
 		alert.beginSheetModal(for: window) { response in
 			if response == .alertFirstButtonReturn {
 				triggerSave(for: document)
-				connectAndBeginCollaboration(document: document)
 			}
 		}
 	}
 	
 	private class func connectAndBeginCollaboration(document:Document) {
+		let timeOut = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { _ in
+			document.hideCollaborationProgressView()
+			presentTimeOutMessage(document)
+		}
+		
 		document.connectAndBeginCollaboration { roomId in
+			timeOut.invalidate()
+			
 			Task { await MainActor.run {
+				document.hideCollaborationProgressView()
 				presentStartSessionSheet(for: document, roomId: roomId)
 			} }
 		}
@@ -62,6 +69,25 @@ import yswift
 		connectAndBeginCollaboration(document: document)
 	}
 
+	private class func presentTimeOutMessage(_ document:Document?) {
+		// If the user already canceled the operation, we don't need to show this
+		guard document?.collaborating ?? false else { return }
+		
+		let alert = NSAlert()
+		alert.messageText = "Could Not Start Collaboration"
+		alert.informativeText = "The server did not respond in time. Check your Internet connection. The service might be temporarily down as well."
+		alert.addButton(withTitle: "OK")
+		
+		if let window = document?.windowForSheet {
+			alert.beginSheetModal(for: window) { _ in
+				document?.endCollaboration(documentClosing: false)
+			}
+		} else {
+			alert.runModal()
+			document?.endCollaboration(documentClosing: false)
+		}
+	}
+	
 	private class func presentStartSessionSheet(for document: Document, roomId:String) {
 		let (accessory, nameField, _) = makeNameRoomAccessoryView(roomId: roomId)
 

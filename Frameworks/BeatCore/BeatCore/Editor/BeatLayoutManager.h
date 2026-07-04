@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updatePageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> *)pageBreaks;
 - (void)ensureLayoutForLinesInRange:(NSRange)range;
 - (void)updateRemoteUserSelection:(NSString*)userId range:(NSRange)range;
+- (void)resetRemoteUserSelections;
+- (void)resetRemoteUserSelectionFor:(NSString*)userId;
 @end
 
 NS_ASSUME_NONNULL_END

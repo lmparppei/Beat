@@ -35,6 +35,7 @@
 	return shouldChange;
 }
 
+/// To make some *sense* to thing, I've separated most of `shouldChangeTextInRange` delegate method to this one. Maybe it just increases confusion.
 - (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(nullable NSString *)replacementString
 {
 	// Block editing in some cases
@@ -56,10 +57,20 @@
 		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
 	}
 	
-	// Check for character input trouble
-	if (self.lineForNewCue != nil && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
-		[self cancelCharacterInput];
-		change = false;
+	// Special rules for character input
+	if (self.lineForNewCue != nil) {
+		// We are pressing backspace or deleting something at the beginning of a new, empty character cue. Cancel character input.
+		if (replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
+			[self cancelCharacterInput];
+			change = false;
+		} else if (replacementString.length > 0 && (NSLocationInRange(affectedCharRange.location, self.lineForNewCue.textRange) || affectedCharRange.location == NSMaxRange(self.lineForNewCue.textRange))) {
+			if (!self.didProcessCharacterCue) {
+				self.didProcessCharacterCue = true;
+				[self.textActions replaceRange:affectedCharRange withString:replacementString.uppercaseString];
+				self.didProcessCharacterCue = false;
+				change = false;
+			}
+		}
 	}
 	
 	// Don't repeat ) or ]
@@ -254,7 +265,7 @@
 		[alert addButtonWithTitle:@"OK"];
 		
 		[alert runModal];
-		if (alert.suppressionButton.state == NSOnState) {
+		if (alert.suppressionButton.state == BXOnState) {
 			[BeatUserDefaults.sharedDefaults setSuppressed:@"ignoreDialogueSpelling" value:YES];
 		}
 	}

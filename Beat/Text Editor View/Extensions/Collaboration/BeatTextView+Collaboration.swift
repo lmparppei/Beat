@@ -13,12 +13,12 @@ import yswift
 extension BeatTextView {
 	
 	func updateCarets() {
-		guard let document = self.editorDelegate as? Document, let client = document.yClient, let lm = self.layoutManager as? BeatLayoutManager
+		guard let document = self.editorDelegate as? Document, let lm = self.layoutManager as? BeatLayoutManager
 		else {
 			return
 		}
 				
-		let users = client.activeUsers()
+		let users = document.yClient?.activeUsers() ?? []
 				
 		CATransaction.begin()
 		CATransaction.setDisableActions(true)
@@ -27,32 +27,33 @@ extension BeatTextView {
 			self.userCarets = NSMutableDictionary()
 		}
 				
-		for user in users {
-			if user.userId == client.userId { continue }
-			let color = client.userColor(for: user.userId)
-			
-			// Update layout manager with the current user selection
-			lm.updateRemoteUserSelection(user.userId, range: NSMakeRange(user.location, user.length))
-			
-			// Update caret map
-			if userCarets[user.userId] == nil {
-				let layer = CALayer()
+		if let client = document.yClient {
+			for user in users {
+				if user.userId == client.userId { continue }
+				let color = client.userColor(for: user.userId)
 				
-				layer.anchorPoint = .zero
-				layer.cornerRadius = 1
-				layer.backgroundColor = (BeatColors.color(color) ?? NSColor.red).cgColor
+				// Update layout manager with the current user selection
+				lm.updateRemoteUserSelection(user.userId, range: NSMakeRange(user.location, user.length))
 				
-				self.userCarets[user.userId] = layer
-				self.layer?.addSublayer(layer)
-			}
-			
-			if let layer = userCarets[user.userId] as? CALayer {
-				let range = NSMakeRange(user.location + user.length, 0)
-				if let boundingRect = self.boundingRect(for: range) {
-					layer.frame = CGRect(x: boundingRect.origin.x - 1.0, y: boundingRect.origin.y, width: 2, height: boundingRect.height)
+				// Update caret map
+				if userCarets[user.userId] == nil {
+					let layer = CALayer()
+					
+					layer.anchorPoint = .zero
+					layer.cornerRadius = 1
+					layer.backgroundColor = (BeatColors.color(color) ?? NSColor.red).cgColor
+					
+					self.userCarets[user.userId] = layer
+					self.layer?.addSublayer(layer)
 				}
-			}
-		}
+				
+				if let layer = userCarets[user.userId] as? CALayer {
+					let range = NSMakeRange(user.location + user.length, 0)
+					if let boundingRect = self.boundingRect(for: range) {
+						layer.frame = CGRect(x: boundingRect.origin.x - 1.0, y: boundingRect.origin.y, width: 2, height: boundingRect.height)
+					}
+				}
+			}}
 		
 		// Remove inactive users
 		let activeIds = users.map { $0.userId }
