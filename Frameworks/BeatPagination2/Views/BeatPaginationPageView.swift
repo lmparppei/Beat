@@ -165,7 +165,7 @@ import UXKit
             textView.isAutomaticLinkDetectionEnabled = false
             textView.textContainer?.lineFragmentPadding = linePadding
             textView.textContainerInset = NSSize(width: 0, height: 0)
-            textView.drawsBackground = true
+            textView.drawsBackground = false
         #endif
 		        
 		
@@ -268,5 +268,3 @@ import UXKit
     
 	required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
-
-

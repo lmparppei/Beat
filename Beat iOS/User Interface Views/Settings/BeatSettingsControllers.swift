@@ -84,9 +84,12 @@ class BeatSettingsViewController:UITableViewController {
 	@IBOutlet weak var synopsisFontType:UIButton?
 	
 	@IBOutlet weak var fontStyleButton:UIButton?
-	
+
 	/// Font size switch is only available on iPhone
 	@IBOutlet var fontSizeSwitch:UISegmentedControl?
+
+	private var activeFontSettingKey:String?
+	private var activeFontRequiresMonospaced = false
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -113,6 +116,9 @@ class BeatSettingsViewController:UITableViewController {
 		if let fontStyleMenu = fontStyleButton?.menu, style < fontStyleMenu.children.count {
 			(fontStyleMenu.children[style] as? UICommand)?.state = .on
 		}
+
+		self.migrateLegacyCustomFonts()
+		self.setupCustomFontMenu()
 		
 		if let stylesheet = self.delegate?.styles.name,
 		   let availableStyles = stylesheetSwitch?.stylesheets.split(separator: ",") {
@@ -311,13 +317,146 @@ class BeatSettingsViewController:UITableViewController {
 		
 		// This is a little hacky. 0 = serif, 1 = sans serif, 2 = courier new
 		BeatUserDefaults.shared().save(style, forKey: BeatSettingFontStyle)
+		BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayFont)
+		BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayEditorFont)
+		BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayExportFont)
+		BeatUserDefaults.shared().save("", forKey: BeatSettingCustomEditorFont)
+		BeatUserDefaults.shared().save("", forKey: BeatSettingCustomExportFont)
 		print("New font style:", style)
 
 
+		self.applyFontChange()
+	}
+
+	// MARK: Custom fonts
+
+	private func setupCustomFontMenu() {
+		guard let button = fontStyleButton else { return }
+		let existing = button.menu?.children ?? []
+
+		let screenplayCustomAction = UIAction(title: NSLocalizedString("settings.customScreenplayFont", comment: "")) { [weak self] _ in
+			self?.presentFontPicker(for: BeatSettingCustomScreenplayFont, requiresMonospaced: true)
+		}
+		let screenplayDefaultAction = UIAction(title: NSLocalizedString("settings.useDefaultScreenplayFont", comment: "")) { [weak self] _ in
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayExportFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomExportFont)
+			self?.applyFontChange()
+		}
+		let novelCustomAction = UIAction(title: NSLocalizedString("settings.customNovelFont", comment: "")) { [weak self] _ in
+			self?.presentFontPicker(for: BeatSettingCustomNovelFont, requiresMonospaced: false)
+		}
+		let novelDefaultAction = UIAction(title: NSLocalizedString("settings.useDefaultNovelFont", comment: "")) { [weak self] _ in
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelExportFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomExportFont)
+			self?.applyFontChange()
+		}
+		let resetAction = UIAction(title: NSLocalizedString("settings.useDefaultFonts", comment: "")) { [weak self] _ in
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomExportFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomScreenplayExportFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelEditorFont)
+			BeatUserDefaults.shared().save("", forKey: BeatSettingCustomNovelExportFont)
+			self?.applyFontChange()
+		}
+
+		let screenplayMenu = UIMenu(title: NSLocalizedString("settings.screenplayFonts", comment: ""),
+									options: .displayInline,
+									children: [screenplayCustomAction, screenplayDefaultAction])
+		let novelMenu = UIMenu(title: NSLocalizedString("settings.novelFonts", comment: ""),
+							   options: .displayInline,
+							   children: [novelCustomAction, novelDefaultAction])
+		let resetMenu = UIMenu(title: "", options: .displayInline, children: [resetAction])
+		button.menu = UIMenu(children: existing + [screenplayMenu, novelMenu, resetMenu])
+	}
+
+	private func migrateLegacyCustomFonts() {
+		let defaults = BeatUserDefaults.shared()
+		var screenplayFont = defaults.get(BeatSettingCustomScreenplayFont) as? String ?? ""
+		var novelFont = defaults.get(BeatSettingCustomNovelFont) as? String ?? ""
+
+		if let editorFont = defaults.get(BeatSettingCustomEditorFont) as? String,
+		   !editorFont.isEmpty,
+		   screenplayFont.isEmpty,
+		   novelFont.isEmpty {
+			defaults.save(editorFont, forKey: BeatSettingCustomScreenplayFont)
+			defaults.save(editorFont, forKey: BeatSettingCustomNovelFont)
+			screenplayFont = editorFont
+			novelFont = editorFont
+		}
+
+		if let exportFont = defaults.get(BeatSettingCustomExportFont) as? String,
+		   !exportFont.isEmpty,
+		   screenplayFont.isEmpty,
+		   novelFont.isEmpty {
+			defaults.save(exportFont, forKey: BeatSettingCustomScreenplayFont)
+			defaults.save(exportFont, forKey: BeatSettingCustomNovelFont)
+		}
+
+		if screenplayFont.isEmpty,
+		   let legacyScreenplayFont = defaults.get(BeatSettingCustomScreenplayEditorFont) as? String,
+		   !legacyScreenplayFont.isEmpty {
+			defaults.save(legacyScreenplayFont, forKey: BeatSettingCustomScreenplayFont)
+		}
+		if novelFont.isEmpty,
+		   let legacyNovelFont = defaults.get(BeatSettingCustomNovelEditorFont) as? String,
+		   !legacyNovelFont.isEmpty {
+			defaults.save(legacyNovelFont, forKey: BeatSettingCustomNovelFont)
+		}
+	}
+
+	private func presentFontPicker(for settingKey:String, requiresMonospaced:Bool) {
+		self.activeFontSettingKey = settingKey
+		self.activeFontRequiresMonospaced = requiresMonospaced
+
+		let config = UIFontPickerViewController.Configuration()
+		config.includeFaces = true
+		let picker = UIFontPickerViewController(configuration: config)
+		picker.delegate = self
+		self.present(picker, animated: true)
+	}
+
+	fileprivate func applyFontChange() {
+		self.delegate?.reloadFonts()
 		self.delegate?.reloadStyles()
 		self.delegate?.formatting.formatAllLines()
+		self.delegate?.invalidatePreview()
 	}
-	
+
+}
+
+extension BeatSettingsViewController:UIFontPickerViewControllerDelegate {
+	func fontPickerViewControllerDidPickFont(_ viewController: UIFontPickerViewController) {
+		viewController.dismiss(animated: true)
+
+		guard let key = self.activeFontSettingKey,
+			  let descriptor = viewController.selectedFontDescriptor
+		else { return }
+
+		let font = UIFont(descriptor: descriptor, size: 12.0)
+		BeatUserDefaults.shared().save(font.fontName, forKey: key)
+		self.applyFontChange()
+
+		if self.activeFontRequiresMonospaced && !font.fontDescriptor.symbolicTraits.contains(.traitMonoSpace) {
+			let alert = UIAlertController(title: NSLocalizedString("settings.notMonospaced.title", comment: ""),
+										  message: NSLocalizedString("settings.notMonospaced.message", comment: ""),
+										  preferredStyle: .alert)
+			alert.addAction(UIAlertAction(title: NSLocalizedString("general.OK", comment: ""), style: .default))
+			self.present(alert, animated: true)
+		}
+	}
+
+	func fontPickerViewControllerDidCancel(_ viewController: UIFontPickerViewController) {
+		viewController.dismiss(animated: true)
+	}
 }
 
 class BeatURLButton:UIButton {
@@ -351,4 +490,3 @@ extension UIButton {
 		(menu.children[index] as? UIAction)?.state = .on
 	}
 }
-

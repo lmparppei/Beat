@@ -33,29 +33,77 @@
         
         _name = name;
         _scale = scale;
+        _custom = false;
         
         _regular = [BXFont fontWithName:regularFontName size:fontSize];
         _bold = [BXFont fontWithName:boldFontName size:fontSize];
         _italic = [BXFont fontWithName:italicFontName size:fontSize];
         _boldItalic = [BXFont fontWithName:boldItalicFontName size:fontSize];
-        
+
         if (_regular == nil || _bold == nil || _italic == nil)
             NSLog(@"🆘 WARNING - font not found: %@", name);
-            
-        // Fonts for sections and synopsis lines. If something goes wrong, we'll load system font as a fallback.
-        if (sectionFontName != nil) _section = [BXFont fontWithName:sectionFontName size:fontSize];
-        if (_section == nil) _section = [BXFont boldSystemFontOfSize:size];
-        
-        if (synopsisFontName != nil) _synopsis = [BXFont fontWithName:synopsisFontName size:fontSize - 1.0];
-        if (_synopsis == nil) _synopsis = [BeatFontSet fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:size - 1.0]];
-        
-        BXFont* emojis = [BXFont fontWithName:@"Noto Emoji" size:fontSize];
-        if (emojis == nil) emojis = [BXFont fontWithName:@"NotoEmoji" size:fontSize]; // Fix for Mojave
-        _emojiFont = emojis;
 
+        [self loadSectionAndSynopsisFontsWithScaledSize:fontSize baseSize:size sectionFont:sectionFontName synopsisFont:synopsisFontName];
     }
-     
+
     return self;
+}
+
++ (nullable instancetype)customFontSetWithFontName:(NSString *)fontName size:(CGFloat)size scale:(CGFloat)scale
+{
+    CGFloat fontSize = (size <= 0.0) ? 12.0 : size;
+    fontSize *= scale;
+
+    BXFont* regular = [BXFont fontWithName:fontName size:fontSize];
+    if (regular == nil) {
+        NSLog(@"🆘 WARNING - custom font not found: %@", fontName);
+        return nil;
+    }
+
+    BXFont* bold = [BeatFontSet fontWithTrait:BXFontDescriptorTraitBold font:regular];
+    BXFont* italic = [BeatFontSet fontWithTrait:BXFontDescriptorTraitItalic font:regular];
+    BXFont* boldItalic = [BeatFontSet fontWithTrait:(BXFontDescriptorTraitBold | BXFontDescriptorTraitItalic) font:regular];
+
+    return [BeatFontSet.alloc initWithCustomName:fontName size:size scale:scale regular:regular bold:bold italic:italic boldItalic:boldItalic];
+}
+
+- (instancetype)initWithCustomName:(NSString*)name
+                              size:(CGFloat)size
+                             scale:(CGFloat)scale
+                           regular:(BXFont*)regular
+                              bold:(BXFont*)bold
+                            italic:(BXFont*)italic
+                        boldItalic:(BXFont*)boldItalic
+{
+    self = [super init];
+    if (self) {
+        CGFloat fontSize = (size <= 0.0) ? 12.0 : size;
+        fontSize *= scale;
+
+        _name = name;
+        _scale = scale;
+        _custom = true;
+        _regular = regular;
+        _bold = bold;
+        _italic = italic;
+        _boldItalic = boldItalic;
+
+        [self loadSectionAndSynopsisFontsWithScaledSize:fontSize baseSize:size sectionFont:nil synopsisFont:nil];
+    }
+    return self;
+}
+
+- (void)loadSectionAndSynopsisFontsWithScaledSize:(CGFloat)fontSize baseSize:(CGFloat)size sectionFont:(NSString* _Nullable)sectionFontName synopsisFont:(NSString* _Nullable)synopsisFontName
+{
+    if (sectionFontName != nil) _section = [BXFont fontWithName:sectionFontName size:fontSize];
+    if (_section == nil) _section = [BXFont boldSystemFontOfSize:size];
+
+    if (synopsisFontName != nil) _synopsis = [BXFont fontWithName:synopsisFontName size:fontSize - 1.0];
+    if (_synopsis == nil) _synopsis = [BeatFontSet fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:size - 1.0]];
+
+    BXFont* emojis = [BXFont fontWithName:@"Noto Emoji" size:fontSize];
+    if (emojis == nil) emojis = [BXFont fontWithName:@"NotoEmoji" size:fontSize]; // Fix for Mojave
+    _emojiFont = emojis;
 }
 
 - (BXFont*)sectionFontWithSize:(CGFloat)size

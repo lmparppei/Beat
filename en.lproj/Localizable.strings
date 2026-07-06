@@ -356,3 +356,11 @@
 
 "versionMenu.newVersion" = "Add New Alternative for This Line";
 "versionMenu.noVersions" = "No Alternative Versions";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Choose Font…";
+"prefs.font.customScreenplay" = "Choose Font…";
+"prefs.font.customNovel" = "Choose Font…";
+"prefs.font.choose" = "Choose Font…";
+"prefs.font.change" = "Change Font…";
+"prefs.font.customWarning" = "Custom fonts can affect pagination and standard screenplay formatting.";

@@ -108,6 +108,14 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Paragraph styles
 
+- (CGFloat)lineHeight:(CGFloat)lineHeight fittingFont:(BXFont*)font
+{
+    if (!self.fonts.custom || font == nil) return lineHeight;
+
+    CGFloat fontLineHeight = ceil(font.ascender - font.descender + font.leading);
+    return MAX(lineHeight, fontLineHeight);
+}
+
 /// Returns paragraph style for given line type
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
 	Line *tempLine = [Line withString:@"" type:type];
@@ -178,6 +186,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     // Create paragraph style
     NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
     
+    BXFont* font = [self fontFamilyForLine:line];
+
     // Set default line height
     CGFloat lineHeight = styles.page.lineHeight;
 
@@ -185,11 +195,11 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     if (elementStyle.fontSize > 0 && elementStyle.fontSize > lineHeight) {
         lineHeight = elementStyle.fontSize;
     } else if (line.type == section) {
-        BXFont* font = [self fontFamilyForLine:line];
         lineHeight = font.pointSize;
     }
     // Scale if needed
     lineHeight *= self.delegate.fonts.scale;
+    lineHeight = [self lineHeight:lineHeight fittingFont:font];
     
     style.minimumLineHeight = lineHeight;
     style.maximumLineHeight = lineHeight;

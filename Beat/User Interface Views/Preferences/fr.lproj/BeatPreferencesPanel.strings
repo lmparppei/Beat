@@ -190,8 +190,9 @@
 /* Class = "NSTextFieldCell"; title = "Section Font"; ObjectID = "wK3-T2-CKe"; */
 "wK3-T2-CKe.title" = "Police de section";
 
-/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
-"Wyn-hc-s1G.title" = "Police de l'éditeur";
+/* Class = "NSTextFieldCell"; title = "Screenplay Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Screenplay Font";
+"EXF-cl-002.title" = "Novel Font";
 
 /* Class = "NSTextFieldCell"; title = "Note: These settings only affect screenplay formatting"; ObjectID = "XEa-I5-p3i"; */
 "XEa-I5-p3i.title" = "Note : ces réglages s'appliquent uniquement au formatage de scénario";
@@ -219,4 +220,3 @@
 
 /* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
 "Zfa-HM-161.title" = "Souligné";
-

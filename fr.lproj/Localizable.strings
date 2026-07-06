@@ -785,3 +785,11 @@
 
 "versionMenu.newVersion" = "Ajouter une nouvelle alternative pour cette ligne";
 "versionMenu.noVersions" = "Aucune version alternative";
+
+/* Font preferences (General tab) */
+"prefs.font.custom" = "Choisir une police…";
+"prefs.font.customScreenplay" = "Choisir une police…";
+"prefs.font.customNovel" = "Choisir une police…";
+"prefs.font.choose" = "Choisir une police…";
+"prefs.font.change" = "Changer de police…";
+"prefs.font.customWarning" = "Les polices personnalisées peuvent affecter la pagination et la mise en forme standard du scénario.";

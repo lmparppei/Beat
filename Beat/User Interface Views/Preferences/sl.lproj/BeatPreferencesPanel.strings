@@ -77,8 +77,9 @@
 /* Class = "NSMenuItem"; title = "Medium"; ObjectID = "WAb-8C-Sjl"; */
 "WAb-8C-Sjl.title" = "Srednja";
 
-/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
-"Wyn-hc-s1G.title" = "Pisava urejevalnika";
+/* Class = "NSTextFieldCell"; title = "Screenplay Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Screenplay Font";
+"EXF-cl-002.title" = "Novel Font";
 
 /* Class = "NSMenuItem"; title = "Very big"; ObjectID = "YEd-uH-lo0"; */
 "YEd-uH-lo0.title" = "Ogromna";
@@ -174,4 +175,3 @@
 "2Og-yp-uDM.label" = "Napredne";
 
 "EbP-vJ-jSl.title" = "Samodejno dodaj naslovno stran";
-

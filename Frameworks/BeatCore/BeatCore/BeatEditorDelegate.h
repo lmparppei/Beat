@@ -217,6 +217,7 @@ typedef void (^BeatChangeListener)(NSRange);
 
 @property (nonatomic) BeatFontSet* fonts;
 - (CGFloat)fontScale;
+- (void)reloadFonts;
 /*
 @property (readonly, nonatomic) BXFont *courier;
 @property (readonly, nonatomic) BXFont *boldCourier;
