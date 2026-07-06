@@ -474,8 +474,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
                 // And on macOS we need to set the color (no idea why)
             [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range textStorage:nil];
             #endif
-
-			_delegate.selectedRange = selectedRange;
+            
+			//_delegate.selectedRange = selectedRange;
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
