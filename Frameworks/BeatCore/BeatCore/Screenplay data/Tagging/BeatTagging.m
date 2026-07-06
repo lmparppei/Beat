@@ -10,7 +10,6 @@
 #import <BeatCore/BeatCompatibility.h>
 #import <BeatCore/BeatCore.h>
 #import "BeatTagging.h"
-#import "BeatTagItem.h"
 #import "BeatTag.h"
 #import "NSString+Levenshtein.h"
 #import "BeatColors.h"
@@ -39,7 +38,7 @@
 + (void)initialize
 {
 	[super initialize];
-	[BeatAttributes registerAttribute:BeatTagging.attributeKey];
+	[BeatAttributes registerAttribute:BeatTagging.attributeKey class:BeatTag.class];
 }
 
 - (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate

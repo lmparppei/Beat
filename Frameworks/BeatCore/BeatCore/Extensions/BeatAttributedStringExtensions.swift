@@ -156,8 +156,6 @@ extension CharacterSet {
     
     /** Trim whitespace and new line from start and end of the text */
     @objc func trimWhiteSpace(includeLineBreaks:Bool = false) -> NSAttributedString {
-        
-        
         // Thanks, Kamalraj Venkatesan on stackoverflow
         let invertedSet = (includeLineBreaks) ? CharacterSet.whitespacesAndNewlines.inverted : CharacterSet.whitespaces.inverted
         let startRange = string.utf16.description.rangeOfCharacter(from: invertedSet)
@@ -172,4 +170,5 @@ extension CharacterSet {
         let range = NSRange(location: location, length: length)
         return attributedSubstring(from: range)
     }
+    
 }

@@ -47,7 +47,9 @@ import JavaScriptCore
 
 // MARK: - Review item
 
-@objc public class BeatReviewItem:NSObject, NSCopying, NSCoding, BeatReviewItemExports {
+@objc public class BeatReviewItem:NSObject, NSCopying, NSCoding, NSSecureCoding, BeatReviewItemExports {
+    public static var supportsSecureCoding: Bool = true
+    
 	@objc public var string:String = ""
 	
     @objc public var keywords:[String] {
@@ -84,7 +86,7 @@ import JavaScriptCore
 	
 	public required init?(coder: NSCoder) {
 		super.init()
-		string = coder.decodeObject(forKey: "string") as? String ?? ""
+        string = (coder.decodeObject(of: NSString.self, forKey: "string") as? String) ?? ""
 	}
 	
 	public func encode(with coder: NSCoder) {
@@ -123,7 +125,7 @@ import JavaScriptCore
 	}
     
     @objc public override init() {
-        BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue)
+		BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue, class: BeatReviewItem.self)
         super.init()
     }
 		
@@ -138,7 +140,7 @@ import JavaScriptCore
 		guard let documentSettings = self.delegate?.documentSettings
 			else { return }
         
-        BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue)
+		BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue, class: BeatReviewItem.self)
 		setupReviews(ranges: documentSettings.get(DocSettingReviews) as? NSArray ?? [])
 	}
 	

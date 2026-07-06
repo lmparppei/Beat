@@ -29,7 +29,7 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import <BeatCore/BeatLocalization.h>
 #import <BeatCore/BeatTagging.h>
 #import <BeatCore/BeatTag.h>
-#import <BeatCore/BeatTagItem.h>
+//#import <BeatCore/BeatTagItem.h>
 #import <BeatCore/NSString+Levenshtein.h>
 #import <BeatCore/BeatUserDefaults.h>
 #import <BeatCore/BeatLayoutManager.h>

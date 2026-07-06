@@ -157,8 +157,6 @@
 		B6D15A732AF9793500DAB66D /* BeatStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D15A6E2AF9793500DAB66D /* BeatStyles.swift */; };
 		B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201B298EBE2B003DA45D /* TagDefinition.m */; };
 		B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201A298EBE2B003DA45D /* TagDefinition.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201E298EBE2B003DA45D /* BeatTagItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201F298EBE2B003DA45D /* BeatTagItem.m */; };
 		B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D32019298EBE2B003DA45D /* BeatTagging.m */; };
 		B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D32018298EBE2B003DA45D /* BeatTagging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D32027298EBE45003DA45D /* BeatTag.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201C298EBE2B003DA45D /* BeatTag.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -848,7 +846,6 @@
 				B6311EC12D672C6200712CFE /* NSString+Compression.h in Headers */,
 				B6311EC62D672DAB00712CFE /* BeatDocumentBaseController+RegisteredViewsAndObservers.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
-				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
 				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
 				B63D40E12EE06A70003771CF /* BeatDocumentBaseController+Outline.h in Headers */,
 				B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */,
@@ -996,7 +993,6 @@
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
 				B6311F052D6F6DF700712CFE /* BXColor+Perception.swift in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
-				B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */,
 				B6311ECB2D672F4000712CFE /* BeatDocumentBaseController+VersionControl.m in Sources */,
 				B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */,
 				B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */,

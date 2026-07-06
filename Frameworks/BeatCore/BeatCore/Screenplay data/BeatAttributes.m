@@ -33,13 +33,15 @@
 - (id)init {
   if (self = [super init]) {
 	  self.keys = NSMutableSet.new;
+      self.classes = NSMutableSet.new;
   }
   return self;
 }
 
-+ (void)registerAttribute:(NSString*)key
++ (void)registerAttribute:(NSString*)key class:(_Nullable Class)class
 {
 	[BeatAttributes.shared.keys addObject:key];
+    if (class != nil) [BeatAttributes.shared.classes addObject:class];
 }
 
 + (BOOL)containsCustomAttributes:(NSDictionary*)dict

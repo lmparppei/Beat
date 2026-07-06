@@ -14,18 +14,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatTagItem : NSObject <NSCopying, NSCoding>
+@interface BeatTagItem : NSObject <NSCopying, NSCoding, NSSecureCoding>
 
 @property (nonatomic) BeatTagType type;
 @property (nonatomic) NSString *name;
-@property (nonatomic) NSMutableIndexSet *indices;
+//@property (nonatomic) NSMutableIndexSet *indices;
 @property (weak) NSMutableArray *lines;
 + (BeatTagItem*)withString:(NSString*)string type:(BeatTagType)type range:(NSRange)range;
 
 - (BXColor*)color;
 - (NSString*)key;
-- (void)addRange:(NSRange)range;
-- (NSArray<NSValue*>*)ranges;
+//- (void)addRange:(NSRange)range;
+//- (NSArray<NSValue*>*)ranges;
 @end
 
 NS_ASSUME_NONNULL_END

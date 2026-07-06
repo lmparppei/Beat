@@ -9,9 +9,10 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface BeatPasteboardItem : NSObject <NSCopying, NSPasteboardWriting, NSPasteboardReading, NSCoding>
+@interface BeatPasteboardItem : NSObject <NSPasteboardWriting, NSCopying, NSPasteboardReading, NSCoding, NSSecureCoding>
 
 @property (nonatomic) NSAttributedString *attrString;
+@property (nonatomic) NSDictionary<NSString*, NSArray<NSValue*>*>* attrRanges;
 
 - (id)initWithAttrString:(NSAttributedString*)string;
 + (NSString*)sanitizeString:(NSString*)string;

@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 	RevisionCharacterRemoved
 };
 
-@interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
+@interface BeatRevisionItem : NSObject <NSCoding, NSCopying, NSSecureCoding>
 
 @property (nonatomic) RevisionType type;
 @property (nonatomic) NSInteger generationLevel;

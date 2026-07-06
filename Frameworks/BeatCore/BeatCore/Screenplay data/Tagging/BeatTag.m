@@ -17,6 +17,8 @@
 
 @implementation BeatTag
 
++(BOOL)supportsSecureCoding { return YES; }
+
 + (BeatTag*)withDefinition:(TagDefinition *)def
 {
 	return [[BeatTag alloc] initWithDefinition:def];
@@ -69,9 +71,9 @@
 	self = [super init];
 	if (self) {
 		_type = [coder decodeIntegerForKey:@"type"];
-		_defId = [coder decodeObjectForKey:@"defId"];
-		_tagId = [coder decodeObjectForKey:@"tagId"];
-		_definition = [coder decodeObjectForKey:@"definition"];
+		_defId = [coder decodeObjectOfClass:NSString.class forKey:@"defId"];
+        _tagId = [coder decodeObjectOfClass:NSString.class forKey:@"tagId"];
+        _definition = [coder decodeObjectOfClass:NSString.class forKey:@"definition"];
 	}
 	
 	return self;

@@ -62,7 +62,7 @@
 
 + (void)initialize {
     [super initialize];
-    [BeatAttributes registerAttribute:BeatRevisions.attributeKey];
+    [BeatAttributes registerAttribute:BeatRevisions.attributeKey class:BeatRevisionItem.class];
 }
 
 

@@ -12,6 +12,8 @@
 
 @implementation BeatTagItem
 
++ (BOOL)supportsSecureCoding { return true; }
+
 + (BeatTagItem*)withString:(NSString*)string type:(BeatTagType)type range:(NSRange)range {
 	return [[BeatTagItem alloc] initWithString:string type:type range:range];
 }
@@ -35,11 +37,12 @@
 - (BXColor*)color {
 	return [BeatTagging colorFor:self.type];
 }
-- (void)addRange:(NSRange)range {	
+/*
+- (void)addRange:(NSRange)range {
 	[_indices addIndexesInRange:range];
 }
 
-- (NSArray<NSValue*>*)ranges
+ - (NSArray<NSValue*>*)ranges
 {
     NSMutableArray<NSValue*>* ranges = NSMutableArray.new;
     [_indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -52,7 +55,7 @@
 {
 	return [_indices containsIndexesInRange:range];
 }
-
+*/
 
 
 #pragma mark - Debugging
@@ -68,14 +71,14 @@
 	BeatTagItem *item = [[self.class allocWithZone:zone] init];
 	item->_type = self.type;
 	item->_name = [self.name copyWithZone:zone];
-	item->_indices = [self.indices copyWithZone:zone];
+	//item->_indices = [self.indices copyWithZone:zone];
 	return item;
 }
 
 - (void)encodeWithCoder:(nonnull NSCoder *)coder {
 	[coder encodeInteger:self.type forKey:@"type"];
 	[coder encodeObject:self.name forKey:@"name"];
-	[coder encodeObject:self.indices forKey:@"indices"];
+	//[coder encodeObject:self.indices forKey:@"indices"];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
@@ -83,9 +86,7 @@
 	
 	if (self) {
 		_type = [coder decodeIntegerForKey:@"type"];
-		_name = [coder decodeObjectForKey:@"name"];
-		// NOTE NOTE NOTE: This won't work when copy-pasting, so please dread lightly
-		_indices = [coder decodeObjectForKey:@"indices"];
+		_name = [coder decodeObjectOfClass:NSString.class forKey:@"name"];
 	}
 	
 	return self;

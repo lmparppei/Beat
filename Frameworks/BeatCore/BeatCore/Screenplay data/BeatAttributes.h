@@ -11,9 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatAttributes : NSObject
-@property (nonatomic) NSMutableSet *keys;
+@property (nonatomic) NSMutableSet<NSString*>* keys;
+@property (nonatomic) NSMutableSet<Class>* classes;
 + (BeatAttributes*)shared;
-+ (void)registerAttribute:(NSString*)key;
++ (void)registerAttribute:(NSString*)key class:(_Nullable Class)class;
 + (BOOL)containsCustomAttributes:(NSDictionary*)dict;
 + (NSDictionary*)stripUnnecessaryAttributesFrom:(NSDictionary*)attrs;
 @end

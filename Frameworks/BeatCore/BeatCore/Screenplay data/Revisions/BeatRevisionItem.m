@@ -12,6 +12,8 @@
 
 @implementation BeatRevisionItem
 
++ (BOOL)supportsSecureCoding { return YES; }
+
 - (instancetype)initWithType:(RevisionType)type generation:(NSInteger)level
 {
     // Guard for faulty revision generations
@@ -67,8 +69,8 @@
 	}
 	
 	return self;
-
 }
+
 
 -(id)copyWithZone:(NSZone *)zone
 {

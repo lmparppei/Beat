@@ -7,39 +7,130 @@
 //
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatPasteboardItem.h"
 #define UTI @"com.kapitanFI.beat.pasteboardItem"
 
+
 @implementation BeatPasteboardItem
+
++ (BOOL)supportsSecureCoding { return YES; }
+
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pasteboard
+{
+	if ([type isEqualToString:UTI]) return NSPasteboardReadingAsData;
+	return NSPasteboardReadingAsString;
+}
+
+- (id)initWithAttrString:(NSAttributedString*)string
+{
+	// Because of security reasons, macOS 10.14+ requires us to conform to secure coding. This is a very crappy implementation of that.
+	// We'll strip out any custom Beat attributes and then encode values to another dictionary.
+	
+	self = [super init];
+	
+	if (self) {
+		NSMutableAttributedString* attrStr = string.mutableCopy;
+		
+		NSMutableDictionary<NSString*, NSMutableArray*>* ranges = NSMutableDictionary.new;
+		
+		[attrStr.copy enumerateAttributesInRange:attrStr.range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull values, NSRange range, BOOL * _Nonnull stop) {
+			for (NSAttributedStringKey key in BeatAttributes.shared.keys) {
+				if (values[key] == nil) continue;
+				
+				id value = values[key];
+				
+				if (ranges[key] == nil) ranges[key] = NSMutableArray.new;
+				
+				NSString* className = [value className];
+				[ranges[key] addObject:@[className, value, [NSValue valueWithRange:range]]];
+				
+				[attrStr removeAttribute:key range:range];
+			}
+		}];
+		
+		_attrString = attrStr.copy;
+		_attrRanges = ranges;
+	}
+	
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+	self = [super init];
+	
+	if (self) {
+		// Because of security reasons, macOS 10.14+ requires us to conform to secure coding. This is a very crappy implementation of that.
+		// Custom Beat attributes have been stripped away, so we need to add them back ……… and hope that the decoding goes well.
+		
+		NSAttributedString *attrStr =
+			[coder decodeObjectOfClass:NSAttributedString.class forKey:@"attrString"];
+
+		/// Basic support for core classes and custom ones.
+		/// To support anything to be copy-pasted via text attributes, you have to register it via `BeatAttributes` and implement `NSSecureCoding` for the class.
+		NSMutableSet *containerClasses = [NSMutableSet setWithObjects:
+			[NSDictionary class], [NSArray class], [NSString class], [NSData class], [NSValue class], nil];
+		[containerClasses addObjectsFromArray:BeatAttributes.shared.classes.allObjects];
+		
+		NSDictionary<NSString *, NSArray *> *ranges =
+			[coder decodeObjectOfClasses:containerClasses forKey:@"attrRanges"];
+
+		/// This will be our final string
+		NSMutableAttributedString *result = attrStr.mutableCopy;
+		
+		for (NSString *key in ranges) {
+			for (NSArray *entry in ranges[key]) {
+				NSString *className = entry[0];
+				id value = entry[1];
+				NSRange range = [entry[2] rangeValue];
+				
+				NSError *error = nil;
+			
+				if (value) {
+					[result addAttribute:key value:value range:range];
+				} else {
+					NSLog(@"Failed to decode custom attribute %@: %@", className, error);
+				}
+			}
+		}
+
+		_attrString = result;
+	}
+	
+	return self;
+}
 
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-	[coder encodeObject:self.attrString forKey:@"attrString"];
+	[coder encodeObject:_attrString forKey:@"attrString"];
+	[coder encodeObject:_attrRanges forKey:@"attrRanges"];
 }
 
-- (id)initWithAttrString:(NSAttributedString*)string {
-	self = [super init];
-	
-	if (self) {
-		_attrString = string;
+-(id)initWithPasteboardPropertyList:(id)propertyList ofType:(NSString *)type
+{
+	if ([type isEqualToString:UTI]) {
+		NSError *error = nil;
+		NSLog(@" --> %@", propertyList);
+		id obj = [NSKeyedUnarchiver unarchivedObjectOfClass:BeatPasteboardItem.class
+												   fromData:propertyList
+													  error:&error];
+		
+		if (error) {
+			NSLog(@"ERROR %@", error);
+		}
+		
+		return obj;
+	} else if ([type isEqualToString:NSPasteboardTypeString] || [type isEqualToString:@"public.utf8-plain-text"]) {
+		// propertyList here is an NSString, not NSData
+		NSString *string = [propertyList isKindOfClass:[NSString class]] ? propertyList : nil;
+		if (string != nil) {
+			NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:string];
+			return [[BeatPasteboardItem alloc] initWithAttrString:attrStr];
+		}
 	}
 	
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-	self = [super init];
-
-	if (self) {
-		_attrString = [coder decodeObjectForKey:@"attrString"];
-	}
-	
-	return self;
-}
-
--(id)initWithPasteboardPropertyList:(id)propertyList ofType:(NSString *)type {
-	return [NSKeyedUnarchiver unarchivedObjectOfClass:BeatPasteboardItem.class fromData:propertyList error:nil];
-	//return [NSKeyedUnarchiver unarchiveObjectWithData:propertyList];
+	return nil;
 }
 
 +(NSString*)pasteboardType
@@ -58,8 +149,12 @@
 
 - (id)pasteboardPropertyListForType:(NSString *)type {
 	if (![type isEqualToString:UTI]) return nil;
-	return [NSKeyedArchiver archivedDataWithRootObject:self requiringSecureCoding:false error:nil];
-	//return [NSKeyedArchiver archivedDataWithRootObject:self];
+	NSError *error = nil;
+	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self
+										 requiringSecureCoding:true
+														 error:&error];
+	if (!data) NSLog(@"Archive failed: %@", error);
+	return data;
 }
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
