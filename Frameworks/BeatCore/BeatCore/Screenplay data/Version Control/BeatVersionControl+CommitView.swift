@@ -85,6 +85,7 @@ class CommitMessagePopover: NSViewController {
         button.target = self
         button.action = #selector(commitClicked)
         button.controlSize = .small
+        button.keyEquivalent = "\r"
         return button
     }()
     
@@ -114,9 +115,9 @@ class CommitMessagePopover: NSViewController {
         messageField.frame.size.width = self.view.frame.width - 10
         
         commitButton.sizeToFit()
+        commitButton.frame.origin.x = self.view.frame.width - commitButton.frame.width - 2
+        
         skipButton.sizeToFit()
-                
-        skipButton.frame.origin.x = self.view.frame.width - skipButton.frame.width - 2
         skipButton.isHidden = true
         
         self.view.addSubview(messageField)
