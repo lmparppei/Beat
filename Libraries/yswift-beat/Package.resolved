@@ -11,11 +11,11 @@
     },
     {
       "identity" : "promise",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ObuchiYuki/Promise.git",
+      "kind" : "localSourceControl",
+      "location" : "/Users/lmp/Koodaus/Beat/Libraries/Promise",
       "state" : {
-        "revision" : "1f80e9bf2391451cbfd3f4674428937c802fbdcb",
-        "version" : "1.0.15"
+        "revision" : "9912726da28524cc0f6e193f000aec3c582fb3f0",
+        "version" : "1.0.14"
       }
     }
   ],

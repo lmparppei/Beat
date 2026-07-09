@@ -912,7 +912,7 @@
 			mainGroup = B633C1AB298C5F750011449D;
 			packageReferences = (
 				B697D10A2FF3B1C300CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/yswift-beat" */,
-				B697D10B2FF3B21D00CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */,
+				B697D1492FFC2A8600CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */,
 			);
 			productRefGroup = B633C1B6298C5F750011449D /* Products */;
 			projectDirPath = "";
@@ -1292,7 +1292,7 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../Libraries/yswift-beat";
 		};
-		B697D10B2FF3B21D00CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */ = {
+		B697D1492FFC2A8600CBFA9D /* XCLocalSwiftPackageReference "../../Libraries/Promise" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../Libraries/Promise;
 		};

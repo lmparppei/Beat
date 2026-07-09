@@ -2830,6 +2830,7 @@
 				B6253BA62BF4C04800E22236 /* XCRemoteSwiftPackageReference "UXKit" */,
 				B66F1D342ED74EE8005EB432 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				B6FC4BF22FE31E28008B4C80 /* XCLocalSwiftPackageReference "Libraries/yswift-beat" */,
+				B697D14A2FFC2B1000CBFA9D /* XCLocalSwiftPackageReference "Libraries/Promise" */,
 			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
@@ -4530,6 +4531,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		B697D14A2FFC2B1000CBFA9D /* XCLocalSwiftPackageReference "Libraries/Promise" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Libraries/Promise;
+		};
 		B6FC4BF22FE31E28008B4C80 /* XCLocalSwiftPackageReference "Libraries/yswift-beat" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "Libraries/yswift-beat";
