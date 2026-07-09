@@ -87,11 +87,16 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Text I/O
 
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+{
+    [self replaceCharactersInRange:range withAttributedString:[NSAttributedString.alloc initWithString:string]];
+}
+
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
  @warning __Don't use__ this for adding text. Go through the intermediate methods instead, `addString`, `removeString` etc.
  */
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+- (void)replaceCharactersInRange:(NSRange)range withAttributedString:(NSAttributedString*)string
 {
     BXTextView* textView = self.textView;
     
@@ -149,7 +154,7 @@ static NSString *centeredEnd = @" <";
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
-    
+
 #if !TARGET_OS_IOS
     // I don't know why, but we shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
@@ -207,12 +212,14 @@ static NSString *centeredEnd = @" <";
 {
     if (position > _delegate.text.length) position = _delegate.text.length;
 
+    [self.delegate.textStorage beginEditing];
+    
     NSAttributedString* oldAttrStr = [_delegate.textStorage attributedSubstringFromRange:range];
     
     NSAttributedString* stringToMove = (string != nil) ? string : oldAttrStr;
     
     // First remove everything
-    [self replaceCharactersInRange:range withString:@""];
+    [self replaceRange:range withString:@""];
     
     NSInteger newPosition = position;
     if (range.location < position) {
@@ -221,21 +228,8 @@ static NSString *centeredEnd = @" <";
     if (newPosition < 0) newPosition = 0;
     
     [self replaceRange:NSMakeRange(newPosition, 0) withAttributedString:stringToMove];
-    //[self replaceCharactersInRange:NSMakeRange(newPosition, 0) withString:stringToMove];
-    
-    NSRange undoingRange;
-    NSInteger undoPosition;
-    
-    if (range.location > position) {
-        undoPosition = range.location + stringToMove.length;
-        undoingRange = NSMakeRange(position, stringToMove.length);
-    } else {
-        undoingRange = NSMakeRange(newPosition, stringToMove.length);
-        undoPosition = range.location;
-    }
-    
-    [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldAttrStr];
-    [_delegate.undoManager setActionName:@"Move Scene"];
+        
+    [self.delegate.textStorage endEditing];
 }
 
 /// Moves given range to another position
