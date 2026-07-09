@@ -28,10 +28,45 @@ extension BeatVersionControl {
         
         return popover
     }
+    
+    /// New modal window presentation, reusing the same view controller
+    public class func commitPromptModal(delegate: BeatEditorDelegate,
+                                         callback: @escaping (BeatVersionControl?) -> Void) {
+        let modalVC = CommitMessagePopover { message in
+            let vc = BeatVersionControl(delegate: delegate)
+            vc.addCommit(withMessage: message)
+        }
+        
+        if let window = delegate.documentWindow {
+            let modalWindow = NSWindow(contentViewController: modalVC)
+            modalWindow.styleMask = [.titled, .closable]
+            modalWindow.title = "Commit Changes"
+            
+            modalVC.closeAction = {
+                window.endSheet(modalWindow)
+            }
+            
+            delegate.documentWindow.beginSheet(modalWindow) { _ in
+                callback(nil)
+            }
+            
+        } else {
+            // As a fallback, do whatever the closure told
+            callback(nil)
+        }
+    }
 }
 
 class CommitMessagePopover: NSViewController {
     private var commitAction: ((String) -> Void)?
+    // Add this when calling as a modal
+    var closeAction: (() -> Void)? {
+        didSet {
+            if closeAction != nil {
+                skipButton.isHidden = false
+            }
+        }
+    }
     
     private lazy var messageField: NSTextField = {
         let field = NSTextField(frame: NSRect(x: 5, y: 35, width: 210, height: 48))
@@ -53,6 +88,17 @@ class CommitMessagePopover: NSViewController {
         return button
     }()
     
+    private lazy var skipButton: NSButton = {
+        let button = NSButton(frame: NSRect(x: 2, y: 5, width: 100, height: 24))
+        button.title = "Skip"
+        button.bezelStyle = .rounded
+        button.setButtonType(.momentaryPushIn)
+        button.target = self
+        button.action = #selector(commitClicked)
+        button.controlSize = .small
+        return button
+    }()
+    
     init(commitAction: @escaping (String) -> Void) {
         self.commitAction = commitAction
         super.init(nibName: nil, bundle: nil)
@@ -63,14 +109,36 @@ class CommitMessagePopover: NSViewController {
     }
     
     override func loadView() {
-        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: 90))
+        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 250, height: 90))
+        
+        messageField.frame.size.width = self.view.frame.width - 10
+        
+        commitButton.sizeToFit()
+        skipButton.sizeToFit()
+                
+        skipButton.frame.origin.x = self.view.frame.width - skipButton.frame.width - 2
+        skipButton.isHidden = true
+        
         self.view.addSubview(messageField)
         self.view.addSubview(commitButton)
+        self.view.addSubview(skipButton)
     }
     
     @objc private func commitClicked() {
         commitAction?(messageField.stringValue)
-        dismiss(nil)
+        close()
+    }
+    
+    override func cancelOperation(_ sender: Any?) {
+        close()
+    }
+    
+    private func close() {
+        if let closeAction = closeAction {
+            closeAction()
+        } else {
+            dismiss(nil)
+        }
     }
 }
 

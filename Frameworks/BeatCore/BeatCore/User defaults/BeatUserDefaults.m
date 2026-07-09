@@ -99,6 +99,7 @@ NSString* const BeatSettingAllowAllFileTypes            = @"allowAllFileTypes";
 
 NSString* const BeatSettingSmartQuotes                  = @"smartQuotes";
 
+NSString* const BeatSettingShowCommitPromptOnSave       = @"showCommitPromptOnSave";
 
 + (BeatUserDefaults*)sharedDefaults
 {

@@ -173,6 +173,9 @@
 	else if (menuItem.action == @selector(markAddition:) || menuItem.action == @selector(markRemoval:) || menuItem.action == @selector(clearMarkings:)) {
 		valid = (self.textView.selectedRange.length > 0);
 	}
+	else if (menuItem.action == @selector(commit:)) {
+		valid = self.hasVersionControl;
+	}
 	
 	return valid;
 }
