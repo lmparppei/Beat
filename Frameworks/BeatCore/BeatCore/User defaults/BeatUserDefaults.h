@@ -93,6 +93,9 @@ extern NSString* const BeatSettingAllowAllFileTypes;
 
 extern NSString* const BeatSettingSmartQuotes;
 
+extern NSString* const BeatSettingShowCommitPromptOnSave;
+
+
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
 

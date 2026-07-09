@@ -837,13 +837,7 @@
 	BXFont* font = self.delegate.fonts.regular;
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-	
-#if TARGET_OS_IOS
-	// Set font size to 80% on iOS
-    // BTW, why are we doing this? Is this a mistake?
-	// font = [font fontWithSize:font.pointSize * 0.8];
-#endif
-	
+		
     // Create paragraph style
     NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
     pStyle.minimumLineHeight = lineHeight;
