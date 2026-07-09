@@ -91,9 +91,11 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 {
     ContinuousFountainParser* parser = self.delegate.parser;
     NSArray* lines = parser.lines;
+    NSLog(@"Applying format changes");
     
     while (parser.changedIndices.count > 0) {
         NSInteger idx = parser.changedIndices.firstIndex;
+        NSLog(@" -> %@", lines[idx]);
         [parser.changedIndices removeIndex:idx];
         
         if (idx < lines.count) [self formatLine:lines[idx]];
@@ -545,10 +547,17 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     [BeatMeasure queue:@"format" startPhase:@"inline formatting"];
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
     
+    /// We are optimizing the render time by double-checking if the calculated attributed string matches the stored one. This only includes inline formatting.
+    /// Touching text storage and aqcuiring an attributed string is VERY expensive, and wouldn't do what we want, as it includes stuff like color etc.
+    /// Optimization only requires the minimal attributes (bold, italic etc.), so the FDX string is enough.
+    ///
+    /// HOWEVER. This implementation comes with the caveat that if you go and replace the string *with the exact same string* in editor, formatting is skipped.
+    /// To get around this, `Line` nulls the reference to `formattedString` whenever text is changed. I missed this myself and used an hour to understand why some text didn't get reformatted correctly.
+    
 	NSRange range = NSMakeRange(0, line.length);
 	NSAttributedString* astr = line.attributedStringForFDX;
     
-	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString];
+	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString] && line.length == line.formattedString.length;
 	if (!reset &&
 		formattingUnchanged &&
 		!line.isOutlineElement &&
