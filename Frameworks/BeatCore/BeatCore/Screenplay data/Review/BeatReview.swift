@@ -20,6 +20,7 @@
 import UXKit
 
 import JavaScriptCore
+import yswift
 
 /// JS API exports for the individual review items (objects attached to text)
 @objc public protocol BeatReviewItemExports:JSExport {
@@ -51,6 +52,8 @@ import JavaScriptCore
     public static var supportsSecureCoding: Bool = true
     
 	@objc public var string:String = ""
+	
+	@objc public var uuid:String = UUID().uuidString
 	
     @objc public var keywords:[String] {
         let string = self.string as NSString
@@ -96,6 +99,23 @@ import JavaScriptCore
 	public func copy(with zone: NSZone? = nil) -> Any {
 		let item = BeatReviewItem(reviewString: self.string as NSString)
 		return item
+	}
+	
+	public func sharedReview() -> BeatSharedReview {
+		return BeatSharedReview(string: string, uuid: self.uuid)
+	}
+}
+
+/// A shared array type for collaboration. These are sent to peers and matched to placeholder UUIDs in text attributes. If the review range arrives first, an empty review will be added, and it will be updated once this item arrives.
+public class BeatSharedReview:YCodable {
+	public var string:String
+	public var user:String = ""
+	public var uuid:String
+	
+	public init(string: String, uuid: String, user:String = "") {
+		self.string = string
+		self.user = user
+		self.uuid = uuid
 	}
 }
 
@@ -180,19 +200,37 @@ import JavaScriptCore
                 return
             }
             
+            var newItem:[String:Any] = [:]
+            var newRange:NSRange?
+            
+            // Fix consecutive attributes
             if (NSMaxRange(prevRange) + 1 == range.location && item.string == prevString as String) {
-                // TODO: Fix review attribute ranges
-                print("We should fix this attribute...")
+                if var lastItem = ranges.lastObject as? [String:Any],
+                    let rangeValues = lastItem["range"] as? [Int],
+                    rangeValues.count > 1,
+                    let string = lastItem["string"] as? String {
+                    
+                    let loc = rangeValues[0]
+                    let len = rangeValues[1]
+                    newRange = NSMakeRange(loc, NSMaxRange(range) - loc)
+                    
+                    ranges.removeLastObject()
+                    newItem = [
+                        "range": [newRange!.location, newRange!.length],
+                        "string": string
+                    ]
+                }
+            } else {
+                newRange = range
+                newItem = [
+                    "range": [range.location, range.length],
+                    "string": item.string
+                ]
             }
-            
-            ranges.add([
-                "range": [range.location, range.length],
-                "string": item.string
-            ])
-            
-            if (!item.emptyReview) {
+
+            if let newRange, let string = newItem["string"] as? String {
                 prevRange = range
-                prevString = item.string as NSString
+                prevString = string as NSString
             }
         }
         
@@ -205,7 +243,6 @@ import JavaScriptCore
         
         if (trimmedString.count > 0 && trimmedString != "") {
             // Save review if it's not empty
-			// TODO: YDocument compatibility
             delegate?.addAttribute(BeatReview.attributeKey(), value: item, range: currentRange)
         }
         
