@@ -60,7 +60,7 @@ public enum YClientRole {
     public var onPeerLeft:((String, [String]) -> Void)?
     /// This user successfully joined the room
     public var onJoinedRoom:((String) -> Void)?
-    
+        
     private var syncTask: Task<Void, Never>?
     
     var updateQueue:[Data] = []
@@ -78,15 +78,16 @@ public enum YClientRole {
     public var role:YClientRole = .owner
     
     private var syncCheckTimer:Timer?
-    
-    /// A list of local-first colors for
+        
+    /// A list of local-first colors for participants
     private var userColors:[String:String] = [:]
     private let allColors:[String] = ["mint", "red", "green", "magenta", "blue", "yellow", "orange", "cyan"]
     private var nextUserColorIndex:Int = 0
     
+    /// Awereness for user presences
     public let awareness:YAwareness = YAwareness<YUserAwareness>()
     private var objectBag = [AnyCancellable]()
-    
+        
     public init(doc: YDocument, server:String, clientName:String = "") {
         self.doc = doc
         self.clientName = clientName
@@ -109,7 +110,7 @@ public enum YClientRole {
                 self.sendUpdate(args.update)
             }
         }
-        
+                
         // Network events
         self.networkClient.onUpdates = { [weak self] messages in
             Task {
