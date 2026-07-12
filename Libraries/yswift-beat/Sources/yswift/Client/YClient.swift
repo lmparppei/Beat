@@ -86,7 +86,7 @@ public enum YClientRole {
     
     /// Awereness for user presences
     public let awareness:YAwareness = YAwareness<YUserAwareness>()
-    private var objectBag = [AnyCancellable]()
+    public var objectBag = [AnyCancellable]()
         
     public init(doc: YDocument, server:String, clientName:String = "") {
         self.doc = doc

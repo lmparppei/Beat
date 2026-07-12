@@ -31,7 +31,7 @@ extension BeatDocumentBaseController {
                     self.yClient?.onUpdate = nil
                 }
             }
-            
+                        
             client.clientName = BeatUserDefaults.shared().get("userName") as? String ?? "Anonymous"
             client.connect(room: room)
         }
@@ -101,11 +101,13 @@ extension BeatDocumentBaseController {
             // The host gives our source of truth
             text = parser.text()
         }
-        
+                
         doc.transact(origin: client.origin) {
             doc.getText().insert(0, text: text)
-            
+
             if !joining {
+                let settings = doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+
                 // Bake revisions
                 // This is a little silly. We should maybe transmit the full JSON setting block here and let the receiving end apply everything they need from that.
                 let revisions = self.revisionTracking.revisedRanges()
@@ -119,9 +121,20 @@ extension BeatDocumentBaseController {
                         doc.getText().format(range.location, length: range.length, attributes: [BeatRevisions.attributeKey().rawValue: generation])
                     }
                 }
+                                
+                // Update other metadata
+                let reviewsAndRanges = self.review?.getReviewsAndRanges() ?? [:]
+                for range in reviewsAndRanges.keys {
+                    let review = reviewsAndRanges[range]
+                    if let sharedReview = review?.sharedReview() {
+                        doc.getText().format(range.location, length: range.length, attributes: [BeatReview.attributeKey().rawValue: sharedReview.uuid])
+                        
+                        settings.reviews.append(sharedReview)
+                    }
+                }
             }
         }
-        
+                
         // Don't allow undoing the initial transaction
         client.undoManager.clear()
         
@@ -129,7 +142,14 @@ extension BeatDocumentBaseController {
         doc.getText().observe { [weak self] event, txn in
             self?.sharedDocumentChanged(event: event)
         }
-                
+        
+        // Set up document setting listener (two different ways of doing it)
+        setupDocumentSettings()
+        
+        doc.getObject(BeatSharedDocumentSettings.self, "documentSettings").observe { [weak self] event, txn in
+            self?.sharedDocumentSettingsChanged(event: event)
+        }
+        
         client.networkClient.onError = { [weak self] description, error in
             Swift.print("Server error: \(description)")
             
@@ -265,6 +285,43 @@ extension BeatDocumentBaseController {
     }
     
     
+    // MARK: - Document settings & metadata
+    
+    func setupDocumentSettings() {
+        guard let client = self.yClient else { return }
+        
+        let doc = client.doc
+        
+        let settings = doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+        settings.$reviews
+            .sink { reviews in
+                // Check for any registered reviews
+                Swift.print(" ---> ", reviews)
+            }
+            .store(in: &client.objectBag)
+    }
+    
+    /// - warning: `keys` values are hard-coded and predefined for now.
+    public func updateDocumentSettings(key:String, value:Any) {
+        guard let client = self.yClient else { return }
+        
+        client.doc.transact(origin: client.origin) {
+            let settings = client.doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+            
+            if key == "reviews", let reviews = value as? [BeatSharedReview] {
+                settings.reviews.assign(reviews)
+            }
+        }
+    }
+    
+    public func sharedDocumentSettingsChanged(event: YEvent) {
+        Swift.print("Event:",event.changes())
+        //guard let doc = self.yClient?.doc, var bag = self.yClient?.objectBag else { return }
+    
+    }
+    
+    
+    
     // MARK: - Selection update
     
     @objc public func updateSelectionAwareness() {
@@ -289,6 +346,8 @@ extension BeatDocumentBaseController {
         
         if key == BeatRevisions.attributeKey(), let value = value as? BeatRevisionItem {
             self.yClient?.addSharedAttribute(key: key, value: value.generationLevel, range: range)
+        } else if key == BeatReview.attributeKey(), let review = value as? BeatReviewItem, !review.emptyReview {
+            self.yClient?.addSharedAttribute(key: key, value: review.uuid, range: range)
         }
     }
     
@@ -300,5 +359,15 @@ extension BeatDocumentBaseController {
 }
 
 @objc class BeatCollaborationUtils:NSObject {
-    @objc public static var supportedSharedAttributes: [NSAttributedString.Key] = [BeatRevisions.attributeKey()]
+    @objc public static var supportedSharedAttributes: [NSAttributedString.Key] = [
+        BeatRevisions.attributeKey(),
+        BeatReview.attributeKey()
+    ]
+}
+
+
+public class BeatSharedDocumentSettings:YObject {
+    @Property var pageSize:Int = 0
+    @WProperty var tags: YArray<String> = []
+    @WProperty var reviews: YArray<BeatSharedReview> = []
 }

@@ -654,7 +654,7 @@
     [self.textView.textStorage addAttribute:key value:value range:range];
 
     // TODO: YDocument compatibility
-    if (self.collaborating)[self addSharedAttribute:key value:value range:range];
+    if (self.collaborating) [self addSharedAttribute:key value:value range:range];
 }
 /// Adds attributes to the text storage
 - (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range
