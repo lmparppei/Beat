@@ -132,8 +132,8 @@ static NSString *centeredEnd = @" <";
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
-        [textView replaceCharactersInRange:range withString:string];
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
+        [textView.textStorage replaceCharactersInRange:range withAttributedString:string];
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif

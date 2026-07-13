@@ -937,7 +937,6 @@
 }
 
 @synthesize fontSize;
-@synthesize yClient;
 
 @end
 

@@ -105,7 +105,6 @@ THE SOFTWARE.
 
 @property (nonatomic, weak) IBOutlet CollaborationButton* _Nullable collaborationButton;
 
-
 #pragma mark - Applying settings
 
 - (void)readUserSettings;
