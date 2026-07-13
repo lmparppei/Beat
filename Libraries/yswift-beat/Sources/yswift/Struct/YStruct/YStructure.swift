@@ -5,7 +5,7 @@
 //  Created by yuki on 2023/03/15.
 //
 
-class YStructure {
+public class YStructure {
     let id: YIdentifier
     var length: Int
     

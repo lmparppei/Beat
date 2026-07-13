@@ -18,7 +18,7 @@ extension YItem {
 }
 
 /// Abstract class that represents any content.
-final class YItem: YStructure, JSHashable {
+final public class YItem: YStructure, JSHashable {
     
     // =========================================================================== //
     // MARK: - Properties -

@@ -665,7 +665,6 @@
     if (self.collaborating) {
         // TODO: YDocument compatibility
     }
-    
 }
 
 

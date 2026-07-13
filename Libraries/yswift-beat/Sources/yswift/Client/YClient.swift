@@ -104,13 +104,13 @@ public enum YClientRole {
         
         // Local update event
         doc.on(.init("update")) { [weak self] (args:(update: YUpdate, origin: Any?, txn: YTransaction)) in
-            guard let self, self.networkClient.ready else { return }
+            guard let self else { return }
             
             if let origin = args.origin as? String, origin == self.origin {
                 self.sendUpdate(args.update)
             }
         }
-                
+        
         // Network events
         self.networkClient.onUpdates = { [weak self] messages in
             Task {
@@ -126,11 +126,12 @@ public enum YClientRole {
             
             // Post a sync message to let the other participant(s) know we're here.
             if self.role != .owner {
+                print(self.clientName, ": sending sync step 1")
                 self.sendSync(step: .step1)
             }
             
             // Sync heartbeat (checks for missing updates that might clog up the system)
-            self.syncCheckTimer = createSyncCheckTimer()
+            self.createSyncCheckTimer()
             
             self.onJoinedRoom?(roomId)
         }
@@ -140,7 +141,7 @@ public enum YClientRole {
             self?.onRoomCreated?(roomID)
             
             // Sync heartbeat (checks for missing updates that might clog up the system)
-            self?.syncCheckTimer = self?.createSyncCheckTimer()
+            self?.createSyncCheckTimer()
         }
         
         self.networkClient.onPeerJoined = { [weak self] member, allMembers in
@@ -163,14 +164,17 @@ public enum YClientRole {
     }
     
     /// Creates a heartbeat for checking that the document is not missing any structs. If an update was lost on the way (due to network error or my silly programming bug), we'll send sync step 1 to get state vectors up to date.
-    func createSyncCheckTimer() -> Timer {
-        return Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true, block: { [weak self] _ in
-            guard let self else { return }
-            
-            if let pendingStructs = doc.store.pendingStructs, pendingStructs.missing.count > 0 {
-                self.sendSync(step: .step1)
-            }
-        })
+    func createSyncCheckTimer() {
+        Task { await MainActor.run {
+            self.syncCheckTimer?.invalidate()
+            self.syncCheckTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true, block: { [weak self] _ in
+                guard let self else { return }
+                
+                if let pendingStructs = doc.store.pendingStructs, pendingStructs.missing.count > 0 {
+                    self.sendSync(step: .step1)
+                }
+            })
+        } }
     }
     
     
@@ -352,6 +356,8 @@ public enum YClientRole {
                 } else if syncMessage.type == .awareness {
                     readAwareness(syncMessage.data)
                 }
+            } else {
+                print("Failed to decode")
             }
         }
     }
@@ -367,6 +373,7 @@ public enum YClientRole {
             
             if let messageType {
                 if messageType == .step1 {
+                    print("!!!", self.clientName, "received sync 1")
                     // Upon receiving step 1, we'll immediately send step 2
                     sendSync(step: .step2)
                 }
@@ -511,8 +518,7 @@ extension YClient {
     public func addSharedAttribute(key:NSAttributedString.Key, value:Any, range:NSRange) {
         if let value = value as? YTextAttributeValue {
             doc.transact(origin: self.origin) {
-                let text = doc.getText()
-                text.addAttribute(key.rawValue, value: value, range: range)
+                doc.getText().addAttribute(key.rawValue, value: value, range: range)
             }
         }
     }

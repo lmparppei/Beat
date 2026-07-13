@@ -101,13 +101,12 @@ extension BeatDocumentBaseController {
             // The host gives our source of truth
             text = parser.text()
         }
-                
+                        
         doc.transact(origin: client.origin) {
+            // Insert empty text (or the full text for hosting document)
             doc.getText().insert(0, text: text)
-
+            
             if !joining {
-                let settings = doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
-
                 // Bake revisions
                 // This is a little silly. We should maybe transmit the full JSON setting block here and let the receiving end apply everything they need from that.
                 let revisions = self.revisionTracking.revisedRanges()
@@ -121,8 +120,10 @@ extension BeatDocumentBaseController {
                         doc.getText().format(range.location, length: range.length, attributes: [BeatRevisions.attributeKey().rawValue: generation])
                     }
                 }
-                                
+
                 // Update other metadata
+                let settings = client.doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+                
                 let reviewsAndRanges = self.review?.getReviewsAndRanges() ?? [:]
                 for range in reviewsAndRanges.keys {
                     let review = reviewsAndRanges[range]
@@ -138,18 +139,14 @@ extension BeatDocumentBaseController {
         // Don't allow undoing the initial transaction
         client.undoManager.clear()
         
+        // Set up document setting listener
+        setupDocumentSettings()
+        
         // Set up basic observation listener
         doc.getText().observe { [weak self] event, txn in
             self?.sharedDocumentChanged(event: event)
         }
-        
-        // Set up document setting listener (two different ways of doing it)
-        setupDocumentSettings()
-        
-        doc.getObject(BeatSharedDocumentSettings.self, "documentSettings").observe { [weak self] event, txn in
-            self?.sharedDocumentSettingsChanged(event: event)
-        }
-        
+                        
         client.networkClient.onError = { [weak self] description, error in
             Swift.print("Server error: \(description)")
             
@@ -250,9 +247,8 @@ extension BeatDocumentBaseController {
                     selEnd = selEnd < delEnd ? pos : selEnd - delete
                 }
             }
-            
+                        
             // Handle attributes
-            
             let attrs = d.getAttributes()
             if attrs.count > 0 {
                 if let revision = attrs[BeatRevisions.attributeKey().rawValue] as? Int {
@@ -266,9 +262,22 @@ extension BeatDocumentBaseController {
                         self.textStorage().addAttribute(BeatRevisions.attributeKey(), value: revisionItem, range: editedRange)
                     }
                 }
+                
+                if let review = attrs[BeatReview.attributeKey().rawValue] as? String {
+                    let item = BeatReviewItem(reviewString: nil, uuid: review, user: nil)
+                    item.pendingForSharedValue = true
+                    self.textStorage().addAttribute(BeatReview.attributeKey(), value: item, range: editedRange)
+                }
+                
+                // Remove any nulled attributes
+                for key in attrs.keys {
+                    if attrs[key] == nil {
+                        self.textStorage().removeAttribute(NSAttributedString.Key(key), range: editedRange)
+                    }
+                }
             }
         }
-        
+                
         if !wasEditing { textStorage.endEditing() }
         self.applyingRemoteEdits = false
 
@@ -290,36 +299,120 @@ extension BeatDocumentBaseController {
     func setupDocumentSettings() {
         guard let client = self.yClient else { return }
         
-        let doc = client.doc
-        
-        let settings = doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+        client.doc.transact(origin: client.origin) {
+            let settings = client.doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+            settings.observeDeep { events, txn in
+                Swift.print(self.yClient?.clientName, "Document settings changed")
+                
+                self.sharedDocumentSettingsChanged(events: events)
+            }
+        }
+
+        /*
+        // Using an observer:
         settings.$reviews
             .sink { reviews in
-                // Check for any registered reviews
-                Swift.print(" ---> ", reviews)
+                // Check through the registered reviews
             }
             .store(in: &client.objectBag)
+         */
     }
     
     /// - warning: `keys` values are hard-coded and predefined for now.
-    public func updateDocumentSettings(key:String, value:Any) {
+    @objc public func updateSharedDocumentSettings(key:String, value:Any, op:BeatSharedDocumentSettingOperation) {
         guard let client = self.yClient else { return }
         
         client.doc.transact(origin: client.origin) {
             let settings = client.doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
             
-            if key == "reviews", let reviews = value as? [BeatSharedReview] {
-                settings.reviews.assign(reviews)
+            if key == BeatReview.attributeKey().rawValue {
+                if op == .insert, let v = value as? BeatSharedReview { settings.reviews.append(v) }
+                else if op == .delete, let v = value as? BeatSharedReview {
+                    if let i = settings.reviews.toArray().firstIndex(where: { review in
+                        review.uuid == v.uuid
+                    }), i != NSNotFound {
+                        _ = settings.reviews.remove(at: i)
+                    }
+                } else if op == .set, let v = value as? [BeatSharedReview] {
+                    settings.reviews.assign(v)
+                }
             }
         }
     }
     
-    public func sharedDocumentSettingsChanged(event: YEvent) {
-        Swift.print("Event:",event.changes())
-        //guard let doc = self.yClient?.doc, var bag = self.yClient?.objectBag else { return }
-    
+    public func sharedDocumentSettingsChanged(events: [YEvent]) {
+        var refresh = false
+        
+        for event in events {
+            let path = event.path
+            
+            // If there is a path, let's update only the things that were changed
+            if path.count > 0 {
+                if let key = path.first {
+                    switch key {
+                    case .key("reviews"):
+                        handleSharedReviewChange()
+                    case .key("tags"):
+                        Swift.print("Tag change")
+                    default:
+                        break
+                    }
+                }
+            } else {
+                // No path, this means the whole thing was uploaded. Refresh everything
+                refresh = true
+                break
+            }
+        }
+        
+        if refresh, yClient?.role != .owner {
+            self.readSharedDocumentSettings()
+        }
     }
     
+    public func sharedDocumentSettings() -> BeatSharedDocumentSettings? {
+        guard let client = self.yClient else { return nil }
+        
+        var settings:BeatSharedDocumentSettings?
+        
+        client.doc.transact(origin: client.origin) {
+            settings = yClient?.doc.getObject(BeatSharedDocumentSettings.self, "documentSettings")
+        }
+        
+        return settings
+    }
+    
+    /// Do this only when the first whole object of settings comes in. Add handlers for more shared data.
+    public func readSharedDocumentSettings() {
+        guard let settings = self.sharedDocumentSettings() else { return }
+        
+        Swift.print(self.yClient?.clientName, "READ SHARED ITEMS:", settings.reviews.toArray())
+        
+        self.review?.handleSharedReviewChange(sharedReviews: settings.reviews)
+    }
+        
+    func handleSharedReviewChange() {
+        guard let localReviews = self.review?.reviews,
+              let sharedReviews = sharedDocumentSettings()?.reviews
+        else { return }
+        
+        // Build a set of current shared UUIDs for quick lookup
+        let sharedUUIDs = Set(sharedReviews.map { $0.uuid })
+        let localUUIDs = Set(localReviews.keys)
+        
+        // In shared but not local, this review was added
+        for review in sharedReviews where !localUUIDs.contains(review.uuid) {
+            self.review?.peerAddedReview(review)
+        }
+        
+        // In local but not in shared, so a peer removed this review
+        for uuid in localUUIDs where !sharedUUIDs.contains(uuid) {
+            self.review?.peerRemovedReview(uuid: uuid)
+        }
+        
+        // Update all reviews
+        self.review?.sharedReviewsDidUpdate(reviews: sharedReviews.toArray())
+    }
     
     
     // MARK: - Selection update
@@ -370,4 +463,12 @@ public class BeatSharedDocumentSettings:YObject {
     @Property var pageSize:Int = 0
     @WProperty var tags: YArray<String> = []
     @WProperty var reviews: YArray<BeatSharedReview> = []
+    
+    public required init() {
+        super.init()
+        self.register(_reviews, for: "reviews")
+        self.register(_tags, for: "tags")
+        self.register(_pageSize, for: "pageSize")
+    }
 }
+

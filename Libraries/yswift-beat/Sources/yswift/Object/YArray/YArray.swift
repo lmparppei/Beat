@@ -155,7 +155,11 @@ extension YArray {
             for delta in event.changes().delta {
                 if let v = delta.retain { retain += v }
                 if let v = delta.delete { delete += v }
-                if let v = delta.insert { insert.append(contentsOf: v as! [Element]) }
+                //if let v = delta.insert { insert.append(contentsOf: v as! [Element]) }
+                if let v = delta.insert, let raw = v as? [Any?] {
+                    // This is a change for Beat. The old implementation (above) was safe only for primitives, as far as I'm aware.
+                    insert.append(contentsOf: raw.map { Element.fromOpaque($0) })
+                }
             }
             
             self.retain = retain

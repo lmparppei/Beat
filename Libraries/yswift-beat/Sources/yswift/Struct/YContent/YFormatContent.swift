@@ -46,12 +46,26 @@ extension YFormatContent {
     }
 
     static func decode(from decoder: YUpdateDecoder) throws -> YFormatContent {
-        // TODO: this as? may be wrong
         let key = try decoder.readKey()
-        let value = try decoder.readJSON()
-        if !(value is YTextAttributeValue?) {
-            assertionFailure("'\(value as Any)' (\(type(of: value))) is not YTextAttributeValue")
-        }
+        let raw = try decoder.readJSON()
+
+        let value: YTextAttributeValue? = {
+            switch raw {
+            case let v as Bool:         return v
+            case let v as Int:          return v
+            case let v as String:       return v
+            case let v as NSString:     return v as String
+            case let v as NSNumber:     return v
+            case let v as NSDictionary: return v
+            case let v as NSArray:      return v
+            case is NSNull:             return NSNull()
+            case nil:                   return nil
+            default:
+                assertionFailure("'\(raw as Any)' (\(type(of: raw as Any))) is not YTextAttributeValue")
+                return nil
+            }
+        }()
+
         return YFormatContent(key: key, value: value as? YTextAttributeValue)
     }
 }

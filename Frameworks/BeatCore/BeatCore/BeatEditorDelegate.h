@@ -46,6 +46,13 @@ typedef void (^BeatChangeListener)(NSRange);
 @class BeatPlugin;
 @class YClient;
 
+typedef NS_ENUM(NSInteger, BeatSharedDocumentSettingOperation) {
+    BeatSharedDocumentSettingOperationInsert = 0,
+    BeatSharedDocumentSettingOperationDelete,
+    BeatSharedDocumentSettingOperationSet
+};
+
+
 /**
  Protocol for editor views which need to be updated in some cases
 */
@@ -147,7 +154,9 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic) id client;
 /// CRDT client for collaboration
 @property (nonatomic) YClient* yClient;
+
 - (void)endCollaborationWithDocumentClosing:(BOOL)documentClosing;
+- (void)updateSharedDocumentSettingsWithKey:(NSString*)key value:(id)value op:(BeatSharedDocumentSettingOperation)op;
 
 
 #pragma mark - Revisions

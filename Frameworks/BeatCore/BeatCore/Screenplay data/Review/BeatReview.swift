@@ -123,11 +123,29 @@ public class BeatSharedReview:YCodable {
 	public var user:String = ""
 	public var uuid:String
 	
-	public init(string: String, uuid: String, user:String = "") {
+	public required init(string: String, uuid: String, user:String = "") {
 		self.string = string
 		self.user = user
 		self.uuid = uuid
 	}
+    
+    public func toOpaque() -> Any? {
+        return [
+            "string": string,
+            "user": user,
+            "uuid": uuid
+        ]
+    }
+    
+    public static func fromOpaque(_ opaque: Any?) -> Self {
+        let dict = opaque as? [String: Any] ?? [:]
+        
+        return Self(
+            string: dict["string"] as? String ?? "",
+            uuid: dict["uuid"] as? String ?? UUID().uuidString,
+            user: dict["user"] as? String ?? ""
+        )
+    }
 }
 
 
@@ -150,6 +168,8 @@ public class BeatSharedReview:YCodable {
     
     @objc var reviews:[String:BeatReviewItem] = [:]
 	
+    var pendingSharedReviewUUIDs:Set<String> = []
+    
 	@objc public class func reviewColor() -> UXColor {
 		return UXColor.init(red: 255.0 / 255.0, green: 229.0 / 255.0, blue: 117.0 / 255, alpha: 1.0)
 	}
@@ -223,13 +243,12 @@ public class BeatSharedReview:YCodable {
             
             // Fix consecutive attributes
             if (NSMaxRange(prevRange) + 1 == range.location && item.string == prevString as String) {
-                if var lastItem = ranges.lastObject as? [String:Any],
+                if let lastItem = ranges.lastObject as? [String:Any],
                     let rangeValues = lastItem["range"] as? [Int],
                     rangeValues.count > 1,
                     let string = lastItem["string"] as? String {
                     
                     let loc = rangeValues[0]
-                    let len = rangeValues[1]
                     newRange = NSMakeRange(loc, NSMaxRange(range) - loc)
                     
                     ranges.removeLastObject()
@@ -247,7 +266,7 @@ public class BeatSharedReview:YCodable {
             }
 
             if let newRange, let string = newItem["string"] as? String {
-                prevRange = range
+                prevRange = newRange
                 prevString = string as NSString
             }
         }
@@ -264,6 +283,10 @@ public class BeatSharedReview:YCodable {
             delegate?.addAttribute(BeatReview.attributeKey(), value: item, range: currentRange)
         }
         
+        if self.delegate?.collaborating ?? false {
+            item.user = (self.delegate?.client as? YClient)?.clientName ?? ""
+        }
+        
         // Store the reviews
         reviews[item.uuid] = item
         
@@ -273,6 +296,9 @@ public class BeatSharedReview:YCodable {
         // Commit to attributed text cache
         _ = delegate?.getAttributedText()
 		changeDone()
+        
+        // Update shared reviews if needed
+        addOrUpdateSharedReview(item)
     }
 	
     /// Deletes a review item from text view
@@ -302,6 +328,9 @@ public class BeatSharedReview:YCodable {
         // Delete from the stored list
         reviews.removeValue(forKey: item.uuid)
 
+        // Delete the shared item
+        self.removeSharedReview(item)
+        
         // Commit to attributed text cache
         _ = delegate.getAttributedText()
     }
@@ -471,45 +500,6 @@ public class BeatSharedReview:YCodable {
         
         return ranges
     }
-    
-    // MARK: - Collaboration
-    
-    public func updateSharedReviews() {
-        guard let client = delegate?.client as? YClient else { return }
-        
-        let sharedReviews: [BeatSharedReview] = self.reviews.values.map { $0.sharedReview() }
-        
-    }
-    
-    /// Update shared values from remote source
-    public func sharedReviewsDidUpdate(reviews:[BeatSharedReview]) {
-        var pendingReviews:[String] = []
-        
-        for review in reviews {
-            if let localReview = self.reviews[review.uuid] {
-                self.reviews[review.uuid]?.string = review.string
-                self.reviews[review.uuid]?.user = review.user
-            } else {
-                let newItem = BeatReviewItem(reviewString: review.string as NSString, uuid: review.uuid, user: review.user)
-                self.reviews[review.uuid] = newItem
-                
-                pendingReviews.append(review.uuid)
-            }
-        }
-        
-        if let textStorage = delegate?.textStorage() {
-            textStorage.enumerateAttribute(BeatReview.attributeKey(), in: textStorage.range) { value, range, stop in
-                guard let review = value as? BeatReviewItem, review.pendingForSharedValue else { return }
-                
-                if let existingValue = self.reviews[review.uuid] {
-                    review.string = existingValue.string
-                    review.user = existingValue.user
-                    review.pendingForSharedValue = false
-                }
-            }
-        }
-    }
-    
 }
 
 

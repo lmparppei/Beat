@@ -37,6 +37,28 @@ extension YEvent {
             self.delta = delta
         }
     }
-
 }
 
+
+public extension YEvent.Change {
+    /// Returns deleted / nulled formatting keys
+    public func deletedFormattingKeys() -> [String] {
+        var keys:[String] = []
+        
+        for delete in deleted {
+            if let deletedFormatting = delete.content as? YFormatContent {
+                keys.append(deletedFormatting.key)
+            }
+        }
+        
+        for add in added {
+            if let addedFormatting = add.content as? YFormatContent {
+                if addedFormatting.value == nil {
+                    keys.append(addedFormatting.key)
+                }
+            }
+        }
+        
+        return keys
+    }
+}

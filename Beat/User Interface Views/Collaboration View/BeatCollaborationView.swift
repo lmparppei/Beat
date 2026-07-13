@@ -165,7 +165,7 @@ class CollaborationButton:NSButton {
 
 	private func showTransient(_ message: String) {
 		transientPopover?.close()
-		guard !(popover?.isShown ?? false) else { return }
+		guard !(popover?.isShown ?? false), self.window != nil else { return }
 
 		let label = NSTextField(labelWithString: message)
 		label.font = .systemFont(ofSize: 12)
