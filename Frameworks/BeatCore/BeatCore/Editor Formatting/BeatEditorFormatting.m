@@ -95,7 +95,6 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     
     while (parser.changedIndices.count > 0) {
         NSInteger idx = parser.changedIndices.firstIndex;
-        NSLog(@" -> %@", lines[idx]);
         [parser.changedIndices removeIndex:idx];
         
         if (idx < lines.count) [self formatLine:lines[idx]];

@@ -241,6 +241,8 @@ static NSString *centeredEnd = @" <";
 
 - (void)moveScene:(OutlineScene*)scene from:(NSInteger)from to:(NSInteger)to
 {
+    [self.delegate.textStorage beginEditing];
+    
     OutlineScene* target = (to < _delegate.parser.outline.count) ? _delegate.parser.outline[to] : nil;
     OutlineScene* nextScene = (from < _delegate.parser.outline.count - 1) ? _delegate.parser.outline[from+1] : nil;
     
@@ -317,6 +319,8 @@ static NSString *centeredEnd = @" <";
     }
     
     [self replaceRange:NSMakeRange(targetPosition, 0) withAttributedString:attrStr];
+    
+    [self.delegate.textStorage endEditing];
 }
 
 - (void)moveScenesInRange:(NSRange)range to:(NSInteger)position
