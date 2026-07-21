@@ -438,7 +438,9 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
         
 		if (!alreadyEditing) [textStorage endEditing];
-        
+
+        // Typing attributes are also used to draw system inline predictions, so they should always contain the correct font
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
         [_delegate.getTextView setTypingAttributes:attributes];
         
         self.lineBeingFormatted = nil;
@@ -535,7 +537,10 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self setTextColorFor:line];
     
     if (!alreadyEditing) [textStorage endEditing];
-    if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
+    if (shouldSetTypingAttributes) {
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
+        [_delegate.getTextView setTypingAttributes:attributes];
+    }
     
     self.lineBeingFormatted = nil;
     _formatting = false;

@@ -718,7 +718,31 @@ double clamp(double d, double min, double max)
 
 -(NSString *)text { return self.string; }
 - (void)setText:(NSString *)text { self.string = text; }
-@synthesize typingAttributes;
+@synthesize typingAttributes = _typingAttributes;
+
+/// This property shadows the native `NSTextView` typing attributes, which are also used by the system to draw inline predictions (macOS 14+).
+/// If no font is set, predicted text will be drawn using the system font instead of editor font, so we'll make sure the attributes always contain one.
+- (NSDictionary<NSAttributedStringKey, id>*)typingAttributes
+{
+	NSDictionary* attributes = _typingAttributes;
+	if (attributes[NSFontAttributeName] != nil) return attributes;
+
+	NSMutableDictionary* attributesWithFont = (attributes != nil) ? attributes.mutableCopy : NSMutableDictionary.new;
+	attributesWithFont[NSFontAttributeName] = [self fontAtCaret];
+	return attributesWithFont;
+}
+
+/// Returns the font at current caret position, falling back to editor default.
+- (NSFont*)fontAtCaret
+{
+	NSTextStorage* textStorage = self.textStorage;
+	if (textStorage.length > 0) {
+		NSUInteger location = MIN(self.selectedRange.location, textStorage.length - 1);
+		NSFont* font = [textStorage attribute:NSFontAttributeName atIndex:location effectiveRange:nil];
+		if (font != nil) return font;
+	}
+	return _editorDelegate.fonts.regular;
+}
 
 
 #pragma mark - Caret
