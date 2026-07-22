@@ -766,3 +766,13 @@
 
 "versionMenu.newVersion" = "Añadir nueva alternativa para esta línea";
 "versionMenu.noVersions" = "Sin versiones alternativas";
+
+"versionControl.commit" = "Confirmar";
+"versionControl.commitMessage" = "Mensaje de confirmación (opcional)";
+"versionControl.addCommit" = "Añadir confirmación";
+"versionControl.skip" = "Omitir";
+"versionControl.commitChanges" = "Confirmar cambios";
+"versionControl.restoreVersion" = "Restaurar versión";
+"versionControl.confirmRevertMessage" = "¿Estás seguro de que quieres revertir el documento al estado del %TIMESTAMP%? Esta acción no se puede deshacer y se eliminarán todas las confirmaciones posteriores.";
+"versionControl.confirmResetTitle" = "¿Estás seguro de que quieres restablecer el control de versiones?";
+"versionControl.confirmResetMessage" = "Esto eliminará todas tus confirmaciones hasta este punto. Esta acción no se puede deshacer.";

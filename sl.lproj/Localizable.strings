@@ -301,3 +301,13 @@
 
 "versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
 "versionMenu.noVersions" = "Ni alternativnih verzij";
+
+"versionControl.commit" = "Uveljavi";
+"versionControl.commitMessage" = "Sporočilo uveljavitve (neobvezno)";
+"versionControl.addCommit" = "Dodaj uveljavitev";
+"versionControl.skip" = "Preskoči";
+"versionControl.commitChanges" = "Uveljavi spremembe";
+"versionControl.restoreVersion" = "Obnovi različico";
+"versionControl.confirmRevertMessage" = "Ali ste prepričani, da želite dokument povrniti v stanje iz %TIMESTAMP%? Tega dejanja ni mogoče razveljaviti in vse novejše uveljavitve bodo odstranjene.";
+"versionControl.confirmResetTitle" = "Ali ste prepričani, da želite ponastaviti nadzor različic?";
+"versionControl.confirmResetMessage" = "S tem boste izbrisali vse svoje uveljavitve do te točke. Tega dejanja ni mogoče razveljaviti.";

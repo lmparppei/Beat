@@ -785,3 +785,13 @@
 
 "versionMenu.newVersion" = "Ajouter une nouvelle alternative pour cette ligne";
 "versionMenu.noVersions" = "Aucune version alternative";
+
+"versionControl.commit" = "Valider";
+"versionControl.commitMessage" = "Message de validation (facultatif)";
+"versionControl.addCommit" = "Ajouter une validation";
+"versionControl.skip" = "Ignorer";
+"versionControl.commitChanges" = "Valider les modifications";
+"versionControl.restoreVersion" = "Restaurer la version";
+"versionControl.confirmRevertMessage" = "Voulez-vous vraiment restaurer le document à l'état du %TIMESTAMP% ? Cette action est irréversible et toutes les validations plus récentes seront supprimées.";
+"versionControl.confirmResetTitle" = "Voulez-vous vraiment réinitialiser le contrôle de version ?";
+"versionControl.confirmResetMessage" = "Cela supprimera toutes vos validations jusqu'à ce point. Cette action est irréversible.";

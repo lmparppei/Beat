@@ -305,6 +305,16 @@
 "versionControl.addExternalFile" = "Avaa tiedosto...";
 "versionControl.noVersionControl" = "Ei versionhallintaa";
 
+"versionControl.commit" = "Versioi";
+"versionControl.commitMessage" = "Version viesti (valinnainen)";
+"versionControl.addCommit" = "Lisää versio";
+"versionControl.skip" = "Ohita";
+"versionControl.commitChanges" = "Lisää muutokset";
+"versionControl.restoreVersion" = "Palauta versio";
+"versionControl.confirmRevertMessage" = "Haluatko varmasti palauttaa asiakirjan tilaan %TIMESTAMP%? Tätä ei voi kumota, ja kaikki tämän jälkeen tehdyt versioinnit poistetaan.";
+"versionControl.confirmResetTitle" = "Haluatko varmasti nollata versionhallinnan?";
+"versionControl.confirmResetMessage" = "Tämä poistaa kaikki versiosi tähän pisteeseen asti. Tätä toimintoa ei voi kumota.";
+
 "versionControl.reset.confirm" = "Haluatko varmasti nollata versionhallinnan?";
 "versionControl.reset.info" = "Tämä poistaa kaikki muutokset tähän pisteeseen asti. Tätä toimintoa ei voi kumota.";
 
@@ -312,3 +322,4 @@
 
 "versionMenu.newVersion" = "Lisää vaihtoehtoinen versio rivistä";
 "versionMenu.noVersions" = "Ei vaihtoehtoisia versioita";
+

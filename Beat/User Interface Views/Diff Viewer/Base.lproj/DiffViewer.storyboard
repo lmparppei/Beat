@@ -323,7 +323,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="upM-2y-2oG">
-                                <rect key="frame" x="18" y="89" width="290" height="14"/>
+                                <rect key="frame" x="18" y="89" width="289" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" alignment="left" title="Generation" id="DTn-LQ-J1F">
                                     <font key="font" metaFont="smallSystem"/>
@@ -332,7 +332,7 @@
                                 </textFieldCell>
                             </textField>
                             <button id="19l-WH-gcJ">
-                                <rect key="frame" x="159" y="16" width="146" height="37"/>
+                                <rect key="frame" x="158" y="16" width="147" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="bevel" title="Generate" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="26G-OC-IDB">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>

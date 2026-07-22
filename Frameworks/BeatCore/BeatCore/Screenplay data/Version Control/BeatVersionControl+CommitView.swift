@@ -40,7 +40,7 @@ extension BeatVersionControl {
         if let window = delegate.documentWindow {
             let modalWindow = NSWindow(contentViewController: modalVC)
             modalWindow.styleMask = [.titled, .closable]
-            modalWindow.title = "Commit Changes"
+            modalWindow.title = BeatLocalization.localizedString(forKey: "versionControl.commitChanges")
             
             modalVC.closeAction = {
                 window.endSheet(modalWindow)
@@ -70,7 +70,7 @@ class CommitMessagePopover: NSViewController {
     
     private lazy var messageField: NSTextField = {
         let field = NSTextField(frame: NSRect(x: 5, y: 35, width: 210, height: 48))
-        field.placeholderString = "Commit message (Optional)"
+        field.placeholderString = BeatLocalization.localizedString(forKey: "versionControl.commitMessage")
         field.action = #selector(commitClicked)
         field.formatter = CommitFieldFormatter(maxLength: 140)
         field.focusRingType = .none
@@ -79,7 +79,7 @@ class CommitMessagePopover: NSViewController {
     
     private lazy var commitButton: NSButton = {
         let button = NSButton(frame: NSRect(x: 2, y: 5, width: 100, height: 24))
-        button.title = "Add Commit"
+        button.title = BeatLocalization.localizedString(forKey: "versionControl.addCommit")
         button.bezelStyle = .rounded
         button.setButtonType(.momentaryPushIn)
         button.target = self
@@ -91,7 +91,7 @@ class CommitMessagePopover: NSViewController {
     
     private lazy var skipButton: NSButton = {
         let button = NSButton(frame: NSRect(x: 2, y: 5, width: 100, height: 24))
-        button.title = "Skip"
+        button.title = BeatLocalization.localizedString(forKey: "versionControl.skip")
         button.bezelStyle = .rounded
         button.setButtonType(.momentaryPushIn)
         button.target = self
