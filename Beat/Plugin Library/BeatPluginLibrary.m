@@ -113,13 +113,16 @@
 	[self.webview loadHTMLString:page baseURL:self.pluginManager.pluginFolderURL];
 }
 
-- (NSString*)pluginJSON:(NSString*)pluginName {
+- (NSString*)pluginJSON:(NSString*)pluginName
+{
 	BeatPluginInfo *plugin = _pluginManager.availablePlugins[pluginName];
 	NSData * data = [NSJSONSerialization dataWithJSONObject:plugin.json options:NSJSONWritingPrettyPrinted error:nil];
 	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	return jsonString;
 }
-- (void)displayPluginPage:(NSString*)pluginName {
+
+- (void)displayPluginPage:(NSString*)pluginName
+{
 	NSString *jsonString = [self pluginJSON:pluginName];
 	[_webview evaluateJavaScript:[NSString stringWithFormat:@"loadData(%@)", jsonString] completionHandler:nil];
 }

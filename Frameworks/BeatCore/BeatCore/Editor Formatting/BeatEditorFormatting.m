@@ -91,7 +91,6 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 {
     ContinuousFountainParser* parser = self.delegate.parser;
     NSArray* lines = parser.lines;
-    NSLog(@"Applying format changes");
     
     while (parser.changedIndices.count > 0) {
         NSInteger idx = parser.changedIndices.firstIndex;
@@ -438,7 +437,9 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
         
 		if (!alreadyEditing) [textStorage endEditing];
-        
+
+        // Typing attributes are also used to draw system inline predictions, so they should always contain the correct font
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
         [_delegate.getTextView setTypingAttributes:attributes];
         
         self.lineBeingFormatted = nil;
@@ -535,7 +536,10 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self setTextColorFor:line];
     
     if (!alreadyEditing) [textStorage endEditing];
-    if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
+    if (shouldSetTypingAttributes) {
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
+        [_delegate.getTextView setTypingAttributes:attributes];
+    }
     
     self.lineBeingFormatted = nil;
     _formatting = false;

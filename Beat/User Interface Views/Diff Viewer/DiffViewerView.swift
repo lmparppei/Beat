@@ -172,8 +172,8 @@ class DiffViewerViewController: NSViewController {
 	
 	@IBAction func resetVersionControl(_ sender:Any?) {
 		let alert = NSAlert()
-		alert.messageText = "Are you sure you want to reset version control?"
-		alert.informativeText = "This will delete all your commits until this point. This action cannot be undone."
+		alert.messageText = BeatLocalization.localizedString(forKey: "versionControl.confirmResetTitle")
+		alert.informativeText = BeatLocalization.localizedString(forKey: "versionControl.confirmResetMessage")
 		
 		alert.addButton(withTitle: BeatLocalization.localizedString(forKey: "general.cancel"))
 		alert.addButton(withTitle: BeatLocalization.localizedString(forKey: "general.ok"))
@@ -211,8 +211,9 @@ class DiffViewerViewController: NSViewController {
 		let timestamp = formatTimestamp(revertedVersion.timestamp)
 		
 		let alert = NSAlert()
-		alert.messageText = "Restore Version"
-		alert.informativeText = "Are you sure you want to revert the document to the state from \(timestamp)? This can't be undone and any newer commits will be removed."
+		alert.messageText = BeatLocalization.localizedString(forKey: "versionControl.restoreVersion")
+//		alert.informativeText = "Are you sure you want to revert the document to the state from \(timestamp)? This can't be undone and any newer commits will be removed."
+		alert.informativeText = BeatLocalization.localizedString(forKey: "versionControl.confirmRevertMessagetMessage").replacingOccurrences(of: "%TIMESTAMP%", with: timestamp)
 		alert.addButton(withTitle: NSLocalizedString("general.ok", comment: "OK"))
 		alert.addButton(withTitle: NSLocalizedString("general.cancel", comment: "Cancel"))
 		

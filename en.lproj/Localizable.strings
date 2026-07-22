@@ -365,3 +365,12 @@
 "cardView.addAct.placeholder" = "Act name";
 "cardView.deleteScene" = "Delete Scene";
 "cardView.deleteAct" = "Delete Act (Keep Scenes)";
+"versionControl.commit" = "Commit";
+"versionControl.commitMessage" = "Commit message (Optional)";
+"versionControl.addCommit" = "Add Commit";
+"versionControl.skip" = "Skip";
+"versionControl.commitChanges" = "Commit Changes";
+"versionControl.restoreVersion" = "Restore Version";
+"versionControl.confirmRevertMessage" = "Are you sure you want to revert the document to the state from %TIMESTAMP%? This can't be undone and any newer commits will be removed.";
+"versionControl.confirmResetTitle" = "Are you sure you want to reset version control?";
+"versionControl.confirmResetMessage" = "This will delete all your commits until this point. This action cannot be undone.";
