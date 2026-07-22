@@ -23,6 +23,15 @@ let selectedRange = { location: 0, length: 0 }
 // Updated when refreshing. Refers to which units we are using: page or word lengths
 let significantUnits = Beat.editorStyles().document.significantUnits
 
+// Kanban mode displays cards in columns, split by top-level sections
+let kanbanMode = Beat.getUserDefault("cardsKanbanMode") == true
+
+// Collapsed kanban columns are stored in the document settings, keyed by section line UUID
+let collapsedColumns = new Set(Beat.getDocumentSetting("collapsedColumns") ?? [])
+
+// Compact mode collapses every card to its title for a quick overview
+let compactMode = Beat.getUserDefault("cardsCompactMode") == true
+
 if (Beat.container != undefined) mode = modes.container;
 else if (Beat.iOS()) mode = modes.ios;
 else mode = modes.window;
@@ -144,9 +153,10 @@ Beat.custom = {
 			}
 		}
 		
-		// Make sure there's a line break
-		if (position > 1) {
-			let lineBeforeTarget = Beat.lineAtPosition(position-1)
+		// Make sure there's a line break BEFORE THE TARGET position — otherwise the moved
+		// scene heading can get merged into the preceding line (e.g. a section heading)
+		if (targetPosition > 1) {
+			let lineBeforeTarget = Beat.lineAtPosition(targetPosition-1)
 			if (lineBeforeTarget.length > 0) stringToMove = "\n\n" + stringToMove
 		}
 		// Make sure the string has a line break at end
@@ -174,6 +184,61 @@ Beat.custom = {
 	
 	returnToEditor: () => {
 		window.closePanel()
+	},
+
+	setKanbanMode: (value) => {
+		kanbanMode = (value == true)
+		Beat.setUserDefault("cardsKanbanMode", kanbanMode)
+		refreshHTML()
+	},
+
+	setColumnCollapsed: (uuid, collapsed) => {
+		if (collapsed == true) collapsedColumns.add(uuid)
+		else collapsedColumns.delete(uuid)
+
+		Beat.setDocumentSetting("collapsedColumns", Array.from(collapsedColumns))
+	},
+
+	setCompactMode: (value) => {
+		compactMode = (value == true)
+		Beat.setUserDefault("cardsCompactMode", compactMode)
+	},
+
+	/// Removes a full scene from the document
+	deleteScene: (uuid) => {
+		const outline = [...Beat.outline()]
+
+		for (const scene of outline) {
+			if (scene.line.uuidString() == uuid && scene.type == Beat.type.heading) {
+				Beat.replaceRange(scene.position, scene.length, "")
+				return
+			}
+		}
+	},
+
+	/// Removes a section heading line. The scenes are kept and will flow into the previous section.
+	deleteAct: (uuid) => {
+		let line = Beat.currentParser.lineWithUUID(uuid)
+		if (line == null || line.type != Beat.type.section) return;
+
+		let length = line.length
+		// Also remove the trailing line break
+		if (line.position + length < Beat.getText().length) length += 1
+
+		Beat.replaceRange(line.position, length, "")
+	},
+
+	/// Asks for a name and adds a new top-level section at the end of the document
+	promptNewAct: () => {
+		const title = Beat.localize("#cardView.addAct#")
+		const placeholder = Beat.localize("#cardView.addAct.placeholder#")
+
+		// On macOS the prompt runs synchronously and returns the value — the callback is iOS-only
+		if (Beat.iOS()) {
+			Beat.prompt(title, "", placeholder, "", (name) => { addActToDocument(name) })
+		} else {
+			addActToDocument(Beat.prompt(title, "", placeholder, "", null))
+		}
 	},
 	
 	printCards: () => {
@@ -304,6 +369,29 @@ Beat.custom = {
 }
 
 
+/// Adds a new top-level section at the end of the document
+function addActToDocument(name) {
+	// null means the prompt was cancelled. An empty string is a deliberate unnamed act, which is valid.
+	if (name == null) return;
+
+	// The board always shows an implicit first column for the content that comes before any
+	// section. When no real section exists yet, adding an act means the user is adding a *second*
+	// one, so we first materialize that first act with an unnamed break at the very top — otherwise
+	// the new act would silently become the one and only act.
+	const hasSection = Beat.outline().some(scene => scene.type == Beat.type.section)
+	if (!hasSection) Beat.addString("# \n\n", 0)
+
+	const text = Beat.getText()
+	let prefix = ""
+	if (text.length > 0) {
+		if (!text.endsWith("\n")) prefix = "\n\n";
+		else if (!text.endsWith("\n\n")) prefix = "\n";
+	}
+
+	Beat.addString(prefix + "# " + name + "\n\n", text.length)
+}
+
+
 // ###################################
 // Initialization
 // ###################################
@@ -332,7 +420,7 @@ if (Beat.iOS()) {
 let current = (Beat.currentScene != null) ? Beat.currentScene.line.uuidString() : null
 
 // Create UI
-ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current)
+ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current).replaceAll("{{kanban}}", (kanbanMode ? 'true' : 'false')).replaceAll("{{compact}}", (compactMode ? 'true' : 'false'))
 
 let fullHTML = [ui, js]
 
@@ -434,6 +522,9 @@ function createOutline(...outline) {
 		json.push(scene)
     }
 
+    // The kanban view uses a different HTML structure
+    if (kanbanMode) return createKanbanOutline();
+
     // Create HTML based on the JSON data
     let html = "<div class='dragContainer'>"
 
@@ -449,8 +540,59 @@ function createOutline(...outline) {
     }
 
     html += "</div>"
-	
+
     return html
+}
+
+// Creates the HTML for kanban view: one column per top-level section, deeper sections become in-column separators
+function createKanbanOutline() {
+	// Columns are split at the topmost section depth actually used in the document
+	let columnDepth = Infinity
+	for (const scene of json) {
+		if (scene.typeAsString == "section" && scene.sectionDepth < columnDepth) columnDepth = scene.sectionDepth
+	}
+
+	let columns = [{ header: "", uuid: "", title: "", cards: "", count: 0 }]
+
+	for (const scene of json) {
+		let card = updateCard(scene)
+
+		if (scene.typeAsString == "section" && scene.sectionDepth == columnDepth) {
+			columns.push({ header: card.html, uuid: scene.line.uuid, title: scene.stringForDisplay, cards: "", count: 0 })
+		} else {
+			columns[columns.length - 1].cards += card.html
+			if (scene.typeAsString == "heading") columns[columns.length - 1].count++
+		}
+	}
+
+	// Drop the first column if there's nothing before the first section
+	if (columns[0].cards.length == 0 && columns.length > 1) columns.shift();
+
+	let html = "<div class='kanbanBoard'>"
+
+	for (let i=0; i < columns.length; i++) {
+		const column = columns[i]
+		// Cards dropped at the end of a column are moved before the section which starts the next column
+		const nextUuid = (i + 1 < columns.length) ? columns[i + 1].uuid : ""
+
+		// Columns are identified by their section uuid for collapsing (persisted in document settings)
+		const key = (column.uuid.length > 0) ? column.uuid : "unsorted"
+		const collapsed = (collapsedColumns.has(key)) ? " collapsed" : ""
+
+		html += "<div class='kanbanColumn" + collapsed + "' sectionUuid='" + key + "'>" +
+				"<div class='collapseButton' onclick='toggleColumn(event, \"" + key + "\")'></div>" +
+				"<div class='collapsedTitle' onclick='toggleColumn(event, \"" + key + "\")'>" + (column.title ?? "") +
+				" <span class='collapsedCount'>" + column.count + "</span></div>" +
+				column.header +
+				"<div class='dragContainer' nextUuid='" + nextUuid + "'>" + column.cards + "</div>" +
+				"<div class='addCardButton' onclick='addCardToColumn(event, \"" + key + "\")'>+ " + Beat.localize("#cardView.addScene#") + "</div>" +
+				"</div>"
+	}
+
+	html += "<div class='addActButton' onclick='addAct(event)'>+ " + Beat.localize("#cardView.addAct#") + "</div>"
+	html += "</div>"
+
+	return html
 }
 
 

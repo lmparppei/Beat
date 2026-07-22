@@ -786,6 +786,14 @@
 "versionMenu.newVersion" = "Ajouter une nouvelle alternative pour cette ligne";
 "versionMenu.noVersions" = "Aucune version alternative";
 
+"cardView.grid" = "Grille";
+"cardView.kanban" = "Colonnes";
+"cardView.compact" = "Titres seulement";
+"cardView.addScene" = "Ajouter une scène";
+"cardView.addAct" = "Ajouter un acte";
+"cardView.addAct.placeholder" = "Nom de l'acte";
+"cardView.deleteScene" = "Supprimer la scène";
+"cardView.deleteAct" = "Supprimer l'acte (garder les scènes)";
 "versionControl.commit" = "Valider";
 "versionControl.commitMessage" = "Message de validation (facultatif)";
 "versionControl.addCommit" = "Ajouter une validation";

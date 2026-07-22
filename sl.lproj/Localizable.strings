@@ -302,6 +302,14 @@
 "versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
 "versionMenu.noVersions" = "Ni alternativnih verzij";
 
+"cardView.grid" = "Mreža";
+"cardView.kanban" = "Stolpci";
+"cardView.compact" = "Samo naslovi";
+"cardView.addScene" = "Dodaj prizor";
+"cardView.addAct" = "Dodaj dejanje";
+"cardView.addAct.placeholder" = "Ime dejanja";
+"cardView.deleteScene" = "Izbriši prizor";
+"cardView.deleteAct" = "Izbriši dejanje (ohrani prizore)";
 "versionControl.commit" = "Uveljavi";
 "versionControl.commitMessage" = "Sporočilo uveljavitve (neobvezno)";
 "versionControl.addCommit" = "Dodaj uveljavitev";

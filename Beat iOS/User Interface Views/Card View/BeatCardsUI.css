@@ -127,6 +127,11 @@ body {
 	visibility: visible;
 }
 
+/* An empty count would still render as a dark pill */
+span.wordCount:empty {
+	display: none;
+}
+
 span.wordCount {
 	display: inline-block;
 	font-size: .35em;
@@ -401,11 +406,29 @@ ul {
 	
 	color: white;
 	background: var(--blue);
-	
+
 	z-index: 9999;
 }
 
-li.red { color: var(--red) !important; } 
+/* Cards stack vertically in kanban, so the add-scene bar runs along the bottom edge
+   (a horizontal strip) instead of down the right edge as it does in the grid. */
+body.kanban .addScene {
+	top: auto;
+	left: 2px;
+	right: 2px;
+	/* Centered in the card's .8rem bottom padding — which is exactly the gap before the next
+	   card. It's the card's own fixed padding, not a measured gap, so the last card (no card
+	   after it) centers identically. */
+	bottom: calc((0.8rem - 5px) / 2);
+	width: auto;
+	height: 5px;
+}
+body.kanban .addScene::after {
+	top: calc(50% - 10px);
+	left: calc(50% - 10px);
+}
+
+li.red { color: var(--red) !important; }
 li.blue { color: var(--blue) !important; }
 li.green { color: var(--green) !important; } 
 li.pink { color: var(--pink) !important; }
@@ -462,6 +485,10 @@ li.note { color: black !important; }
 .menuItem:hover {
 	background-color: #e5e5e5 !important;
 }
+.menuItem.destructive {
+	color: #c62828;
+	border-top: 1px solid #d5d5d5;
+}
 .color {
 	margin-right: 10px;
 	width: 15px; height: 15px;
@@ -470,6 +497,248 @@ li.note { color: black !important; }
 
 .sortable-ghost {
 	opacity: 0.5;
+}
+
+
+/* KANBAN VIEW ############################################ */
+
+body.kanban {
+	height: 100vh;
+	overflow: hidden;
+}
+body.kanban #container {
+	height: calc(100vh - 2.5rem);
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.kanbanBoard {
+	display: flex;
+	align-items: stretch;
+	gap: .8rem;
+	height: 100%;
+}
+
+.kanbanColumn {
+	flex: 0 0 320px;
+	display: flex;
+	flex-direction: column;
+	max-height: 100%;
+	position: relative;
+
+	padding: .6rem;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, .06);
+}
+
+/* Collapse / expand */
+
+.collapseButton {
+	position: absolute;
+	top: .5rem; right: .4rem;
+	width: 1.7em; height: 1.7em;
+	z-index: 5;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	border-radius: 50%;
+	color: #999;
+	cursor: pointer;
+}
+.collapseButton:hover {
+	background: rgba(255, 255, 255, .12);
+	color: white;
+}
+.collapseButton::before {
+	content: '❮';
+	font-size: .8em;
+}
+.kanbanColumn.collapsed .collapseButton::before {
+	content: '❯';
+}
+
+.collapsedTitle {
+	display: none;
+}
+
+.kanbanColumn.collapsed {
+	flex: 0 0 2.6rem !important;
+	cursor: pointer;
+}
+.kanbanColumn.collapsed > .section,
+.kanbanColumn.collapsed > .dragContainer {
+	display: none;
+}
+.kanbanColumn.collapsed > .collapsedTitle {
+	display: flex;
+	align-items: center;
+	gap: .7em;
+
+	writing-mode: vertical-rl;
+	padding: 2.4rem .1rem 0 .1rem;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 1.15em;
+	color: #eee;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.collapsedCount {
+	background: rgba(255, 255, 255, .15);
+	border-radius: 1em;
+	padding: .5em .12em;
+	font-size: .7em;
+	color: #ccc;
+}
+
+/* Keep the column header clear of the collapse button */
+.kanbanColumn > .section h2 {
+	padding-right: 1.6em;
+}
+
+/* Add buttons */
+
+.addCardButton {
+	margin-top: .4rem;
+	padding: .45em;
+
+	border: 1px dashed rgba(255, 255, 255, .25);
+	border-radius: 6px;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	font-size: .85em;
+	text-align: center;
+	color: #999;
+	cursor: pointer;
+
+	-webkit-user-select: none;
+	user-select: none;
+}
+.addCardButton:hover {
+	background: rgba(255, 255, 255, .08);
+	color: #eee;
+}
+.kanbanColumn.collapsed > .addCardButton {
+	display: none;
+}
+
+.addActButton {
+	flex: 0 0 10rem;
+	align-self: flex-start;
+	padding: .8em;
+
+	border: 1px dashed rgba(255, 255, 255, .25);
+	border-radius: 8px;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	text-align: center;
+	color: #999;
+	cursor: pointer;
+
+	-webkit-user-select: none;
+	user-select: none;
+}
+.addActButton:hover {
+	background: rgba(255, 255, 255, .08);
+	color: #eee;
+}
+
+
+/* COMPACT MODE (titles only) ############################# */
+
+body.compact .card {
+	aspect-ratio: auto;
+	-webkit-aspect-ratio: auto;
+}
+/* In grid mode, match the right inset of the absolutely positioned card content (.8em, not the .8rem card padding) */
+body.compact:not(.kanban) .card {
+	padding-right: 0;
+}
+body.compact:not(.kanban) .card-content {
+	width: calc(100% - .8em);
+}
+body.compact .card-content,
+body.kanban.compact .card-content {
+	position: relative;
+	left: auto; right: auto; top: auto; bottom: auto;
+	width: 100%;
+	height: auto;
+	/* Beats the kanban min-height, which would otherwise leave a sliver of card background visible below the heading */
+	min-height: 0;
+	/* The heading is the only visible element, so the card background can't bleed out at fractional zoom sizes */
+	background: transparent !important;
+}
+body.compact .card .card-container,
+body.compact .card .footer,
+body.compact .card .editButton {
+	display: none;
+}
+body.compact .card .heading {
+	border-radius: 5px;
+	border-bottom: none;
+}
+/* Grid mode needs tighter spacing when compact */
+body.compact #cardContainer .card,
+body.compact .dragContainer .card {
+	padding-bottom: .5rem;
+}
+body.kanban.zoomLevel-0 .kanbanColumn { flex-basis: 250px; }
+body.kanban.zoomLevel-2 .kanbanColumn { flex-basis: 400px; }
+
+/* Column headers (top-level sections) */
+.kanbanColumn > .section {
+	width: auto;
+	padding: .1em .2em .5em .2em;
+	/* Always reserve a header band tall enough to clear the collapse button, so an unnamed
+	   act (empty title) doesn't let the first card slide up underneath the button. */
+	min-height: 2em;
+}
+.kanbanColumn > .section h2 {
+	font-size: 1.3em !important;
+}
+
+/* Cards stack vertically and each column scrolls on its own.
+   The minimum height keeps empty columns droppable. */
+.kanbanColumn .dragContainer {
+	flex: 1;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	overflow-y: auto;
+	min-height: 4rem;
+}
+
+/* In kanban mode cards take the height of their actual content instead of a fixed aspect ratio:
+   the content is laid out in normal flow rather than absolutely positioned. */
+body.kanban .card {
+	width: 100% !important;
+	aspect-ratio: auto;
+	-webkit-aspect-ratio: auto;
+	padding: 0 0 .8rem 0;
+}
+body.kanban .card-content {
+	position: relative;
+	left: auto; right: auto; top: auto; bottom: auto;
+	width: 100%;
+	height: auto;
+	min-height: 2.2em;
+}
+/* Long contents are clipped and scroll inside the card */
+body.kanban .card .card-container {
+	max-height: 11em;
+}
+body.kanban .card .editButton {
+	bottom: 2em;
+}
+
+/* Deeper sections act as separators inside a column */
+.kanbanColumn .dragContainer .section {
+	padding: .4em .2em .2em .2em !important;
+}
+.kanbanColumn .dragContainer .section h2 {
+	font-size: 1.1em !important;
 }
 
 
@@ -543,6 +812,62 @@ li.note { color: black !important; }
 }
 #zoom button:hover {
 	background-color: #333;
+}
+
+#viewMode {
+	margin-left: 1rem;
+	display: flex;
+	align-items: center;
+	/* Space separating the layout group from the density toggle */
+	gap: .6rem;
+}
+
+/* Layout — segmented control: buttons sit together, exactly one is active */
+#viewMode .segmented {
+	display: flex;
+	background-color: #111;
+	border-radius: .4em;
+	padding: 2px;
+}
+#viewMode .segmented button {
+	border: none;
+	background-color: transparent;
+	color: #999;
+	width: 2em;
+	height: 1.7em;
+	border-radius: .28em;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#viewMode .segmented button:hover {
+	color: #ddd;
+}
+#viewMode .segmented button.selectedMode {
+	background-color: #555;
+	color: white;
+}
+
+/* Density — standalone toggle: uses the accent color when on, to read as on/off rather than a selection */
+#viewMode .toggleButton {
+	border: none;
+	background-color: #111;
+	color: #999;
+	width: 2em;
+	height: 2em;
+	border-radius: .4em;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#viewMode .toggleButton:hover {
+	color: #ddd;
+}
+#viewMode .toggleButton.selectedMode {
+	background-color: #0085ca;
+	color: white;
 }
 
 #print {

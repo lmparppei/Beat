@@ -323,3 +323,11 @@
 "versionMenu.newVersion" = "Lisää vaihtoehtoinen versio rivistä";
 "versionMenu.noVersions" = "Ei vaihtoehtoisia versioita";
 
+"cardView.grid" = "Ruudukko";
+"cardView.kanban" = "Sarakkeet";
+"cardView.compact" = "Vain otsikot";
+"cardView.addScene" = "Lisää kohtaus";
+"cardView.addAct" = "Lisää näytös";
+"cardView.addAct.placeholder" = "Näytöksen nimi";
+"cardView.deleteScene" = "Poista kohtaus";
+"cardView.deleteAct" = "Poista näytös (säilytä kohtaukset)";
