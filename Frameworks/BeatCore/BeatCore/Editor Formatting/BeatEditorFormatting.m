@@ -91,7 +91,6 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 {
     ContinuousFountainParser* parser = self.delegate.parser;
     NSArray* lines = parser.lines;
-    NSLog(@"Applying format changes");
     
     while (parser.changedIndices.count > 0) {
         NSInteger idx = parser.changedIndices.firstIndex;
