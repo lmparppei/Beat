@@ -493,3 +493,12 @@
 
 "versionMenu.newVersion" = "Lägg till nytt alternativ för den här raden";
 "versionMenu.noVersions" = "Inga alternativa versioner";
+
+"cardView.grid" = "Rutnät";
+"cardView.kanban" = "Kolumner";
+"cardView.compact" = "Endast titlar";
+"cardView.addScene" = "Lägg till scen";
+"cardView.addAct" = "Lägg till akt";
+"cardView.addAct.placeholder" = "Aktens namn";
+"cardView.deleteScene" = "Ta bort scen";
+"cardView.deleteAct" = "Ta bort akt (behåll scener)";

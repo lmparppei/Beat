@@ -356,3 +356,12 @@
 
 "versionMenu.newVersion" = "Add New Alternative for This Line";
 "versionMenu.noVersions" = "No Alternative Versions";
+
+"cardView.grid" = "Grid";
+"cardView.kanban" = "Columns";
+"cardView.compact" = "Titles Only";
+"cardView.addScene" = "Add Scene";
+"cardView.addAct" = "Add Act";
+"cardView.addAct.placeholder" = "Act name";
+"cardView.deleteScene" = "Delete Scene";
+"cardView.deleteAct" = "Delete Act (Keep Scenes)";

@@ -766,3 +766,12 @@
 
 "versionMenu.newVersion" = "Añadir nueva alternativa para esta línea";
 "versionMenu.noVersions" = "Sin versiones alternativas";
+
+"cardView.grid" = "Cuadrícula";
+"cardView.kanban" = "Columnas";
+"cardView.compact" = "Solo títulos";
+"cardView.addScene" = "Añadir escena";
+"cardView.addAct" = "Añadir acto";
+"cardView.addAct.placeholder" = "Nombre del acto";
+"cardView.deleteScene" = "Eliminar escena";
+"cardView.deleteAct" = "Eliminar acto (conservar escenas)";
