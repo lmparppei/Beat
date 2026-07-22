@@ -877,10 +877,12 @@
     // Get string reference
     NSUInteger location = charIndexes[0];
     NSUInteger length = glyphRange.length;
-    CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    NSString *substring = [self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    CFStringRef str = (__bridge CFStringRef)substring;
     
     // Create a mutable copy
-    CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+    // Before, we had a length cap here (CFStringGetLength(str)), but it might cause memory issues with complex unicode characters
+    CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, 0);
     CFStringAppend(modifiedStr, str);
     
     // Some types get rendered in uppercase
@@ -908,13 +910,19 @@
         }
     }
     
+    // Panic escape: Bail out safely if the any of the transforms changed the character count, because we can't correctly remap glyphs/props/charIndexes in that case
+    if (CFStringGetLength(modifiedStr) != (CFIndex)glyphRange.length) {
+        CFRelease(modifiedStr);
+        return 0;
+    }
+        
     CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
     [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
     
     free(newGlyphs);
     free(modifiedProps);
     CFRelease(modifiedStr);
-    
+        
     return glyphRange.length;
 }
 
