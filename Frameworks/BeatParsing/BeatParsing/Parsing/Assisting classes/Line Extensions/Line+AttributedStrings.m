@@ -46,6 +46,8 @@
         [styles enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
             // Don't open already open things again
             if ([openStyles containsObject:obj]) return;
+            // ALSO, we don't handle macros here, because they are already resolved
+            else if ([(NSString*)obj isEqualToString:@"Macro"]) return;
             
             NSNumber* t = InlineFormatting.formattingTypes[obj];
             InlineFormatting* f = InlineFormatting.inlineFormats[t];
@@ -57,25 +59,6 @@
         }];
         
         [result appendString:string];
-/*
-        NSMutableString *open = [NSMutableString stringWithString:@""];
-        NSMutableString *close = [NSMutableString stringWithString:@""];
-        
-        NSSet *styles = attrs[@"Style"];
-         
-        for (InlineFormatting* inlineFormat in InlineFormatting.inlineFormats.allValues) {
-            NSString* styleName = [InlineFormatting styleNameFor:inlineFormat.formatType];
-            if ([styles containsObject:styleName]) {
-                [open insertString:[NSString stringWithFormat:@"%s", inlineFormat.open] atIndex:0];
-                [close appendString:[NSString stringWithFormat:@"%s", inlineFormat.close]];
-            }
-        }
-    
-        [result appendString:open];
-        [result appendString:string];
-        [result appendString:close];
-*/
-        
     }];
     
     [openStyles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, BOOL * _Nonnull stop) {
@@ -131,13 +114,14 @@
     }];
         
     // Add macro attributes. We store RESOLVED macro values as ranges, and the actual values are replaced only when rendering to a __printed__ attributed string. (See attributedStringForPrinting)
-    if (self.macroRanges.count > 0) {
+    if (self.resolvedMacros.count > 0) {
         for (NSValue* r in self.macros.allKeys) {
             NSString* resolvedMacro = self.resolvedMacros[r];
             
             NSRange range = r.rangeValue;
-            if (NSMaxRange(range) <= string.length)
+            if (NSMaxRange(range) <= string.length) {
                 [string addAttribute:@"Macro" value:(resolvedMacro != nil) ? resolvedMacro : @"" range:range];
+            }
         }
     }
     
