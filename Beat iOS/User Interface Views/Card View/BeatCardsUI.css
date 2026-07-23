@@ -368,11 +368,6 @@ ul {
 	list-style-type: none;
 	border-bottom: dotted 1px #ccc;
 }
-/*
-.card ul li:last-child {
-	border-bottom:  solid 1px #bbb;
-}
-*/
 
 .addScene {
 	position: absolute;
@@ -725,12 +720,22 @@ body.kanban .card-content {
 	height: auto;
 	min-height: 2.2em;
 }
-/* Long contents are clipped and scroll inside the card */
+/* Long contents are clipped and scroll inside the card. `auto` (not the shared `scroll`) so the
+   scrollbar track only shows when the content actually overflows. */
 body.kanban .card .card-container {
 	max-height: 11em;
+	overflow: auto;
 }
 body.kanban .card .editButton {
 	bottom: 2em;
+}
+/* The snippet is emptied when a synopsis or notes are shown; collapse it so it leaves no gap */
+body.kanban .content:empty {
+	display: none;
+}
+/* The dotted line separates synopsis items, so drop it after the last one */
+body.kanban #container ul li:last-child {
+	border-bottom: none;
 }
 
 /* Deeper sections act as separators inside a column */
