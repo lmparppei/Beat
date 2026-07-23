@@ -721,27 +721,34 @@ double clamp(double d, double min, double max)
 @synthesize typingAttributes = _typingAttributes;
 
 /// This property shadows the native `NSTextView` typing attributes, which are also used by the system to draw inline predictions (macOS 14+).
-/// If no font is set, predicted text will be drawn using the system font instead of editor font, so we'll make sure the attributes always contain one.
+/// The font must match what the next typed character would actually get, otherwise the prediction is drawn in the wrong font — the system font when none is set, or a stale one carried over from another element (e.g. Courier on a synopsis line, or regular weight inside a bold heading).
 - (NSDictionary<NSAttributedStringKey, id>*)typingAttributes
 {
-	NSDictionary* attributes = _typingAttributes;
-	if (attributes[NSFontAttributeName] != nil) return attributes;
+	NSMutableDictionary* attributes = (_typingAttributes != nil) ? _typingAttributes.mutableCopy : NSMutableDictionary.new;
 
-	NSMutableDictionary* attributesWithFont = (attributes != nil) ? attributes.mutableCopy : NSMutableDictionary.new;
-	attributesWithFont[NSFontAttributeName] = [self fontAtCaret];
-	return attributesWithFont;
+	// Always match the font actually applied at the caret so the prediction uses the current
+	// element's real font — family, weight and traits alike — rather than whatever was stored last.
+	NSFont* font = [self fontForTypingPosition];
+	if (font != nil) attributes[NSFontAttributeName] = font;
+	else if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = _editorDelegate.fonts.regular;
+
+	return attributes;
 }
 
-/// Returns the font at current caret position, falling back to editor default.
-- (NSFont*)fontAtCaret
+/// Returns the font applied to the character just before the caret (on the same line), which carries
+/// the exact family/weight/traits of the current element. Returns `nil` at the start of a line or the
+/// document — there's no preceding character to read there, so the caller keeps the stored typing font
+/// (which the formatter sets from the line type for empty lines).
+- (NSFont*)fontForTypingPosition
 {
 	NSTextStorage* textStorage = self.textStorage;
-	if (textStorage.length > 0) {
-		NSUInteger location = MIN(self.selectedRange.location, textStorage.length - 1);
-		NSFont* font = [textStorage attribute:NSFontAttributeName atIndex:location effectiveRange:nil];
-		if (font != nil) return font;
-	}
-	return _editorDelegate.fonts.regular;
+	NSUInteger location = self.selectedRange.location;
+	if (location == 0 || location > textStorage.length) return nil;
+
+	// A line break right before the caret means we're at the start of a (possibly empty) line.
+	if ([textStorage.string characterAtIndex:location - 1] == '\n') return nil;
+
+	return [textStorage attribute:NSFontAttributeName atIndex:location - 1 effectiveRange:nil];
 }
 
 
