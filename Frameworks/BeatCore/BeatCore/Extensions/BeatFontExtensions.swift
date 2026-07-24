@@ -9,15 +9,34 @@
 
 #if os(iOS)
 import UIKit
-typealias BFont = UIFont
-typealias BFontDescriptor = UIFontDescriptor
+public typealias BFont = UIFont
+public typealias BFontDescriptor = UIFontDescriptor
 #else
 import Foundation
-typealias BFont = NSFont
-typealias BFontDescriptor = NSFontDescriptor
+public typealias BFont = NSFont
+public typealias BFontDescriptor = NSFontDescriptor
+
+extension BFontDescriptor.SymbolicTraits {
+	static var italicTrait: BFontDescriptor.SymbolicTraits {
+#if os(iOS)
+		return .traitItalic
+#else
+		return .italic
+#endif
+	}
+	
+	static var boldTrait:BFontDescriptor.SymbolicTraits {
+#if os(iOS)
+		return .traitBold
+#else
+		return .bold
+#endif
+	}
+}
+
 #endif
 
-extension BFont {
+@objc public extension BFont {
 
 	/// Creates a new font descriptor with the given traits. macOS and iOS have differing optional types, hence this mess.
 	@objc func withTraits(_ traits: BFontDescriptor.SymbolicTraits) -> BFont {
@@ -36,29 +55,37 @@ extension BFont {
 			return font
 		#endif
 	}
+	
+	@objc func withAddedTraits(_ traits: BFontDescriptor.SymbolicTraits) -> BFont {
+		let descriptor = fontDescriptor.withSymbolicTraits(
+			fontDescriptor.symbolicTraits.union(traits)
+		)
+		return BFont(descriptor: descriptor, size: pointSize) ?? self
+	}
 
+	/// Returns the font with italic variant
 	@objc func italics() -> BFont {
-		#if os(iOS)
-			return withTraits(.traitItalic)
-		#else
-			return withTraits(.italic)
-		#endif
+		return withTraits(.italicTrait)
+	}
+	
+	/// This method ADDS italic trait to the font, and won't override the old ones
+	@objc func italicized() -> BFont {
+		return withAddedTraits(.italicTrait)
 	}
 
+	/// Returns the font with bold variant
 	@objc func bold() -> BFont {
-		#if os(iOS)
-			return withTraits(.traitBold)
-		#else
-			return withTraits(.bold)
-		#endif
+		return withTraits(.boldTrait)
+	}
+	
+	/// This method ADDS bolded trait to the font, and won't override the old ones
+	@objc func bolded() -> BFont {
+		return withAddedTraits(.boldTrait)
 	}
 
+	/// Returns the font with bold+italic variant
 	@objc func boldItalics() -> BFont {
-		#if os(iOS)
-			return withTraits([ .traitBold, .traitItalic ])
-		#else
-			return withTraits([ .bold, .italic ])
-		#endif
+		return withTraits([ .boldTrait, .italicTrait ])
 	}
 	
 	@objc func font(size:CGFloat, traits:BFontDescriptor.SymbolicTraits) -> BFont? {

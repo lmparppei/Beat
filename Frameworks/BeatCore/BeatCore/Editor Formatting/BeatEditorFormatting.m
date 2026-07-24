@@ -650,6 +650,19 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Set font
 
+- (BXFont*)fontForTyping
+{
+    BXFont* font = [self fontFamilyForLine:self.delegate.currentLine];
+    
+    RenderStyle* style = [self.delegate.editorStyles forLine:self.delegate.currentLine];
+    if (style != nil) {
+        if (style.bold) font = font.bolded;
+        if (style.italic) font = font.italicized;
+    }
+    
+    return font;
+}
+
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
 {
     [BeatMeasure queue:@"format" startPhase:@"font family"];

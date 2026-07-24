@@ -65,6 +65,9 @@ extern NSString* const BeatRepresentedLineKey;
 
 - (void)formatAllAsynchronously;
 
+/// Returns the font for current line
+- (BXFont*)fontForTyping;
+
 
 #pragma mark - Text color
 
