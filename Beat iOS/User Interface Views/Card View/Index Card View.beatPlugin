@@ -273,7 +273,7 @@ Beat.custom = {
 		let suitableIndex = index
 		
 		// Find a good place to add our synopsis to
-		for (let i=index+1; i++; i<lines.length) {
+		for (let i=index+1; i < lines.length; i++) {
 			let line = lines[i]
 			if (line.type == Beat.type.empty) continue;
 			
