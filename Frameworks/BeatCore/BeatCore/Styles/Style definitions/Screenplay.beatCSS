@@ -100,6 +100,8 @@ character {
     margin-top: 1l;
     
     trim: true;
+    
+    uppercase: true;
 }
 
 parenthetical {

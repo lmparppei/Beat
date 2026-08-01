@@ -48,6 +48,8 @@ character {
     width-us: 40ch;
     
     margin-left: 9ch;
+    
+    uppercase: true;
 }
 
 parenthetical {
