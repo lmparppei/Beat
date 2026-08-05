@@ -1263,6 +1263,7 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="typewriterMode"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="editorSetting" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleTypewriterMode:" target="-1" id="huT-2l-VQV"/>
