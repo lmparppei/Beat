@@ -91,6 +91,7 @@ class BeatValidationItem: NSObject {
 
 /// A more sensible way to do the above
 @objc class BeatOnOffMenuItem:NSMenuItem {
+	@IBInspectable var editorSetting:Bool = false
 	@IBInspectable var documentSetting:Bool = false
 	@IBInspectable var settingKey:String = ""
 	@IBInspectable var requiresRedraw = false
@@ -100,7 +101,17 @@ class BeatValidationItem: NSObject {
 		
 		var value = false
 		
-		if self.documentSetting {
+		if self.editorSetting, let doc = document as? NSObject {
+			if doc.responds(to: NSSelectorFromString(self.settingKey)) {
+				let sel = NSSelectorFromString(self.settingKey)
+				
+				if let val = doc.perform(sel).takeUnretainedValue() as? Bool {
+					value = val
+				}
+			} else {
+				value = doc.value(forKey: settingKey) as? Bool ?? false
+			}
+		} else if self.documentSetting {
 			value = document.documentSettings.getBool(settingKey)
 		} else {
 			value = BeatUserDefaults.shared().getBool(settingKey)
