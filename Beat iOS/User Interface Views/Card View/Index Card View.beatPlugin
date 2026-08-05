@@ -119,6 +119,9 @@ Beat.custom = {
 		let scene = outline[sceneIndex]
 		let sibling = outline[targetIndex]
 		
+		let prevSceneIsOmitted = outline[targetIndex - 1] && outline[targetIndex - 1].omitted
+		let nextSceneIsOmitted = outline[targetIndex + 1] && outline[targetIndex + 1].omitted
+		
 		let stringToMove = Beat.getText().substring(scene.position, scene.position + scene.length)
 		let targetPosition = (sibling) ? sibling.position : Beat.getText().length
 		
@@ -126,19 +129,23 @@ Beat.custom = {
 		let length = scene.length
 		
 		// Then onto some very convoluted code for taking care of omissions
-		if (outline[targetIndex - 1] && outline[targetIndex - 1].omitted &&
-			outline[targetIndex] && outline[targetIndex].omitted && !scene.omitted) {
+		if (prevSceneIsOmitted &&
+			outline[targetIndex] &&
+			outline[targetIndex].omitted &&
+			!scene.omitted) {
 			stringToMove = "\n*/\n\n" + stringToMove + "\n/*\n\n"
 		}
-		else if (sibling?.omitted && outline[targetIndex - 1] && !outline[targetIndex - 1].omitted && !scene.omitted) {
+		else if (sibling && sibling.omitted &&
+				 !prevSceneIsOmitted &&
+				 !scene.omitted) {
 			// Find the omission
 			targetPosition = sibling.omissionStartsAt
 		} else if (scene.omitted) {
 			// Move an omitted scene
-			if (outline[sceneIndex-1]?.omitted && outline[sceneIndex+1]?.omitted) {
+			if (prevSceneIsOmitted && nextSceneIsOmitted) {
 				stringToMove = "/*\n\n" + stringToMove + "*/\n\n"
 			}
-			else if (outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+			else if (prevSceneIsOmitted && !nextSceneIsOmitted) {
 				// We need to close the current omission
 				Beat.replaceRange(scene.position, 0, "*/\n")
 				position += 3
@@ -146,7 +153,7 @@ Beat.custom = {
 
 				stringToMove = "\n/*\n\n" + stringToMove
 			}
-			else if (!outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+			else if (!prevSceneIsOmitted && !nextSceneIsOmitted) {
 				position = scene.omissionStartsAt
 				length = scene.length + scene.position - position
 				stringToMove = Beat.getText().substring(position, position + length)
@@ -318,7 +325,7 @@ Beat.custom = {
 		let line = Beat.lineAtPosition(endPosition)
 		
 		if (line.length > 0) text = "\n" + text;
-		if (precedingLine?.length > 0) text = "\n" + text;
+		if (precedingLine && precedingLine.length > 0) text = "\n" + text;
 		
 		text += "\n\n\n"
 		
@@ -326,21 +333,6 @@ Beat.custom = {
 	},
 	
 	getNewCard: (uuid) => {
-		/*
-		 "<div class='item card {{color}} {{selected}} {{isOmitted}}' color='{{color}}' uuid='{{uuid}}' position='{{range.location}}' length='{{range.length}}'><div class='card-content'>\
-				 <div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div>\
-					 <div class='title'>{{ stringForDisplay }}</div></div>\
-						 <div class='card-container'>\
-							 {{ synopsisList }}\
-							 {{ noteList }}\
-							 <div class='content'>{{ text }}</div>\
-						 </div>\
-						 <div class='editButton'>✎</div>\
-						 <div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
-					 </div>\
-					 <div class='addScene'></div>\
-				 </div>"
-		 */
 		let card = templates.scene.withData({
 			stringForDisplay: "",
 			sceneNumber: "",
@@ -404,7 +396,7 @@ if (Beat.container != undefined) {
 }
 
 // When running the plugin for the first time, create the outline immediately
-let html = (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
+let html = (Beat.outline() && Beat.outline().length > 0) ? createOutline(...Beat.outline()) : ""
 
 // Get files from inside the app bundle
 let css = Beat.appAssetAsString("BeatCardsUI.css")
@@ -471,9 +463,11 @@ Beat.onSelectionChange((selection) => {
 		scroll = false
 	}
 
-	let uuid = currentScene.line?.uuidString()
+	let uuid = currentScene.line && currentScene.line.uuidString()
 	
-	window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
+	if (uuid) {
+		window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
+	}
 })
 
 
@@ -622,8 +616,8 @@ function updateScene(scene, pagination = Beat.currentPagination()) {
 	sceneJSON.text = sceneJSON.text.replaceAll("<", "&lt;")
 
 	// Convert some values to lowercase for consistency
-	sceneJSON.color = sceneJSON.color?.toLowerCase()
-	sceneJSON.typeAsString = sceneJSON.typeAsString?.toLowerCase()
+	sceneJSON.color = (sceneJSON.color) ? sceneJSON.color.toLowerCase() : ""
+	sceneJSON.typeAsString = (sceneJSON.typeAsString) ? sceneJSON.typeAsString.toLowerCase() : ""
 
 	// There's no enum for this value, but 0 means page count is the significant unit.
 	if (significantUnits == 0) {
