@@ -290,7 +290,8 @@ extension BeatReviewEditorViewBase {
                 
         // Load content from the review
         textView?.text = item.string
-                
+        textView?.editorView = self
+        
         highlightHashtags()
         updateEditorMode()
         
@@ -449,7 +450,19 @@ extension BeatReviewEditorView:UIPopoverPresentationControllerDelegate {
 
 @objc public class BeatReviewTextView:UXTextView {
     weak var reviewDelegate: BeatReviewDelegate?
-
+    weak var editorView: BeatReviewEditorViewBase?
+    
+    public override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            editorView?.editable = true
+        }
+    }
+    
+    deinit {
+        reviewDelegate = nil
+        editorView = nil
+    }
+    
 #if os(macOS)
     override public func keyDown(with event: NSEvent) {
         // Close on esc or shift-enter
