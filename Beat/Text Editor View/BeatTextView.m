@@ -237,6 +237,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)didFinishLoading
 {
 	[self didChangeLanguage:nil];
+	[self updateFocusMode];
 }
 
 -(void)removeFromSuperview
