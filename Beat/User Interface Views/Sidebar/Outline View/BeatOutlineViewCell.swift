@@ -52,6 +52,11 @@ import BeatCore
 			textField?.stringValue = ""
 		}
 		
+		if provider.options.contains(.includeLength) {
+			// Create length label
+			
+		}
+		
 		// Add all items
 		provider.items().forEach { item in
 			let label = RoundedLabel(item: item, tableCell: self)

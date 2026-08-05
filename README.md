@@ -1,6 +1,6 @@
 # Beat
 
-An elegant screenwriting app for macOS and iOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **fully open source** under GPL.
+An elegant screenwriting app for macOS and iOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is **fully open source** under GPL.
 
 [Official website](https://www.beat-app.fi/)  
 [Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)   
@@ -63,7 +63,7 @@ To fund the development, the binary for iOS release is currently distributed wit
 
 You can also help to keep the project alive by subscribing to my Patreon.
 
-However, the creator of this app is a well-off person from a social-democratic welfare country, so you can also send your loose change to NGOs and charities. Currently, there is a genocide happening in Gaza and people are in desperate need of help.
+However, the creator of this app is a well-off person from a social-democratic welfare country, so you can consider sending your loose change to NGOs and charities instead. Currently, there is a genocide happening in Gaza and people are in desperate need of help.
 
 
 ## Post-mortem
