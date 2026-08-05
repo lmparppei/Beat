@@ -18,6 +18,9 @@
 @property (nonatomic) NSRange range;
 @end
 
+/**
+ This class provides all the outline view elements for a outline view cell. This replaces the old text-based `OutlineViewItem` class. Instantiated every time new data is loaded.
+ */
 @interface OutlineItemProvider : NSObject
 - (instancetype _Nonnull)initWithScene:(OutlineScene* _Nonnull)scene dark:(bool)dark;
 
