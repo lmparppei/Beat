@@ -500,7 +500,8 @@
 	else return NO;
 }
 
-// FOR CELL-BASED VIEW.
+/*
+// Old cell-based view method
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
@@ -509,8 +510,8 @@
 		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
 	}
 	return @"";
-	
 }
+ */
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
@@ -521,7 +522,6 @@
 	[self.editorDelegate scrollToScene:item];
 	return YES;
 }
-
 
 /*
 -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {

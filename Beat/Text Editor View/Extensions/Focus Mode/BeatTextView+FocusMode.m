@@ -17,6 +17,12 @@
 	if (focusMode != BeatFocusModeOff) [self.editorDelegate registerSelectionObserver:self];
 }
 
+- (void)updateFocusMode
+{
+	if (self.focusModeType == BeatFocusModeOff) return;
+	[self focusRange:self.selectedRange];
+}
+
 - (void)selectionDidChange:(NSRange)selectedRange
 {
 	[self focusRange:selectedRange];

@@ -106,11 +106,11 @@ import Foundation
         
         if typeName == "panel" {
             // Panel is a global variable/keyword
-            macro = panel
+            macro = self.panel
         } else if typeName == "ref" {
-            macro = references
+            macro = self.references
         } else if typeName == "references" {
-            macro = BeatMacro(name: "references", type: .references, value: references.value)
+            macro = BeatMacro(name: "references", type: .references, value: self.references.value)
         } else if varType == .date {
             // Create a date macro
             macro = BeatMacro(name: "date", type: .date, value: parameters)

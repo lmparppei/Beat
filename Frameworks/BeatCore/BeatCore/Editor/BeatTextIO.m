@@ -120,14 +120,14 @@ static NSString *centeredEnd = @" <";
     // When replacing stuff directly in the view, we need to call it manually.
     
 #if TARGET_OS_IOS
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
         
         UITextRange *textRange = textView.selectedTextRange;
         [self.textView setSelectedTextRange:oldRange];
         
-        [textView replaceRange:textRange withText:string];
+        [textView replaceRange:textRange withAttributedText:string];
         if (textView.textStorage.isEditing) [textView.textStorage endEditing];
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
@@ -240,6 +240,8 @@ static NSString *centeredEnd = @" <";
 
 - (void)moveScene:(OutlineScene*)scene from:(NSInteger)from to:(NSInteger)to
 {
+    [self.delegate.textStorage beginEditing];
+    
     OutlineScene* target = (to < _delegate.parser.outline.count) ? _delegate.parser.outline[to] : nil;
     OutlineScene* nextScene = (from < _delegate.parser.outline.count - 1) ? _delegate.parser.outline[from+1] : nil;
     
@@ -316,6 +318,8 @@ static NSString *centeredEnd = @" <";
     }
     
     [self replaceRange:NSMakeRange(targetPosition, 0) withAttributedString:attrStr];
+    
+    [self.delegate.textStorage endEditing];
 }
 
 - (void)moveScenesInRange:(NSRange)range to:(NSInteger)position
@@ -393,6 +397,32 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Additional editor convenience stuff
 
+/// Checks if smart quotes replaced `'` with `’` inside CONT'D and replaces them back where needed. Called inside `shouldChangeTextInRange` text view delegate method on macOS.
+- (BOOL)replaceSmartQuotationIfNeeded:(NSString*)string range:(NSRange)range
+{
+    if (![self checkForBadQuoteWithReplacementString:string range:range]) return NO;
+    
+    [self replaceRange:range withString:@"'"];
+    return YES;
+}
+
+/// Checks if smart quotes replaced `'` with `’` inside CONT'D. Let's not allow that.
+- (BOOL)checkForBadQuoteWithReplacementString:(NSString*)string range:(NSRange)range
+{
+    // We only look for smart quote substitutions here. Ignore anything else. 
+    if (string.length != 1 || ![string isEqualToString:@"’"]) return NO;
+        
+    // Do nothing if there is no quote to be handled in the CONT'D element (which can be user-defined)
+    NSString* contd = BeatScreenplayElements.shared.contd;
+    NSInteger quoteLoc = [contd rangeOfString:@"'"].location;
+    if (quoteLoc == NSNotFound || range.location < quoteLoc) return NO;
+    
+    // Check the content preceding the smart quote and make sure it matches with CONT'D element
+    NSString* substr = [self.delegate.text substringWithRange:NSMakeRange(range.location - quoteLoc, quoteLoc)];
+        
+    return [substr isEqualToString:[contd substringToIndex:quoteLoc]];
+}
+
 /// Checks if we should add additional line breaks. Returns `true` if line breaks were added.
 /// @warning: Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange
@@ -408,7 +438,7 @@ static NSString *centeredEnd = @" <";
         prevent = true;
     }
     // Prevent default
-    if (prevent) return false;
+    if (prevent) return NO;
     
     
     // Don't add a dual line break if shift is pressed

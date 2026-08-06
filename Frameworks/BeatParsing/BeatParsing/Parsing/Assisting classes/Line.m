@@ -119,6 +119,17 @@
 }
 
 
+#pragma mark - String setter
+
+- (void)setString:(NSString *)string
+{
+    @synchronized (self) {
+        _string = string;
+        self.formattedString = nil;
+    }
+}
+
+
 #pragma mark - Thread-safe getters
 
 /// Length of the string

@@ -87,10 +87,13 @@
 				action == @selector(undoEdit:) ||
 				action == @selector(redoEdit:));
 	}
-	
+		
 	//
 	if (action == @selector(toggleTimeline:)) {
 		menuItem.state = BXState(self.timeline.visible);
+	}
+	else if (action == @selector(preview:)) {
+		menuItem.state = self.currentTab == self.nativePreviewTab ? NSOnState : NSOffState;
 	}
 	else if (action == @selector(toggleSidebarView:)) {
 		menuItem.state = BXState(self.sidebarVisible);

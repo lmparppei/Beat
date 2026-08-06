@@ -55,6 +55,8 @@
 	if (replacementString.length == 1) {
 		unichar c = [replacementString characterAtIndex:0];
 		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
+		
+		if ([self.textActions replaceSmartQuotationIfNeeded:replacementString range:affectedCharRange]) return false;
 	}
 	
 	// Special rules for character input

@@ -163,12 +163,12 @@
 	return NO;
 }
 
-
+/*
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag
 {
 	return !flag;
 }
-
+*/
 
 #pragma mark - Updates
 

@@ -13,8 +13,10 @@
 
 			const mode = {{mode}}
 			const iOS = {{iOS}}
+			const kanbanEnabled = {{kanban}}
+			const compactEnabled = {{compact}}
 			
-			let sortable
+			let sortables = []
 
 			let disabled = false
 			
@@ -69,36 +71,118 @@
 			}
 			
 			function initDragDrop () {
-				let dragContainer = document.querySelector(".dragContainer")
-				
-				sortable = new Sortable(dragContainer, {
-					animation: 200,
-					direction: "horizontal",
-					filter: ".section",
-					
-					swapThreshold: 0.8,
-					delayOnTouchOnly: true,
-					delay: 300,
-					touchStartThreshold: 5,
-					supportPointer: false,
-					
-					easing: "cubic-bezier(1, 0, 0, 1)",
-					ghostClass: "sortable-ghost",
-					
-					onEnd: function (evt) {
-						if (evt.newIndex == evt.oldIndex) return;
+				for (const sortable of sortables) sortable.destroy()
+				sortables = []
+
+				const kanban = document.body.classList.contains("kanban")
+
+				// Every drag container is a sortable list, and cards can be moved between them
+				document.querySelectorAll(".dragContainer").forEach((dragContainer) => {
+					sortables.push(new Sortable(dragContainer, {
+						group: "cards",
+						animation: 200,
+						direction: (kanban) ? "vertical" : "horizontal",
+						filter: ".section",
 						
-						let item = evt.item
-						let items = evt.from.children
+						swapThreshold: 0.8,
+						delayOnTouchOnly: true,
+						delay: 300,
+						touchStartThreshold: 5,
+						supportPointer: false,
+						
+						easing: "cubic-bezier(1, 0, 0, 1)",
+						ghostClass: "sortable-ghost",
+						
+						onEnd: function (evt) {
+							if (evt.to == evt.from && evt.newIndex == evt.oldIndex) return;
+							
+							let item = evt.item
+							let sceneUUID = item.getAttribute("uuid")
 
-						let sceneUUID = item.getAttribute("uuid")
+							// The scene will be moved before its next sibling. If the card was dropped
+							// at the end of a container, the target is the next outline item in the DOM.
+							let sibling = item.nextElementSibling
+							let siblingUUID = sibling?.getAttribute("uuid") ?? uuidAfter(evt.to)
 
-						let sibling = items[evt.newIndex + 1]
-						let siblingUUID = sibling?.getAttribute("uuid") ?? ""
-
-						Beat.call(`Beat.custom.moveScene("${sceneUUID}", "${siblingUUID}")`)
-					},
+							Beat.call(`Beat.custom.moveScene("${sceneUUID}", "${siblingUUID}")`)
+						},
+					}))
 				})
+			}
+
+			// Returns the uuid of the first outline item following the given container in the DOM
+			function uuidAfter(container) {
+				const elements = document.querySelectorAll("#container [uuid]")
+				for (const element of elements) {
+					if (!container.contains(element) && (container.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+						return element.getAttribute("uuid")
+					}
+				}
+				return ""
+			}
+
+			function setKanbanMode(value) {
+				document.body.classList.toggle("kanban", value)
+				updateViewModeButtons()
+
+				Beat.call((v) => { Beat.custom.setKanbanMode(v) }, value)
+			}
+
+			// Collapses/expands a kanban column and persists the state in document settings
+			function toggleColumn(event, uuid) {
+				event.stopPropagation()
+
+				const column = document.querySelector(`.kanbanColumn[sectionUuid="${uuid}"]`)
+				if (column == null) return;
+
+				const collapsed = column.classList.toggle("collapsed")
+				Beat.call((u, c) => { Beat.custom.setColumnCollapsed(u, c) }, uuid, collapsed)
+			}
+
+			// Compact mode collapses every card to its title bar
+			function setCompactMode(value) {
+				document.body.classList.toggle("compact", value)
+				updateViewModeButtons()
+
+				// WebKit doesn't reliably recompute the cards' aspect-ratio height when toggling
+				// compact (the card content switches between absolute and normal flow), leaving them
+				// a few pixels off until the next full render. Detaching the container from layout and
+				// reattaching it forces a clean relayout so the height matches a fresh render.
+				const c = document.getElementById("container")
+				c.style.display = "none"
+				void c.offsetHeight
+				c.style.display = ""
+
+				Beat.call((v) => { Beat.custom.setCompactMode(v) }, value)
+			}
+
+			// Adds a new card at the end of a kanban column
+			function addCardToColumn(event, key) {
+				event.stopPropagation()
+
+				const column = document.querySelector(`.kanbanColumn[sectionUuid="${key}"]`)
+				if (column == null) return;
+
+				const cards = column.querySelectorAll(".card")
+				const lastCard = cards[cards.length - 1]
+
+				// Use the last card as the anchor. In an empty column we anchor to the section itself.
+				let uuid = lastCard?.getAttribute("uuid") ?? ((key != "unsorted") ? key : "")
+
+				Beat.call((u) => { Beat.custom.getNewCard(u) }, uuid)
+			}
+
+			function addAct(event) {
+				event.stopPropagation()
+				Beat.call(() => { Beat.custom.promptNewAct() })
+			}
+
+			function updateViewModeButtons() {
+				const kanban = document.body.classList.contains("kanban")
+				const compact = document.body.classList.contains("compact")
+				document.getElementById("gridModeButton")?.classList.toggle("selectedMode", !kanban)
+				document.getElementById("kanbanModeButton")?.classList.toggle("selectedMode", kanban)
+				document.getElementById("compactModeButton")?.classList.toggle("selectedMode", compact)
 			}
 
 			function filter(element) {
@@ -115,15 +199,16 @@
 			let zoomLevel = 1
 			function zoomIn () {
 				if (zoomLevel < 2) zoomLevel++;
-				
-				let zoomClass = 'zoomLevel-' + zoomLevel
-				document.body.className = zoomClass
+				setZoomClass()
 			}
 			function zoomOut () {
 				if (zoomLevel > 0) zoomLevel--;
-				
-				let zoomClass = 'zoomLevel-' + zoomLevel
-				document.body.className = zoomClass
+				setZoomClass()
+			}
+			function setZoomClass() {
+				// Only touch the zoom classes — the body can also carry the kanban class
+				document.body.classList.remove("zoomLevel-0", "zoomLevel-1", "zoomLevel-2")
+				document.body.classList.add("zoomLevel-" + zoomLevel)
 			}
 
 			function print() {
@@ -154,6 +239,10 @@
 					
 					// No synopsis editing on iOS
 					if (!iOS) content += "<div onclick='contextMenu.addSynopsis()' class='menuItem'>+ synopsis</div>"
+
+					// Destructive actions — shown depending on the target type
+					content += "<div id='menuDeleteScene' onclick='contextMenu.deleteScene()' class='menuItem destructive'>#cardView.deleteScene#</div>"
+					content += "<div id='menuDeleteAct' onclick='contextMenu.deleteAct()' class='menuItem destructive'>#cardView.deleteAct#</div>"
 					
 					// macOS has a more elegant way of adding new scenes
 					if (iOS) content += "<div onclick='contextMenu.addSceneOnMobile()' class='menuItem'>+ #cards.addScene#</div>"
@@ -208,6 +297,13 @@
 						};
 					}
 					
+					// Show the correct destructive action for the target type
+					const isSection = (contextMenu.target?.closest(".section") != null)
+					const deleteScene = document.getElementById("menuDeleteScene")
+					const deleteAct = document.getElementById("menuDeleteAct")
+					if (deleteScene) deleteScene.style.display = (isSection) ? "none" : "flex";
+					if (deleteAct) deleteAct.style.display = (isSection) ? "flex" : "none";
+
 					// Position and show the menu
 					contextMenu.menu.style.left = coordinates.x + "px";
 					contextMenu.menu.style.top = coordinates.y + "px";
@@ -244,6 +340,22 @@
 					//if (iOS) Beat.call("Beat.custom.refresh()")
 				}
 				
+				contextMenu.deleteScene = function () {
+					const uuid = contextMenu.uuid
+					contextMenu.close()
+					if (uuid == null) return;
+
+					Beat.call((u) => { Beat.custom.deleteScene(u) }, uuid)
+				}
+
+				contextMenu.deleteAct = function () {
+					const uuid = contextMenu.uuid
+					contextMenu.close()
+					if (uuid == null) return;
+
+					Beat.call((u) => { Beat.custom.deleteAct(u) }, uuid)
+				}
+
 				contextMenu.addSynopsis = function () {
 					// Add an empty synopsis item inside the card
 					let card = contextMenu.target.closest(".card")
@@ -342,6 +454,23 @@
 			// uuid: the card after which to add the new placeholder card, 
 			function addCard(uuid, html) {
 				let precedingCard = document.querySelector(`.card[uuid="${uuid}"]`)
+
+				// No card found — the anchor can also be an empty kanban column
+				if (precedingCard == null) {
+					const columnKey = (uuid.length > 0) ? uuid : "unsorted"
+					const container = document.querySelector(`.kanbanColumn[sectionUuid="${columnKey}"] .dragContainer`)
+					if (container == null) return;
+
+					const div = document.createElement("div")
+					div.innerHTML = html
+					const card = div.firstChild
+					card.setAttribute("prevUuid", uuid)
+
+					container.appendChild(card)
+					editTitle(card)
+					return
+				}
+
 				let nextCard = precedingCard.nextSibling
 				
 				// We need to support old browser,so here's a little trickery
@@ -379,6 +508,16 @@
 			<div id='zoom'>
 			   <button onclick='zoomOut()'>-</button>
 			   <button onclick='zoomIn()'>+</button>
+			</div>
+
+			<div id='viewMode'>
+			   <!-- Layout: exclusive choice between grid and columns -->
+			   <div class='segmented'>
+			      <button id='gridModeButton' title='#cardView.grid#' onclick='setKanbanMode(false)'><svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor"><rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/><rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/></svg></button>
+			      <button id='kanbanModeButton' title='#cardView.kanban#' onclick='setKanbanMode(true)'><svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor"><rect x="0" y="0" width="3.6" height="14" rx="1"/><rect x="5.2" y="0" width="3.6" height="9" rx="1"/><rect x="10.4" y="0" width="3.6" height="12" rx="1"/></svg></button>
+			   </div>
+			   <!-- Density: independent on/off toggle, cumulative with either layout -->
+			   <button id='compactModeButton' class='toggleButton' title='#cardView.compact#' onclick='setCompactMode(!document.body.classList.contains("compact"))'><svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor"><rect x="0" y="1" width="14" height="2.6" rx="1"/><rect x="0" y="5.7" width="14" height="2.6" rx="1"/><rect x="0" y="10.4" width="14" height="2.6" rx="1"/></svg></button>
 			</div>
 		</div>
 		<div id='spinner'><span class="loader"></span></div>
@@ -422,6 +561,10 @@
 				sections.forEach((section) => {
 					section.onclick = () => { contextMenu.close() }
 					section.ontouchstart = () => { contextMenu.close() }
+					section.oncontextmenu = (e) => {
+						e.preventDefault()
+						contextMenu.toggle(e)
+					}
 				})
 				
 				cards.forEach((card) => {
@@ -528,36 +671,40 @@
 				let title = card.querySelector(".title")
 				title.contentEditable = true
 				title.focus()
-				
-				title.onkeydown = (e) => {
-					let remove = false
-					
-					if (e.keyCode == 13) {
-						// Commit
-						let prevUuid = card.getAttribute("prevUuid")
-						remove = true
+				title.canceled = false
+				title.committed = false
 
-						// Add the new scene
-						if (title.innerText.length > 0) {
-							Beat.call((prevUuid, card) => {
-								Beat.custom.addScene(prevUuid, card)
-							}, prevUuid, title.innerText)
-						}
-						
-					} else if (e.keyCode == 27) {
-						remove = true
+				// Single commit path — runs on Enter, Tab, clicking out, or when another control
+				// (Add Scene / Add Act) steals focus. Only Esc cancels. The placeholder card is
+				// removed afterwards either way: on commit the host re-renders with the real card.
+				title.commit = () => {
+					if (title.committed) return
+					title.committed = true
+
+					let text = title.innerText.trim()
+					if (!title.canceled && text.length > 0) {
+						let prevUuid = card.getAttribute("prevUuid")
+						Beat.call((prevUuid, text) => {
+							Beat.custom.addScene(prevUuid, text)
+						}, prevUuid, text)
 					}
-					
-					// We'll remove the card in any case. If esc was pressed, nothing will happen, and on enter the app will be adding a real card anyway.
-					if (remove) {
+
+					if (card.parentNode) card.parentNode.removeChild(card)
+				}
+
+				title.onkeydown = (e) => {
+					if (e.keyCode == 13 || e.keyCode == 9) {		// Enter or Tab commit
 						e.preventDefault()
 						title.blur()
-						card.parentNode.removeChild(card)
+					} else if (e.keyCode == 27) {					// Esc cancels
+						e.preventDefault()
+						title.canceled = true
+						title.blur()
 					}
 				}
-				
+
 				title.onblur = () => {
-					card.parentNode.removeChild(card)
+					title.commit()
 				}
 			}
 			
@@ -580,7 +727,16 @@
 					synopsis.contentEditable = false
 
 					let uuid = synopsis.getAttribute("uuid")
-					
+
+					// Esc restores the original text and skips saving
+					if (synopsis.canceled) {
+						synopsis.canceled = false
+						synopsis.innerText = synopsis.original
+						// A brand-new (unsaved) item is discarded
+						if (!(uuid?.length > 0)) synopsis.remove()
+						return
+					}
+
 					if (uuid?.length > 0) {
 						// Modify existing synopsis
 						modifySynopsis(uuid, synopsis.innerText)
@@ -593,17 +749,16 @@
 						synopsis.remove()
 					}
 				}
-				
+
 				synopsis.onkeydown = (e) => {
-					if (e.keyCode == 13) {
-						// Enter pressed
+					if (e.keyCode == 13 || e.keyCode == 9) {
+						// Enter or Tab commits
 						e.preventDefault()
 						synopsis.blur()
 					}
 					if (e.keyCode == 27) {
-						// Esc pressed
+						// Esc cancels
 						e.preventDefault()
-						synopsis.innerText = synopsis.original
 						synopsis.canceled = true
 						synopsis.blur()
 					}
@@ -611,6 +766,10 @@
 			}
 
 			// Initial setup
+			if (kanbanEnabled) document.body.classList.add("kanban");
+			if (compactEnabled) document.body.classList.add("compact");
+			updateViewModeButtons()
+
 			updateCardMenus()
 			initDragDrop()
 			

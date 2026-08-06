@@ -237,6 +237,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)didFinishLoading
 {
 	[self didChangeLanguage:nil];
+	[self updateFocusMode];
 }
 
 -(void)removeFromSuperview
@@ -505,7 +506,6 @@ Line *cachedRectLine;
 {
 	CGFloat width = [_editorDelegate.editorStyles.page defaultWidthWithPageSize:_editorDelegate.pageSize];
 	CGFloat padding = self.textContainer.lineFragmentPadding;
-	
 	return width + padding * 2 + 1.0;
 }
 
@@ -718,7 +718,22 @@ double clamp(double d, double min, double max)
 
 -(NSString *)text { return self.string; }
 - (void)setText:(NSString *)text { self.string = text; }
-@synthesize typingAttributes;
+@synthesize typingAttributes = _typingAttributes;
+
+/// This property shadows the native `NSTextView` typing attributes, which are also used by the system to draw inline predictions (macOS 14+).
+/// The font must match what the next typed character would actually get, otherwise the prediction is drawn in the wrong font — the system font when none is set, or a stale one carried over from another element (e.g. Courier on a synopsis line, or regular weight inside a bold heading).
+- (NSDictionary<NSAttributedStringKey, id>*)typingAttributes
+{
+	NSMutableDictionary* attributes = (_typingAttributes != nil) ? _typingAttributes.mutableCopy : NSMutableDictionary.new;
+
+	// Always match the font actually applied at the caret so the prediction uses the current
+	// element's real font — family, weight and traits alike — rather than whatever was stored last.
+	NSFont* font = self.editorDelegate.formatting.fontForTyping;
+	if (font != nil) attributes[NSFontAttributeName] = font;
+	else if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = _editorDelegate.fonts.regular;
+
+	return attributes;
+}
 
 
 #pragma mark - Caret

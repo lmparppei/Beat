@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, BeatFocusModeType) {
 - (void)setupFocusMode;
 - (IBAction)toggleFocusMode:(id)sender;
 - (BOOL)validateFocusMode:(NSMenuItem*)menuItem;
+- (void)updateFocusMode;
 @end
 
 NS_ASSUME_NONNULL_END

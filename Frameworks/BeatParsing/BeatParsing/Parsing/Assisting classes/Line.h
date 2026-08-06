@@ -100,7 +100,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly) bool omitIn;
 @property (readonly) bool omitOut;
 
-@property (readonly, atomic) NSString* string;
+@property (readonly, nonatomic) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
@@ -171,7 +171,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Line type (integer enum)
 @property LineType type;
 /// String content of this line
-@property (strong, atomic) NSString* string;
+@property (strong, nonatomic) NSString* string;
 /// The string value when this line was initialized
 @property (strong, atomic) NSString* originalString;
 /// Position (starting index) )in document

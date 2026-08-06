@@ -12,22 +12,19 @@ extension BeatTextView:NSMenuDelegate {
 	
 	/// Sets up automatically validated items. These items check a value in another object and toggle themselves on/off based on that.
 	@objc func setupValidationItems() {
-		self.validatedMenuItems = [
-			BeatValidationItem(
-				action: #selector(toggleTypewriterMode),
-				setting: BeatSettingTypewriterMode,
-				target: BeatUserDefaults.shared()
-			)
-		]
+		// Nothing here anymore. I have moved all text-view related checks to validateMenuItem.
 	}
 	
-	func validate(_ menuItem: NSMenuItem) -> Bool {
-		for item in validatedMenuItems where item.selector == menuItem.action {
-			return item.validate()
+	open override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+		if let item = menuItem as? BeatOnOffMenuItem {
+			return item.setChecked(document: self.editorDelegate)
+		} else if menuItem.action == #selector(toggleFocusMode) {
+			return self.validateFocusMode(menuItem)
 		}
 		
-		return true
+		return super.validateMenuItem(menuItem)
 	}
+	
 	
 	open override func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
 		// Remove context menu for layout orientation change
@@ -43,8 +40,3 @@ extension BeatTextView:NSMenuDelegate {
 		}
 	}
 }
-/**
- 
- 
- 
- */

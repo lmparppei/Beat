@@ -83,6 +83,8 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 
+- (BOOL)replaceSmartQuotationIfNeeded:(NSString*)string range:(NSRange)range;
+
 - (void)setColor:(NSString *)color forLine:(Line *)line;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 

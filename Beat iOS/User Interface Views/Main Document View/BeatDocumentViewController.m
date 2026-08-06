@@ -98,6 +98,8 @@
 		[self.pageView addSubview:self.textView];
 	} else {
 		// Completely replace the scroll view with our text view on phones
+		self.textView.translatesAutoresizingMaskIntoConstraints = YES;
+		self.textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		self.textView.frame = self.scrollView.frame;
 		
 		[self.view addSubview:self.textView];

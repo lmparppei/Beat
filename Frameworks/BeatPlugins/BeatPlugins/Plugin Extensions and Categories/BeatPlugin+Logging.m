@@ -63,7 +63,7 @@
 - (void)reportError:(NSString*)title withText:(NSString*)string
 {
     NSString* msg = [NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string];
-    [BeatConsole.shared logError:msg context:self pluginName:self.pluginName];
+    [BeatConsole.shared logError:msg context:self.delegate pluginName:self.pluginName];
 }
 
 @end

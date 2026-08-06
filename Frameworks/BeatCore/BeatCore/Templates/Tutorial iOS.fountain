@@ -1,7 +1,7 @@
 Title: Beat iOS Tutorial
 Credit: Written by
 Author: Lauri-Matti Parppei
-Draft date: Version 2, 18.5.2024
+Draft date: Version 3, 6.8.2026
 Contact:
 beat@beat-app.fi
 www.beat-app.fi
@@ -9,7 +9,7 @@ www.beat-app.fi
 
 INT. SCHOOL ROOM - DAY
 
-Is this your first time using Beat? This file is a playground for you to mess around with. For more detailed instructions, consult the user manual, which is accessible through the Help menu.
+Is this your first time using Beat? This file is a playground for you to mess around with. For more detailed instructions, see Documentation on Beat website.
 
 In Beat, you don't need to press any special keys to write dialogue or a scene header. Just type "int. school" or "ext. park" on a new line and it will become a scene header.
 
@@ -126,4 +126,5 @@ You can find more information about the Fountain markup language at https://www.
 
 
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[3996,9,0],[4116,17,1]]},"Revision Level":0} END_BEAT */
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[],"Window Width":1218,"Caret Position":103,"Heading UUIDs":[{"string":"INT. SCHOOL ROOM - DAY","uuid":"1D021AA7-0C29-44A1-9E6D-FE0BFC1F0005"},{"string":"EXT. PARK - DAY","uuid":"A3C07929-8A3C-4ECC-9B70-5639607C915F"},{"string":"# This is a new section","uuid":"DF95C951-E3AB-428E-8445-38AD6DE67F31"},{"string":"INT. TUNNEL - NIGHT ","uuid":"D94E1BD8-F51C-4CA1-9DE7-7EF2EE356A3A"},{"string":"INT.\/EXT. BEACH HOUSE - NIGHT","uuid":"A0ED5921-03C4-4F7E-8638-338C0124D65D"},{"string":"EXT. STREET - NIGHT [[BLUE]]","uuid":"27590CA8-5C7E-4DC9-8E3E-789C1F97F556"},{"string":"INT. NIGHT CLUB - NIGHT [[RED]]","uuid":"83BFCB97-0DAA-44A1-B6DF-AA7BD8A2F27D"},{"string":"EXT. UNIVERSITY CLASSROOM - MORNING","uuid":"ED3E84DB-75C6-4DC3-9DBA-9B31D05451A9"}],"Text Length":4383,"Revision":{"Removed":[],"RemovalSuggestion":[],"Addition":[[3962,9,0],[4082,17,1]]},"TagDefinitions":[],"Tags":[],"Active Plugins":[],"Revision Level":0,"Window Height":1020} END_BEAT */

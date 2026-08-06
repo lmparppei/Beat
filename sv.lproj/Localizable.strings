@@ -495,3 +495,20 @@
 "versionMenu.noVersions" = "Inga alternativa versioner";
 
 "general.copyLink" = "Kopiera länk";
+"cardView.grid" = "Rutnät";
+"cardView.kanban" = "Kolumner";
+"cardView.compact" = "Endast titlar";
+"cardView.addScene" = "Lägg till scen";
+"cardView.addAct" = "Lägg till akt";
+"cardView.addAct.placeholder" = "Aktens namn";
+"cardView.deleteScene" = "Ta bort scen";
+"cardView.deleteAct" = "Ta bort akt (behåll scener)";
+"versionControl.commit" = "Checka in";
+"versionControl.commitMessage" = "Incheckningsmeddelande (valfritt)";
+"versionControl.addCommit" = "Lägg till incheckning";
+"versionControl.skip" = "Hoppa över";
+"versionControl.commitChanges" = "Checka in ändringar";
+"versionControl.restoreVersion" = "Återställ version";
+"versionControl.confirmRevertMessage" = "Är du säker på att du vill återställa dokumentet till tillståndet från %TIMESTAMP%? Detta går inte att ångra och alla nyare incheckningar kommer att tas bort.";
+"versionControl.confirmResetTitle" = "Är du säker på att du vill återställa versionshanteringen?";
+"versionControl.confirmResetMessage" = "Detta kommer att ta bort alla dina incheckningar fram till denna punkt. Denna åtgärd kan inte ångras.";
