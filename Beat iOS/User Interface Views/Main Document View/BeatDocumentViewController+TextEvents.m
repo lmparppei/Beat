@@ -246,4 +246,27 @@
 }
 
 
+#pragma mark - Page number display updates
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+	[self.textView.pageNumberOverlay scrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+	[self.textView.pageNumberOverlay scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+	[self.textView.pageNumberOverlay scrollViewDidEndDecelerating:scrollView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+	[self.textView.pageNumberOverlay scrollViewDidEndScrollingAnimation:scrollView];
+}
+
+
 @end
