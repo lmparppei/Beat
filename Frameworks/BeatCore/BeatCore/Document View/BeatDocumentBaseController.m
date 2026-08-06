@@ -540,7 +540,15 @@
         for (id<BeatPluginInstance> plugin in self.runningPlugins.allValues) {
             [plugin previewDidFinish:operation indices:changedIndices];
         }
+        
+        [self pageBreaksUpdated];
     });
+}
+
+/// You can override this to do something with the page breaks in OS-specific implementations
+- (void)pageBreaksUpdated
+{
+    
 }
 
 

@@ -211,7 +211,7 @@
     // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers) return;
 #if TARGET_OS_IOS
-    // Page number doesn't fit on phones
+    // Page number doesn't fit on phones, so we are using overlays
     if (is_Mobile) return;
 #endif
 
@@ -225,12 +225,12 @@
     
     // Why are we using a key enumerator here instead of a normal fast enumeration? I do not know.
     Line* line;
-    
     NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
+        
     while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
-        // The dictionary value is always a two-item array with [pageNumber<String>, pageBreakPosition<Float>]
+        // The dictionary value is always a two-item array with [pageNumber<String>, pageBreakPosition<UInt>]
         NSArray* values = [_pageBreaksMap objectForKey:line];
         
         // Page number

@@ -451,19 +451,20 @@ extension BeatReviewEditorView:UIPopoverPresentationControllerDelegate {
 @objc public class BeatReviewTextView:UXTextView {
     weak var reviewDelegate: BeatReviewDelegate?
     weak var editorView: BeatReviewEditorViewBase?
-    
-    public override func mouseDown(with event: NSEvent) {
-        if event.clickCount == 2 {
-            editorView?.editable = true
-        }
-    }
-    
+        
     deinit {
         reviewDelegate = nil
         editorView = nil
     }
     
 #if os(macOS)
+    public override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+        if event.clickCount == 2 {
+            editorView?.editable = true
+        }
+    }
+
     override public func keyDown(with event: NSEvent) {
         // Close on esc or shift-enter
         if (event.keyCode == 53 ||

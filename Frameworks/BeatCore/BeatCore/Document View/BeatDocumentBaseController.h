@@ -272,6 +272,7 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic, readonly) BeatPaginationManager* _Nonnull pagination;
 
 - (void)paginationFinished:(BeatPagination * _Nonnull)operation indices:(NSIndexSet * _Nonnull)indices pageBreaks:(NSDictionary<NSValue *,NSArray<NSNumber *> *> * _Nonnull)pageBreaks;
+- (void)pageBreaksUpdated;
 
 
 #pragma mark - Revisions

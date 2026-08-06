@@ -143,6 +143,13 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     CGFloat leftMargin = elementStyle.marginLeft;
     CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
     
+#if TARGET_OS_IOS
+    if (is_Mobile) {
+        leftMargin *= self.delegate.fontScale;
+        rightMargin *= self.delegate.fontScale;
+    }
+#endif
+    
     // Extended types for title page fields and sections. This is moderately silly.
     if (line.isTitlePage && line.titlePageKey.length == 0) {
         type = (LineType)titlePageSubField;

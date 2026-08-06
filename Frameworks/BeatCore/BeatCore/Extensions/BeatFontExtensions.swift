@@ -15,6 +15,7 @@ public typealias BFontDescriptor = UIFontDescriptor
 import Foundation
 public typealias BFont = NSFont
 public typealias BFontDescriptor = NSFontDescriptor
+#endif
 
 extension BFontDescriptor.SymbolicTraits {
 	static var italicTrait: BFontDescriptor.SymbolicTraits {
@@ -33,8 +34,6 @@ extension BFontDescriptor.SymbolicTraits {
 #endif
 	}
 }
-
-#endif
 
 @objc public extension BFont {
 
@@ -57,10 +56,22 @@ extension BFontDescriptor.SymbolicTraits {
 	}
 	
 	@objc func withAddedTraits(_ traits: BFontDescriptor.SymbolicTraits) -> BFont {
+		// iOS and macOS have differing nullabilities for both descriptors and fonts. No idea why.
+		
+		#if os(iOS)
+		if let descriptor = fontDescriptor.withSymbolicTraits(
+				fontDescriptor.symbolicTraits.union(traits)
+		) {
+			return BFont(descriptor: descriptor, size: pointSize)
+		} else {
+			return self
+		}
+		#else
 		let descriptor = fontDescriptor.withSymbolicTraits(
 			fontDescriptor.symbolicTraits.union(traits)
 		)
 		return BFont(descriptor: descriptor, size: pointSize) ?? self
+		#endif
 	}
 
 	/// Returns the font with italic variant
