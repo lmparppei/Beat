@@ -20,11 +20,12 @@ extension BeatTextView:NSMenuDelegate {
 			return item.setChecked(document: self.editorDelegate)
 		} else if menuItem.action == #selector(toggleFocusMode) {
 			return self.validateFocusMode(menuItem)
+		} else if menuItem.action == #selector(toggleLineNumbers) {
+			menuItem.state = (self.enclosingScrollView?.rulersVisible ?? false) ? .on : .off
 		}
 		
 		return super.validateMenuItem(menuItem)
 	}
-	
 	
 	open override func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
 		// Remove context menu for layout orientation change

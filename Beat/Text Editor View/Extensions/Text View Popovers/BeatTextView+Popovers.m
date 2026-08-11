@@ -152,7 +152,6 @@
 	NSInteger words = 0;
 	NSInteger printedWords = 0;
 	NSArray *lines = [string componentsSeparatedByString:@"\n"];
-	NSInteger symbols = string.length;
 	
 	for (NSString *line in lines) {
 		for (NSString *word in [line componentsSeparatedByString:@" "]) {
