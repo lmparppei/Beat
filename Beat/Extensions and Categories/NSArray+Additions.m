@@ -17,5 +17,10 @@
     return newArray;
 }
 
+- (NSArray*)reversedArray
+{
+	return self.reverseObjectEnumerator.allObjects;
+}
+
 
 @end

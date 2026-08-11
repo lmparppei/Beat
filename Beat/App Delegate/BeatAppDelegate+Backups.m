@@ -8,6 +8,7 @@
 
 #import "BeatAppDelegate+Backups.h"
 #import <BeatCore/BeatCore-Swift.h>
+#import "NSArray+Additions.h"
 #import "Beat-Swift.h"
 
 @implementation BeatAppDelegate (Backups)
@@ -24,6 +25,7 @@
 	
 	if (url) {
 		NSArray *versions = [BeatBackup backupsWithName:url.lastPathComponent.stringByDeletingPathExtension];
+		versions = versions.reversedArray; // Reversed will make more sense in the UI
 		
 		NSDateFormatter* df = NSDateFormatter.new;
 		[df setDateStyle:NSDateFormatterShortStyle];

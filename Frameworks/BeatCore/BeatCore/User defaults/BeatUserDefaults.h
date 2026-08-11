@@ -95,6 +95,8 @@ extern NSString* const BeatSettingSmartQuotes;
 
 extern NSString* const BeatSettingShowCommitPromptOnSave;
 
+extern NSString* const BeatSettingiCloudBackupEnabled;
+
 
 /// Returns the user default singleton
 + (BeatUserDefaults*)sharedDefaults;
