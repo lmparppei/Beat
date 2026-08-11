@@ -163,6 +163,8 @@ static NSString *centeredEnd = @" <";
     
     // Restore position on iOS
     [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
+    
+
 }
 
 /// Removes a range. This is here for backwards-compatibility.
@@ -448,18 +450,21 @@ static NSString *centeredEnd = @" <";
     // Handle lines with content
     bool shiftPressed = false;
     
+    // Pressing shift will avoid adding an extra line break
 #if TARGET_OS_OSX
-    // On macOS, pressing shift will avoid adding an extra line break
     shiftPressed = (NSEvent.modifierFlags & NSEventModifierFlagShift);
 #else
     shiftPressed = self.delegate.inputModifierFlags & UIKeyModifierShift;
 #endif
     
+    bool addBreaks = NO;
+    
     if (currentLine.string.length > 0 && !shiftPressed) {
-        // Add double breaks for outline element lines
-        if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
+        // Add double breaks for outline element lines, end of dialogue block and transitions
+        if (currentLine.isOutlineElement || currentLine.isAnyDialogue || currentLine.type == transitionLine) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
-            return YES;
+            //return YES;
+            addBreaks = YES;
         } else if (currentLine.type == action) {
             // Action lines need to perform some checks
             // Perform a double-check if there is a next line
@@ -470,11 +475,13 @@ static NSString *centeredEnd = @" <";
                     if (currentLine.string.onlyUppercaseUntilParenthesis) return NO;
                     // Otherwise add dual line break
                     [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                    return YES;
+                    //return YES;
+                    addBreaks = YES;
                 }
             } else {
                 [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                return YES;
+                //return YES;
+                addBreaks = YES;
             }
         }
     } else if (currentLine.string.length == 0) {
@@ -485,11 +492,12 @@ static NSString *centeredEnd = @" <";
         if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
             self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
-            return YES;
+            //return YES;
+            addBreaks = YES;
         }
     }
     
-    return NO;
+    return addBreaks;
 }
 
 /// If the user types `)` where there already is a closing parentheses, jump over the `)`.
