@@ -190,7 +190,6 @@
 	self.formatting = nil;
 	self.runningPlugins = nil;
 	self.currentLine = nil;
-	self.parser = nil;
 	self.outlineView = nil;
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
@@ -215,7 +214,9 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
 	[NSNotificationCenter.defaultCenter removeObserver:self.widgetView];
 	[NSDistributedNotificationCenter.defaultCenter removeObserver:self];
-		
+	
+	self.parser = nil;
+	
 	[super close];
 	
 	// ApplicationDelegate will show welcome screen when no documents are open
