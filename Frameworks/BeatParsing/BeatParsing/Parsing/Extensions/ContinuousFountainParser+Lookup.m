@@ -454,7 +454,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 - (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item, NSInteger idx))compare
 {
     // Don't go out of range
-    if (array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
+    if (searchOrigin == NSNotFound || array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
         /** Uh, wtf, how does this work?
             We are checking if the search origin is in range from -1 to the full array count, so I don't understand how and why this could actually work, and why are we getting the correct behavior. The magician surprised themself, too.
             (Edit in 2026: I think this works because -1 calculated as max int, so actually the range is array count ... max int.)
