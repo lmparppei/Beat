@@ -186,7 +186,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Observer for selection change. It's posted to text view delegate as well, but we'll handle popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
-	
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeLanguage:) name:@"BeatLanguageChangedNotification" object:nil];
 	
 	// For future generations
@@ -220,6 +219,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
+	
+	[self setupLineNumberView];
 	
 	// Make the text view first responder at start
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
@@ -729,8 +730,11 @@ double clamp(double d, double min, double max)
 	// Always match the font actually applied at the caret so the prediction uses the current
 	// element's real font — family, weight and traits alike — rather than whatever was stored last.
 	NSFont* font = self.editorDelegate.formatting.fontForTyping;
-	if (font != nil) attributes[NSFontAttributeName] = font;
-	else if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = _editorDelegate.fonts.regular;
+	if (font != nil) {
+		attributes[NSFontAttributeName] = font;
+	} else if (attributes[NSFontAttributeName] == nil && _editorDelegate.fonts.regular != nil) {
+		attributes[NSFontAttributeName] = _editorDelegate.fonts.regular;
+	}
 
 	return attributes;
 }

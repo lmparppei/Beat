@@ -185,6 +185,7 @@
     newLine.representedLine = self;
     newLine.uuid = self.uuid;
     newLine.position = self.position;
+    newLine.lineNumber = self.lineNumber;
     
     newLine.changed = self.changed;
     

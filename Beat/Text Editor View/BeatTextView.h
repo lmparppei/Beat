@@ -120,6 +120,9 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 @property NSArray* pageBreaks;
 
+
+#pragma mark Flags
+
 /// Typewriter mode
 @property (nonatomic) bool typewriterMode;
 

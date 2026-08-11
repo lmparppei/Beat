@@ -178,6 +178,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSInteger position;
 /// Getter for string length
 @property (nonatomic) NSInteger length;
+/// The line number *in editor*
+@property (nonatomic) NSInteger lineNumber;
 
 /// If the line is an outline element (section/heading) this value contains the section depth
 @property (nonatomic) NSUInteger sectionDepth;
