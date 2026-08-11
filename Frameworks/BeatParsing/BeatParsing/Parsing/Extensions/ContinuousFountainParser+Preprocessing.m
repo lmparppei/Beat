@@ -51,8 +51,14 @@
         
     NSString* queuedPageNumber = nil;
     
+    NSInteger lineNumber = 1;
+    
     // First we'll skip non-printable lines and apply macros.
     for (Line* line in lines) {
+        // Store the original line number in editor
+        line.lineNumber = lineNumber;
+        lineNumber++;
+        
         // Stop at boneyard
         if (line.isBoneyardSection) break;
         

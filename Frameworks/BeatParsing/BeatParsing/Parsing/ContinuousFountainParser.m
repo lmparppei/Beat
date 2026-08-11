@@ -189,6 +189,7 @@
 
 /// Returns either document settings OR static document settings. Note that if static document settings are provided, they are preferred.
 /// TODO: Perhaps the parser should hold the document settings and read them when originally parsing the document? This would be much more sensible.
+/// Update 2026-08: Initialization now reads the settings and sets them in an `inout` variable. Still not the best thing.
 - (BeatDocumentSettings*)documentSettings
 {
     if (self.delegate != nil) return self.delegate.documentSettings;

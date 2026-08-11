@@ -25,6 +25,8 @@
 		B61A4E972D22079600CE761C /* NSDictionary+Inverse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */; };
 		B61A4E9A2D220F7900CE761C /* Line+RangeLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = B61A4E982D220F7900CE761C /* Line+RangeLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61A4E9B2D220F7900CE761C /* Line+RangeLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = B61A4E992D220F7900CE761C /* Line+RangeLookup.m */; };
+		B6230390302A3C3E002A9424 /* Line+Macros.m in Sources */ = {isa = PBXBuildFile; fileRef = B623038F302A3C3E002A9424 /* Line+Macros.m */; };
+		B6230391302A3C3E002A9424 /* Line+Macros.h in Headers */ = {isa = PBXBuildFile; fileRef = B623038E302A3C3E002A9424 /* Line+Macros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62D7D8C2FC87F8D00FE8ED9 /* Line+Versions.h in Headers */ = {isa = PBXBuildFile; fileRef = B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62D7D8D2FC87F8D00FE8ED9 /* Line+Versions.m in Sources */ = {isa = PBXBuildFile; fileRef = B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */; };
 		B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */; };
@@ -119,6 +121,8 @@
 		B61A4E962D22079600CE761C /* NSDictionary+Inverse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDictionary+Inverse.swift"; sourceTree = "<group>"; };
 		B61A4E982D220F7900CE761C /* Line+RangeLookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+RangeLookup.h"; sourceTree = "<group>"; };
 		B61A4E992D220F7900CE761C /* Line+RangeLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+RangeLookup.m"; sourceTree = "<group>"; };
+		B623038E302A3C3E002A9424 /* Line+Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Macros.h"; sourceTree = "<group>"; };
+		B623038F302A3C3E002A9424 /* Line+Macros.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Macros.m"; sourceTree = "<group>"; };
 		B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Line+Versions.h"; sourceTree = "<group>"; };
 		B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Line+Versions.m"; sourceTree = "<group>"; };
 		B63531BE2B7D3B5700689F85 /* BeatTypeParsingRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTypeParsingRules.swift; sourceTree = "<group>"; };
@@ -255,6 +259,8 @@
 				B61A4E992D220F7900CE761C /* Line+RangeLookup.m */,
 				B62D7D8A2FC87F8D00FE8ED9 /* Line+Versions.h */,
 				B62D7D8B2FC87F8D00FE8ED9 /* Line+Versions.m */,
+				B623038E302A3C3E002A9424 /* Line+Macros.h */,
+				B623038F302A3C3E002A9424 /* Line+Macros.m */,
 			);
 			path = "Line Extensions";
 			sourceTree = "<group>";
@@ -453,6 +459,7 @@
 				B691A5472F5D9AD10059180C /* ContinuousFountainParser+LineIdentifiers.h in Headers */,
 				B6DBB2C22D778F93008327EF /* ContinuousFountainParser+Lookup.h in Headers */,
 				B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */,
+				B6230391302A3C3E002A9424 /* Line+Macros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,6 +579,7 @@
 				B691A5482F5D9AD10059180C /* ContinuousFountainParser+LineIdentifiers.m in Sources */,
 				B63531BF2B7D3B5700689F85 /* BeatTypeParsingRules.swift in Sources */,
 				B69066852F1E7A620004AE58 /* ContinuousFountainParser+TitlePage.m in Sources */,
+				B6230390302A3C3E002A9424 /* Line+Macros.m in Sources */,
 				B6D1E5112C456D020014D16B /* ContinuousFountainParser+Omissions.m in Sources */,
 				B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */,
 			);
