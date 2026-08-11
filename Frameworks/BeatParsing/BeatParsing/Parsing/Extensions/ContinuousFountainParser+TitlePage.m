@@ -112,7 +112,7 @@
     for (Line* line in self.safeLines) {
         if (!line.isTitlePage) break;
         
-        [self resolveMacrosOn:line parser:titlePageMacros];
+        [line resolveMacrosWithParser:titlePageMacros];
         
         // Reset flags
         line.beginsTitlePageBlock = false;
