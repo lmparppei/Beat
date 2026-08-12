@@ -12,6 +12,8 @@ import UIKit
 enum BeatInputAssistantMode {
 	case writing
 	case editing
+	case phoneEditing
+	case phoneDeleting
 }
 
 /// A button to be displayed in on the leading or trailing side of an input assistant.
@@ -363,7 +365,7 @@ open class InputAssistantView: UIToolbar {
 			
 			// Flexible space between leading and trailing
 			items?.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-			
+
 			// Trailing actions
 			if !trailingActions.isEmpty {
 				let trailingButtons = createBarButtonItems(from: trailingActions)
@@ -373,8 +375,13 @@ open class InputAssistantView: UIToolbar {
 			
 			displayMode = .buttons
 		}
-		
+				
 		if let items, items.count > 0, !empty {
+			for item in items {
+				if item.primaryAction == nil { continue }
+				item.width = 30.0
+			}
+			
 			self.setItems(items, animated: false)
 		} else {
 			//self.items?.removeAll()
