@@ -20,29 +20,29 @@
 
 @implementation ContinuousFountainParser (Preprocessing)
 
-- (NSArray*)preprocessForPrinting
+- (NSArray<Line*>*)preprocessForPrinting
 {
     return [self preprocessForPrintingWithLines:self.safeLines exportSettings:nil screenplayData:nil];
 }
 
-- (NSArray*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings
+- (NSArray<Line*>*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings
 {
     return [self preprocessForPrintingWithLines:self.safeLines exportSettings:exportSettings screenplayData:nil];
 }
 
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay
+- (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay
 {
     if (!lines) lines = self.safeLines;
     return [ContinuousFountainParser preprocessForPrintingWithLines:lines documentSettings:self.documentSettings exportSettings:settings screenplay:screenplay];
 }
 
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings
++ (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings
 {
     return [ContinuousFountainParser preprocessForPrintingWithLines:lines documentSettings:documentSettings exportSettings:nil screenplay:nil];
 }
 
 /// Handles an array of lines and preprocesses them for pagination/rendering module according to document settings. Macros are applied, effectively empty lines are stripped away, forced page numbers and paragraph break rules are applied and so on.
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
++ (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay
 {
     // Create a copy of parsed lines
     NSMutableArray<Line*>* preprocessedLines = NSMutableArray.array;
@@ -51,8 +51,14 @@
         
     NSString* queuedPageNumber = nil;
     
+    NSInteger lineNumber = 1;
+    
     // First we'll skip non-printable lines and apply macros.
     for (Line* line in lines) {
+        // Store the original line number in editor
+        line.lineNumber = lineNumber;
+        lineNumber++;
+        
         // Stop at boneyard
         if (line.isBoneyardSection) break;
         

@@ -11,6 +11,8 @@
  
  There's a lot of very old code, which is pretty terrible, but works.
  
+ Edit 2026: Oh sweet summer child. Why did you do all this. You could have had everything so much easier.
+ 
  */
 
 #import "BeatTextIO.h"
@@ -85,11 +87,16 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Text I/O
 
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+{
+    [self replaceCharactersInRange:range withAttributedString:[NSAttributedString.alloc initWithString:string]];
+}
+
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
  @warning __Don't use__ this for adding text. Go through the intermediate methods instead, `addString`, `removeString` etc.
  */
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+- (void)replaceCharactersInRange:(NSRange)range withAttributedString:(NSAttributedString*)string
 {
     BXTextView* textView = self.textView;
     
@@ -113,20 +120,21 @@ static NSString *centeredEnd = @" <";
     // When replacing stuff directly in the view, we need to call it manually.
     
 #if TARGET_OS_IOS
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
         
         UITextRange *textRange = textView.selectedTextRange;
         [self.textView setSelectedTextRange:oldRange];
         
-        [textView replaceRange:textRange withText:string];
+        [textView replaceRange:textRange withAttributedText:string];
         if (textView.textStorage.isEditing) [textView.textStorage endEditing];
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
-    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
-        [textView replaceCharactersInRange:range withString:string];
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
+        //[textView replaceCharactersInRange:range withAttributedString:string];
+        [textView.textStorage replaceCharactersInRange:range withAttributedString:string];
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif
@@ -147,7 +155,7 @@ static NSString *centeredEnd = @" <";
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
-    
+
 #if !TARGET_OS_IOS
     // I don't know why, but we shouldn't invoke undo manager on iOS
     [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
@@ -155,6 +163,8 @@ static NSString *centeredEnd = @" <";
     
     // Restore position on iOS
     [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
+    
+
 }
 
 /// Removes a range. This is here for backwards-compatibility.
@@ -205,13 +215,14 @@ static NSString *centeredEnd = @" <";
 {
     if (position > _delegate.text.length) position = _delegate.text.length;
 
+    [self.delegate.textStorage beginEditing];
+    
     NSAttributedString* oldAttrStr = [_delegate.textStorage attributedSubstringFromRange:range];
-    NSString *oldString = [_delegate.text substringWithRange:range];
     
     NSAttributedString* stringToMove = (string != nil) ? string : oldAttrStr;
     
     // First remove everything
-    [self replaceCharactersInRange:range withString:@""];
+    [self replaceRange:range withString:@""];
     
     NSInteger newPosition = position;
     if (range.location < position) {
@@ -220,21 +231,8 @@ static NSString *centeredEnd = @" <";
     if (newPosition < 0) newPosition = 0;
     
     [self replaceRange:NSMakeRange(newPosition, 0) withAttributedString:stringToMove];
-    //[self replaceCharactersInRange:NSMakeRange(newPosition, 0) withString:stringToMove];
-    
-    NSRange undoingRange;
-    NSInteger undoPosition;
-    
-    if (range.location > position) {
-        undoPosition = range.location + stringToMove.length;
-        undoingRange = NSMakeRange(position, stringToMove.length);
-    } else {
-        undoingRange = NSMakeRange(newPosition, stringToMove.length);
-        undoPosition = range.location;
-    }
-    
-    [[_delegate.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
-    [_delegate.undoManager setActionName:@"Move Scene"];
+        
+    [self.delegate.textStorage endEditing];
 }
 
 /// Moves given range to another position
@@ -245,6 +243,8 @@ static NSString *centeredEnd = @" <";
 
 - (void)moveScene:(OutlineScene*)scene from:(NSInteger)from to:(NSInteger)to
 {
+    [self.delegate.textStorage beginEditing];
+    
     OutlineScene* target = (to < _delegate.parser.outline.count) ? _delegate.parser.outline[to] : nil;
     OutlineScene* nextScene = (from < _delegate.parser.outline.count - 1) ? _delegate.parser.outline[from+1] : nil;
     
@@ -321,6 +321,8 @@ static NSString *centeredEnd = @" <";
     }
     
     [self replaceRange:NSMakeRange(targetPosition, 0) withAttributedString:attrStr];
+    
+    [self.delegate.textStorage endEditing];
 }
 
 - (void)moveScenesInRange:(NSRange)range to:(NSInteger)position
@@ -376,6 +378,8 @@ static NSString *centeredEnd = @" <";
         // Only spare our custom, registered attributes
         NSDictionary* customAttrs = [BeatAttributes stripUnnecessaryAttributesFrom:attrs];
         [newString addAttributes:customAttrs range:NSMakeRange(range.location, range.length)];
+        
+        // TODO: YDocument compatibility
     }];
 
     if ([self.delegate textView:self.textView shouldChangeTextInRange:range replacementString:newString.string]) {
@@ -396,6 +400,32 @@ static NSString *centeredEnd = @" <";
 
 #pragma mark - Additional editor convenience stuff
 
+/// Checks if smart quotes replaced `'` with `’` inside CONT'D and replaces them back where needed. Called inside `shouldChangeTextInRange` text view delegate method on macOS.
+- (BOOL)replaceSmartQuotationIfNeeded:(NSString*)string range:(NSRange)range
+{
+    if (![self checkForBadQuoteWithReplacementString:string range:range]) return NO;
+    
+    [self replaceRange:range withString:@"'"];
+    return YES;
+}
+
+/// Checks if smart quotes replaced `'` with `’` inside CONT'D. Let's not allow that.
+- (BOOL)checkForBadQuoteWithReplacementString:(NSString*)string range:(NSRange)range
+{
+    // We only look for smart quote substitutions here. Ignore anything else. 
+    if (string.length != 1 || ![string isEqualToString:@"’"]) return NO;
+        
+    // Do nothing if there is no quote to be handled in the CONT'D element (which can be user-defined)
+    NSString* contd = BeatScreenplayElements.shared.contd;
+    NSInteger quoteLoc = [contd rangeOfString:@"'"].location;
+    if (quoteLoc == NSNotFound || range.location < quoteLoc) return NO;
+    
+    // Check the content preceding the smart quote and make sure it matches with CONT'D element
+    NSString* substr = [self.delegate.text substringWithRange:NSMakeRange(range.location - quoteLoc, quoteLoc)];
+        
+    return [substr isEqualToString:[contd substringToIndex:quoteLoc]];
+}
+
 /// Checks if we should add additional line breaks. Returns `true` if line breaks were added.
 /// @warning: Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange
@@ -411,7 +441,7 @@ static NSString *centeredEnd = @" <";
         prevent = true;
     }
     // Prevent default
-    if (prevent) return false;
+    if (prevent) return NO;
     
     
     // Don't add a dual line break if shift is pressed
@@ -420,18 +450,21 @@ static NSString *centeredEnd = @" <";
     // Handle lines with content
     bool shiftPressed = false;
     
+    // Pressing shift will avoid adding an extra line break
 #if TARGET_OS_OSX
-    // On macOS, pressing shift will avoid adding an extra line break
     shiftPressed = (NSEvent.modifierFlags & NSEventModifierFlagShift);
 #else
     shiftPressed = self.delegate.inputModifierFlags & UIKeyModifierShift;
 #endif
     
+    bool addBreaks = NO;
+    
     if (currentLine.string.length > 0 && !shiftPressed) {
-        // Add double breaks for outline element lines
-        if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
+        // Add double breaks for outline element lines, end of dialogue block and transitions
+        if (currentLine.isOutlineElement || currentLine.isAnyDialogue || currentLine.type == transitionLine) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
-            return YES;
+            //return YES;
+            addBreaks = YES;
         } else if (currentLine.type == action) {
             // Action lines need to perform some checks
             // Perform a double-check if there is a next line
@@ -442,11 +475,13 @@ static NSString *centeredEnd = @" <";
                     if (currentLine.string.onlyUppercaseUntilParenthesis) return NO;
                     // Otherwise add dual line break
                     [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                    return YES;
+                    //return YES;
+                    addBreaks = YES;
                 }
             } else {
                 [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                return YES;
+                //return YES;
+                addBreaks = YES;
             }
         }
     } else if (currentLine.string.length == 0) {
@@ -457,11 +492,12 @@ static NSString *centeredEnd = @" <";
         if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
             self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
-            return YES;
+            //return YES;
+            addBreaks = YES;
         }
     }
     
-    return NO;
+    return addBreaks;
 }
 
 /// If the user types `)` where there already is a closing parentheses, jump over the `)`.
@@ -936,6 +972,28 @@ static NSString *centeredEnd = @" <";
     }
     
     return false;
+}
+
+
+#pragma mark - Versions
+
+- (void)switchToVersion:(NSInteger)index
+{
+    [self.delegate bakeRevisions];
+    
+    Line* line = self.delegate.currentLine;
+    
+    NSDictionary* version = [line switchVersion:index];
+    if (version != nil && version[@"text"] != nil) {
+        [self.delegate.textActions replaceRange:line.textRange withString:version[@"text"]];
+        [self.delegate.revisionTracking loadLocalRevision:version[@"revisions"] line:line];
+    }
+}
+
+- (void)addVersionForLine:(Line*)line
+{
+    [line addVersion];
+    [self.delegate.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 }
 
 @end

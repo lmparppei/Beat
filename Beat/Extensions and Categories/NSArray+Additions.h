@@ -10,4 +10,5 @@
 
 @interface NSArray (Additions)
 - (NSArray *)arrayByRemovingObjectsFromArray:(NSArray *) objects;
+- (NSArray*)reversedArray;
 @end

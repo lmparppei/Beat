@@ -110,8 +110,9 @@
 #import "BeatEditorButton.h"
 #import "BeatTextView.h"
 #import "BeatTextView+Popovers.h"
+#import <BeatCore/BeatDocumentBaseController+Fonts.h>
 
-@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate, TKSplitHandleDelegate>
+@interface Document () <BeatPreviewManagerDelegate, BeatTextIODelegate, BeatQuickSettingsDelegate, BeatExportSettingDelegate, BeatTextViewDelegate, BeatPluginDelegate, BeatOutlineViewEditorDelegate>
 
 @property (atomic) NSData* dataCache;
 @property (nonatomic) NSString* bufferedText;
@@ -189,7 +190,6 @@
 	self.formatting = nil;
 	self.runningPlugins = nil;
 	self.currentLine = nil;
-	self.parser = nil;
 	self.outlineView = nil;
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
@@ -214,7 +214,9 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
 	[NSNotificationCenter.defaultCenter removeObserver:self.widgetView];
 	[NSDistributedNotificationCenter.defaultCenter removeObserver:self];
-		
+	
+	self.parser = nil;
+	
 	[super close];
 	
 	// ApplicationDelegate will show welcome screen when no documents are open
@@ -239,13 +241,12 @@
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController
 {
 	[super windowControllerWillLoadNib:windowController];
-
+	
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = [BeatDocumentSettings.alloc initWithDelegate:self];
 	
 	// Initialize parser
 	self.documentIsLoading = YES;
-	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController
@@ -264,6 +265,7 @@
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self; // The conformance is provided by a Swift extension
 	
+	[self setupParser];
 	[self setup];
 }
 
@@ -314,15 +316,18 @@
 
 /// Loads text & remove settings block from Fountain.
 /// - note: `readBeatDocumentString:` is implemented by the super class. It will handle setting `contentBuffer` at load.
+/// - warning: This makes no fucking sense. It's not a superclass thing, because we are allocating the parser in a very different way on iOS.
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting
 {
 	self.documentIsLoading = true;
 
 	NSString* text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding].stringByCleaningUpWindowsLineBreaks.stringByCleaningUpBadControlCharacters;
-	text = [self readBeatDocumentString:text];
+	self.contentBuffer = text;
+	
+	//text = [self readBeatDocumentString:text];
 	
 	// If we're not reverting, we can also set the text here
-	if (!reverting)	[self setText:text];
+	//if (!reverting) [self setText:text];
 	
 	return YES;
 }
@@ -336,6 +341,7 @@
 	
 	[self readFromData:data ofType:typeName error:nil reverting:YES];
 	
+	[self setupParser];
 	[self setupDocument];
 }
 
@@ -363,6 +369,8 @@
 - (void)revertToText:(NSString*)text
 {
 	[super revertToText:text];
+	
+	[self setupParser];
 	[self setupDocument];
 	[self addToChangeCount];
 }
@@ -402,11 +410,21 @@
 
 #pragma mark - Setup
 
+/// Call this FIRST before doing anything else
+- (void)setupParser
+{
+	// Let's initialize the parser from previously loaded content buffer.
+	if (self.contentBuffer == nil) self.contentBuffer = @"";
+	self.parser = [ContinuousFountainParser withRawString:self.contentBuffer delegate:self settings:self.documentSettings];
+}
+
 /**
  Flow: `windowControllerDidLoadNib` -> `setup` -> `setupDocument` -> `renderDocument` -> (async formatting) -> `loadingComplete`
  */
 - (void)setup
 {
+	self.documentIsLoading = true;
+
 	[self.previewController setup];
 	
 	// Setup plugins
@@ -417,7 +435,9 @@
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
 	
-		// Initialize theme
+	[self.textView setNeedsDisplay:true];
+		
+	// Initialize theme
 	[self loadSelectedTheme:false];
 	
 	// Setup views
@@ -443,21 +463,13 @@
 /// Reloads all necessary things. Should be called when the whole text has changed.
 - (void)setupDocument
 {
-	self.documentIsLoading = true;
-	if (self.contentBuffer == nil) self.contentBuffer = @"";
-	
-	[self.textView setNeedsDisplay:true];
-	
 	self.textView.alphaValue = 0.0;
-	
-	// We are re-initializing the parser here for some reason. Do we need to?
-	self.parser = [ContinuousFountainParser.alloc initWithString:self.contentBuffer delegate:self];
-	
+		
 	if (self.hasUnautosavedChanges) [self updateChangeCount:NSChangeDone];
 	[self.undoManager removeAllActions];
 	
-	// Put any previously loaded text into the text view when it's loaded
-	self.text = (self.contentBuffer.length > 0) ? self.contentBuffer : @"";
+	// Put the text from parser to the text view
+	[self.textView setText:self.parser.text];
 	
 	// Set up revision tracking before preview is created and lines are rendered on screen
 	[self.revisionTracking setup];
@@ -837,30 +849,7 @@
 }
 
 
-#pragma mark - split view listener
-
-- (void)setSplitHandleMinSize:(CGFloat)value
-{
-	self.splitHandle.topOrRightMinSize = value;
-}
-
-- (void)splitViewDidResize
-{
-	[self.documentSettings setInt:DocSettingSidebarWidth as:(NSInteger)self.splitHandle.bottomOrLeftView.frame.size.width];
-	[self updateLayout];
-}
-
-- (void)leftViewDidShow
-{
-	self.sidebarVisible = YES;
-	[_outlineButton setState:NSOnState];
-	[self.outlineView reloadOutline];
-}
-
-- (void)leftViewDidHide
-{
-	self.sidebarVisible = NO;
-}
+#pragma mark - split view actions
 
 /// The rest of sidebar methods are found in `Document+Sidebar`. These are just here to conform to editor delegate protocol. Oh well, oh fuck.
 - (IBAction)toggleSidebar:(id)sender
@@ -930,6 +919,8 @@
 		}
 	});	
 }
+
+@synthesize fontSize;
 
 @end
 

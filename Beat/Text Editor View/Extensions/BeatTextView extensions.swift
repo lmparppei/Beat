@@ -6,6 +6,12 @@
 //  Copyright © 2024 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ Work-in-progress Swift class for cleaner popover handling (I guess?)
+ 
+ */
+
 import Foundation
 
 fileprivate let INTERCELL_SPACING: CGFloat = 5.0
@@ -74,7 +80,6 @@ public extension BeatTextView {
 //		if (_popupMode == Autocomplete)	[self insert:sender];
 //		if (_popupMode == Tagging) [self setTag:sender];
 //		else [self closePopovers];
-		
 	}
 	
 	@objc func insertAutocompletion() {

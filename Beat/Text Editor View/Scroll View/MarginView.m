@@ -73,6 +73,10 @@
 	CGFloat x = (self.frame.size.width - documentWidth) / 2;
 	if (x < 0) x = 0.0;
 	
+	if (self.editor.getTextView.enclosingScrollView.rulersVisible) {
+		x += self.editor.getTextView.enclosingScrollView.verticalRulerView.frame.size.width;
+	}
+		
 	_paper.frame = CGRectMake(x, -50, documentWidth, self.frame.size.height + 100);
 	_paper.bounds = CGRectMake(0, 0, _paper.frame.size.width, _paper.frame.size.height);
 	

@@ -150,7 +150,7 @@
         }
         
         if (line.versions.count > 0) {
-            [self drawVersion:rect line:line inset:inset];
+            [self drawVersion:boundingRect line:line inset:inset];
         }
     }];
 }
@@ -211,7 +211,7 @@
     // Page number drawing is off
     if (!self.editorDelegate.showPageNumbers) return;
 #if TARGET_OS_IOS
-    // Page number doesn't fit on phones
+    // Page number doesn't fit on phones, so we are using overlays
     if (is_Mobile) return;
 #endif
 
@@ -225,12 +225,12 @@
     
     // Why are we using a key enumerator here instead of a normal fast enumeration? I do not know.
     Line* line;
-    
     NSEnumerator* enumerator = _pageBreaksMap.keyEnumerator;
+        
     while ((line = enumerator.nextObject)) {
         if (NSIntersectionRange(line.range, charRange).length == 0) continue;
         
-        // The dictionary value is always a two-item array with [pageNumber<String>, pageBreakPosition<Float>]
+        // The dictionary value is always a two-item array with [pageNumber<String>, pageBreakPosition<UInt>]
         NSArray* values = [_pageBreaksMap objectForKey:line];
         
         // Page number
@@ -765,8 +765,12 @@
 
 - (void)drawVersion:(CGRect)rect line:(Line*)line inset:(CGSize)inset
 {
-    CGFloat x = _editorDelegate.documentWidth - (inset.width / 2);
-    CGFloat y = rect.origin.y;
+    CGFloat padding = self.textContainers.firstObject.lineFragmentPadding;
+    CGFloat w = _editorDelegate.documentWidth - padding * 2;
+    CGRect r = CGRectMake(inset.width + rect.origin.x, rect.origin.y + inset.height, w, rect.size.height);
+    
+    CGFloat x = CGRectGetMaxX(r);
+    CGFloat y = r.origin.y;
     
     NSString* str = [NSString stringWithFormat:@"%lu/%lu", line.currentVersion+1, line.versions.count];
     [str drawAtPoint:CGPointMake(x, y) withAttributes:@{
@@ -873,10 +877,12 @@
     // Get string reference
     NSUInteger location = charIndexes[0];
     NSUInteger length = glyphRange.length;
-    CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    NSString *substring = [self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    CFStringRef str = (__bridge CFStringRef)substring;
     
     // Create a mutable copy
-    CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+    // Before, we had a length cap here (CFStringGetLength(str)), but it might cause memory issues with complex unicode characters
+    CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, 0);
     CFStringAppend(modifiedStr, str);
     
     // Some types get rendered in uppercase
@@ -904,13 +910,19 @@
         }
     }
     
+    // Panic escape: Bail out safely if the any of the transforms changed the character count, because we can't correctly remap glyphs/props/charIndexes in that case
+    if (CFStringGetLength(modifiedStr) != (CFIndex)glyphRange.length) {
+        CFRelease(modifiedStr);
+        return 0;
+    }
+        
     CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
     [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
     
     free(newGlyphs);
-    free(modifiedProps);    
+    free(modifiedProps);
     CFRelease(modifiedStr);
-    
+        
     return glyphRange.length;
 }
 

@@ -103,6 +103,8 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic, readonly) NSUndoManager *undoManager;
 @property (nonatomic, readonly) bool disableFormatting;
 
+@property (nonatomic) bool collaborating;
+
 /// Returns the actual text view for either macOS or iOS.
 - (BXTextView*)getTextView;
 - (CGFloat)editorLineHeight;

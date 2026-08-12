@@ -709,7 +709,7 @@
                                                                                 </scroller>
                                                                             </scrollView>
                                                                             <button id="ny4-eq-i89">
-                                                                                <rect key="frame" x="252" y="33" width="26" height="32"/>
+                                                                                <rect key="frame" x="252" y="33.5" width="26.5" height="32"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                                                 <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="plus.magnifyingglass" catalog="system" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="rEG-pP-Ete">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -720,7 +720,7 @@
                                                                                 </connections>
                                                                             </button>
                                                                             <button id="oeo-I1-hTN">
-                                                                                <rect key="frame" x="252" y="8" width="26" height="32"/>
+                                                                                <rect key="frame" x="252" y="8.5" width="26.5" height="32"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                                                 <buttonCell key="cell" type="bevel" bezelStyle="rounded" image="minus.magnifyingglass" catalog="system" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="b9j-Th-ghT">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1130,6 +1130,7 @@
                                                                             <outlet property="contextMenu" destination="DrH-zx-R7H" id="9LD-s8-Oqi"/>
                                                                             <outlet property="delegate" destination="-2" id="lmD-aH-hkQ"/>
                                                                             <outlet property="editorDelegate" destination="-2" id="5q0-if-Gmg"/>
+                                                                            <outlet property="lineVersionMenu" destination="vgm-WN-O8I" id="85f-ag-1YO"/>
                                                                             <outlet property="tagging" destination="IRq-m7-MkJ" id="7jd-sG-2Hg"/>
                                                                             <outlet property="touchBar" destination="FXM-lH-N3d" id="ibZ-0X-rds"/>
                                                                         </connections>
@@ -1620,9 +1621,9 @@
                                             </connections>
                                         </button>
                                         <button toolTip="Printout Settings" id="u0f-Cg-wvv">
-                                            <rect key="frame" x="1069" y="620" width="23" height="29"/>
+                                            <rect key="frame" x="1069" y="620.5" width="23" height="29"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="doc.badge.gearshape" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="b1S-3C-jJm">
+                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="document.badge.gearshape" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="b1S-3C-jJm">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -2199,6 +2200,19 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="PCK-7h-Sct"/>
+                <menuItem title="Line Version" id="V4s-AP-dc1">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Line Version" id="vgm-WN-O8I" customClass="BeatLineVersionMenu" customModule="Beat" customModuleProvider="target">
+                        <items>
+                            <menuItem title="Item?" id="35P-eZ-AOt">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
+                        </items>
+                        <connections>
+                            <outlet property="delegate" destination="6pm-Ac-n3m" id="PdV-Ub-4Gi"/>
+                        </connections>
+                    </menu>
+                </menuItem>
             </items>
             <point key="canvasLocation" x="-656" y="356.5"/>
         </menu>
@@ -2236,7 +2250,7 @@
         <image name="color.orange" width="15" height="15"/>
         <image name="color.pink" width="15" height="15"/>
         <image name="color.red" width="15" height="15"/>
-        <image name="doc.badge.gearshape" catalog="system" width="16" height="18"/>
+        <image name="document.badge.gearshape" catalog="system" width="16" height="18"/>
         <image name="list.number" catalog="system" width="16" height="13"/>
         <image name="minus.magnifyingglass" catalog="system" width="16" height="15"/>
         <image name="number" catalog="system" width="15" height="15"/>

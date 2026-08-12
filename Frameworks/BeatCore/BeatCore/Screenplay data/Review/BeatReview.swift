@@ -159,6 +159,7 @@ import JavaScriptCore
 			let range = NSMakeRange(rangeArray[0], rangeArray[1])
 			
 			if (NSMaxRange(range) <= delegate.text().count) {
+				// TODO: YDocument compatibility
 				delegate.textStorage().addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
 			}
 		}
@@ -202,6 +203,7 @@ import JavaScriptCore
         
         if (trimmedString.count > 0 && trimmedString != "") {
             // Save review if it's not empty
+			// TODO: YDocument compatibility
             delegate?.addAttribute(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
         }
         
@@ -365,6 +367,7 @@ import JavaScriptCore
         let range = NSMakeRange(location, length)
                 
         if NSMaxRange(range) <= textStorage.length {
+			// TODO: YDocument compatibility
             textStorage.addAttribute(BeatReview.attributeKey(), value: review, range: range)
             
             // Commit to attributed text cache

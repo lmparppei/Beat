@@ -74,7 +74,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 #define UNDERLINE_PATTERN_LENGTH 1
 #define NOTE_PATTERN_LENGTH 2
 #define OMIT_PATTERN_LENGTH 2
-#define HIGHLIGHT_PATTERN_LENGTH 1
 #define STRIKEOUT_PATTERN_LENGTH 2
 
 #define COLOR_PATTERN "color"
@@ -101,7 +100,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly) bool omitIn;
 @property (readonly) bool omitOut;
 
-@property (readonly, atomic) NSString* string;
+@property (readonly, nonatomic) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
@@ -172,13 +171,15 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Line type (integer enum)
 @property LineType type;
 /// String content of this line
-@property (strong, atomic) NSString* string;
+@property (strong, nonatomic) NSString* string;
 /// The string value when this line was initialized
 @property (strong, atomic) NSString* originalString;
 /// Position (starting index) )in document
 @property (nonatomic) NSInteger position;
 /// Getter for string length
 @property (nonatomic) NSInteger length;
+/// The line number *in editor*
+@property (nonatomic) NSInteger lineNumber;
 
 /// If the line is an outline element (section/heading) this value contains the section depth
 @property (nonatomic) NSUInteger sectionDepth;
@@ -267,23 +268,13 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableArray<NSDictionary*>* tags;
 /// Lines can hold any sort of custom data when needed. Used by plugins.
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
-/// Possible alternative versions of the line 
-@property (nonatomic) NSMutableArray<NSDictionary*>* versions;
-/// The currently selected iteration of line
+/// Possible alternative versions of the line content
+@property (nonatomic) NSMutableArray<NSDictionary<NSString*, id>*>* versions;
+/// The currently selected iteration of line content
 @property (nonatomic) NSInteger currentVersion;
 
 
-#pragma mark Versions
-
-/// Returns the metadata for an alternative version of this line by stepping the given amount from current version
-/// - warning: This method **DOES NOT** replace anything, but instead returns the text and possible revisions of the line. You will need to handle the actual replacement yourself in editor.
-- (NSDictionary*)switchVersion:(NSInteger)amount;
-- (void)addVersion;
-- (void)storeVersion;
-/// Returns line versions ready to be serialized to JSON.
-- (NSArray*)versionsForSerialization;
-
-#pragma mark Generated metadata
+#pragma mark - Generated metadata
 
 /// Index of line in parser, experimental
 @property (nonatomic, readonly) NSUInteger index;

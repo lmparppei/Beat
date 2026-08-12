@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatDocumentViewController (TextEvents) <UITextViewDelegate>
+@interface BeatDocumentViewController (TextEvents) <UITextViewDelegate, UIScrollViewDelegate>
 
 /// Restores caret position from document settings
 - (void)restoreCaret;

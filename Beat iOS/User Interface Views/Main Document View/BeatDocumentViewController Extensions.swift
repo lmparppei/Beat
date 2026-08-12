@@ -71,4 +71,13 @@ extension BeatDocumentViewController {
 	}
 }
 
-
+extension BeatDocumentViewController {
+	open override func pageBreaksUpdated() {
+		guard let textView = self.textView as? BeatUITextView,
+			  let layoutManager = textView.layoutManager as? BeatLayoutManager,
+			  let pageBreaksMap = layoutManager.pageBreaksMap
+		else { return }
+		
+		textView.pageNumberOverlay?.reloadPageMap(pageBreaksMap)
+	}
+}

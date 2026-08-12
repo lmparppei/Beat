@@ -16,6 +16,31 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	bool shouldChange = [self shouldChangeTextInRange:affectedCharRange replacementString:replacementString];
+		
+	if (self.collaborating) {
+		// In collaboration mode, we will never physically commit any text to the text view.
+		// However, we *will* send this change to the YDocument at this point. Parsing will be done when changes are committed to the CRDT.
+		// TODO: YClient edit
+		return false;
+	}
+
+	// Check if we can safely add the string (and parse the addition)
+	if (shouldChange) {
+		// Make the replacement string uppercase in parser
+		if (self.characterInput) replacementString = replacementString.uppercaseString;
+		
+		// Parse changes so far
+		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+		
+		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+	}
+	
+	return shouldChange;
+}
+
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(nullable NSString *)replacementString
+{
 	// Don't allow editing the script while tagging
 	if (self.mode != EditMode || self.contentLocked) return NO;
 	
@@ -33,7 +58,10 @@
 	if (replacementString.length == 1) {
 		unichar c = [replacementString characterAtIndex:0];
 		if ([NSCharacterSet.badControlCharacters characterIsMember:c]) return false;
+		
+		if ([self.textActions replaceSmartQuotationIfNeeded:replacementString range:affectedCharRange]) return false;
 	}
+	
 	
 	
 	// Check for character input trouble
@@ -85,18 +113,7 @@
 		// Auto-close () and [[]]
 		if (self.matchParentheses) change = ![self.textActions shouldMatchParenthesesIn:affectedCharRange string:replacementString];
 	}
-	
-	// If change is true, we can safely add the string (and parse the addition)
-	if (change) {
-		// Make the replacement string uppercase in parser
-		if (self.characterInput) replacementString = replacementString.uppercaseString;
 		
-		// Parse changes so far
-		[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-		
-		self.lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	}
-	
 	return change;
 }
 
@@ -136,7 +153,7 @@
 {
 	// If we are just opening the document, do nothing
 	if (self.documentIsLoading) return;
-	
+		
 	Line* currentLine = self.currentLine;
 	
 	// Reset forced character input
@@ -235,40 +252,5 @@
 	
 	[self setTypeAndFormat:cueLine type:empty];
 }
-
-/*
-#pragma mark - Character cues
-// TODO: Move these to text view
-
-- (void)handleTabPress
-{
-	// TODO: Move this to text view
-	// Force character if the line is suitable
-	Line *currentLine = self.currentLine;
-	
-	if (currentLine.isAnyCharacter && currentLine.string.length > 0) {
-		if ([self.text positionInsideParentheticals:self.selectedRange.location]) {
-			[self.textActions moveToNextDialogueLineOrAddNew];
-		} else {
-			[self.formattingActions addOrEditCharacterExtension];
-		}
-	} else if (currentLine.isAnyDialogue && currentLine.string.length == 0) {
-		[self.textActions addString:@"()" atIndex:currentLine.position];
-		self.selectedRange = NSMakeRange(currentLine.position+1, 0);
-	} else {
-		[self forceCharacterInput];
-	}
-}
-
-- (void)forceCharacterInput
-{
-	// TODO: Move this to text view
-	// Don't allow this to happen twice
-	if (self.characterInput) return;
-	
-	[self.formattingActions addCue];
-}
-*/
-
 
 @end

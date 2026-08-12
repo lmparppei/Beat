@@ -46,21 +46,16 @@
 - (id)getDocumentSetting:(NSString*)key;
 /// Returns a non-prefixed document setting
 - (id)getRawDocumentSetting:(NSString*)key;
-/// For those who REALLY know what they're doing
+/// For those who REALLY know what they're doing. Get property value in main document class.
 - (id)getPropertyValue:(NSString*)key;
 /// Sets a document setting without plugin prefix. Can be used to tweak actual document data.
 JSExportAs(setRawDocumentSetting, - (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value);
 /// Sets a document setting, prefixed by plugin name, so you won't mess up settings for other plugins.
 JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName setting:(id)value);
+/// Sets a document setting without plugin prefix. Can be used to tweak actual document data.
+JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
 
 
-#pragma mark - Objective C value setter/getter
-
-/// Set any value in the main document class class
-- (void)setPropertyValue:(NSString*)key value:(id)value;
-
-/// Get any value in the main document class
-- (id)getPropertyValue:(NSString *)key;
 
 @end
 

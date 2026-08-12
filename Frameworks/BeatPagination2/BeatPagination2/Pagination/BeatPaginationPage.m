@@ -25,11 +25,13 @@
 
 @implementation BeatPaginationPage
 
--(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate {
+-(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate
+{
     return [BeatPaginationPage.alloc initWithDelegate:delegate blocks:nil pageBreak:nil];
 }
 
--(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate blocks:(NSMutableArray* _Nullable)blocks pageBreak:(BeatPageBreak*)pageBreak {
+-(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate blocks:(NSMutableArray* _Nullable)blocks pageBreak:(BeatPageBreak*)pageBreak
+{
     self = [super init];
     
     if (self) {
@@ -43,7 +45,8 @@
     return self;
 }
 
--(BeatPaginationPage*)copyWithDelegate:(id)delegate {
+-(BeatPaginationPage*)copyWithDelegate:(id)delegate
+{
     // Move ownership of blocks
     for (BeatPaginationBlock* block in self.blocks) block.delegate = delegate;
     
@@ -88,11 +91,29 @@
         NSArray* blocks = self.safeBlocks;
         renderedString = NSMutableAttributedString.new;
         
+        NSMutableDictionary<NSNumber*,NSAttributedString*>* attrStrs = NSMutableDictionary.new;
+        
+        /*
+        // Sync render
         for (BeatPaginationBlock* block in blocks) {
-            bool firstElement = (block == blocks.firstObject) ? true : false;
+            bool firstElement = (block == blocks.firstObject);
             
             NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
             if (renderedBlock != nil) [renderedString appendAttributedString:renderedBlock];
+        }
+         */
+                
+        // Concurrent render. Drops rendering time to something like 1% of the concurrent, linear render.
+        [blocks enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(BeatPaginationBlock*  _Nonnull block, NSUInteger idx, BOOL * _Nonnull stop) {
+            bool firstElement = block == blocks.firstObject;
+            NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
+            @synchronized (attrStrs) {
+                if (renderedBlock != nil) attrStrs[@(idx)] = renderedBlock;
+            }
+        }];
+        
+        for (NSInteger i=0;i<attrStrs.count;i++) {
+            [renderedString appendAttributedString:attrStrs[@(i)]];
         }
         
         _renderedString = renderedString;
@@ -105,11 +126,13 @@
     return result;
 }
 
-- (void)invalidateRender {
+- (void)invalidateRender
+{
     _renderedString = nil;
 }
 
--(NSArray*)lines {
+-(NSArray*)lines
+{
     if (_lines != nil) return _lines;
     NSArray* blocks = self.safeBlocks;
     
@@ -122,14 +145,16 @@
     return lines;
 }
 
--(NSArray*)safeBlocks {
+-(NSArray*)safeBlocks
+{
     if (self.blocks == nil) return @[];
     
     NSArray* blocks = [NSArray arrayWithArray:self.blocks];
     return blocks;
 }
 
--(CGFloat)remainingSpace {
+-(CGFloat)remainingSpace
+{
     CGFloat height = 0.0;
     NSArray* blocks = self.safeBlocks;
     for (BeatPaginationBlock *block in blocks) {
@@ -146,7 +171,8 @@
 
 
 /// Finds the index which we can restart pagination from. It's kind of a reverse block search.
-- (NSInteger)findSafeLineFromIndex:(NSInteger)index {
+- (NSInteger)findSafeLineFromIndex:(NSInteger)index
+{
     // OK, this code doesn't make any sense.
     // I must have been tired, drunk or in psychosis.
     // After some minor blind fixes, it appears to work, though.
@@ -243,7 +269,8 @@
 }
 
 /// Returns index for the line in given position
-- (NSInteger)indexForLineAtPosition:(NSInteger)position {
+- (NSInteger)indexForLineAtPosition:(NSInteger)position
+{
     NSInteger index = self.lines.count - 1;
     
     while (index >= 0) {
@@ -259,7 +286,8 @@
 }
 
 /// Returns the index of a block (on this page) containing the given line.
-- (NSInteger)blockIndexForLine:(Line*)line {
+- (NSInteger)blockIndexForLine:(Line*)line
+{
     for (NSInteger i=0; i<_blocks.count; i++) {
         BeatPaginationBlock* block = _blocks[i];
         
@@ -328,7 +356,8 @@
 
 
 /// Returns the pagination-safe range of the screenplay which current page represents.
--(NSRange)safeRange {
+-(NSRange)safeRange
+{
     return [self safeRangeWithUUIDs:nil];
 }
 -(NSRange)safeRangeWithUUIDs:(NSMapTable<NSUUID*, Line*>* _Nullable)uuids
@@ -414,7 +443,8 @@
 }
 
  
--(void)addBlock:(BeatPaginationBlock*)block {
+-(void)addBlock:(BeatPaginationBlock*)block
+{
     // Invalidate current line array and rendered string
     _lines = nil;
     
@@ -422,7 +452,8 @@
 	[self invalidateRender];
 }
 
--(void)clearUntil:(Line*)line {
+-(void)clearUntil:(Line*)line
+{
     // Invalidate current line array
     _lines = nil;
     

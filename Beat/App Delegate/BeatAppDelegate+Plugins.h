@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatAppDelegate (Plugins)
 
 - (IBAction)openPluginLibrary:(id _Nullable)sender;
+-  (void)log:(NSString*)string;
 
 @end
 

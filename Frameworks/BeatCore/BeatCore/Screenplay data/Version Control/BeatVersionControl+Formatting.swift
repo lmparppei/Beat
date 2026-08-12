@@ -69,19 +69,15 @@ public extension BeatVersionControl {
     
     class func formatFountain(_ string: String) -> NSMutableAttributedString {
         let settings = BeatDocumentSettings()
+        let attributedString = NSMutableAttributedString()
         
-        let settingRange = settings.readAndReturnRange(string)
-        
-        var content = string
-        if settingRange.location != NSNotFound && settingRange.length != 0 {
-            content = String(string.prefix(settingRange.location))
+        if let parser = ContinuousFountainParser(staticParsingWith: string, settings: settings) {
+            attributedString.appendString(parser.text())
+            let formatting = BeatEditorFormatting(textStorage: attributedString)
+            formatting.staticParser = parser
+            
+            formatting.formatAllLines()
         }
-
-        let attributedString = NSMutableAttributedString(string: content)
-        let formatting = BeatEditorFormatting(textStorage: attributedString)
-
-        formatting.staticParser = ContinuousFountainParser(staticParsingWith: attributedString.string, settings: settings)
-        formatting.formatAllLines()
         
         return attributedString
     }

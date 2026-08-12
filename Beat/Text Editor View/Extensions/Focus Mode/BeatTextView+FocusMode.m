@@ -17,6 +17,12 @@
 	if (focusMode != BeatFocusModeOff) [self.editorDelegate registerSelectionObserver:self];
 }
 
+- (void)updateFocusMode
+{
+	if (self.focusModeType == BeatFocusModeOff) return;
+	[self focusRange:self.selectedRange];
+}
+
 - (void)selectionDidChange:(NSRange)selectedRange
 {
 	[self focusRange:selectedRange];
@@ -55,8 +61,7 @@
 
 - (BOOL)validateFocusMode:(NSMenuItem*)menuItem
 {
-	if (menuItem.tag == self.focusModeType) menuItem.state = NSOnState;
-	else menuItem.state = NSOffState;
+	menuItem.state = (menuItem.tag == self.focusModeType) ? NSOnState : NSOffState;
 	return true;
 }
 

@@ -12,6 +12,8 @@ import UIKit
 enum BeatInputAssistantMode {
 	case writing
 	case editing
+	case phoneEditing
+	case phoneDeleting
 }
 
 /// A button to be displayed in on the leading or trailing side of an input assistant.
@@ -144,17 +146,17 @@ open class InputAssistantView: UIToolbar {
 	/// Actions to display on the leading side of the suggestions.
 	public var leadingActions: [InputAssistantAction] = [] {
 		didSet {
-			self.updateToolbarItems()
+			self.updateToolbarItems(force: true)
 		}
 	}
 	
 	/// Actions to display on the trailing side of the suggestions
 	public var trailingActions: [InputAssistantAction] = [] {
 		didSet {
-			self.updateToolbarItems()
+			self.updateToolbarItems(force: true)
 		}
 	}
-	
+		
 	/// Set this to receive notifications when things happen in the assistant toolbar.
 	public weak var assistantDelegate: InputAssistantViewDelegate?
 	
@@ -329,9 +331,9 @@ open class InputAssistantView: UIToolbar {
 		widthConstraint.isActive = true
 		suggestionsWidthConstraint = widthConstraint
 	}
-		
+			
 	/// Update the toolbar items based on current actions and suggestions visibility.
-	private func updateToolbarItems() {
+	private func updateToolbarItems(force: Bool = false) {
 		// Determine if we should show suggestions or not. We'll also update the display mode to determine if we should update all the items or not.
 		let hasSuggestions = (suggestionsCollectionView?.numberOfItems(inSection: 0) ?? 0) > 0
 		let shouldShowSuggestions = hasSuggestions && (assistantDelegate?.shouldShowSuggestions() ?? false)
@@ -350,7 +352,7 @@ open class InputAssistantView: UIToolbar {
 			empty = false
 			displayMode = .suggestions
 			
-		} else if self.items == nil || self.items?.count == 0 || displayMode != .buttons {
+		} else if force || self.items == nil || self.items?.count == 0 || displayMode != .buttons {
 			// Show leading and trailing actions (no suggestions)
 			items = []
 			
@@ -363,7 +365,7 @@ open class InputAssistantView: UIToolbar {
 			
 			// Flexible space between leading and trailing
 			items?.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-			
+
 			// Trailing actions
 			if !trailingActions.isEmpty {
 				let trailingButtons = createBarButtonItems(from: trailingActions)
@@ -373,12 +375,17 @@ open class InputAssistantView: UIToolbar {
 			
 			displayMode = .buttons
 		}
-		
+				
 		if let items, items.count > 0, !empty {
+			for item in items {
+				if item.primaryAction == nil { continue }
+				item.width = 30.0
+			}
+			
 			self.setItems(items, animated: false)
 		} else {
-			self.items?.removeAll()
-			displayMode = .none
+			//self.items?.removeAll()
+			//displayMode = .none
 		}
 	}
 	

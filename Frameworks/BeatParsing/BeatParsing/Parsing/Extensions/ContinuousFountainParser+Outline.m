@@ -145,15 +145,19 @@
 {
     NSMutableArray* outline = NSMutableArray.new;
     for (OutlineScene* scene in self.outline) {
+        if (![scene isKindOfClass:OutlineScene.class]) continue;
+        
+        NSString* uuid = scene.line.uuid.UUIDString;
+        NSString* string = scene.line.string;
+        
         [outline addObject:@{
-            @"uuid": scene.line.uuid.UUIDString,
-            @"string": scene.line.string
+            @"uuid": (uuid != nil) ? scene.line.uuid.UUIDString : NSUUID.new.UUIDString,
+            @"string": (string != nil) ? string : @""
         }];
     }
     
     return outline;
 }
-
 
 
 #pragma mark - Handling changes to outline

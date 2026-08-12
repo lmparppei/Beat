@@ -1,0 +1,223 @@
+//
+//  File.swift
+//  
+//
+//  Created by yuki on 2023/03/18.
+//
+
+
+// ================================================================ //
+// Instead of XML types, YObject is used in yswift.
+// ================================================================ //
+
+
+import Foundation
+
+public typealias CSSSelector = String
+
+public protocol XMLElementType {}
+extension YXmlElement: XMLElementType {}
+extension YXmlText: XMLElementType {}
+extension YXmlHook: XMLElementType {}
+
+public protocol Item_or_YXmlElement_or_YXmlText: AnyObject {}
+extension Item: Item_or_YXmlElement_or_YXmlText {}
+extension YXmlElement: Item_or_YXmlElement_or_YXmlText {}
+extension YXmlText: Item_or_YXmlElement_or_YXmlText {}
+
+public class YXmlFragment: Object {
+    public var _prelimContent: [Any]?
+
+    public override init() {
+        self._prelimContent = []
+        super.init()
+    }
+
+    public var firstChild: XMLElementType? {
+        let first = self._first
+        return first != nil ? first!.content.getContent()[0] as? XMLElementType : nil
+    }
+
+    public override func _integrate(_ y: Doc, item: Item?) throws {
+        try super._integrate(y, item: item)
+        self.insert(0, content: self._prelimContent as! [XMLElementType])
+        self._prelimContent = nil
+    }
+    
+    public override func _copy() -> Object {
+        return YXmlFragment()
+    }
+
+    public override func clone() throws -> Object {
+        let el = YXmlFragment()
+        let array = self.toArray().map{ item in
+            return item is Object ? item.clone() : item
+        }
+        el.insert(0, content: array as! [XMLElementType])
+        return el
+    }
+
+    public var length: Int {
+        return self._prelimContent == nil ? self._length : self._prelimContent!.count
+    }
+
+    public func createTreeWalker(_ filter: (Object) -> Bool) -> YXmlTreeWalker {
+        return YXmlTreeWalker(this, filter)
+    }
+
+    public func querySelector(_ query: CSSSelector) -> XMLElementType? {
+        let query = query.uppercased()
+        let iterator = YXmlTreeWalker(self) { element in
+            let xmlElement = element as! YXmlElement
+            return xmlElement.nodeName != nil && xmlElement.nodeName.uppercased() == query
+        }
+        let next = iterator.next()
+        if next.done {
+            return nil
+        } else {
+            return next.value
+        }
+    }
+
+    public func querySelectorAll(_ query: CSSSelector) -> [XMLElementType?] {
+        query = query.uppercased()
+        let walker = YXmlTreeWalker(self) { element in
+            let xmlElement = element as! YXmlElement
+            return xmlElement.nodeName != nil && xmlElement.nodeName.uppercased() == query
+        }
+        return walker.map{ $0 }
+    }
+
+    public func _callObserver(_ transaction: Transaction, parentSubs: Set<String?>) throws {
+        self.callObservers(transaction, YXmlEvent(this, parentSubs, transaction))
+    }
+
+    public func toString() -> String {
+        return self.listMap{ $0.toString() }.joined(separator: "")
+    }
+
+    public func toJSON() -> String {
+        return self.toString()
+    }
+
+    // No toDOM in swift
+
+    public func insert(_ index: Int, content: [XMLElementType]) throws {
+        if self.doc != nil {
+            try self.doc!.transact({ transaction in
+                try self.listInsertGenerics(transaction, index: index, contents: content)
+            })
+        } else {
+            self._prelimContent?.insert(contentsOf: content, at: index)
+        }
+    }
+
+    public func insertAfter(_ ref: Item_or_YXmlElement_or_YXmlText?, content: XMLElementType) throws {
+        if self.doc != nil {
+            self.doc!.transact({ transaction in
+                let refItem = (ref != nil && ref is Object) ? (ref as! Object)._item : ref
+                self.listInsertGenericsAfter(transaction, refItem, content)
+            })
+        } else {
+            let index = ref == nil ? 0 : self._prelimContent!.firstIndex(where: { $0 === ref }) + 1
+            if index == 0 && ref != nil {
+                throw YSwiftError("Reference item not found")
+            }
+            self._prelimContent!.insert(contentsOf: content, at: index)
+        }
+    }
+
+    /**
+     * Deletes elements starting from an index.
+     *
+     * @param {Int} index Index at which to start deleting elements
+     * @param {Int} [length=1] The Int of elements to remove. Defaults to 1.
+     */
+    public func delete(_ index: Int, length: Int = 1) {
+        if self.doc != nil {
+            self.doc!.transact({ transaction in
+                self.listDelete(transaction, index, length)
+            })
+        } else {
+            // _prelimContent is defined because this is not yet integrated
+            self._prelimContent?.splice(index, length)
+        }
+    }
+
+    /**
+     * Transforms this YArray to a JavaScript Array.
+     *
+     * @return {Array<YXmlElement|YXmlText|YXmlHook>}
+     */
+    public func toArray() -> Array<XMLElementType> {
+        return self.listToArray()
+    }
+
+    /**
+     * Appends content to this YArray.
+     *
+     * @param {Array<YXmlElement|YXmlText>} content Array of content to append.
+     */
+    public func push(_ content: Array<YXmlElement | YXmlText>) {
+        self.insert(self.length, content)
+    }
+
+    /**
+     * Preppends content to this YArray.
+     *
+     * @param {Array<YXmlElement|YXmlText>} content Array of content to preppend.
+     */
+    public func unshift(_ content: Array<YXmlElement | YXmlText>) {
+        self.insert(0, content)
+    }
+
+    /**
+     * Returns the i-th element from a YArray.
+     *
+     * @param {Int} index The index of the element to return from the YArray
+     * @return {YXmlElement|YXmlText}
+     */
+    public func get(_ index: Int) -> YXmlElement | YXmlText {
+        return self.listGet(index)
+    }
+
+    /**
+     * Transforms this YArray to a JavaScript Array.
+     *
+     * @param {Int} [start]
+     * @param {Int} [end]
+     * @return {Array<YXmlElement|YXmlText>}
+     */
+    public func slice(_ start: Int = 0, end: Int = self.length) -> Array<YXmlElement | YXmlText> {
+        return self.listSlice(start, end)
+    }
+
+    /**
+     * Executes a provided function on once on overy child element.
+     */
+    public func forEach(_ f: (element: YXmlElement | YXmlText, index: Int, self: this) -> Void) {
+        self.listForEach(f)
+    }
+
+    /**
+     * Transform the properties of this type to binary and write it to an
+     * BinaryEncoder.
+     *
+     * This is called when this Item is sent to a remote peer.
+     *
+     * @param {UpdateEncoderV1 | UpdateEncoderV2} encoder The encoder to write data to.
+     */
+    public func _write(_ encoder: UpdateEncoderAny_) {
+        encoder.writeTypeRef(YXmlFragmentRefID)
+    }
+}
+
+/**
+ * @param {YUpdateDecoderV1 | YUpdateDecoderV2} _decoder
+ * @return {YXmlFragment}
+ *
+ * @private
+ * @function
+ */
+let readYXmlFragment = (_decoder: UpdateDecoderAny_) -> YXmlFragment -> YXmlFragment()
+

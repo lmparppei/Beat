@@ -28,14 +28,49 @@ extension BeatVersionControl {
         
         return popover
     }
+    
+    /// New modal window presentation, reusing the same view controller
+    public class func commitPromptModal(delegate: BeatEditorDelegate,
+                                         callback: @escaping (BeatVersionControl?) -> Void) {
+        let modalVC = CommitMessagePopover { message in
+            let vc = BeatVersionControl(delegate: delegate)
+            vc.addCommit(withMessage: message)
+        }
+        
+        if let window = delegate.documentWindow {
+            let modalWindow = NSWindow(contentViewController: modalVC)
+            modalWindow.styleMask = [.titled, .closable]
+            modalWindow.title = BeatLocalization.localizedString(forKey: "versionControl.commitChanges")
+            
+            modalVC.closeAction = {
+                window.endSheet(modalWindow)
+            }
+            
+            delegate.documentWindow.beginSheet(modalWindow) { _ in
+                callback(nil)
+            }
+            
+        } else {
+            // As a fallback, do whatever the closure told
+            callback(nil)
+        }
+    }
 }
 
 class CommitMessagePopover: NSViewController {
     private var commitAction: ((String) -> Void)?
+    // Add this when calling as a modal
+    var closeAction: (() -> Void)? {
+        didSet {
+            if closeAction != nil {
+                skipButton.isHidden = false
+            }
+        }
+    }
     
     private lazy var messageField: NSTextField = {
         let field = NSTextField(frame: NSRect(x: 5, y: 35, width: 210, height: 48))
-        field.placeholderString = "Commit message (Optional)"
+        field.placeholderString = BeatLocalization.localizedString(forKey: "versionControl.commitMessage")
         field.action = #selector(commitClicked)
         field.formatter = CommitFieldFormatter(maxLength: 140)
         field.focusRingType = .none
@@ -44,7 +79,19 @@ class CommitMessagePopover: NSViewController {
     
     private lazy var commitButton: NSButton = {
         let button = NSButton(frame: NSRect(x: 2, y: 5, width: 100, height: 24))
-        button.title = "Add Commit"
+        button.title = BeatLocalization.localizedString(forKey: "versionControl.addCommit")
+        button.bezelStyle = .rounded
+        button.setButtonType(.momentaryPushIn)
+        button.target = self
+        button.action = #selector(commitClicked)
+        button.controlSize = .small
+        button.keyEquivalent = "\r"
+        return button
+    }()
+    
+    private lazy var skipButton: NSButton = {
+        let button = NSButton(frame: NSRect(x: 2, y: 5, width: 100, height: 24))
+        button.title = BeatLocalization.localizedString(forKey: "versionControl.skip")
         button.bezelStyle = .rounded
         button.setButtonType(.momentaryPushIn)
         button.target = self
@@ -63,14 +110,36 @@ class CommitMessagePopover: NSViewController {
     }
     
     override func loadView() {
-        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: 90))
+        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 250, height: 90))
+        
+        messageField.frame.size.width = self.view.frame.width - 10
+        
+        commitButton.sizeToFit()
+        commitButton.frame.origin.x = self.view.frame.width - commitButton.frame.width - 2
+        
+        skipButton.sizeToFit()
+        skipButton.isHidden = true
+        
         self.view.addSubview(messageField)
         self.view.addSubview(commitButton)
+        self.view.addSubview(skipButton)
     }
     
     @objc private func commitClicked() {
         commitAction?(messageField.stringValue)
-        dismiss(nil)
+        close()
+    }
+    
+    override func cancelOperation(_ sender: Any?) {
+        close()
+    }
+    
+    private func close() {
+        if let closeAction = closeAction {
+            closeAction()
+        } else {
+            dismiss(nil)
+        }
     }
 }
 

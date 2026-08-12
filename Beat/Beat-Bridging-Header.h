@@ -33,9 +33,13 @@
 #import "BeatTextView.h"
 #import "BeatBrowserView.h"
 
+#import "BeatTextView+TypewriterMode.h"
+#import "BeatTextView+FocusMode.h"
+
 #import "BeatModalInput.h"
 
 #import "ITSwitch.h"
+#import "TKSplitHandle.h"
 
 #import "BeatColorMenuItem.h"
 

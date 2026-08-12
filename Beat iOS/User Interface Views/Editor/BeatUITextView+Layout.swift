@@ -9,7 +9,7 @@
 import UIKit
 
 extension BeatUITextView {
-	
+		
 	// MARK: - Resize scroll view and text view
 	/**
 	 
@@ -183,9 +183,12 @@ extension BeatUITextView {
 		var insets = self.insets
 		
 		if (documentWidth < scaledFrame) {
-			insets.left = ((self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2) * factor
+			let inset = (self.frame.size.width - documentWidth - BeatUITextView.linePadding() * 2) / 2
+			
+			insets.left = inset
+			insets.right = inset
 		}
-		
+				
 		// Calculate the index of the last glyph that fits within the available height
 		var lastGlyphIndex = layoutManager.numberOfGlyphs - 1
 		if (lastGlyphIndex < 0) { lastGlyphIndex = 0 }
@@ -206,8 +209,9 @@ extension BeatUITextView {
 			insets.top = topInset
 		}
 		
-		
 		self.textContainerInset = insets
+		
+		pageNumberOverlay?.layoutContainer()
 	}
 	
 }

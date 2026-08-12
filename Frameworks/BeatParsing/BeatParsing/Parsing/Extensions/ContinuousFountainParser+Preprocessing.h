@@ -11,9 +11,9 @@
 @class BeatScreenplay;
 
 @interface ContinuousFountainParser (Preprocessing)
-- (NSArray*)preprocessForPrinting;
-- (NSArray*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings;
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay;
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings;
-+ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay;
+- (NSArray<Line*>*)preprocessForPrinting;
+- (NSArray<Line*>*)preprocessForPrintingWithExportSettings:(BeatExportSettings*)exportSettings;
+- (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines exportSettings:(BeatExportSettings*)settings screenplayData:(BeatScreenplay**)screenplay;
++ (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings;
++ (NSArray<Line*>*)preprocessForPrintingWithLines:(NSArray*)lines documentSettings:(BeatDocumentSettings*)documentSettings exportSettings:(BeatExportSettings*)exportSettings screenplay:(BeatScreenplay**)screenplay;
 @end

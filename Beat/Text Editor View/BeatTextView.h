@@ -59,7 +59,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 
 - (bool)isDark;
 - (void)showLockStatus;
-//- (void)handleTabPress;
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (CGFloat)lineHeight;
@@ -75,16 +74,23 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @class BeatTagging;
 @class BeatPaginationPage;
 @class BeatEditorPopoverController;
+@class BeatValidationItem;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
 @property (weak) IBOutlet BeatTagging *tagging;
+
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
+@property (nonatomic) IBOutlet NSMenu *lineVersionMenu;
+
 @property (nonatomic) NSString* text;
 @property (nonatomic) BeatEditorPopoverController* popoverController;
 
 @property (nonatomic) bool didType;
+
+/// Automatically validated menu items
+@property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
 
 /// This is set `true` while the user is scrolling the view
 @property (nonatomic) bool scrolling;
@@ -113,6 +119,9 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 #pragma mark Pagination
 
 @property NSArray* pageBreaks;
+
+
+#pragma mark Flags
 
 /// Typewriter mode
 @property (nonatomic) bool typewriterMode;

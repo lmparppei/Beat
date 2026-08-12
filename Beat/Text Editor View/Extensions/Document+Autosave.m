@@ -8,6 +8,7 @@
 
 #import "Document+Autosave.h"
 #import "BeatAppDelegate.h"
+#import "Beat-Swift.h"
 
 @implementation Document (Autosave)
 
@@ -96,8 +97,29 @@
 	self.autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 }
 
+- (void)saveDocument:(id)sender
+{
+	if (self.hasVersionControl && [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowCommitPromptOnSave]) {
+		// Show commit prompt
+		[self showCommitModalWithCallback:^{
+			[super saveDocument:sender];
+		}];
+		return;
+	}
+	
+	[super saveDocument:sender];
+}
+
 - (void)saveDocumentAs:(id)sender
 {
+	if (self.hasVersionControl && [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowCommitPromptOnSave]) {
+		// Show commit prompt
+		[self showCommitModalWithCallback:^{
+			[super saveDocumentAs:sender];
+		}];
+		return;
+	}
+	
 	[super saveDocumentAs:sender];
 }
 
@@ -105,6 +127,7 @@
 {
 	[super runModalSavePanelForSaveOperation:saveOperation delegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
 }
+
 
 
 @end

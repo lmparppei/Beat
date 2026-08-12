@@ -143,6 +143,13 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     CGFloat leftMargin = elementStyle.marginLeft;
     CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
     
+#if TARGET_OS_IOS
+    if (is_Mobile) {
+        leftMargin *= self.delegate.fontScale;
+        rightMargin *= self.delegate.fontScale;
+    }
+#endif
+    
     // Extended types for title page fields and sections. This is moderately silly.
     if (line.isTitlePage && line.titlePageKey.length == 0) {
         type = (LineType)titlePageSubField;
@@ -437,7 +444,9 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
         
 		if (!alreadyEditing) [textStorage endEditing];
-        
+
+        // Typing attributes are also used to draw system inline predictions, so they should always contain the correct font
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
         [_delegate.getTextView setTypingAttributes:attributes];
         
         self.lineBeingFormatted = nil;
@@ -474,8 +483,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
                 // And on macOS we need to set the color (no idea why)
             [self addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range textStorage:nil];
             #endif
-
-			_delegate.selectedRange = selectedRange;
+            
+			//_delegate.selectedRange = selectedRange;
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
@@ -534,7 +543,10 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	[self setTextColorFor:line];
     
     if (!alreadyEditing) [textStorage endEditing];
-    if (shouldSetTypingAttributes) [_delegate.getTextView setTypingAttributes:attributes];
+    if (shouldSetTypingAttributes) {
+        if (attributes[NSFontAttributeName] == nil) attributes[NSFontAttributeName] = [self fontFamilyForLine:line];
+        [_delegate.getTextView setTypingAttributes:attributes];
+    }
     
     self.lineBeingFormatted = nil;
     _formatting = false;
@@ -545,10 +557,17 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     [BeatMeasure queue:@"format" startPhase:@"inline formatting"];
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
     
+    /// We are optimizing the render time by double-checking if the calculated attributed string matches the stored one. This only includes inline formatting.
+    /// Touching text storage and aqcuiring an attributed string is VERY expensive, and wouldn't do what we want, as it includes stuff like color etc.
+    /// Optimization only requires the minimal attributes (bold, italic etc.), so the FDX string is enough.
+    ///
+    /// HOWEVER. This implementation comes with the caveat that if you go and replace the string *with the exact same string* in editor, formatting is skipped.
+    /// To get around this, `Line` nulls the reference to `formattedString` whenever text is changed. I missed this myself and used an hour to understand why some text didn't get reformatted correctly.
+    
 	NSRange range = NSMakeRange(0, line.length);
 	NSAttributedString* astr = line.attributedStringForFDX;
     
-	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString];
+	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString] && line.length == line.formattedString.length;
 	if (!reset &&
 		formattingUnchanged &&
 		!line.isOutlineElement &&
@@ -638,10 +657,27 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Set font
 
+- (BXFont*)fontForTyping
+{
+    Line* currentLine = self.delegate.currentLine;
+    if (currentLine == nil) return self.regular;
+    
+    BXFont* font = [self fontFamilyForLine:currentLine];
+        
+    RenderStyle* style = [self.delegate.editorStyles forLine:currentLine];
+
+    if (style != nil) {
+        if (style.bold) font = font.bolded;
+        if (style.italic) font = font.italicized;
+    }
+    
+    return font;
+}
+
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
 {
-    [BeatMeasure queue:@"format" startPhase:@"font family"];
     BXFont* font = self.regular;
+    if (line == nil) return font;
     
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
     NSString* fontName = style.font;
@@ -670,17 +706,16 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     }
         
     return (font != nil) ? font : self.regular;
-    
-    return font;
 }
 
 /// Sets the font for given line (if needed)
 - (void)setFontForLine:(Line*)line {
     [self setFontForLine:line force:false];
 }
+
 /// Sets the font for given line. You can force it if needed.
-- (void)setFontForLine:(Line*)line force:(bool)force {
-    [BeatMeasure queue:@"format" startPhase:@"set font"];
+- (void)setFontForLine:(Line*)line force:(bool)force
+{
     NSMutableAttributedString *textStorage = self.textStorage;
     
     NSRange range = line.textRange;
@@ -704,7 +739,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     }
     
     // Avoid extra work and only add the font attribute when needed
-    if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
+    if (resetFont && font != nil) [textStorage addAttribute:NSFontAttributeName value:font range:range];
 }
 
 

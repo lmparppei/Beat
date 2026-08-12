@@ -9,8 +9,6 @@
 import BeatCore
 import AppKit
 
-// MARK: - Supporting Classes
-
 class DiffViewerTextView: NSTextView {
 	weak var editor: BeatEditorDelegate?
 	var magnification = 1.3

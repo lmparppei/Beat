@@ -80,9 +80,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
-/// Validated menu items
-@property (nonatomic) NSArray<BeatValidationItem*>* validatedMenuItems;
-
 @property (weak, nonatomic) IBOutlet NSScrollView* minimapContainer;
 @property (nonatomic) IBOutlet MinimapTextView* minimapView;
 
@@ -178,7 +175,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		self.layoutManager.delegate = (id<NSLayoutManagerDelegate>)self.layoutManager;
 	}
 
-	
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
 	
@@ -190,7 +186,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Observer for selection change. It's posted to text view delegate as well, but we'll handle popovers etc. here.
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
-	
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeLanguage:) name:@"BeatLanguageChangedNotification" object:nil];
 	
 	// For future generations
@@ -225,6 +220,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Setup popovers for autocomplete, tagging, etc.
 	[self setupPopovers];
 	
+	[self setupLineNumberView];
+	
 	// Make the text view first responder at start
 	[self.editorDelegate.documentWindow makeFirstResponder:self];
 	
@@ -241,6 +238,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)didFinishLoading
 {
 	[self didChangeLanguage:nil];
+	[self updateFocusMode];
 }
 
 -(void)removeFromSuperview
@@ -509,7 +507,6 @@ Line *cachedRectLine;
 {
 	CGFloat width = [_editorDelegate.editorStyles.page defaultWidthWithPageSize:_editorDelegate.pageSize];
 	CGFloat padding = self.textContainer.lineFragmentPadding;
-	
 	return width + padding * 2 + 1.0;
 }
 
@@ -547,6 +544,16 @@ Line *cachedRectLine;
 		[menu addItem:NSMenuItem.separatorItem];
 		
 		for (NSMenuItem* item in self.contextMenu.itemArray) [menu addItem:item.copy];
+		menu.delegate = self;
+	}
+	
+	// Add submenu delegate
+	for (NSMenuItem* item in menu.itemArray) {
+		if (item.menu.itemArray.count > 0) {
+			if ([item.submenu isKindOfClass:BeatLineVersionMenu.class]) {
+				item.submenu.delegate = self;
+			}
+		}
 	}
 	
 	return menu;
@@ -633,38 +640,6 @@ double clamp(double d, double min, double max)
 }
 
 
-#pragma mark - Validate menu items
-
-- (void)setupValidationItems
-{
-	self.validatedMenuItems = @[
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:BeatUserDefaults.sharedDefaults],
-	];
-}
-
-- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
-{
-	for (BeatValidationItem *item in self.validatedMenuItems) {
-		if (menuItem.action == item.selector) {
-			bool on = [item validate];
-			if (on) [menuItem setState:NSOnState];
-			else [menuItem setState:NSOffState];
-		}
-	}
-	
-	if (menuItem.action == @selector(toggleFocusMode:)) {
-		return [self validateFocusMode:menuItem];
-	}
-	
-	return [super validateMenuItem:menuItem];
-}
-
-- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem {
-	// Remove context menu for layout orientation change
-	if (anItem.action == @selector(changeLayoutOrientation:)) return NO;
-	return [super validateUserInterfaceItem:anItem];
-}
-
 
 #pragma mark - Hiding markup
 
@@ -744,7 +719,25 @@ double clamp(double d, double min, double max)
 
 -(NSString *)text { return self.string; }
 - (void)setText:(NSString *)text { self.string = text; }
-@synthesize typingAttributes;
+@synthesize typingAttributes = _typingAttributes;
+
+/// This property shadows the native `NSTextView` typing attributes, which are also used by the system to draw inline predictions (macOS 14+).
+/// The font must match what the next typed character would actually get, otherwise the prediction is drawn in the wrong font — the system font when none is set, or a stale one carried over from another element (e.g. Courier on a synopsis line, or regular weight inside a bold heading).
+- (NSDictionary<NSAttributedStringKey, id>*)typingAttributes
+{
+	NSMutableDictionary* attributes = (_typingAttributes != nil) ? _typingAttributes.mutableCopy : NSMutableDictionary.new;
+
+	// Always match the font actually applied at the caret so the prediction uses the current
+	// element's real font — family, weight and traits alike — rather than whatever was stored last.
+	NSFont* font = self.editorDelegate.formatting.fontForTyping;
+	if (font != nil) {
+		attributes[NSFontAttributeName] = font;
+	} else if (attributes[NSFontAttributeName] == nil && _editorDelegate.fonts.regular != nil) {
+		attributes[NSFontAttributeName] = _editorDelegate.fonts.regular;
+	}
+
+	return attributes;
+}
 
 
 #pragma mark - Caret

@@ -134,7 +134,7 @@
 {
 	// This is a new implementation of the old code, which enumerates line ranges instead of the whole attributed string and then iterating over lines.
 	// Slower with short documents, 90 times faster on longer ones.
-	for (Line* line in lines) { 
+	for (Line* line in lines) {
 		line.revisedRanges = NSMutableDictionary.new;
 		if (line.textRange.length == 0) continue;
 		
@@ -228,10 +228,12 @@
     return ranges;
 }
 
-#pragma mark Attributed string
+
+#pragma mark - Saving and loading revisions from settings
 
 /// Writes the given revisions into a plain text string, and returns an attributed string
-+ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
++ (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string
+{
     NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(string) ? string : @""];
     [BeatRevisions loadRevisionsFromDictionary:revisions toAttributedString:attrStr];
     return attrStr;
@@ -312,6 +314,12 @@
     return self;
 }
 
+/// Bakes current revisions into the lines of our current parser. Shorthand for the full method.
+/// - note We are using a copy of the actual lines array for semi-thread safety.
+- (void)bakeRevisions
+{
+    [BeatRevisions bakeRevisionsIntoLines:_delegate.parser.lines.copy text:_delegate.getAttributedText];
+}
 
 /// Adds  revision attributes from the delegate
 - (void)loadRevisions {
@@ -430,7 +438,7 @@
         
         if ((!revisionsMatch || range.location != NSMaxRange(currentRange)) && previousRevision != nil) {
             // Revision generation changed or the range is not continuous, so let's add the attribute
-            [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
+            [self.delegate addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
             previousRevision = nil;
         }
 
@@ -453,7 +461,7 @@
     
     // Add range
     if (currentRange.location != NSNotFound && previousRevision != nil && currentRange.length > 0 && NSMaxRange(currentRange) <= textStorage.length) {
-        [textStorage addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
+        [self.delegate addAttribute:BeatRevisions.attributeKey value:previousRevision range:currentRange];
     }
     
     [textStorage endEditing];
@@ -517,11 +525,10 @@
     
     BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:_delegate.revisionLevel];
     if (revision != nil) {
-        bool wasEditing = _delegate.textStorage.isEditing;
+        //bool wasEditing = _delegate.textStorage.isEditing;
         
-        [_delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
-        [_delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:range];
-        
+        [_delegate removeAttribute:BeatRevisions.attributeKey range:range];
+        [_delegate addAttribute:BeatRevisions.attributeKey value:revision range:range];
     }
 }
 
@@ -557,9 +564,9 @@
         if (newGen != nil) {
             // convert to another generation
             BeatRevisionItem* newRevision = [BeatRevisionItem type:revision.type generation:newGen.level];
-            if (newRevision) [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:newRevision range:range];
+            if (newRevision) [self.delegate addAttribute:BeatRevisions.attributeKey value:newRevision range:range];
         } else {
-            [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
+            [self.delegate removeAttribute:BeatRevisions.attributeKey range:range];
         }
     }];
     
@@ -760,9 +767,9 @@
         
         BeatRevisionItem* revision = (BeatRevisionItem*)value;
         if (revision == nil) {
-            [self.delegate.textStorage removeAttribute:BeatRevisions.attributeKey range:globalRange];
+            [self.delegate removeAttribute:BeatRevisions.attributeKey range:globalRange];
         } else {
-            [self.delegate.textStorage addAttribute:BeatRevisions.attributeKey value:revision range:globalRange];
+            [self.delegate addAttribute:BeatRevisions.attributeKey value:revision range:globalRange];
         }
     }];
     
@@ -772,18 +779,18 @@
 - (void)markRangeAsAddition:(NSRange)range
 {
 	BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition generation:_delegate.revisionLevel];
-	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+	if (revision) [_delegate addAttribute:REVISION_ATTR value:revision range:range];
         
     [_delegate refreshTextView];
 }
 - (void)markRangeForRemoval:(NSRange)range {
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionRemovalSuggestion generation:_delegate.revisionLevel];
-	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+	if (revision) [_delegate addAttribute:REVISION_ATTR value:revision range:range];
     [_delegate refreshTextView];
 }
 - (void)clearReviewMarkers:(NSRange)range {
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionNone generation:_delegate.revisionLevel];
-	if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+	if (revision) [_delegate addAttribute:REVISION_ATTR value:revision range:range];
     [_delegate refreshTextView];
 }
 
@@ -792,7 +799,7 @@
     if (NSMaxRange(range) > self.delegate.text.length) return;
     
     BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition generation:generation];
-    if (revision) [_delegate.textStorage addAttribute:REVISION_ATTR value:revision range:range];
+    if (revision) [_delegate addAttribute:REVISION_ATTR value:revision range:range];
 }
 
 - (void)addRevisions:(NSIndexSet*)indices generation:(NSInteger)generation

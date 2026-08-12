@@ -298,3 +298,24 @@
 "versionControl.reset.confirm" = "Ali ste prepričani, da želite ponastaviti nadzor različic?";
 "versionControl.reset.info" = "S tem boste izbrisali vse svoje commite do te točke. Tega dejanja ni mogoče razveljaviti.";
 "versionControl.reset" = "Ponastavi";
+
+"versionMenu.newVersion" = "Dodaj novo alternativo za to vrstico";
+"versionMenu.noVersions" = "Ni alternativnih verzij";
+
+"cardView.grid" = "Mreža";
+"cardView.kanban" = "Stolpci";
+"cardView.compact" = "Samo naslovi";
+"cardView.addScene" = "Dodaj prizor";
+"cardView.addAct" = "Dodaj dejanje";
+"cardView.addAct.placeholder" = "Ime dejanja";
+"cardView.deleteScene" = "Izbriši prizor";
+"cardView.deleteAct" = "Izbriši dejanje (ohrani prizore)";
+"versionControl.commit" = "Uveljavi";
+"versionControl.commitMessage" = "Sporočilo uveljavitve (neobvezno)";
+"versionControl.addCommit" = "Dodaj uveljavitev";
+"versionControl.skip" = "Preskoči";
+"versionControl.commitChanges" = "Uveljavi spremembe";
+"versionControl.restoreVersion" = "Obnovi različico";
+"versionControl.confirmRevertMessage" = "Ali ste prepričani, da želite dokument povrniti v stanje iz %TIMESTAMP%? Tega dejanja ni mogoče razveljaviti in vse novejše uveljavitve bodo odstranjene.";
+"versionControl.confirmResetTitle" = "Ali ste prepričani, da želite ponastaviti nadzor različic?";
+"versionControl.confirmResetMessage" = "S tem boste izbrisali vse svoje uveljavitve do te točke. Tega dejanja ni mogoče razveljaviti.";

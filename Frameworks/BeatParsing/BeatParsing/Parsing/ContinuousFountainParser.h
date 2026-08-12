@@ -54,7 +54,7 @@
 @property (nonatomic, readonly) OutlineChanges* outlineChanges;
 @property (nonatomic, readonly) NSMutableSet *changedOutlineElements;
 
-- (NSString*)rawText;
+- (NSString*)text;
 - (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
 
@@ -98,8 +98,6 @@
 
 /// For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
-/// Set `true` when the parser is not continuous
-@property (nonatomic) bool staticParser;
 
 @property (nonatomic) OutlineChanges* outlineChanges;
 @property (nonatomic) NSMutableSet *changedOutlineElements;
@@ -113,6 +111,9 @@
 @property (nonatomic) NSMapTable<NSUUID*, Line*>* uuidsToLinesMap;
 
 + (NSArray*)titlePageForString:(NSString*)string;
+
+/// Use this to initialize a parser with __raw__ string from a Fountain file. This automatically reads settings (__remember to pass a pointer!__) and initializes a parser. After this, you can get the actual content string for editor using `getRawText`
++ (ContinuousFountainParser*)withRawString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(inout BeatDocumentSettings*)settings;
 
 // Initialization for both CONTINUOUS and STATIC parsing
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
@@ -168,6 +169,9 @@
 
 /// Returns the number of scenes  in the file (excluding other structure elements)
 - (NSInteger)numberOfScenes;
+
+/// We can't import `BeatColors` here, so let's use generic color names
++ (NSArray<NSString*>*)colors;
 
 
 #pragma mark -

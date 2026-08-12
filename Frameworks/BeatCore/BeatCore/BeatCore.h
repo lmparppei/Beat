@@ -51,6 +51,7 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 
 #import <BeatCore/BeatDocumentBaseController.h>
 #import <BeatCore/BeatDocumentBaseController+RegisteredViewsAndObservers.h>
+#import <BeatCore/BeatDocumentBaseController+Fonts.h>
 
 #import <BeatCore/BeatNotificationDelegate.h>
 #import <BeatCore/NSTextView+UX.h>

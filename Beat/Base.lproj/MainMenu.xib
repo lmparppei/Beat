@@ -891,7 +891,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="9KI-Cy-Uax"/>
-                            <menuItem title="Line Alternatives" hidden="YES" id="zGj-P3-PkD">
+                            <menuItem title="Line Alternatives" id="zGj-P3-PkD">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="OPQ-lX-aTP">
                                     <items>
@@ -1263,6 +1263,7 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="typewriterMode"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="editorSetting" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleTypewriterMode:" target="-1" id="huT-2l-VQV"/>
@@ -1344,6 +1345,12 @@ DQ
                                 </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="toggleSetting:" target="-1" id="bBu-fx-JZf"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Line Numbers" id="kas-iH-QP7">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleLineNumbers:" target="-1" id="y1R-oB-v8B"/>
                                 </connections>
                             </menuItem>
                         </items>

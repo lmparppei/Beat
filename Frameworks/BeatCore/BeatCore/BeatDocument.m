@@ -55,7 +55,7 @@
     string = [string stringByRemovingRange:settingRange];
     self.parser = [ContinuousFountainParser.alloc initWithString:string];
     
-    [BeatRevisions bakeRevisionsIntoLines:self.parser.lines revisions:[self.settings get:DocSettingRevisions] string:self.parser.rawText];
+    [BeatRevisions bakeRevisionsIntoLines:self.parser.lines revisions:[self.settings get:DocSettingRevisions] string:self.parser.text];
 }
 
 

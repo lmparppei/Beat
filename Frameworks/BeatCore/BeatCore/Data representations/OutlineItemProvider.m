@@ -38,9 +38,13 @@
     self = [super init];
     if (self) {
         _scene = scene;
-        _dark = dark;
-        
         _options = OutlineItemProvider.options;
+        
+        if (@available(macOS 10.14, *)) {
+            _dark = dark;
+        } else {
+            _dark = true;
+        }
     }
     return self;
 }

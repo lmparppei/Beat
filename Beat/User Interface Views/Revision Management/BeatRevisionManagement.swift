@@ -88,6 +88,7 @@ import BeatCore.BeatRevisions
 		stack.orientation = .vertical
 		
 		let labelFrom = NSTextField(labelWithString: BeatLocalization.localizedString(forKey: "revisions.convert.from"))
+		labelFrom.sizeToFit()
 		let dropdownFrom = NSPopUpButton(frame: NSMakeRect(0.0, 0.0, 250.0, 30.0))
 		
 		let generations = BeatRevisions.revisionGenerations()

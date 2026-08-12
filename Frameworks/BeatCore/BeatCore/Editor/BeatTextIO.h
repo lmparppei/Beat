@@ -83,6 +83,8 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 - (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
 
+- (BOOL)replaceSmartQuotationIfNeeded:(NSString*)string range:(NSRange)range;
+
 - (void)setColor:(NSString *)color forLine:(Line *)line;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 
@@ -98,6 +100,9 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 /// This is used for navigating inside a dialogue block, for example when pressing enter inside character cue extension or parenthetical line
 /// @returns `true` if something happened, `false` if not.
 - (BOOL)moveToNextDialogueLineOrAddNew;
+
+- (void)switchToVersion:(NSInteger)index;
+- (void)addVersionForLine:(Line*)line;
 
 @end
 

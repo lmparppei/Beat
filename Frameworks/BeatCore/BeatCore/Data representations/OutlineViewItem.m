@@ -259,7 +259,7 @@
             NSForegroundColorAttributeName: (!line.omitted) ? sceneColor : [OutlineViewItem elementColor:OutlineElementTypeOmitted dark:dark],
             NSFontAttributeName: font
         }];
-        
+                
         [resultString appendAttributedString:header];
         [resultString appendAttributedString:body];
     } else if (line.type == section && string.length > 0) {

@@ -8,6 +8,7 @@
 
 #import "Document+WindowManagement.h"
 #import "Document+ThemesAndAppearance.h"
+#import "Beat-Swift.h"
 #import "BeatTextView.h"
 #import <BeatPlugins/BeatPlugin+Windows.h>
 

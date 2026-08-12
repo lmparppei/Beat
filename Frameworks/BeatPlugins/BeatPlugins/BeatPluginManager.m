@@ -70,6 +70,7 @@
         if (isFolder) {
             self.isFolder = true;
             self.bundleURL = url;
+            self.bundleName = url.lastPathComponent;
         }
         
         self.localURL = url;

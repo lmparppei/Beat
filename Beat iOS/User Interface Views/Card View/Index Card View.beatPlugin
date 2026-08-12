@@ -23,6 +23,15 @@ let selectedRange = { location: 0, length: 0 }
 // Updated when refreshing. Refers to which units we are using: page or word lengths
 let significantUnits = Beat.editorStyles().document.significantUnits
 
+// Kanban mode displays cards in columns, split by top-level sections
+let kanbanMode = Beat.getUserDefault("cardsKanbanMode") == true
+
+// Collapsed kanban columns are stored in the document settings, keyed by section line UUID
+let collapsedColumns = new Set(Beat.getDocumentSetting("collapsedColumns") ?? [])
+
+// Compact mode collapses every card to its title for a quick overview
+let compactMode = Beat.getUserDefault("cardsCompactMode") == true
+
 if (Beat.container != undefined) mode = modes.container;
 else if (Beat.iOS()) mode = modes.ios;
 else mode = modes.window;
@@ -110,6 +119,9 @@ Beat.custom = {
 		let scene = outline[sceneIndex]
 		let sibling = outline[targetIndex]
 		
+		let prevSceneIsOmitted = outline[targetIndex - 1] && outline[targetIndex - 1].omitted
+		let nextSceneIsOmitted = outline[targetIndex + 1] && outline[targetIndex + 1].omitted
+		
 		let stringToMove = Beat.getText().substring(scene.position, scene.position + scene.length)
 		let targetPosition = (sibling) ? sibling.position : Beat.getText().length
 		
@@ -117,19 +129,23 @@ Beat.custom = {
 		let length = scene.length
 		
 		// Then onto some very convoluted code for taking care of omissions
-		if (outline[targetIndex - 1] && outline[targetIndex - 1].omitted &&
-			outline[targetIndex] && outline[targetIndex].omitted && !scene.omitted) {
+		if (prevSceneIsOmitted &&
+			outline[targetIndex] &&
+			outline[targetIndex].omitted &&
+			!scene.omitted) {
 			stringToMove = "\n*/\n\n" + stringToMove + "\n/*\n\n"
 		}
-		else if (sibling?.omitted && outline[targetIndex - 1] && !outline[targetIndex - 1].omitted && !scene.omitted) {
+		else if (sibling && sibling.omitted &&
+				 !prevSceneIsOmitted &&
+				 !scene.omitted) {
 			// Find the omission
 			targetPosition = sibling.omissionStartsAt
 		} else if (scene.omitted) {
 			// Move an omitted scene
-			if (outline[sceneIndex-1]?.omitted && outline[sceneIndex+1]?.omitted) {
+			if (prevSceneIsOmitted && nextSceneIsOmitted) {
 				stringToMove = "/*\n\n" + stringToMove + "*/\n\n"
 			}
-			else if (outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+			else if (prevSceneIsOmitted && !nextSceneIsOmitted) {
 				// We need to close the current omission
 				Beat.replaceRange(scene.position, 0, "*/\n")
 				position += 3
@@ -137,16 +153,17 @@ Beat.custom = {
 
 				stringToMove = "\n/*\n\n" + stringToMove
 			}
-			else if (!outline[sceneIndex-1]?.omitted && !outline[sceneIndex+1]?.omitted) {
+			else if (!prevSceneIsOmitted && !nextSceneIsOmitted) {
 				position = scene.omissionStartsAt
 				length = scene.length + scene.position - position
 				stringToMove = Beat.getText().substring(position, position + length)
 			}
 		}
 		
-		// Make sure there's a line break
-		if (position > 1) {
-			let lineBeforeTarget = Beat.lineAtPosition(position-1)
+		// Make sure there's a line break BEFORE THE TARGET position — otherwise the moved
+		// scene heading can get merged into the preceding line (e.g. a section heading)
+		if (targetPosition > 1) {
+			let lineBeforeTarget = Beat.lineAtPosition(targetPosition-1)
 			if (lineBeforeTarget.length > 0) stringToMove = "\n\n" + stringToMove
 		}
 		// Make sure the string has a line break at end
@@ -174,6 +191,61 @@ Beat.custom = {
 	
 	returnToEditor: () => {
 		window.closePanel()
+	},
+
+	setKanbanMode: (value) => {
+		kanbanMode = (value == true)
+		Beat.setUserDefault("cardsKanbanMode", kanbanMode)
+		refreshHTML()
+	},
+
+	setColumnCollapsed: (uuid, collapsed) => {
+		if (collapsed == true) collapsedColumns.add(uuid)
+		else collapsedColumns.delete(uuid)
+
+		Beat.setDocumentSetting("collapsedColumns", Array.from(collapsedColumns))
+	},
+
+	setCompactMode: (value) => {
+		compactMode = (value == true)
+		Beat.setUserDefault("cardsCompactMode", compactMode)
+	},
+
+	/// Removes a full scene from the document
+	deleteScene: (uuid) => {
+		const outline = [...Beat.outline()]
+
+		for (const scene of outline) {
+			if (scene.line.uuidString() == uuid && scene.type == Beat.type.heading) {
+				Beat.replaceRange(scene.position, scene.length, "")
+				return
+			}
+		}
+	},
+
+	/// Removes a section heading line. The scenes are kept and will flow into the previous section.
+	deleteAct: (uuid) => {
+		let line = Beat.currentParser.lineWithUUID(uuid)
+		if (line == null || line.type != Beat.type.section) return;
+
+		let length = line.length
+		// Also remove the trailing line break
+		if (line.position + length < Beat.getText().length) length += 1
+
+		Beat.replaceRange(line.position, length, "")
+	},
+
+	/// Asks for a name and adds a new top-level section at the end of the document
+	promptNewAct: () => {
+		const title = Beat.localize("#cardView.addAct#")
+		const placeholder = Beat.localize("#cardView.addAct.placeholder#")
+
+		// On macOS the prompt runs synchronously and returns the value — the callback is iOS-only
+		if (Beat.iOS()) {
+			Beat.prompt(title, "", placeholder, "", (name) => { addActToDocument(name) })
+		} else {
+			addActToDocument(Beat.prompt(title, "", placeholder, "", null))
+		}
 	},
 	
 	printCards: () => {
@@ -208,7 +280,7 @@ Beat.custom = {
 		let suitableIndex = index
 		
 		// Find a good place to add our synopsis to
-		for (let i=index+1; i++; i<lines.length) {
+		for (let i=index+1; i < lines.length; i++) {
 			let line = lines[i]
 			if (line.type == Beat.type.empty) continue;
 			
@@ -253,7 +325,7 @@ Beat.custom = {
 		let line = Beat.lineAtPosition(endPosition)
 		
 		if (line.length > 0) text = "\n" + text;
-		if (precedingLine?.length > 0) text = "\n" + text;
+		if (precedingLine && precedingLine.length > 0) text = "\n" + text;
 		
 		text += "\n\n\n"
 		
@@ -261,21 +333,6 @@ Beat.custom = {
 	},
 	
 	getNewCard: (uuid) => {
-		/*
-		 "<div class='item card {{color}} {{selected}} {{isOmitted}}' color='{{color}}' uuid='{{uuid}}' position='{{range.location}}' length='{{range.length}}'><div class='card-content'>\
-				 <div class='heading'><div class='sceneNumber'>{{ sceneNumber }}</div>\
-					 <div class='title'>{{ stringForDisplay }}</div></div>\
-						 <div class='card-container'>\
-							 {{ synopsisList }}\
-							 {{ noteList }}\
-							 <div class='content'>{{ text }}</div>\
-						 </div>\
-						 <div class='editButton'>✎</div>\
-						 <div class='footer'>{{storylineList}} &nbsp;<div class='pages'>{{ pages }} {{ eights }}&nbsp;</div></div>\
-					 </div>\
-					 <div class='addScene'></div>\
-				 </div>"
-		 */
 		let card = templates.scene.withData({
 			stringForDisplay: "",
 			sceneNumber: "",
@@ -304,6 +361,29 @@ Beat.custom = {
 }
 
 
+/// Adds a new top-level section at the end of the document
+function addActToDocument(name) {
+	// null means the prompt was cancelled. An empty string is a deliberate unnamed act, which is valid.
+	if (name == null) return;
+
+	// The board always shows an implicit first column for the content that comes before any
+	// section. When no real section exists yet, adding an act means the user is adding a *second*
+	// one, so we first materialize that first act with an unnamed break at the very top — otherwise
+	// the new act would silently become the one and only act.
+	const hasSection = Beat.outline().some(scene => scene.type == Beat.type.section)
+	if (!hasSection) Beat.addString("# \n\n", 0)
+
+	const text = Beat.getText()
+	let prefix = ""
+	if (text.length > 0) {
+		if (!text.endsWith("\n")) prefix = "\n\n";
+		else if (!text.endsWith("\n\n")) prefix = "\n";
+	}
+
+	Beat.addString(prefix + "# " + name + "\n\n", text.length)
+}
+
+
 // ###################################
 // Initialization
 // ###################################
@@ -316,7 +396,7 @@ if (Beat.container != undefined) {
 }
 
 // When running the plugin for the first time, create the outline immediately
-let html = (Beat.outline()?.length > 0) ? createOutline(...Beat.outline()) : ""
+let html = (Beat.outline() && Beat.outline().length > 0) ? createOutline(...Beat.outline()) : ""
 
 // Get files from inside the app bundle
 let css = Beat.appAssetAsString("BeatCardsUI.css")
@@ -332,7 +412,7 @@ if (Beat.iOS()) {
 let current = (Beat.currentScene != null) ? Beat.currentScene.line.uuidString() : null
 
 // Create UI
-ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current)
+ui = Beat.localize(ui).replaceAll("{{html}}", html).replaceAll("{{css}}", css).replaceAll("{{mode}}", mode).replaceAll("{{iOS}}", (Beat.iOS() ? 'true' : 'false')).replaceAll("{{iOS-css}}", additionalCSS,).replaceAll("{{current}}", current).replaceAll("{{kanban}}", (kanbanMode ? 'true' : 'false')).replaceAll("{{compact}}", (compactMode ? 'true' : 'false'))
 
 let fullHTML = [ui, js]
 
@@ -383,9 +463,11 @@ Beat.onSelectionChange((selection) => {
 		scroll = false
 	}
 
-	let uuid = currentScene.line?.uuidString()
+	let uuid = currentScene.line && currentScene.line.uuidString()
 	
-	window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
+	if (uuid) {
+		window.runJS('updateSelection("' + uuid + '", ' + scroll + ')')
+	}
 })
 
 
@@ -434,6 +516,9 @@ function createOutline(...outline) {
 		json.push(scene)
     }
 
+    // The kanban view uses a different HTML structure
+    if (kanbanMode) return createKanbanOutline();
+
     // Create HTML based on the JSON data
     let html = "<div class='dragContainer'>"
 
@@ -449,8 +534,59 @@ function createOutline(...outline) {
     }
 
     html += "</div>"
-	
+
     return html
+}
+
+// Creates the HTML for kanban view: one column per top-level section, deeper sections become in-column separators
+function createKanbanOutline() {
+	// Columns are split at the topmost section depth actually used in the document
+	let columnDepth = Infinity
+	for (const scene of json) {
+		if (scene.typeAsString == "section" && scene.sectionDepth < columnDepth) columnDepth = scene.sectionDepth
+	}
+
+	let columns = [{ header: "", uuid: "", title: "", cards: "", count: 0 }]
+
+	for (const scene of json) {
+		let card = updateCard(scene)
+
+		if (scene.typeAsString == "section" && scene.sectionDepth == columnDepth) {
+			columns.push({ header: card.html, uuid: scene.line.uuid, title: scene.stringForDisplay, cards: "", count: 0 })
+		} else {
+			columns[columns.length - 1].cards += card.html
+			if (scene.typeAsString == "heading") columns[columns.length - 1].count++
+		}
+	}
+
+	// Drop the first column if there's nothing before the first section
+	if (columns[0].cards.length == 0 && columns.length > 1) columns.shift();
+
+	let html = "<div class='kanbanBoard'>"
+
+	for (let i=0; i < columns.length; i++) {
+		const column = columns[i]
+		// Cards dropped at the end of a column are moved before the section which starts the next column
+		const nextUuid = (i + 1 < columns.length) ? columns[i + 1].uuid : ""
+
+		// Columns are identified by their section uuid for collapsing (persisted in document settings)
+		const key = (column.uuid.length > 0) ? column.uuid : "unsorted"
+		const collapsed = (collapsedColumns.has(key)) ? " collapsed" : ""
+
+		html += "<div class='kanbanColumn" + collapsed + "' sectionUuid='" + key + "'>" +
+				"<div class='collapseButton' onclick='toggleColumn(event, \"" + key + "\")'></div>" +
+				"<div class='collapsedTitle' onclick='toggleColumn(event, \"" + key + "\")'>" + (column.title ?? "") +
+				" <span class='collapsedCount'>" + column.count + "</span></div>" +
+				column.header +
+				"<div class='dragContainer' nextUuid='" + nextUuid + "'>" + column.cards + "</div>" +
+				"<div class='addCardButton' onclick='addCardToColumn(event, \"" + key + "\")'>+ " + Beat.localize("#cardView.addScene#") + "</div>" +
+				"</div>"
+	}
+
+	html += "<div class='addActButton' onclick='addAct(event)'>+ " + Beat.localize("#cardView.addAct#") + "</div>"
+	html += "</div>"
+
+	return html
 }
 
 
@@ -480,8 +616,8 @@ function updateScene(scene, pagination = Beat.currentPagination()) {
 	sceneJSON.text = sceneJSON.text.replaceAll("<", "&lt;")
 
 	// Convert some values to lowercase for consistency
-	sceneJSON.color = sceneJSON.color?.toLowerCase()
-	sceneJSON.typeAsString = sceneJSON.typeAsString?.toLowerCase()
+	sceneJSON.color = (sceneJSON.color) ? sceneJSON.color.toLowerCase() : ""
+	sceneJSON.typeAsString = (sceneJSON.typeAsString) ? sceneJSON.typeAsString.toLowerCase() : ""
 
 	// There's no enum for this value, but 0 means page count is the significant unit.
 	if (significantUnits == 0) {
@@ -576,74 +712,7 @@ function updateCard(scene) {
 
 function printCards() {
 	// This is a hacky custom method
-	
 	Beat.printIndexCards()
-	/*
-	let css = Beat.appAssetAsString("BeatCardsPrint.css")
-	let printedHTML = ""
-
-	let json = []
-	let outline = Beat.outline()
-
-	for (let i=0; i < outline.length; i++) {
-		let scene = updateScene(outline[i])
-
-		scene.synopsisList = ""
-		if (scene.synopsis.length > 0) {
-			let synopsisList = []
-			for (const synopsis of scene.synopsis) {
-				synopsisList += templates.synopsisItem.withData(synopsis)
-			}
-
-			if (synopsisList.length > 0) scene.synopsisList = templates.synopsisList.withData({ synopsisList: synopsisList })
-			scene.text = ""
-		}
-
-		json.push(scene)
-    }
-
-    let imageableSize = Beat.printInfo().imageableSize
-
-	// Orientation is ALWAYS LANDSCAPE, so the math has to work accordingly.
-	let cardsPerRow = 3;
-	let maxRows = Math.floor(imageableSize.width / 165);
-	
-	let height = imageableSize.width / maxRows + 5;
-	css = css.replace("#MAX_HEIGHT#", height);
-
-    let cardsOnRow = 0
-	let rows = 0
-
-    for (const card of json) {
-    	if (card.typeAsString == "section") continue;
-
-    	let cardHTML = templates.printedCard.withData(card)
-    	printedHTML += cardHTML
-
-    	cardsOnRow++
-    	
-    	if (cardsOnRow == cardsPerRow) {
-    		rows++
-    		cardsOnRow = 0
-    	}
-    	if (rows == maxRows) {
-    		printedHTML += "</section><div class='pageBreak'></div><section>"
-
-    		rows = 0
-    		cardsOnRow = 0
-    	}
-    }
-
-    let settings = {
-    	orientation: "landscape",
-    	margins: [0, 0, 0, 0]
-    }
-
-    let htmlContent = "<html><head><meta name='viewport' content='initial-scale=0.9, maximum-scale=0.9, user-scalable=no' /><style>" + css + "</style></head><body><div id='container'><section>" + printedHTML + "</section></div></body></html>"
-    Beat.printHTML(htmlContent, settings, () => {
-
-    })
-	 */
 }
 
 function windowed() {

@@ -32,7 +32,7 @@ class iOSDocument: UIDocument {
 	override var description: String {
 		return fileURL.deletingPathExtension().lastPathComponent
 	}
-	
+		
     override func contents(forType typeName: String) throws -> Any {
 		if let _ = delegate?.parser {
 			guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
@@ -50,7 +50,6 @@ class iOSDocument: UIDocument {
 		if !backup {
 			print("Backup failed")
 		}
-		
 		return success
 	}
 		

@@ -51,6 +51,12 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
     BeatFontTypeLibertinus
 };
 
+typedef NS_ENUM(NSInteger, BeatFontStyle) {
+    BeatFontStyleSerif = 0,
+    BeatFontStyleSansSerif,
+    BeatFontStyleCourierNew
+};
+
 @interface BeatFontSet : NSObject
 
 @property (nonatomic, readonly) NSString* name;
@@ -69,6 +75,8 @@ typedef NS_ENUM(NSInteger, BeatFontType) {
 
 /// Cross-platform font trait creation. This should be a category.
 + (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont;
+
++ (BeatFontType)fontTypeWithStyle:(BeatFontStyle)fontStyle variableWidth:(BOOL)variableWidth;
 
 @end
 

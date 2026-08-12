@@ -206,7 +206,7 @@ import BeatCore
         }
               
         if let screenplay = BeatScreenplay.from(self.delegate?.parser, settings: settings) {
-            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange:NSMakeRange(0, parser.rawText().count))
+            let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changedRange:NSMakeRange(0, parser.text().count))
             runPagination(pagination: operation)
         }
     }
@@ -290,10 +290,12 @@ import BeatCore
 	
 	/// Returns `[numberOfFullPages, eightsOfLastpage]`, ie. `[5, 2]` for 5 2/8
     @objc public var lengthInEights:[Int] {
-		if self.pages.count == 0 { return [0,0] }
+		guard self.pages.count > 0,
+                let lastPage = self.pages.last
+        else { return [0,0] }
 		
 		var pageCount = self.pages.count - 1
-		var eights = Int(round((self.pages.last!.maxHeight - self.pages.last!.remainingSpace / self.pages.last!.maxHeight) / (1.0/8.0)))
+		var eights = Int(round(((lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight) / (1.0/8.0)))
 		
 		if eights == 8 {
 			pageCount += 1

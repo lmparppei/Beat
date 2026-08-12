@@ -90,9 +90,12 @@ import UXKit
         updateStylizations()
         
 		var r = range
+                
 		if NSMaxRange(r) > textStorage.string.count {
 			r.length -= NSMaxRange(r) - textStorage.string.count
 		}
+        
+        guard NSMaxRange(r) <= textStorage.string.count else { return }
 		
 		let string = textStorage.string.substring(range: r)
 		if string.count == 0 { return }
@@ -131,7 +134,10 @@ import UXKit
                 
 				let indices = parseInlineStyles(string: string, markdown: key)
 				indices.enumerateRanges { localRange, stop in
-                    self.textStorage?.addAttributes(dict, range: NSMakeRange(range.location + localRange.location, localRange.length))
+                    let range = NSMakeRange(r.location + localRange.location, localRange.length)
+                    if NSMaxRange(range) <= textStorage.length {
+                        textStorage.addAttributes(dict, range: NSMakeRange(r.location + localRange.location, localRange.length))
+                    }
 				}
 			}
 		}

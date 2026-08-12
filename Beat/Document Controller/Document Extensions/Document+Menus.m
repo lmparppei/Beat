@@ -45,6 +45,7 @@
 	SEL action = menuItem.action;
 
 	// Toggle checks first
+	// TODO: (wtf, there are multiple similar, basically overlapping menu item classes. These should be fixed at some point.
 	if ([menuItem isKindOfClass:BeatOnOffMenuItem.class]) {
 		BeatOnOffMenuItem* validatingItem = (BeatOnOffMenuItem*)menuItem;
 		valid = [validatingItem setCheckedWithDocument:self];
@@ -85,10 +86,13 @@
 				action == @selector(undoEdit:) ||
 				action == @selector(redoEdit:));
 	}
-	
+		
 	//
 	if (action == @selector(toggleTimeline:)) {
 		menuItem.state = (self.timeline.visible) ? NSOnState : NSOffState;
+	}
+	else if (action == @selector(preview:)) {
+		menuItem.state = self.currentTab == self.nativePreviewTab ? NSOnState : NSOffState;
 	}
 	else if (action == @selector(toggleSidebarView:)) {
 		menuItem.state = (self.sidebarVisible) ? NSOnState : NSOffState;
@@ -168,6 +172,12 @@
 	else if ([menuItem isKindOfClass:BeatVisibleRevisionMenuItem.class]) {
 		NSArray<NSNumber*>* indices = [self.documentSettings get:DocSettingHiddenRevisions];
 		[(BeatVisibleRevisionMenuItem*)menuItem validateWithVisibleRevisions:indices];
+	}
+	else if (menuItem.action == @selector(markAddition:) || menuItem.action == @selector(markRemoval:) || menuItem.action == @selector(clearMarkings:)) {
+		valid = (self.textView.selectedRange.length > 0);
+	}
+	else if (menuItem.action == @selector(commit:)) {
+		valid = self.hasVersionControl;
 	}
 	
 	return valid;

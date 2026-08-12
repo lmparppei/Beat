@@ -275,13 +275,13 @@
 
 -(BeatScreenplay*)screenplayForText:(NSString*)text settings:(BeatExportSettings*)exportSettings {
 	BeatDocumentSettings *settings = BeatDocumentSettings.new;
-	[settings readSettingsAndReturnRange:text];
-	
 	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initStaticParsingWithString:text settings:settings];
+	
+	NSString* content = parser.text;
 	
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
-	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text];
+	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:content];
 	
 	BeatScreenplay* screenplay = [BeatScreenplay from:parser settings:exportSettings];
 	return screenplay;

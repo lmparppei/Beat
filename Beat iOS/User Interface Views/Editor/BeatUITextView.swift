@@ -38,6 +38,8 @@ import BeatParsing
 	@IBOutlet weak var enclosingScrollView:BeatScrollView?
 	@IBOutlet weak var pageView:UIView?
 		
+	@objc var pageNumberOverlay:BeatPageNumberOverlay?
+	
 	/// Modifier flags are set during key press events and cleared afterwards. This helps with macOS class interop.
 	@objc public var modifierFlags:UIKeyModifierFlags = []
 	/// The input assistant view on top of keyboard
@@ -90,6 +92,7 @@ import BeatParsing
 	
 	/// This class function creates and sets up the main editor text view. We can't create a text view in IB, because layout manager can't be replaced when initializing through `NSCoder`.
 	@objc class func createTextView(editorDelegate:BeatEditorDelegate, frame:CGRect, pageView:BeatPageView, scrollView:BeatScrollView) -> BeatUITextView {
+		
 		// First create core text system
 		let textContainer = NSTextContainer()
 		let layoutManager = BeatLayoutManager(delegate: editorDelegate)
@@ -231,11 +234,14 @@ import BeatParsing
 		// Text view behavior
 		self.smartDashesType = .no
 		self.smartQuotesType = .no
-		self.smartInsertDeleteType = .no		
+		self.smartInsertDeleteType = .no
+		
+		// This *might* reduce blurriness.
+		self.layer.shouldRasterize = false
 		
 		resizePaper()
 		resize()
-		
+				
 		setupInputAssistantButtons()
 		
 		if !mobileMode {
@@ -263,6 +269,8 @@ import BeatParsing
 			self.maximumZoomScale = 2.0
 			self.minimumZoomScale = 1.0
 		}
+		
+		pageNumberOverlay = BeatPageNumberOverlay(textView: self)
 	}
 	
 	
@@ -274,17 +282,13 @@ import BeatParsing
 		
 		guard let delegate = self.editorDelegate else { return 0.0 }
 		
-		if delegate.pageSize == .A4 {
-			width = BeatFontManager.characterWidth * 60
-		} else {
-			width = BeatFontManager.characterWidth * 62
-		}
-		
+		width = delegate.pageSize == .A4 ? delegate.editorStyles.page().defaultWidthA4 : delegate.editorStyles.page().defaultWidthLetter
 		width += padding * 2
 		
 		// For iPhone, we'll fit the viewport to view
-		if mobileMode {
-			let availableWidth = self.frame.size.width * (1/self.zoomScale)
+		if mobileMode, let superview {
+			let availableWidth = superview.frame.size.width * self.zoomScale
+			width = width * delegate.fontScale()
 			width = min(availableWidth, width)
 		}
 		
@@ -513,147 +517,6 @@ import BeatParsing
 	}
 }
 
-
-
-// MARK: - Scroll view delegation
-
-extension BeatUITextView: UIScrollViewDelegate {
-	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-		return pageView
-	}
-		
-	func scrollViewDidZoom(_ scrollView: UIScrollView) {
-		//
-	}
-	
-	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-		guard let pageView else { return }
-		var x = (scrollView.frame.width - pageView.frame.width) / 2
-		if (x < 0) { x = 0; }
-				
-		var frame = pageView.frame
-		frame.origin.x = x
-		
-		var zoom = scrollView.zoomScale
-		
-		// Page view will always be at least the height of the screen
-		if (frame.height < scrollView.frame.height) {
-			let factor = frame.height / scrollView.frame.height
-			zoom = scrollView.zoomScale / factor
-		}
-		
-		// Set content scale factor (see UIView+Scale extension)
-		// We'll multiply the value with screen native scale. Not sure if this is wise or not.
-		let scale = scrollView.zoomScale * UIScreen.main.nativeScale
-		scrollView.scaleView(view: scrollView, scale: scale)
-		scrollView.scaleLayer(layer: scrollView.layer, scale: scale)
-		
-		self.scaleView(view: self, scale: scale)
-		self.scaleLayer(layer: self.layer, scale: scale)
-		
-		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) { [weak self] in
-			self?.pageView?.frame.origin.x = frame.origin.x
-			
-			self?.enclosingScrollView?.zoomScale = zoom
-			self?.resizeScrollViewContent()
-		} completion: { _ in
-			
-		}
-	}
-
-	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-		guard let key = presses.first?.key else { return }
-		
-		// First check possible assistant view status and move highlight if needed
-		// Normal tab presses are caught later
-		if let assistantView, assistantView.numberOfSuggestions > 0,
-		   key.modifierFlags.rawValue == 0 || key.modifierFlags == .shift {
-			var preventSuper = false
-			
-			if key.keyCode == .keyboardTab && key.modifierFlags == .shift {
-				assistantView.highlightPreviousSuggestion()
-				preventSuper = true
-			} else if key.keyCode == .keyboardTab {
-				assistantView.highlightNextSuggestion()
-				preventSuper = true
-			} else if assistantView.highlightedSuggestion >= 0, key.keyCode == .keyboardReturnOrEnter {
-				// Select the highlighted item
-				assistantView.selectHighlightedItem()
-				preventSuper = true
-			} else if assistantView.highlightedSuggestion >= 0, key.keyCode == .keyboardEscape  {
-				// De-select highlights
-				assistantView.deselectHighlightedItem()
-				preventSuper = true
-			}
-			
-			if preventSuper { return }
-		}
-		
-		if key.keyCode == .keyboardTab {
-			handleTabPress()
-			return
-		}
-		
-		if key.keyCode == .keyboardReturnOrEnter, key.modifierFlags == .shift {
-			self.modifierFlags = key.modifierFlags
-		} else if key.keyCode == .keyboardDeleteOrBackspace, self.shouldCancelCharacterInput() {
-			// Check if we should cancel character input
-			self.cancelCharacterInput()
-			return
-		}
-		
-		super.pressesBegan(presses, with: event)
-	}
-	
-	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-		// Reset modifier flags first
-		self.modifierFlags = []
-		
-		guard let key = presses.first?.key else { return }
-
-		switch key.keyCode {
-		case .keyboardTab:
-			return
-			
-		default:
-			super.pressesEnded(presses, with: event)
-		}
-	}
-	
-	func handleTabPress() {
-		guard let line = self.editorDelegate?.currentLine else { return }
-					
-		if line.isAnyCharacter(), line.length > 0 {
-			self.editorDelegate?.formattingActions.addOrEditCharacterExtension()
-		} else if line.isAnyDialogue() && line.length == 0 {
-			self.editorDelegate?.textActions.add("()", at: UInt(line.position), skipAutomaticLineBreaks: true)
-			self.setSelectedRange(NSMakeRange(line.position+1, 0))
-		} else {
-			forceCharacterInput()
-		}
-	}
-	
-	func forceCharacterInput() {
-		if self.editorDelegate?.lineForNewCue != nil { return }
-		self.editorDelegate?.formattingActions.addCue()
-	}
-	
-	
-	//Delegate Methods
-	func scrollViewWillBeginDragging(_ scrollView: UIScrollView){
-		lastOffsetY = scrollView.contentOffset.y
-	}
-	
-	func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView){
-		/*
-		let hide = scrollView.contentOffset.y > self.lastOffsetY
-		if let vc = self.getViewController() {
-			let nc = vc.navigationController
-			vc.navigationController?.setToolbarHidden(hide, animated: true)
-		}
-		*/
-	}
-}
 
 
 // MARK: - Gesture recognizer delegate for mobile

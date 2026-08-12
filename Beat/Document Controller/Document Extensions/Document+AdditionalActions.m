@@ -217,10 +217,10 @@
 		if (scene.line.sceneNumberRange.length) {
 			// Remove existing scene number
 			NSRange range = NSMakeRange(scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length);
-			[self replaceRange:range withString:result];
+			[self.textActions replaceRange:range withString:result];
 		} else {
 			// Add empty scene number
-			[self addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
+			[self.textActions addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
 		}
 	}];
 }

@@ -9,23 +9,29 @@
 import UIKit
 
 extension UIView {
-	func scaleView(view: UIView, scale: CGFloat) {
-		let factor = (scale > 1.0) ? scale : 1.0
-		
-		view.contentScaleFactor = factor
-		for vi in view.subviews {
-			scaleView(view: vi, scale: factor)
-		}
+	func scaleViewTree(to scale:CGFloat) {
+		scaleView(scale: scale)
+		self.layer.scaleLayer(scale: scale)
 	}
-
-	func scaleLayer(layer: CALayer, scale: CGFloat) {
+	
+	func scaleView(scale: CGFloat) {
 		let factor = (scale > 1.0) ? scale : 1.0
-		layer.contentsScale = factor
 		
-		guard let sublayers = layer.sublayers else { return }
-		for la in sublayers {
-			scaleLayer(layer: la, scale: factor)
+		self.contentScaleFactor = factor
+		for vi in self.subviews {
+			vi.scaleView(scale: factor)
 		}
 	}
 }
 
+extension CALayer {
+	func scaleLayer(scale: CGFloat) {
+		let factor = (scale > 1.0) ? scale : 1.0
+		self.contentsScale = factor
+		
+		guard let sublayers = self.sublayers else { return }
+		for la in sublayers {
+			la.scaleLayer(scale: factor)
+		}
+	}
+}

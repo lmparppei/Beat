@@ -453,7 +453,8 @@
 - (IBAction)dismissDocumentViewController:(id)sender
 {
 	[self dismissViewControllerAnimated:true completion:^{
-		[self.document closeWithCompletionHandler:nil];
+		[self.document closeWithCompletionHandler:^(BOOL success) {
+		}];
 	}];
 }
 

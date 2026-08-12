@@ -15,7 +15,8 @@ typedef NS_OPTIONS(NSUInteger, OutlineItemOptions) {
     OutlineItemIncludeSynopsis      = 1 << 2,
     OutlineItemIncludeNotes         = 1 << 3,
     OutlineItemIncludeMarkers       = 1 << 4,
-    OutlineItemDarkMode             = 1 << 5
+    OutlineItemIncludeLength        = 1 << 5,
+    OutlineItemDarkMode             = 1 << 6
 };
 
 typedef NS_OPTIONS(NSUInteger, OutlineElementType) {
