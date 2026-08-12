@@ -182,6 +182,9 @@
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 		
 	[self setupDocument];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsDidChange:) name:@"BeatSettingsChanged" object:nil];
+	[self settingsDidChange:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -223,6 +226,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self restoreCaret];
 	});
+	
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -301,7 +305,6 @@
 		[super loadFonts];
 	}	
 }
-
 
 - (void)setupDocument
 {
@@ -477,6 +480,16 @@
 - (NSString*)contentForSaving
 {
 	return [self createDocumentFile];
+}
+
+
+#pragma mark - Setting change listener
+
+- (void)settingsDidChange:(NSNotification*)notification
+{
+	if (self.editorSplitView == nil) return;
+
+	self.navigationController.hidesBarsOnSwipe = ![BeatUserDefaults.sharedDefaults getBool:BeatSettingDontHideBars];
 }
 
 
