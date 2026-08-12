@@ -35,7 +35,8 @@
 
 @implementation BeatTitlePageEditor
 
-- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate {
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate
+{
 	self = [super initWithWindowNibName:@"BeatTitlePageEditor" owner:self];
 	self.editorDelegate = delegate;
 	
@@ -43,9 +44,7 @@
 }
 
 - (void)parseTitlePage {
-	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:self.editorDelegate.text];
-
-	// List of applicable fields
+	// List of applicable fields mapped to controls
 	NSDictionary* fields = @{
 							 @"title":_titleField,
 							 @"credit":_creditField,
@@ -58,26 +57,31 @@
 							 };
 
 	// Clear custom fields
-	_customFields = [NSMutableArray array];
+	_customFields = NSMutableArray.new;
 	
-	if (parser.titlePage.count > 0) {
+	ContinuousFountainParser* parser = self.editorDelegate.parser;
+	NSArray* titlePage = [parser parseTitlePage];
+	
+	if (titlePage.count > 0) {
 		// This is a shitty approach, but what can I say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
-		for (NSDictionary *dict in parser.titlePage) {
+		for (NSDictionary *dict in titlePage) {
 			NSString *key = [dict.allKeys objectAtIndex:0];
 			
 			if ([fields objectForKey:key]) {
-				NSMutableString *values = [NSMutableString string];
+				NSMutableString* string = NSMutableString.new;
+				NSArray* lines = dict[key];
 				
-				for (NSString *val in dict[key]) {
-					if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
-					else [values appendFormat:@"%@\n", val];
+				for (Line* line in lines) {
+					[string appendString:line.titlePageValue];
+					if (lines.count > 0 && line != lines.lastObject) [string appendString:@"\n"];
 				}
 				
 				// Strip extra line break from multiline values
-				if (values.length > 1 && [values characterAtIndex:0] == '\n') [values setString:[values substringFromIndex:1]];
+				[string setString:[string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
 				
-				if (![fields[key] isKindOfClass:[NSTextView class]]) [fields[key] setStringValue:values];
-				else [fields[key] setString:values];
+				// Multiline text view has different setter
+				if (![fields[key] isKindOfClass:NSTextView.class]) [(NSTextField*)fields[key] setStringValue:string];
+				else [(NSTextView*)fields[key] setString:string];
 			} else {
 				[_customFields addObject:dict];
 			}
@@ -90,7 +94,8 @@
 	}
 }
 
-- (void)windowDidLoad {
+- (void)windowDidLoad
+{
     [super windowDidLoad];
 	[self parseTitlePage];
 	[self fieldDidChange:nil];
@@ -120,8 +125,9 @@
 	[self.window.sheetParent endSheet:self.window];
 }
 
-- (IBAction)applyTitlePageEdit:(id)sender {
-	NSMutableString *titlePage = [NSMutableString string];
+- (IBAction)applyTitlePageEdit:(id)sender
+{
+	NSMutableString *titlePage = NSMutableString.new;
 	
 	// BTW, isn't Objective C nice, beautiful and elegant?
 	[titlePage appendFormat:@"Title: %@\n", [_titleField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
@@ -140,14 +146,13 @@
 	// Add back possible custom fields that were left out
 	for (NSDictionary *dict in _customFields) {
 		NSString *key = [dict.allKeys objectAtIndex:0];
-		NSArray *obj = dict[key];
+		NSArray *lines = dict[key];
 	
 		// Check if it is a text block or single line
-		if ([obj count] == 1) [titlePage appendFormat:@"%@:", [key capitalizedString]];
-		else  [titlePage appendFormat:@"%@:\n", [key capitalizedString]];
+		[titlePage appendFormat:@"%@:%@", key.capitalizedString, lines.count > 1 ? @"\n" : @""];
 		
-		for (NSString *val in obj) {
-			[titlePage appendFormat:@"%@\n", val];
+		for (Line *line in lines) {
+			[titlePage appendFormat:@"%@\n", line.string];
 		}
 	}
 	
