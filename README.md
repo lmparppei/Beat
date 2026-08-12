@@ -12,7 +12,7 @@ Read more on public plugin repository: https://github.com/lmparppei/BeatPlugins/
 
 ## About Beat
 
-This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. 
+This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features.
 
 Beat is under active development, and worst bugs will usually be fixed ASAP. If you encounter a bug, contact me through e-mail, Discord or file an issue here on GitHub. 
 
@@ -47,9 +47,9 @@ The mobile version is currently a paid app, available on App Store, but it is st
 
 ## Building from repo
 
-**Note:** This repository follows my development, so it DOES NOT match the latest release version on either platform. I still can't use branches. Dread lightly, dear friend!
+**Note:** The main branch in this repository follows my development, so it DOES NOT always match the latest release version on either platform.
 
-Open the `Beat` workspace and set your credentials. When building for macOS development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but both iOS and macOS release versions have only one external package dependency.
+Open the `Beat` workspace and set your credentials. When building for macOS development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but both releases have very few external dependencies.
 
 ## Plugins
 
@@ -63,7 +63,7 @@ To fund the development, the binary for iOS release is currently distributed wit
 
 You can also help to keep the project alive by subscribing to my Patreon.
 
-However, the creator of this app is a well-off person from a social-democratic welfare country, so you can consider sending your loose change to NGOs and charities instead. Currently, there is a genocide happening in Gaza and people are in desperate need of help.
+However, the creator of this app is a well-off person from a social-democratic welfare country, so you can consider sending your loose change to NGOs and charities instead. Currently, there is a genocide happening in Gaza, while the world is closing its eyes, and people are in desperate need of help.
 
 
 ## Post-mortem
@@ -72,7 +72,9 @@ However, the creator of this app is a well-off person from a social-democratic w
 
 The application will stay free (as in freedom) and open source forever. I'm sorry it's only available for Apple devices, which waters down the anti-capitalist stance, but solidarity is still woven into the core of the app. The project will never allow racism, facism, homophobia, transphobia, antisemitism, islamophobia or any sort of discrimination. 
 
-I came to filmmaking from a DIY & underground art scene, which works on very different rules than the highly gate-kept film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free or affordable screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Apple's phones fit into your pocket even more nicely, if you know what I mean. Don't steal from an individual, though.
+If you have an issue with my politics, it's probably related to one single thing. In that case, instead of threatening or trying to silence me, please direct your complaints to International Red Cross, UNICEF, Amnesty International, Human Rights Watch, International Criminal Court, UNHCR… I guess you get the idea.
+
+I came to filmmaking from a DIY & underground art scene, which works on very different rules than the highly gate-kept film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class people — nowadays including me. A free or affordable screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Apple's phones fit into your pocket even more nicely, if you know what I mean.
 
 If you are here just to steal some code for your own Fountain editor, please note that the code is licensed under GPL (v3), so you will need to share your derivative work publicly.
 
