@@ -13,7 +13,8 @@
 #import <BeatDynamicColor/BeatDynamicColor.h>
 
 #define SHADOW_WIDTH 20
-#define SHADOW_OPACITY 0.05;
+#define SHADOW_OPACITY 0.05
+#define MINIMUM_MARGIN 125
 
 @interface MarginView ()
 @property (nonatomic) CALayer *paper;
@@ -70,7 +71,8 @@
 	
 	// Set background paper size
 	CGFloat documentWidth = (_editor.documentWidth) * _editor.magnification;
-	CGFloat x = (self.frame.size.width - documentWidth) / 2;
+	CGFloat margin = (self.frame.size.width - documentWidth) / 2;
+	CGFloat x = margin;
 	if (x < 0) x = 0.0;
 	
 	if (self.editor.getTextView.enclosingScrollView.rulersVisible) {
@@ -80,20 +82,23 @@
 	_paper.frame = CGRectMake(x, -50, documentWidth, self.frame.size.height + 100);
 	_paper.bounds = CGRectMake(0, 0, _paper.frame.size.width, _paper.frame.size.height);
 	
+	// Hide margins if there's no room for them
+	bool showMargins = (margin >= MINIMUM_MARGIN);
+	
 	// CALayer doesn't read the effective color
 	if (_editor.isDark) {
 		self.paper.backgroundColor = _themeManager.backgroundColor.darkColor.CGColor;
-		self.layer.backgroundColor = _themeManager.marginColor.darkColor.CGColor;
+		self.layer.backgroundColor = showMargins ? _themeManager.marginColor.darkColor.CGColor : _themeManager.backgroundColor.darkColor.CGColor;
 	}
 	else {
 		self.paper.backgroundColor = _themeManager.backgroundColor.lightColor.CGColor;
-		self.layer.backgroundColor = _themeManager.marginColor.lightColor.CGColor;
+		self.layer.backgroundColor = showMargins ? _themeManager.marginColor.lightColor.CGColor : _themeManager.backgroundColor.lightColor.CGColor;
 	}
 
 	// Remove shadow if needed
 	NSColor* mColor = _editor.isDark ? ThemeManager.sharedManager.marginColor.darkColor : ThemeManager.sharedManager.marginColor.lightColor;
 	NSColor* bColor = _editor.isDark ? ThemeManager.sharedManager.backgroundColor.darkColor : ThemeManager.sharedManager.backgroundColor.lightColor;
-	self.paper.shadowOpacity = ([mColor isEqualTo:bColor]) ? 0.0 : SHADOW_OPACITY;
+	self.paper.shadowOpacity = (showMargins && ![mColor isEqualTo:bColor]) ? SHADOW_OPACITY : 0.0;
 	
 	[CATransaction commit];
 }
