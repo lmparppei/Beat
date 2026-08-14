@@ -47,17 +47,23 @@ The mobile version is currently a paid app, available on App Store, but it is st
 
 ## Building from repo
 
-**Note:** The main branch in this repository follows my development, so it DOES NOT always match the latest release version on either platform.
-
 Open the `Beat` workspace and set your credentials. When building for macOS development, I suggest using the *Beat App Store* target. You will need multiple Beat frameworks built, but both releases have very few external dependencies.
 
 ## Plugins
 
 Beat provides a JavaScript API for creating user extensions. You can learn more about creating your own plugins in the Beat Plugin repo: https://github.com/lmparppei/BeatPlugins
 
-## Supporting Beat
 
-The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. Coding assistance, bug reports, feature requests and feedback are highly appreciated!   
+## Contributions
+
+**Note:** The main branch in this repository follows my development, so it DOES NOT always match the latest release version on either platform.
+
+The person behind this project is not a real programmer but an artist and a filmmaker, and sometimes it really shows in the code, so coding assistance, bug reports, feature requests and feedback are highly appreciated! 
+
+For now, you can submit PRs directly to the main branch, but in the near future, I'll move to a development branch. LLM assistance is allowed, but please don't submit fully generated PRs. Parts of the code are very old, from the time I was still learning, and the structure can be a little convoluted. There are multiple self-reliant systems (like parsing, pagination and rendering), and changing one thing can lead to a lot of subtle issues throughout the app. Dread lightly. :-) 
+
+
+## Supporting Beat
 
 To fund the development, the binary for iOS release is currently distributed with a single lifetime fee. This is because Finnish law doesn't allow me to receive donations for my work, and because the iOS port was created due to popular demand. It is open source, though, so you can compile it yourself and install it on your own device. 
 
@@ -72,7 +78,7 @@ However, the creator of this app is a well-off person from a social-democratic w
 
 The application will stay free (as in freedom) and open source forever. I'm sorry it's only available for Apple devices, which waters down the anti-capitalist stance, but solidarity is still woven into the core of the app. The project will never allow racism, facism, homophobia, transphobia, antisemitism, islamophobia or any sort of discrimination. 
 
-If you have an issue with my politics, it's probably related to one single thing. In that case, instead of threatening or trying to silence me, please direct your complaints to International Red Cross, UNICEF, Amnesty International, Human Rights Watch, International Criminal Court, UNHCR… I guess you get the idea.
+If you have an issue with my politics, instead of threatening or trying to silence me, please direct your complaints to International Red Cross, UNICEF, Amnesty International, Human Rights Watch, International Criminal Court, UNHCR… I guess you get the idea.
 
 I came to filmmaking from a DIY & underground art scene, which works on very different rules than the highly gate-kept film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class people — nowadays including me. A free or affordable screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Apple's phones fit into your pocket even more nicely, if you know what I mean.
 
