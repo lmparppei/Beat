@@ -145,11 +145,21 @@
     else return NSMakeRange(first, last - first);
 }
 
-- (NSString*)stringByRemovingRange:(NSRange)range {
-    NSString* head = [self substringToIndex:range.location];
-    NSString* tail = (NSMaxRange(range) < self.length) ? [self substringFromIndex:NSMaxRange(range)] : @"";
-    
-    return [NSString stringWithFormat:@"%@%@", head, tail];
+- (NSString*)stringByRemovingRange:(NSRange)range
+{
+    @synchronized (self) {
+        NSString *string = self.copy;
+        NSUInteger length = string.length;
+        
+        if (range.location > length) {
+            return string;
+        }
+        
+        NSString *head = [string substringToIndex:range.location];
+        NSString *tail = (NSMaxRange(range) < length) ? [string substringFromIndex:NSMaxRange(range)] : @"";
+        
+        return [head stringByAppendingString:tail];
+    }
 }
 
 - (NSString*)trim

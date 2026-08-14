@@ -399,7 +399,6 @@
 		
 	self.formatting = nil;
 	self.runningPlugins = nil;
-	self.parser = nil;
 	self.outlineView = nil;
 	self.contentBuffer = nil;
 	self.documentBrowser = nil;
@@ -421,6 +420,7 @@
 	self.attrTextCache = NSMutableAttributedString.new;
 	
 	self.document = nil;
+	self.parser = nil;
 }
 
 - (void)ensureLayout

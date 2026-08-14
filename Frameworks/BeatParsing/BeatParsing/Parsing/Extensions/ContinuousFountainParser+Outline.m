@@ -144,6 +144,8 @@
 -(NSArray<NSDictionary<NSString*,NSString*>*>*)outlineUUIDs
 {
     NSMutableArray* outline = NSMutableArray.new;
+    if (self.outline == nil) [self updateOutline];
+    
     for (OutlineScene* scene in self.outline) {
         if (![scene isKindOfClass:OutlineScene.class]) continue;
         

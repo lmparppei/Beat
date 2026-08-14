@@ -704,6 +704,13 @@
     // Do we need to bake revisions here? Aren't they stored using attributed string nowadays? Let's not and we'll see if something breaks, he he.
     //[self bakeRevisions];
     
+    if (self.parser == nil) {
+        NSLog(@"ERROR: Something went horribly wrong. There is no parser available.");
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"content was nil during save"
+                                     userInfo:nil];
+    }
+    
     NSAttributedString *attrStr = self.getAttributedText;
     NSString* content = self.parser.screenplayForSaving;
     NSString* visibleText = self.text;
@@ -715,11 +722,6 @@
         content = visibleText;
     }
     
-    if (content == nil) {
-        NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
-        @throw NSInternalInconsistencyException;
-    }
-    
     // Resort to content buffer if needed
     if (content == nil) content = self.attrTextCache.string;
     
@@ -729,7 +731,7 @@
     // Save added/removed ranges
     // This saves the revised ranges into Document Settings
     NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
-    [self.documentSettings set:DocSettingRevisions as:revisions];
+    if (revisions != nil) [self.documentSettings set:DocSettingRevisions as:revisions];
     
     // Save tag definitions and ranges
     [self.tagging saveTagsWithAttributedString:attrStr];
@@ -738,14 +740,18 @@
     [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
     
     // Store currently running plugins (the ones which support restoration)
-    [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
+    NSArray* runningPlugins = self.runningPluginsForSaving;
+    if (runningPlugins != nil) [self.documentSettings set:DocSettingActivePlugins as:runningPlugins];
     
     // Save reviewed ranges
-    NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
-    [self.documentSettings set:DocSettingReviews as:reviews];
+    if (attrStr != nil) {
+        NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
+        if (reviews != nil) [self.documentSettings set:DocSettingReviews as:reviews];
+    }
     
     // Save heading/section info
-    [self.documentSettings set:DocSettingHeadingUUIDs as:self.parser.outlineUUIDs];
+    NSArray* uuids = self.parser.outlineUUIDs;
+    if (uuids != nil) [self.documentSettings set:DocSettingHeadingUUIDs as:uuids];
     
     // Save caret position
     if (NSThread.isMainThread) {
