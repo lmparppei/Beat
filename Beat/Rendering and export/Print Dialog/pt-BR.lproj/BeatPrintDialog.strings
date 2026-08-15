@@ -1,0 +1,96 @@
+
+/* Class = "NSButtonCell"; title = "None"; ObjectID = "1KJ-qe-KeZ"; */
+"1KJ-qe-KeZ.title" = "Nenhum";
+
+/* Class = "NSButtonCell"; title = "2nd"; ObjectID = "2ld-An-t4A"; */
+"2ld-An-t4A.title" = "2ª";
+
+/* Class = "NSTextFieldCell"; title = "Highlight Revisions"; ObjectID = "3Ft-pa-w7n"; */
+"3Ft-pa-w7n.title" = "Destacar Revisões";
+
+/* Class = "NSButtonCell"; title = "Text Background"; ObjectID = "6OC-5j-jBy"; */
+"6OC-5j-jBy.title" = "Fundo do Texto";
+
+/* Class = "NSButtonCell"; title = "PDF"; ObjectID = "8t8-IM-hHv"; */
+"8t8-IM-hHv.title" = "PDF";
+
+/* Class = "NSTextFieldCell"; title = "Print"; ObjectID = "B23-AL-UUS"; */
+"B23-AL-UUS.title" = "Imprimir";
+
+/* Class = "NSButtonCell"; title = "8th"; ObjectID = "BNA-67-JgB"; */
+"BNA-67-JgB.title" = "8ª";
+
+/* Class = "NSButtonCell"; title = "  Print  "; ObjectID = "BTh-vA-fQk"; */
+"BTh-vA-fQk.title" = "  Imprimir  ";
+
+/* Class = "NSButtonCell"; title = "Sections"; ObjectID = "DrB-io-gNd"; */
+"DrB-io-gNd.title" = "Seções";
+
+/* Class = "NSButtonCell"; title = "3rd"; ObjectID = "Fuc-Nw-9ve"; */
+"Fuc-Nw-9ve.title" = "3ª";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "Gug-Yv-fGM"; */
+"Gug-Yv-fGM.title" = "Tamanho da página";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "HOf-0E-WLn"; */
+"HOf-0E-WLn.placeholderString" = "Revisão, Versão, ...";
+
+/* Class = "NSButtonCell"; title = "Show advanced options"; ObjectID = "K23-C7-mRO"; */
+"K23-C7-mRO.title" = "Mostrar opções avançadas";
+
+/* Class = "NSTextFieldCell"; title = "Include Invisible Elements"; ObjectID = "Nef-4V-udt"; */
+"Nef-4V-udt.title" = "Incluir Elementos Invisíveis";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "QKZ-PI-6GB"; */
+"QKZ-PI-6GB.title" = "A4";
+
+/* Class = "NSWindow"; title = "Print"; ObjectID = "Rg7-lI-xne"; */
+"Rg7-lI-xne.title" = "Imprimir";
+
+/* Class = "NSButtonCell"; title = "Scene Numbers"; ObjectID = "XTs-KO-ZjG"; */
+"XTs-KO-ZjG.title" = "Números de Cena";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "XaA-mb-KGd"; */
+"XaA-mb-KGd.title" = "US Letter";
+
+/* Class = "NSButtonCell"; title = "4th"; ObjectID = "XyP-L6-Yh9"; */
+"XyP-L6-Yh9.title" = "4ª";
+
+/* Class = "NSButtonCell"; title = "7th"; ObjectID = "YA6-dX-Ctn"; */
+"YA6-dX-Ctn.title" = "7ª";
+
+/* Class = "NSButtonCell"; title = "6th"; ObjectID = "YI4-GJ-jLL"; */
+"YI4-GJ-jLL.title" = "6ª";
+
+/* Class = "NSButtonCell"; title = "1st"; ObjectID = "eFm-th-NeC"; */
+"eFm-th-NeC.title" = "1ª";
+
+/* Class = "NSButtonCell"; title = "Notes"; ObjectID = "hsE-MS-Br7"; */
+"hsE-MS-Br7.title" = "Notas";
+
+/* Class = "NSButtonCell"; title = "Text Color"; ObjectID = "lQd-48-z2R"; */
+"lQd-48-z2R.title" = "Cor do Texto";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "oDa-5Z-L46"; */
+"oDa-5Z-L46.title" = "Box";
+
+/* Class = "NSButtonCell"; title = "Synopsis"; ObjectID = "p05-ak-YGH"; */
+"p05-ak-YGH.title" = "Sinopse";
+
+/* Class = "NSButtonCell"; title = "Page Numbers"; ObjectID = "qC1-Ig-3gL"; */
+"qC1-Ig-3gL.title" = "Números de Página";
+
+/* Class = "NSButtonCell"; title = "Colored Scene Headings"; ObjectID = "qKm-ya-y4c"; */
+"qKm-ya-y4c.title" = "Cabeçalhos de Cena Coloridos";
+
+/* Class = "NSTextFieldCell"; title = "Include Revision Markers"; ObjectID = "tAR-96-UAV"; */
+"tAR-96-UAV.title" = "Incluir Marcadores de Revisão";
+
+/* Class = "NSTextFieldCell"; title = "Page Header"; ObjectID = "vz7-gT-RKM"; */
+"vz7-gT-RKM.title" = "Cabeçalho da Página";
+
+/* Class = "NSButtonCell"; title = "5th"; ObjectID = "xBa-Ue-WC0"; */
+"xBa-Ue-WC0.title" = "5ª";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "y6u-Lj-RR8"; */
+"y6u-Lj-RR8.title" = "Cancelar";
