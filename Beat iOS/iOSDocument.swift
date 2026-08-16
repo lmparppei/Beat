@@ -27,6 +27,8 @@ class iOSDocument: UIDocument {
 		return self.delegate?.parser ?? ContinuousFountainParser()
 	}
 	
+	var lastStoredText = ""
+	
 	@objc var closing = false
 	
 	override var description: String {
@@ -37,6 +39,9 @@ class iOSDocument: UIDocument {
 		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
 			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
 		}
+		
+		lastStoredText = text
+		
 		return text.data(using: .utf8) as Any
     }
 	
