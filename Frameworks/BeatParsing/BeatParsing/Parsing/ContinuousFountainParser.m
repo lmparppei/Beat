@@ -214,7 +214,7 @@
         if (line.versions.count > 0) {
             // Update current version
             [line storeVersion];
-            //We need to have methods for serializing index sets
+
             NSDictionary* versionDict = @{
                 @"current": @(line.currentVersion),
                 @"versions": line.versionsForSerialization
@@ -370,55 +370,57 @@
 {
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
     
-    // Get the line where into which we are adding characters
-    NSUInteger lineIndex = [self lineIndexAtPosition:position];
-    Line* line = self.lines[lineIndex];
-    
-    [changedIndices addIndex:lineIndex];
-    
-    NSUInteger indexInLine = position - line.position;
-    
-    // Cut the string in half
-    NSString* tail = [line.string substringFromIndex:indexInLine];
-    line.string = [line.string substringToIndex:indexInLine];
-    
-    NSInteger currentRange = -1;
-    
-    for (NSInteger i=0; i<string.length; i++) {
-        if (currentRange < 0) currentRange = i;
+    @synchronized (self) {
+        // Get the line where into which we are adding characters
+        NSUInteger lineIndex = [self lineIndexAtPosition:position];
+        Line* line = self.lines[lineIndex];
         
-        unichar chr = [string characterAtIndex:i];
+        [changedIndices addIndex:lineIndex];
         
-        if (chr == '\n') {
-            NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
-            line.string = [line.string stringByAppendingString:addedString];
+        NSUInteger indexInLine = position - line.position;
+        
+        // Cut the string in half
+        NSString* tail = (indexInLine <= line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
+        line.string = (indexInLine <= line.string.length) ? [line.string substringToIndex:indexInLine] : line.string;
+        
+        NSInteger currentRange = -1;
+        
+        for (NSInteger i=0; i<string.length; i++) {
+            if (currentRange < 0) currentRange = i;
             
-            if (lineIndex < self.lines.count - 1) {
-                Line* nextLine = self.lines[lineIndex+1];
-                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
-                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+            unichar chr = [string characterAtIndex:i];
+            
+            if (chr == '\n') {
+                NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
+                line.string = [line.string stringByAppendingString:addedString];
+                
+                if (lineIndex < self.lines.count - 1) {
+                    Line* nextLine = self.lines[lineIndex+1];
+                    NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
+                    [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+                }
+                
+                [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
+                
+                // Increment current line index and reset inspected range
+                lineIndex++;
+                currentRange = -1;
+                
+                // Set current line
+                line = self.lines[lineIndex];
             }
-            
-            [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
-            
-            // Increment current line index and reset inspected range
-            lineIndex++;
-            currentRange = -1;
-            
-            // Set current line
-            line = self.lines[lineIndex];
         }
+        
+        // Get the remaining string (if applicable)
+        NSString* remainder = (currentRange >= 0  && currentRange < string.length) ? [string substringFromIndex:currentRange] : @"";
+        line.string = [line.string stringByAppendingString:remainder];
+        line.string = [line.string stringByAppendingString:tail];
+        
+        [self adjustLinePositionsFrom:lineIndex];
+        
+        //[self report];
+        [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     }
-    
-    // Get the remaining string (if applicable)
-    NSString* remainder = (currentRange >= 0) ? [string substringFromIndex:currentRange] : @"";
-    line.string = [line.string stringByAppendingString:remainder];
-    line.string = [line.string stringByAppendingString:tail];
-    
-    [self adjustLinePositionsFrom:lineIndex];
-    
-    //[self report];
-    [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
     
     return changedIndices;
 }

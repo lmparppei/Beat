@@ -1001,6 +1001,8 @@
 
 - (void)saveTagsWithAttributedString:(NSAttributedString*)attrStr
 {
+    if (attrStr == nil) return;
+    
     NSArray<BeatTag*>* allTags = [BeatTagging allTagsFrom:attrStr];
     NSArray<NSDictionary*>* tags = [self serializedTagDataWithTags:allTags];
     NSArray* definitions = [self getDefinitionsForSavinWithTags:allTags];
