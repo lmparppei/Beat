@@ -362,16 +362,18 @@ import BeatParsing
 		
 		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
-		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
-		
-		// Account for top margin
-		selectionRect.origin.y += self.textContainerInset.top
-		
-		let scaledRect = convert(selectionRect, to: enclosingScrollView)
-		
-		// If the rect is not visible, scroll to that range
-		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+		if selectionRect != .infinite {
+			if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
+			
+			// Account for top margin
+			selectionRect.origin.y += self.textContainerInset.top
+			
+			let scaledRect = convert(selectionRect, to: enclosingScrollView)
+			
+			// If the rect is not visible, scroll to that range
+			if CGRectIntersection(scaledRect, visible).height < 16.0 {
+				enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			}
 		}
 	}
 	
@@ -446,6 +448,8 @@ import BeatParsing
 	// MARK: - Rects for ranges
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
+		guard NSMaxRange(range) <= self.text.count else { return .infinite }
+		
 		let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
 		let rect = self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
 		

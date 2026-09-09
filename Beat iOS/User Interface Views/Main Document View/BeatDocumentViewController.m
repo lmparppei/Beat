@@ -372,55 +372,57 @@
 /// This is called by `iOSDocument` after closing the document
 - (void)unloadViews
 {
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
-	
-	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
-		[container unload];
+	@synchronized (self.parser) {
+		[NSNotificationCenter.defaultCenter removeObserver:self];
+		[NSNotificationCenter.defaultCenter removeObserver:self.textView];
+		
+		for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
+			[container unload];
+		}
+		[self.registeredPluginContainers removeAllObjects];
+		
+		self.review = nil;
+		self.revisionTracking = nil;
+		self.tagging = nil;
+		
+		[self forgetStyles];
+		[self.pluginAgent unloadPlugins];
+		
+		self.navigationItem.titleMenuProvider = nil;
+		self.navigationItem.rightBarButtonItems = nil;
+		self.navigationItem.leftBarButtonItem = nil;
+		
+		[self.userActivity invalidate];
+		
+		[self.registeredViews removeAllObjects];
+		[self.registeredOutlineViews removeAllObjects];
+		[self.registeredSelectionObservers removeAllObjects];
+		
+		self.formatting = nil;
+		self.runningPlugins = nil;
+		self.outlineView = nil;
+		self.contentBuffer = nil;
+		self.documentBrowser = nil;
+		self.formattingActions = nil;
+		self.textActions = nil;
+		self.autocomplete = nil;
+		
+		[self.textView unload];
+		
+		[self.previewView clear];
+		[self.previewView removeFromParentViewController];
+		self.previewView = nil;
+		
+		[self removeChildren];
+		self.editorSplitView = nil;
+		
+		// These have to be nulled to kill any retained line references
+		self.formattedTextBuffer = NSMutableAttributedString.new;
+		self.attrTextCache = NSMutableAttributedString.new;
+		
+		self.document = nil;
+		self.parser = nil;
 	}
-	[self.registeredPluginContainers removeAllObjects];
-	
-	self.review = nil;
-	self.revisionTracking = nil;
-	self.tagging = nil;
-
-	[self forgetStyles];
-	[self.pluginAgent unloadPlugins];
-	
-	self.navigationItem.titleMenuProvider = nil;
-	self.navigationItem.rightBarButtonItems = nil;
-	self.navigationItem.leftBarButtonItem = nil;
-
-	[self.userActivity invalidate];
-	
-	[self.registeredViews removeAllObjects];
-	[self.registeredOutlineViews removeAllObjects];
-	[self.registeredSelectionObservers removeAllObjects];
-		
-	self.formatting = nil;
-	self.runningPlugins = nil;
-	self.outlineView = nil;
-	self.contentBuffer = nil;
-	self.documentBrowser = nil;
-	self.formattingActions = nil;
-	self.textActions = nil;
-	self.autocomplete = nil;
-	
-	[self.textView unload];
-	
-	[self.previewView clear];
-	[self.previewView removeFromParentViewController];
-	self.previewView = nil;
-		
-	[self removeChildren];
-	self.editorSplitView = nil;
-	
-	// These have to be nulled to kill any retained line references
-	self.formattedTextBuffer = NSMutableAttributedString.new;
-	self.attrTextCache = NSMutableAttributedString.new;
-	
-	self.document = nil;
-	self.parser = nil;
 }
 
 - (void)ensureLayout

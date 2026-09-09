@@ -45,7 +45,7 @@ extension BeatDocumentViewController {
 		let button = pluginViewButtons[viewController]
 		button?.removeFromSuperview()
 		pluginViewButtons.removeValue(forKey: viewController)
-	}
+	}	
 }
 
 @objc public extension BeatDocumentViewController {
