@@ -127,7 +127,12 @@ static NSString *centeredEnd = @" <";
         UITextRange *textRange = textView.selectedTextRange;
         [self.textView setSelectedTextRange:oldRange];
         
-        [textView replaceRange:textRange withAttributedText:string];
+        if (@available(iOS 18.0, *)) {
+            [textView replaceRange:textRange withAttributedText:string];
+        } else {
+            [textView.textStorage replaceCharactersInRange:textView.selectedRange withAttributedString:string];
+        }
+        
         if (textView.textStorage.isEditing) [textView.textStorage endEditing];
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
@@ -533,7 +538,9 @@ static NSString *centeredEnd = @" <";
         @"[[" : @"]]",
         @"/*" : @"*/",
         @"<<" : @">>",
-        @"{{" : @"}}"
+        @"{{" : @"}}",
+        @"+" : @"+",
+        @"_" : @"_"
     };
     
     // Find match for the parenthesis symbol
