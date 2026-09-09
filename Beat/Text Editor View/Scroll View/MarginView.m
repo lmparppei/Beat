@@ -11,10 +11,11 @@
 #import <BeatThemes/BeatThemes.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
+#import "Beat-Swift.h"
 
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.05
-#define MINIMUM_MARGIN 115
+#define MINIMUM_MARGIN 0.0
 
 @interface MarginView ()
 @property (nonatomic) CALayer *paper;
@@ -39,7 +40,7 @@
 		_paper.shadowRadius = SHADOW_WIDTH;
 		
 		[self.layer addSublayer:_paper];
-		
+				
 		[self updateBackground];
 	}
 }
@@ -53,10 +54,10 @@
 {
 	// This shouldn't happen but just to be sure
 	if (!_paper || !_editor) return;
-	
+		
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-	
+		
 	// Set background paper size
 	CGFloat documentWidth = (_editor.documentWidth) * _editor.magnification;
 	CGFloat margin = (self.frame.size.width - documentWidth) / 2;
