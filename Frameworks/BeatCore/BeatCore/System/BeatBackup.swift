@@ -375,12 +375,14 @@ public class BeatBackup:NSObject {
                 
                 for file in files {
                     let filename = URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent
-                    let separatorRange = filename.range(of: BeatBackup.separator)
-                    guard let separatorRange else { continue }
+                    if filename.count == 0 { continue }
                     
-                    let actualName = String(filename.prefix(upTo: separatorRange.lowerBound))
-                    let dateStr = String(filename.suffix(from: separatorRange.upperBound))
-                                        
+                    let parts = filename.components(separatedBy: BeatBackup.separator)
+                    guard parts.count >= 2 else { continue }
+
+                    let actualName = parts[0]
+                    let dateStr = parts.dropFirst().joined(separator: BeatBackup.separator)
+                                                                                
                     let formatter = BeatBackup.formatter
                     let date = formatter.date(from: dateStr)
                     
