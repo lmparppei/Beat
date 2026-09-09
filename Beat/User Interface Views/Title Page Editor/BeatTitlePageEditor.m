@@ -146,10 +146,10 @@
 	// Add back possible custom fields that were left out
 	for (NSDictionary *dict in _customFields) {
 		NSString *key = [dict.allKeys objectAtIndex:0];
-		NSArray *lines = dict[key];
+		NSArray<Line*>* lines = dict[key];
 	
-		// Check if it is a text block or single line
-		[titlePage appendFormat:@"%@:%@", key.capitalizedString, lines.count > 1 ? @"\n" : @""];
+		// Check if it is a text block or single line. Add key for multi-line blocks with just the key, because otherwise it's stripped away.
+		if (lines.firstObject.titlePageKey.length == 0) [titlePage appendFormat:@"%@:\n", key.capitalizedString];
 		
 		for (Line *line in lines) {
 			[titlePage appendFormat:@"%@\n", line.string];
