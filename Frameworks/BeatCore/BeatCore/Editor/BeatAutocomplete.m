@@ -149,11 +149,11 @@
 - (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange
 {
     Line *currentLine = self.delegate.currentLine;
-    if (currentLine.string == nil || NSMaxRange(charRange) > _delegate.text.length) return @[];
+    if (currentLine.string == nil || NSMaxRange(charRange) > _delegate.text.length || charRange.length < 0) return @[];
     
     NSMutableArray *matches = NSMutableArray.new;
     NSMutableArray *allSuggestions = NSMutableArray.new;
-    
+        
     NSString* stringToSearch = [_delegate.text substringWithRange:charRange].uppercaseString;
     NSString* prefix = @"";
     
