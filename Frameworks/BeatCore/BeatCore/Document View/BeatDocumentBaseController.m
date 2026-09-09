@@ -30,6 +30,17 @@
 
 @implementation BeatDocumentBaseController
 
+#if TARGET_OS_IOS
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        _saveLock = NSObject.new;
+    }
+    return self;
+}
+#endif
+
 #pragma mark - Identity
 
 #if TARGET_OS_OSX
@@ -701,18 +712,14 @@
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
+    /// Make sure `nil` is handled correctly in `contentsForType:` implementation.
+    if (self.parser == nil) return nil;
+    
     // Do we need to bake revisions here? Aren't they stored using attributed string nowadays? Let's not and we'll see if something breaks, he he.
     //[self bakeRevisions];
-    @synchronized (self) {
-        
-        if (self.parser == nil) {
-            NSLog(@"ERROR: Something went horribly wrong. There is no parser available.");
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"content was nil during save"
-                                         userInfo:nil];
-        }
-        
+    @synchronized (self.parser) {
         NSAttributedString *attrStr = self.getAttributedText;
+
         NSString* content = self.parser.screenplayForSaving;
         NSString* visibleText = self.text;
         NSString* parsedText = self.parser.text;
