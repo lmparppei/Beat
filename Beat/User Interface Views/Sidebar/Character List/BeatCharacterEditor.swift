@@ -45,6 +45,8 @@ import BeatCore
 	@objc var changed = false
 	@objc var changesRequireReload = false
 	
+	weak var colorPanel:NSColorPanel?
+	
 	/// Character reference: When set, object values are loaded into the view.
 	@objc weak var character:BeatCharacter? {
 		didSet {
@@ -76,7 +78,7 @@ import BeatCore
 	
 	override func viewWillAppear() {
 		super.viewWillAppear()
-		let colors = ["red", "blue", "green", "pink", "brown", "cyan", "orange", "magenta", "cherry", "mint", "violet"]
+		let colors = ["red", "blue", "green", "pink", "brown", "cyan", "orange", "magenta", "cherry", "mint", "violet", "custom"]
 		
 		// Add empty item
 		let item = BeatColorMenuItem(title: "", action: #selector(pickColor), keyEquivalent: "")
@@ -84,16 +86,28 @@ import BeatCore
 		self.highlightColorButton?.menu?.addItem(item)
 		
 		for color in colors {
-			let item = BeatColorMenuItem(title: "", action: #selector(pickColor), keyEquivalent: "")
-			item.colorKey = color
+			let item:BeatColorMenuItem
+			if color != "custom" {
+				item = BeatColorMenuItem(title: "", action: #selector(pickColor), keyEquivalent: "")
+				item.colorKey = color
+				
+				item.image = BeatColors.labelImage(forColor: color, size: CGSize(width: 16, height: 16))
+			} else {
+				item = BeatColorMenuItem(customColor: "")
+				item.action = #selector(pickColor)
+			}
+			
 			item.target = self
-			item.image = BeatColors.labelImage(forColor: color, size: CGSize(width: 16, height: 16))
 			self.highlightColorButton?.menu?.addItem(item)
 		}
 		
 		if let highlightColor = character?.highlightColor {
 			applyHighlightColor(highlightColor)
 		}
+	}
+	
+	override func viewWillDisappear() {
+		self.colorPanel?.close()
 	}
 	
 	required init?(coder: NSCoder) {
@@ -114,11 +128,52 @@ import BeatCore
 	}
 	
 	@objc func pickColor(_ sender:BeatColorMenuItem?) {
-		guard let delegate = manager?.delegate, let chr = self.character, let color = sender?.colorKey else { return }
-		chr.highlightColor = color
-		manager?.saveCharacter(chr, reloadView: true)
-		changed = true
+		guard let chr = self.character, let sender else { return }
+		if sender.custom {
+			NSColorPanel.setPickerMode(.RGB)
+			let panel = NSColorPanel.shared
+			
+			panel.setTarget(self)
+			panel.setAction(#selector(pickCustomColor))
+			panel.makeKeyAndOrderFront(nil)
+			
+			// First check if we have a custom color set
+			if chr.highlightColor.hasPrefix("#"), let color = BeatColors.color(chr.highlightColor) {
+				panel.color = color
+			} else {
+				panel.color = NSColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
+			}
+			
+			colorPanel = panel
+		} else {
+			self.setColor(for: chr, color: sender.colorKey)
+		}
+	}
+	
+	var customColorTimer:Timer?
+	
+	@objc func pickCustomColor(_ sender:Any?) {
+		guard let character, self.biography?.window != nil, self.biography?.window?.isVisible ?? false,
+			  let panel = sender as? NSColorPanel
+		else { return }
 		
+		customColorTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
+			guard let self else { return }
+			self.customColorTimer = nil
+			
+			let rgbColor = panel.color.usingColorSpace(.deviceRGB)
+			let color = "#" + BeatColors.get8BitHex(for: rgbColor)
+			self.setColor(for: character, color: color)
+		})
+	}
+	
+	func setColor(for character:BeatCharacter, color:String) {
+		guard let delegate = manager?.delegate else { return }
+		
+		character.highlightColor = color
+		manager?.saveCharacter(character, reloadView: true)
+		changed = true
+				
 		// This is a little silly, but whatever
 		let types:IndexSet = [
 			Int(LineType.character.rawValue),
@@ -136,9 +191,12 @@ import BeatCore
 	@objc func applyHighlightColor(_ color:String) {
 		guard let menu = highlightColorButton?.menu else { return }
 		
-		for item in menu.items {
-			if let cItem = item as? BeatColorMenuItem, cItem.colorKey == character?.highlightColor {
+		for item in menu.items as? [BeatColorMenuItem] ?? [] {
+			if item.colorKey == character?.highlightColor {
 				item.state = .on
+				highlightColorButton?.selectItem(at: menu.index(of: item))
+			} else if item.custom {
+				item.state = color.hasPrefix("#") ? .on : .off
 				highlightColorButton?.selectItem(at: menu.index(of: item))
 			} else {
 				item.state = .off
