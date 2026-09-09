@@ -927,22 +927,12 @@
     }
     
     if (line.type == heading) {
-        line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length line:line];
-        line.resetsSceneNumber = false;
+        [line parseSceneNumber];
         
-        if (line.sceneNumberRange.length == 0) {
-            line.sceneNumber = @"";
-        } else {
-            line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
-            NSString* lastSymbol = [line.sceneNumber substringFromIndex:line.sceneNumber.length - 1];
-            if ([lastSymbol isEqualToString:@">"] || [lastSymbol isEqualToString:@"＞"]) {
-                line.sceneNumber = [line.sceneNumber substringToIndex:line.sceneNumber.length - 1];
-                line.resetsSceneNumber = true;
-            }
-        }
+        // Make sure macros are up to date, if this is an outline element
+        if (line.macroRanges.count > 0) [self updateMacros];
     }
 }
-
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length line:(Line*)line
 {

@@ -52,8 +52,9 @@
     NSString* queuedPageNumber = nil;
     
     NSInteger lineNumber = 1;
+    NSInteger dialogueNumber = 1;
     
-    // First we'll skip non-printable lines and apply macros.
+    // First we'll skip non-printable lines and resolve macros.
     for (Line* line in lines) {
         // Store the original line number in editor
         line.lineNumber = lineNumber;
@@ -62,6 +63,10 @@
         // Stop at boneyard
         if (line.isBoneyardSection) break;
         
+        // Eliminate faux empty lines with only single space. To force whitespace you have to use two spaces.
+        // This shouldn't happen, but better safe than sorry.
+        if ([line.string isEqualToString:@" "] && line.type != empty) line.type = empty;
+
         bool printable = !line.effectivelyEmpty || ([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes));
         
         // Let's use a clone of the line
@@ -141,6 +146,7 @@
     // Previously handled line, not necessarily previously added line.
     Line *previousLine;
     
+    // Next, we'll go through the cleaned lines and do some extra checks.
     for (Line *line in preprocessedLines) {
         // Fix a weird bug for first line
         if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
@@ -150,10 +156,7 @@
         queuedPageNumber = line.forcedPageNumber;
                 
         BOOL shouldProcessLine = true;
-        
-        // Eliminate faux empty lines with only single space. To force whitespace you have to use two spaces.
-        if ([line.string isEqualToString:@" "] && line.type != empty) line.type = empty;
-        
+                
         // Check if we should spare some non-printing objects or not.
         if (line.isNonPrinting &&
             !([exportSettings.additionalTypes containsIndex:line.type] || (line.note && exportSettings.printNotes))) {
@@ -167,9 +170,8 @@
             // Lines which are *effectively* empty have to be remembered.
             if (line.effectivelyEmpty) previousLine = line;
             shouldProcessLine = false;
-        }
-        // Remove misinterpreted dialogue
-        else if (line.isAnyDialogue && line.string.length == 0) {
+        } else if (line.isAnyDialogue && line.string.length == 0) {
+            // Remove misinterpreted dialogue
             line.type = empty;
             previousLine = line;
             shouldProcessLine = false;
@@ -177,7 +179,6 @@
          
         // This line didn't pass the tests
         if (!shouldProcessLine) continue;
-        
 
         // Add scene numbers
         if (line.type == heading) {
@@ -186,6 +187,16 @@
             } else if (!line.sceneNumber) {
                 line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
                 sceneNumber += 1;
+            }
+            
+            // We need to do some extra trickery for heading elements when they have macros, because the user might have used a macro for the scene number.
+            // NB: If we were dealing with pure Fountain, we could just preprocess the text as string and replace macros before parsing the text back to Fountain.
+            // However, this is not possible, because we have all sorts of metadata, so there are certain tricks we have to pull here. Not cool, I know.
+            if (line.macroRanges.count > 0) {
+                NSAttributedString* aStr = line.attributedStringWithResolvedMacros;
+                Line* ln = [Line withString:aStr.string type:line.type];
+                [ln parseSceneNumber];
+                if (ln.sceneNumber.length > 0) line.sceneNumber = ln.sceneNumber;
             }
         } else {
             line.sceneNumber = @"";
@@ -199,6 +210,11 @@
 
         // We can safely nil the queued page number here
         queuedPageNumber = nil;
+        
+        if (line.isAnyDialogue) {
+            line.dialogueNumber = dialogueNumber;
+            dialogueNumber += 1;
+        }
         
         // This line safely passed processing to be printed
         [linesToPrint addObject:line];

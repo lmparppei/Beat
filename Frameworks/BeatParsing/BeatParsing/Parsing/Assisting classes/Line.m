@@ -186,6 +186,7 @@
     newLine.uuid = self.uuid;
     newLine.position = self.position;
     newLine.lineNumber = self.lineNumber;
+    newLine.dialogueNumber = self.dialogueNumber;
     
     newLine.changed = self.changed;
     
@@ -794,11 +795,61 @@
 {
     /*
      
-     Resolve image from macro. The bundle or whatever has to be available via export settings to support pagination. Maybe the whole line should 
+     Resolve image from macro. The bundle or whatever has to be available via export settings to support pagination.
      
      */
     return nil;
 }
+
+
+#pragma mark - Scene number lookup
+
+- (void)parseSceneNumber
+{
+    NSUInteger length = self.string.length;
+    unichar charArray[length];
+    [self.string getCharacters:charArray];
+    
+    [self parseSceneNumberWithCharArray:charArray length:length];
+}
+
+- (void)parseSceneNumberWithCharArray:(unichar*)string length:(NSInteger)length
+{
+    NSUInteger location = NSNotFound;
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    
+    self.resetsSceneNumber = false;
+    
+    for (NSInteger i = length - 1; i >= 0; i--) {
+        // Exclude note ranges
+        if ([self.noteRanges containsIndex:i]) continue;
+
+        unichar c = string[i];
+        if (c == '#') {
+            if (location == NSNotFound) {
+                location = i;
+            } else {
+                range = NSMakeRange(i+1, location-i-1);
+            }
+        }
+    }
+    
+    if (range.location != NSNotFound && range.length > 0 && NSMaxRange(range) <= self.string.length) {
+        _sceneNumberRange = range;
+        _sceneNumber = [self.string substringWithRange:range];
+        
+        NSString* lastSymbol = [self.sceneNumber substringFromIndex:self.sceneNumber.length - 1];
+        if (([lastSymbol isEqualToString:@">"] || [lastSymbol isEqualToString:@"＞"]) && self.sceneNumber.length > 1) {
+            self.sceneNumber = [self.sceneNumber substringToIndex:self.sceneNumber.length - 1];
+            self.resetsSceneNumber = true;
+        }
+    } else {
+        _sceneNumberRange = NSMakeRange(0, 0);
+        _sceneNumber = @"";
+    }
+
+}
+
 
 
 #pragma mark - Debugging
