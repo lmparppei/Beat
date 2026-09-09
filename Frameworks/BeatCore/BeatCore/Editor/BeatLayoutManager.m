@@ -127,9 +127,9 @@
         // Actual rect position
         CGRect rect = CGRectMake(inset.width + boundingRect.origin.x, inset.height + boundingRect.origin.y, boundingRect.size.width, boundingRect.size.height);
 
-        // Don't go past this point if the text is folded
-        NSNumber* folded = [self.textStorage attribute:@"BeatFolded" atIndex:range.location effectiveRange:nil];
-        if (folded) return;
+        // Don't go past this point if the text is folded (NOTE: Not in use currently. Maybe one day.)
+        // NSNumber* folded = [self.textStorage attribute:@"BeatFolded" atIndex:range.location effectiveRange:nil];
+        // if (folded) return;
         
         // Draw scene numbers
         if (line.type == heading) {

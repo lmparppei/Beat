@@ -24,6 +24,7 @@
 		B663A6DE29F1C4F70036FE6B /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6DD29F1C4F70036FE6B /* BeatCore.framework */; };
 		B68E3F2B2B2BB90600C63B71 /* BeatPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */; };
 		B6D7917E2E45EDEE00186B3E /* BeatRenderer+Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7917D2E45EDE800186B3E /* BeatRenderer+Outline.swift */; };
+		B6E960213032503F00E4F5FB /* NSView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E960203032503F00E4F5FB /* NSView+Layout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		B663A6F429F1DD140036FE6B /* Beat Pagination Framework.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Beat Pagination Framework.md"; sourceTree = "<group>"; };
 		B68E3F2A2B2BB90600C63B71 /* BeatPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewManager.swift; sourceTree = "<group>"; };
 		B6D7917D2E45EDE800186B3E /* BeatRenderer+Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatRenderer+Outline.swift"; sourceTree = "<group>"; };
+		B6E960203032503F00E4F5FB /* NSView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Layout.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -118,6 +120,7 @@
 				B663A6C429F1C3D80036FE6B /* BeatPaginationBlockGroup.m */,
 				B663A6C729F1C3D80036FE6B /* BeatPageBreak.h */,
 				B663A6C529F1C3D80036FE6B /* BeatPageBreak.m */,
+				B6E960203032503F00E4F5FB /* NSView+Layout.swift */,
 			);
 			path = Pagination;
 			sourceTree = "<group>";
@@ -218,6 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6E960213032503F00E4F5FB /* NSView+Layout.swift in Sources */,
 				B61FF8792B5FB05C008F449D /* BeatRenderer.m in Sources */,
 				B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */,
 				B68E3F2B2B2BB90600C63B71 /* BeatPreviewManager.swift in Sources */,
