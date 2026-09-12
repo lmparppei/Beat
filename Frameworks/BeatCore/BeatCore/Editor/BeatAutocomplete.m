@@ -149,12 +149,13 @@
 - (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange
 {
     Line *currentLine = self.delegate.currentLine;
-    if (currentLine.string == nil || NSMaxRange(charRange) > _delegate.text.length || charRange.length < 0) return @[];
+    if (_delegate.text.length == 0 || currentLine.string == nil || NSMaxRange(charRange) > _delegate.text.length || charRange.length < 0) return @[];
     
     NSMutableArray *matches = NSMutableArray.new;
     NSMutableArray *allSuggestions = NSMutableArray.new;
-        
-    NSString* stringToSearch = [_delegate.text substringWithRange:charRange].uppercaseString;
+    
+    NSString* rawString = [_delegate.text substringWithRange:charRange];
+    NSString* stringToSearch = rawString.uppercaseString;
     NSString* prefix = @"";
     
     // Scene headings will ignore the prefix

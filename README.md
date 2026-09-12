@@ -42,7 +42,7 @@ Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Wri
 
 Beat for iOS supports a limited set of features, but is getting up to speed with the desktop release. Some thing will, like plugin support, will remain macOS-exclusive, and the iOS version should be considered a companion app for the bigger sibling now.
 
-The mobile version is currently a paid app, available on App Store, but it is still licensed under GPL and this repo contains the code for both platforms. You can build it yourself to avoid paying me anything.
+The mobile release is currently a paid app, available on App Store, but still licensed under GPL and this repo contains the code for both platforms. You can build the app yourself and install it on your own device. 
 
 
 ## Building from repo
@@ -65,20 +65,18 @@ For now, you can submit PRs directly to the main branch, but in the near future,
 
 ## Supporting Beat
 
-To fund the development, the binary for iOS release is currently distributed with a single lifetime fee. This is because Finnish law doesn't allow me to receive donations for my work, and because the iOS port was created due to popular demand. It is open source, though, so you can compile it yourself and install it on your own device. 
+To fund the development, the binary for iOS release is currently distributed with a single lifetime fee. This is because Finnish law doesn't allow me to receive donations for my work, and because the iOS port was created due to popular demand. You can also help to keep the project alive by subscribing to my Patreon. 
 
-You can also help to keep the project alive by subscribing to my Patreon.
-
-However, the creator of this app is a well-off person from a social-democratic welfare country, so you can consider sending your loose change to NGOs and charities instead. Currently, there is a genocide happening in Gaza, while the world is closing its eyes, and people are in desperate need of help.
+However, the creator of this app is a middle class person from a social-democratic country, so consider sending your loose change to NGOs and charities instead. Currently, there is a genocide happening in Gaza, while the world is closing its eyes, and peoople are in desperate need of help.
 
 
 ## Post-mortem
 
 **Beat is a political and an anti-capitalist venture at its heart.** 
 
-The application will stay free (as in freedom) and open source forever. I'm sorry it's only available for Apple devices, which waters down the anti-capitalist stance, but solidarity is still woven into the core of the app. The project will never allow racism, facism, homophobia, transphobia, antisemitism, islamophobia or any sort of discrimination. 
+The application will stay free (as in freedom) and open source forever. I'm sorry it's only available for Apple devices, which waters down the anti-capitalist stance, but aim for solidarity is still woven into the core of the app. I will never allow racism, facism, homophobia, transphobia, antisemitism, islamophobia or any sort of discrimination. 
 
-If you have an issue with my politics, instead of threatening or trying to silence me, please direct your complaints to International Red Cross, UNICEF, Amnesty International, Human Rights Watch, International Criminal Court, UNHCR… I guess you get the idea.
+If you have an issue with my politics and plan on threatening or trying to silence me, please don't, and instead direct your complaints to International Red Cross, UNICEF, Amnesty International, Human Rights Watch, International Criminal Court, UNHCR… I guess you get the idea. Free Palestine.
 
 I came to filmmaking from a DIY & underground art scene, which works on very different rules than the highly gate-kept film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class people — nowadays including me. A free or affordable screenwriting app might not be the thing that helps you to break through, but it's a start, if you are able to afford (or steal) a Mac. Apple's phones fit into your pocket even more nicely, if you know what I mean.
 
