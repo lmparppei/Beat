@@ -24,10 +24,6 @@
 #import "BeatUserDefaults.h"
 
 
-@interface BeatTextIO()
-@property (nonatomic) bool skipAutomaticLineBreaks;
-@end
-
 @implementation BeatTextIO
 
 static NSString *lineBreak = @"\n\n===\n\n";
@@ -532,6 +528,8 @@ static NSString *centeredEnd = @" <";
  */
 - (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
+    if (self.skipAutomaticLineBreaks) return false;
+    
     static NSDictionary *matches;
     if (matches == nil) matches = @{
         @"(" : @")",
