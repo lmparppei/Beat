@@ -376,3 +376,6 @@
 "versionControl.confirmResetMessage" = "This will delete all your commits until this point. This action cannot be undone.";
 
 "export.printDialogueNumber" = "Number Dialogue Lines";
+
+"color.custom" = "Mukautettu";
+

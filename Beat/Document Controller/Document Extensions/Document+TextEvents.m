@@ -62,8 +62,6 @@
 		if ([self.textActions replaceSmartQuotationIfNeeded:replacementString range:affectedCharRange]) return false;
 	}
 	
-	
-	
 	// Check for character input trouble
 	if (self.lineForNewCue != nil && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
 		[self cancelCharacterInput];
