@@ -420,6 +420,7 @@
 {
     NSMutableArray* autoNumbered = NSMutableArray.new;
     NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
+    
     for (Line* line in self.safeLines) {
         if (line.type == heading && !line.omitted) {
             if (line.sceneNumberRange.length > 0) [forcedNumbers addObject:line.sceneNumber];

@@ -184,19 +184,19 @@
         if (line.type == heading) {
             if (line.sceneNumberRange.length > 0) {
                 line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
+                
+                // We need to do some extra trickery for heading elements when they have macros, because the user might have used a macro for the scene number.
+                // NB: If we were dealing with pure Fountain, we could just preprocess the text as string and replace macros before parsing the text back to Fountain.
+                // However, this is not possible, because we have all sorts of metadata, so there are certain tricks we have to pull here. Not cool, I know.
+                if (line.macroRanges.count > 0) {
+                    NSAttributedString* aStr = line.attributedStringWithResolvedMacros;
+                    Line* ln = [Line withString:aStr.string type:line.type];
+                    [ln parseSceneNumber];
+                    if (ln.sceneNumber.length > 0) line.sceneNumber = ln.sceneNumber;
+                }
             } else if (!line.sceneNumber) {
                 line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
                 sceneNumber += 1;
-            }
-            
-            // We need to do some extra trickery for heading elements when they have macros, because the user might have used a macro for the scene number.
-            // NB: If we were dealing with pure Fountain, we could just preprocess the text as string and replace macros before parsing the text back to Fountain.
-            // However, this is not possible, because we have all sorts of metadata, so there are certain tricks we have to pull here. Not cool, I know.
-            if (line.macroRanges.count > 0) {
-                NSAttributedString* aStr = line.attributedStringWithResolvedMacros;
-                Line* ln = [Line withString:aStr.string type:line.type];
-                [ln parseSceneNumber];
-                if (ln.sceneNumber.length > 0) line.sceneNumber = ln.sceneNumber;
             }
         } else {
             line.sceneNumber = @"";

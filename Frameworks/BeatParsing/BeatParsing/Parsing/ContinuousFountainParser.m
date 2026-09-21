@@ -934,24 +934,6 @@
     }
 }
 
-- (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length line:(Line*)line
-{
-    NSUInteger location = NSNotFound;
-    
-    for(NSInteger i = length - 1; i >= 0; i--) {
-        // Exclude note ranges
-        if ([line.noteRanges containsIndex:i]) continue;
-
-        unichar c = string[i];
-        if (c == '#') {
-            if (location == NSNotFound) location = i;
-            else return NSMakeRange(i+1, location-i-1);
-        }
-    }
-    
-    return NSMakeRange(0, 0);
-}
-
 - (NSString *)markerForLine:(Line*)line
 {
     line.markerRange = (NSRange){0, 0};

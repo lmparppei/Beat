@@ -33,7 +33,7 @@
             [ln resetFormatting];
             [ln parseSceneNumber];
             
-            l.sceneNumber = ln.sceneNumber;
+            if (ln.sceneNumberRange.length > 0 && ln.sceneNumber.length > 0) l.sceneNumber = ln.sceneNumber;
             
             [self addUpdateToOutlineAtLine:l didChangeType:false];
         }
