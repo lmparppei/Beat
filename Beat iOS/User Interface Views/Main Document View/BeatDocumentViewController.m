@@ -201,7 +201,7 @@
 	
 	// Do nothing more if we're not loading the document
 	if (!self.documentIsLoading) return;
-		
+			
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 1300.0, 10.0) animated:false];
@@ -211,7 +211,7 @@
 	
 	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
 	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-	
+		
 	// This is not a place of honor. No highly esteemed deed is commemorated here.
 	[self.textView firstResize];
 	[self.textView resize];
