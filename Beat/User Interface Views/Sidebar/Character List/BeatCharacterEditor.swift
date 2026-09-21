@@ -94,6 +94,7 @@ import BeatCore
 				item.image = BeatColors.labelImage(forColor: color, size: CGSize(width: 16, height: 16))
 			} else {
 				item = BeatColorMenuItem(customColor: "")
+				item.title = ""
 				item.action = #selector(pickColor)
 			}
 			
@@ -192,12 +193,14 @@ import BeatCore
 		guard let menu = highlightColorButton?.menu else { return }
 		
 		for item in menu.items as? [BeatColorMenuItem] ?? [] {
-			if item.colorKey == character?.highlightColor {
+			if !item.custom, item.colorKey == character?.highlightColor {
 				item.state = .on
 				highlightColorButton?.selectItem(at: menu.index(of: item))
 			} else if item.custom {
 				item.state = color.hasPrefix("#") ? .on : .off
-				highlightColorButton?.selectItem(at: menu.index(of: item))
+				if item.state == .on {
+					highlightColorButton?.selectItem(at: menu.index(of: item))
+				}
 			} else {
 				item.state = .off
 			}
