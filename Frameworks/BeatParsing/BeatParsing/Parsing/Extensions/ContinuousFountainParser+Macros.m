@@ -27,6 +27,14 @@
         [l resolveMacrosWithParser:parser];
         
         if (l.isOutlineElement || l.type == synopse) {
+            // We have to first create a string, then parse it and fetch the scene number. Silly, but this is how it's built.
+            NSString* str = l.attributedStringWithResolvedMacros.string;
+            Line* ln = [Line withString:str type:l.type];
+            [ln resetFormatting];
+            [ln parseSceneNumber];
+            
+            if (ln.sceneNumberRange.length > 0 && ln.sceneNumber.length > 0) l.sceneNumber = ln.sceneNumber;
+            
             [self addUpdateToOutlineAtLine:l didChangeType:false];
         }
     }

@@ -331,3 +331,6 @@
 "cardView.addAct.placeholder" = "Näytöksen nimi";
 "cardView.deleteScene" = "Poista kohtaus";
 "cardView.deleteAct" = "Poista näytös (säilytä kohtaukset)";
+
+"export.printDialogueNumber" = "Numeroi dialogi";
+

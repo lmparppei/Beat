@@ -26,7 +26,8 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 		
 		let container = self.textContainers.first!
         let revisions = pageView?.settings.revisions as? IndexSet ?? []
-		
+        let charRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
+        
 		if ((pageView?.isTitlePage ?? false)) {
 			return
 		}
@@ -34,9 +35,7 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
         #if os(macOS)
 		NSGraphicsContext.saveGraphicsState()
         #endif
-        
-        //var previousLine:Line?
-                
+                        
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, originalRange, stop in
 			let markerRect = CGRectMake(container.size.width - 10 - (self.pageView?.pageStyle.marginRight ?? 0.0), usedRect.origin.y - 3.0, 15, usedRect.size.height)
 			
@@ -54,7 +53,7 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 			}
             
             // In rendered text, the revision attribute is a A NUMBER VALUE
-			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
+			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range) { obj, attrRange, stop in
                 guard obj != nil, let revisionValue = obj as? NSNumber else { return }
                 
                 let level = revisionValue.intValue
@@ -65,8 +64,8 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
                 if highestRevision < level {
 					highestRevision = level
 				}
-			})
-			
+			}
+            
 			if highestRevision == -1 { return }
 			
             let generation = BeatRevisions.revisionGenerations()[highestRevision]
@@ -79,12 +78,41 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 			])
 		}
         
-		
+        if let settings = pageView?.settings, settings.printDialogueNumbers {
+            drawDialogueNumbers(characterRange: charRange)
+        }
+        		
         #if os(macOS)
 		NSGraphicsContext.restoreGraphicsState()
         #endif
 	}
 	
+    private func drawDialogueNumbers(characterRange:NSRange) {
+        guard let container = self.textContainers.first, let pageStyle = pageView?.pageStyle else { return }
+        
+        self.textStorage?.enumerateAttribute(NSAttributedString.Key("DialogueNumber"), in: characterRange) { obj, attrRange, stop in
+            guard let val = obj as? NSNumber else { return }
+            
+            let glyphRange = self.glyphRange(forCharacterRange: attrRange, actualCharacterRange: nil)
+            let usedRect = self.boundingRect(forGlyphRange: glyphRange, in: self.textContainers.first!)
+            
+            let num = String(val.intValue)
+            let font = BeatFontManager.shared.defaultFonts.regular
+            
+            var numRect = CGRectMake(0, usedRect.origin.y, 50, usedRect.size.height)
+            if let textStorage, let val = textStorage.attribute(NSAttributedString.Key("LineType"), at: attrRange.location, effectiveRange: nil) as? UInt, let lineType = LineType(rawValue: val) {
+                if lineType == .dualDialogue {
+                    numRect.origin.x = container.size.width - 30 - pageStyle.marginRight
+                }
+            }
+            
+            num.draw(at: numRect.origin, withAttributes: [
+                NSAttributedString.Key.font: font,
+                NSAttributedString.Key.foregroundColor: UXColor.black
+            ])
+        }
+    }
+    
 	override public func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint) {
 		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
         drawHighlight(forGlyphRange: glyphsToShow)

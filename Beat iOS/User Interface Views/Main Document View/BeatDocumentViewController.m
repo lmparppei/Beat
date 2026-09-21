@@ -196,6 +196,9 @@
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
 	[self setupDocument];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsDidChange:) name:@"BeatSettingsChanged" object:nil];
+	[self settingsDidChange:nil];
 }
 
 - (void)setupTitleBar
@@ -207,7 +210,7 @@
 {
 	// Do nothing more if we're not loading the document
 	if (!self.documentIsLoading) return;
-		
+			
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 1300.0, 10.0) animated:false];
@@ -217,7 +220,7 @@
 	
 	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
 	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-	
+		
 	// This is not a place of honor. No highly esteemed deed is commemorated here.
 	[self.textView firstResize];
 	[self.textView resize];
@@ -229,6 +232,7 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self restoreCaret];
 	});
+	
 }
 
 - (void)setupDocument
@@ -464,60 +468,15 @@
 /// This is called by `iOSDocument` after closing the document.
 - (void)unloadViews
 {
+<<<<<<< HEAD
 	// We won't do this in the new model I guess?
 	
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
-	/*
-	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
-		[container unload];
-	}
-	[self.registeredPluginContainers removeAllObjects];
-	
-	self.review = nil;
-	self.revisionTracking = nil;
-	self.tagging = nil;
-
-	[self forgetStyles];
-	[self.pluginAgent unloadPlugins];
-	
-	self.navigationItem.titleMenuProvider = nil;
-	self.navigationItem.rightBarButtonItems = nil;
-	self.navigationItem.leftBarButtonItem = nil;
-
-	[self.userActivity invalidate];
-	
-	[self.registeredViews removeAllObjects];
-	[self.registeredOutlineViews removeAllObjects];
-	[self.registeredSelectionObservers removeAllObjects];
-		
-	self.formatting = nil;
-	self.runningPlugins = nil;
-	self.parser = nil;
-	self.outlineView = nil;
-	self.contentBuffer = nil;
-	self.documentBrowser = nil;
-	self.formattingActions = nil;
-	self.textActions = nil;
-	self.autocomplete = nil;
-	
-	[self.textView unload];
-	
-	[self.previewView clear];
-	[self.previewView removeFromParentViewController];
-	self.previewView = nil;
-		
-	 */
-	 
-	//[self removeChildren];
-	// self.editorSplitView = nil;
 	 
 	// These have to be nulled to kill any retained line references
 	self.formattedTextBuffer = NSMutableAttributedString.new;
 	self.attrTextCache = NSMutableAttributedString.new;
-
-	 
-	// self.document = nil;
 }
 
 
@@ -585,6 +544,16 @@
 - (NSString*)contentForSaving
 {
 	return [self createDocumentFile];
+}
+
+
+#pragma mark - Setting change listener
+
+- (void)settingsDidChange:(NSNotification*)notification
+{
+	if (self.editorSplitView == nil) return;
+
+	self.navigationController.hidesBarsOnSwipe = ![BeatUserDefaults.sharedDefaults getBool:BeatSettingDontHideBars];
 }
 
 

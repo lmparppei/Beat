@@ -113,6 +113,8 @@
 		B68C59212CCE4C6E00C1F596 /* 0.1.18.html in Resources */ = {isa = PBXBuildFile; fileRef = B68C59202CCE4C6E00C1F596 /* 0.1.18.html */; };
 		B68E3F2D2B2BBB1200C63B71 /* BeatiOSPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */; };
 		B691A5732F64942C0059180C /* 0.4.4html in Resources */ = {isa = PBXBuildFile; fileRef = B691A5722F64942C0059180C /* 0.4.4html */; };
+		B692205330528DDE00267E11 /* 0.4.16.html in Resources */ = {isa = PBXBuildFile; fileRef = B692205230528DDE00267E11 /* 0.4.16.html */; };
+		B692205530574EB200267E11 /* 0.4.17.html in Resources */ = {isa = PBXBuildFile; fileRef = B692205430574EB200267E11 /* 0.4.17.html */; };
 		B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BD296EDFF400CF4869 /* WebKit.framework */; };
 		B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BF296EDFFD00CF4869 /* UIKit.framework */; };
 		B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; };
@@ -145,6 +147,7 @@
 		B6C597C42E6EA28000418587 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6C597C32E6EA28000418587 /* Main.storyboard */; };
 		B6C597CB2E6EA48C00418587 /* DiffViewer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6C597CA2E6EA48C00418587 /* DiffViewer.storyboard */; };
 		B6C597CD2E7ACA6C00418587 /* 0.3.3.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C597CC2E7ACA6C00418587 /* 0.3.3.html */; };
+		B6C6797F302CEED900CAE976 /* 0.4.13.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C6797E302CEED900CAE976 /* 0.4.13.html */; };
 		B6C7AA8A2BB3113E00A43284 /* BeatShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C7AA892BB3113E00A43284 /* BeatShareSheetController.swift */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
@@ -166,6 +169,7 @@
 		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
 		B6D4F0032C58E01000A8884E /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = B6D4F0022C58E01000A8884E /* Sortable.js */; };
+		B6D74541304EF67300E10F3A /* 0.4.15.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74540304EF67300E10F3A /* 0.4.15.html */; };
 		B6D791762E43A43500186B3E /* 0.3.1.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D791752E43A43500186B3E /* 0.3.1.html */; };
 		B6D7917C2E44E89500186B3E /* SettingViews.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6D7917B2E44E89500186B3E /* SettingViews.storyboard */; };
 		B6DAAC952D74C13400FF6BD6 /* 0.2.8.html in Resources */ = {isa = PBXBuildFile; fileRef = B6DAAC942D74C13400FF6BD6 /* 0.2.8.html */; };
@@ -352,6 +356,8 @@
 		B68C59202CCE4C6E00C1F596 /* 0.1.18.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.1.18.html; sourceTree = "<group>"; };
 		B68E3F2C2B2BBB1200C63B71 /* BeatiOSPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSPreviewController.swift; sourceTree = "<group>"; };
 		B691A5722F64942C0059180C /* 0.4.4html */ = {isa = PBXFileReference; lastKnownFileType = text; path = 0.4.4html; sourceTree = "<group>"; };
+		B692205230528DDE00267E11 /* 0.4.16.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.16.html; sourceTree = "<group>"; };
+		B692205430574EB200267E11 /* 0.4.17.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.17.html; sourceTree = "<group>"; };
 		B69311BD296EDFF400CF4869 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311BF296EDFFD00CF4869 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311C1296EE00500CF4869 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -384,6 +390,7 @@
 		B6C597C22E6EA28000418587 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B6C597CA2E6EA48C00418587 /* DiffViewer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DiffViewer.storyboard; sourceTree = "<group>"; };
 		B6C597CC2E7ACA6C00418587 /* 0.3.3.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.3.html; sourceTree = "<group>"; };
+		B6C6797E302CEED900CAE976 /* 0.4.13.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.13.html; sourceTree = "<group>"; };
 		B6C7AA892BB3113E00A43284 /* BeatShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatShareSheetController.swift; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -407,6 +414,7 @@
 		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D4F0022C58E01000A8884E /* Sortable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sortable.js; sourceTree = "<group>"; };
+		B6D74540304EF67300E10F3A /* 0.4.15.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.15.html; sourceTree = "<group>"; };
 		B6D791752E43A43500186B3E /* 0.3.1.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.1.html; sourceTree = "<group>"; };
 		B6D7917A2E44E89500186B3E /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/SettingViews.storyboard; sourceTree = "<group>"; };
 		B6DAAC942D74C13400FF6BD6 /* 0.2.8.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.8.html; sourceTree = "<group>"; };
@@ -639,6 +647,10 @@
 				B6B36AF22FC5D93300FCAF06 /* 0.4.9.html */,
 				B681F1B62FD8A766009178A8 /* 0.4.10.html */,
 				B6ADE3F53024B73800DBFDB6 /* 0.4.11.html */,
+				B6C6797E302CEED900CAE976 /* 0.4.13.html */,
+				B6D74540304EF67300E10F3A /* 0.4.15.html */,
+				B692205230528DDE00267E11 /* 0.4.16.html */,
+				B692205430574EB200267E11 /* 0.4.17.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -1087,6 +1099,7 @@
 				B619DE6329F80E40007D1838 /* New Document.fountain in Resources */,
 				B6C597CD2E7ACA6C00418587 /* 0.3.3.html in Resources */,
 				B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */,
+				B6D74541304EF67300E10F3A /* 0.4.15.html in Resources */,
 				B60158F22CD59D8B00F9413D /* 0.1.19.html in Resources */,
 				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
 				B6E91E372B6820CC00EDB066 /* NotoEmoji.ttf in Resources */,
@@ -1117,6 +1130,9 @@
 				B6964D9C2D7F1E6F00F034A4 /* Beat-FadeIn.png in Resources */,
 				B6964D9D2D7F1E6F00F034A4 /* Beat-FDX.png in Resources */,
 				B6CF14412EBD7D0E000D1E9E /* 0.3.5.html in Resources */,
+				B692205530574EB200267E11 /* 0.4.17.html in Resources */,
+				B6C6797F302CEED900CAE976 /* 0.4.13.html in Resources */,
+				B692205330528DDE00267E11 /* 0.4.16.html in Resources */,
 				B6FDCF232BD43F0300A6C9B6 /* Test.beatPlugin in Resources */,
 				B6CB96FC282FEB6600C7AFC7 /* Document.storyboard in Resources */,
 				B61914D02C0497EA0079C828 /* BeatStatistics.beatPlugin in Resources */,
@@ -1402,7 +1418,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 112;
+				CURRENT_PROJECT_VERSION = 119;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1412,7 +1428,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 0.4.11;
+				MARKETING_VERSION = 0.4.17;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
@@ -1438,7 +1454,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 112;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1447,7 +1463,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 0.4.11;
+				MARKETING_VERSION = 0.4.17;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1475,7 +1491,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 112;
+				CURRENT_PROJECT_VERSION = 119;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1497,7 +1513,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.11;
+				MARKETING_VERSION = 0.4.17;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1533,7 +1549,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 112;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = "OS_IOS=1";
@@ -1550,7 +1566,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.11;
+				MARKETING_VERSION = 0.4.17;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;

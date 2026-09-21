@@ -9,6 +9,8 @@
  
  This is a collection of IBAction methods for screenplay editing.
  
+ Note in 2026: AND A TERRIBLE FUCKING MESS. At least it works, but this is completely un-debuggable.
+ 
  */
 
 #import "BeatEditorFormattingActions.h"
@@ -150,8 +152,12 @@ static NSString *macroSymbolClose = @"}}";
     // ... then in the new position, check again if we need a line break
     if (_delegate.currentLine.type != empty && _delegate.currentLine.length > 0) {
         // Add line break at the end of block
-        [_delegate.textActions addString:@"\n" atIndex: NSMaxRange(_delegate.currentLine.textRange) skipAutomaticLineBreaks:true];
-        _delegate.selectedRange = NSMakeRange(NSMaxRange(_delegate.currentLine.textRange) + 2, 0);
+        Line* currentLine = _delegate.currentLine;
+        [_delegate.textActions addString:@"\n" atIndex: NSMaxRange(currentLine.textRange) skipAutomaticLineBreaks:true];
+        // For some reason, we need to actually access the text view for the selection to register.
+        // This seems like quantum mechanics somehow: Even though the _delegate.selectedRange = ... setter should do just this,
+        // unless we observe the selection, it won't work. This is a little weird, but at least it works like this on both iOS and macOS.
+        _delegate.getTextView.selectedRange = NSMakeRange(NSMaxRange(currentLine.textRange) + 2, 0);
     }
     
     // Do we need a line break before current line, too?
@@ -408,10 +414,11 @@ static NSString *macroSymbolClose = @"}}";
             }
             
             if ([line.string characterAtIndex:0] != '>') {
-                [self.delegate.textActions addString:startingSymbol atIndex:line.position];
+                [self.delegate.textActions addString:startingSymbol atIndex:line.position skipAutomaticLineBreaks:true];
             }
+            
             if (line.lastCharacter != '<') {
-                [self.delegate.textActions addString:endSymbol atIndex:line.position + line.length];
+                [self.delegate.textActions addString:endSymbol atIndex:line.position + line.length skipAutomaticLineBreaks:true];
             }
         }
         return;
@@ -462,8 +469,8 @@ static NSString *macroSymbolClose = @"}}";
 			addedCharactersInRange = 0;
 		} else {
 			//The text really isn't formatted. Just add the formatting using the original data.
-			[_delegate.textActions addString:endSymbol atIndex:NSMaxRange(range)];
-			[_delegate.textActions addString:startingSymbol atIndex:range.location];
+			[_delegate.textActions addString:endSymbol atIndex:NSMaxRange(range) skipAutomaticLineBreaks:true];
+			[_delegate.textActions addString:startingSymbol atIndex:range.location skipAutomaticLineBreaks:true];
 			
 			addedCharactersBeforeRange = startingSymbol.length;
 			addedCharactersInRange = 0;

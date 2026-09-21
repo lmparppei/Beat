@@ -30,7 +30,7 @@ page {
     content-padding: 7ch;
  
     margin-left-a4: 20;
-    margin-left-us: 22;
+    margin-left-us: 29;
 }
 
 titlePage {

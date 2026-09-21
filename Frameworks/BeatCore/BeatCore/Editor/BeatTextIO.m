@@ -24,10 +24,6 @@
 #import "BeatUserDefaults.h"
 
 
-@interface BeatTextIO()
-@property (nonatomic) bool skipAutomaticLineBreaks;
-@end
-
 @implementation BeatTextIO
 
 static NSString *lineBreak = @"\n\n===\n\n";
@@ -127,7 +123,12 @@ static NSString *centeredEnd = @" <";
         UITextRange *textRange = textView.selectedTextRange;
         [self.textView setSelectedTextRange:oldRange];
         
-        [textView replaceRange:textRange withAttributedText:string];
+        if (@available(iOS 18.0, *)) {
+            [textView replaceRange:textRange withAttributedText:string];
+        } else {
+            [textView.textStorage replaceCharactersInRange:textView.selectedRange withAttributedString:string];
+        }
+        
         if (textView.textStorage.isEditing) [textView.textStorage endEditing];
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
@@ -527,13 +528,17 @@ static NSString *centeredEnd = @" <";
  */
 - (bool)shouldMatchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString
 {
+    if (self.skipAutomaticLineBreaks) return false;
+    
     static NSDictionary *matches;
     if (matches == nil) matches = @{
         @"(" : @")",
         @"[[" : @"]]",
         @"/*" : @"*/",
         @"<<" : @">>",
-        @"{{" : @"}}"
+        @"{{" : @"}}",
+        @"+" : @"+",
+        @"_" : @"_"
     };
     
     // Find match for the parenthesis symbol

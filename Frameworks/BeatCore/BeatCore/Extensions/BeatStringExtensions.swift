@@ -11,15 +11,16 @@ import NaturalLanguage
 
 public extension String {
 	/// Returns a substring with given `NSRange`
-	func substring(range:NSRange) -> String {
-		if (range.length == 0) { return "" }
-		
-		let start = index(startIndex, offsetBy: range.location)
-		let end = index(startIndex, offsetBy: NSMaxRange(range))
-		let strRange = start..<end
-		
-		return String(self[strRange])
-	}
+    func substring(range: NSRange) -> String {
+        guard range.length > 0,
+              let start = utf16.index(utf16.startIndex, offsetBy: range.location, limitedBy: utf16.endIndex),
+              let end = utf16.index(utf16.startIndex, offsetBy: NSMaxRange(range), limitedBy: utf16.endIndex),
+              let strStart = String.Index(start, within: self),
+              let strEnd = String.Index(end, within: self) else {
+            return ""
+        }
+        return String(self[strStart..<strEnd])
+    }
 	
 	/// Replaces given range with a string and returns a new string.
 	func stringByReplacing(range:NSRange, withString string:String) -> String {

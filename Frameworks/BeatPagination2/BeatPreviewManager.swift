@@ -351,6 +351,8 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
             // Otherwise we'll just return the actual page
             let page = pages[actualIndex]
             pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
+            pageView?.setNeedsLayout()
+            pageView?.setNeedsDisplay()
         }
         
         if (pageView != nil && !placeholder) {

@@ -30,6 +30,17 @@
 
 @implementation BeatDocumentBaseController
 
+#if TARGET_OS_IOS
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        _saveLock = NSObject.new;
+    }
+    return self;
+}
+#endif
+
 #pragma mark - Identity
 
 #if TARGET_OS_OSX
@@ -714,73 +725,79 @@
 /// Returns the string to be stored as the document. After merging together content and settings, the string is returned to `dataOfType:`. If you want to add additional settings at save-time, you can provide them in a dictionary. You can also provide an array for excluded setting keys. This is used especially for version control.
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings excludingSettings:(NSArray<NSString*>*)excludedKeys
 {
+    /// Make sure `nil` is handled correctly in `contentsForType:` implementation.
+    if (self.parser == nil) return nil;
+    
     // Do we need to bake revisions here? Aren't they stored using attributed string nowadays? Let's not and we'll see if something breaks, he he.
     //[self bakeRevisions];
-    
-    NSAttributedString *attrStr = self.getAttributedText;
-    NSString* content = self.parser.screenplayForSaving;
-    NSString* visibleText = self.text;
-    NSString* parsedText = self.parser.text;
-    
-    // Make sure data is intact
-    if (visibleText.length != parsedText.length) {
-        NSLog(@"🆘 Editor and parser are out of sync. We'll use the editor text.");
-        content = visibleText;
-    }
-    
-    if (content == nil) {
-        NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
-        @throw NSInternalInconsistencyException;
-    }
-    
-    // Resort to content buffer if needed
-    if (content == nil) content = self.attrTextCache.string;
-    
-    // Store the text length. This is used for health checks.
-    [self.documentSettings setInt:DocSettingTextLengthAtSave as:content.length];
+    @synchronized (self.parser) {
+        NSAttributedString *attrStr = self.getAttributedText;
+
+        NSString* content = self.parser.screenplayForSaving;
+        NSString* visibleText = self.text;
+        NSString* parsedText = self.parser.text;
         
-    // Save added/removed ranges
-    // This saves the revised ranges into Document Settings
-    NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
-    [self.documentSettings set:DocSettingRevisions as:revisions];
-    
-    // Save tag definitions and ranges
-    [self.tagging saveTagsWithAttributedString:attrStr];
-    
-    // Save current revision color
-    [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
-    
-    // Store currently running plugins (the ones which support restoration)
-    [self.documentSettings set:DocSettingActivePlugins as:[self runningPluginsForSaving]];
-    
-    // Save reviewed ranges
-    NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
-    [self.documentSettings set:DocSettingReviews as:reviews];
-    
-    // Save heading/section info
-    [self.documentSettings set:DocSettingHeadingUUIDs as:self.parser.outlineUUIDs];
-    
-    // Save caret position
-    if (NSThread.isMainThread) {
-        [self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
-    }
-    
-    #if TARGET_OS_OSX
+        // Make sure data is intact
+        if (visibleText.length != parsedText.length) {
+            NSLog(@"🆘 Editor and parser are out of sync. We'll use the editor text.");
+            content = visibleText;
+        }
+        
+        // Resort to content buffer if needed
+        if (content == nil) content = self.attrTextCache.string;
+        
+        // Store the text length. This is used for health checks.
+        [self.documentSettings setInt:DocSettingTextLengthAtSave as:content.length];
+        
+        // Save added/removed ranges
+        // This saves the revised ranges into Document Settings
+        NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
+        if (revisions != nil) [self.documentSettings set:DocSettingRevisions as:revisions];
+        
+        // Save tag definitions and ranges
+        [self.tagging saveTagsWithAttributedString:attrStr];
+        
+        // Save current revision color
+        [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
+        
+        // Store currently running plugins (the ones which support restoration)
+        NSArray* runningPlugins = self.runningPluginsForSaving;
+        if (runningPlugins != nil) [self.documentSettings set:DocSettingActivePlugins as:runningPlugins];
+        
+        // Save reviewed ranges
+        if (attrStr != nil) {
+            NSArray *reviews = [self.review rangesForSavingWithString:attrStr];
+            if (reviews != nil) [self.documentSettings set:DocSettingReviews as:reviews];
+        }
+        
+        // Save heading/section info
+        NSArray* uuids = self.parser.outlineUUIDs;
+        if (uuids != nil) [self.documentSettings set:DocSettingHeadingUUIDs as:uuids];
+        
+        // Save caret position
+        if (NSThread.isMainThread) {
+            [self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
+        }
+        
+#if TARGET_OS_OSX
         [self unblockUserInteraction]; // What is this?
-    #endif
-    
-    NSString* settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
+#endif
+        
+        NSString* settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings excluding:excludedKeys];
+        if (settingsString != nil) {
+            // Add line break if needed
+            if (content.length > 0 && [content characterAtIndex:content.length - 1] != '\n')
+                settingsString = [NSString stringWithFormat:@"\n%@", settingsString];
+        } else {
+            settingsString = @"";
+        }
+        
+        // Create final result string
+        NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
 
-    // Add line break if needed
-    if (content.length > 0 && [content characterAtIndex:content.length - 1] != '\n')
-        settingsString = [NSString stringWithFormat:@"\n%@", settingsString];
-
-    // Create final result string
-    NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
-    
-    [self documentWasSaved];
-    
-    return result;
+        [self documentWasSaved];
+        return result;
+    }
 }
 
 

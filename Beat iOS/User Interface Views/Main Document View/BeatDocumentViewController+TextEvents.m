@@ -92,7 +92,7 @@
 		string = string.uppercaseString;
 	}
 	
-	// Make sure we're double-formatting .... fix for a silly iOS issue
+	// Make sure we're not double-formatting .... fix for a silly iOS issue
 	if (line != self.formatting.lineBeingFormatted || line == nil) {
 		[self.parser parseChangeInRange:affectedRange withString:string];
 	}
@@ -213,7 +213,7 @@
 				change = ![self.textActions shouldAddLineBreaks:currentLine range:range];
 			}
 		}
-	} else if (self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
+	} else if (!self.textActions.skipAutomaticLineBreaks && self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
 		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
 		change = NO;
 	}

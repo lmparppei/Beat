@@ -55,6 +55,7 @@ NSString * const DocSettingCharacterGenders = @"CharacterGenders"; // Backwards 
 NSString * const DocSettingCharacterData = @"CharacterData";
 
 NSString * const DocSettingPrintSceneNumbers = @"Print Scene Numbers";
+NSString * const DocSettingPrintDialogueNumbers = @"printDialogueNumbers";
 NSString * const DocSettingPrintSynopsis = @"Print Synopsis";
 NSString * const DocSettingPrintSections = @"Print Sections";
 NSString * const DocSettingPrintNotes = @"Print Notes";

@@ -157,17 +157,26 @@
     return string;
 }
 
-- (NSAttributedString*)attributedStringWithMacros
+- (NSAttributedString*)attributedStringWithResolvedMacros
 {
-    NSMutableAttributedString* string = [NSMutableAttributedString.alloc initWithString:self.string];
-    // Add macro attributes
-    for (NSValue* r in self.macros) {
-        NSRange range = r.rangeValue;
-        NSString* resolvedMacro = self.resolvedMacros[r];
+    NSMutableAttributedString* attrStr = self.attributedString.mutableCopy;
+    
+    // Replace macro ranges. All macros should be resolved by now.
+    [attrStr.copy enumerateAttribute:@"Macro" inRange:NSMakeRange(0, attrStr.length) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        if (value == nil) return;
+        NSDictionary* attrs = [attrStr attributesAtIndex:range.location effectiveRange:nil];
         
-        [string addAttribute:@"Macro" value:(resolvedMacro) ? resolvedMacro : @"" range:range];
-    }
-    return string;
+        // We'll create an intermediate Line object here to parse any possible formatting inside the macro. This is a little convoluted solution, but this is how it works for now, he he.
+        Line* macroLine = [Line withString:(NSString*)value type:action];
+        [macroLine resetFormatting];
+        
+        NSMutableAttributedString* attributedMacro = [macroLine attributedStringForOutputWith:BeatExportSettings.new].mutableCopy;
+        [attributedMacro addAttributes:attrs range:NSMakeRange(0, attributedMacro.length)];
+        
+        [attrStr replaceCharactersInRange:range withAttributedString:attributedMacro];
+    }];
+    
+    return attrStr;
 }
 
 /// Returns an attributed string without formatting markup

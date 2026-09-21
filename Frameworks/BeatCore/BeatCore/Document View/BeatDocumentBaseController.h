@@ -339,6 +339,7 @@ NS_ASSUME_NONNULL_END
 
 @property (nonatomic) NSMapTable<NSString*, id>* _Nullable additionalData;
 
+@property (atomic) NSObject* _Nonnull saveLock;
 
 @end
 

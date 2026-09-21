@@ -27,6 +27,8 @@ class iOSDocument: UIDocument {
 		return self.delegate?.parser ?? ContinuousFountainParser()
 	}
 	
+	var lastStoredText:String? = ""
+	
 	@objc var closing = false
 	
 	override var description: String {
@@ -34,13 +36,13 @@ class iOSDocument: UIDocument {
 	}
 		
     override func contents(forType typeName: String) throws -> Any {
-		if let _ = delegate?.parser {
-			guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
-				fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
-			}
-			return text.data(using: .utf8) as Any
-		} else {
-			return "".data(using: .utf8) as Any
+		var text = delegate?.createDocumentFile()
+		if text == nil { text = lastStoredText }
+		
+		lastStoredText = text
+		
+		guard let text else {
+			throw NSError(domain: "Beat", code: 0, userInfo: ["reason": "Failed to create document"])
 		}
     }
 	
@@ -83,10 +85,7 @@ class iOSDocument: UIDocument {
 			await vc.unloadViews()
 		}
 		
-		//self.delegate = nil
-
 		return closed
-		
 	}
 		
 	@objc func rename(newName:String) {

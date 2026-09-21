@@ -25,6 +25,8 @@
 /// Transforms a Beat/FDX-style attributed string back to a Fountain string.
 + (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr;
 
+- (NSAttributedString*)attributedStringWithResolvedMacros;
+
 /// Returns and caches the line with attributes.
 /// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
 // @property (nonatomic) NSAttributedString *attrString;
