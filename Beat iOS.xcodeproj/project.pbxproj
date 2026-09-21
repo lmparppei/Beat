@@ -76,6 +76,7 @@
 		B64FA4AB2DA560E30098F448 /* BeatColorWell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64FA4AA2DA560B80098F448 /* BeatColorWell.swift */; };
 		B650E0312F488C1100E345EF /* 0.4.1.html in Resources */ = {isa = PBXBuildFile; fileRef = B650E0302F488C1100E345EF /* 0.4.1.html */; };
 		B650E0BE2F520CA800E345EF /* 0.4.2.html in Resources */ = {isa = PBXBuildFile; fileRef = B650E0BD2F520CA800E345EF /* 0.4.2.html */; };
+		B650ED5630615984000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B650ED553061597B000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift */; };
 		B65428552F59C25D00844A30 /* 0.4.3.html in Resources */ = {isa = PBXBuildFile; fileRef = B65428542F59C25D00844A30 /* 0.4.3.html */; };
 		B654B5AD2E3B8F9800AEDAE0 /* 0.3.0.html in Resources */ = {isa = PBXBuildFile; fileRef = B654B5AC2E3B8F9800AEDAE0 /* 0.3.0.html */; };
 		B65B56E92D40284A008BB43F /* 0.2.4.html in Resources */ = {isa = PBXBuildFile; fileRef = B65B56E82D40284A008BB43F /* 0.2.4.html */; };
@@ -311,6 +312,7 @@
 		B64FA4AA2DA560B80098F448 /* BeatColorWell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatColorWell.swift; sourceTree = "<group>"; };
 		B650E0302F488C1100E345EF /* 0.4.1.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.1.html; sourceTree = "<group>"; };
 		B650E0BD2F520CA800E345EF /* 0.4.2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.2.html; sourceTree = "<group>"; };
+		B650ED553061597B000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+BrowserDelegate.swift"; sourceTree = "<group>"; };
 		B65428542F59C25D00844A30 /* 0.4.3.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.3.html; sourceTree = "<group>"; };
 		B654B5AC2E3B8F9800AEDAE0 /* 0.3.0.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.0.html; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
@@ -376,11 +378,11 @@
 		B6A97BF92BF0BA7500414878 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B6A97CA12BF0C3FD00414878 /* BeatFileExport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatFileExport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+Export.swift"; sourceTree = "<group>"; };
-		B6B36AEB2FC59A2D00FCAF06 /* BeatDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentViewController.swift; sourceTree = "<group>"; };
 		B6ADE3ED302470B300DBFDB6 /* BeatPageNumberOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPageNumberOverlay.swift; sourceTree = "<group>"; };
 		B6ADE3EF3024727200DBFDB6 /* BeatPageNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPageNumberView.swift; sourceTree = "<group>"; };
 		B6ADE3F33024764700DBFDB6 /* BeatUITextView+ScrollViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatUITextView+ScrollViewDelegate.swift"; sourceTree = "<group>"; };
 		B6ADE3F53024B73800DBFDB6 /* 0.4.11.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.11.html; sourceTree = "<group>"; };
+		B6B36AEB2FC59A2D00FCAF06 /* BeatDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatDocumentViewController.swift; sourceTree = "<group>"; };
 		B6B36AF22FC5D93300FCAF06 /* 0.4.9.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.9.html; sourceTree = "<group>"; };
 		B6B61BB429F970A20098D94D /* UITextView+UX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITextView+UX.h"; sourceTree = "<group>"; };
 		B6B61BB529F970A20098D94D /* UITextView+UX.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITextView+UX.m"; sourceTree = "<group>"; };
@@ -547,6 +549,7 @@
 		B61FD0632A69308500A40883 /* Main Document View */ = {
 			isa = PBXGroup;
 			children = (
+				B650ED553061597B000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift */,
 				B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */,
 				B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */,
 				B6839B472D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.h */,
@@ -1234,6 +1237,7 @@
 				B6BEE27D2F24C2FC00CF6BF5 /* BeatLLMHelper.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
 				B6298D4B2BC66E3D00F9AAF0 /* BeatNavigationController.swift in Sources */,
+				B650ED5630615984000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift in Sources */,
 				B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */,
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */,

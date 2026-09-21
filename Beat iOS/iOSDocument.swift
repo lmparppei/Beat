@@ -44,6 +44,7 @@ class iOSDocument: UIDocument {
 		guard let text else {
 			throw NSError(domain: "Beat", code: 0, userInfo: ["reason": "Failed to create document"])
 		}
+		return text.data(using: .utf8) as Any
     }
 	
 	override func save(to url: URL, for saveOperation: UIDocument.SaveOperation) async -> Bool {

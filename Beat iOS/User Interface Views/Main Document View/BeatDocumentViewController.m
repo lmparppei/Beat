@@ -17,6 +17,9 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
+API_AVAILABLE(ios(18.0))
+static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"template";
+
 @interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, BeatPluginDelegate, UITextInputDelegate> {
 	bool editorWasActive;
 }
@@ -232,7 +235,6 @@
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self restoreCaret];
 	});
-	
 }
 
 - (void)setupDocument
@@ -357,13 +359,15 @@
 		};
 		UIView* v = UIView.new;
 		v.backgroundColor = [BeatColors color:@"backgroundGray"];
-				
-		self.launchOptions.primaryAction = [UIAction actionWithTitle:@"New Document" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
-			NSLog(@"!!!");
-		}];
-		self.launchOptions.secondaryAction = [UIAction actionWithTitle:@"Templates & Tutorials" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
-			NSLog(@"!!!");
-		}];
+		
+		self.launchOptions.primaryAction = [UIDocumentViewControllerLaunchOptions createDocumentActionWithIntent:UIDocumentCreationIntentDefault];
+		self.launchOptions.primaryAction.title = @"New Document";
+		
+		UIAction* templateAction = [UIDocumentViewControllerLaunchOptions
+		createDocumentActionWithIntent:BeatDocumentCreationIntentTemplate];
+		templateAction.title = @"Templates & Tutorials";
+		
+		self.launchOptions.secondaryAction = templateAction;
 	}
 	
 	[super viewDidLoad];
@@ -468,7 +472,6 @@
 /// This is called by `iOSDocument` after closing the document.
 - (void)unloadViews
 {
-<<<<<<< HEAD
 	// We won't do this in the new model I guess?
 	
 	[NSNotificationCenter.defaultCenter removeObserver:self];

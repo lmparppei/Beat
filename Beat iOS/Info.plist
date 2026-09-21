@@ -2,32 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
-		<key>UISceneConfigurations</key>
-		<dict>
-			<key>UIWindowSceneSessionRoleApplication</key>
-			<array>
-				<dict>
-					<key>UISceneConfigurationName</key>
-					<string>Default Configuration</string>
-					<key>UISceneDelegateClassName</key>
-					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Document</string>
-				</dict>
-			</array>
-		</dict>
-	</dict>
 	<key>ATSApplicationFontsPath</key>
 	<string>.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>UIDocumentClass</key>
-			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 			<key>CFBundleTypeName</key>
 			<string>Fountain Screenplay</string>
 			<key>CFBundleTypeRole</key>
@@ -39,10 +18,10 @@
 				<string>fi.KAPITAN.fountain</string>
 				<string>io.fountain</string>
 			</array>
-		</dict>
-		<dict>
 			<key>UIDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Plain Text</string>
 			<key>CFBundleTypeRole</key>
@@ -53,6 +32,8 @@
 			<array>
 				<string>public.plain-text</string>
 			</array>
+			<key>UIDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleIcons</key>
@@ -90,6 +71,25 @@
 		<string>Courier Prime Sans Bold Italic.ttf</string>
 		<string>NotoEmoji.ttf</string>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Document</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UTExportedTypeDeclarations</key>
@@ -154,13 +154,13 @@
 			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
-				<key>public.mime-type</key>
-				<array>
-					<string>text/plain</string>
-				</array>
 				<key>public.filename-extension</key>
 				<array>
 					<string>fountain</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/plain</string>
 				</array>
 			</dict>
 		</dict>
