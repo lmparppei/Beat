@@ -16,6 +16,10 @@ extension BeatUITextView:UIScrollViewDelegate {
 	}
 	
 	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+		updateZoomScale(scrollView: scrollView)
+	}
+	
+	func updateZoomScale(scrollView:UIScrollView, animated:Bool = true) {
 		guard let pageView else { return }
 		var x = (scrollView.frame.width - pageView.frame.width) / 2
 		if (x < 0) { x = 0; }
@@ -38,15 +42,22 @@ extension BeatUITextView:UIScrollViewDelegate {
 		scrollView.scaleViewTree(to: scale)
 		self.scaleView(scale: scale)
 
-		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) { [weak self] in
-			self?.pageView?.frame.origin.x = frame.origin.x
-			
-			self?.enclosingScrollView?.zoomScale = zoom
-			self?.resizeScrollViewContent()
-		} completion: { _ in
-			
+		if animated {
+			UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) { [weak self] in
+				self?.pageView?.frame.origin.x = frame.origin.x
+				
+				//self?.enclosingScrollView?.zoomScale = zoom
+				self?.resizeScrollViewContent()
+			} completion: { _ in
+				
+			}
+		} else {
+			pageView.frame.origin.x = frame.origin.x
+			enclosingScrollView?.zoomScale = zoom
+			resizeScrollViewContent()
 		}
 	}
+	
 
 	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
 		guard let key = presses.first?.key else { return }

@@ -266,7 +266,7 @@ import BeatCore
     
 	/// Centers content view
     private func updateContentPosition() {
-		guard let container else { print(" No container"); return }
+		guard let container else { return }
 		let offset = self.bounds.width / 2
 		container.center = CGPointMake(offset, container.center.y)
     }

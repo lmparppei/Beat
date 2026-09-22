@@ -19,23 +19,7 @@ extension BeatDocumentViewController {
 	}
 	
 	/// Sets up the basic tool bar menu
-	@objc func setupTitleMenus() {
-		guard let document else { return }
-		
-		/*
-		let documentProperties = UIDocumentProperties(url: document.fileURL)
-		if let itemProvider = NSItemProvider(contentsOf: document.fileURL) {
-			documentProperties.dragItemsProvider = { _ in
-				[UIDragItem(itemProvider: itemProvider)]
-			}
-			documentProperties.activityViewControllerProvider = {
-				UIActivityViewController(activityItems: [itemProvider], applicationActivities: nil)
-			}
-		}
-		
-		navigationItem.documentProperties = documentProperties
-		 */
-		 
+	@objc func setupTitleMenus() {		 
 		navigationItem.titleMenuProvider = { suggestions in
 			var items = suggestions
 			

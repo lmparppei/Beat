@@ -22,6 +22,7 @@ extension BeatUITextView {
 		
 	/// Called when setting up the view and adjusting paper size
 	@objc func resizePaper() {
+		print("RESIZING PAPER")
 		guard let pageView else { return }
 		
 		var frame = pageView.frame
@@ -37,6 +38,22 @@ extension BeatUITextView {
 		self.textContainerInset = insets
 	}
 	
+	@objc func resizeToFit() {
+		guard !self.mobileMode else { return }
+		
+		guard let enclosingScrollView, let pageView, pageView.frame.width > 0 else { return }
+		
+		let actualPageWidth = (pageView.frame.width / enclosingScrollView.zoomScale) + 10.0
+		var newZoomScale = enclosingScrollView.frame.width / actualPageWidth
+		
+		newZoomScale = min(max(newZoomScale, enclosingScrollView.minimumZoomScale), enclosingScrollView.maximumZoomScale)
+		
+		enclosingScrollView.setZoomScale(newZoomScale, animated: false)
+		enclosingScrollView.layoutIfNeeded()
+		
+		updateZoomScale(scrollView: enclosingScrollView, animated: false)
+	}
+	
 	/// Used to reliably resize the text view to fit content
 	@objc func resize() {
 		// We'll ignore this method on phones
@@ -44,13 +61,12 @@ extension BeatUITextView {
 			mobileViewResize()
 			return
 		}
-		guard let pageView else { return }
 		
-		guard let enclosingScrollView = self.enclosingScrollView else {
-			print("WARNING: No scroll view set for text view")
+		guard let pageView, let enclosingScrollView = self.enclosingScrollView else {
+			print("WARNING: Missing views when resizing. ", pageView == nil ? "Page view not set." : "", enclosingScrollView == nil ? "Scroll view not set." : "")
 			return
 		}
-		
+				
 		// Resize content view size in scroll view. This value has to be set before any of the following calculations.
 		resizeScrollViewContent()
 		
@@ -83,8 +99,7 @@ extension BeatUITextView {
 		// iOS frame sizes tend to be off by ~0.000001, so we'll have to round everything to ensure we're not doing anything unnecessary.
 		if preciseRound(frame.origin.x, precision: .tenths) != preciseRound(pageView.frame.origin.x, precision: .tenths) { pageView.frame.origin.x = frame.origin.x }
 		if preciseRound(frame.width, precision: .tenths) != preciseRound(pageView.frame.width, precision: .tenths) { pageView.frame.size.width = frame.width }
-//		if preciseRound(frame.height, precision: .tenths) != preciseRound(pageView.frame.height, precision: .tenths) { pageView.frame.size.height = frame.height }
-
+		
 		// Check if we should resize text view frame or not.
 		// Note that the self here is important (don't get confused with page view frame)
 		if floor(self.frame.origin.x) != 0.0 { self.frame.origin.x = 0.0 }

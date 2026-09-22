@@ -628,7 +628,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 {
 #if TARGET_OS_IOS
     // NSLayoutManager doesn't have traits on iOS. We need to do some trickery – and navigate around full width punctuation. I hate this.
-    NSInteger maxLength = self.delegate.text.length;
+    NSInteger maxLength = self.textStorage.length;
     if (NSMaxRange(range) <= maxLength && range.location != maxLength) {
         NSRange fontRange = range;
         unichar firstChar = [textStorage.string characterAtIndex:range.location];

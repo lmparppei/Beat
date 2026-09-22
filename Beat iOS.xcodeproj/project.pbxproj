@@ -49,6 +49,7 @@
 		B62D16402BFE3596000EFEE5 /* Beat-iOS-76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = B62D163F2BFE3596000EFEE5 /* Beat-iOS-76x76.png */; };
 		B62D16442BFE35D1000EFEE5 /* BeatDocument 256.png in Resources */ = {isa = PBXBuildFile; fileRef = B62D16432BFE35D1000EFEE5 /* BeatDocument 256.png */; };
 		B62F78CA2EB39171007B80F9 /* 0.3.4.html in Resources */ = {isa = PBXBuildFile; fileRef = B62F78C92EB39171007B80F9 /* 0.3.4.html */; };
+		B62FD0CE30629B0100EF55F8 /* 0.4.18.html in Resources */ = {isa = PBXBuildFile; fileRef = B62FD0CD30629B0100EF55F8 /* 0.4.18.html */; };
 		B63148722CB69038001EE70E /* BeatStylesheetSegmentedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63148712CB69038001EE70E /* BeatStylesheetSegmentedCell.swift */; };
 		B63148742CB69908001EE70E /* BeatDocumentViewController+PatchNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63148732CB698FC001EE70E /* BeatDocumentViewController+PatchNotes.swift */; };
 		B631487C2CB69C6C001EE70E /* BeatPatchNoteTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B631487B2CB69C6C001EE70E /* BeatPatchNoteTemplate.html */; };
@@ -281,6 +282,7 @@
 		B62D163F2BFE3596000EFEE5 /* Beat-iOS-76x76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Beat-iOS-76x76.png"; sourceTree = "<group>"; };
 		B62D16432BFE35D1000EFEE5 /* BeatDocument 256.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BeatDocument 256.png"; sourceTree = "<group>"; };
 		B62F78C92EB39171007B80F9 /* 0.3.4.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.4.html; sourceTree = "<group>"; };
+		B62FD0CD30629B0100EF55F8 /* 0.4.18.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.18.html; sourceTree = "<group>"; };
 		B63148712CB69038001EE70E /* BeatStylesheetSegmentedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStylesheetSegmentedCell.swift; sourceTree = "<group>"; };
 		B63148732CB698FC001EE70E /* BeatDocumentViewController+PatchNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+PatchNotes.swift"; sourceTree = "<group>"; };
 		B631487B2CB69C6C001EE70E /* BeatPatchNoteTemplate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = BeatPatchNoteTemplate.html; sourceTree = "<group>"; };
@@ -654,6 +656,7 @@
 				B6D74540304EF67300E10F3A /* 0.4.15.html */,
 				B692205230528DDE00267E11 /* 0.4.16.html */,
 				B692205430574EB200267E11 /* 0.4.17.html */,
+				B62FD0CD30629B0100EF55F8 /* 0.4.18.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -699,9 +702,9 @@
 		B63D9F5C2830366B00D027B6 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B6ADE3EC302470A900DBFDB6 /* Page Number Overlay */,
+				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
 				B67512542C24A71400F57CEF /* BeatUITextView+Menus+Assistant.swift */,
 				B675122F2C2333DF00F57CEF /* BeatUITextView+Layout.swift */,
@@ -1121,6 +1124,7 @@
 				B6C51B4E2DF755C10093965F /* 0.2.12.html in Resources */,
 				B628E7462D88D3BB00A3FBCD /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B628E7472D88D3BB00A3FBCD /* Courier Prime Sans Italic.ttf in Resources */,
+				B62FD0CE30629B0100EF55F8 /* 0.4.18.html in Resources */,
 				B628E7482D88D3BB00A3FBCD /* Courier Prime Sans.ttf in Resources */,
 				B6F6E64E2FC49E7F00574DD4 /* 0.4.8.html in Resources */,
 				B628E7492D88D3BB00A3FBCD /* Courier Prime Sans Bold.ttf in Resources */,
@@ -1430,7 +1434,7 @@
 				INFOPLIST_FILE = BeatThumbnailProvider/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 0.4.17;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -1465,7 +1469,7 @@
 				INFOPLIST_FILE = BeatThumbnailProvider/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BeatThumbnailProvider;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Lauri-Matti Parppei. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 0.4.17;
 				MTL_FAST_MATH = YES;
@@ -1515,7 +1519,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.4.17;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -1568,7 +1572,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 0.4.17;
 				MTL_FAST_MATH = YES;

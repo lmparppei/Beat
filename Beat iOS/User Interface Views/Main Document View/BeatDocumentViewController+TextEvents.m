@@ -32,7 +32,7 @@
 /// - note: This is different from macOS, where changes are parsed in text view delegate method `shouldChangeText`, meaning they get parsed before anything is actually added to the text view. Changes on iOS are parsed **after** text has hit the text storage, which can cause some headache.
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
 {
-	if (self.documentIsLoading) return;
+	if (self.documentIsLoading || self.document == nil) return;
 	else if (self.formatting.didProcessForcedCharacterCue) return;
 	
 	Line* line = [self.parser lineAtPosition:editedRange.location];

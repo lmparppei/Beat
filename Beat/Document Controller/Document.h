@@ -163,7 +163,7 @@ THE SOFTWARE.
 #pragma mark - Views
 
 /// Main text view
-@property (weak, nonatomic) IBOutlet BeatTextView* _Nullable textView;
+@property (nonatomic) IBOutlet BeatTextView* _Nullable textView;
 
 /// Scroll view which holds the text view
 @property (weak, nonatomic) IBOutlet ScrollView* _Nullable textScrollView;

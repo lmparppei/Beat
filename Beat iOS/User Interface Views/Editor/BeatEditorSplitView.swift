@@ -21,17 +21,27 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 
 	@objc public weak var editorDelegate:BeatEditorDelegate?
 	
+	fileprivate var _editorView:BeatEditorViewController?
+	fileprivate var _sidebar:BeatSidebarViewController?
+	
 	@objc public weak var editorView:BeatEditorViewController? {
-		guard self.viewControllers.count > 1 else { return nil }
-		if let nav = self.viewControllers[1] as? UINavigationController {
-			return nav.viewControllers.first as? BeatEditorViewController
-		} else {
-			return self.viewControllers[1] as? BeatEditorViewController
+		get {
+			guard self.viewControllers.count > 1 else {
+				// We'll try to resort to our hard copy
+				return _editorView
+			}
+			if let nav = self.viewControllers[1] as? UINavigationController {
+				return nav.viewControllers.first as? BeatEditorViewController
+			} else {
+				return self.viewControllers[1] as? BeatEditorViewController
+			}
 		}
 	}
-	
+		
 	@objc public weak var sidebar:BeatSidebarViewController? {
-		guard self.viewControllers.count > 0 else { return nil }
+		guard self.viewControllers.count > 0 else {
+			return _sidebar
+		}
 		if let nav = self.viewControllers[0] as? UINavigationController {
 			return nav.viewControllers.first as? BeatSidebarViewController
 		} else {
@@ -58,13 +68,19 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
+				
 		// Force loading of views
 		editorView?.loadView()
 		sidebar?.loadView()
 		
+		// Store a hard reference (no idea, this might be an iOS bug)
+		_editorView = editorView
+		_sidebar = sidebar
+		
 		self.primaryBackgroundStyle = .sidebar
 		self.navigationController?.navigationBar.isHidden = true
+		
+		//self.setViewController(editorView, for: .compact)
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
@@ -111,7 +127,17 @@ class BeatEditorSplitViewController:UISplitViewController, UISplitViewController
 		vc.navigationItem.leftBarButtonItems = []
 		vc.navigationItem.hidesBackButton = true
 		vc.navigationItem.setLeftBarButtonItems([], animated: false)
+	}
+		
+	func primaryViewController(forCollapsing splitViewController: UISplitViewController) -> UIViewController? {
+		// Return the editor (secondary) instead of the default (sidebar)
+		guard self.viewControllers.count > 1 else { return nil }
+		return self.viewControllers[1]
+	}
 	
+	func primaryViewController(forExpanding splitViewController: UISplitViewController) -> UIViewController? {
+		guard self.viewControllers.count > 0 else { return nil }
+		return self.viewControllers[0]
 	}
 	
 	override func viewDidLayoutSubviews() {

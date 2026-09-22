@@ -126,7 +126,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" title="Preview" largeTitleDisplayMode="never" id="dR7-Av-ZNU">
-                        <barButtonItem key="leftBarButtonItem" title="Page Element Settings" image="doc.badge.gearshape.fill" catalog="system" style="plain" id="fYN-6w-PuY"/>
+                        <barButtonItem key="leftBarButtonItem" title="Page Element Settings" image="document.badge.gearshape.fill" catalog="system" id="fYN-6w-PuY"/>
                         <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="qiH-nG-6vi">
                             <connections>
                                 <action selector="closePreviewWithSender:" destination="VDS-CY-Eht" id="5A1-m4-orv"/>
@@ -623,7 +623,7 @@
                                                     </subviews>
                                                 </view>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5zd-VH-QgG">
-                                                    <rect key="frame" x="348" y="5" width="307" height="163"/>
+                                                    <rect key="frame" x="348" y="5" width="306" height="163"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES"/>
                                                     <subviews>
                                                         <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="vHY-h3-yHb" customClass="BeatCheckboxButton" customModule="Beat" customModuleProvider="target">
@@ -847,7 +847,7 @@
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Create PDF" id="3VY-hR-VZS">
-                        <barButtonItem key="leftBarButtonItem" title="Back" image="chevron.left" catalog="system" style="plain" id="hKH-tk-Owk">
+                        <barButtonItem key="leftBarButtonItem" title="Back" image="chevron.left" catalog="system" id="hKH-tk-Owk">
                             <connections>
                                 <action selector="close:" destination="p0B-o5-lkK" id="D1V-1r-37E"/>
                             </connections>
@@ -891,7 +891,7 @@
     <resources>
         <image name="checkmark.square.fill" catalog="system" width="128" height="114"/>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
-        <image name="doc.badge.gearshape.fill" catalog="system" width="120" height="128"/>
+        <image name="document.badge.gearshape.fill" catalog="system" width="120" height="128"/>
         <image name="ellipsis.circle" catalog="system" width="128" height="123"/>
         <image name="eye.fill" catalog="system" width="128" height="80"/>
         <image name="folder" catalog="system" width="128" height="96"/>

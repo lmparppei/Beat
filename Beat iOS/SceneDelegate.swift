@@ -17,13 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		willConnectTo session: UISceneSession,
 		options connectionOptions: UIScene.ConnectionOptions
 	) {
-		guard let windowScene = scene as? UIWindowScene else { return }
-/*
-		window = UIWindow(windowScene: windowScene)
-		window?.rootViewController = UINavigationController(rootViewController: BeatDocumentViewController())
-		window?.makeKeyAndVisible()
-	*/
-		
+		guard let _ = scene as? UIWindowScene else { return }
+
 		// UIKit handles storyboard loading automatically
 		// Only handle URL if the app was cold-launched via one
 		if let url = connectionOptions.urlContexts.first?.url {

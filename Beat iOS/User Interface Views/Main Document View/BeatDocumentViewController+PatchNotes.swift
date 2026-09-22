@@ -69,8 +69,8 @@ class PatchNotesViewController: UIViewController {
 		guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
 			  let templateURL = Bundle.main.url(forResource: "BeatPatchNoteTemplate", withExtension: "html"),
 			  let patchNotesURL = Bundle.main.url(forResource: version, withExtension: "html"),
-			  let content = try? String(contentsOf: patchNotesURL),
-			  var template = try? String(contentsOf: templateURL)
+			  let content = try? String(contentsOf: patchNotesURL, encoding: .utf8),
+			  var template = try? String(contentsOf: templateURL, encoding: .utf8)
 		else { return }
 		
 		template = template.replacingOccurrences(of: "{{version}}", with: version)

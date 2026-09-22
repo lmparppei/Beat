@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatiOSOutlineView;
 @class BeatScrollView;
 @class BeatEditorSplitViewController;
+@class BeatPageView;
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
@@ -33,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet UIView* _Nullable splitViewContainer;
 
 /// Main editor view
-@property (nonatomic, weak) BeatUITextView* _Nullable textView;
+@property (nonatomic) BeatUITextView* _Nullable textView;
+/// Container page view
+@property (nonatomic) IBOutlet BeatPageView* _Nullable pageView;
 /// Sidebar outline view
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 

@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Text view
 
 /// - note: Override this property in OS class.
-@property (nonatomic, weak) IBOutlet BXTextView* _Nullable textView;
+@property (nonatomic) IBOutlet BXTextView* _Nullable textView;
 
 /// Skips selection change events when needed. Remember to reset after selection change.
 @property (nonatomic) bool skipSelectionChangeEvent;

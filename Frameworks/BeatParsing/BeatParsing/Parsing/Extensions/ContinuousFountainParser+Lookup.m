@@ -453,32 +453,25 @@ NSUInteger prevLineAtLocationIndex = 0;
  */
 - (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item, NSInteger idx))compare
 {
+    if (searchOrigin == NSNotFound) searchOrigin = 0;
+
     // Don't go out of range
-    if (array.count == 0 || NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
-        /** Uh, wtf, how does this work?
-            We are checking if the search origin is in range from -1 to the full array count, so I don't understand how and why this could actually work, and why are we getting the correct behavior. The magician surprised themself, too.
-            (Edit in 2026: I think this works because -1 calculated as max int, so actually the range is array count ... max int.)
-         */
+    if (array.count == 0 || searchOrigin >= array.count) {
+        *cacheIndex = NSNotFound;
         return nil;
     }
     
-    if (searchOrigin == NSNotFound) searchOrigin = 0;
-    
     NSInteger i = searchOrigin;
-    NSInteger origin = (descending) ? i - 1 : i + 1;
-    if (origin == -1) origin = array.count - 1;
-    
-    bool stop = NO;
     
     do {
         if (!descending) {
             i++;
-            if (i >= array.count) i = 0;
+            if (i >= (NSInteger)array.count) i = 0;
         } else {
             i--;
             if (i < 0) i = array.count - 1;
         }
-                
+        
         id item = array[i];
         
         if (compare(item, i)) {
@@ -486,13 +479,13 @@ NSUInteger prevLineAtLocationIndex = 0;
             return item;
         }
         
-        // We have looped around the array (unsuccessfuly)
-        if (i == searchOrigin || origin == -1) {
-            NSLog(@"Failed to find match for %@ - origin: %lu / searchorigin: %lu  -- %@", self.lines[searchOrigin], origin, searchOrigin, compare);
+        // We have looped around the array (unsuccessfully)
+        if (i == (NSInteger)searchOrigin) {
+            NSLog(@"Failed to find match for %@ - searchOrigin: %lu", self.lines[searchOrigin], (unsigned long)searchOrigin);
             break;
         }
         
-    } while (stop != YES);
+    } while (YES);
     
     *cacheIndex = NSNotFound;
     return nil;

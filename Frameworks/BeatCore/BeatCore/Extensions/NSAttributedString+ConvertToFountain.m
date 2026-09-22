@@ -25,11 +25,6 @@ static inline NSString *OpenMarkerForStyle(PastedFragmentStyle style) {
     }
 }
 
-static inline NSString *CloseMarkerForStyle(PastedFragmentStyle style) {
-    // Same markers, but order matters
-    return OpenMarkerForStyle(style);
-}
-
 static inline PastedFragmentStyle StyleFromAttributes(NSDictionary *attrs) {
     PastedFragmentStyle style = 0;
 

@@ -17,14 +17,10 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-API_AVAILABLE(ios(18.0))
-static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"template";
-
 @interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, BeatPluginDelegate, UITextInputDelegate> {
 	bool editorWasActive;
 }
 
-@property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
 
 @property (nonatomic) BeatPageViewController* previewView;
@@ -87,6 +83,11 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	return (iOSDocument*)self.document;
 }
 
+- (void)setTextView:(BeatUITextView *)textView
+{
+	[super setTextView:textView];
+}
+
 /// Override document getter to support async access to `document` property. Extremely hacky.
 - (UIDocument *)document
 {
@@ -103,9 +104,13 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 {
 	[super setDocument:document];
 	___fountainDocument = (iOSDocument*)document;
-	
+		
 	self.documentIsLoading = true;
 	self.initialFormattingComplete = false;
+	
+	if (___fountainDocument == nil) {
+		[self.textView setString:@""];
+	}
 }
 
 - (void)initialFormatting
@@ -177,11 +182,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	// Setup plugin support
 	self.runningPlugins = NSMutableDictionary.new;
 	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
-	
-	// Embed the editor split view
-	self.editorSplitView = self.childViewControllers.firstObject;
-	[self.editorSplitView loadView];
-	
+		
 	[self.navigationController.navigationBar setTranslucent:true];
 	
 	// Setup the split view
@@ -228,12 +229,16 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	[self.textView firstResize];
 	[self.textView resize];
 	
+	// Fit text view to scroll view (on iPadOS)
+	[self.textView resizeToFit];
+	
 	self.documentIsLoading = false;
 	
 	[self displayPatchNotesIfNeeded];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self restoreCaret];
+		[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
 	});
 }
 
@@ -256,11 +261,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	
 	// Init preview controller and pagination
 	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
-	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
-	
-	// Fit to view here
-	self.scrollView.zoomScale = 1.4;
-	
+		
 	// Observers
 	[self setupKeyboardObserver];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
@@ -271,11 +272,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	// Text view settings
 	self.textView.textStorage.delegate = self;
 	[self.textView setFindInteractionEnabled:true];
-	
-	// Don't ask
-	[self.textView firstResize];
-	[self.textView resize];
-	
+		
 	// Setup outline view
 	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
 	self.outlineView.editorDelegate = self;
@@ -307,41 +304,53 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	self.editorSplitView.editorDelegate = self;
 	[self.editorSplitView setupWithEditorDelegate:self];
 	
-	self.pageView = self.editorSplitView.editorView.pageView;
-	self.scrollView = self.editorSplitView.editorView.scrollView;
+	//self.pageView = self.editorSplitView.editorView.pageView;
+	//self.scrollView = self.editorSplitView.editorView.scrollView;
 	
 	self.outlineView = self.editorSplitView.outlineView;
 }
 
+- (BeatPageView *)pageView { return self.editorSplitView.editorView.pageView; }
+- (BeatScrollView *)scrollView { return self.editorSplitView.editorView.scrollView; }
+
 /// Creates the text view and replaces placeholder text view
 - (void)createTextView
 {
-	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
-	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
-	
-	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
-	
-	self.textView = textView;
-	
-	// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
-	if (!is_Mobile) {
-		self.textView.enclosingScrollView = self.scrollView;
-		[self.pageView addSubview:self.textView];
-	} else {
-		// Completely replace the scroll view with our text view on phones
-		self.textView.frame = self.scrollView.frame;
+	if (self.textView == nil) {
+		CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
+		BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
 		
-		[self.view addSubview:self.textView];
-				
-		[self.scrollView.superview addSubview:self.textView];
-		[self.pageView removeFromSuperview];
-		[self.scrollView removeFromSuperview];
+		textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
+		
+		self.textView = textView;
+		
+		// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
+		if (!is_Mobile) {
+			self.textView.enclosingScrollView = self.scrollView;
+			[self.pageView addSubview:self.textView];
+		} else {
+			// Completely replace the scroll view with our text view on phones
+			self.textView.frame = self.scrollView.frame;
+			
+			[self.view addSubview:self.textView];
+			
+			[self.scrollView.superview addSubview:self.textView];
+			[self.pageView removeFromSuperview];
+			[self.scrollView removeFromSuperview];
+		}
+		
+		self.textView.font = self.fonts.regular;
+		
+		[self.textView resize];
 	}
 	
-	self.textView.font = self.fonts.regular;
-	
-	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
-	[self.formatting refreshRevisionTextColors];
+	if (self.fountainDocument != nil) {
+		// Set delegate again when reloading text view (it could be nulled)
+		self.textView.delegate = self;
+		[self.textView.textStorage setAttributedString:self.formattedTextBuffer.copy];
+		
+		[self.formatting refreshRevisionTextColors];
+	}
 }
 
 /// Dismisses editor view keyboard
@@ -353,33 +362,13 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 /// NOTE: You need to call `loadDocument` before actually presenting the view
 - (void)viewDidLoad
 {
-	if (@available(iOS 18.0, *)) {
-		self.launchOptions.background.backgroundColorTransformer = ^UIColor * _Nonnull(UIColor * _Nonnull color) {
-			return UIColor.darkGrayColor;
-		};
-		UIView* v = UIView.new;
-		v.backgroundColor = [BeatColors color:@"backgroundGray"];
-		
-		self.launchOptions.primaryAction = [UIDocumentViewControllerLaunchOptions createDocumentActionWithIntent:UIDocumentCreationIntentDefault];
-		self.launchOptions.primaryAction.title = @"New Document";
-		
-		UIAction* templateAction = [UIDocumentViewControllerLaunchOptions
-		createDocumentActionWithIntent:BeatDocumentCreationIntentTemplate];
-		templateAction.title = @"Templates & Tutorials";
-		
-		self.launchOptions.secondaryAction = templateAction;
-	}
+	// Embed the editor split view
+	self.editorSplitView = self.childViewControllers.firstObject;
+	[self.editorSplitView loadView];
+	
+	[self setupLaunchItems];
 	
 	[super viewDidLoad];
-	
-	// Because view can be loaded before the document is loaded and parsed, we need to avoid race conditions here.
-	// Only set things up if formatting is complete, and once we've performed initial formatting, we'll check if the view has loaded and perform the setup there.
-	// Can this go wrong in some cases? Maybe.
-	if (!_initialFormattingInAction) {
-		[self initialFormatting];
-	} else if (_initialFormattingComplete) {
-		[self setup];
-	}
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -399,7 +388,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 {
 	[super viewWillAppear:animated];
 	[self becomeFirstResponder];
-	if (editorWasActive) {
+	if (!self.documentIsLoading && editorWasActive) {
 		editorWasActive = false;
 		[self.textView becomeFirstResponder];
 	}
@@ -422,8 +411,6 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 
 - (void)loadDocumentWithCallback:(void (^)(void))callback
 {
-	NSLog(@"Trying to load document?");
-	
 	[self.document openWithCompletionHandler:^(BOOL success) {
 		// Do something here maybe
 		if (!success) return;
@@ -432,7 +419,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.fountainDocument.rawText];
 		self.attrTextCache = self.formattedTextBuffer;
 		
-		// Load fonts (iOS is limited to serif courier for now)
+		// Load fonts before touching any formatting
 		[self loadFonts];
 		
 		// Format the document. We'll create a static formatting instance for this operation.
@@ -447,6 +434,9 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 		}
 		
 		[self.parser.changedIndices removeAllIndexes];
+
+		// After this, we should have the formatted text intact in formattedTextBuffer.
+		// However, because iOS is what iOS is, there are a ton of guardrails here and there for race conditions.
 		
 		callback();
 	}];
@@ -456,7 +446,6 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
-
 
 - (IBAction)dismissDocumentViewController:(id)sender
 {
@@ -596,7 +585,7 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 	
 	[self.formatting refreshRevisionTextColors];
 	
-	[self.pageView toggleShadow:[_scrollView.backgroundColor isEqual:self.textView.backgroundColor]];
+	[self.pageView toggleShadow:[self.scrollView.backgroundColor isEqual:self.textView.backgroundColor]];
 }
 
 
@@ -922,8 +911,6 @@ static UIDocumentCreationIntent const BeatDocumentCreationIntentTemplate = @"tem
 		vc.delegate = self;
 		vc.pluginName = @"Index Card View";
 		
-	} else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
-		self.editorSplitView = segue.destinationViewController;
 	}
 }
 
