@@ -1,0 +1,336 @@
+"general.yes" = "Sì";
+"general.no" = "No";
+"general.OK" = "OK";
+"general.ok" = "OK";
+"general.cancel" = "Annulla";
+"general.undo" = "Annulla";
+"general.redo" = "Ripristina";
+"general.close" = "Chiudi";
+"general.untitled" = "Senza titolo";
+"app.manual" = "Manuale";
+"app.patchNotes" = "Note di aggiornamento";
+"general.revert" = "Ripristina";
+"general.selectAll" = "Seleziona tutto";
+"general.new" = "Nuovo";
+"general.revealInFinder" = "Mostra nel Finder";
+
+"plugins.errorRunningScript" = "Errore nell'esecuzione dello script";
+"plugins.input.select" = "Seleziona...";
+
+"launch.newDocument.subtitle" = "Avvia un nuovo progetto vuoto";
+"launch.tutorial.subtitle" = "Inizia da qui se sei nuovo in Beat";
+"launch.templates.subtitle" = "Impara Beat e inizia rapidamente!";
+
+"unlock_document.title" = "Sblocca documento";
+"unlock_document.confirm" = "Sei sicuro di voler sbloccare il documento e consentire modifiche?";
+
+"language.alert" = "Riavvio richiesto";
+"language.informative" = "Devi riavviare Beat affinché la modifica della lingua abbia effetto.";
+
+"about.version" = "Versione";
+"about.build" = "Build";
+
+"plugins.library" = "Libreria plugin";
+"plugins.installed" = "Installate";
+"plugins.download" = "Scarica";
+"plugins.update" = "Aggiorna";
+"plugins.version" = "Versione";
+"plugins.updateAvailable" = "Aggiornamento disponibile";
+"plugins.currentVersion" = "Versione installata";
+"plugins.compatibilityWarning" = "<b>Attenzione</b>: Questo plugin potrebbe non essere compatibile con la tua versione di Beat. Per assicurarti che funzioni, scarica l'ultima versione dall'App Store prima di continuare.";
+
+"plugins.libraryWelcome" = "<p>Una selezione di plugin ufficiali per Beat. I plugin abilitati (spuntati) saranno visibili nel menu <b>Strumenti</b>. I plugin in grigio non sono ancora installati. Clicca sul loro nome per installarli e saperne di più.</p>\
+   <p class='small gray'>Clicca sull'icona della cartella per gestire manualmente i tuoi plugin. Puoi scrivere i tuoi plugin usando JavaScript &mdash; scopri di più sul sito di Beat.</p>";
+
+"storyline.placeholder" = "Nuovo nome trama";
+"storyline.add" = "Aggiungi trama...";
+
+"gender.other" = "Altro";
+"gender.woman" = "Donna";
+"gender.man" = "Uomo";
+"gender.unspecified" = "Non specificato";
+
+"gender.other.plural" = "Altri";
+"gender.woman.plural" = "Donne";
+"gender.man.plural" = "Uomini";
+"gender.unspecified.plural" = "Non specificati";
+
+"lock.clickToUnlock" = "Clicca per sbloccare";
+"lock.documentLocked" = "Il documento è bloccato";
+
+"statistics.lines" = "righe";
+"statistics.scenes" = "scene";
+"statisticsPanel.numberOfPages" = "Pagine";
+
+"statisticsPanel.title" = "Statistiche sceneggiatura";
+"statisticsPanel.averageSceneLength" = "Lunghezza media scena";
+"statisticsPanel.shortForPages" = "pag";
+"statisticsPanel.longestScene" = "Scena più lunga";
+"statisticsPanel.stats.words" = "parole";
+"statisticsPanel.stats.scenes" = "scene";
+"statisticsPanel.stats.characters" = "personaggi";
+"statisticsPanel.linesByGender" = "Battute per genere";
+"statisticsPanel.setGenderInfo" = "Imposta il genere dei personaggi sul lato sinistro";
+"statisticsPanel.linesPerCharacter" = "Battute per personaggio";
+"statisticsPanel.locations" = "Location";
+"statisticsPanel.locations.interior" = "Interno";
+"statisticsPanel.locations.exterior" = "Esterno";
+"statisticsPanel.locations.other" = "Altro";
+"statisticsPanel.noDialogue" = "Nessun dialogo";
+
+"print.print" = "Stampa";
+"print.createPDF" = "Crea PDF";
+"print.pdfButton" = "Crea PDF";
+"print.printButton" = "Stampa";
+"print.pdfButton" = "PDF";
+
+"cardView.noScenes" = "Nessuna scena";
+"cardView.noScenesInformation" = "Quando scriverai alcune scene, saranno visibili come schede in questa vista";
+"cardView.print" = "Stampa";
+
+"color.none" = "Nessuno";
+"color.red" = "Rosso";
+"color.green" = "Verde";
+"color.blue" = "Blu";
+"color.pink" = "Rosa";
+"color.yellow" = "Giallo";
+"color.brown" = "Marrone";
+"color.cyan" = "Ciano";
+"color.orange" = "Arancione";
+"color.magenta" = "Magenta";
+"color.purple" = "Viola";
+"color.salmon" = "Salmone";
+"color.rose" = "Rosa";
+"color.goldenrod" = "Oro";
+"color.buff" = "Beige";
+"color.cherry" = "Ciliegia";
+
+"revision.1" = "Prima";
+"revision.2" = "Seconda";
+"revision.3" = "Terza";
+"revision.4" = "Quarta";
+"revision.5" = "Quinta";
+"revision.6" = "Sesta";
+"revision.7" = "Settima";
+"revision.8" = "Ottava";
+
+"revisionMode.reviseLine" = "Segna la riga corrente come revisionata";
+"revisionMode.reviseSelection" = "Segna la selezione corrente come revisionata";
+"revisionMode.clearSelection" = "Rimuovi i marcatori di revisione nella selezione";
+"revisionMode.clearLine" = "Rimuovi i marcatori di revisione nella riga";
+
+"revisions.commitPrompt.title" = "Conferma tutte le revisioni";
+"revisions.commitPrompt.text" = "Questo rimuoverà tutti i marcatori di revisione e cancellerà tutte le parti segnate per la rimozione. Sei sicuro di voler continuare?";
+
+"mode.taggingMode" = "Modalità tagging";
+"mode.reviewMode" = "Modalità revisione";
+
+"backup.revertToSaved" = "Ripristina versione salvata";
+"backup.backupVault" = "Apri archivio backup...";
+"backup.browseVersions" = "Sfoglia versioni...";
+"backup.saved" = "Salvato";
+"backup.revertAction" = "Ripristina";
+
+"backup.reverting.title" = "Ripristino file";
+"backup.reverting.message" = "Qualsiasi modifica non salvata andrà persa ripristinando una versione precedente";
+
+"editor.setSceneNumber" = "Imposta numero scena";
+"editor.setSceneNumber.info" = "Numero scena personalizzato (può includere lettere, oppure premi spazio per una scena senza numero)";
+
+"force.character" = "Personaggio";
+"force.heading" = "Intestazione scena";
+"force.action" = "Azione";
+"force.lyrics" = "Testo";
+
+"editor.goToSceneNumber.message" = "Vai al numero scena...";
+"editor.goToSceneNumber.placeholder" = "es. 123";
+
+"export.prefix" = "Esporta";
+"import.prefix" = "Importa";
+
+"timer.reset" = "Reset";
+"timer.start" = "Avvia";
+"timer.charactersRemoved" = "caratteri rimossi";
+"timer.charactersTyped" = "caratteri\ndigitati";
+
+/* Tutorials */
+
+"templates.tutorials" = "Tutorial";
+"templates.templates" = "Modelli";
+
+"templates.tutorial.title" = "Tutorial";
+"templates.tutorial.description" = "Guida rapida per iniziare con Beat!";
+
+"templates.outliningTutorial.title" = "Tutorial sulla scaletta";
+"templates.outliningTutorial.description" = "Impara tecniche avanzate per la creazione di scalette";
+
+"templates.comicBook.title" = "Fumetto";
+"templates.comicBook.description" = "Un semplice modello per fumetti";
+
+"templates.onePageSynopsis.title" = "Sinossi di una pagina";
+"templates.onePageSynopsis.description" = "Crea una versione condensata della tua storia";
+
+"templates.threeActOutline.title" = "Struttura in tre atti";
+"templates.threeActOutline.description" = "La struttura classica della storia in 8 sequenze";
+
+"templates.novel-tutorial.title" = "Tutorial romanzo";
+"templates.novel-tutorial.description" = "Inizia a scrivere romanzi in Beat";
+
+"templates.novel.title" = "Romanzo";
+"templates.novel.description" = "Modello base per romanzo";
+
+/* Selection / information */
+
+"textView.information.selection" = "Selezione";
+"textView.information.document" = "Documento";
+"textView.information.pages" = "Pagine";
+"textView.information.page" = "Pagina";
+"textView.information.characters" = "Caratteri";
+"textView.information.words" = "Parole";
+
+"export.includeInvisibleElements" = "Includi elementi invisibili";
+"export.printSections" = "Sezioni";
+"export.printSynopsis" = "Sinossi";
+"export.printNotes" = "Note";
+"export.printSceneNumbers" = "Numeri di scena";
+
+"templates.showTutorialsAndTemplates" = "Mostra tutorial e modelli...";
+
+"revisions.downgrade.title" = "Riduci livello revisioni";
+"revisions.downgrade.info" = "Questa operazione riduce la generazione di revisione selezionata alla prima generazione, e le generazioni superiori seguiranno di conseguenza. È utile quando hai raggiunto il livello massimo e vuoi rimuovere i livelli inferiori.";
+
+"revisions.downgrade.from" = "Revisione più bassa dopo la riduzione:";
+
+"revisions.convert.title" = "Converti/Rimuovi marcatori di revisione";
+"revisions.convert.info" = "La generazione selezionata di revisioni verrà convertita in un'altra generazione. Se lasci vuota la generazione di destinazione, le revisioni selezionate verranno rimosse.";
+
+"revisions.convert.from" = "Generazione corrente";
+"revisions.convert.to" = "Generazione di destinazione";
+
+"revisions.convert.remove" = "(rimuovi)";
+"revisions.convert.onlySelectedRange" = "Solo nell'intervallo selezionato";
+
+"license.title" = "Inserisci chiave di donazione";
+"license.info" = "Grazie di cuore per la tua donazione! Copia e incolla qui sotto la chiave ricevuta.";
+
+/* Outline settings */
+
+"outline.settings" = "Impostazioni scaletta";
+"outline.settings.synopses" = "Sinossi";
+"outline.settings.headings" = "Intestazioni scena";
+"outline.settings.sceneNumbers" = "Numeri di scena";
+"outline.settings.notes" = "Note";
+"outline.settings.markers" = "Marcatori";
+"outline.settings.snapshots" = "Mostra snapshot";
+
+"character.editor.age" = "Età";
+"character.editor.biography" = "Biografia";
+"character.editor.lines" = "Battute";
+"character.editor.highlight" = "Colore evidenziazione";
+"character.editor.addAlias" = "Aggiungi alias...";
+
+"backup.browseVersions" = "Sfoglia versioni...";
+
+"quickSettings.novelLineHeightMultiplier" = "Interlinea";
+"quickSettings.novelContentAlignment" = "Allineamento";
+
+"documentSettings.title" = "Impostazioni documento";
+"documentSettings.style" = "Stile";
+"documentSettings.pageSize" = "Formato pagina";
+"documentSettings.firstSceneNumber" = "Primo numero scena";
+"documentSettings.firstPageNumber" = "Primo numero pagina";
+"documentSettings.pageNumberingMode" = "La numerazione delle pagine inizia da...";
+"documentSettings.novelLineHeightMultiplier" = "Interlinea";
+"documentSettings.novelContentAlignment" = "Allineamento";
+
+"pagination.pageNumberingMode.anyContent" = "Qualsiasi contenuto";
+"pagination.pageNumberingMode.firstScene" = "Prima scena";
+"pagination.pageNumberingMode.forcedPageBreak" = "Prima interruzione forzata di pagina";
+"pagination.forcedNote" = "Nota: con questa impostazione tutte le pagine rimarranno senza numero fino alla prima interruzione di pagina (===)";
+
+"spelling.ignoreDialogue.title" = "Ignora controllo ortografico nei dialoghi";
+"spelling.ignoreDialogue.text" = "Potrebbe essere necessario riaprire il documento affinché le modifiche abbiano effetto.";
+
+"type.empty" = "Vuoto";
+"type.section" = "Sezione";
+"type.synopsis" = "Sinossi";
+"type.titlePageTitle" = "Titolo";
+"type.titlePageAuthor" = "Autore";
+"type.titlePageCredit" = "Crediti";
+"type.titlePageSource" = "Fonte";
+"type.titlePageContact" = "Contatti";
+"type.titlePageDraftDate" = "Data bozza";
+"type.titlePageUnknown" = "Pagina del titolo";
+"type.heading" = "Intestazione scena";
+"type.action" = "Azione";
+"type.character" = "Personaggio";
+"type.parenthetical" = "Parentetica";
+"type.dialogue" = "Dialogo";
+"type.dualDialogueCharacter" = "Personaggio dialogo doppio";
+"type.dualDialogue" = "Dialogo doppio";
+"type.dualDialogueParenthetical" = "Parentetica dialogo doppio";
+"type.transition" = "Transizione";
+"type.lyrics" = "Testo";
+"type.pageBreak" = "Interruzione di pagina";
+"type.centered" = "Centrato";
+"type.shot" = "Inquadratura / Mini slug";
+"type.multiple" = "(Righe multiple)";
+
+"tagManager.list.warning.noTypes" = "Aggiungi prima uno o più tipi di tag";
+
+"tag.cast" = "Cast";
+"tag.prop" = "Oggetti di scena";
+"tag.costume" = "Costumi";
+"tag.makeup" = "Trucco";
+"tag.vfx" = "VFX";
+"tag.sfx" = "Effetti speciali";
+"tag.music" = "Musica";
+"tag.animal" = "Animale";
+"tag.extras" = "Comparse";
+"tag.vehicle" = "Veicolo";
+"tag.none" = "Nessuno";
+"tag.stunt" = "Stunt";
+"tag.setDesign" = "Scenografia";
+
+"tagManager.createReport" = "Crea report tag";
+
+"tagManager.report.sceneByScene" = "Scena per scena";
+"tagManager.report.sceneByScene.details" = "Elenca le scene in ordine cronologico, ciascuna seguita dai tag selezionati";
+
+"tagManager.report.listScenesByTag" = "Elenca scene per tag";
+"tagManager.report.sceneByScene.details" = "Elenca i tipi di tag selezionati, seguiti dalle scene che li contengono";
+
+"tagManager.report.screenplay" = "Sceneggiatura";
+"tagManager.report.screenplay.details" = "Crea un nuovo documento con tutte le scene che contengono uno dei tag selezionati";
+
+"tagManager.report.create" = "Crea";
+
+"tagManager.rename" = "Rinomina";
+
+"tagManager.tab.edit" = "Modifica tag";
+"tagManager.tab.report" = "Report tag";
+
+"tagManager.windowTitle" = "Gestione tag";
+
+"versionControl.base" = "Base";
+"versionControl.current" = "Corrente";
+"versionControl.addExternalFile" = "Apri file...";
+"versionControl.noVersionControl" = "Nessun controllo versione";
+
+"pagination.paragraphPaginationMode.default" = "Dividi azioni tra le pagine (predefinito)";
+"pagination.paragraphPaginationMode.avoid" = "Evita divisione delle azioni";
+
+"dataHealth.warning.title" = "Intervalli non sincronizzati";
+"dataHealth.warning.informative" = "Il file contiene revisioni, recensioni o tag che sono stati spostati fuori posizione, probabilmente perché il file è stato modificato fuori da Beat.\n\nNon è pericoloso, ma gli intervalli precedenti potrebbero non avere più senso";
+"dataHealth.warning.ignore" = "Ignora";
+"dataHealth.warning.remove" = "Rimuovi tutti gli intervalli";
+
+"export.includeRevisions" = "Includi marcatori di revisione";
+
+"export.highlightRevisions" = "Evidenzia revisioni";
+"export.highlightRevisions.none" = "Nessuno";
+"export.highlightRevisions.text" = "Colore testo";
+"export.highlightRevisions.background" = "Colore sfondo";
+"export.printHeadingColor" = "Intestazioni scena colorate";
+
+"review.keyword.none" = "Nessuna #keyword";
