@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SwiftUI
 
-@available(iOS 18.0, *)
+
 extension UIDocument.CreationIntent {
 	static let template = UIDocument.CreationIntent("template")
 }
@@ -21,7 +22,7 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 		self.launchOptions.background.backgroundColor = BeatColors.color("backgroundDarkGray")
 		self.launchOptions.background.image = UIImage(named: "browser.background")
 		self.launchOptions.background.imageContentMode = .scaleAspectFill
-		
+				
 		self.launchOptions.primaryAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .default)
 		self.launchOptions.primaryAction?.title = "New Document"
 		self.launchOptions.primaryAction?.subtitle = "Start A New, Blank Project"

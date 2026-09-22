@@ -372,8 +372,16 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
 
 extension BeatPreviewManager:UXTextViewDelegate {
     #if os(iOS)
+    /*
     public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         return false
+    }
+     */
+    public func textView(_ textView: UITextView, primaryActionFor textItem: UITextItem, defaultAction: UIAction) -> UIAction? {
+        if case .link(let url) = textItem.content {
+            // Navigate to this text chunk (why is it not implemented on iOS?)
+        }
+        return nil
     }
     #endif
 }
