@@ -16,32 +16,30 @@ extension UIDocument.CreationIntent {
 extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 	
 	@objc func setupLaunchItems() {
-		if #available(iOS 18.0, *) {
-			self.launchOptions.browserViewController.delegate = self
-			
-			self.launchOptions.background.backgroundColor = BeatColors.color("backgroundDarkGray")
-			
-			self.launchOptions.primaryAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .default)
-			self.launchOptions.primaryAction?.title = "New Document"
-			self.launchOptions.primaryAction?.subtitle = "Start A New, Blank Project"
-			self.launchOptions.primaryAction?.image = UIImage(systemName: "document")
-			
-			let templateAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .template)
-			templateAction.title = "Templates & Tutorials"
-			templateAction.subtitle = "Get Familiar With Beat and Fountain"
-			templateAction.image = UIImage(systemName: "map")
-			
-			self.launchOptions.secondaryAction = templateAction
-		}
+		self.launchOptions.browserViewController.delegate = self
+		
+		self.launchOptions.background.backgroundColor = BeatColors.color("backgroundDarkGray")
+		self.launchOptions.background.image = UIImage(named: "browser.background")
+		self.launchOptions.background.imageContentMode = .scaleAspectFill
+		
+		self.launchOptions.primaryAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .default)
+		self.launchOptions.primaryAction?.title = "New Document"
+		self.launchOptions.primaryAction?.subtitle = "Start A New, Blank Project"
+		self.launchOptions.primaryAction?.image = UIImage(systemName: "document")
+		
+		let templateAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .template)
+		templateAction.title = "Templates & Tutorials"
+		templateAction.subtitle = "Get Familiar With Beat and Fountain"
+		templateAction.image = UIImage(systemName: "map")
+		
+		self.launchOptions.secondaryAction = templateAction
 	}
 	
 	public func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
-		if #available(iOS 18.0, *) {
-			guard let intent = controller.activeDocumentCreationIntent else { return }
-			
-			if intent == .template {
-				pickTemplate(importHandler: importHandler)
-			}
+		guard let intent = controller.activeDocumentCreationIntent else { return }
+		
+		if intent == .template {
+			pickTemplate(importHandler: importHandler)
 		}
 	}
 	

@@ -380,7 +380,7 @@ class Template {
     }
     
     private func importFile(_ fileURL: String) -> String {
-        guard let content = try? String(contentsOfFile: fileURL) else {
+        guard let content = try? String(contentsOfFile: fileURL, encoding: .utf8) else {
             return ""
         }
         return content

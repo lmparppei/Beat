@@ -760,9 +760,12 @@
         // Save current revision color
         [self.documentSettings setInt:DocSettingRevisionLevel as:self.revisionLevel];
         
+#if TARGET_OS_OSX
         // Store currently running plugins (the ones which support restoration)
+        // We won't do this on iOS.
         NSArray* runningPlugins = self.runningPluginsForSaving;
         if (runningPlugins != nil) [self.documentSettings set:DocSettingActivePlugins as:runningPlugins];
+#endif
         
         // Save reviewed ranges
         if (attrStr != nil) {
