@@ -146,7 +146,6 @@
 	self.initialFormattingComplete = true;
 
 	if (self.viewLoaded) {
-		NSLog(@"View has loaded, perform setup");
 		[self setup];
 	}
 }

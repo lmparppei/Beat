@@ -195,7 +195,7 @@ typedef void (^BeatChangeListener)(NSRange);
 /// Sets and gets the selected range in editor text view
 @property (nonatomic, readwrite) NSRange selectedRange;
 @property (nonatomic, readonly) CGFloat documentWidth;
-//@property (nonatomic, readonly) CGFloat magnification;
+@property (nonatomic, readonly) CGFloat magnification;
 
 #pragma mark Editor text view helpers
 
@@ -246,6 +246,8 @@ typedef void (^BeatChangeListener)(NSRange);
 - (bool)editorTabVisible;
 #else
 @property (nonatomic) UIKeyModifierFlags inputModifierFlags;
+/// Set to true when text storage is processing an edit
+@property (nonatomic) bool processingEdit;
 #endif
 
 

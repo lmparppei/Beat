@@ -58,7 +58,13 @@ class iOSDocument: UIDocument {
 		
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
-		rawText = String(data: contents as! Data, encoding: .utf8) ?? ""
+		let string = String(data: contents as! Data, encoding: .utf8)
+		
+		guard let string else {
+			throw NSError(domain: "Beat", code: 0, userInfo: ["reason": "File could not be opened"])
+		}
+		
+		rawText = string
 		rawText = rawText.replacingOccurrences(of: "\r", with: "")
 		
 		// Read settings and replace range
@@ -72,9 +78,6 @@ class iOSDocument: UIDocument {
 			recentFiles = Array(recentFiles.prefix(10))
 			BeatUserDefaults.shared().save(recentFiles, forKey: "Recent Files")
 		}
-		
-		
-		//setupHandoff()
     }
 	
 	override func close() async -> Bool {

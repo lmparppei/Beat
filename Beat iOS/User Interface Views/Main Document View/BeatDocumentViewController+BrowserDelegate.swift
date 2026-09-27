@@ -12,6 +12,7 @@ import SwiftUI
 
 extension UIDocument.CreationIntent {
 	static let template = UIDocument.CreationIntent("template")
+	static let backup = UIDocument.CreationIntent("restoreBackup")
 }
 
 extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
@@ -22,7 +23,7 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 		self.launchOptions.background.backgroundColor = BeatColors.color("backgroundDarkGray")
 		self.launchOptions.background.image = UIImage(named: "browser.background")
 		self.launchOptions.background.imageContentMode = .scaleAspectFill
-				
+			
 		self.launchOptions.primaryAction = UIDocumentViewController.LaunchOptions.createDocumentAction(withIntent: .default)
 		self.launchOptions.primaryAction?.title = "New Document"
 		self.launchOptions.primaryAction?.subtitle = "Start A New, Blank Project"
@@ -41,6 +42,26 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 		
 		if intent == .template {
 			pickTemplate(importHandler: importHandler)
+		} else if intent == .default {
+			guard let url = Bundle(for: BeatDocumentBaseController.self)
+				.url(forResource: "New Document", withExtension: "fountain") else {
+				importHandler(nil, .none)
+				return
+			}
+			
+			let tempURL = FileManager.default.temporaryDirectory
+				.appendingPathComponent(url.lastPathComponent)
+			
+			do {
+				if FileManager.default.fileExists(atPath: tempURL.path()) {
+					try FileManager.default.removeItem(at: tempURL)
+				}
+				
+				try FileManager.default.copyItem(at: url, to: tempURL)
+				importHandler(tempURL, .move)
+			} catch {
+				importHandler(nil, .none)
+			}
 		}
 	}
 	
@@ -56,8 +77,6 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 			} else {
 				importHandler(nil, .none)
 			}
-			
-			
 		}
 		
 		present(templateVC, animated: true)

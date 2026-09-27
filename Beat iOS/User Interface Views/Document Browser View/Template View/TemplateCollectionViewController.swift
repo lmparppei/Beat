@@ -74,11 +74,8 @@ class TemplateCollectionViewController: UIViewController, UICollectionViewDelega
 		
 		createFileFromTemplate(url, filename)
 
-		
 		// Dismiss the template controller
-		self.dismiss(animated: true) {
-			
-		}
+		self.dismiss(animated: true)
 		return true
 	}
 

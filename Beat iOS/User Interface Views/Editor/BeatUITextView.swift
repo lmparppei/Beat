@@ -173,20 +173,12 @@ import BeatParsing
 	var inputAssistantHidden: Bool = BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden) {
 		didSet {
 			BeatUserDefaults.shared().save(inputAssistantHidden, forKey:BeatSettingInputAssistantHidden)
-			
-			if inputAssistantHidden {
-				self.assistantView?.detach(from: self)
-				self.assistantView = nil
-			} else {
-				showInputAssistant()
-			}
+			self.assistantView?.isHidden = inputAssistantHidden
 		}
 	}
 
 	func setupInputAssistant() {
-		if !inputAssistantHidden {
-			showInputAssistant()
-		}
+		showInputAssistant()
 	}
 	
 	func showInputAssistant() {
@@ -194,6 +186,7 @@ import BeatParsing
 		guard let editorDelegate else { print("No editor delegate"); return }
 		self.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: self)
 		self.assistantView?.attach(to: self)
+		self.assistantView?.isHidden = BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden)
 	}
 	
 	
@@ -352,7 +345,7 @@ import BeatParsing
 			super.scrollRangeToVisible(range)
 			return
 		}
-		guard let enclosingScrollView else { return }
+		guard let enclosingScrollView, NSMaxRange(range) <= (self.text as NSString).length else { return }
 		
 		// Current bounds
 		let bounds = enclosingScrollView.bounds
@@ -449,11 +442,12 @@ import BeatParsing
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
 		guard NSMaxRange(range) <= self.text.count else { return .infinite }
-		
+				
 		let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
-		let rect = self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
+		self.layoutManager.ensureLayout(forGlyphRange: glyphRange)
 		
-		return rect
+		guard NSMaxRange(glyphRange) <= self.layoutManager.numberOfGlyphs else { return .infinite }
+		return self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
 	}
 	
 	

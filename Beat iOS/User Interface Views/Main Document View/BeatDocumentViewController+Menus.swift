@@ -18,6 +18,15 @@ extension BeatDocumentViewController {
 		setupTitleMenus()
 	}
 	
+	open override func navigationItemDidUpdate() {
+		super.navigationItemDidUpdate()
+		
+		self.navigationItem.leftItemsSupplementBackButton = true
+		self.navigationItem.leftBarButtonItems = [
+			UIBarButtonItem(image: UIImage(systemName: "sidebar.left"), style: .plain, target: self, action: #selector(self.toggleSidebar))
+		]
+	}
+	
 	/// Sets up the basic tool bar menu
 	@objc func setupTitleMenus() {		 
 		navigationItem.titleMenuProvider = { suggestions in
@@ -36,7 +45,7 @@ extension BeatDocumentViewController {
 			
 			return UIMenu(children: items)
 		}
-		
+				
 		// Warning: This menu is a pain to debug.
 		let screenplayMenu:UIMenu = UIMenu(options: [], children: [
 			UIDeferredMenuElement.uncached { [weak self] completion in

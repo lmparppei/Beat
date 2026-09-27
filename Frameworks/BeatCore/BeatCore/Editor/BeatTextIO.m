@@ -117,19 +117,22 @@ static NSString *centeredEnd = @" <";
     
 #if TARGET_OS_IOS
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string.string]) {
+        // Let's convert the range from NSRange to UITextRange here
+        self.delegate.processingEdit = true;
         UITextRange *oldRange = textView.selectedTextRange;
         [self.delegate setSelectedRange:range];
         
+        self.delegate.processingEdit = true;
         UITextRange *textRange = textView.selectedTextRange;
-        [self.textView setSelectedTextRange:oldRange];
         
-        if (@available(iOS 18.0, *)) {
-            [textView replaceRange:textRange withAttributedText:string];
-        } else {
-            [textView.textStorage replaceCharactersInRange:textView.selectedRange withAttributedString:string];
-        }
+        // ... and restore the old range
+        self.delegate.processingEdit = true;
         
+        [textView replaceRange:textRange withAttributedText:string];
         if (textView.textStorage.isEditing) [textView.textStorage endEditing];
+        
+        [self.textView setSelectedTextRange:oldRange];
+
         //[self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
