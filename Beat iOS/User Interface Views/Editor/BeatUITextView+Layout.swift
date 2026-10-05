@@ -22,9 +22,8 @@ extension BeatUITextView {
 		
 	/// Called when setting up the view and adjusting paper size
 	@objc func resizePaper() {
-		print("RESIZING PAPER")
 		guard let pageView else { return }
-		
+				
 		var frame = pageView.frame
 		frame.origin.x = 0.0
 		frame.origin.y = 0.0
@@ -39,7 +38,7 @@ extension BeatUITextView {
 	}
 	
 	@objc func resizeToFit() {
-		guard !self.mobileMode else { return }
+		guard self.mobileMode == false else { return }
 		
 		guard let enclosingScrollView, let pageView, pageView.frame.width > 0 else { return }
 		
@@ -151,29 +150,21 @@ extension BeatUITextView {
 		var scrollSize = CGSize(width: (contentSize.width + inset.left + inset.right) * factor,
 								height: (contentSize.height + inset.top + inset.bottom) * factor)
 
-		if scrollSize.height * factor < enclosingScrollView.frame.height {
-			scrollSize.height = enclosingScrollView.frame.height - ((inset.top - inset.bottom) * factor)
+		if scrollSize.height < enclosingScrollView.frame.height {
+			scrollSize.height = enclosingScrollView.frame.height * factor - (inset.top + inset.bottom) * factor
 		}
 		
 		let heightNow = enclosingScrollView.contentSize.height
 		
 		// Adjust the size to fit, if the size differs more than 5.0 points
+		scrollSize.height += 12.0
 		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
-			scrollSize.height += 12.0
 			enclosingScrollView.contentSize = scrollSize
-		}	
+		}
 	}
 
 	
 	// MARK: - Mobile sizing
-	
-	/*
-	var mobileScale:CGFloat {
-		let scale = BeatUserDefaults.shared().getInteger(BeatSettingPhoneFontSize)
-		return 1 + CGFloat(scale) * 0.25
-		
-	}
-	 */
 	
 	@objc public func updateMobileScale() {
 		guard let editorDelegate else { return }
@@ -192,9 +183,7 @@ extension BeatUITextView {
 		self.insetsLayoutMarginsFromSafeArea = true
 		self.automaticallyAdjustsScrollIndicatorInsets = true
 		
-		let factor = 1 / self.zoomScale
-		let scaledFrame = self.frame.width * factor
-		
+		let scaledFrame = self.frame.width
 		var insets = self.insets
 		
 		if (documentWidth < scaledFrame) {
@@ -222,6 +211,8 @@ extension BeatUITextView {
 			let diff = window.frame.height - lastLineY
 			let topInset = min(diff, 150)
 			insets.top = topInset
+		} else {
+			insets.top = self.insets.top
 		}
 		
 		self.textContainerInset = insets

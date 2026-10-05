@@ -372,11 +372,11 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
-    // Get editing status from delegate
-    bool alreadyEditing = _delegate.textStorage.isEditing;
+    // Get editing status from delegate (if applicable)
+    bool alreadyEditing = _textStorage ? false : _delegate.textStorage.isEditing;
     if (!alreadyEditing) [textStorage beginEditing];
 	
-    NSRange selectedRange = _delegate.selectedRange;
+    NSRange selectedRange = (NSThread.isMainThread) ? _delegate.selectedRange : NSMakeRange(NSNotFound, 0);
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
@@ -953,8 +953,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 #pragma mark - Get text storage
 
 -(NSMutableAttributedString *)textStorage {
-	if (_textStorage) return _textStorage;
-	else return _delegate.textStorage;
+    return _textStorage ? _textStorage : _delegate.textStorage;
 }
 
 

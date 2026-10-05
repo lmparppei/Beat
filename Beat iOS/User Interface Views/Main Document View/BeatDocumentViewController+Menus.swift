@@ -53,6 +53,7 @@ extension BeatDocumentViewController {
 					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.addTitlePage"), image: UIImage(systemName: "info"), handler: { (_) in
 						self?.formattingActions?.addTitlePage(self)
 					}),
+					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.characterList"), image: UIImage(systemName: "person.2.fill"), handler: { _ in self?.showCharacterList(self) }),
 					// Scene Numbering
 					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering"), image: UIImage(systemName: "number"), children: [
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.setFirstSceneNumber"), handler: { _ in

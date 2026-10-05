@@ -99,33 +99,41 @@
 "color.buff" = "Buff";
 "color.cherry" = "Cherry";
 
-"menuItem.createPDF" = "Create PDF...";
+"menuItem.createPDF" = "Create PDF…";
 "menuItem.export" = "Export";
-"menuItem.export.fdx" = "Export Final Draft File...";
-"menuItem.export.outline" = "Export Fountain Outline...";
+"menuItem.export.fdx" = "Export Final Draft File…";
+"menuItem.export.outline" = "Export Fountain Outline…";
 
 "menuItem.addTitlePage" = "Add Title Page";
 "menuItem.sceneNumbering" = "Scene Numbering";
-"menuItem.sceneNumbering.setFirstSceneNumber" = "Set First Scene Number...";
+"menuItem.sceneNumbering.setFirstSceneNumber" = "Set First Scene Number…";
 "menuItem.sceneNumbering.lockSceneNumbers" = "Lock Scene Numbers";
 "menuItem.sceneNumbering.unlockSceneNumbers" = "Remove locked scene numbers";
 
 "menuItem.pagination" = "Pagination Options";
-"menuItem.pagination.numberingBeginsFrom" = "Page Numbering Begins From...";
+"menuItem.pagination.numberingBeginsFrom" = "Page Numbering Begins From…";
 "menuItem.pagination.numberingBeginsFrom.anyContent" = "Any Content (Default)";
 "menuItem.pagination.numberingBeginsFrom.firstScene" = "First Scene";
 "menuItem.pagination.numberingBeginsFrom.firstPageBreak" = "First Forced Page Break";
 "menuItem.pagination.numberingBeginsFrom.firstPageBreak.note" = "All pages before === are non-numbered";
-"menuItem.pagination.setFirstPageNumber" = "Set First Page Number...";
+"menuItem.pagination.setFirstPageNumber" = "Set First Page Number…";
 "menuItem.notepad" = "Notepad";
 "menuItem.statistics" = "Screenplay Statistics";
-"menuItem.allSettings" = "All Settings...";
+"menuItem.allSettings" = "All Settings…";
+"menuItem.characterList" = "Characters…";
 
 "menuItem.paragraphPagination" = "Action Pagination";
 "menuItem.paragraphPagination.default" = "Break Actions Across Pages (Default)";
 "menuItem.paragraphPagination.avoid" = "Avoid Breaking Actions";
 
-"menuItem.editTheme" = "Customize Colors...";
+"menuItem.editTheme" = "Customize Colors…";
 
 "cards.addScene" = "Add New Scene Here";
 "cards.addScenePrompt" = "Heading For New Scene";
+
+"character.editor.done" = "Done";
+"character.editor.age" = "Age";
+"character.editor.biography" = "Biography";
+"character.editor.lines" = "Lines";
+"character.editor.highlight" = "Highlight Color";
+"character.editor.addAlias" = "Add Alias…";

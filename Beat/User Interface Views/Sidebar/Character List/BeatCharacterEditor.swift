@@ -11,7 +11,6 @@ import BeatCore
 
 @objc protocol BeatCharacterListDelegate: AnyObject {
 	var editorDelegate:BeatEditorDelegate? { get }	
-	//var characterData:BeatCharacterData { get }
 	
 	func editorDidClose(for character:BeatCharacter)
 	func reloadView()

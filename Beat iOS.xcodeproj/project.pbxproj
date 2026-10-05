@@ -45,6 +45,9 @@
 		B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */; };
 		B622801C2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */; };
 		B625683830690FAC00654879 /* 0.5.4.html in Resources */ = {isa = PBXBuildFile; fileRef = B625683730690FAC00654879 /* 0.5.4.html */; };
+		B625683B306AE59400654879 /* BeatAppearanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B625683A306AE59100654879 /* BeatAppearanceManager.swift */; };
+		B625683D306AF69000654879 /* 0.5.5.html in Resources */ = {isa = PBXBuildFile; fileRef = B625683C306AF69000654879 /* 0.5.5.html */; };
+		B625683F306D9EBB00654879 /* 0.5.6.html in Resources */ = {isa = PBXBuildFile; fileRef = B625683E306D9EBB00654879 /* 0.5.6.html */; };
 		B628E7392D86DC3000A3FBCD /* 0.2.9.html in Resources */ = {isa = PBXBuildFile; fileRef = B628E7382D86DC3000A3FBCD /* 0.2.9.html */; };
 		B628E7462D88D3BB00A3FBCD /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B628E7422D88D3BB00A3FBCD /* Courier Prime Sans Bold Italic.ttf */; };
 		B628E7472D88D3BB00A3FBCD /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B628E7442D88D3BB00A3FBCD /* Courier Prime Sans Italic.ttf */; };
@@ -92,6 +95,10 @@
 		B6637C0A2F9B6FC400EF58B0 /* 0.4.5.html in Resources */ = {isa = PBXBuildFile; fileRef = B6637C092F9B6FC400EF58B0 /* 0.4.5.html */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B665CE9C30729A6400C9709E /* LoadingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B665CE9B30729A6100C9709E /* LoadingOverlayView.swift */; };
+		B665CE9E30729AA700C9709E /* BeatDocumentViewController+PluginViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B665CE9D30729AA200C9709E /* BeatDocumentViewController+PluginViews.swift */; };
+		B665CEA030729AD700C9709E /* BeatDocumentViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B665CE9F30729AD200C9709E /* BeatDocumentViewController+Layout.swift */; };
+		B665CEA230729AED00C9709E /* BeatDocumentViewController+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B665CEA130729AE800C9709E /* BeatDocumentViewController+Loading.swift */; };
 		B66FCC832EF0CAD400D91FBE /* 0.3.7.html in Resources */ = {isa = PBXBuildFile; fileRef = B66FCC822EF0CAD400D91FBE /* 0.3.7.html */; };
 		B6720F8F2EF9B9AA00A1907F /* 0.3.9.html in Resources */ = {isa = PBXBuildFile; fileRef = B6720F8E2EF9B9AA00A1907F /* 0.3.9.html */; };
 		B672CBB92FBF49B200DFF3E5 /* 0.4.6.html in Resources */ = {isa = PBXBuildFile; fileRef = B672CBB82FBF49B200DFF3E5 /* 0.4.6.html */; };
@@ -281,6 +288,9 @@
 		B62280192BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatUITextView+KeyCommands.swift"; sourceTree = "<group>"; };
 		B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+KeyCommands.swift"; sourceTree = "<group>"; };
 		B625683730690FAC00654879 /* 0.5.4.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.5.4.html; sourceTree = "<group>"; };
+		B625683A306AE59100654879 /* BeatAppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatAppearanceManager.swift; sourceTree = "<group>"; };
+		B625683C306AF69000654879 /* 0.5.5.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.5.5.html; sourceTree = "<group>"; };
+		B625683E306D9EBB00654879 /* 0.5.6.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.5.6.html; sourceTree = "<group>"; };
 		B628E7382D86DC3000A3FBCD /* 0.2.9.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.2.9.html; sourceTree = "<group>"; };
 		B628E7422D88D3BB00A3FBCD /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold Italic.ttf"; sourceTree = "<group>"; };
 		B628E7432D88D3BB00A3FBCD /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold.ttf"; sourceTree = "<group>"; };
@@ -337,6 +347,10 @@
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
 		B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B665CE9B30729A6100C9709E /* LoadingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingOverlayView.swift; sourceTree = "<group>"; };
+		B665CE9D30729AA200C9709E /* BeatDocumentViewController+PluginViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+PluginViews.swift"; sourceTree = "<group>"; };
+		B665CE9F30729AD200C9709E /* BeatDocumentViewController+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+Layout.swift"; sourceTree = "<group>"; };
+		B665CEA130729AE800C9709E /* BeatDocumentViewController+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentViewController+Loading.swift"; sourceTree = "<group>"; };
 		B66FCC822EF0CAD400D91FBE /* 0.3.7.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.7.html; sourceTree = "<group>"; };
 		B6720F8E2EF9B9AA00A1907F /* 0.3.9.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.3.9.html; sourceTree = "<group>"; };
 		B672CBB82FBF49B200DFF3E5 /* 0.4.6.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0.4.6.html; sourceTree = "<group>"; };
@@ -579,8 +593,12 @@
 				B63148732CB698FC001EE70E /* BeatDocumentViewController+PatchNotes.swift */,
 				B6A97CA42BF0C62B00414878 /* BeatDocumentViewController+Export.swift */,
 				B622801B2BC95E9100AE2D6E /* BeatDocumentViewController+KeyCommands.swift */,
+				B665CE9F30729AD200C9709E /* BeatDocumentViewController+Layout.swift */,
+				B665CEA130729AE800C9709E /* BeatDocumentViewController+Loading.swift */,
 				B65B56EC2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.h */,
 				B65B56ED2D42ECD8008BB43F /* BeatDocumentViewController+KeyboardEvents.m */,
+				B665CE9D30729AA200C9709E /* BeatDocumentViewController+PluginViews.swift */,
+				B665CE9B30729A6100C9709E /* LoadingOverlayView.swift */,
 				B6B36AEB2FC59A2D00FCAF06 /* BeatDocumentViewController.swift */,
 			);
 			path = "Main Document View";
@@ -596,6 +614,17 @@
 				B64FA4A82DA55E590098F448 /* ThemeEditor.storyboard */,
 			);
 			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		B6256839306AE58300654879 /* State */ = {
+			isa = PBXGroup;
+			children = (
+				B625683A306AE59100654879 /* BeatAppearanceManager.swift */,
+				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
+				B672CBC12FC48B4000DFF3E5 /* SceneDelegate.swift */,
+				B6ED944D2E37AAD200D76982 /* BeatAppState.swift */,
+			);
+			path = State;
 			sourceTree = "<group>";
 		};
 		B629FE3C2846B8DB00E8B9BD /* Card View */ = {
@@ -679,6 +708,8 @@
 				B608C56A3067462C00CCFB74 /* 0.5.2.html */,
 				B608C571306834A800CCFB74 /* 0.5.3.html */,
 				B625683730690FAC00654879 /* 0.5.4.html */,
+				B625683C306AF69000654879 /* 0.5.5.html */,
+				B625683E306D9EBB00654879 /* 0.5.6.html */,
 			);
 			path = "Patch Notes";
 			sourceTree = "<group>";
@@ -911,6 +942,7 @@
 				B6A97BF62BF0B9FF00414878 /* App Store */,
 				B686BD212B33AEFC0074FC67 /* User Interface Elements */,
 				B6CB9707282FEDAF00C7AFC7 /* User Interface Views */,
+				B6256839306AE58300654879 /* State */,
 				B6D32035298F04B5003DA45D /* Fonts */,
 				B619DE5F29F80E40007D1838 /* Templates */,
 				B686FF892971BC6500789C8D /* Exporting and rendering */,
@@ -918,9 +950,6 @@
 				B6FDCF242BD4411C00A6C9B6 /* Plugins */,
 				B62D163C2BFE33F7000EFEE5 /* Icons */,
 				B63148792CB69C3F001EE70E /* Patch Notes */,
-				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
-				B672CBC12FC48B4000DFF3E5 /* SceneDelegate.swift */,
-				B6ED944D2E37AAD200D76982 /* BeatAppState.swift */,
 				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
 				B672CBC32FC4909800DFF3E5 /* UTIs.swift */,
 				B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */,
@@ -1137,6 +1166,7 @@
 				B608C56930653D5200CCFB74 /* 0.5.1.html in Resources */,
 				B608C56B3067462C00CCFB74 /* 0.5.2.html in Resources */,
 				B64FA4A92DA55E590098F448 /* ThemeEditor.storyboard in Resources */,
+				B625683D306AF69000654879 /* 0.5.5.html in Resources */,
 				B61653702F1A3A98000C6F2C /* 0.4.0.html in Resources */,
 				B61914CF2C0497E80079C828 /* BeatStatisticsUI.html in Resources */,
 				B691A5732F64942C0059180C /* 0.4.4html in Resources */,
@@ -1155,6 +1185,7 @@
 				B62FD0CE30629B0100EF55F8 /* 0.5.0.html in Resources */,
 				B628E7482D88D3BB00A3FBCD /* Courier Prime Sans.ttf in Resources */,
 				B6F6E64E2FC49E7F00574DD4 /* 0.4.8.html in Resources */,
+				B625683F306D9EBB00654879 /* 0.5.6.html in Resources */,
 				B628E7492D88D3BB00A3FBCD /* Courier Prime Sans Bold.ttf in Resources */,
 				B65428552F59C25D00844A30 /* 0.4.3.html in Resources */,
 				B6D32041298F04C3003DA45D /* Courier Prime Bold.ttf in Resources */,
@@ -1228,6 +1259,7 @@
 				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
 				B67668E82B30768C004597D9 /* BeatEditorSplitView.swift in Sources */,
 				B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */,
+				B665CE9C30729A6400C9709E /* LoadingOverlayView.swift in Sources */,
 				B61FD05D2A66D49200A40883 /* BeatIndexCardView.swift in Sources */,
 				B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */,
 				B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */,
@@ -1265,6 +1297,7 @@
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
 				B67B07142E15967C004345D4 /* BeatBackupViewController.swift in Sources */,
 				B6A79B662B801B02003FF931 /* BeatStartupScreenViewController.swift in Sources */,
+				B665CEA030729AD700C9709E /* BeatDocumentViewController+Layout.swift in Sources */,
 				B637EE182A4B423D00F4E7AA /* BeatOutlineDataSource.swift in Sources */,
 				B6ED944E2E37AAE700D76982 /* BeatAppState.swift in Sources */,
 				B6BEE27D2F24C2FC00CF6BF5 /* BeatLLMHelper.swift in Sources */,
@@ -1272,6 +1305,8 @@
 				B6298D4B2BC66E3D00F9AAF0 /* BeatNavigationController.swift in Sources */,
 				B650ED5630615984000E02C8 /* BeatDocumentViewController+BrowserDelegate.swift in Sources */,
 				B622801A2BC95DED00AE2D6E /* BeatUITextView+KeyCommands.swift in Sources */,
+				B665CEA230729AED00C9709E /* BeatDocumentViewController+Loading.swift in Sources */,
+				B665CE9E30729AA700C9709E /* BeatDocumentViewController+PluginViews.swift in Sources */,
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686BD272B345F060074FC67 /* BeatAdaptiveViews.swift in Sources */,
 				B67B07182E15A70E004345D4 /* BeatDocumentViewController+Menus.swift in Sources */,
@@ -1285,6 +1320,7 @@
 				B672CBC22FC48B4200DFF3E5 /* SceneDelegate.swift in Sources */,
 				B6ED944C2E3794A400D76982 /* BeatThemeEditor.swift in Sources */,
 				B6839B492D3EA6410044DB2C /* BeatDocumentViewController+TextEvents.m in Sources */,
+				B625683B306AE59400654879 /* BeatAppearanceManager.swift in Sources */,
 				B6F59D452C6E9A9B00AB8FAE /* BeatNotepadView.swift in Sources */,
 				B61F44DB2C38339D00A10DF3 /* Maths.swift in Sources */,
 			);
@@ -1460,7 +1496,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 124;
+				CURRENT_PROJECT_VERSION = 131;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1473,7 +1509,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.5.4;
+				MARKETING_VERSION = 0.5.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
@@ -1499,7 +1535,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 124;
+				CURRENT_PROJECT_VERSION = 131;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BeatThumbnailProvider/Info.plist;
@@ -1511,7 +1547,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.5.4;
+				MARKETING_VERSION = 0.5.6;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS.BeatThumbnailProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1538,7 +1574,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 124;
+				CURRENT_PROJECT_VERSION = 131;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -1565,7 +1601,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.5.4;
+				MARKETING_VERSION = 0.5.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
@@ -1600,7 +1636,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 124;
+				CURRENT_PROJECT_VERSION = 131;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -1622,7 +1658,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.5.4;
+				MARKETING_VERSION = 0.5.6;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.Beat-iOS";
 				PRODUCT_NAME = Beat;

@@ -182,7 +182,6 @@ import UXKit
             // Paginate and create preview with 1 second delay
             self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
                 // Store revisions into lines in sync (this requires access to the latest attributed string from text view)
-                print("Baking revisions, sync", Thread.isMainThread)
                 self.delegate?.bakeRevisions()
                 
                 // Dispatch pagination to a background thread after one second

@@ -125,7 +125,7 @@ class BeatSettingsViewController:UITableViewController {
 		}
 		
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
-			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
+			self.darkModeSwitch?.selectedSegmentIndex = delegate.isDark() ? 1 : 0
 		}
 				
 		if let sectionFontType = BeatUserDefaults.shared().get(BeatSettingSectionFontType) {
@@ -146,8 +146,8 @@ class BeatSettingsViewController:UITableViewController {
 	}
 	
 	@IBAction func toggleDarkMode(_ sender:UISegmentedControl) {
-		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
-			appDelegate.toggleDarkMode()
+		if let window = self.delegate?.documentWindow {
+			BeatAppearanceManager.shared.toggle(in: window)
 		}
 		
 		postNotification()

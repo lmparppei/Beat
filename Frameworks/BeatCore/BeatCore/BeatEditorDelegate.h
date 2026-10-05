@@ -111,6 +111,8 @@ typedef void (^BeatChangeListener)(NSRange);
 
 #if TARGET_OS_OSX
 @property (weak, readonly) BXWindow* documentWindow;
+#else
+@property (weak, readonly) UIWindow* documentWindow;
 #endif
 
 - (id)themeManager;

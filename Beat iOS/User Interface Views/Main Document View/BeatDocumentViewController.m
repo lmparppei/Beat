@@ -103,8 +103,12 @@
 - (void)setDocument:(UIDocument *)document
 {
 	[super setDocument:document];
+	
+	self.formattedTextBuffer = NSMutableAttributedString.new;
+	self.attrTextCache = NSMutableAttributedString.new;
+	
 	___fountainDocument = (iOSDocument*)document;
-		
+	
 	self.documentIsLoading = true;
 	self.initialFormattingComplete = false;
 	
@@ -121,68 +125,53 @@
 		self.fountainDocument == nil) return;
 	
 	_initialFormattingInAction = true;
-	
+		
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsDidChange:) name:@"BeatSettingsChanged" object:nil];
+	[self settingsDidChange:nil];
+
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.fountainDocument.rawText delegate:self];
-	self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.fountainDocument.rawText];
+	self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.parser.text];
 	self.attrTextCache = self.formattedTextBuffer;
-	
-	// Load fonts before any formatting
-	[self loadFonts];
 	
 	// Format the document. We'll create a static formatting instance for this operation.
 	BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
 	formatting.delegate = self;
-	
-	// Perform initial formatting
-	for (Line* line in self.parser.lines) {
-		[formatting formatLine:line firstTime:true];
-	}
-	
-	[self.parser.changedIndices removeAllIndexes];
-	
-	// Oh well. View can be loaded before the document is loaded and vice-versa.
-	// We need to throttle the setup phase until formatting is complete
-	self.initialFormattingInAction = false;
-	self.initialFormattingComplete = true;
 
-	if (self.viewLoaded) {
-		[self setup];
-	}
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^(void) {
+		// Perform initial formatting
+		for (Line* line in self.parser.lines) {
+			[formatting formatLine:line firstTime:true];
+		}
+		
+		[self.parser.changedIndices removeAllIndexes];
+		
+		// Oh well. View can be loaded before the document is loaded and vice-versa.
+		// We need to throttle the setup phase until formatting is complete
+		self.initialFormattingInAction = false;
+		self.initialFormattingComplete = true;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self setupDocument];
+		});
+	});
+
 }
 
 - (void)documentDidOpen
-{
-	[self initialFormatting];
-}
-	
-- (BXWindow*)documentWindow
-{
-	return self.view.window;
-}
-
-
-#pragma mark - SETUP
-
-- (void)setup
 {
 	if (self.fountainDocument == nil) return;
 	if (!self.documentIsLoading) return;
 	
 	// Let the app state know this is the current document view controller
 	BeatAppState.shared.documentController = self;
+	[BeatAppearanceManager.shared systemStyleChangedIn:self.documentWindow];
 	
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	[delegate checkDarkMode];
+	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = NSMapTable.new;
 	
-	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
-	self.navigationController.hidesBarsOnSwipe = true;
-	self.navigationController.hidesBottomBarWhenPushed = true;
+	[self setupNavigationViewController];
 	
-	// Setup plugin support
-	self.runningPlugins = NSMutableDictionary.new;
-	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
-		
-	[self.navigationController.navigationBar setTranslucent:true];
+	// Load fonts before any formatting
+	[self loadFonts];
 	
 	// Setup the split view
 	[self setupEditorViews];
@@ -195,13 +184,55 @@
 	
 	// Setup document title menu (done in Swift extension)
 	[self setupTitleBar];
-	
+
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
-	[self setupDocument];
+	[self showLoadingBar];
 	
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsDidChange:) name:@"BeatSettingsChanged" object:nil];
-	[self settingsDidChange:nil];
+	[self initialFormatting];
+
+	[self setupAppearanceObservers];
+}
+
+- (BXWindow*)documentWindow
+{
+	return self.view.window;
+}
+
+
+#pragma mark - SETUP
+
+- (void)setupAppearanceObservers
+{
+	__weak typeof(self) weakSelf = self;
+
+	[self.documentWindow.windowScene registerForTraitChanges:@[UITraitUserInterfaceStyle.self] withHandler:^(__kindof id<UITraitEnvironment>  _Nonnull traitEnvironment, UITraitCollection * _Nonnull previousCollection) {
+		[BeatAppearanceManager.shared systemStyleChangedIn:weakSelf.documentWindow];
+	}];
+	
+	[NSNotificationCenter.defaultCenter addObserverForName:UISceneDidActivateNotification
+		object:self.documentWindow.windowScene
+		queue:NSOperationQueue.mainQueue
+		usingBlock:^(NSNotification *note) {
+			[BeatAppearanceManager.shared systemStyleChangedIn:weakSelf.documentWindow];
+		}];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
+}
+
+- (void)setupNavigationViewController
+{
+	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
+	self.navigationController.hidesBarsOnSwipe = true;
+	self.navigationController.hidesBottomBarWhenPushed = true;
+	self.navigationController.navigationBar.translucent = true;
+}
+
+- (void)setupPlugins
+{
+	// Setup plugin support
+	self.runningPlugins = NSMutableDictionary.new;
+	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
 }
 
 - (void)setupTitleBar
@@ -232,10 +263,9 @@
 	[self.textView resizeToFit];
 	
 	self.documentIsLoading = false;
-	
-	[self displayPatchNotesIfNeeded];
-	
+		
 	dispatch_async(dispatch_get_main_queue(), ^{
+		[self hideLoadingBar];
 		[self restoreCaret];
 		[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
 	});
@@ -245,13 +275,19 @@
 {
 	self.fountainDocument.delegate = self;
 	
-	// Setup revision tracking and reviews
-	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
-	self.review = [BeatReview.alloc initWithDelegate:self];
+	[self.textView setAttributedText:self.formattedTextBuffer.copy];
+	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.textStorage.length)];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	[self.textView setNeedsLayout];
+	[self.textView layoutIfNeeded];
 	
 	// Initialize real-time formatting
 	self.formatting = BeatEditorFormatting.new;
 	self.formatting.delegate = self;
+	
+	// Setup revision tracking and reviews
+	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
+	self.review = [BeatReview.alloc initWithDelegate:self];
 	
 	// Init preview view
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
@@ -263,11 +299,10 @@
 		
 	// Observers
 	[self setupKeyboardObserver];
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
 	
 	// Text I/O
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
-	
+		
 	// Text view settings
 	self.textView.textStorage.delegate = self;
 	[self.textView setFindInteractionEnabled:true];
@@ -275,7 +310,9 @@
 	// Setup outline view
 	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
 	self.outlineView.editorDelegate = self;
-	
+		
+	[self.formatting refreshRevisionTextColors];
+
 	[self afterLoadSetup];
 }
 
@@ -339,10 +376,16 @@
 		}
 		
 		self.textView.font = self.fonts.regular;
-		
-		[self.textView resize];
 	}
 	
+	// Clear the text view
+	self.textView.text = @"";
+	self.textView.delegate = self;
+	[self.textView resize];
+	
+	NSLog(@"Layout manager %@", self.textView.layoutManager);
+	
+	/*
 	if (self.fountainDocument != nil) {
 		// Set delegate again when reloading text view (it could be nulled)
 		self.textView.delegate = self;
@@ -350,6 +393,7 @@
 		
 		[self.formatting refreshRevisionTextColors];
 	}
+	 */
 }
 
 /// Dismisses editor view keyboard
@@ -366,7 +410,7 @@
 	[self.editorSplitView loadView];
 	
 	[self setupLaunchItems];
-	
+		
 	[super viewDidLoad];
 }
 
@@ -376,8 +420,10 @@
 	
 	[self becomeFirstResponder];
 	
+	[self displayPatchNotesIfNeeded];
+	
 	// When returning from another VC, let's check if we should return to editing mode
-	if (editorWasActive) {
+	if (self.document != nil && editorWasActive) {
 		editorWasActive = false;
 		[self.getTextView becomeFirstResponder];
 	}
@@ -460,14 +506,7 @@
 /// This is called by `iOSDocument` after closing the document.
 - (void)unloadViews
 {
-	// We won't do this in the new model I guess?
-	
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
-	 
-	// These have to be nulled to kill any retained line references
-	self.formattedTextBuffer = NSMutableAttributedString.new;
-	self.attrTextCache = NSMutableAttributedString.new;
+	NSLog(@"UNLOAD VIEWS");
 }
 
 
@@ -515,8 +554,6 @@
 	return self.document.fileURL.lastPathComponent.stringByDeletingPathExtension;
 }
 
-- (bool)isDark { return false; }
-
 - (void)showLockStatus
 {
 	
@@ -537,6 +574,12 @@
 	return [self createDocumentFile];
 }
 
+- (bool)isDark
+{
+	return [BeatAppearanceManager.shared isDarkWithScene:self.documentWindow.windowScene];
+}
+
+
 
 #pragma mark - Setting change listener
 
@@ -552,20 +595,18 @@
 
 - (void)setDarkMode:(BOOL)value
 {
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	[delegate toggleDarkMode];
+	[BeatAppearanceManager.shared setDarkMode:value in:self.documentWindow];
 }
 
 - (void)appearanceChanged:(NSNotification*)notification
 {
+	NSLog(@"Appearance did change");
 	[self updateUIColors];
 }
 
 - (void)updateUIColors
 {
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	
-	bool isDark = delegate.isDark;
+	bool isDark = self.isDark;
 	UIUserInterfaceStyle effectiveStyle = UITraitCollection.currentTraitCollection.userInterfaceStyle;
 		
 	self.overrideUserInterfaceStyle = 0;

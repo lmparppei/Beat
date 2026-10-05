@@ -259,11 +259,11 @@ import BeatParsing
 			self.frame = CGRectMake(0.0, 0.0, contentView.frame.width, contentView.frame.height)
 			self.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
 			
-			self.maximumZoomScale = 2.0
+			self.maximumZoomScale = 1.0
 			self.minimumZoomScale = 1.0
 		}
 		
-		pageNumberOverlay = BeatPageNumberOverlay(textView: self)
+		//pageNumberOverlay = BeatPageNumberOverlay(textView: self)
 	}
 	
 	

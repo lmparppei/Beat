@@ -96,6 +96,9 @@
 	if (line != self.formatting.lineBeingFormatted || line == nil) {
 		[self.parser parseChangeInRange:affectedRange withString:string];
 	}
+	
+	NSRange clampedRange = CLAMP_RANGE(editedRange, self.textView.string.length);
+	if (clampedRange.length > 0) [self.textView.layoutManager invalidateDisplayForCharacterRange:clampedRange];
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView
