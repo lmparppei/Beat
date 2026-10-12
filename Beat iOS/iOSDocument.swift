@@ -11,11 +11,18 @@ import BeatParsing
 import BeatCore
 import QuickLook
 
+@objc enum BeatDocumentError:Int {
+	case generalError = 0
+	case fileNotFound
+}
+
 @objc protocol iOSDocumentDelegate {
 	var parser:ContinuousFountainParser? { get }
 	func text() -> String!
 	func contentForSaving() -> String!
 	func createDocumentFile() -> String!
+	
+	func handleError(_ error:BeatDocumentError)
 }
 
 class iOSDocument: UIDocument {
@@ -84,11 +91,7 @@ class iOSDocument: UIDocument {
 		self.userActivity?.resignCurrent()
 		
 		let closed = await super.close()
-		
-		if let vc = delegate as? BeatDocumentViewController {
-			await vc.unloadViews()
-		}
-		
+				
 		return closed
 	}
 		
@@ -175,6 +178,22 @@ class iOSDocument: UIDocument {
 				print("Failed to rename document: \(error)", fileURL)
 			}
 		}
+	}
+	
+	override func handleError(_ error: any Error, userInteractionPermitted: Bool) {
+		super.handleError(error, userInteractionPermitted: userInteractionPermitted)
+		print("ERROR: \(error)")
+		
+		if (error as NSError).code == 260 {
+			Task { @MainActor in
+				self.delegate?.handleError(.fileNotFound)
+			}
+		} else {
+			Task { @MainActor in
+				self.delegate?.handleError(.generalError)
+			}
+		}
+		
 	}
 	
 	/// Check if the file is stored on a cloud service

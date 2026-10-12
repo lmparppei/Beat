@@ -242,7 +242,7 @@
         <!--Beat Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBarsOnSwipe="YES" id="n1j-v5-5jA" customClass="BeatNavigationController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationViewController" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" hidesBarsOnSwipe="YES" id="n1j-v5-5jA" customClass="BeatNavigationController" customModule="Beat" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="JT7-eO-PGz">
                         <rect key="frame" x="0.0" y="24" width="1024" height="54"/>

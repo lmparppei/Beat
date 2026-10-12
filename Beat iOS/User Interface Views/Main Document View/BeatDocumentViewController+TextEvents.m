@@ -37,7 +37,7 @@
 	
 	Line* line = [self.parser lineAtPosition:editedRange.location];
 	
-	// Don't parse anything when editing attributes
+	// Don't parse anything when only attributes were edited
 	if (editedMask == NSTextStorageEditedAttributes) {
 		return;
 	} else if (mask_contains(editedMask, NSTextStorageEditedCharacters)) {

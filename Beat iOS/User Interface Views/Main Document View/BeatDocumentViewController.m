@@ -49,6 +49,8 @@
 @property (nonatomic) bool initialFormattingInAction;
 @property (nonatomic) bool initialFormattingComplete;
 
+@property (nonatomic) bool documentHasOpened;
+
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* topContainerConstraint;
 
 /// This is our shadow document. For some genious reason, the new iOS document view controller allows only SYNCHRONIZED access to `.document` property.
@@ -63,6 +65,8 @@
 
 -(instancetype)initWithCoder:(NSCoder *)coder
 {
+	[BeatDocumentManager.shared addDocumentController:self];
+	
 	self = [super initWithCoder:coder];
 	self.documentIsLoading = true;
 
@@ -94,15 +98,20 @@
 	return (NSThread.isMainThread) ? super.document : ___fountainDocument;
 }
 
-- (void)navigationItemDidUpdate
-{
-	[super navigationItemDidUpdate];
-	[self setupTitleBar];
-}
-
 - (void)setDocument:(UIDocument *)document
 {
+	// Make sure the document knows its host for error handling
+	((iOSDocument*)document).delegate = self;
+	
+	// Check if the document is already open somewhere and bring up that window if needed
+	if (document != nil && [BeatDocumentManager.shared documentAlreadyOpenFor:document.fileURL current:self]) {
+		[BeatDocumentManager.shared showDocumentControllerFor:document.fileURL];
+		return;
+	}
+	
 	[super setDocument:document];
+	
+	self.documentHasOpened = false;
 	
 	self.formattedTextBuffer = NSMutableAttributedString.new;
 	self.attrTextCache = NSMutableAttributedString.new;
@@ -111,9 +120,13 @@
 	
 	self.documentIsLoading = true;
 	self.initialFormattingComplete = false;
+
+	// Hide the text view when no document is open
+	self.textView.hidden = ___fountainDocument == nil;
 	
 	if (___fountainDocument == nil) {
 		[self.textView setString:@""];
+	} else {
 	}
 }
 
@@ -162,16 +175,18 @@
 	if (self.fountainDocument == nil) return;
 	if (!self.documentIsLoading) return;
 	
+	self.documentHasOpened = true;
+	
 	// Let the app state know this is the current document view controller
-	BeatAppState.shared.documentController = self;
 	[BeatAppearanceManager.shared systemStyleChangedIn:self.documentWindow];
 	
 	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = NSMapTable.new;
-	
-	[self setupNavigationViewController];
-	
+		
 	// Load fonts before any formatting
 	[self loadFonts];
+	
+	// Setup document title menu (done in Swift extension)
+	[self setupTitleBar];
 	
 	// Setup the split view
 	[self setupEditorViews];
@@ -182,13 +197,12 @@
 	// Updates the UI to current color scheme
 	[self updateUIColors];
 	
-	// Setup document title menu (done in Swift extension)
-	[self setupTitleBar];
-
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
 	
 	[self showLoadingBar];
 	
+	[self setupPlugins];
+
 	[self initialFormatting];
 
 	[self setupAppearanceObservers];
@@ -383,8 +397,6 @@
 	self.textView.delegate = self;
 	[self.textView resize];
 	
-	NSLog(@"Layout manager %@", self.textView.layoutManager);
-	
 	/*
 	if (self.fountainDocument != nil) {
 		// Set delegate again when reloading text view (it could be nulled)
@@ -405,13 +417,18 @@
 /// NOTE: You need to call `loadDocument` before actually presenting the view
 - (void)viewDidLoad
 {
+	self.sessionIdentifier = self.view.window.windowScene.session.persistentIdentifier;
+
 	// Embed the editor split view
 	self.editorSplitView = self.childViewControllers.firstObject;
 	[self.editorSplitView loadView];
+
+	[super viewDidLoad];
 	
 	[self setupLaunchItems];
-		
-	[super viewDidLoad];
+	
+	[self setupNavigationViewController];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -441,8 +458,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-	BeatAppState.shared.documentController = nil;
-	
 	[super viewWillDisappear:animated];
 	editorWasActive = self.textView.isFirstResponder;
 	[self.textView resignFirstResponder];
@@ -452,39 +467,6 @@
 -(IBAction)dismissViewController:(id)sender
 {
 	[self unloadViews];
-}
-
-- (void)loadDocumentWithCallback:(void (^)(void))callback
-{
-	[self.document openWithCompletionHandler:^(BOOL success) {
-		// Do something here maybe
-		if (!success) return;
-		
-		self.parser = [ContinuousFountainParser.alloc initWithString:self.fountainDocument.rawText delegate:self];
-		self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.fountainDocument.rawText];
-		self.attrTextCache = self.formattedTextBuffer;
-		
-		// Load fonts before touching any formatting
-		[self loadFonts];
-		
-		// Format the document. We'll create a static formatting instance for this operation.
-		BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
-		formatting.delegate = self;
-		
-		// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
-		for (Line* line in self.parser.lines) {
-			@autoreleasepool {
-				[formatting formatLine:line firstTime:true];
-			}
-		}
-		
-		[self.parser.changedIndices removeAllIndexes];
-
-		// After this, we should have the formatted text intact in formattedTextBuffer.
-		// However, because iOS is what iOS is, there are a ton of guardrails here and there for race conditions.
-		
-		callback();
-	}];
 }
 
 - (void)dealloc
@@ -501,12 +483,20 @@
 }
 
 
-#pragma mark - Teardown
+#pragma mark - Errors from document
 
-/// This is called by `iOSDocument` after closing the document.
-- (void)unloadViews
+- (void)handleError:(enum BeatDocumentError)error
 {
-	NSLog(@"UNLOAD VIEWS");
+	self.document = nil;
+}
+
+
+#pragma mark - Navigation items
+
+- (void)navigationItemDidUpdate
+{
+	[super navigationItemDidUpdate];
+	[self setupTitleBar];
 }
 
 

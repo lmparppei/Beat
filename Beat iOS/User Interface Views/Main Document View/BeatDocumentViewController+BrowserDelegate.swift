@@ -35,6 +35,23 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 		templateAction.image = UIImage(systemName: "map")
 		
 		self.launchOptions.secondaryAction = templateAction
+	
+		setupCustomItems()
+	}
+	
+	func setupCustomItems() {
+		let openInNewWindowAction = UIDocumentBrowserAction(
+			identifier: "fi.KAPITAN.Beat.openInNewWindow",
+			localizedTitle: NSLocalizedString("Open in New Window", comment: ""),
+			availability: .menu   // shows in the long-press/context menu
+		) { urls in
+			guard let url = urls.first else { return }
+			WindowCoordinator.openOrActivate(url)
+		}
+		openInNewWindowAction.image = UIImage(systemName: "macwindow.badge.plus")
+		openInNewWindowAction.supportsMultipleItems = false
+
+		self.launchOptions.browserViewController.customActions = [openInNewWindowAction]
 	}
 	
 	public func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
@@ -64,6 +81,8 @@ extension BeatDocumentViewController:UIDocumentBrowserViewControllerDelegate {
 			}
 		}
 	}
+	
+	
 	
 	/// Force template menu
 	func pickTemplate(importHandler: @escaping ((URL?, UIDocumentBrowserViewController.ImportMode) -> Void)) {

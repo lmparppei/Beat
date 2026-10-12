@@ -19,12 +19,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	) {
 		guard let _ = scene as? UIWindowScene else { return }
 
+	   window?.makeKeyAndVisible()
+		
 		// UIKit handles storyboard loading automatically
 		// Only handle URL if the app was cold-launched via one
 		if let url = connectionOptions.urlContexts.first?.url {
-			handleURL(url)
+			print("Configure with URL")
+			configure(window: window, with: url)
+		} else if let activity = connectionOptions.userActivities.first ?? session.stateRestorationActivity {
+			print("Configure with activity")
+			configure(window: window, with: activity)
 		}
 	}
+	
+	func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+		configure(window: window, with: userActivity)
+	}
+			
 	func sceneDidBecomeActive(_ scene: UIScene) { }
 
 	func sceneWillResignActive(_ scene: UIScene) { }
@@ -36,9 +47,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	func sceneWillEnterForeground(_ scene: UIScene) {
 		// Undo changes made on entering background
 	}
-
+	
 	func sceneDidDisconnect(_ scene: UIScene) {
-		// Release resources that can be recreated if scene reconnects
+		guard let session = (scene as? UIWindowScene)?.session else { return }
+		let documents = BeatDocumentManager.shared.documentControllers
+		if let doc = documents.first(where: { $0.sessionIdentifier == session.persistentIdentifier }) {
+			BeatDocumentManager.shared.removeDocumentController(doc)
+		}
 	}
 	
 	func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -49,26 +64,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 			let doc = UIDocument(fileURL: inputURL)
 			documentView.document = doc
 		}
-		
-/*
- 
-		guard let documentBrowserViewController = window?.rootViewController as? DocumentBrowserViewController else { return }
-
-		documentBrowserViewController.revealDocument(at: inputURL, importIfNeeded: true) { (revealedDocumentURL, error) in
-			if let error = error {
-				print("Failed to reveal the document at URL \(inputURL) with error: '\(error)'")
-				return
-			}
-			documentBrowserViewController.presentDocument(at: revealedDocumentURL!)
-		}
- */
 	}
 	
-	func handleURL(_ url:URL!) {
-		let doc = UIDocument(fileURL: url)
-		let docView = BeatDocumentViewController()
-		docView.document = doc
-		
-		window?.rootViewController?.present(docView, animated: true)
+	func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
+		guard let controller = BeatDocumentManager.shared.documentControllers.first(where: {
+			$0.view.window?.windowScene == scene
+		}), let url = controller.fileURL else {
+			return nil
+		}
+		return DocumentActivity.make(for: url)
 	}
+	
+	func findDocumentViewController(in root: UIViewController?) -> BeatDocumentViewController? {
+		guard let root else { return nil }
+		if let match = root as? BeatDocumentViewController { return match }
+		for child in root.children {
+			if let found = findDocumentViewController(in: child) { return found }
+		}
+		return nil
+	}
+	
+	func configure(window: UIWindow?, with activity: NSUserActivity) {
+		guard let url = DocumentActivity.documentURL(from: activity) else { return }
+		configure(window: window, with: url)
+	}
+	
+	func configure(window: UIWindow?, with url: URL) {
+		guard let docView = findDocumentViewController(in: window?.rootViewController) else { return }
+		
+		//docView.loadView()
+		
+		
+			docView.document = iOSDocument(fileURL: url)
+		
+	}
+	
 }

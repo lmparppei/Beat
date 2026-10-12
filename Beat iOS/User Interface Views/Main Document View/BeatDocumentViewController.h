@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
+@property (nonatomic) NSString* sessionIdentifier;
+
 @property (nonatomic) iOSDocument* _Nullable fountainDocument;
 @property (weak, readonly) BXWindow* documentWindow;
 
@@ -48,8 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
-
-- (void)loadDocumentWithCallback:(void (^)(void))callback;
 
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
 

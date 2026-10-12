@@ -19,6 +19,7 @@ import WebKit
 		
 		if buildNumber > lastRunVersion && lastRunVersion > 0 {
 			let viewController = PatchNotesViewController()
+			print("• Showing patch notes")
 			self.present(viewController, animated: true)
 		}
 		

@@ -57,6 +57,7 @@
 	</array>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>fi.KAPITAN.Beat.openDocument</string>
 		<string>fi.KAPITAN.Beat.editing</string>
 	</array>
 	<key>UIAppFonts</key>
@@ -74,7 +75,7 @@
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>

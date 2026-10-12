@@ -58,7 +58,23 @@ import BeatParsing
 	
 	@IBOutlet weak var viewController:UIViewController?
 	var lastOffsetY:CGFloat = 0.0
-		
+	/*
+	override var selectedTextRange: UITextRange? {
+
+		get {
+			let r = super.selectedTextRange
+			print("\nselection get:", r as Any)
+			print("     NSRange:", self.selectedRange)
+			return r
+		}
+		set {
+			print("\nselection set:", newValue as Any)
+			Thread.callStackSymbols.prefix(8).forEach { print($0) }
+			super.selectedTextRange = newValue
+		}
+	}
+	*/
+	
 	var inputAssistantMode:BeatInputAssistantMode = .writing {
 		didSet {
 			self.setupInputAssistantButtons()
@@ -437,7 +453,7 @@ import BeatParsing
 			editorDelegate.setTypeAndFormat(line, type: .empty)
 		}
 	}
-		
+	
 	// MARK: - Rects for ranges
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
@@ -457,40 +473,39 @@ import BeatParsing
 	
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
+		/*
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
 			}
 		}
+		 */
 		
 		super.touchesBegan(touches, with: event)
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
+		/*
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
 			}
 		}
+		 */
 		
 		super.touchesMoved(touches, with: event)
 	}
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		// Convert to enclosing scroll view coordinate
-		if !mobileMode {
-			for touch in touches {
-				touch.location(in: self.enclosingScrollView)
-			}
-		}
-		
 		super.touchesEnded(touches, with: event)
 		
 		// Force selection to stay where user tapped
+		/*
 		let currentRange = selectedRange
 		unmarkText()
 		selectedRange = currentRange
+		 */
 	}
 	
 	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {

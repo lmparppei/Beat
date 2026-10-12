@@ -221,12 +221,13 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		
 		documentViewController.document = iOSDocument(fileURL: documentURL)
 		documentViewController.documentBrowser = self
-		
+		/*
 		documentViewController.loadDocument {
 			let navigationController = UINavigationController(rootViewController: documentViewController)
 			navigationController.modalPresentationStyle = .fullScreen
 			self.present(navigationController, animated: true, completion: nil)
 		}
-	}	
+		 */
+	}
 }
 
