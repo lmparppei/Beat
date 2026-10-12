@@ -22,7 +22,7 @@ page {
     margin-bottom: 60;
     
     default-width-a4: 60ch;
-    default-width-us: 63ch;
+    default-width-us: 61ch;
     
     line-height: 15;
     
@@ -31,7 +31,7 @@ page {
 
 heading {
     width-a4: 60ch - 2ch;
-    width-us: 62ch - 2ch;
+    width-us: 61ch - 2ch;
     
     bold: userSetting(headingStyleBold);
     underline: userSetting(headingStyleUnderline);

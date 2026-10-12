@@ -228,14 +228,15 @@
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingRelativeOutlineHeights];
 }
 
-- (void)reloadInBackground {
+- (void)reloadInBackground
+{
 	// Maybe we don't need this here?
 }
 
-- (void)reloadView { 
+- (void)reloadView
+{
 	if (self.visible) [self reloadOutline];
 }
-
 
 - (void)didMoveToSceneIndex:(NSInteger)index
 {
@@ -500,19 +501,6 @@
 	else return NO;
 }
 
-/*
-// Old cell-based view method
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
-{
-	if ([item isKindOfClass:[OutlineScene class]]) {
-		// Note: OutlineViewItem returns an NSMutableAttributedString
-		bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
-	}
-	return @"";
-}
- */
-
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	_editing = NO;
@@ -577,87 +565,85 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index
 {
-	// Don't allow reordering a filtered list
-	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return NSDragOperationNone;
-	
-	/*
+	/**
+	 
 	 I have no idea what this code actually does. I've written it in lockdown (probably) and it's now November 2022.
 	 Now, I'll do my best to document and comment the code.
 	 
 	 Update on Geneva airport in 2024: You didn't comment it at all, past me.
+	 
+	 Updated on a Thursday at home in 2026: This made no sense, so I rewrote it. Let's hope it's cleaner now.
+	 
 	 */
-	
-	// Target is always a SECTION, childIndex speaks for itself.
-	
-	OutlineScene *scene;
-	NSArray *outline = self.outline;
-	NSInteger numberOfChildren = [self numberOfChildrenOfItem:targetItem];
+
+	// Don't allow reordering a filtered list
+	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return false;
+		
+	// Target is always a section element, childIndex speaks for itself.
+	// If there's no target, we're moving at the top level.
+	// First, let's cast the target item.
 	
 	OutlineScene* targetScene = targetItem;
 	
-	// What is this?
-	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetItem];
+	NSArray *outline = self.outline;
+	NSInteger numberOfChildren = [self numberOfChildrenOfItem:targetScene];
+		
+	OutlineScene *scene = nil;
+	// Check if the index is actually somewhere inside the children. Note that scene can be nil.
+	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetScene];
 	
-	// First we'll determine the indices
-	NSInteger to = index;
+	// First we'll determine the to/from indices in a flat hierarchy.
 	NSInteger from = [outline indexOfObject:_draggedScene];
-	NSInteger position = 0; // Used for sections
+	NSInteger to = NSNotFound;
 	
-	// The other indices are local (section-bound) indices, so we nede to figure out the actual position in flat outline.
-	if (index == NSNotFound || index < 0) {
-		// Dropped directly into a section header
-		OutlineScene *lastInSection = targetScene.siblings.lastObject;
-				
-		if (lastInSection != nil) {
-			// There were items in the section
-			position = lastInSection.position + lastInSection.length;
-			to = [self.outline indexOfObject:lastInSection];
-		} else {
-			// No items in the section
-			to = [self.outline indexOfObject:targetItem] + 1;
-		}
+	if (targetItem == nil) {
+		// Dropped at top level
+		to = index;
 	} else {
-		// Dropped normally between scenes
-		if (scene) {
-			to = [self.outline indexOfObject:scene];
-			position = scene.position;
+		// Dropped in nested hierarchy. Note that we have to add one here to the resulting index, because child indices start from 0.
+		if (index == NSNotFound || index < 0) {
+			// This item was dropped directly on top of a section.
+			to = [outline indexOfObject:targetScene.children.lastObject] + 1;
 		} else {
-			// Dropped at the end of a section. Look at this terniary hell.
-			if (targetScene != nil) {
-				OutlineScene* parent = (targetScene.parent != nil) ? targetScene.parent : targetScene;
-				to = [self.outline indexOfObject:(parent.children.count > 0) ? parent.children.lastObject : targetScene] + 1;
-				position = NSMaxRange(parent.children.lastObject.range);
-			} else {
-				to = self.outline.count;
-				position = self.editorDelegate.text.length;
-			}
+			// Dropped inside a section. We'll need to find the parent index.
+			NSInteger parentIndex = [outline indexOfObject:targetScene];
+			to = parentIndex + index + 1;
 		}
 	}
-	
-	// If scene is being moved to the same index, do nothing.
-	if (from == to || from == to - 1) return NO;
-	
+		
+	// If a scene is being moved to the same index, do nothing.
+	// Not found should never happen, but check that too, just to be sure.
+	if (to == NSNotFound || from == to) return NO;
+		
 	self.dragging = true;
 	
 	if (_draggedScene.type == section) {
 		// If the dropped item is a section, let's move everything it contains
-		NSArray <OutlineScene*>*scenesInSection = @[_draggedScene];
-		scenesInSection = [scenesInSection arrayByAddingObjectsFromArray:[self.editorDelegate.parser scenesInSection:_draggedScene]];
+		NSArray<OutlineScene*>* scenesInSection = [@[_draggedScene] arrayByAddingObjectsFromArray:[self.editorDelegate.parser scenesInSection:_draggedScene]];
 		
 		NSInteger location = scenesInSection.firstObject.position;
 		NSInteger length = NSMaxRange(scenesInSection.lastObject.range) - location;
-		NSRange sectionRange = NSMakeRange(location, length);
+		
+		NSRange sectionRange = CLAMP_RANGE(NSMakeRange(location, length), self.editorDelegate.text.length);
+
+		NSInteger position;
+		if (to < outline.count) {
+			OutlineScene* toScene = outline[to];
+			position = toScene.position;
+		} else {
+			position = self.editorDelegate.text.length;
+		}
 				
 		[self.editorDelegate.textActions moveScenesInRange:sectionRange to:position];
 	} else {
-		// Move a single scene
 		self.editorDelegate.outlineEdit = YES;
 		[self.editorDelegate.textActions moveScene:_draggedScene from:from to:to];
 		self.editorDelegate.outlineEdit = NO;
 	}
-	
+
 	return YES;
 }
+
 
 - (void)scrollToScene:(OutlineScene*)scene
 {
@@ -696,7 +682,8 @@
 	[self.settingsPopover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSRectEdgeMinY];
 }
 
-- (void)popoverDidClose:(NSNotification *)notification {
+- (void)popoverDidClose:(NSNotification *)notification
+{
 	self.settingsPopover = nil;
 }
 
@@ -894,27 +881,6 @@
 	}
 }
 
-#pragma mark - Actions
-
-- (IBAction)addSection:(id)sender
-{
-	if (self.clickedRow == -1 || self.clickedRow == NSNotFound) return;
-	
-	OutlineScene *scene = [self itemAtRow:self.clickedRow];
-	if (scene != nil) {
-		NSInteger pos = scene.position + scene.length;
-		[self.editorDelegate.textActions addSection:pos];
-	}
-}
-
-- (IBAction)setSceneColor:(id)sender
-{
-	if (self.clickedRow == -1 || self.clickedRow == NSNotFound) return;
-	
-	BeatColorMenuItem *item = sender;	
-	OutlineScene* selectedScene = [self itemAtRow:self.clickedRow];
-	if (selectedScene != nil) [self.editorDelegate.textActions setColor:item.colorKey forScene:selectedScene];
-}
 
 #pragma mark - Mouse tracking
 

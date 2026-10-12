@@ -467,7 +467,6 @@ static NSString *centeredEnd = @" <";
         // Add double breaks for outline element lines, end of dialogue block and transitions
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue || currentLine.type == transitionLine) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
-            //return YES;
             addBreaks = YES;
         } else if (currentLine.type == action) {
             // Action lines need to perform some checks
@@ -479,12 +478,10 @@ static NSString *centeredEnd = @" <";
                     if (currentLine.string.onlyUppercaseUntilParenthesis) return NO;
                     // Otherwise add dual line break
                     [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                    //return YES;
                     addBreaks = YES;
                 }
             } else {
                 [self addString:@"\n\n" atIndex:affectedCharRange.location];
-                //return YES;
                 addBreaks = YES;
             }
         }
@@ -496,7 +493,6 @@ static NSString *centeredEnd = @" <";
         if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];
             self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
-            //return YES;
             addBreaks = YES;
         }
     }

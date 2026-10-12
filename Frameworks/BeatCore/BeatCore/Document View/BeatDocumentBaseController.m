@@ -629,7 +629,7 @@
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent
 {
     if (NSMaxRange(range) > self.text.length) return;
-    
+ 
     _skipSelectionChangeEvent = triggerChangedEvent;
     [self.textView setSelectedRange:range];
 }

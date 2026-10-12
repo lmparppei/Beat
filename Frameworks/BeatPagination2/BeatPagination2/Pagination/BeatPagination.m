@@ -500,9 +500,17 @@
 	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks delegate:self];
     CGFloat lineHeight = (self.styles.page.lineHeight >= 0) ? self.styles.page.lineHeight : BeatPagination.lineHeight;
     
+    CGFloat remainingSpace = _currentPage.remainingSpace;
+    
     // Add a safety margin to remaining sapce so we won't cut off stuff when it's like 2 points over max height
-	if (_currentPage.remainingSpace + lineHeight * 0.2 >= group.height) {
+    // We'll also check if we can just squeeze in the block.
+	if (remainingSpace + lineHeight * 0.2 >= group.height || (remainingSpace - group.height < 0 && fabs(remainingSpace - group.height) <= lineHeight + lineHeight * 0.2)) {
 		// Add blocks on current page
+        
+        //if (remainingSpace - group.height < 0 && fabs(remainingSpace - group.height) <= lineHeight + lineHeight * 0.2) {
+        //    NSLog(@"Squeezing: %@", group.blocks.firstObject);
+        //}
+        
 		for (BeatPaginationBlock *pageBlock in pageBlocks) {
 			[_currentPage addBlock:pageBlock];
 		}
@@ -510,12 +518,12 @@
 	}
     
 	// Nothing fit, let's break it apart
-	CGFloat remainingSpace = _currentPage.remainingSpace;
     
 	// If remaining space is less than 1 line OR we're just leaving one line on this page, just roll on to next page
-	if (remainingSpace < lineHeight || (remainingSpace <= lineHeight + group.topMargin)) {
+    if (remainingSpace < lineHeight || (remainingSpace <= lineHeight + group.topMargin)) {
         BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithVisibleIndex:0 element:group.blocks.firstObject.lines.firstObject attributedString:nil reason:@"Nothing fit"];
-		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
+        [self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
+
 	} else if (group.blocks.count > 0) {
         // Break the block group
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace styles:self.styles];
@@ -592,7 +600,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		Line* l = _lineQueue[i];
 		i += 1;
 		
-		// Skip empty lines, and break when the next line type is not the one we expected
+		// Skip empty lines, and break when the next line type is not the one we expected.
+        // Note that preprocessed screenplay shouldn't have these elements, but pagination can be used by plugins and other tools.
         if (l.type == empty || l.string.length == 0) {
             continue;
         } else if (l.type == expectedType) {

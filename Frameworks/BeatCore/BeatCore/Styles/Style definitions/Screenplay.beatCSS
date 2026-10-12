@@ -23,7 +23,7 @@ page {
     margin-bottom-a4: 10;
     
     default-width-a4: 60ch;
-    default-width-us: 63ch;
+    default-width-us: 62ch;
     
     line-height: 12;
     
@@ -84,7 +84,7 @@ action {
 
 centered {
     width-a4: 60ch;
-    width-us: 62ch;
+    width-us: 61ch;
 
     margin-top: 1l;
     text-align: center;

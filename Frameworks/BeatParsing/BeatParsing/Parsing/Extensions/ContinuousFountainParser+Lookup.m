@@ -492,6 +492,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 
+
+
 #pragma mark - Element block lookup
 
 /// Returns the lines for a full dual dialogue block
