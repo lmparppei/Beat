@@ -22,8 +22,8 @@
 /// Closes __all__ popovers and resets popover mode
 - (void)closePopovers
 {
-	[self.infoPopover close];
-	[self.popoverController close];
+	if (self.infoPopover.shown) [self.infoPopover close];
+	if (self.popoverController.isShown) [self.popoverController close];
 }
 
 
