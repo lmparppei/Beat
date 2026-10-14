@@ -121,6 +121,8 @@ typedef NS_ENUM(NSInteger, BeatSharedDocumentSettingOperation) {
 
 #if TARGET_OS_OSX
 @property (weak, readonly) BXWindow* documentWindow;
+#else
+@property (weak, readonly) UIWindow* documentWindow;
 #endif
 
 - (id)themeManager;
@@ -266,6 +268,8 @@ typedef NS_ENUM(NSInteger, BeatSharedDocumentSettingOperation) {
 - (bool)editorTabVisible;
 #else
 @property (nonatomic) UIKeyModifierFlags inputModifierFlags;
+/// Set to true when text storage is processing an edit
+@property (nonatomic) bool processingEdit;
 #endif
 
 
@@ -306,7 +310,6 @@ typedef NS_ENUM(NSInteger, BeatSharedDocumentSettingOperation) {
 #if TARGET_OS_IOS
 - (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
-- (void)refreshLayoutByExportSettings;
 #endif
 
 #if TARGET_OS_IOS

@@ -85,7 +85,8 @@ NS_ASSUME_NONNULL_END
 @interface BeatDocumentBaseController:NSDocument <DocumentExports, BeatExportSettingDelegate, BeatDocumentSettingDelegate>
 #else
 // iOS
-@interface BeatDocumentBaseController:UIViewController
+// @interface BeatDocumentBaseController:UIViewController
+@interface BeatDocumentBaseController:UIDocumentViewController
 #endif
 
 #pragma mark - Loading text
@@ -167,6 +168,8 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showRevisedTextColor;
 
+@property (nonatomic) bool showTags;
+
 
 #pragma mark - Handoff
 
@@ -197,7 +200,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark - Text view
 
 /// - note: Override this property in OS class.
-@property (nonatomic, weak) IBOutlet BXTextView* _Nullable textView;
+@property (nonatomic) IBOutlet BXTextView* _Nullable textView;
 
 /// Skips selection change events in __TEXT VIEW__ when needed. Remember to reset after selection change.
 @property (nonatomic) bool skipSelectionChangeEvent;
@@ -350,6 +353,7 @@ NS_ASSUME_NONNULL_END
 
 @property (nonatomic) NSMapTable<NSString*, id>* _Nullable additionalData;
 
+@property (atomic) NSObject* _Nonnull saveLock;
 
 @end
 

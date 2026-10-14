@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BeatCore
 
 extension BeatUITextView: InputAssistantViewDelegate {
 	
@@ -80,6 +81,17 @@ extension BeatUITextView {
 				InputAssistantAction(image: UIImage(systemName: "delete.left"), target: self, action: #selector(deleteWordBackward)),
 				InputAssistantAction(image: UIImage(systemName: "delete.forward"), target: self, action: #selector(deleteWordForward)),
 				InputAssistantAction(image: UIImage(systemName: "minus.rectangle"), target: self, action: #selector(deleteLine)),
+			],
+			.phoneEditing: [
+				InputAssistantAction(image: UIImage(systemName: "arrow.backward"), target: self, action: #selector(moveLeft)),
+				InputAssistantAction(image: UIImage(systemName: "arrow.forward"), target: self, action: #selector(moveRight)),
+				InputAssistantAction(image: UIImage(systemName: "arrow.up"), target: self, action: #selector(moveUp)),
+				InputAssistantAction(image: UIImage(systemName: "arrow.down"), target: self, action: #selector(moveDown))
+			],
+			.phoneDeleting: [
+				InputAssistantAction(image: UIImage(systemName: "delete.left"), target: self, action: #selector(deleteWordBackward)),
+				InputAssistantAction(image: UIImage(systemName: "delete.forward"), target: self, action: #selector(deleteWordForward)),
+				InputAssistantAction(image: UIImage(systemName: "minus.rectangle"), target: self, action: #selector(deleteLine))
 			]
 		]
 		
@@ -97,12 +109,22 @@ extension BeatUITextView {
 		
 		// First add the mode selector
 		var leadingActions = [InputAssistantAction(image: UIImage(systemName: "chevron.up.chevron.down")!, menu: UIMenu(title: "Toolbar", children: [ UIDeferredMenuElement.uncached { [weak self] completion in
-				let items = [
-					UIAction(title:"Editing", state: self?.inputAssistantMode == .editing ? .on : .off, handler: { b in self?.inputAssistantMode = .editing }),
-					UIAction(title:"Writing", state: self?.inputAssistantMode == .writing ? .on : .off, handler: { b in self?.inputAssistantMode = .writing })
-				]
-				completion(items)
-			}]))
+			var items = [
+				UIAction(title:"Editing", state: self?.inputAssistantMode == .editing ? .on : .off, handler: { b in self?.inputAssistantMode = .editing }),
+				UIAction(title:"Writing", state: self?.inputAssistantMode == .writing ? .on : .off, handler: { b in self?.inputAssistantMode = .writing })
+			]
+						
+			if UIDevice.current.userInterfaceIdiom == .phone {
+				items.remove(at: 0)
+				
+				items.insert(contentsOf: [
+					UIAction(title:"Deletion", state: self?.inputAssistantMode == .phoneDeleting ? .on : .off, handler: { b in self?.inputAssistantMode = .phoneDeleting }),
+					UIAction(title:"Editing", state: self?.inputAssistantMode == .phoneEditing ? .on : .off, handler: { b in self?.inputAssistantMode = .phoneEditing }),
+				], at: 0)
+			}
+			
+			completion(items)
+		}]))
 		]
 		
 		// Then add buttons by assistant mode

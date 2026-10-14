@@ -18,9 +18,11 @@ import JavaScriptCore
     
     @objc public func writeToPasteboard(_ string:String) {
         #if os(macOS)
+        NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(string, forType: .string)
         #else
-        UIPasteboard.general.string = string
+        UXPasteboard.general.clearContents()
+        UXPasteboard.general.string = string
         #endif
     }
     

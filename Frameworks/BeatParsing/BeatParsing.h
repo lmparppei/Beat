@@ -28,6 +28,7 @@
 #import <BeatParsing/Line+RangeLookup.h>
 #import <BeatParsing/Line+SplitAndJoin.h>
 #import <BeatParsing/Line+Versions.h>
+#import <BeatParsing/Line+Macros.h>
 
 #import <BeatParsing/OutlineScene.h>
 #import <BeatParsing/FountainRegexes.h>

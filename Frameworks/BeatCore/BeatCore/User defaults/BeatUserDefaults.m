@@ -101,6 +101,10 @@ NSString* const BeatSettingSmartQuotes                  = @"smartQuotes";
 
 NSString* const BeatSettingShowCommitPromptOnSave       = @"showCommitPromptOnSave";
 
+NSString* const BeatSettingiCloudBackupEnabled          = @"iCloudBackupEnabled";
+
+NSString* const BeatSettingDontHideBars                 = @"dontHideBars";
+
 + (BeatUserDefaults*)sharedDefaults
 {
 	static BeatUserDefaults* sharedDefaults;

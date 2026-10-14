@@ -26,8 +26,8 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-	[self closePopovers];
 	[super mouseDown:event];
+	[self closePopovers];
 }
 
 - (void)mouseUp:(NSEvent *)event

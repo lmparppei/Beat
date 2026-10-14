@@ -127,7 +127,7 @@
 + (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string
 {
     NSIndexSet* allRevisions = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.revisionGenerations.count)];
-	[self bakeRevisionsIntoLines:lines text:string includeRevisions:allRevisions];
+	[self bakeRevisionsIntoLines:lines text:string.copy includeRevisions:allRevisions];
 }
 /// Bakes the revised ranges from editor into corresponding lines in the parser. When needed, you can specify which revisions to include.
 + (void)bakeRevisionsIntoLines:(NSArray<Line*>*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSIndexSet*)includedRevisions
@@ -150,7 +150,7 @@
 			[string enumerateAttribute:BeatRevisions.attributeKey inRange:textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 				// Don't go out of range
 				if (range.length == 0 || range.location == NSNotFound || NSMaxRange(range) > string.length) return;
-				
+                
 				BeatRevisionItem *revision = value;
 				if (![includedRevisions containsIndex:revision.generationLevel] || revision.type == RevisionNone) return; // Skip if the color is not included
 				

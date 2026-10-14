@@ -18,6 +18,8 @@
 				<string>fi.KAPITAN.fountain</string>
 				<string>io.fountain</string>
 			</array>
+			<key>UIDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
@@ -30,6 +32,8 @@
 			<array>
 				<string>public.plain-text</string>
 			</array>
+			<key>UIDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).iOSDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleIcons</key>
@@ -53,6 +57,7 @@
 	</array>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>fi.KAPITAN.Beat.openDocument</string>
 		<string>fi.KAPITAN.Beat.editing</string>
 	</array>
 	<key>UIAppFonts</key>
@@ -65,9 +70,27 @@
 		<string>Courier Prime Sans Bold.ttf</string>
 		<string>Courier Prime Sans Italic.ttf</string>
 		<string>Courier Prime Sans Bold Italic.ttf</string>
-		<string>Courier Prime Sans Italic.ttf</string>
 		<string>NotoEmoji.ttf</string>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Document</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UTExportedTypeDeclarations</key>
@@ -94,6 +117,25 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Text File</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>public.plain-text</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>txt</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
@@ -113,13 +155,13 @@
 			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
-				<key>public.mime-type</key>
-				<array>
-					<string>text/plain</string>
-				</array>
 				<key>public.filename-extension</key>
 				<array>
 					<string>fountain</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/plain</string>
 				</array>
 			</dict>
 		</dict>

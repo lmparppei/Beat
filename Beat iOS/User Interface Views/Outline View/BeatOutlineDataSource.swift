@@ -24,7 +24,7 @@ import BeatParsing
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let delegate else { return UITableViewCell() }
+		guard let delegate else { return UITableViewCell() } 
 		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Scene") as! BeatOutlineViewCell
 		let dark = UIView.shouldAppearAsDark(view: cell, apply: true)

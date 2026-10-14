@@ -85,7 +85,7 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
         _printSceneNumbers = delegate.printSceneNumbers;
         _hidePageNumbers = delegate.hidePageNumbers;
         _revisions = delegate.shownRevisions;
-                
+        
         _paperSize = delegate.pageSize;
                 
         _fileName = delegate.fileNameString;
@@ -93,6 +93,7 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
         _firstPageNumber = [delegate.documentSettings getInt:DocSettingFirstPageNumber];
         
         _printSceneHeadingColors = [delegate.documentSettings getBool:DocSettingPrintHeadingColor];
+        _printDialogueNumbers = [delegate.documentSettings getBool:DocSettingPrintDialogueNumbers];
         
         // Yeah, this is a silly approach. TODO: Make invisible element printing more sensible. We should have a unified way to handle these, regardless of doc/style settings. Probably a bytemask?
         [self applyInvisibleElementSettings];
@@ -117,7 +118,8 @@ NSString *const BeatExportSettingInvisibleElements = @"invisibleElements";
         
         _documentSettings = settings[BeatExportSettingDocumentSettings];
         _firstPageNumber = [self.documentSettings getInt:DocSettingFirstPageNumber];
-                
+        _printDialogueNumbers = [self.documentSettings getBool:DocSettingPrintDialogueNumbers];
+        
         NSNumber* invisibleElements = settings[BeatExportSettingInvisibleElements];
         self.invisibleElements = invisibleElements.unsignedIntValue;
         

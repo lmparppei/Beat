@@ -372,8 +372,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
-    // Get editing status from delegate
-    bool alreadyEditing = (_textStorage == nil) ? _delegate.textStorage.isEditing : false;
+    // Get editing status from delegate (if applicable)
+    bool alreadyEditing = _textStorage ? false : _delegate.textStorage.isEditing;
     if (!alreadyEditing) [textStorage beginEditing];
 	
     NSRange selectedRange = (NSThread.isMainThread) ? _delegate.selectedRange : NSMakeRange(NSNotFound, 0);
@@ -605,7 +605,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 {
 #if TARGET_OS_IOS
     // NSLayoutManager doesn't have traits on iOS. We need to do some trickery – and navigate around full width punctuation. I hate this.
-    NSInteger maxLength = self.delegate.text.length;
+    NSInteger maxLength = self.textStorage.length;
     if (NSMaxRange(range) <= maxLength && range.location != maxLength) {
         NSRange fontRange = range;
         unichar firstChar = [textStorage.string characterAtIndex:range.location];
@@ -636,9 +636,13 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (BXFont*)fontForTyping
 {
-    BXFont* font = [self fontFamilyForLine:self.delegate.currentLine];
+    Line* currentLine = self.delegate.currentLine;
+    if (currentLine == nil) return self.regular;
     
-    RenderStyle* style = [self.delegate.editorStyles forLine:self.delegate.currentLine];
+    BXFont* font = [self fontFamilyForLine:currentLine];
+        
+    RenderStyle* style = [self.delegate.editorStyles forLine:currentLine];
+
     if (style != nil) {
         if (style.bold) font = font.bolded;
         if (style.italic) font = font.italicized;
@@ -649,8 +653,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 - (BXFont* _Nonnull)fontFamilyForLine:(Line*)line
 {
-    [BeatMeasure queue:@"format" startPhase:@"font family"];
     BXFont* font = self.regular;
+    if (line == nil) return font;
     
     RenderStyle* style = [self.delegate.editorStyles forLine:line];
     NSString* fontName = style.font;
@@ -679,17 +683,16 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     }
         
     return (font != nil) ? font : self.regular;
-    
-    return font;
 }
 
 /// Sets the font for given line (if needed)
 - (void)setFontForLine:(Line*)line {
     [self setFontForLine:line force:false];
 }
+
 /// Sets the font for given line. You can force it if needed.
-- (void)setFontForLine:(Line*)line force:(bool)force {
-    [BeatMeasure queue:@"format" startPhase:@"set font"];
+- (void)setFontForLine:(Line*)line force:(bool)force
+{
     NSMutableAttributedString *textStorage = self.textStorage;
     
     NSRange range = line.textRange;
@@ -713,7 +716,7 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     }
     
     // Avoid extra work and only add the font attribute when needed
-    if (resetFont) [textStorage addAttribute:NSFontAttributeName value:font range:range];
+    if (resetFont && font != nil) [textStorage addAttribute:NSFontAttributeName value:font range:range];
 }
 
 
@@ -926,10 +929,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
 
 #pragma mark - Get text storage
 
--(NSMutableAttributedString *)textStorage
-{
-	if (_textStorage != nil) return _textStorage;
-	else return _delegate.textStorage;
+-(NSMutableAttributedString *)textStorage {
+    return _textStorage ? _textStorage : _delegate.textStorage;
 }
 
 

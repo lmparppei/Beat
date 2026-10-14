@@ -11,11 +11,18 @@ import BeatParsing
 import BeatCore
 import QuickLook
 
+@objc enum BeatDocumentError:Int {
+	case generalError = 0
+	case fileNotFound
+}
+
 @objc protocol iOSDocumentDelegate {
 	var parser:ContinuousFountainParser? { get }
 	func text() -> String!
 	func contentForSaving() -> String!
 	func createDocumentFile() -> String!
+	
+	func handleError(_ error:BeatDocumentError)
 }
 
 class iOSDocument: UIDocument {
@@ -27,6 +34,8 @@ class iOSDocument: UIDocument {
 		return self.delegate?.parser ?? ContinuousFountainParser()
 	}
 	
+	var lastStoredText:String? = ""
+	
 	@objc var closing = false
 	
 	override var description: String {
@@ -34,8 +43,13 @@ class iOSDocument: UIDocument {
 	}
 		
     override func contents(forType typeName: String) throws -> Any {
-		guard let text = delegate?.createDocumentFile() ?? delegate?.text() else {
-			fatalError("ERROR: Could not save the file. We'll quit the app to avoid data loss.")
+		var text = delegate?.createDocumentFile()
+		if text == nil { text = lastStoredText }
+		
+		lastStoredText = text
+		
+		guard let text else {
+			throw NSError(domain: "Beat", code: 0, userInfo: ["reason": "Failed to create document"])
 		}
 		return text.data(using: .utf8) as Any
     }
@@ -51,7 +65,13 @@ class iOSDocument: UIDocument {
 		
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
-		rawText = String(data: contents as! Data, encoding: .utf8) ?? ""
+		let string = String(data: contents as! Data, encoding: .utf8)
+		
+		guard let string else {
+			throw NSError(domain: "Beat", code: 0, userInfo: ["reason": "File could not be opened"])
+		}
+		
+		rawText = string
 		rawText = rawText.replacingOccurrences(of: "\r", with: "")
 		
 		// Read settings and replace range
@@ -65,24 +85,14 @@ class iOSDocument: UIDocument {
 			recentFiles = Array(recentFiles.prefix(10))
 			BeatUserDefaults.shared().save(recentFiles, forKey: "Recent Files")
 		}
-		
-		
-		//setupHandoff()
     }
 	
 	override func close() async -> Bool {
 		self.userActivity?.resignCurrent()
 		
 		let closed = await super.close()
-		
-		if let vc = delegate as? BeatDocumentViewController {
-			await vc.unloadViews()
-		}
-		
-		//self.delegate = nil
-
+				
 		return closed
-		
 	}
 		
 	@objc func rename(newName:String) {
@@ -168,6 +178,22 @@ class iOSDocument: UIDocument {
 				print("Failed to rename document: \(error)", fileURL)
 			}
 		}
+	}
+	
+	override func handleError(_ error: any Error, userInteractionPermitted: Bool) {
+		super.handleError(error, userInteractionPermitted: userInteractionPermitted)
+		print("ERROR: \(error)")
+		
+		if (error as NSError).code == 260 {
+			Task { @MainActor in
+				self.delegate?.handleError(.fileNotFound)
+			}
+		} else {
+			Task { @MainActor in
+				self.delegate?.handleError(.generalError)
+			}
+		}
+		
 	}
 	
 	/// Check if the file is stored on a cloud service

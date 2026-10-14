@@ -46,11 +46,12 @@
 			 @"lightgray": [BeatColors colorWithRed:220 green:220 blue:220],
 			 @"darkgray": [BeatColors colorWithRed:170 green:170 blue:170],
 			 @"verydarkgray": [BeatColors colorWithRed:100 green:100 blue:100],
-			 @"backgroundgray": [BeatColors colorWithRed:41 green:42 blue:45],
 			 @"fdxremoval": [BeatColors colorWithRed:255 green:190 blue:220],
              @"mint": [BeatColors colorWithRed:72 green:231 blue:211],
              @"violet": [BeatColors colorWithRed:116 green:62 blue:230],
              @"olive": [BeatColors colorWithRed:77 green:147 blue:44],
+             @"backgroundgray": [BeatColors colorWithRed:34 green:34 blue:35],
+             @"backgrounddarkgray": [BeatColors colorWithRed:24 green:24 blue:25],
 	};
 	
 	return _colorValues;
@@ -75,7 +76,8 @@
 }
  */
 
-+ (BXColor*)color:(NSString*)name {
++ (BXColor*)color:(NSString*)name
+{
 	BXColor* color = [BeatColors.colors valueForKey:name.lowercaseString];
 	if (color) {
 		return color;
@@ -119,6 +121,24 @@
 									   alpha:1.0];
 #endif
     return result;
+}
+
++ (NSString*)get8BitHexFor:(BXColor*)color
+{
+#if TARGET_OS_IOS
+    CGFloat red; CGFloat green; CGFloat blue;
+    [color getRed:&red green:&green blue:&blue alpha:nil];
+#else
+    CGFloat red = color.redComponent;
+    CGFloat green = color.greenComponent;
+    CGFloat blue = color.blueComponent;
+#endif
+    
+    NSString* hexString = [NSString stringWithFormat:@"%02X%02X%02X",
+                           (int) (red * 0xFF),
+                           (int) (green * 0xFF),
+                           (int) (blue * 0xFF)];
+    return hexString;
 }
 
 + (NSString*)colorWith16bitHex:(NSString*)colorName {
@@ -188,7 +208,8 @@
     [path fill];
     [image unlockFocus];
     
-    labelImages[color] = image;
+    if (color != nil) labelImages[color] = image;
+    
     return image;
 }
 

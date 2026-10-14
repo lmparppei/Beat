@@ -18,23 +18,17 @@ extension BeatDocumentViewController {
 		setupTitleMenus()
 	}
 	
-	/// Sets up the rename/document menu
-	@objc func setupTitleMenus() {
-		// Basic iPad menu scheme
-		guard let document else { return }
+	open override func navigationItemDidUpdate() {
+		super.navigationItemDidUpdate()
 		
-		let documentProperties = UIDocumentProperties(url: document.fileURL)
-		if let itemProvider = NSItemProvider(contentsOf: document.fileURL) {
-			documentProperties.dragItemsProvider = { _ in
-				[UIDragItem(itemProvider: itemProvider)]
-			}
-			documentProperties.activityViewControllerProvider = {
-				UIActivityViewController(activityItems: [itemProvider], applicationActivities: nil)
-			}
-		}
-		
-		navigationItem.documentProperties = documentProperties
-		
+		self.navigationItem.leftItemsSupplementBackButton = true
+		self.navigationItem.leftBarButtonItems = [
+			UIBarButtonItem(image: UIImage(systemName: "sidebar.left"), style: .plain, target: self, action: #selector(self.toggleSidebar))
+		]
+	}
+	
+	/// Sets up the basic tool bar menu
+	@objc func setupTitleMenus() {		 
 		navigationItem.titleMenuProvider = { suggestions in
 			var items = suggestions
 			
@@ -51,7 +45,7 @@ extension BeatDocumentViewController {
 			
 			return UIMenu(children: items)
 		}
-		
+				
 		// Warning: This menu is a pain to debug.
 		let screenplayMenu:UIMenu = UIMenu(options: [], children: [
 			UIDeferredMenuElement.uncached { [weak self] completion in
@@ -59,6 +53,7 @@ extension BeatDocumentViewController {
 					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.addTitlePage"), image: UIImage(systemName: "info"), handler: { (_) in
 						self?.formattingActions?.addTitlePage(self)
 					}),
+					UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.characterList"), image: UIImage(systemName: "person.2.fill"), handler: { _ in self?.showCharacterList(self) }),
 					// Scene Numbering
 					UIMenu(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering"), image: UIImage(systemName: "number"), children: [
 						UIAction(title: BeatLocalization.localizedString(forKey: "menuItem.sceneNumbering.setFirstSceneNumber"), handler: { _ in

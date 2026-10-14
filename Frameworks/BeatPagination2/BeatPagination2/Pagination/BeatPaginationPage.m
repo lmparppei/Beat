@@ -93,17 +93,18 @@
         
         NSMutableDictionary<NSNumber*,NSAttributedString*>* attrStrs = NSMutableDictionary.new;
         
-        /*
-        // Sync render
+#if TARGET_OS_IOS
+        // We'll use sync render on iOS. Very slow, but this is because of the text attachments we have to use as headings.
+        // This could be fixed by making the attachments load lazily and update themselves only when actually displayed.
         for (BeatPaginationBlock* block in blocks) {
             bool firstElement = (block == blocks.firstObject);
             
             NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
             if (renderedBlock != nil) [renderedString appendAttributedString:renderedBlock];
         }
-         */
-                
+#else
         // Concurrent render. Drops rendering time to something like 1% of the concurrent, linear render.
+        // Can't be used on iOS because of the underlying text attachments.
         [blocks enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(BeatPaginationBlock*  _Nonnull block, NSUInteger idx, BOOL * _Nonnull stop) {
             bool firstElement = block == blocks.firstObject;
             NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
@@ -111,6 +112,7 @@
                 if (renderedBlock != nil) attrStrs[@(idx)] = renderedBlock;
             }
         }];
+#endif
         
         for (NSInteger i=0;i<attrStrs.count;i++) {
             [renderedString appendAttributedString:attrStrs[@(i)]];

@@ -96,6 +96,9 @@ FOUNDATION_EXPORT NSString *const BeatExportSettingInvisibleElements;
 /// Set `true` if you want to print the heading color
 @property (nonatomic) bool printSceneHeadingColors;
 
+/// 
+@property (nonatomic) bool printDialogueNumbers;
+
 /// Styles for new pagination / export system
 @property (nonatomic) id _Nullable styles;
 

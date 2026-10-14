@@ -181,7 +181,7 @@ import UXKit
         } else {
             // Paginate and create preview with 1 second delay
             self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
-                // Store revisions into lines in sync
+                // Store revisions into lines in sync (this requires access to the latest attributed string from text view)
                 self.delegate?.bakeRevisions()
                 
                 // Dispatch pagination to a background thread after one second
@@ -351,6 +351,8 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
             // Otherwise we'll just return the actual page
             let page = pages[actualIndex]
             pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self, textViewDelegate: self)
+            pageView?.setNeedsLayout()
+            pageView?.setNeedsDisplay()
         }
         
         if (pageView != nil && !placeholder) {
@@ -369,8 +371,16 @@ extension BeatPreviewManager:BeatPreviewPageViewDataSource {
 
 extension BeatPreviewManager:UXTextViewDelegate {
     #if os(iOS)
+    /*
     public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         return false
+    }
+     */
+    public func textView(_ textView: UITextView, primaryActionFor textItem: UITextItem, defaultAction: UIAction) -> UIAction? {
+        if case .link(let url) = textItem.content {
+            // Navigate to this text chunk (why is it not implemented on iOS?)
+        }
+        return nil
     }
     #endif
 }

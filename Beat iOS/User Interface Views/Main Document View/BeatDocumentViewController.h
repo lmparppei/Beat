@@ -17,10 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatiOSOutlineView;
 @class BeatScrollView;
 @class BeatEditorSplitViewController;
+@class BeatPageView;
 
 @interface BeatDocumentViewController : BeatDocumentBaseController <BeatEditorDelegate, ContinuousFountainParserDelegate, BeatPluginDelegate>
 
-@property (nonatomic) iOSDocument* _Nullable document;
+@property (nonatomic) NSString* sessionIdentifier;
+
+@property (nonatomic) iOSDocument* _Nullable fountainDocument;
 @property (weak, readonly) BXWindow* documentWindow;
 
 @property (nonatomic, weak) UIDocumentBrowserViewController* _Nullable documentBrowser;
@@ -33,7 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) IBOutlet UIView* _Nullable splitViewContainer;
 
 /// Main editor view
-@property (nonatomic, weak) BeatUITextView* _Nullable textView;
+@property (nonatomic) BeatUITextView* _Nullable textView;
+/// Container page view
+@property (nonatomic) IBOutlet BeatPageView* _Nullable pageView;
 /// Sidebar outline view
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 
@@ -45,8 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
-
-- (void)loadDocumentWithCallback:(void (^)(void))callback;
 
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
 

@@ -32,12 +32,12 @@
 /// - note: This is different from macOS, where changes are parsed in text view delegate method `shouldChangeText`, meaning they get parsed before anything is actually added to the text view. Changes on iOS are parsed **after** text has hit the text storage, which can cause some headache.
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
 {
-	if (self.documentIsLoading) return;
+	if (self.documentIsLoading || self.document == nil) return;
 	else if (self.formatting.didProcessForcedCharacterCue) return;
 	
 	Line* line = [self.parser lineAtPosition:editedRange.location];
 	
-	// Don't parse anything when editing attributes
+	// Don't parse anything when only attributes were edited
 	if (editedMask == NSTextStorageEditedAttributes) {
 		return;
 	} else if (mask_contains(editedMask, NSTextStorageEditedCharacters)) {
@@ -92,10 +92,13 @@
 		string = string.uppercaseString;
 	}
 	
-	// Make sure we're double-formatting .... fix for a silly iOS issue
+	// Make sure we're not double-formatting .... fix for a silly iOS issue
 	if (line != self.formatting.lineBeingFormatted || line == nil) {
 		[self.parser parseChangeInRange:affectedRange withString:string];
 	}
+	
+	NSRange clampedRange = CLAMP_RANGE(editedRange, self.textView.string.length);
+	if (clampedRange.length > 0) [self.textView.layoutManager invalidateDisplayForCharacterRange:clampedRange];
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView
@@ -213,7 +216,7 @@
 				change = ![self.textActions shouldAddLineBreaks:currentLine range:range];
 			}
 		}
-	} else if (self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
+	} else if (!self.textActions.skipAutomaticLineBreaks && self.matchParentheses && [self.textActions shouldMatchParenthesesIn:range string:text]) {
 		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
 		change = NO;
 	}

@@ -80,5 +80,15 @@ extension NSWindow:XIBLocalizable {
         }
     }
 }
+extension NSMenuItem:XIBLocalizable{
+    @IBInspectable var xibLocKey: String? {
+        get { return nil }
+        set (key) {
+            if let label = key?.localized {
+                self.title = label
+            }
+        }
+    }
+}
 #endif
 

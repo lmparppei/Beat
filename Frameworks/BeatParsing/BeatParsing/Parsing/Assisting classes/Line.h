@@ -178,6 +178,10 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSInteger position;
 /// Getter for string length
 @property (nonatomic) NSInteger length;
+/// The line number *in editor*
+@property (nonatomic) NSInteger lineNumber;
+/// Running dialogue number
+@property (nonatomic) NSInteger dialogueNumber;
 
 /// If the line is an outline element (section/heading) this value contains the section depth
 @property (nonatomic) NSUInteger sectionDepth;
@@ -441,6 +445,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSString* forcedPageNumber;
 @property (nonatomic) NSString* inheritedForcedPageNumber;
 
+- (void)parseSceneNumber;
+- (void)parseSceneNumberWithCharArray:(unichar*)string length:(NSInteger)length;
 
 #pragma mark - Debugging
 

@@ -125,7 +125,7 @@ class BeatSettingsViewController:UITableViewController {
 		}
 		
 		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
-			self.darkModeSwitch?.selectedSegmentIndex = appDelegate.isDark() ? 1 : 0
+			self.darkModeSwitch?.selectedSegmentIndex = delegate.isDark() ? 1 : 0
 		}
 				
 		if let sectionFontType = BeatUserDefaults.shared().get(BeatSettingSectionFontType) {
@@ -146,9 +146,11 @@ class BeatSettingsViewController:UITableViewController {
 	}
 	
 	@IBAction func toggleDarkMode(_ sender:UISegmentedControl) {
-		if let appDelegate = UIApplication.shared.delegate as? BeatiOSAppDelegate {
-			appDelegate.toggleDarkMode()
+		if let window = self.delegate?.documentWindow {
+			BeatAppearanceManager.shared.toggle(in: window)
 		}
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleSectionFontType(_ sender:UICommand?) {
@@ -162,6 +164,8 @@ class BeatSettingsViewController:UITableViewController {
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
 		delegate?.formatting.formatAllLines(of: .section)
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleSynopsisFontType(_ sender:UICommand?) {
@@ -175,6 +179,8 @@ class BeatSettingsViewController:UITableViewController {
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
 		delegate?.formatting.formatAllLines(of: .synopse)
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleSectionFontSize(_ sender:UICommand?) {
@@ -184,6 +190,8 @@ class BeatSettingsViewController:UITableViewController {
 		delegate?.reloadStyles()
 		delegate?.resetPreview()
 		delegate?.formatting.formatAllLines(of: .section)
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleSetting(_ sender:BeatUserSettingSwitch?) {
@@ -213,12 +221,16 @@ class BeatSettingsViewController:UITableViewController {
 		if button.reloadOutline {
 			// ?
 		}
+		
+		postNotification()
 	}
 		
 	@IBAction func toggleStylesheet(_ sender:BeatSegmentedStylesheetControl) {
 		let styles = sender.stylesheets.split(separator: ",")
 		let stylesheetName = String(styles[sender.selectedSegmentIndex])
 		self.delegate?.setStylesheetAndReformat(stylesheetName)
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleLineSpacing(_ sender:BeatUserSettingSegmentedControl) {
@@ -230,6 +242,8 @@ class BeatSettingsViewController:UITableViewController {
 		}
 		
 		self.delegate?.reloadStyles()
+		
+		postNotification()
 	}
 	
 	@IBAction func togglePageSize(_ sender:UISegmentedControl) {
@@ -281,11 +295,15 @@ class BeatSettingsViewController:UITableViewController {
 		
 		guard let textView = self.delegate?.getTextView() as? BeatUITextView else { return }
 		textView.updateMobileScale()
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleColouredRevisionText(_ sender:BeatUserSettingSwitch) {
 		self.toggleSetting(sender)
 		self.delegate?.formatting.refreshRevisionTextColors()
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleHighContrast(_ sender:UISwitch?) {
@@ -300,6 +318,8 @@ class BeatSettingsViewController:UITableViewController {
 		ThemeManager.shared().reloadTheme()
 		self.delegate?.updateUIColors()
 		self.delegate?.formatting.formatAllLines()
+		
+		postNotification()
 	}
 	
 	@IBAction func toggleFontStyle(_ sender:UIMenuElement) {
@@ -316,8 +336,13 @@ class BeatSettingsViewController:UITableViewController {
 
 		self.delegate?.reloadStyles()
 		self.delegate?.formatting.formatAllLines()
+		
+		postNotification()
 	}
 	
+	func postNotification() {
+		NotificationCenter.default.post(name: NSNotification.Name("BeatSettingsChanged"), object: nil)
+	}
 }
 
 class BeatURLButton:UIButton {

@@ -8,31 +8,7 @@
 
 /*
  
- You who will emerge from the flood
- In which we have gone under
- Remember
- When you speak of our failings
- The dark time too
- Which you have escaped.
- 
- 
- 
- This is a class for comparing two Fountain files against each other, using Google's
- diff-match-patch framework.
- 
- The system is a bit convoluted, so let me elaborate. This class also provides the
- UI functions, which then sends the script to PrintView, which THEN calls this class
- again to set comparison markers (line.changed = YES) and prints out the HTML file.
- 
- Comparison can be run outside the UI too:
- BeatComparison *comparison = [[BeatComparison alloc] init];
- [comparison compare:parser.lines with:oldScript];
- 
- It's multiple systems built on top of each other in a messy way, but it works for now.
- Hopefully I don't need to touch it again.
- 
- Note that the PrintView (of Writer legacy) has to be retained in memory as it
- works asynchronously.
+ TODO: This class is used only by the productivity timer and should be abolished.
  
  */
 
@@ -120,7 +96,7 @@
 			
 			index += d.text.length;
 		} else {
-			// ... and ignore deletions.
+			// ignore deletions.
 		}
 		
 	}

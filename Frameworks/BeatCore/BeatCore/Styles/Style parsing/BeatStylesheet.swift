@@ -87,7 +87,13 @@ import JavaScriptCore
     }
     
     /// Returns styles for given line, can be dynamic
+    /// - warning: Make sure the line exists. Some `nil` Objective C values can look like non-null, while they aren't. Guard against this in ObjC code.
     @objc public func forLine(_ line:Line) -> RenderStyle {
+        // This is a silly guardrail to intercept possible nil values passed down from somewhere.
+        guard let line = line as Line? else {
+            return forElement("action")
+        }
+        
         let style = forElement(line.typeName())
         
         if style.hasConditionalStyles(), let dynamicStyle = style.dynamicStyles(for: line) {

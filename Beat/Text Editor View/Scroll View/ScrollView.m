@@ -34,10 +34,6 @@
 #define HIDE_INTERVAL 5.0
 #define TIMER_HIDE_INTERVAL 5.0
 
-- (instancetype)init {
-	return [super init];
-}
-
 - (void)awakeFromNib {
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
@@ -50,6 +46,8 @@
 	
 	_recognizer = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
 	[self addGestureRecognizer:_recognizer];
+	
+	self.wantsLayer = true;	
 }
 
 - (void)removeFromSuperview {
@@ -78,7 +76,8 @@
 	[super setFrame:frame];
 }
 
-- (void)viewDidChangeEffectiveAppearance {
+- (void)viewDidChangeEffectiveAppearance
+{
 	// Update button style
 	for (NSView *view in _buttonView.subviews) {
 		[view layout];

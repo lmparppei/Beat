@@ -65,7 +65,9 @@ class BeatThemeEditor:UITableViewController {
 	}
 	
 	func updateColors() {
-		guard let editor:BeatEditorDelegate = BeatAppState.shared.documentController else {
+		
+		
+		guard let editor:BeatEditorDelegate else {
 			print("No editor delegate")
 			return
 		}

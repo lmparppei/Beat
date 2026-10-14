@@ -22,8 +22,8 @@
 /// Closes __all__ popovers and resets popover mode
 - (void)closePopovers
 {
-	[self.infoPopover close];
-	[self.popoverController close];
+	if (self.infoPopover.shown) [self.infoPopover close];
+	if (self.popoverController.isShown) [self.popoverController close];
 }
 
 
@@ -152,7 +152,6 @@
 	NSInteger words = 0;
 	NSInteger printedWords = 0;
 	NSArray *lines = [string componentsSeparatedByString:@"\n"];
-	NSInteger symbols = string.length;
 	
 	for (NSString *line in lines) {
 		for (NSString *word in [line componentsSeparatedByString:@" "]) {

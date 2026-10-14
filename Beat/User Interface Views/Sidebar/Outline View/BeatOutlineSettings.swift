@@ -20,6 +20,7 @@ class BeatOutlineSettings: NSViewController {
 	@IBOutlet weak var showSceneNumbers:NSButton?
 	@IBOutlet weak var showMarkers:NSButton?
 	@IBOutlet weak var showSnapshots:NSButton?
+	@IBOutlet weak var outineFontSize:NSPopUpButton?
 	
 	var settings:[String:NSButton] = [:]
 	
@@ -31,6 +32,12 @@ class BeatOutlineSettings: NSViewController {
 
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
+	}
+	
+	override func viewDidAppear() {
+		if let modifier = BeatUserDefaults.shared().get(BeatSettingOutlineFontSizeModifier) as? Int {
+			self.outineFontSize?.selectItem(at: modifier)
+		}
 	}
 		
 	@IBAction func toggle(sender:BeatUserDefaultCheckbox?) {
@@ -49,6 +56,15 @@ class BeatOutlineSettings: NSViewController {
 		}
 		
 		outlineDelegate?.reloadOutline()
+	}
+	
+	@IBAction func selectOutlineFontSize(_ sender:NSPopUpButton) {
+		let modifier = sender.indexOfSelectedItem
+		BeatUserDefaults.shared().save(modifier, forKey: BeatSettingOutlineFontSizeModifier)
+	
+		for doc in NSDocumentController.shared.documents as? [Document] ?? [] {
+			doc.updateOutlineViews()
+		}
 	}
 }
 

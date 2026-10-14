@@ -17,11 +17,10 @@
 #import "Beat-Swift.h"
 #import <OSLog/OSLog.h>
 
-@interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, UINavigationItemRenameDelegate, BeatPluginDelegate, UITextInputDelegate> {
+@interface BeatDocumentViewController () <BeatPreviewManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatExportSettingDelegate, BeatTextEditorDelegate, BeatPluginDelegate, UITextInputDelegate> {
 	bool editorWasActive;
 }
 
-@property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 @property (nonatomic) NSString* bufferedText;
 
 @property (nonatomic) BeatPageViewController* previewView;
@@ -34,7 +33,6 @@
 @property (nonatomic) BeatPreviewController* previewController;
  
 @property (nonatomic) bool sidebarVisible;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint* sidebarConstraint;
 
 @property (nonatomic) bool matchParentheses;
 
@@ -48,8 +46,16 @@
 
 //@objc var hideFountainMarkup: Bool = false
 @property (nonatomic) bool closing;
+@property (nonatomic) bool initialFormattingInAction;
+@property (nonatomic) bool initialFormattingComplete;
+
+@property (nonatomic) bool documentHasOpened;
 
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* topContainerConstraint;
+
+/// This is our shadow document. For some genious reason, the new iOS document view controller allows only SYNCHRONIZED access to `.document` property.
+/// The value is set along the `document` value.
+@property (nonatomic, weak) iOSDocument* __fountainDocument;
 
 @end
 
@@ -57,110 +63,130 @@
 @dynamic textView;
 @dynamic previewController;
 
--(instancetype)initWithCoder:(NSCoder *)coder {
-	self = [super initWithCoder:coder];
-	if (self) {
-		self.documentIsLoading = true;
-	}
+-(instancetype)initWithCoder:(NSCoder *)coder
+{
+	[BeatDocumentManager.shared addDocumentController:self];
 	
+	self = [super initWithCoder:coder];
+	self.documentIsLoading = true;
+
 	return self;
 }
 
-- (BXWindow*)documentWindow {
-	return self.view.window;
+- (instancetype)initWithDocument:(UIDocument *)document
+{
+	self = [super initWithDocument:document];
+	self.documentIsLoading = true;
+
+	return self;
 }
 
-/// @warning This method expects the split view controller to be in place (done in storyboard segue)
-- (void)setupEditorViews
+/// Conformance to the new `UIDocumentViewController` class.
+- (iOSDocument *)fountainDocument
 {
-	self.editorSplitView.editorDelegate = self;
-	[self.editorSplitView setupWithEditorDelegate:self];
-	
-	self.pageView = self.editorSplitView.editorView.pageView;
-	self.scrollView = self.editorSplitView.editorView.scrollView;
-	
-	self.outlineView = self.editorSplitView.outlineView;
+	return (iOSDocument*)self.document;
 }
 
-/// Creates the text view and replaces placeholder text view
-- (void)createTextView
+- (void)setTextView:(BeatUITextView *)textView
 {
-	CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
-	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
+	[super setTextView:textView];
+}
+
+/// Override document getter to support async access to `document` property. Extremely hacky.
+- (UIDocument *)document
+{
+	return (NSThread.isMainThread) ? super.document : ___fountainDocument;
+}
+
+- (void)setDocument:(UIDocument *)document
+{
+	// Make sure the document knows its host for error handling
+	((iOSDocument*)document).delegate = self;
 	
-	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
-	
-	self.textView = textView;
-	
-	// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
-	if (!is_Mobile) {
-		self.textView.enclosingScrollView = self.scrollView;
-		[self.pageView addSubview:self.textView];
-	} else {
-		// Completely replace the scroll view with our text view on phones
-		self.textView.translatesAutoresizingMaskIntoConstraints = YES;
-		self.textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		self.textView.frame = self.scrollView.frame;
-		
-		[self.view addSubview:self.textView];
-		
-		[self.scrollView.superview addSubview:self.textView];
-		[self.pageView removeFromSuperview];
-		[self.scrollView removeFromSuperview];
+	// Check if the document is already open somewhere and bring up that window if needed
+	if (document != nil && [BeatDocumentManager.shared documentAlreadyOpenFor:document.fileURL current:self]) {
+		[BeatDocumentManager.shared showDocumentControllerFor:document.fileURL];
+		return;
 	}
 	
-	self.textView.font = self.fonts.regular;
+	[super setDocument:document];
 	
-	[self.textView.textStorage setAttributedString:self.formattedTextBuffer];
-	[self.formatting refreshRevisionTextColors];
+	self.documentHasOpened = false;
+	
+	self.formattedTextBuffer = NSMutableAttributedString.new;
+	self.attrTextCache = NSMutableAttributedString.new;
+	
+	___fountainDocument = (iOSDocument*)document;
+	
+	self.documentIsLoading = true;
+	self.initialFormattingComplete = false;
+
+	// Hide the text view when no document is open
+	self.textView.hidden = ___fountainDocument == nil;
+	
+	if (___fountainDocument == nil) {
+		[self.textView setString:@""];
+	} else {
+	}
 }
 
-/// Dismisses editor view keyboard
-- (IBAction)endEditing:(id)sender
+- (void)initialFormatting
 {
-	[self.textView endEditing:true];
+	if (_initialFormattingInAction ||
+		mask_contains(((UIDocument*)self.document).documentState, UIDocumentStateClosed) ||
+		!self.documentIsLoading ||
+		self.fountainDocument == nil) return;
+	
+	_initialFormattingInAction = true;
+		
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsDidChange:) name:@"BeatSettingsChanged" object:nil];
+	[self settingsDidChange:nil];
+
+	self.parser = [ContinuousFountainParser.alloc initWithString:self.fountainDocument.rawText delegate:self];
+	self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.parser.text];
+	self.attrTextCache = self.formattedTextBuffer;
+	
+	// Format the document. We'll create a static formatting instance for this operation.
+	BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
+	formatting.delegate = self;
+
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^(void) {
+		// Perform initial formatting
+		for (Line* line in self.parser.lines) {
+			[formatting formatLine:line firstTime:true];
+		}
+		
+		[self.parser.changedIndices removeAllIndexes];
+		
+		// Oh well. View can be loaded before the document is loaded and vice-versa.
+		// We need to throttle the setup phase until formatting is complete
+		self.initialFormattingInAction = false;
+		self.initialFormattingComplete = true;
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self setupDocument];
+		});
+	});
+
 }
 
-/// Returns the undo manager from **text view**
-- (NSUndoManager *)undoManager { return self.textView.undoManager; }
-
-/// NOTE: You need to call `loadDocument` before actually presenting the view
-- (void)viewDidLoad
+- (void)documentDidOpen
 {
-	[super viewDidLoad];
-	
+	if (self.fountainDocument == nil) return;
 	if (!self.documentIsLoading) return;
 	
+	self.documentHasOpened = true;
+	
 	// Let the app state know this is the current document view controller
-	BeatAppState.shared.documentController = self;
+	[BeatAppearanceManager.shared systemStyleChangedIn:self.documentWindow];
 	
-	//[self appearanceChanged:nil];
+	((BeatLayoutManager*)self.layoutManager).pageBreaksMap = NSMapTable.new;
+		
+	// Load fonts before any formatting
+	[self loadFonts];
 	
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	[delegate checkDarkMode];
-	
-	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
-	self.navigationController.hidesBarsOnSwipe = true;
-	self.navigationController.hidesBottomBarWhenPushed = true;
-	
-	// Setup plugin support
-	self.runningPlugins = NSMutableDictionary.new;
-	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
-	
-	// Embed the editor split view
-	self.editorSplitView = self.childViewControllers.firstObject;
-	[self.editorSplitView loadView];
-	
-	[self.navigationController.navigationBar setTranslucent:true];
-	
-	/*
-	UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Document" bundle:nil];
-	BeatEditorSplitViewController* splitView = [sb instantiateViewControllerWithIdentifier:@"EditorSplitView"];
-	[self embed:splitView inView:self.splitViewContainer];
-	[splitView loadView];
-	 self.editorSplitView = splitView;
-	*/
-	
+	// Setup document title menu (done in Swift extension)
+	[self setupTitleBar];
 	
 	// Setup the split view
 	[self setupEditorViews];
@@ -168,37 +194,71 @@
 	// Create text view
 	[self createTextView];
 	
+	// Updates the UI to current color scheme
 	[self updateUIColors];
 	
-	// Setup document title menu (from Swift extension)
-	[self setupTitleBar];
-	
-	// Setup navigation item delegate
-	self.navigationItem.renameDelegate = self;
-	
-	// Hide sidebar
-	self.sidebarConstraint.constant = 0.0;
-	
 	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
-		
-	[self setupDocument];
+	
+	[self showLoadingBar];
+	
+	[self setupPlugins];
+
+	[self initialFormatting];
+
+	[self setupAppearanceObservers];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (BXWindow*)documentWindow
 {
-	[super viewDidAppear:animated];
+	return self.view.window;
+}
+
+
+#pragma mark - SETUP
+
+- (void)setupAppearanceObservers
+{
+	__weak typeof(self) weakSelf = self;
+
+	[self.documentWindow.windowScene registerForTraitChanges:@[UITraitUserInterfaceStyle.self] withHandler:^(__kindof id<UITraitEnvironment>  _Nonnull traitEnvironment, UITraitCollection * _Nonnull previousCollection) {
+		[BeatAppearanceManager.shared systemStyleChangedIn:weakSelf.documentWindow];
+	}];
 	
-	[self becomeFirstResponder];
+	[NSNotificationCenter.defaultCenter addObserverForName:UISceneDidActivateNotification
+		object:self.documentWindow.windowScene
+		queue:NSOperationQueue.mainQueue
+		usingBlock:^(NSNotification *note) {
+			[BeatAppearanceManager.shared systemStyleChangedIn:weakSelf.documentWindow];
+		}];
 	
-	// When returning from another VC, let's check if we should return to editing mode
-	if (editorWasActive) {
-		editorWasActive = false;
-		[self.getTextView becomeFirstResponder];
-	}
-	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
+}
+
+- (void)setupNavigationViewController
+{
+	self.navigationController.view.backgroundColor = UIColor.systemBackgroundColor;
+	self.navigationController.hidesBarsOnSwipe = true;
+	self.navigationController.hidesBottomBarWhenPushed = true;
+	self.navigationController.navigationBar.translucent = true;
+}
+
+- (void)setupPlugins
+{
+	// Setup plugin support
+	self.runningPlugins = NSMutableDictionary.new;
+	self.pluginAgent = [BeatPluginAgent.alloc initWithDelegate:self];
+}
+
+- (void)setupTitleBar
+{
+	self.titleBar.title = self.fileNameString;
+}
+
+- (void)afterLoadSetup
+{
 	// Do nothing more if we're not loading the document
 	if (!self.documentIsLoading) return;
-		
+			
 	// Become first responder if text view is empty and scroll to top
 	if (self.textView.text.length == 0) [self.textView becomeFirstResponder];
 	[self.scrollView scrollRectToVisible:CGRectMake(0.0, 0.0, 1300.0, 10.0) animated:false];
@@ -208,85 +268,71 @@
 	
 	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.text.length)];
 	[self.textView.layoutManager invalidateLayoutForCharacterRange:NSMakeRange(0, self.textView.text.length) actualCharacterRange:nil];
-	
+		
 	// This is not a place of honor. No highly esteemed deed is commemorated here.
 	[self.textView firstResize];
 	[self.textView resize];
 	
+	// Fit text view to scroll view (on iPadOS)
+	[self.textView resizeToFit];
+	
 	self.documentIsLoading = false;
-	
-	//[self appearanceChanged:nil];
-	[self displayPatchNotesIfNeeded];
-	
-	//typing = [SimulatedTyping.alloc initWithTextView:self.textView];
-	
+		
 	dispatch_async(dispatch_get_main_queue(), ^{
+		[self hideLoadingBar];
 		[self restoreCaret];
+		[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
 	});
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)setupDocument
 {
-	[super viewWillAppear:animated];
-	[self becomeFirstResponder];
-	if (editorWasActive) {
-		editorWasActive = false;
-		[self.textView becomeFirstResponder];
-	}
+	self.fountainDocument.delegate = self;
 	
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	delegate.currentDocument = self.document;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	BeatAppState.shared.documentController = nil;
+	[self.textView setAttributedText:self.formattedTextBuffer.copy];
+	[self.textView.layoutManager invalidateDisplayForCharacterRange:NSMakeRange(0, self.textView.textStorage.length)];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	[self.textView setNeedsLayout];
+	[self.textView layoutIfNeeded];
 	
-	[super viewWillDisappear:animated];
-	editorWasActive = self.textView.isFirstResponder;
-	[self.textView resignFirstResponder];
-	[self resignFirstResponder];
-}
+	// Initialize real-time formatting
+	self.formatting = BeatEditorFormatting.new;
+	self.formatting.delegate = self;
+	
+	// Setup revision tracking and reviews
+	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
+	self.review = [BeatReview.alloc initWithDelegate:self];
+	
+	// Init preview view
+	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
+	self.previewView.delegate = self;
+	[self.previewView loadViewIfNeeded];
+	
+	// Init preview controller and pagination
+	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
+		
+	// Observers
+	[self setupKeyboardObserver];
+	
+	// Text I/O
+	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
+		
+	// Text view settings
+	self.textView.textStorage.delegate = self;
+	[self.textView setFindInteractionEnabled:true];
+		
+	// Setup outline view
+	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
+	self.outlineView.editorDelegate = self;
+		
+	[self.formatting refreshRevisionTextColors];
 
--(IBAction)dismissViewController:(id)sender
-{
-	[self unloadViews];
-}
-
-- (void)loadDocumentWithCallback:(void (^)(void))callback
-{
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		[self.document openWithCompletionHandler:^(BOOL success) {
-			// Do something here maybe
-			if (!success) return;
-			
-			self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
-			self.formattedTextBuffer = [NSMutableAttributedString.alloc initWithString:self.parser.text];
-			self.attrTextCache = self.formattedTextBuffer;
-			
-			// Load fonts before formatting
-			[self loadFonts];
-			
-			// Format the document. We'll create a static formatting instance for this operation.
-			BeatEditorFormatting* formatting = [BeatEditorFormatting.alloc initWithTextStorage:self.formattedTextBuffer];
-			formatting.delegate = self;
-			
-			// Perform initial formatting (with autorelease, because this operation can be RAM intensive)
-			for (Line* line in self.parser.lines) {
-				@autoreleasepool {
-					[formatting formatLine:line firstTime:true];
-				}
-			}
-			
-			[self.parser.changedIndices removeAllIndexes];
-			callback();
-		}];
-	});
+	[self afterLoadSetup];
 }
 
 - (void)setStylesheetAndReformat:(NSString *)name
 {
-	// We'll set the stylesheet twice to load fonts correctly. Sorry.
+	// We'll set the stylesheet twice to load fonts correctly. Sorry. (WTF, past me? Can you explain? Where are you?)
 	[self setStylesheet:name];
 	[self loadFonts];
 	[super setStylesheetAndReformat:name];
@@ -299,63 +345,133 @@
 		[super loadFontsWithScale:self.fontScale];
 	} else {
 		[super loadFonts];
-	}	
+	}
 }
 
-
-- (void)setupDocument
+/// @warning This method expects the split view controller to be in place (done in storyboard segue)
+- (void)setupEditorViews
 {
-	self.document.delegate = self;
+	self.editorSplitView.editorDelegate = self;
+	[self.editorSplitView setupWithEditorDelegate:self];
 	
-	// Setup revision tracking and reviews
-	self.revisionTracking = [BeatRevisions.alloc initWithDelegate:self];
-	self.review = [BeatReview.alloc initWithDelegate:self];
+	//self.pageView = self.editorSplitView.editorView.pageView;
+	//self.scrollView = self.editorSplitView.editorView.scrollView;
 	
-	// Initialize real-time formatting
-	self.formatting = BeatEditorFormatting.new;
-	self.formatting.delegate = self;
+	self.outlineView = self.editorSplitView.outlineView;
+}
+
+- (BeatPageView *)pageView { return self.editorSplitView.editorView.pageView; }
+- (BeatScrollView *)scrollView { return self.editorSplitView.editorView.scrollView; }
+
+/// Creates the text view and replaces placeholder text view
+- (void)createTextView
+{
+	if (self.textView == nil) {
+		CGRect frame = CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height);
+		BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:frame pageView:self.pageView scrollView:self.scrollView];
+		
+		textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
+		
+		self.textView = textView;
+		
+		// On iPad, we'll use a free-scaling text view inside a scroll view, and on iPhone we'll just use a single text view
+		if (!is_Mobile) {
+			self.textView.enclosingScrollView = self.scrollView;
+			[self.pageView addSubview:self.textView];
+		} else {
+			// Completely replace the scroll view with our text view on phones
+			self.textView.frame = self.scrollView.frame;
+			
+			[self.view addSubview:self.textView];
+			
+			[self.scrollView.superview addSubview:self.textView];
+			[self.pageView removeFromSuperview];
+			[self.scrollView removeFromSuperview];
+		}
+		
+		self.textView.font = self.fonts.regular;
+	}
 	
-	// Init preview view
-	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
-	self.previewView.delegate = self;
-	[self.previewView loadViewIfNeeded];
-	
-	// Init preview controller and pagination
-	self.previewController = [BeatPreviewController.alloc initWithDelegate:self previewView:self.previewView];
-	[self.previewController createPreviewWithChangedRange:NSMakeRange(0,1) sync:false];
-	
-	// Fit to view here
-	self.scrollView.zoomScale = 1.4;
-	
-	// Observers
-	[self setupKeyboardObserver];
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(appearanceChanged:) name:@"Appearance changed" object:nil];
-	
-	// Text I/O
-	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
-	
-	// Text view settings
-	self.textView.textStorage.delegate = self;
-	[self.textView setFindInteractionEnabled:true];
-	
-	// Don't ask
-	[self.textView firstResize];
+	// Clear the text view
+	self.textView.text = @"";
+	self.textView.delegate = self;
 	[self.textView resize];
 	
-	// Setup outline view
-	self.outlineView = (BeatiOSOutlineView*)_editorSplitView.sidebar.tableView;
-	self.outlineView.editorDelegate = self;
+	/*
+	if (self.fountainDocument != nil) {
+		// Set delegate again when reloading text view (it could be nulled)
+		self.textView.delegate = self;
+		[self.textView.textStorage setAttributedString:self.formattedTextBuffer.copy];
+		
+		[self.formatting refreshRevisionTextColors];
+	}
+	 */
+}
+
+/// Dismisses editor view keyboard
+- (IBAction)endEditing:(id)sender
+{
+	[self.textView endEditing:true];
+}
+
+/// NOTE: You need to call `loadDocument` before actually presenting the view
+- (void)viewDidLoad
+{
+	self.sessionIdentifier = self.view.window.windowScene.session.persistentIdentifier;
+
+	// Embed the editor split view
+	self.editorSplitView = self.childViewControllers.firstObject;
+	[self.editorSplitView loadView];
+
+	[super viewDidLoad];
+	
+	[self setupLaunchItems];
+	
+	[self setupNavigationViewController];
+
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+	
+	[self becomeFirstResponder];
+	
+	[self displayPatchNotesIfNeeded];
+	
+	// When returning from another VC, let's check if we should return to editing mode
+	if (self.document != nil && editorWasActive) {
+		editorWasActive = false;
+		[self.getTextView becomeFirstResponder];
+	}
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	[self becomeFirstResponder];
+	if (!self.documentIsLoading && editorWasActive) {
+		editorWasActive = false;
+		[self.textView becomeFirstResponder];
+	}
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+	editorWasActive = self.textView.isFirstResponder;
+	[self.textView resignFirstResponder];
+	[self resignFirstResponder];
+}
+
+-(IBAction)dismissViewController:(id)sender
+{
+	[self unloadViews];
 }
 
 - (void)dealloc
 {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)setupTitleBar
-{
-	// Show document name
-	self.titleBar.title = self.fileNameString;
 }
 
 - (IBAction)dismissDocumentViewController:(id)sender
@@ -366,59 +482,38 @@
 	}];
 }
 
-/// This is called by `iOSDocument` after closing the document
-- (void)unloadViews
+
+#pragma mark - Errors from document
+
+- (void)handleError:(enum BeatDocumentError)error
 {
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-	[NSNotificationCenter.defaultCenter removeObserver:self.textView];
-	
-	for (id<BeatPluginContainer> container in self.registeredPluginContainers) {
-		[container unload];
-	}
-	[self.registeredPluginContainers removeAllObjects];
-	
-	self.review = nil;
-	self.revisionTracking = nil;
-	self.tagging = nil;
-
-	[self forgetStyles];
-	[self.pluginAgent unloadPlugins];
-	
-	self.navigationItem.titleMenuProvider = nil;
-	self.navigationItem.rightBarButtonItems = nil;
-	self.navigationItem.leftBarButtonItem = nil;
-
-	[self.userActivity invalidate];
-	
-	[self.registeredViews removeAllObjects];
-	[self.registeredOutlineViews removeAllObjects];
-	[self.registeredSelectionObservers removeAllObjects];
-		
-	self.formatting = nil;
-	self.runningPlugins = nil;
-	self.parser = nil;
-	self.outlineView = nil;
-	self.contentBuffer = nil;
-	self.documentBrowser = nil;
-	self.formattingActions = nil;
-	self.textActions = nil;
-	self.autocomplete = nil;
-	
-	[self.textView unload];
-	
-	[self.previewView clear];
-	[self.previewView removeFromParentViewController];
-	self.previewView = nil;
-		
-	[self removeChildren];
-	self.editorSplitView = nil;
-	
-	// These have to be nulled to kill any retained line references
-	self.formattedTextBuffer = NSMutableAttributedString.new;
-	self.attrTextCache = NSMutableAttributedString.new;
-	
 	self.document = nil;
 }
+
+
+#pragma mark - Navigation items
+
+- (void)navigationItemDidUpdate
+{
+	[super navigationItemDidUpdate];
+	[self setupTitleBar];
+}
+
+
+#pragma mark - Text view
+
+@synthesize inputModifierFlags;
+
+/// Returns the undo manager from **text view**
+- (NSUndoManager *)undoManager { return self.textView.undoManager; }
+
+- (BXTextView*)getTextView { return self.textView; }
+- (CGFloat)editorLineHeight { return self.editorStyles.page.lineHeight; }
+- (UIKeyModifierFlags)inputModifierFlags { return self.textView.modifierFlags; }
+
+
+
+#pragma mark - Layout
 
 - (void)ensureLayout
 {
@@ -437,27 +532,17 @@
 }
 
 
-#pragma mark - Text view
-
-@synthesize inputModifierFlags;
-
-- (BXTextView*)getTextView { return self.textView; }
-- (CGFloat)editorLineHeight { return self.editorStyles.page.lineHeight; }
-- (UIKeyModifierFlags)inputModifierFlags { return self.textView.modifierFlags; }
-
-
 #pragma mark - Application data and file access
 
 - (NSURL *)fileURL
 {
-	return _document.fileURL;
+	return self.document.fileURL;
 }
 
-- (NSString*)fileNameString {
-	return _document.fileURL.lastPathComponent.stringByDeletingPathExtension;
+- (NSString*)fileNameString
+{
+	return self.document.fileURL.lastPathComponent.stringByDeletingPathExtension;
 }
-
-- (bool)isDark { return false; }
 
 - (void)showLockStatus
 {
@@ -471,7 +556,7 @@
 
 - (BeatDocumentSettings*)documentSettings
 {
-	return self.document.settings;
+	return self.fountainDocument.settings;
 }
 
 - (NSString*)contentForSaving
@@ -479,25 +564,39 @@
 	return [self createDocumentFile];
 }
 
+- (bool)isDark
+{
+	return [BeatAppearanceManager.shared isDarkWithScene:self.documentWindow.windowScene];
+}
+
+
+
+#pragma mark - Setting change listener
+
+- (void)settingsDidChange:(NSNotification*)notification
+{
+	if (self.editorSplitView == nil) return;
+
+	self.navigationController.hidesBarsOnSwipe = ![BeatUserDefaults.sharedDefaults getBool:BeatSettingDontHideBars];
+}
+
 
 #pragma mark - Appearance
 
 - (void)setDarkMode:(BOOL)value
 {
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	[delegate toggleDarkMode];
+	[BeatAppearanceManager.shared setDarkMode:value in:self.documentWindow];
 }
 
 - (void)appearanceChanged:(NSNotification*)notification
 {
+	NSLog(@"Appearance did change");
 	[self updateUIColors];
 }
 
 - (void)updateUIColors
 {
-	BeatiOSAppDelegate* delegate = (BeatiOSAppDelegate*)UIApplication.sharedApplication.delegate;
-	
-	bool isDark = delegate.isDark;
+	bool isDark = self.isDark;
 	UIUserInterfaceStyle effectiveStyle = UITraitCollection.currentTraitCollection.userInterfaceStyle;
 		
 	self.overrideUserInterfaceStyle = 0;
@@ -516,7 +615,7 @@
 	
 	[self.formatting refreshRevisionTextColors];
 	
-	[self.pageView toggleShadow:[_scrollView.backgroundColor isEqual:self.textView.backgroundColor]];
+	[self.pageView toggleShadow:[self.scrollView.backgroundColor isEqual:self.textView.backgroundColor]];
 }
 
 
@@ -695,7 +794,6 @@
 #pragma mark - Editor text view values
 
 - (CGFloat)documentWidth { return self.textView.documentWidth; }
-- (CGFloat)magnification { return self.textView.enclosingScrollView.zoomScale; }
 
 
 #pragma mark Editor text view helpers
@@ -820,21 +918,6 @@
 }
 
 
-#pragma mark - Rename document
-
--(void)navigationItem:(UINavigationItem *)navigationItem didEndRenamingWithTitle:(NSString *)title
-{
-	[self.documentBrowser renameDocumentAtURL:self.document.fileURL proposedName:title completionHandler:^(NSURL * _Nullable finalURL, NSError * _Nullable error) {
-		if (error) {
-			self.titleBar.title = self.document.fileURL.lastPathComponent.stringByDeletingPathExtension;
-			return;
-		}
-		
-		[self.document presentedItemDidMoveToURL:finalURL];
-	}];
-}
-
-
 
 #pragma mark - Minimal plugin support
 
@@ -858,8 +941,6 @@
 		vc.delegate = self;
 		vc.pluginName = @"Index Card View";
 		
-	} else if ([segue.identifier isEqualToString:@"ToEditorSplitView"]) {
-		self.editorSplitView = segue.destinationViewController;
 	}
 }
 

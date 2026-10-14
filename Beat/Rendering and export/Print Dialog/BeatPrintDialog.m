@@ -204,13 +204,13 @@
 	}];
 	
 
-	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:section]) {
-		self.printSections.state = BXOnState;
+	if (self.documentDelegate.styles.shouldPrintSections) {
+		self.printSections.state = NSOnState;
 		self.printSections.enabled = false;
 	}
 	
-	if ([self.documentDelegate.exportSettings.additionalTypes containsIndex:synopse]) {
-		self.printSynopsis.state = BXOnState;
+	if (self.documentDelegate.styles.shouldPrintSynopses) {
+		self.printSynopsis.state = NSOnState;
 		self.printSynopsis.enabled = false;
 	}
 }
@@ -309,7 +309,7 @@
 	if (_printSections.state == BXOnState) [additionalTypes addIndex:section];
 	if (_printSynopsis.state == BXOnState) [additionalTypes addIndex:synopse];
 	settings.additionalTypes = additionalTypes;
-			
+				
 	return settings;
 }
 

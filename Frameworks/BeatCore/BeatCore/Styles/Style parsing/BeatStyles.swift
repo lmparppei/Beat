@@ -30,6 +30,9 @@ public class BeatStyles:NSObject {
     /// Default line height
     @objc class var lineHeight:CGFloat { return 12.0 }
     
+    /// Lock for avoiding singleton access data races
+    private let _stylesLock = NSLock()
+    
     /// Available stylesheets
     var _stylesheets:[String:URL]?
     /// Currently loaded styles
@@ -85,36 +88,37 @@ public class BeatStyles:NSObject {
         // Each document will have its own stylesheet, recognized UUID, because document settings will have effect on stylesheets
         let uuid:UUID? = delegate?.uuid()
         
-        if let loadedStyle = _loadedStyles[name], uuid == nil {
+        if let loadedStyle = loadedStyle(for: name), uuid == nil {
             return loadedStyle
-        } else if let uuid, let documentStyle = _documentStyles[uuid]?[name] {
+        } else if let uuid, let documentStyle = documentStyle(for: uuid, name: name) {
             return documentStyle
         }
         
         // Get stylesheet. If it's not available, we NEED TO HAVE a file called Screenplay-editor.beatCSS, otherwise the app will crash.
-        var url:URL? = stylesheets[name]
+        var url:URL? = stylesheetURL(for: name)
         
         // If no URL is available, first check user folder.
         // We NEED TO HAVE a file called Screenplay.beatCSS in the bundle, otherwise the app will crash.
         if url == nil, let userStyle = userStylesheet(name: styleName, forEditor: forEditor) {
             url = userStyle
         } else if url == nil {
-            url = stylesheets[defaultStyle]!
+            url = stylesheetURL(for: defaultStyle)!
         }
         
         let stylesheet = BeatStylesheet(url: url!, name: name, documentSettings: delegate?.documentSettings)
         
         if let uuid {
-            if _documentStyles[uuid] == nil { _documentStyles[uuid] = [:] }
-            _documentStyles[uuid]?[name] = stylesheet
+            setDocumentStyle(stylesheet, uuid: uuid, name: name)
         } else {
-            _loadedStyles[name] = stylesheet
+            setLoadedStyle(stylesheet, for: name)
         }
          
         return stylesheet
     }
     
     @objc public func closeDocument(delegate:BeatDocumentDelegate) {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
         _documentStyles.removeValue(forKey: delegate.uuid())
     }
     
@@ -169,4 +173,39 @@ public class BeatStyles:NSObject {
         
         return styles
     }
+    
+    
+    // MARK: - Data race avoidance
+    
+    private func stylesheetURL(for name:String) -> URL? {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
+        return stylesheets[name]
+    }
+    
+    private func loadedStyle(for name: String) -> BeatStylesheet? {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
+        return _loadedStyles[name]
+    }
+
+    private func setLoadedStyle(_ style: BeatStylesheet, for name: String) {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
+        _loadedStyles[name] = style
+    }
+
+    private func documentStyle(for uuid: UUID, name: String) -> BeatStylesheet? {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
+        if _documentStyles[uuid] == nil { _documentStyles[uuid] = [:] }
+        return _documentStyles[uuid]?[name]
+    }
+
+    private func setDocumentStyle(_ style: BeatStylesheet, uuid: UUID, name: String) {
+        _stylesLock.lock()
+        defer { _stylesLock.unlock() }
+        _documentStyles[uuid, default: [:]][name] = style
+    }
+    
 }

@@ -24,7 +24,7 @@ import UXKit
 	struct BeatMdLine {
 		var string = ""
 		var position = NSNotFound
-		var length:Int { return self.string.count }
+		var length:Int { return (string as NSString).length }
 		var range:NSRange { return NSMakeRange(position, length + 1) }
 	}
 	
@@ -52,19 +52,18 @@ import UXKit
     }
 
 	var lines:[BeatMdLine] {
-		guard let textStorage = self.textStorage else { return [] }
-		
-		let lines = textStorage.string.components(separatedBy: "\n")
-		var i = 0
-		
-		// Create simple line elements for each
-		let mdLines:[BeatMdLine] = lines.map { str in
-			let l = BeatMdLine(string: str, position: i)
-			i += str.count + 1
-			return l
-		}
-		
-		return mdLines
+        guard let textStorage = self.textStorage else { return [] }
+        
+        let lines = textStorage.string.components(separatedBy: "\n")
+        var i = 0
+        
+        let mdLines:[BeatMdLine] = lines.map { str in
+            let l = BeatMdLine(string: str, position: i)
+            i += (str as NSString).length + 1
+            return l
+        }
+        
+        return mdLines
 	}
     	
 	public func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
@@ -86,13 +85,16 @@ import UXKit
 	
 	public func parse(_ range:NSRange) {
 		guard let textStorage = self.textStorage else { return }
-		
+        
         updateStylizations()
         
 		var r = range
-		if NSMaxRange(r) > textStorage.string.count {
-			r.length -= NSMaxRange(r) - textStorage.string.count
-		}
+        
+        let length = textStorage.length
+        if NSMaxRange(r) > length {
+            r.length -= NSMaxRange(r) - length
+        }
+        guard NSMaxRange(r) <= length else { return }
 		
 		let string = textStorage.string.substring(range: r)
 		if string.count == 0 { return }
@@ -131,12 +133,18 @@ import UXKit
                 
 				let indices = parseInlineStyles(string: string, markdown: key)
 				indices.enumerateRanges { localRange, stop in
-                    self.textStorage?.addAttributes(dict, range: NSMakeRange(range.location + localRange.location, localRange.length))
+                    let range = NSMakeRange(r.location + localRange.location, localRange.length)
+                    if NSMaxRange(range) <= textStorage.length {
+                        textStorage.addAttributes(dict, range: NSMakeRange(r.location + localRange.location, localRange.length))
+                    }
 				}
 			}
 		}
+        
+        /// Note to self: We need to do this because `parse()` is called after `didProcessEditing:`, so things like fallback fonts might be dropped.
+        textStorage.fixAttributes(in: r)
 	}
-    
+        
     func updateStylizations() {
         for key in Array(stylization.keys) {
             guard var dict = stylization[key] as? [NSAttributedString.Key: Any] else { continue }
@@ -159,36 +167,49 @@ import UXKit
 		return .normal
 	}
 	
-	public func parseInlineStyles(string:String, markdown:String) -> NSIndexSet {
-		let indices = NSMutableIndexSet()
-		let lim = string.count - markdown.count + 1
-		
-		var range = NSMakeRange(NSNotFound, 0)
-		
-		for i in 0..<lim {
-			var match = true
-			for n in 0..<markdown.count {
-				let c = string[i+n]
-				if c != markdown[n] {
-					match = false
-					break
-				}
-			}
-			
-			if match {
-				if range.location == NSNotFound {
-					// Starts a range
-					range.location = i
-					continue
-				} else {
-					// Terminates a range
-					range.length = i - range.location
-					indices.add(in: range)
-				}
-			}
-		}
-		
-		return indices
+    public func parseInlineStyles(string:String, markdown:String) -> NSIndexSet {
+        let indices = NSMutableIndexSet()
+        
+        // Yeah, well, we need to cast everything to stay UTF-16 safe
+        let str = string as NSString
+        let md = markdown as NSString
+        
+        let length = str.length
+        let markdownLength = md.length
+        
+        guard length >= markdownLength else { return indices }
+        let lim = length - markdownLength + 1
+        
+        var range = NSMakeRange(NSNotFound, 0)
+        var i = 0
+        
+        while i < lim {
+            var match = true
+            for n in 0..<markdownLength {
+                if str.character(at: i + n) != md.character(at: n) {
+                    match = false
+                    break
+                }
+            }
+            
+            if match {
+                if range.location == NSNotFound {
+                    // Begins a range
+                    range.location = i
+                } else {
+                    // Closes the range
+                    range.length = i - range.location
+                    indices.add(in: range)
+                    range = NSMakeRange(NSNotFound, 0) // reset range
+                }
+                // Avoid marker matching itself again
+                i += markdownLength
+            } else {
+                i += 1
+            }
+        }
+        
+        return indices
 	}
 	
 }

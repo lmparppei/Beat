@@ -146,6 +146,9 @@ import BeatParsing
             view?.addSubview(column)
             
             x = spacing + CGRectGetMaxX(column.frame)
+            
+            column.setNeedsLayout()
+            column.setNeedsDisplay()
         }
     }
 

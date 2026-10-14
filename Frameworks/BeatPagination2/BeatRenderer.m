@@ -268,8 +268,8 @@
         }
         
         if (attrs[BeatRevisions.attributeKey]) {
-            NSString* color = attrs[BeatRevisions.attributeKey];
-            if (color != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
+            NSString* revName = attrs[BeatRevisions.attributeKey];
+            if (revName != nil) [attributedString addAttribute:BeatRevisions.attributeKey value:revName range:range];
         }
     }];
         
@@ -278,6 +278,10 @@
         NSRange lineRange = NSMakeRange(0, attributedString.length - 1);
         [attributedString addAttribute:NSLinkAttributeName value:line range:lineRange];
         [attributedString addAttribute:@"LineType" value:@(line.type) range:lineRange];
+    }
+    
+    if (line.isAnyDialogue) {
+        [attributedString addAttribute:@"DialogueNumber" value:@(line.dialogueNumber) range:NSMakeRange(0, attributedString.length - 1)];
     }
     
     // Now we'll color revisions if needed
@@ -330,6 +334,14 @@
         attributedString = [self renderHeading:line content:attributedString firstElementOnPage:firstElementOnPage];
         // Let's add a heading attribute to support PDF table of contents
         [attributedString addAttribute:@"HEADING" value:[NSString stringWithFormat:@"%@ %@", line.sceneNumber, line.stringForDisplay.uppercaseString] range:NSMakeRange(0, attributedString.length)];
+    }
+    
+    // We'll also add color for the other outline elements
+    if (self.settings.printSceneHeadingColors && line.type == section) {
+        BXColor* color = [BeatColors color:line.color];
+        if (color != nil) {
+            [attributedString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, attributedString.length)];
+        }
     }
         
     return attributedString;

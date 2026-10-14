@@ -23,14 +23,14 @@ page {
     margin-bottom-a4: 10;
     
     default-width-a4: 60ch;
-    default-width-us: 63ch;
+    default-width-us: 61ch;
     
     line-height: 12;
     
     content-padding: 7ch;
  
     margin-left-a4: 20;
-    margin-left-us: 22;
+    margin-left-us: 29;
 }
 
 titlePage {
@@ -44,7 +44,7 @@ titlePage {
 
 heading {
     width-a4: 60ch - 5ch;
-    width-us: 62ch - 5ch;
+    width-us: 61ch - 5ch;
     
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);
@@ -84,7 +84,7 @@ action {
 
 centered {
     width-a4: 60ch;
-    width-us: 62ch;
+    width-us: 61ch;
 
     margin-top: 1l;
     text-align: center;

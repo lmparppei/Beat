@@ -58,7 +58,23 @@ import BeatParsing
 	
 	@IBOutlet weak var viewController:UIViewController?
 	var lastOffsetY:CGFloat = 0.0
-		
+	/*
+	override var selectedTextRange: UITextRange? {
+
+		get {
+			let r = super.selectedTextRange
+			print("\nselection get:", r as Any)
+			print("     NSRange:", self.selectedRange)
+			return r
+		}
+		set {
+			print("\nselection set:", newValue as Any)
+			Thread.callStackSymbols.prefix(8).forEach { print($0) }
+			super.selectedTextRange = newValue
+		}
+	}
+	*/
+	
 	var inputAssistantMode:BeatInputAssistantMode = .writing {
 		didSet {
 			self.setupInputAssistantButtons()
@@ -173,20 +189,12 @@ import BeatParsing
 	var inputAssistantHidden: Bool = BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden) {
 		didSet {
 			BeatUserDefaults.shared().save(inputAssistantHidden, forKey:BeatSettingInputAssistantHidden)
-			
-			if inputAssistantHidden {
-				self.assistantView?.detach(from: self)
-				self.assistantView = nil
-			} else {
-				showInputAssistant()
-			}
+			self.assistantView?.isHidden = inputAssistantHidden
 		}
 	}
 
 	func setupInputAssistant() {
-		if !inputAssistantHidden {
-			showInputAssistant()
-		}
+		showInputAssistant()
 	}
 	
 	func showInputAssistant() {
@@ -194,6 +202,7 @@ import BeatParsing
 		guard let editorDelegate else { print("No editor delegate"); return }
 		self.assistantView = InputAssistantView(editorDelegate: editorDelegate, inputAssistantDelegate: self)
 		self.assistantView?.attach(to: self)
+		self.assistantView?.isHidden = BeatUserDefaults.shared().getBool(BeatSettingInputAssistantHidden)
 	}
 	
 	
@@ -266,11 +275,11 @@ import BeatParsing
 			self.frame = CGRectMake(0.0, 0.0, contentView.frame.width, contentView.frame.height)
 			self.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
 			
-			self.maximumZoomScale = 2.0
+			self.maximumZoomScale = 1.0
 			self.minimumZoomScale = 1.0
 		}
 		
-		pageNumberOverlay = BeatPageNumberOverlay(textView: self)
+		//pageNumberOverlay = BeatPageNumberOverlay(textView: self)
 	}
 	
 	
@@ -352,7 +361,7 @@ import BeatParsing
 			super.scrollRangeToVisible(range)
 			return
 		}
-		guard let enclosingScrollView else { return }
+		guard let enclosingScrollView, NSMaxRange(range) <= (self.text as NSString).length else { return }
 		
 		// Current bounds
 		let bounds = enclosingScrollView.bounds
@@ -362,16 +371,18 @@ import BeatParsing
 		
 		// Current selection frame
 		var selectionRect = self.rectForRange(range: self.selectedRange)
-		if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
-		
-		// Account for top margin
-		selectionRect.origin.y += self.textContainerInset.top
-		
-		let scaledRect = convert(selectionRect, to: enclosingScrollView)
-		
-		// If the rect is not visible, scroll to that range
-		if CGRectIntersection(scaledRect, visible).height < 16.0 {
-			enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+		if selectionRect != .infinite {
+			if selectionRect.size.width < 1.0 { selectionRect.size.width += 1.0 }
+			
+			// Account for top margin
+			selectionRect.origin.y += self.textContainerInset.top
+			
+			let scaledRect = convert(selectionRect, to: enclosingScrollView)
+			
+			// If the rect is not visible, scroll to that range
+			if CGRectIntersection(scaledRect, visible).height < 16.0 {
+				enclosingScrollView.safelyScrollRectToVisible(scaledRect, animated: animated)
+			}
 		}
 	}
 	
@@ -442,14 +453,17 @@ import BeatParsing
 			editorDelegate.setTypeAndFormat(line, type: .empty)
 		}
 	}
-		
+	
 	// MARK: - Rects for ranges
 	
 	@objc func rectForRange (range: NSRange) -> CGRect {
+		guard NSMaxRange(range) <= self.text.count else { return .infinite }
+				
 		let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
-		let rect = self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
+		self.layoutManager.ensureLayout(forGlyphRange: glyphRange)
 		
-		return rect
+		guard NSMaxRange(glyphRange) <= self.layoutManager.numberOfGlyphs else { return .infinite }
+		return self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
 	}
 	
 	
@@ -459,40 +473,39 @@ import BeatParsing
 	
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
+		/*
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
 			}
 		}
+		 */
 		
 		super.touchesBegan(touches, with: event)
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 		// Convert to enclosing scroll view coordinate
+		/*
 		if !mobileMode {
 			for touch in touches {
 				touch.location(in: self.enclosingScrollView)
 			}
 		}
+		 */
 		
 		super.touchesMoved(touches, with: event)
 	}
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		// Convert to enclosing scroll view coordinate
-		if !mobileMode {
-			for touch in touches {
-				touch.location(in: self.enclosingScrollView)
-			}
-		}
-		
 		super.touchesEnded(touches, with: event)
 		
 		// Force selection to stay where user tapped
+		/*
 		let currentRange = selectedRange
 		unmarkText()
 		selectedRange = currentRange
+		 */
 	}
 	
 	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {

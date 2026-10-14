@@ -183,32 +183,34 @@
 	// Process in a background thread
 	// (This is pretty light, but still)
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
-		// Safeguards for some rare thread issues
-		if (self.editorDelegate == nil) return;
-		NSArray* lines = self.editorDelegate.parser.safeLines;
-		self.characters = [characterData charactersAndLinesWithLines:(lines != nil) ? lines : @[]];
-		
-		// Get the most amount of lines and add missing genders
-		for (BeatCharacter* character in self.characters.allValues) {
-			if (character.lines > self.mostLines) self.mostLines = character.lines;
+		@synchronized (self.editorDelegate.parser) {
+			// Safeguards for some rare thread issues
+			if (self.editorDelegate == nil) return;
+			NSArray* lines = self.editorDelegate.parser.safeLines;
+			self.characters = [characterData charactersAndLinesWithLines:(lines != nil) ? lines : @[]];
 			
-			NSString* gender = (character.gender.length > 0) ? character.gender : @"unspecified";
-			for (NSInteger i=0; i<character.lines; i++) [genders addObject:gender];
-		}
-		
-		// Reload data in main thread
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			[self reloadData];
-			[self.graphView pieChartForData:genders];
-			
-			if (selectedRow < self.numberOfRows) {
-				NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
-				[self selectRowIndexes:indexSet byExtendingSelection:NO];
+			// Get the most amount of lines and add missing genders
+			for (BeatCharacter* character in self.characters.allValues) {
+				if (character.lines > self.mostLines) self.mostLines = character.lines;
+				
+				NSString* gender = (character.gender.length > 0) ? character.gender : @"unspecified";
+				for (NSInteger i=0; i<character.lines; i++) [genders addObject:gender];
 			}
-
-			// Remove reference (just in case)
-			characterData = nil;
-		});
+			
+			// Reload data in main thread
+			dispatch_async(dispatch_get_main_queue(), ^(void) {
+				[self reloadData];
+				[self.graphView pieChartForData:genders];
+				
+				if (selectedRow < self.numberOfRows) {
+					NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
+					[self selectRowIndexes:indexSet byExtendingSelection:NO];
+				}
+				
+				// Remove reference (just in case)
+				characterData = nil;
+			});
+		}
 	});
 }
 

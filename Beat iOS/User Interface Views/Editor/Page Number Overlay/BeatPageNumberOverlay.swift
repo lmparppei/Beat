@@ -44,8 +44,7 @@
 
 	/// Call whenever the page map is (re)computed, e.g. after re-pagination.
 	func reloadPageMap(_ pageMap: NSMapTable<Line, NSArray>) {
-		guard let textView = self.textView,
-			  let lm = self.textView?.layoutManager as? BeatLayoutManager,
+		guard let lm = self.textView?.layoutManager as? BeatLayoutManager,
 			  let tc = lm.textContainers.first
 		else { return }
 		
@@ -56,7 +55,9 @@
 			guard let meta = pageMap.object(forKey: line),
 				  meta.count > 1,
 				  let pageNumber = meta.firstObject as? String,
-				  let breakPosition = meta[1] as? UInt else { continue }
+				  let breakValue = meta[1] as? Int else { continue }
+			
+			let breakPosition = breakValue >= 0 ? Int(truncatingIfNeeded: breakValue) : 0
 			
 			let range = NSRange(location: Int(breakPosition) + line.position, length: 0)
 			let cRange = lm.glyphRange(forCharacterRange: range, actualCharacterRange: nil)

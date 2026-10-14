@@ -961,4 +961,13 @@
 	return [self.UUIDs containsObject:line.uuid];
 }
 
+- (NSString *)description
+{
+    NSMutableString * str = NSMutableString.new;
+    for (Line* l in self.lines) {
+        [str appendFormat:@"%@ / ", l.string];
+    }
+    return [NSString stringWithFormat:@"Pagination block: %@\n", str];
+}
+
 @end

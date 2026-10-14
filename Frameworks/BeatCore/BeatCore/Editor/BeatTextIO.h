@@ -49,6 +49,7 @@ JSExportAs(moveString, - (void)moveStringFrom:(NSRange)range to:(NSInteger)posit
 
 @interface BeatTextIO : NSObject <BeatTextIOExports>
 @property (nonatomic, weak) id<BeatTextIODelegate> delegate;
+@property (nonatomic) bool skipAutomaticLineBreaks;
 
 - (instancetype)initWithDelegate:(id<BeatTextIODelegate>)delegate;
 

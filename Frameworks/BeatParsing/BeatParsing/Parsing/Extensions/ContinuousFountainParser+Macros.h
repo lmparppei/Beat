@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ContinuousFountainParser (Macros)
 
 - (void)updateMacros;
-- (void)resolveMacrosOn:(Line*)line parser:(BeatMacroParser*)macroParser;
 
 @end
 

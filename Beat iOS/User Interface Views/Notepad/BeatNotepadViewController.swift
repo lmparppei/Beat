@@ -30,7 +30,7 @@ class BeatNotepadViewController:UIViewController {
 				var items:[UIMenuElement] = []
 				
 				for colorName in colorNames {
-					var localized = NSLocalizedString("color."+colorName, comment: colorName)
+					let localized = NSLocalizedString("color."+colorName, comment: colorName)
 					let image = BeatColors.labelImage(forColor: colorName, size: CGSizeMake(16.0, 16.0))
 					
 					let action = UIAction(title: localized, image: image, state: self?.notepad?.currentColorName == colorName ? .on : .off)  { item in

@@ -15,6 +15,7 @@ class BeatScrollView: UIScrollView {
 		super.awakeFromNib()
 	}
 	
+	
 	override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
 		super.scrollRectToVisible(rect, animated: animated)
 	}

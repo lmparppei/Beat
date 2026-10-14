@@ -57,14 +57,14 @@
 	NSRect rect = [self rectForRange:self.selectedRange];
 		
 	// Calculate correct scroll position
-	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fonts.regular.pointSize * 2) * self.editorDelegate.magnification;
+	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fonts.regular.pointSize * 2) * self.self.zoomLevel;
 	
 	// Take find & replace bar height into account
 	// CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
 	
 	// Calculate container height with insets
 	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
-	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
+	containerHeight = containerHeight * self.zoomLevel + self.textInsetY * 2 * self.zoomLevel;
 	
 	NSRect bounds = NSMakeRect(clipView.bounds.origin.x, scrollY, clipView.bounds.size.width, clipView.bounds.size.height);
 	

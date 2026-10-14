@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 @objc protocol BeatBackupViewControllerDelegate:BeatEditorDelegate {
-	weak var documentBrowser:UIDocumentBrowserViewController? { get }
+	//weak var documentBrowser:UIDocumentBrowserViewController? { get }
 }
 
 class BeatBackupViewController: UIViewController {
@@ -54,18 +54,21 @@ class BeatBackupViewController: UIViewController {
 	}
 
 	private func restoreBackup(_ backup:BeatBackupFile) {
-		guard let fileURL = self.delegate.fileURL else {
-			print("ERROR: No URL for document")
-			return
-		}
-
 		let backupURL = URL(fileURLWithPath: backup.path)
-		let browser = self.delegate.documentBrowser as? DocumentBrowserViewController
 		
-		self.dismiss(animated: false)
-		self.presentingViewController?.dismiss(animated: true, completion: {
-			browser?.restoreBackup(of: fileURL, at: backupURL)
-		})
+		if let delegate = self.delegate as? UIDocumentViewController, let document = delegate.document {
+			Task {
+				if let url = try? await delegate.launchOptions.browserViewController.importDocument(at: backupURL, nextToDocumentAt: document.fileURL, mode: .copy) {
+					self.dismiss(animated: false)
+					delegate.document = nil
+					
+					if let newURL = try? await delegate.launchOptions.browserViewController.revealDocument(at: url, importIfNeeded: true) {
+						let newDoc = iOSDocument(fileURL: newURL)
+						delegate.document = newDoc
+					}
+				}
+			}
+		}
 	}
 	
 	private func backupPrompt(for backup: BeatBackupFile) {

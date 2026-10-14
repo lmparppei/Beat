@@ -193,7 +193,7 @@ import UXKit
 		
 		let textFrame = CGRect(x: pageStyle.marginLeft - linePadding + marginOffset,
 							   y: pageStyle.marginTop,
-							   width: size.width - pageStyle.marginLeft - pageStyle.marginRight,
+							   width: size.width - pageStyle.marginLeft - pageStyle.marginRight - marginOffset,
 							   height: size.height - pageStyle.marginTop)
 		
 		return textFrame

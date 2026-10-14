@@ -59,20 +59,10 @@
 		if ([self.textActions replaceSmartQuotationIfNeeded:replacementString range:affectedCharRange]) return false;
 	}
 	
-	// Special rules for character input
-	if (self.lineForNewCue != nil) {
-		// We are pressing backspace or deleting something at the beginning of a new, empty character cue. Cancel character input.
-		if (replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
-			[self cancelCharacterInput];
-			change = false;
-		} else if (replacementString.length > 0 && (NSLocationInRange(affectedCharRange.location, self.lineForNewCue.textRange) || affectedCharRange.location == NSMaxRange(self.lineForNewCue.textRange))) {
-			if (!self.didProcessCharacterCue) {
-				self.didProcessCharacterCue = true;
-				[self.textActions replaceRange:affectedCharRange withString:replacementString.uppercaseString];
-				self.didProcessCharacterCue = false;
-				change = false;
-			}
-		}
+	// Check for character input trouble
+	if (self.lineForNewCue != nil && replacementString.length == 0 && NSMaxRange(affectedCharRange) == self.lineForNewCue.position) {
+		[self cancelCharacterInput];
+		change = false;
 	}
 	
 	// Don't repeat ) or ]
