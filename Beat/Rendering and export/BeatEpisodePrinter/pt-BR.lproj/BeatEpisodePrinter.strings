@@ -1,0 +1,51 @@
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "1Is-Bl-rL9"; */
+"1Is-Bl-rL9.placeholderString" = "Revisão, Versão, ...";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "2Bh-O5-Oxn"; */
+"2Bh-O5-Oxn.title" = "Verde";
+
+/* Class = "NSTextFieldCell"; title = "Drag & drop or select episodes on the list to print or export them all at once"; ObjectID = "Aqq-zf-yJ2"; */
+"Aqq-zf-yJ2.title" = "Arraste e solte ou selecione episódios na lista para imprimir ou exportar todos de uma vez";
+
+/* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "Atu-PM-dGd"; */
+"Atu-PM-dGd.title" = "Incluir Cabeçalho";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "BIV-mZ-62a"; */
+"BIV-mZ-62a.title" = "Colorir páginas revisadas";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "DmN-tZ-Tpy"; */
+"DmN-tZ-Tpy.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "EFX-sj-v43"; */
+"EFX-sj-v43.title" = "US Letter";
+
+/* Class = "NSTextFieldCell"; title = "Print Episodes"; ObjectID = "PcO-zY-RPh"; */
+"PcO-zY-RPh.title" = "Imprimir Episódios";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "Q5H-ek-O4w"; */
+"Q5H-ek-O4w.title" = "Vermelho";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "QM5-Ek-2Bv"; */
+"QM5-Ek-2Bv.title" = "Table View Cell";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "U6J-Oq-wzB"; */
+"U6J-Oq-wzB.title" = "Text Cell";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "Uju-KM-S5e"; */
+"Uju-KM-S5e.title" = "Laranja";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "bQK-wT-qQj"; */
+"bQK-wT-qQj.title" = "Tamanho da página";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "iUS-rk-GG1"; */
+"iUS-rk-GG1.title" = "Cancelar";
+
+/* Class = "NSButtonCell"; title = "Export"; ObjectID = "lEy-FZ-CzA"; */
+"lEy-FZ-CzA.title" = "Exportar";
+
+/* Class = "NSWindow"; title = "Print Episodes"; ObjectID = "pUI-V4-DPE"; */
+"pUI-V4-DPE.title" = "Imprimir Episódios";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "znR-bf-oyK"; */
+"znR-bf-oyK.title" = "Ciano";
