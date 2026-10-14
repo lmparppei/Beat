@@ -99,7 +99,7 @@
                         <action selector="toggleWithSender:" target="-2" id="ysl-b7-N3J"/>
                     </connections>
                 </button>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pU6-5v-Dd1">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pU6-5v-Dd1">
                     <rect key="frame" x="18" y="225" width="148" height="16"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Outline Settings" id="1Nm-tA-7c0">

@@ -23,7 +23,7 @@ page {
     margin-bottom-a4: 10;
     
     default-width-a4: 60ch;
-    default-width-us: 62ch;
+    default-width-us: 61ch;
     
     line-height: 12;
     
@@ -44,7 +44,7 @@ titlePage {
 
 heading {
     width-a4: 60ch - 5ch;
-    width-us: 62ch - 5ch;
+    width-us: 61ch - 5ch;
     
     margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);
