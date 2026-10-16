@@ -1,5 +1,5 @@
 {
-  "originHash" : "5cd2268bede181c785176b89bdc852ecb4432ff2d7bad03da7fa947db16a04fb",
+  "originHash" : "20dc87c2b505cb96e3c90add61ae4c38a37e24dd5f2d48ef0bcd13f34732a35c",
   "pins" : [
     {
       "identity" : "lib0-swift",
@@ -8,6 +8,33 @@
       "state" : {
         "revision" : "001958e8384591bf11ad5f494cc525bb2367d5b7",
         "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "sparkle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparkle-project/Sparkle",
+      "state" : {
+        "branch" : "2.x",
+        "revision" : "fa4eaa977cb1a390b237349be2f3d761175f345a"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "cdd0ef3755280949551dc26dee5de9ddeda89f54",
+        "version" : "1.6.2"
+      }
+    },
+    {
+      "identity" : "uxkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZeeZide/UXKit",
+      "state" : {
+        "revision" : "39e7851e92ebdfb06d06cdcab605b7372b264923",
+        "version" : "1.0.2"
       }
     },
     {

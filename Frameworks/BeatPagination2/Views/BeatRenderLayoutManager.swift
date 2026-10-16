@@ -53,7 +53,7 @@ public class BeatRenderLayoutManager:NSLayoutManager, NSLayoutManagerDelegate {
 			}
             
             // In rendered text, the revision attribute is a A NUMBER VALUE
-			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range) { obj, attrRange, stop in
+			self.textStorage?.enumerateAttribute(BeatRevisions.attributeKey(), in: range) { obj, attrRange, stop in
                 guard obj != nil, let revisionValue = obj as? NSNumber else { return }
                 
                 let level = revisionValue.intValue
