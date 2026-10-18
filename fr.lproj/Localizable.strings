@@ -311,6 +311,11 @@
 /* (No Comment) */
 "outline.settings.notes" = "Notes";
 
+"outline.settings.fontSize.small" = "Petit";
+"outline.settings.fontSize.medium" = "Medium";
+"outline.settings.fontSize.big" = "Grand";
+"outline.settings.fontSize.veryBig" = "Très grand";
+
 /* (No Comment) */
 "outline.settings.sceneNumbers" = "Numéros de scènes";
 

@@ -308,6 +308,11 @@
 /* (No Comment) */
 "outline.settings.synopses" = "Sinopsis";
 
+"outline.settings.fontSize.small" = "Pequeño";
+"outline.settings.fontSize.medium" = "Medio";
+"outline.settings.fontSize.big" = "Grande";
+"outline.settings.fontSize.veryBig" = "Muy grande";
+
 /* (No Comment) */
 "pagination.forcedNote" = "Nota: Con este ajuste, todas las páginas permanecerán sin numerar hasta el primer salto de página (===)";
 
