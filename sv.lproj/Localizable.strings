@@ -78,6 +78,11 @@
 "export.printSceneNumbers" = "Scennummer";
 "outline.settings.headings" = "Scenrubriker";
 
+"outline.settings.fontSize.medium" = "Liten";
+"outline.settings.fontSize.medium" = "Medelstor";
+"outline.settings.fontSize.big" = "Stor";
+"outline.settings.fontSize.veryBig" = "Mycket stor";
+
 /* (No Comment) */
 "force.action" = "Scenbeskrivning";
 

@@ -236,6 +236,11 @@
 "outline.settings.markers" = "Markers";
 "outline.settings.snapshots" = "Show Snapshots";
 
+"outline.settings.fontSize.small" = "Small";
+"outline.settings.fontSize.medium" = "Medium";
+"outline.settings.fontSize.big" = "Big";
+"outline.settings.fontSize.veryBig" = "Very Big";
+
 "character.editor.age" = "Age";
 "character.editor.biography" = "Biography";
 "character.editor.lines" = "Lines";

@@ -207,6 +207,11 @@
 "outline.settings.snapshots" = "Vilkaisukuvat";
 "outline.settings.headings" = "Kohtausotsikot";
 
+"outline.settings.fontSize.small" = "Pieni";
+"outline.settings.fontSize.medium" = "Keskikokoinen";
+"outline.settings.fontSize.big" = "Suuri";
+"outline.settings.fontSize.veryBig" = "Suurempi";
+
 "character.editor.age" = "Ikä";
 "character.editor.biography" = "Kuvaus";
 "character.editor.lines" = "Repliikit";

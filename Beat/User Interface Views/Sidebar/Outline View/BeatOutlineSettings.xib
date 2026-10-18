@@ -99,7 +99,7 @@
                         <action selector="toggleWithSender:" target="-2" id="ysl-b7-N3J"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pU6-5v-Dd1">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pU6-5v-Dd1">
                     <rect key="frame" x="18" y="225" width="148" height="16"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Outline Settings" id="1Nm-tA-7c0">
@@ -166,22 +166,22 @@
                             <items>
                                 <menuItem title="Small" state="on" id="YE8-z4-sIX">
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outlineSettings.fontSize.small"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings.fontSize.small"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
                                 <menuItem title="Medium" id="YEu-xO-RDG">
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outlineSettings.fontSize.medium"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings.fontSize.medium"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
                                 <menuItem title="Big" id="n9g-DZ-hZW">
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outlineSettings.fontSize.big"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings.fontSize.big"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
                                 <menuItem title="Very Big" id="hdZ-XT-JSc">
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outlineSettings.fontSize.veryBig"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="xibLocKey" value="outline.settings.fontSize.veryBig"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
                             </items>
