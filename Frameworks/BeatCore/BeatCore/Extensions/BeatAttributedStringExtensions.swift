@@ -154,22 +154,28 @@ extension CharacterSet {
         return string
     }
     
-    /** Trim whitespace and new line from start and end of the text */
+    /** Trim whitespace and new line from start and end of the tex. (Thank you, Kamalraj Venkatesan on stackoverflow)t */
     @objc func trimWhiteSpace(includeLineBreaks:Bool = false) -> NSAttributedString {
-        
-        
-        // Thanks, Kamalraj Venkatesan on stackoverflow
-        let invertedSet = (includeLineBreaks) ? CharacterSet.whitespacesAndNewlines.inverted : CharacterSet.whitespaces.inverted
-        let startRange = string.utf16.description.rangeOfCharacter(from: invertedSet)
-        let endRange = string.utf16.description.rangeOfCharacter(from: invertedSet, options: .backwards)
-        
-        guard let startLocation = startRange?.upperBound, let endLocation = endRange?.lowerBound else {
-            return NSAttributedString(string: string)
+        let invertedSet = if includeLineBreaks {
+            CharacterSet.whitespacesAndNewlines.inverted
+        } else {
+            CharacterSet.whitespaces.inverted
         }
 
-        let location = string.utf16.distance(from: string.startIndex, to: startLocation) - 1
-        let length = string.utf16.distance(from: startLocation, to: endLocation) + 2
-        let range = NSRange(location: location, length: length)
-        return attributedSubstring(from: range)
+        let string = self.string
+
+        guard
+            let startRange = string.rangeOfCharacter(from: invertedSet),
+            let endRange = string.rangeOfCharacter(from: invertedSet, options: .backwards)
+        else {
+            // all whitespace (or empty)
+            return NSAttributedString(string: "")
+        }
+
+        // First non-whitespace char start ... last non-whitespace char end
+        let trimmed = startRange.lowerBound..<endRange.upperBound
+        let nsRange = NSRange(trimmed, in: string)
+        
+        return attributedSubstring(from: nsRange)
     }
 }
