@@ -97,7 +97,7 @@
 		[self.parser parseChangeInRange:affectedRange withString:string];
 	}
 	
-	NSRange clampedRange = CLAMP_RANGE(editedRange, self.textView.string.length);
+	NSRange clampedRange = CLAMP_RANGE(editedRange, self.textStorage.length);
 	if (clampedRange.length > 0) [self.textView.layoutManager invalidateDisplayForCharacterRange:clampedRange];
 }
 
