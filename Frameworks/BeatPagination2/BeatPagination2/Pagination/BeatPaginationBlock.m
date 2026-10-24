@@ -480,7 +480,7 @@
     // This is a hack for some weird situations
     remainingSpace -= 1.0;
 
-    bool breakParagraph = (mode == BeatParagraphPaginationModeDefault && line.type == action);
+    bool breakParagraph = (mode == BeatParagraphPaginationModeDefault && (line.type == action || line.type == centered || line.isAnyParenthetical));
     
     // For some pagination modes, we might need to stop here
     if (mode != BeatParagraphPaginationModeDefault && line.type == action) {
@@ -645,19 +645,21 @@
             
         } else if (line.isAnyParenthetical && [self heightForLine:line] > maxHeight) {
             NSArray* splitParenthetical = [self splitParagraphWithRemainingSpace:remainingSpace - heightBefore line:line];
-            Line* retain = ((NSArray*)splitParenthetical[0]).firstObject;
-            Line* split = ((NSArray*)splitParenthetical[1]).firstObject;
+            // Sorry for this code, it's a mess, I know. We should have a way to safely break ANYTHING into pieces when needed, without this sort of trickery.
+            NSArray<Line*>* retainedLines = splitParenthetical[0];
+            NSArray<Line*>* retain = retainedLines.count > 0 ? [retainedLines subarrayWithRange:NSMakeRange(1, ((NSArray*)splitParenthetical[0]).count - 1)] : @[];
+            NSArray<Line*>* split = ((NSArray*)splitParenthetical[1]);
             
             // Something was left on this page
-            if (retain.length > 0) {
+            if (retain.count > 0) {
                 [tmpThisPage addObjectsFromArray:safeLines];
-                [tmpThisPage addObject:retain];
-                cutoff += 1;
+                [tmpThisPage addObjectsFromArray:retain];
+                cutoff += retainedLines.count;
                 
                 pageBreak = splitParenthetical[2];
             }
             // Something was cut off to next page
-            if (split.length > 0) [tmpNextPage addObject:split];
+            if (split.count > 0) [tmpNextPage addObjectsFromArray:split];
             
             break;
         }
@@ -722,7 +724,9 @@
     
     [onThisPage addObjectsFromArray:tmpThisPage];
     [onNextPage addObjectsFromArray:tmpNextPage];
-    [onNextPage addObjectsFromArray:[self.lines subarrayWithRange:NSMakeRange(cutoff, self.lines.count - cutoff)]];
+    
+    NSArray* cutOffLines = [self.lines subarrayWithRange:NSMakeRange(cutoff, self.lines.count - cutoff)];
+    [onNextPage addObjectsFromArray:cutOffLines];
     
     // Add character cues if needed (usually is)
     if (!splitCharacterCue) {
