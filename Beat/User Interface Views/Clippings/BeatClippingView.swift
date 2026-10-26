@@ -9,6 +9,7 @@
 import AppKit
 import BeatCore
 
+/*
 class BeatClippingView:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, BeatEditorView {
 	@IBOutlet var enclosingTabView:NSTabViewItem?
 	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
@@ -88,3 +89,4 @@ class BeatClippingView:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDele
 class BeatClippingCellView:NSTableCellView {
 	@IBOutlet var textView:NSTextView?
 }
+*/

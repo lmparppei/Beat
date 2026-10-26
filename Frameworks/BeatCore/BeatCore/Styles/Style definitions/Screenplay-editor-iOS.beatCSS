@@ -22,7 +22,7 @@ page {
     margin-bottom: 60;
     
     default-width-a4: 60ch;
-    default-width-us: 63ch;
+    default-width-us: 61ch;
     
     line-height: 15;
     

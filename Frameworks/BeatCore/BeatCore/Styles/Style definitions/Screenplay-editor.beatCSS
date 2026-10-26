@@ -16,17 +16,19 @@
 
 page {
     margin-left: 30;
-    margin-right: 25;
-    padding-left: 60;
+    margin-right: 20;
     margin-top: 40;
-    margin-bottom: 60;
-    
-    default-width-a4: 60ch;
-    default-width-us: 61ch;
-    
+    margin-bottom: 50;
+    margin-bottom-us: 10;
+    margin-bottom-a4: 10;
+        
     line-height: 15;
     
-    content-padding: 7ch;
+    content-padding: 51;
+    content-padding-right: 36;
+ 
+    margin-left-a4: 20;
+    margin-left-us: 29;
 }
 
 heading {
@@ -50,50 +52,33 @@ centered {
 }
 
 character {
-    width-a4: 38ch;
-    width-us: 40ch;
+    margin-left: 19ch;
     
-    margin-left: 20ch;
+    margin-right: 25;
 }
 
 parenthetical {
-    width-a4: 28ch;
-    width-us: 28ch;
-    
-    margin-left: 16ch;
+    margin-left: 15ch;
+    margin-right: 120;
 }
 
 dialogue {
-    width-a4: 35ch;
-    width-us: 35ch;
-    
     margin-left: 11ch;
+    margin-right: 110;
 }
 
 more {
-    width-a4: 38ch;
-    width-us: 38ch;
-    
     margin-left: 130px;
 }
 
 dualDialogueCharacter {
-    width-a4: 38ch;
-    width-us: 40ch;
-
     margin-left: 30ch;
 }
 
 dualDialogueParenthetical {
-    width-a4: 28ch;
-    width-us: 28ch;
-
     margin-left: 27ch;
 }
 dualDialogue {
-    width-a4: 35ch;
-    width-us: 35ch;
-
     margin-left: 21ch;
     margin-right: 0;
 }

@@ -997,4 +997,24 @@ NSMutableDictionary<NSValue*,NSNumber*>* safeRanges;
 }
 
 
+#pragma mark - Drawn size
+
+/// Returns the actually DRAWN AREA of the page, including content padding
+- (CGFloat)drawnAreaWidth
+{
+    return self.paperSize.width - self.styles.page.marginLeft - (self.settings.paperSize == BeatA4 ? self.styles.page.marginLeftA4 : self.styles.page.marginLeftLetter) - self.styles.page.marginRight;
+}
+
+/// Returns the actual content area, excluding padding
+- (CGFloat)baseContentWidth
+{
+    return [self.styles.page basePageWidthWithPageSize:self.settings.paperSize];
+}
+
+/// Shorthand for fetching the paper size
+- (CGSize)paperSize
+{
+    return self.settings.paperSize == BeatA4 ? BeatPaperSizing.a4 : BeatPaperSizing.usLetter;
+}
+
 @end

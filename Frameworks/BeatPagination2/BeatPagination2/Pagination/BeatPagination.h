@@ -94,6 +94,13 @@ typedef NS_ENUM(NSInteger, BeatParagraphPaginationMode) {
 - (Line*)moreLineFor:(Line*)line;
 - (Line*)contdLineFor:(Line*)line;
 - (NSMapTable<NSUUID*, Line*>*)uuids;
+
+/// Returns the actually DRAWN AREA of the page, including content padding
+- (CGFloat)drawnAreaWidth;
+/// Returns actual paper size
+- (CGSize)paperSize;
+/// Returns the actual content area, excluding padding
+- (CGFloat)baseContentWidth;
 @end
 
 @interface BeatPagination : NSObject <BeatPaginationExports>
@@ -143,6 +150,8 @@ typedef NS_ENUM(NSInteger, BeatParagraphPaginationMode) {
 - (NSMapTable<NSUUID*, Line*>*)uuids;
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage;
+
+- (CGFloat)drawnAreaWidth;
 @end
 
 NS_ASSUME_NONNULL_END

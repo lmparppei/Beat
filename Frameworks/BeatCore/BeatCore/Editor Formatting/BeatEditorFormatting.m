@@ -137,11 +137,8 @@ NSString* const BeatRepresentedLineKey = @"representedLine";
     RenderStyle* elementStyle = [styles forElement:(typeName != nil) ? typeName : @"action"];
     
     // Paragraph sizing
-    CGFloat width = [elementStyle widthWithPageSize:_delegate.pageSize];
-    if (width == 0.0) width = [styles.page defaultWidthWithPageSize:paperSize];
-    
     CGFloat leftMargin = elementStyle.marginLeft;
-    CGFloat rightMargin = leftMargin + width - elementStyle.marginRight;
+    CGFloat rightMargin = -1 * elementStyle.marginRight;
     
 #if TARGET_OS_IOS
     if (is_Mobile) {

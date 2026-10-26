@@ -188,17 +188,14 @@ public final class CssParser {
         var type = RenderStyle.types[key]
         
         // We'll infer boolean types
-        if string == "true" || string == "false" {
-            type = .boolType
-        }
+        if string == "true" || string == "false" { type = .boolType }
         
         // First replace any setting getters
-        if let val = replaceGetter(value: value, getter: "userSetting", { key in return BeatUserDefaults.shared().get(key) }) {
+        if let val = replaceGetter(value: value, getter: "userSetting", { key in
+            return BeatUserDefaults.shared().get(key)
+        }) {
             value = val
         }
-        //if let val = replaceGetter(value: value, getter: "setting", { key in return self.settings?.value(forKey: key) }) {
-        //    value = val
-        //}
         
         // Document settings are a bit tricky. If a document setting block is not provided, we need to inquire the actual default value.
         if let val = replaceGetter(value: value, getter: "documentSetting", { key in

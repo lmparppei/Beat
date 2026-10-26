@@ -164,7 +164,6 @@ import UXKit
             textView.displaysLinkToolTips = false
             textView.isAutomaticLinkDetectionEnabled = false
             textView.textContainer?.lineFragmentPadding = linePadding
-            textView.textContainerInset = NSSize(width: 0, height: 0)
             textView.drawsBackground = true
         #endif
 		        

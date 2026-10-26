@@ -13,24 +13,21 @@
 */
 
 page {
-    padding-left: 60;
+    margin-left: 30 + documentSetting(marginModTop);
+    margin-right: 20 + documentSetting(marginModRight);
+    margin-top: 36 + documentSetting(marginModTop);
+    margin-bottom: 50 + documentSetting(marginModBottom);
     
-    margin-left: 30;
-    margin-right: 25;
-    margin-top: 40;
-    margin-bottom: 50;
-    margin-bottom-us: 0;
     margin-bottom-a4: 10;
-    
-    default-width-a4: 60ch;
-    default-width-us: 61ch;
-    
+    margin-bottom-letter: 0;
+        
     line-height: 12;
     
-    content-padding: 7ch;
+    content-padding: 51;
+    content-padding-right: 36;
  
     margin-left-a4: 20;
-    margin-left-us: 29;
+    margin-left-us: 30;
 }
 
 titlePage {
@@ -83,9 +80,6 @@ action {
 }
 
 centered {
-    width-a4: 60ch;
-    width-us: 61ch;
-
     margin-top: 1l;
     text-align: center;
     
@@ -93,75 +87,79 @@ centered {
 }
 
 character {
-    width-a4: 38ch;
-    width-us: 40ch;
-    
     margin-left: 19ch;
     margin-top: 1l;
+    
+    margin-right: 25;
     
     trim: true;
 }
 
 parenthetical {
-    width-a4: 28ch;
-    width-us: 28ch;
-    
     margin-left: 15ch;
+    margin-right: 120;
     margin-top: 0;
     
-    trim:true;
+    trim: true;
 }
 
 dialogue {
-    width-a4: 35ch;
-    width-us: 35ch;
-    
     margin-top: 0;
     margin-left: 10ch;
+    
+    margin-right: 110;
     
     trim: true;
 }
 
 more {
-    width-a4: 38ch;
-    width-us: 38ch;
-    
     margin-left: 136px;
+    margin-right: 120;
     margin-top: 0;
 }
-
+/*
+ dd char
+ width-a4: 20ch;
+ width-us: 21ch;
+ 
+ dd more
+ width-a4: 20ch;
+ width-us: 21ch;
+ 
+ dd par
+ width-a4: 25ch;
+ width-us: 26ch;
+ 
+ dd
+ width-a4: 27ch;
+ width-us: 28ch;
+ */
 dualDialogueCharacter {
     trim: true;
     
-    width-a4: 20ch;
-    width-us: 21ch;
-
     margin-top: 1l;
     margin-left: 7ch;
+    
+    columns: 2;
 }
 dualDialogueMore {
-    width-a4: 20ch;
-    width-us: 21ch;
-
     margin-top: 0;
     margin-left: 6ch;
+    
+    columns: 2;
 }
 dualDialogueParenthetical {
-    width-a4: 25ch;
-    width-us: 26ch;
-    
     margin-top: 0;
     margin-left: 4ch;
     
+    columns: 2;
     trim: true;
 }
 dualDialogue {
-    width-a4: 27ch;
-    width-us: 28ch;
-
     margin-left: 0ch;
     margin-right: 1ch;
     
+    columns: 2;
     trim: true;
 }
 

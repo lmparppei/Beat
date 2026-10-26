@@ -505,7 +505,8 @@ Line *cachedRectLine;
 
 - (CGFloat)documentWidth
 {
-	CGFloat width = [_editorDelegate.editorStyles.page defaultWidthWithPageSize:_editorDelegate.pageSize];
+	CGFloat width = [_editorDelegate.editorStyles.page basePageWidthWithPageSize:_editorDelegate.pageSize];
+	
 	CGFloat padding = self.textContainer.lineFragmentPadding;
 	return width + padding * 2 + 1.0;
 }

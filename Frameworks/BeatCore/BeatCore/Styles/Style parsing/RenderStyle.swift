@@ -83,16 +83,17 @@ struct PaginationRule {
     @objc var marginBottomA4:CGFloat { get }
     @objc var marginBottomLetter:CGFloat { get }
     @objc var marginRight:CGFloat { get }
-    @objc var paddingLeft:CGFloat { get }
     @objc var contentPadding:CGFloat { get }
+    @objc var contentPaddingRight:CGFloat { get }
     @objc var lineFragmentMultiplier:Double { get }
     @objc var paginationMode:Int { get }
     @objc var overrideParagraphPaginationMode:Bool { get }
     @objc var significantUnits:Int { get }
+    @objc var columns:Int { get }
 }
 
 @objc public class RenderStyle:NSObject, RenderStyleExports {
-    // Map property names to types
+    /// Map property names to types.
     public class var types:[String:RenderStyleValueType] {
         return [
         "text-align": .stringType,
@@ -119,6 +120,7 @@ struct PaginationRule {
         "pagination-mode": .integerType,
         "overrideParagraphPaginationMode": .boolType,
         "significant-units": .integerType,
+        "columns": .integerType
     ] }
 
     /// This is a placeholder render style for checking value types
@@ -172,13 +174,16 @@ struct PaginationRule {
     @objc public var marginBottomA4:CGFloat = 0
     @objc public var marginBottomLetter:CGFloat = 0
     @objc public var marginRight:CGFloat = 0
-    @objc public var paddingLeft:CGFloat = 0
+    
     @objc public var contentPadding:CGFloat = 0
+    @objc public var contentPaddingRight:CGFloat = 0
 
     @objc public var lineFragmentMultiplier = 1.0;
     
     @objc public var paginationMode:Int = -1
     @objc public var overrideParagraphPaginationMode:Bool = false
+    
+    @objc public var columns:Int = 0
     
     @objc public var significantUnits:Int = 0
     
@@ -355,21 +360,40 @@ struct PaginationRule {
         print("RenderStyle: Unknown key: ", key)
     }
 
-    /// Returns the default width based on page size
-    @objc public func defaultWidth(pageSize:BeatPaperSize) -> CGFloat {
-        return (pageSize == .A4) ? self.defaultWidthA4 : self.defaultWidthLetter
+    /// Returns the default width based on page size. Only use this with `page` style.
+    @objc public func basePageWidth(pageSize:BeatPaperSize) -> CGFloat {
+        if self.name != "page" {
+            print("WARNING: Never use basePageWidth for any other element than page.")
+        }
+        
+        let width = pageWidth(for: pageSize)
+        let marginOffset = pageSize == .A4 ? self.marginLeftA4 : self.marginLeftLetter
+        
+        let bw = width - marginOffset - self.marginLeft - self.marginRight - self.contentPadding - self.contentPaddingRight
+        
+        //print("BASE WIDTH", width - marginOffset - self.marginLeft - self.marginRight - self.contentPadding - self.contentPaddingRight, (width - marginOffset - self.marginLeft - self.marginRight - self.contentPadding - self.contentPaddingRight) / 7.25)
+        return width - marginOffset - self.marginLeft - self.marginRight - self.contentPadding - self.contentPaddingRight
     }
     
     /// Returns the correct element size based on page width.
-    @objc public func width(pageSize:BeatPaperSize) -> CGFloat {
-        // Prefer page-size-based rules
+    @objc public func width(pageSize:BeatPaperSize, pageStyle:RenderStyle) -> CGFloat {
+        // Prefer page-size-based rules. Note that HARD-CODED width values will be prioritized. After that, we'll calculate the actual size.
         if (pageSize == .A4 && widthA4 > 0) {
             return widthA4
         } else if (pageSize == .usLetter && widthLetter > 0) {
             return widthLetter
-        } else {
+        } else if width > 0 {
             return width
+        } else {
+            let baseWidth = pageStyle.basePageWidth(pageSize: pageSize)
+            let leftMargin = (pageSize == .A4 ? self.marginLeftA4 : self.marginLeftLetter) + self.marginLeft
+            
+            return baseWidth - leftMargin - self.marginRight
         }
+    }
+    
+    private func pageWidth(for pageSize:BeatPaperSize) -> CGFloat {
+        return pageSize == .A4 ? BeatPaperSizing.a4().width : BeatPaperSizing.usLetter().width
     }
         
     @objc public func hasConditionalStyles() -> Bool {

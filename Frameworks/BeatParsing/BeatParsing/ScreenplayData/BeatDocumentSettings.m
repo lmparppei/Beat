@@ -75,6 +75,11 @@ NSString * const DocSettingHidePageNumbers = @"Hide Page Numbers";
 
 NSString * const DocSettingPrintHeadingColor = @"printHeadingColor";
 
+NSString * const DocSettingMarginModifierTop = @"marginModTop";
+NSString * const DocSettingMarginModifierLeft = @"marginModLeft";
+NSString * const DocSettingMarginModifierRight = @"marginModRight";
+NSString * const DocSettingMarginModifierBottom = @"marginModBottom";
+
 -(id)init
 {
     return [BeatDocumentSettings.alloc initWithDelegate:nil];
@@ -126,6 +131,11 @@ NSString * const DocSettingPrintHeadingColor = @"printHeadingColor";
         DocSettingPrintSections: @0,
         DocSettingPrintSynopsis: @0,
         DocSettingPrintSceneNumbers: @1,
+        
+        DocSettingMarginModifierTop: @(0.0),
+        DocSettingMarginModifierLeft: @(0.0),
+        DocSettingMarginModifierRight: @(0.0),
+        DocSettingMarginModifierBottom: @(0.0),
     };
     
     return defaultValues;

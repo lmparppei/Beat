@@ -71,6 +71,11 @@ extern NSString * const DocSettingTextLengthAtSave;
 
 extern NSString * const DocSettingPrintHeadingColor;
 
+extern NSString * const DocSettingMarginModifierTop;
+extern NSString * const DocSettingMarginModifierLeft;
+extern NSString * const DocSettingMarginModifierRight;
+extern NSString * const DocSettingMarginModifierBottom;
+
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)toggleBool:(NSString*)key;
 - (void)setInt:(NSString*)key as:(NSInteger)value;

@@ -5,6 +5,7 @@
 //  Created by Lauri-Matti Parppei on 2.6.2025.
 //
 
+/*
 public struct BeatSnippet {
     public var title:String
     public var text:String
@@ -149,3 +150,4 @@ extension Array {
         insert(element, at: adjustedToIndex)
     }
 }
+*/

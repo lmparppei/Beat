@@ -50,8 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Page number block is created only when rendering the actual pages. This is called by `BeatPaginationPage` during the layout process.
 - (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page;
-/// Returns rendered block point width for given line.
-- (CGFloat)blockWidthFor:(Line*)line dualDialogue:(bool)isDualDialogue;
+
 @end
 
 NS_ASSUME_NONNULL_END

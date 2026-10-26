@@ -161,7 +161,6 @@ import JavaScriptCore
     @objc public var pagination:RenderStyle {
         return self.forElement("pagination")
     }
-
 }
 
 
@@ -184,4 +183,9 @@ extension BeatStylesheet {
             
         return true
     }
+    
+    @objc public func rightMarginForStyle(_ style:RenderStyle) -> CGFloat {
+        -1 * (page().marginRight + style.marginRight)
+    }
+    
 }

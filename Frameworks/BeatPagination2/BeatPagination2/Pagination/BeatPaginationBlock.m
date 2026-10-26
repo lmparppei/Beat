@@ -139,14 +139,15 @@
     }
     
 	// Create a bare-bones paragraph style
+    // TODO: Either get these values from renderer or make the renderer get the values from pagination. After removing the fixed element widths, it's now become a complicated mess to understand which values affect the actual element sizing.
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
     CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
     
     pStyle.minimumLineHeight    = lineHeight;
 	pStyle.maximumLineHeight    = lineHeight;
-    pStyle.firstLineHeadIndent  = style.firstLineIndent;
-    pStyle.headIndent           = style.indent;
-
+    pStyle.firstLineHeadIndent  = style.firstLineIndent + style.marginLeft;
+    pStyle.headIndent           = style.indent + style.marginLeft;
+    pStyle.tailIndent           = -1 * style.marginRight;
         
     // Set font for this element. Make sure we won't encounter a nil value.
     BXFont* font = (_delegate.fonts.regular) ? _delegate.fonts.regular : BeatFontManager.shared.defaultFonts.regular;
@@ -164,12 +165,12 @@
 
 
 	// Calculate the line height
-    CGFloat width = [style widthWithPageSize:pageSize];
-    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:pageSize];
-	
+    CGFloat containerWidth = [self.delegate.styles.page basePageWidthWithPageSize:pageSize];
+    if (self.dualDialogueElement) containerWidth = containerWidth / 2;
+    
     CGFloat height = 0.0;
-    height = [string heightWithContainerWidth:width] + topMargin;
-		
+    height = [string heightWithContainerWidth:containerWidth] + topMargin;
+    
 	// Save the calculated top margin for full block if this is the first element on page, AND this behavior isn't overridden
     if (line == self.lines.firstObject && ![self.delegate.styles forLine:line].forcedMargin) {
         self.topMargin = topMargin;
@@ -392,19 +393,23 @@
     return [self splitParagraphWithRemainingSpace:remainingSpace line:nil];
 }
 
-- (NSInteger)getOverflowLength:(Line *)line lineHeight:(CGFloat)lineHeight remainingSpace:(CGFloat)remainingSpace string:(NSString *)str {
+- (NSInteger)getOverflowLength:(Line *)line lineHeight:(CGFloat)lineHeight remainingSpace:(CGFloat)remainingSpace string:(NSString *)str
+{
+
     // For some reason we need to retain the text storage like this after macOS Sonoma. No idea why.
     NSTextStorage* textStorage;
-    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
-    NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
+    NSLayoutManager *lm = [self layoutManagerForLine:line textStorage:&textStorage];
     
-    // We'll get the number of lines rather than calculating exact size in NSTextField
     __block NSInteger numberOfLines = 0;
     __block CGFloat pageBreakPos = 0;
     __block NSInteger length = 0;
     
-    [lm enumerateLineFragmentsForGlyphRange:layoutRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+    [lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
         numberOfLines++;
+        
+        NSRange cr = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+        NSString* s = [textStorage.string substringWithRange:cr];
+        NSLog(@" • %@",s);
         
         if (numberOfLines < remainingSpace / lineHeight) {
             NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
@@ -421,7 +426,7 @@
 {
     // For some reason we need to retain the text storage like this after macOS Sonoma. No idea why.
     NSTextStorage* textStorage;
-    NSLayoutManager *lm = [self layoutManagerForString:str line:line textStorage:&textStorage];
+    NSLayoutManager *lm = [self layoutManagerForLine:line textStorage:&textStorage];
     NSRange layoutRange = NSMakeRange(0, lm.numberOfGlyphs);
     
     // We'll get the number of lines rather than calculating exact size in NSTextField
@@ -474,8 +479,8 @@
     BeatPaperSize paperSize = self.delegate.settings.paperSize;
     
     // Get block size
-    CGFloat width = [style widthWithPageSize:paperSize];
-    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
+    CGFloat width = [style widthWithPageSize:paperSize pageStyle:_delegate.styles.page];
+    if (width == 0.0) width = [self.delegate.styles.page basePageWidthWithPageSize:paperSize];
     
     // This is a hack for some weird situations
     remainingSpace -= 1.0;
@@ -804,7 +809,7 @@
 	NSInteger breakLength = 0;
 	CGFloat breakPosition = 0.0;
     
-    // Next, let's find out how much we can fit on this page
+    // Next, let's find out how much we can fit on this page. (This code is pretty, pretty, PRETTY inefficient. :---)
 	for (NSString *sentence in sentences) { @autoreleasepool {
 		[text appendString:sentence];
 		CGFloat h = [self heightForString:text lineType:line.type];
@@ -824,11 +829,15 @@
 }
 
 
-/// Returns the height of string for given line type.
-/// - note: This method doesn't take margins or any other styles into account, just the width.
+/// Returns the height of string for given line type. Use this only when we need to dynamically measure the height of an item. No idea why. Seems like a duplicate method?
 - (NSInteger)heightForString:(NSString *)string lineType:(LineType)type
 {
-    CGFloat lineHeight = (self.delegate.styles.page.lineHeight >= 0) ? self.delegate.styles.page.lineHeight : BeatPagination.lineHeight;
+    RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
+    
+    CGFloat lineHeight = style.lineHeight >= 0 ? style.lineHeight : self.delegate.styles.page.lineHeight >= 0;
+    if (lineHeight == 0) lineHeight = BeatPagination.lineHeight;
+    
+    // Return line height only for empty strings
 	if (string.length == 0) return lineHeight;
 	
 	// If this is a *dual dialogue* column, we'll need to convert the style.
@@ -837,67 +846,47 @@
 		else if (type == character) type = dualDialogueCharacter;
 		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
 	}
-	
-	BXFont* font = self.delegate.fonts.regular;
-	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
-	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-		
-    // Create paragraph style
-    NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-    pStyle.minimumLineHeight = lineHeight;
-    pStyle.maximumLineHeight = lineHeight;
+	    
+    Line* line = [Line withString:string type:type];
     
-	// set up the layout manager
-	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString:string attributes:@{
-        NSFontAttributeName: font,
-        NSParagraphStyleAttributeName: pStyle
+    NSTextStorage* textStorage;
+    NSLayoutManager *layoutManager = [self layoutManagerForLine:line textStorage:&textStorage];
+    
+    __block CGFloat height = 0.0;
+    [layoutManager enumerateLineFragmentsForGlyphRange:NSMakeRange(0, layoutManager.numberOfGlyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+        height += rect.size.height;
     }];
-	NSLayoutManager *layoutManager = NSLayoutManager.new;
-	
-	NSTextContainer *textContainer = NSTextContainer.new;
-	[textContainer setSize:CGSizeMake(width, MAXFLOAT)];
-	
-	[layoutManager addTextContainer:textContainer];
-	[textStorage addLayoutManager:layoutManager];
-	[textContainer setLineFragmentPadding:0];
-	[layoutManager glyphRangeForTextContainer:textContainer];
-	
-	// We'll get the number of lines rather than calculating exact size in NSTextField
-	NSInteger numberOfLines;
-	NSInteger index;
-	NSInteger numberOfGlyphs = layoutManager.numberOfGlyphs;
-	
-	// Iterate through line fragments
-	NSRange lineRange;
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
-		index = NSMaxRange(lineRange);
-	}
-    	
-	return numberOfLines * lineHeight;
+    
+    
+    return height;
 }
 
 /// Returns a layout manager for a string with given type. You can use this layout manager to for quick and dirty height calculation.
 /// @warning: This code uses **TextKit 1**
-- (NSLayoutManager*)layoutManagerForString:(NSString*)string line:(Line*)line textStorage:(out NSTextStorage**)textStorage
+- (NSLayoutManager*)layoutManagerForLine:(Line*)line textStorage:(out NSTextStorage**)textStorage
 {
     RenderStyle *style = [self.delegate.styles forLine:line];
     
     BXFont* font = _delegate.fonts.regular;
     if (style.font) font = [self fontFor:style];
     
-    BeatPaperSize paperSize = self.delegate.settings.paperSize;
-    CGFloat width = [self.delegate.renderer blockWidthFor:line dualDialogue:false];
-    if (width == 0.0) width = [self.delegate.styles.page defaultWidthWithPageSize:paperSize];
-        
-    NSAttributedString* attrStr = [self.delegate.renderer renderLine:line ofBlock:self dualDialogueElement:false firstElementOnPage:false];
-            
+    CGFloat width = self.delegate.drawnAreaWidth;
+    if (style.columns > 0) {
+        // We can't use the drawn area width here, because column items are nested in a container.
+        // Let's get the base area.
+        width = self.delegate.baseContentWidth / style.columns;
+    }
+    
+    BeatRenderer* renderer = self.delegate.renderer != nil ? self.delegate.renderer : [BeatRenderer.alloc initWithSettings:self.delegate.settings];
+    NSAttributedString* attrStr = [renderer renderLine:line ofBlock:self dualDialogueElement:self.dualDialogueElement firstElementOnPage:false];
+    
     // set up the layout manager
     *textStorage   = [[NSTextStorage alloc] initWithAttributedString:attrStr];
     NSLayoutManager *layoutManager = NSLayoutManager.new;
     
     NSTextContainer *textContainer = NSTextContainer.new;
     [textContainer setSize:CGSizeMake(width, MAXFLOAT)];
+    
     
     [layoutManager addTextContainer:textContainer];
     [*textStorage addLayoutManager:layoutManager];
@@ -928,20 +917,6 @@
 	return [_delegate.renderer renderBlock:self firstElementOnPage:isFirstElement];
 }
 
-- (CGFloat)widthFor:(Line*)line
-{
-    return [self widthForType:line.typeName];
-}
-
-- (CGFloat)widthForType:(NSString*)typeName
-{
-    RenderStyle* style = [_delegate.styles forElement:typeName];
-    CGFloat width = [style widthWithPageSize:_delegate.settings.paperSize];
-    if (width == 0.0) width = [_delegate.styles.page defaultWidthWithPageSize:_delegate.settings.paperSize];
-    
-    return width;
-}
-
 
 #pragma mark - Convenience
 
@@ -961,7 +936,8 @@
 
 /// Checks if the block contains given line.
 /// - note: This method uses UUIDs to match the lines in paginated (and cloned) content to those originally in parser.
-- (bool)containsLine:(Line*)line {
+- (bool)containsLine:(Line*)line
+{
 	return [self.UUIDs containsObject:line.uuid];
 }
 

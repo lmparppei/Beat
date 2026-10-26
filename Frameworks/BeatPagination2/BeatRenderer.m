@@ -384,6 +384,7 @@
     bool printSceneNumbers = self.settings.printSceneNumbers;
     
     CGFloat contentPadding = self.styles.page.contentPadding;
+    CGFloat contentPaddingRight = self.styles.page.contentPaddingRight;
     CGFloat width = [self widthFor:line];
     
     // Initialize result
@@ -402,7 +403,7 @@
     
     [leftCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
     [contentCell setContentWidth:width - 5.0 type:NSTextBlockAbsoluteValueType];
-    [rightCell setContentWidth:contentPadding - 5.0 type:NSTextBlockAbsoluteValueType];
+    [rightCell setContentWidth:contentPaddingRight - 5.0 type:NSTextBlockAbsoluteValueType];
     
     // Stylize the actual heading part.
     // Make a copy of the style just in case.
@@ -461,6 +462,7 @@
     bool printSceneNumbers = self.settings.printSceneNumbers;
 
     CGFloat contentPadding = self.styles.page.contentPadding;
+    CGFloat contentPaddingRight = self.styles.page.contentPaddingRight;
     CGFloat width = [self widthFor:line];
 
     // Inherit font
@@ -507,7 +509,7 @@
         
     BeatTextTableCell* left = [BeatTextTableCell.alloc initWithContent:sceneNumberLeft width:contentPadding];
     BeatTextTableCell* center = [BeatTextTableCell.alloc initWithContent:content width:width - 5.0];
-    BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:sceneNumberRight width:contentPadding];
+    BeatTextTableCell* right = [BeatTextTableCell.alloc initWithContent:sceneNumberRight width:contentPaddingRight];
     
     BeatTableAttachment* attachment = [BeatTableAttachment.alloc initWithCells:@[left, center, right] spacing:0.0 margin:0.0];
     
@@ -527,22 +529,21 @@
 #if TARGET_OS_OSX
 /// Render a block with left/right columns. This block will know the contents of both columns.
 /// @note: macOS version uses `NSTextTable` which is available only in TextKit1 on macOS.
-- (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock {
+- (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock
+{
     // Create table
-    CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
+    CGFloat width = [self.styles.page basePageWidthWithPageSize:self.settings.paperSize];
     
     NSTextTable* table = NSTextTable.new;
     [table setContentWidth:width + self.styles.page.contentPadding type:NSTextBlockAbsoluteValueType];
-    table.numberOfColumns = 2;
+    table.numberOfColumns = 2; // Styles already support columns, let's think about supporting them here at some point. Probably not lol.
     
     // Create cells
     __block NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
     __block NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
     
-    CGFloat fullWidth = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
-    
-    [leftCell setContentWidth:self.styles.page.contentPadding + fullWidth / 2 type:NSTextBlockAbsoluteValueType];
-    [rightCell setContentWidth:fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+    [leftCell setContentWidth:self.styles.page.contentPadding + width / 2 type:NSTextBlockAbsoluteValueType];
+    [rightCell setContentWidth:width / 2 type:NSTextBlockAbsoluteValueType];
     
     // Render content for left/right cell
     NSMutableAttributedString* leftContent = [self renderBlock:dualDialogueBlock.leftColumnBlock firstElementOnPage:false].mutableCopy;
@@ -647,8 +648,7 @@
         pageNumberString = (page.customPageNumber == nil) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : [NSString stringWithFormat:@"%@\n", page.customPageNumber];
     }
     
-    // We'll use A4 size for both page sizes
-    CGFloat width = self.styles.page.defaultWidthA4 - 10.0;
+    CGFloat width = [self.styles.page basePageWidthWithPageSize:self.settings.paperSize] - 20;
     width += self.styles.page.contentPadding + self.styles.page.marginLeft;
     
     NSTextTable* table = NSTextTable.new;
@@ -922,7 +922,7 @@
             NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
             pStyle.headIndent               = style.marginLeft + style.indent;
             pStyle.firstLineHeadIndent      = style.marginLeft + style.firstLineIndent;
-            pStyle.tailIndent = -1 * style.marginRight; // Negative value;
+            pStyle.tailIndent               = -1 * style.marginRight; // Negative value;
 
             // Check for additional rules
             if (style.unindentFreshParagraphs && line.beginsNewParagraph && !line.paragraphIn) {
@@ -944,16 +944,15 @@
             pStyle.minimumLineHeight = self.styles.page.lineHeight;
             pStyle.lineSpacing = 0.0;
             
-            // Add content padding where needed
+            // Add content padding values where needed
             if (!isDualDialogue && !line.isTitlePage) {
                 pStyle.firstLineHeadIndent     += self.styles.page.contentPadding;
                 pStyle.headIndent              += self.styles.page.contentPadding;
-            } else if (!line.isTitlePage) {
-                pStyle.firstLineHeadIndent     = style.marginLeft;
-                pStyle.headIndent              = style.marginLeft;
+                pStyle.tailIndent              -= self.styles.page.contentPaddingRight;
             }
             
             // With RTL text, we need to switch the margins
+            // NOTE: This is not used currently AFAIK
             if (rightToLeft) {
                 CGFloat fLHI = pStyle.headIndent;
                 CGFloat tI = pStyle.tailIndent;
@@ -966,17 +965,11 @@
                 pStyle.firstLineHeadIndent = -tI;
             }
             
-            // Create text block for non-title page elements to restrict horizontal size
+            // Adjust element margins for non-nested elements.
+            // Headings and dual dialogue blocks are rendered differently than basic elements.
             if (!line.isTitlePage && !isDualDialogue) {
-#if TARGET_OS_OSX
-                NSTextBlock* textBlock = NSTextBlock.new;
-                [textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
-                pStyle.textBlocks = @[textBlock];
-#else
-                // This is a cursed solution, but what can I say. TextKit 2 (or iOS for that matter) doesn't support text blocks.
-                CGFloat rightMargin = style.marginLeft / 2 + blockWidth - style.marginRight;
-                pStyle.tailIndent = rightMargin;                
-#endif
+                CGFloat rightMargin = -1 * (self.styles.page.contentPaddingRight + style.marginRight);
+                pStyle.tailIndent = rightMargin;
             }
             
             // Text alignment
@@ -1019,8 +1012,8 @@
     if (line == nil) return 0.0;
     
     RenderStyle* style = [self.styles forLine:line];
-    CGFloat width = [style widthWithPageSize:self.settings.paperSize];
-    if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
+    CGFloat width = [style widthWithPageSize:self.settings.paperSize pageStyle:self.styles.page];
+    if (width == 0.0) width = [self.styles.page basePageWidthWithPageSize:self.settings.paperSize];
         
     return width;
 }
@@ -1031,8 +1024,8 @@
     if (line == nil) return 0.0;
     
     RenderStyle* style = [self.styles forLine:line];
-    CGFloat width = [style widthWithPageSize:self.settings.paperSize];
-    if (width == 0.0) width = [self.styles.page defaultWidthWithPageSize:self.settings.paperSize];
+    CGFloat width = [style widthWithPageSize:self.settings.paperSize pageStyle:self.styles.page];
+    if (width == 0.0) width = [self.styles.page basePageWidthWithPageSize:self.settings.paperSize];
     
     CGFloat blockWidth = width + style.marginLeft + ((self.settings.paperSize == BeatA4) ? style.marginLeftA4 : style.marginLeftLetter);
     if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
