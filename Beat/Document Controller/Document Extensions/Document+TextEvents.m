@@ -49,7 +49,7 @@
 	bool change = true;
 	bool undoOperation = self.undoManager.isRedoing || self.undoManager.isUndoing;
 	
-	// This shouldn't be here :-)
+	// TODO: This shouldn't be here :-)
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
 	}

@@ -98,7 +98,20 @@
 	}
 	
 	NSRange clampedRange = CLAMP_RANGE(editedRange, self.textStorage.length);
-	if (clampedRange.length > 0) [self.textView.layoutManager invalidateDisplayForCharacterRange:clampedRange];
+	if (clampedRange.length > 0) [self safeInvalidateRange:clampedRange];
+}
+
+/// This is a little hacky way to ensure we are not using stale characters-to-glyphs mapping data in layout manager.
+- (void)safeInvalidateRange:(NSRange)range
+{
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSLayoutManager *lm = self.textView.layoutManager;
+		NSUInteger len = lm.textStorage.length;
+		if (range.location == NSNotFound || range.location >= len) return;
+
+		NSRange safe = NSMakeRange(range.location, MIN(range.length, len - range.location));
+		if (safe.length > 0) [lm invalidateDisplayForCharacterRange:safe];
+	});
 }
 
 -(void)textViewDidChangeSelection:(UITextView *)textView
@@ -121,9 +134,9 @@
 /// Called when touch event *actually* changed the selection
 - (void)textViewDidEndSelection:(UITextView *)textView selectedRange:(NSRange)selectedRange
 {
-	// Let's not do any of this stuff if we're processing an edit. For some reason selection end is posted *before* text change. :--)
 	if (self.documentIsLoading) return;
 	
+	// Let's not do any of this stuff if we're processing an edit. For some reason selection end is posted *before* text change. :--)
 	if (!self.processingEdit) {
 		if (self.selectedRange.length == 0) [self.textView scrollRangeToVisible:NSMakeRange(NSMaxRange(textView.selectedRange), 0)];
 		[self updateSelection];
