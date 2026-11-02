@@ -9,26 +9,59 @@
 import Foundation
 
 @objc class BeatDocumentSettingWindow:NSWindowController {
+	
 	@IBOutlet weak var pageSize:NSPopUpButton?
 	@IBOutlet weak var styleMenu:NSPopUpButton?
 	
 	@IBOutlet weak var sceneNumberStart:NSTextField?
 	@IBOutlet weak var pageNumberStart:NSTextField?
 	
+	// MARK: Invisible element printing
+	
 	@IBOutlet weak var printSections:NSButton?
 	@IBOutlet weak var printSynopsis:NSButton?
 	@IBOutlet weak var printNotes:NSButton?
 	
+	// MARK: Page numbering
+	
 	@IBOutlet weak var pageNumberingModeDefault:NSButton?
 	@IBOutlet weak var pageNumberingModeScene:NSButton?
 	@IBOutlet weak var pageNumberingModePageBreak:NSButton?
+	
+	// MARK: Basic layout
 		
 	@IBOutlet weak var novelSettings:NSView?
 	@IBOutlet weak var lineHeight:NSSegmentedControl?
 	@IBOutlet weak var contentAlignment:NSSegmentedControl?
 	
+	// MARK: Paper sizing outlets
+	
+	@IBOutlet weak var marginLeftField: NSTextField!
+	@IBOutlet weak var marginRightField: NSTextField!
+	@IBOutlet weak var marginTopField: NSTextField!
+	@IBOutlet weak var marginBottomField: NSTextField!
+
+	// Unit selectors and settings
+	@IBOutlet weak var unitMillimetersRadio: NSButton!
+	@IBOutlet weak var unitInchesRadio: NSButton!
+
+	
 	@objc weak var editorDelegate:BeatEditorDelegate?
 	var pageNumberingMode:BeatPageNumberingMode = .default
+	
+	private static let unitDefaultsKey = "marginDisplayUnit"
+	var unit: MarginUnit = .localeDefault {
+		didSet { UserDefaults.standard.set(unit.rawValue, forKey: Self.unitDefaultsKey) }
+	}
+	
+	lazy var formatter: NumberFormatter = {
+			let f = NumberFormatter()
+			f.numberStyle = .decimal
+			f.locale = .current
+			f.minimumFractionDigits = 0
+			f.usesGroupingSeparator = false
+			return f
+		}()
 	
 	override var windowNibName: String! {
 		return "BeatDocumentSettingWindow"

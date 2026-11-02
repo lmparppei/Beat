@@ -13,7 +13,7 @@
 */
 
 page {
-    margin-left: 30 + documentSetting(marginModTop);
+    margin-left: 50 + documentSetting(marginModTop);
     margin-right: 20 + documentSetting(marginModRight);
     margin-top: 36 + documentSetting(marginModTop);
     margin-bottom: 50 + documentSetting(marginModBottom);
@@ -26,8 +26,8 @@ page {
     content-padding: 51;
     content-padding-right: 36;
  
-    margin-left-a4: 20;
-    margin-left-us: 30;
+    margin-left-a4: 0;
+    margin-left-us: 20;
 }
 
 titlePage {

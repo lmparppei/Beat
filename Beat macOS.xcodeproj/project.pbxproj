@@ -506,6 +506,9 @@
 		B67CF0C22CF4E53E0011D82F /* BeatMiniMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67CF0C12CF4E5350011D82F /* BeatMiniMap.swift */; };
 		B67CF0C32CF4E53E0011D82F /* BeatMiniMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67CF0C12CF4E5350011D82F /* BeatMiniMap.swift */; };
 		B67CF0C42CF4E53E0011D82F /* BeatMiniMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67CF0C12CF4E5350011D82F /* BeatMiniMap.swift */; };
+		B67E13353098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E13343098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift */; };
+		B67E13363098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E13343098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift */; };
+		B67E13373098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E13343098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift */; };
 		B67E7BA62AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA72AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
 		B67E7BA82AEED36600977F7D /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */; };
@@ -1254,6 +1257,7 @@
 		B67C73CB2B37226D002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		B67C73CD2B37227C002BD12F /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
 		B67CF0C12CF4E5350011D82F /* BeatMiniMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatMiniMap.swift; sourceTree = "<group>"; };
+		B67E13343098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BeatDocumentSettingWindow+Margins.swift"; sourceTree = "<group>"; };
 		B67E7BA52AEED36600977F7D /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
 		B67F75A02B1F310D0028D009 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatTimerWindow.xib; sourceTree = "<group>"; };
@@ -2250,6 +2254,7 @@
 			isa = PBXGroup;
 			children = (
 				B68C592B2CD1785000C1F596 /* BeatDocumentSettingWindow.swift */,
+				B67E13343098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift */,
 				B68C592E2CD1787100C1F596 /* BeatDocumentSettingWindow.xib */,
 			);
 			path = "Document Settings";
@@ -3163,6 +3168,7 @@
 				B617654B2BA59EDD00F18417 /* ColorView.m in Sources */,
 				B61765462BA59EC800F18417 /* BeatTimelineItem.m in Sources */,
 				B62CD50E279752130070DE17 /* BeatRecentFileCell.swift in Sources */,
+				B67E13353098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */,
 				B67B072C2E1BC014004345D4 /* BeatTextView+SpellChecking.m in Sources */,
 				B61765622BA5A1A700F18417 /* SceneFiltering.m in Sources */,
 				B60FF87426583E1A00886E06 /* BottomAlignedTextField.m in Sources */,
@@ -3349,6 +3355,7 @@
 				B6125FF52CD3D1D8009AE189 /* ColorView.m in Sources */,
 				B6125FF62CD3D1D8009AE189 /* BeatTimelineItem.m in Sources */,
 				B6125FF72CD3D1D8009AE189 /* BeatRecentFileCell.swift in Sources */,
+				B67E13373098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */,
 				B67B072D2E1BC014004345D4 /* BeatTextView+SpellChecking.m in Sources */,
 				B6125FF82CD3D1D8009AE189 /* SceneFiltering.m in Sources */,
 				B6125FF92CD3D1D8009AE189 /* BottomAlignedTextField.m in Sources */,
@@ -3543,6 +3550,7 @@
 				B617654C2BA59EDD00F18417 /* ColorView.m in Sources */,
 				B61765472BA59EC800F18417 /* BeatTimelineItem.m in Sources */,
 				B62CD50F279752130070DE17 /* BeatRecentFileCell.swift in Sources */,
+				B67E13363098E2BA00C20ECF /* BeatDocumentSettingWindow+Margins.swift in Sources */,
 				B67B072E2E1BC014004345D4 /* BeatTextView+SpellChecking.m in Sources */,
 				B61765632BA5A1A700F18417 /* SceneFiltering.m in Sources */,
 				B60FF87526583E1A00886E06 /* BottomAlignedTextField.m in Sources */,
