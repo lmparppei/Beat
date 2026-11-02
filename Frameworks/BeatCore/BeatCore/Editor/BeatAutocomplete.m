@@ -149,12 +149,21 @@
 - (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange
 {
     __block NSString* text;
+    __block Line *currentLine;
     @synchronized (_delegate) {
         text = _delegate.text.copy;
+        currentLine = self.delegate.currentLine;
     }
-        
-    Line *currentLine = self.delegate.currentLine;
-    if (text.length == 0 || currentLine.string == nil || NSMaxRange(charRange) > text.length || charRange.length < 0) return @[];
+
+    // In some rare cases the charRange can have integer overflow, so we have to do a lot of checks here
+    NSUInteger textLength = text.length;
+    if (textLength == 0
+        || currentLine.string == nil
+        || charRange.location == NSNotFound
+        || charRange.location > textLength
+        || charRange.length > textLength - charRange.location) {
+        return @[];
+    }
     
     NSMutableArray *matches = NSMutableArray.new;
     NSMutableArray *allSuggestions = NSMutableArray.new;

@@ -78,7 +78,10 @@ public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	}
 	
 	public func numberOfSuggestionsInInputAssistantView() -> Int {
-		guard let line = delegate?.currentLine, let delegate = self.delegate else { return 0 }
+		guard let line = delegate?.currentLine,
+				let delegate = self.delegate,
+			    NSMaxRange(delegate.selectedRange) <= (delegate.text() as NSString).length
+		else { return 0 }
 		
 		// If the currently edited line has changed, we'll refresh the results
 		if line != prevLine || prevLineType != line.type {
